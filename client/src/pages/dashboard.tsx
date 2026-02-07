@@ -1820,7 +1820,7 @@ export default function Dashboard() {
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
-  const saveCourses = (data: { courses: Array<{ name: string; color: string; professor: string }> }) => {
+  const saveCourses = (data: { courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }) => {
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
     setIsCoursesDialogOpen(false);
@@ -10256,29 +10256,67 @@ export default function Dashboard() {
                               data-testid={`input-school-course-color-${index}`}
                             />
                           </div>
-                          <span className="text-[10px] text-white">
-                            <span className="font-medium">{courseCode}</span>
-                            {courseName !== courseCode && <span> - {courseName}</span>}
-                            {course.professor && (
-                              professorEmail ? (
-                                <>{" "}(<a
-                                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="!text-blue-400 underline hover:!text-blue-300 cursor-pointer"
-                                  data-testid={`link-school-email-professor-${index + 1}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
-                                  }}
-                                >
-                                  {course.professor}
-                                </a>)</>
-                              ) : (
-                                <span className="text-white/70"> ({course.professor})</span>
-                              )
-                            )}
-                          </span>
+                          <input
+                            type="text"
+                            className="text-[10px] text-white bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none font-medium w-[60px] px-0"
+                            value={courseCode}
+                            onChange={(e) => {
+                              const updatedCourses = [...coursesData.courses];
+                              const newName = courseName !== courseCode ? `${e.target.value} - ${courseName}` : e.target.value;
+                              updatedCourses[index] = { ...updatedCourses[index], name: newName };
+                              setCoursesData({ courses: updatedCourses });
+                              localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                              saveCourses({ courses: updatedCourses });
+                            }}
+                            data-testid={`input-school-course-code-${index}`}
+                          />
+                          {courseName !== courseCode && (
+                            <>
+                              <span className="text-[10px] text-white/70">-</span>
+                              <input
+                                type="text"
+                                className="text-[10px] text-white bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none flex-1 min-w-0 px-0"
+                                value={courseName}
+                                onChange={(e) => {
+                                  const updatedCourses = [...coursesData.courses];
+                                  updatedCourses[index] = { ...updatedCourses[index], name: `${courseCode} - ${e.target.value}` };
+                                  setCoursesData({ courses: updatedCourses });
+                                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                                  saveCourses({ courses: updatedCourses });
+                                }}
+                                data-testid={`input-school-course-name-${index}`}
+                              />
+                            </>
+                          )}
+                          <span className="text-[10px] text-white/50 mx-0.5">|</span>
+                          <input
+                            type="text"
+                            className="text-[10px] text-white/70 bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none w-[70px] px-0"
+                            value={course.professor || ''}
+                            placeholder="Prof..."
+                            onChange={(e) => {
+                              const updatedCourses = [...coursesData.courses];
+                              updatedCourses[index] = { ...updatedCourses[index], professor: e.target.value };
+                              setCoursesData({ courses: updatedCourses });
+                              localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                              saveCourses({ courses: updatedCourses });
+                            }}
+                            data-testid={`input-school-professor-${index}`}
+                          />
+                          <input
+                            type="text"
+                            className="text-[10px] !text-blue-400 bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none w-[90px] px-0"
+                            value={course.professorEmail || ''}
+                            placeholder="email..."
+                            onChange={(e) => {
+                              const updatedCourses = [...coursesData.courses];
+                              updatedCourses[index] = { ...updatedCourses[index], professorEmail: e.target.value };
+                              setCoursesData({ courses: updatedCourses });
+                              localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                              saveCourses({ courses: updatedCourses });
+                            }}
+                            data-testid={`input-school-professor-email-${index}`}
+                          />
                           <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
                             <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
                               {aasSentStatus[courseCode] && (
