@@ -2747,7 +2747,7 @@ export default function Dashboard() {
   const [oneDrivePreviewFiles, setOneDrivePreviewFiles] = useState<FileItem[]>([]);
   const [isLoadingOneDriveFiles, setIsLoadingOneDriveFiles] = useState(false);
   // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
-  const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number }>>({});
+  const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number; partialProgress?: number }>>({});
   // Legacy: for backward compatibility with OneDrive-only counts
   const [oneDriveFileCounts, setOneDriveFileCounts] = useState<Record<string, number>>({});
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
@@ -2850,10 +2850,21 @@ export default function Dashboard() {
         prefetchNextChunk(currentIdx + 1, voice);
       }
       
+      let lastSaveTime = 0;
+      audio.ontimeupdate = () => {
+        const now = Date.now();
+        if (now - lastSaveTime > 5000) {
+          lastSaveTime = now;
+          const currentFile = previewFileRef.current;
+          if (currentFile) {
+            saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
+          }
+        }
+      };
+      
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
         const currentFile = previewFileRef.current;
-        // Play next chunk if available
         if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
           currentChunkIndexRef.current++;
           setCurrentChunkIndex(currentChunkIndexRef.current);
@@ -8897,20 +8908,52 @@ export default function Dashboard() {
                 >
                   {/* Play button and progress bar row */}
                   <div className="absolute flex flex-col items-start gap-0.5" style={{ top: courseId === 'casl101' ? '8px' : '-2px', left: '4px', right: '4px' }}>
-                    {(moduleCount + moduleListenedCount) > 0 && (
-                      <span className="text-[7px] text-white/80 ml-auto" style={{ marginTop: '1px', position: 'relative', top: courseId === 'cppa122' ? '3px' : courseId === 'cfnf400' ? '2px' : '0px' }}>{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
+                    {(moduleCount + moduleListenedCount) > 0 && (() => {
+                      const folderKey = `week-${selectedWeek}-${courseId}-module`;
+                      const folderFiles = weeklyFiles.filter(f => f.folder === folderKey);
+                      const totalFiles = moduleCount + moduleListenedCount;
+                      let progressPct = 0;
+                      if (folderFiles.length > 0) {
+                        let totalProgress = 0;
+                        for (const f of folderFiles) {
+                          const isCurrentlyPlaying = !f.listened && previewFile && f.id === previewFile.id && isPlaying && totalChunks > 0;
+                          if (f.listened) {
+                            totalProgress += 100;
+                          } else if (isCurrentlyPlaying) {
+                            totalProgress += Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
+                          } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex > 0) {
+                            totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                          }
+                        }
+                        progressPct = Math.min(100, Math.round(totalProgress / folderFiles.length));
+                      } else {
+                        const fc = fileCounts[folderKey];
+                        if (fc && fc.total > 0) {
+                          progressPct = fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : Math.round((fc.listened / fc.total) * 100);
+                        } else {
+                          progressPct = totalFiles > 0 ? Math.round((moduleListenedCount / totalFiles) * 100) : 0;
+                        }
+                      }
+                      return (
+                        <>
+                          <span className="text-[7px] text-white/80 ml-auto" style={{ marginTop: '1px', position: 'relative', top: courseId === 'cppa122' ? '3px' : courseId === 'cfnf400' ? '2px' : '0px' }}>{progressPct}%</span>
+                          <div className="flex items-center gap-1 w-full">
+                            <Play className="h-3.5 w-3.5 text-white shrink-0" />
+                            <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full transition-all duration-300 rounded-full"
+                                style={{ width: `${progressPct}%`, backgroundColor: progressPct === 100 ? '#22c55e' : progressPct > 0 ? '#f97316' : '#ef4444' }}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                    {(moduleCount + moduleListenedCount) === 0 && (
+                      <div className="flex items-center gap-1 w-full">
+                        <Play className="h-3.5 w-3.5 text-white shrink-0" />
+                      </div>
                     )}
-                    <div className="flex items-center gap-1 w-full">
-                      <Play className="h-3.5 w-3.5 text-white shrink-0" />
-                      {(moduleCount + moduleListenedCount) > 0 && (
-                        <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-green-400 transition-all duration-300 rounded-full"
-                            style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
-                          />
-                        </div>
-                      )}
-                    </div>
                   </div>
                   <div className="absolute left-0 w-full px-2.5" style={{ bottom: courseId === 'cppa122' ? '25px' : '27px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
@@ -11486,9 +11529,9 @@ export default function Dashboard() {
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
                     const calcFileProgress = (files: WeeklyFile[], folderKey: string) => {
                       if (files.length === 0) {
-                        const fc = fileCounts[folderKey] as { total: number; listened: number; unlistened: number; partialProgress?: number } | undefined;
+                        const fc = fileCounts[folderKey];
                         if (fc && fc.total > 0) {
-                          const pct = fc.partialProgress != null ? Math.round(fc.partialProgress / fc.total) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0);
+                          const pct = fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0);
                           return { percent: pct, hasFiles: true };
                         }
                         return { percent: 0, hasFiles: false };
