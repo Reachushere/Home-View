@@ -1519,13 +1519,13 @@ export default function Dashboard() {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
   });
-  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }>(() => {
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string }>(() => {
     const saved = localStorage.getItem('schoolData');
     if (saved) {
       const parsed = JSON.parse(saved);
       return { schoolName: 'Toronto Metropolitan University', ...parsed };
     }
-    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-12', firstDayOfWeek: 'saturday' };
+    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-12', firstDayOfWeek: 'saturday', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto' };
   });
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
@@ -1595,7 +1595,7 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; semesterType?: string }) => {
+  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; semesterType?: string }) => {
     const { semesterType: semType, ...schoolOnly } = data;
     setSchoolData(schoolOnly);
     localStorage.setItem('schoolData', JSON.stringify(schoolOnly));
@@ -15831,9 +15831,9 @@ function SchoolForm({
   onSave,
   onCancel 
 }: { 
-  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string };
+  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; semesterType?: string }) => void;
+  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; semesterType?: string }) => void;
   onCancel: () => void;
 }) {
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -15841,6 +15841,7 @@ function SchoolForm({
   const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
   const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
+  const [timezone, setTimezone] = useState(schoolData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto');
   const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
   
   const daysOfWeek = [
@@ -15856,7 +15857,7 @@ function SchoolForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, semesterType });
+    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, timezone, semesterType });
   };
 
   const semesterEnd = week1StartDate 
@@ -15945,18 +15946,54 @@ function SchoolForm({
                 </Select>
               </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">Number of School Weeks</Label>
-              <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8 w-24 px-2" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
-                  <SelectValue placeholder="Select weeks" />
-                </SelectTrigger>
-                <SelectContent className="bg-white [&_*]:!text-black !text-[10px] min-w-0 w-24">
-                  {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                    <SelectItem key={w} value={String(w)} className="!text-black !text-[10px] py-1">{w} weeks</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">Number of School Weeks</Label>
+                <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
+                  <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8 w-24 px-2" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
+                    <SelectValue placeholder="Select weeks" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white [&_*]:!text-black !text-[10px] min-w-0 w-24">
+                    {[10, 11, 12, 13, 14, 15, 16].map(w => (
+                      <SelectItem key={w} value={String(w)} className="!text-black !text-[10px] py-1">{w} weeks</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="timezone" className="text-[10px] text-white/70">Time Zone</Label>
+                <Select value={timezone} onValueChange={setTimezone}>
+                  <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-timezone">
+                    <SelectValue placeholder="Select timezone" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
+                    {[
+                      { value: 'America/Toronto', label: 'Eastern (Toronto)' },
+                      { value: 'America/New_York', label: 'Eastern (New York)' },
+                      { value: 'America/Chicago', label: 'Central (Chicago)' },
+                      { value: 'America/Denver', label: 'Mountain (Denver)' },
+                      { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
+                      { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
+                      { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
+                      { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
+                      { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
+                      { value: 'America/St_Johns', label: 'Newfoundland (St. John\'s)' },
+                      { value: 'America/Regina', label: 'Central - No DST (Regina)' },
+                      { value: 'Pacific/Honolulu', label: 'Hawaii' },
+                      { value: 'America/Anchorage', label: 'Alaska' },
+                      { value: 'Europe/London', label: 'GMT (London)' },
+                      { value: 'Europe/Paris', label: 'CET (Paris)' },
+                      { value: 'Europe/Berlin', label: 'CET (Berlin)' },
+                      { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
+                      { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
+                      { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
+                      { value: 'UTC', label: 'UTC' },
+                    ].map(tz => (
+                      <SelectItem key={tz.value} value={tz.value} className="!text-black !text-[10px]">{tz.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section.</p>
