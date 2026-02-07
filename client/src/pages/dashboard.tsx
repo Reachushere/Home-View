@@ -243,7 +243,7 @@ export default function Dashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
   const [openCourseDropdown, setOpenCourseDropdown] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarView, setCalendarView] = useState<"week" | "month">("week");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newTaskType, setNewTaskType] = useState<string>("module");
@@ -13213,8 +13213,22 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[35px] transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
-          <Card className="shadow-lg overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm" style={{ borderRadius: '16px' }}>
+        <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
+          <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px' }} className="relative overflow-visible">
+          {/* Glass effect backing box */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{ 
+              top: '-5px', 
+              left: '-15px', 
+              right: '-15px', 
+              bottom: '-27px', 
+              background: 'rgba(255, 255, 255, 0.35)',
+              borderRadius: '31px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+          />
+          <Card className="shadow-lg overflow-hidden h-full border border-white" style={{ background: 'white', borderRadius: '16px' }}>
             <CardContent className="p-0 h-full overflow-auto scrollbar-hidden">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
@@ -13310,6 +13324,7 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
         )}
         {/* Due Today, Due Tomorrow, Due This Week - Grouped by Course */}
