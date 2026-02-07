@@ -11891,12 +11891,12 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0 ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: isCurrentHour ? '#e8e8e8' : '#faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5' }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#e8e8e8' : '#faf8f5' }} />}
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5' }} />}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
@@ -11915,7 +11915,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? '#e8e8e8' : '#faf8f5'
+                            backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -11945,13 +11945,18 @@ export default function Dashboard() {
                           <div 
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? '#e8e8e8' : undefined,
+                              backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.todayCellBackground : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
+                          {/* Hour boundary dotted line */}
+                          <div 
+                            className="absolute left-0 right-0 border-t border-dotted border-gray-400 dark:border-gray-500 z-[1]" 
+                            style={{ top: '0' }}
+                          />
                           {/* Half-hour dotted line */}
                           <div 
-                            className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" 
+                            className="absolute left-0 right-0 border-t border-dotted border-gray-400 dark:border-gray-500 z-[1]" 
                             style={{ top: '50%' }}
                           />
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
@@ -12114,10 +12119,10 @@ export default function Dashboard() {
                       const isSatToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const satBg = isSatToday && isCurrentHour ? '#c8c8c8' : isSatToday ? colorSettings.todayCellBackground : isCurrentHour ? '#e8e8e8' : '#faf8f5';
+                      const satBg = isSatToday && isCurrentHour ? '#c8c8c8' : isSatToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5';
                       return (
                         <div 
-                          className={`border-l border-border/50 border-t border-t-gray-300/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isSatToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isSatToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
                           style={{ 
                             backgroundColor: satBg,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
@@ -12127,9 +12132,10 @@ export default function Dashboard() {
                           }}
                         >
                           <div className="absolute inset-0 z-0" style={{ backgroundColor: satBg }} />
-                          {hour % 1 === 0 && (
-                            <div className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 z-[1]" style={{ top: '50%' }} />
-                          )}
+                          {/* Hour boundary dotted line */}
+                          <div className="absolute left-0 right-0 border-t border-dotted border-gray-400 z-[1]" style={{ top: '0' }} />
+                          {/* Half-hour dotted line */}
+                          <div className="absolute left-0 right-0 border-t border-dotted border-gray-400 z-[1]" style={{ top: '50%' }} />
                         </div>
                       );
                     })()}
