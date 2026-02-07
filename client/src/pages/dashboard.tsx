@@ -13218,6 +13218,7 @@ export default function Dashboard() {
               
                           </div>
           </div>
+          </div>
         </div>
         ) : (
         <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
