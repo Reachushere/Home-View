@@ -10431,97 +10431,105 @@ export default function Dashboard() {
           </Dialog>
           
           {/* New Course Dialog (opened from grad cap menu) */}
-          {isNewCourseDialogOpen && (
-            <NewCourseDialog
-              onSave={(courseData) => {
-                const fullName = `${courseData.courseCode} - ${courseData.courseName}`;
-                const updatedCourses = [...coursesData.courses];
-                const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
-                if (emptyIdx === -1 && updatedCourses.filter(c => c.name.trim()).length >= 3) {
-                  toast({ title: "Maximum courses reached", description: "You can only have up to 3 courses.", variant: "destructive" });
-                  return;
-                }
-                const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
-                if (emptyIdx !== -1) {
-                  updatedCourses[emptyIdx] = {
-                    name: fullName,
-                    color: courseData.color,
-                    professor: courseData.professorName,
-                    professorEmail: courseData.professorEmail,
-                  };
-                } else {
-                  updatedCourses.push({
-                    name: fullName,
-                    color: courseData.color,
-                    professor: courseData.professorName,
-                    professorEmail: courseData.professorEmail,
-                  });
-                }
-                setCoursesData({ courses: updatedCourses });
-                localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+          <Dialog open={isNewCourseDialogOpen} onOpenChange={(open) => { if (!open) { newCourseDialogClosingRef.current = true; setIsNewCourseDialogOpen(false); setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300); } }}>
+            <DialogContent 
+              className="overflow-hidden flex flex-col w-[520px] max-h-[85vh] text-[11px] bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 text-white shadow-2xl p-0 [&>button.absolute]:hidden"
+              onInteractOutside={(e) => e.preventDefault()}
+              onPointerDownOutside={(e) => e.preventDefault()}
+              aria-describedby={undefined}
+            >
+              <DialogTitle className="sr-only">New Course</DialogTitle>
+              <NewCourseDialogInner
+                onSave={(courseData) => {
+                  const fullName = `${courseData.courseCode} - ${courseData.courseName}`;
+                  const updatedCourses = [...coursesData.courses];
+                  const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
+                  if (emptyIdx === -1 && updatedCourses.filter(c => c.name.trim()).length >= 3) {
+                    toast({ title: "Maximum courses reached", description: "You can only have up to 3 courses.", variant: "destructive" });
+                    return;
+                  }
+                  const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
+                  if (emptyIdx !== -1) {
+                    updatedCourses[emptyIdx] = {
+                      name: fullName,
+                      color: courseData.color,
+                      professor: courseData.professorName,
+                      professorEmail: courseData.professorEmail,
+                    };
+                  } else {
+                    updatedCourses.push({
+                      name: fullName,
+                      color: courseData.color,
+                      professor: courseData.professorName,
+                      professorEmail: courseData.professorEmail,
+                    });
+                  }
+                  setCoursesData({ courses: updatedCourses });
+                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
 
-                const prefix = `course${targetIdx + 1}`;
-                if (targetIdx < 3) {
-                  const schedulePayload: Record<string, any> = {
-                    semesterType: courseData.semesterType,
-                    [`${prefix}DeliveryMode`]: courseData.deliveryMode || null,
-                    [`${prefix}ClassDay`]: courseData.classDay || null,
-                    [`${prefix}ClassDay2`]: courseData.classDay2 || null,
-                    [`${prefix}ClassTime`]: courseData.classTime || null,
-                    [`${prefix}ClassEndTime`]: courseData.classEndTime || null,
-                    [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
-                    [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
-                    [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
-                  };
-                  saveSemesterScheduleMutation.mutate(schedulePayload);
-                }
+                  const prefix = `course${targetIdx + 1}`;
+                  if (targetIdx < 3) {
+                    const schedulePayload: Record<string, any> = {
+                      semesterType: courseData.semesterType,
+                      [`${prefix}DeliveryMode`]: courseData.deliveryMode || null,
+                      [`${prefix}ClassDay`]: courseData.classDay || null,
+                      [`${prefix}ClassDay2`]: courseData.classDay2 || null,
+                      [`${prefix}ClassTime`]: courseData.classTime || null,
+                      [`${prefix}ClassEndTime`]: courseData.classEndTime || null,
+                      [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
+                      [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
+                      [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
+                    };
+                    saveSemesterScheduleMutation.mutate(schedulePayload);
+                  }
 
-                if (courseData.reminders && courseData.reminders.length > 0) {
-                  const courseReminders = JSON.parse(localStorage.getItem('courseReminders') || '{}');
-                  courseReminders[fullName] = courseData.reminders;
-                  localStorage.setItem('courseReminders', JSON.stringify(courseReminders));
-                }
+                  if (courseData.reminders && courseData.reminders.length > 0) {
+                    const courseReminders = JSON.parse(localStorage.getItem('courseReminders') || '{}');
+                    courseReminders[fullName] = courseData.reminders;
+                    localStorage.setItem('courseReminders', JSON.stringify(courseReminders));
+                  }
 
-                newCourseDialogClosingRef.current = true;
-                setIsNewCourseDialogOpen(false);
-                setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300);
-                toast({ title: "Course added", description: `${fullName} has been added.` });
+                  newCourseDialogClosingRef.current = true;
+                  setIsNewCourseDialogOpen(false);
+                  setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300);
+                  toast({ title: "Course added", description: `${fullName} has been added.` });
 
-                if (courseData.deadlines.length > 0) {
-                  (async () => {
-                    for (const deadline of courseData.deadlines) {
-                      if (deadline.title && deadline.dueDate) {
-                        try {
-                          const dueDate = new Date(deadline.dueDate);
-                          dueDate.setHours(23, 59, 0, 0);
-                          await apiRequest("POST", "/api/tasks", {
-                            title: deadline.title,
-                            description: deadline.description || '',
-                            type: deadline.type || 'assignment',
-                            courseName: fullName,
-                            dueDate: dueDate.toISOString(),
-                            priority: deadline.type === 'exam' || deadline.type === 'quiz' ? 'high' : 'medium',
-                            weekNumber: getWeekNumber(dueDate),
-                            reminder1: DEFAULT_REMINDER_1,
-                            reminder2: DEFAULT_REMINDER_2,
-                          });
-                        } catch (err) {
-                          console.error("Failed to create deadline task:", err);
+                  if (courseData.deadlines.length > 0) {
+                    (async () => {
+                      for (const deadline of courseData.deadlines) {
+                        if (deadline.title && deadline.dueDate) {
+                          try {
+                            const dueDate = new Date(deadline.dueDate);
+                            dueDate.setHours(23, 59, 0, 0);
+                            await apiRequest("POST", "/api/tasks", {
+                              title: deadline.title,
+                              description: deadline.description || '',
+                              type: deadline.type || 'assignment',
+                              courseName: fullName,
+                              dueDate: dueDate.toISOString(),
+                              priority: deadline.type === 'exam' || deadline.type === 'quiz' ? 'high' : 'medium',
+                              weekNumber: getWeekNumber(dueDate),
+                              reminder1: DEFAULT_REMINDER_1,
+                              reminder2: DEFAULT_REMINDER_2,
+                            });
+                          } catch (err) {
+                            console.error("Failed to create deadline task:", err);
+                          }
                         }
                       }
-                    }
-                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-                    toast({ title: "Deadlines created", description: `${courseData.deadlines.length} deadline(s) added for ${courseData.courseCode}.` });
-                  })();
-                }
-              }}
-              onClose={() => {
-                newCourseDialogClosingRef.current = true;
-                setIsNewCourseDialogOpen(false);
-                setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300);
-              }}
-            />
-          )}
+                      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                      toast({ title: "Deadlines created", description: `${courseData.deadlines.length} deadline(s) added for ${courseData.courseCode}.` });
+                    })();
+                  }
+                }}
+                onClose={() => {
+                  newCourseDialogClosingRef.current = true;
+                  setIsNewCourseDialogOpen(false);
+                  setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300);
+                }}
+              />
+            </DialogContent>
+          </Dialog>
 
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
@@ -16535,11 +16543,7 @@ function CoursesForm({
   );
 }
 
-function NewCourseDialog({
-  existingCourse,
-  onSave,
-  onClose,
-}: {
+type NewCourseDialogProps = {
   existingCourse?: {
     courseCode: string;
     courseName: string;
@@ -16575,7 +16579,9 @@ function NewCourseDialog({
     reminders: number[];
   }) => void;
   onClose: () => void;
-}) {
+};
+
+function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDialogProps) {
   const [courseCode, setCourseCode] = useState(existingCourse?.courseCode || '');
   const [courseName, setCourseName] = useState(existingCourse?.courseName || '');
   const [professorName, setProfessorName] = useState(existingCourse?.professorName || '');
@@ -16656,22 +16662,21 @@ function NewCourseDialog({
     { value: 'other', label: 'Other' },
   ];
 
-  return createPortal(
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="h-3.5 w-3.5 text-white" />
-            <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-              {existingCourse ? 'EDIT COURSE' : 'NEW COURSE'}
-            </h2>
-          </div>
-          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-new-course">
-            <X className="h-5 w-5" />
-          </button>
+  return (
+    <>
+      <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="h-3.5 w-3.5 text-white" />
+          <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+            {existingCourse ? 'EDIT COURSE' : 'NEW COURSE'}
+          </h2>
         </div>
+        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-new-course">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-4">
+      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-4">
           <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
             <div>
               <Label className="text-[9px] text-white/60 mb-1 block">Course Number</Label>
@@ -17019,6 +17024,15 @@ function NewCourseDialog({
             </Button>
           </div>
         </form>
+    </>
+  );
+}
+
+function NewCourseDialog(props: NewCourseDialogProps) {
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}>
+      <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <NewCourseDialogInner {...props} />
       </div>
     </div>,
     document.body
