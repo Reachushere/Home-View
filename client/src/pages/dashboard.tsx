@@ -11905,7 +11905,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: '#555555', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: '#777777', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -11972,7 +11972,7 @@ export default function Dashboard() {
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#555555' : '#faf8f5' }} data-testid="module-column-cell" />}
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#777777' : '#faf8f5' }} data-testid="module-column-cell" />}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
@@ -11989,7 +11989,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday || isCurrentHour ? '#555555' : '#faf8f5'
+                            backgroundColor: isToday || isCurrentHour ? '#777777' : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -12195,7 +12195,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l border-border/50 relative`}
                           style={{ 
-                            backgroundColor: '#555555',
+                            backgroundColor: '#777777',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px',
                             overflow: 'hidden',
