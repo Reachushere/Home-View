@@ -10343,8 +10343,8 @@ export default function Dashboard() {
                         >
                           <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
                             <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : 'text-white'}`} />
-                            <span className={`text-xs ${isSelected ? 'text-black' : 'text-white'}`}>Week {week.weekNumber}</span>
-                            <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`}>
+                            <span className={`text-[10px] ${isSelected ? 'text-black' : 'text-white'}`}>Week {week.weekNumber}</span>
+                            <span className={`text-[10px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`}>
                               ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                             </span>
                           </div>
@@ -16142,19 +16142,6 @@ function SchoolForm({
             )}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="numberOfWeeks" className="text-[10px]">Number of School Weeks</Label>
-            <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
-                <SelectValue placeholder="Select weeks" />
-              </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                  <SelectItem key={w} value={String(w)} className="!text-black !text-[10px]">{w} weeks</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1">
             <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
               <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
@@ -16207,6 +16194,19 @@ function SchoolForm({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">Number of School Weeks</Label>
+              <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
+                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
+                  <SelectValue placeholder="Select weeks" />
+                </SelectTrigger>
+                <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                  {[10, 11, 12, 13, 14, 15, 16].map(w => (
+                    <SelectItem key={w} value={String(w)} className="!text-black !text-[10px]">{w} weeks</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section.</p>
