@@ -4899,8 +4899,8 @@ export default function Dashboard() {
           task: row1TaskRef.current!.getBoundingClientRect().left - containerLeft,
           code: row1CodeRef.current!.getBoundingClientRect().left - containerLeft,
           course: row1CourseRef.current!.getBoundingClientRect().left - containerLeft,
-          due: prev.due,
-          days: prev.days,
+          due: row1DueRef.current ? row1DueRef.current.getBoundingClientRect().left - containerLeft : prev.due,
+          days: row1DaysRef.current ? row1DaysRef.current.getBoundingClientRect().left - containerLeft : prev.days,
           progressBar: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().left - containerLeft : prev.progressBar,
           progressBarTop: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().top - containerTop : prev.progressBarTop
         }));
