@@ -2852,6 +2852,7 @@ export default function Dashboard() {
   
   // OpenAI TTS for Fire tablets (no browser speechSynthesis)
   const openaiAudioRef = useRef<HTMLAudioElement | null>(null);
+  const activeWordRef = useRef<HTMLSpanElement | null>(null);
   const openaiNextChunkRef = useRef<{ blob: Blob; index: number } | null>(null);
   const [isOpenAiTtsAvailable] = useState(() => !window.speechSynthesis);
   const [openaiVoice, setOpenaiVoice] = useState<"alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer">("nova");
@@ -7263,6 +7264,12 @@ export default function Dashboard() {
                                         return (
                                           <span
                                             key={wordGlobalIdx}
+                                            ref={isCurrentWord ? (el) => {
+                                              if (el && el !== activeWordRef.current) {
+                                                activeWordRef.current = el;
+                                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                              }
+                                            } : undefined}
                                             className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
                                           >
                                             {word}{' '}
