@@ -11255,7 +11255,7 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = isActualToday ? '#e8e8e8' : course.bg;
+                              const cellBg = course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -11349,8 +11349,8 @@ export default function Dashboard() {
                             
                             {/* Progress column - empty with black background */}
                             <div style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }} />
-                            {/* Saturday column - grey if today, otherwise course bg */}
-                            <div style={{ backgroundColor: weekDays[6] && isSameDay(weekDays[6], new Date()) ? '#e8e8e8' : course.bg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }} />
+                            {/* Saturday column - always course bg */}
+                            <div style={{ backgroundColor: course.bg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }} />
                           </div>
                         );
                       })}
@@ -11420,7 +11420,7 @@ export default function Dashboard() {
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
-                    const cellBgColor = isDayToday ? '#e8e8e8' : course.bg;
+                    const cellBgColor = course.bg;
                     const cellDate = startOfDay(day);
                     
                     const dueTasks = tasks?.filter(task => {
@@ -11640,7 +11640,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e8e8e8' : course.bg, padding: '2px 2px 2px 4px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 4px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
