@@ -1155,6 +1155,7 @@ export default function Dashboard() {
     timeColumnWidth: number;
     moduleColumnWidth: number;
     dayColumnWidths: number[];
+    progressColumnWidth: number;
     allDayRowHeight: number;
     courseRowHeight: number;
     timeSlotHeight: number;
@@ -1164,11 +1165,26 @@ export default function Dashboard() {
     const defaultSizes = {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
-      dayColumnWidths: [1, 1, 1, 1, 1, 1, 0.5, 1], // flex proportions (6 days + half-width progress + Saturday)
+      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions for 7 days (Sun-Sat)
+      progressColumnWidth: 0.5, // separate from day columns
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
+    };
+    
+    const migrateOldWidths = (parsed: any) => {
+      if (parsed.dayColumnWidths && parsed.dayColumnWidths.length === 8) {
+        const oldWidths = parsed.dayColumnWidths;
+        parsed.progressColumnWidth = oldWidths[6];
+        parsed.dayColumnWidths = [...oldWidths.slice(0, 6), oldWidths[7]];
+      }
+      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 7) {
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
+      }
+      if (parsed.progressColumnWidth === undefined) {
+        parsed.progressColumnWidth = 0.5;
+      }
     };
     
     // Check for device-specific saved settings first
@@ -1187,9 +1203,7 @@ export default function Dashboard() {
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
-      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
-        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.5, 1];
-      }
+      migrateOldWidths(parsed);
       return parsed;
     }
     
@@ -1204,9 +1218,7 @@ export default function Dashboard() {
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
-      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
-        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.5, 1];
-      }
+      migrateOldWidths(parsed);
       return parsed;
     }
     return defaultSizes;
@@ -1413,13 +1425,15 @@ export default function Dashboard() {
   }, [columnResizing, rowResizing, gridSizes.dayColumnWidths]);
   
   // Generate grid template columns based on sizes
+  // dayColumnWidths has 7 entries (Sun-Sat), progress column inserted between Fri (5) and Sat (6)
   const getGridTemplateColumns = () => {
-    const dayColumns = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
-    // Only include module column if width > 0
+    const sunToFri = gridSizes.dayColumnWidths.slice(0, 6).map(w => `${w}fr`).join(' ');
+    const sat = `${gridSizes.dayColumnWidths[6]}fr`;
+    const progress = `${gridSizes.progressColumnWidth}fr`;
     if (gridSizes.moduleColumnWidth > 0) {
-      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${dayColumns}`;
+      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${sunToFri} ${progress} ${sat}`;
     }
-    return `${gridSizes.timeColumnWidth}px ${dayColumns}`;
+    return `${gridSizes.timeColumnWidth}px ${sunToFri} ${progress} ${sat}`;
   };
   
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
@@ -10892,11 +10906,23 @@ export default function Dashboard() {
               );
             })}
             <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
-            <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
+            {/* Saturday column - show reminder if Saturday is today */}
+            {(() => {
+              const satDay = weekDays[6];
+              const isSatToday = satDay && isSameDay(satDay, new Date());
+              const satHasTasks = isSatToday && allTasks.some(t => 
+                t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), satDay)
+              );
+              return (
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
+                  {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
+                </div>
+              );
+            })()}
           </div>
           <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '16px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator */}
-            <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
+            <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
             
@@ -11042,7 +11068,7 @@ export default function Dashboard() {
                 // Get Saturday column width (Saturday is at index 6 when not Saturday, index 6 when Saturday)
                 // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Sat at end
                 // When Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - same order
-                const saturdayColumnWidth = gridSizes.dayColumnWidths[7] || 100;
+                const saturdayColumnWidth = gridSizes.dayColumnWidths[6] || 100;
                 
 // Check if this course has any full-week tasks
                 const hasFullWeekTasks = fullWeekTasks.length > 0;
@@ -11111,7 +11137,7 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = course.bg;
+                              const cellBg = isActualToday ? '#e8e8e8' : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -11205,8 +11231,8 @@ export default function Dashboard() {
                             
                             {/* Progress column - empty with black background */}
                             <div style={{ backgroundColor: '#000000' }} />
-                            {/* Saturday column - course bg */}
-                            <div style={{ backgroundColor: course.bg }} />
+                            {/* Saturday column - grey if today, otherwise course bg */}
+                            <div style={{ backgroundColor: weekDays[6] && isSameDay(weekDays[6], new Date()) ? '#e8e8e8' : course.bg }} />
                           </div>
                         );
                       })}
@@ -11744,7 +11770,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0 ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: isCurrentHour || (weekDays[6] && isSameDay(weekDays[6], new Date())) ? '#e8e8e8' : '#faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: isCurrentHour ? '#e8e8e8' : '#faf8f5' }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -12057,8 +12083,8 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? 6.5 : dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)) + 2px)`,
-                        width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 4px)`,
+                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? (gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth) : gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
+                        width: `calc((${gridSizes.dayColumnWidths[dayIdx >= 6 ? 6 : dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
@@ -12119,6 +12145,8 @@ export default function Dashboard() {
                   const isTodayInView = weekDays.some(d => isSameDay(d, now));
                   const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
                   const isTodaySat = todayDayIdx === 6;
+                  const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
+                  const satPlusProgFr = gridSizes.dayColumnWidths[6] + gridSizes.progressColumnWidth;
                   
                   return (
                     <div 
@@ -12127,7 +12155,7 @@ export default function Dashboard() {
                         top: `${topPosition}px`, 
                         right: isTodaySat 
                           ? '0px'
-                          : `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                          : `calc((${satPlusProgFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
                       }}
                     >
                       <div 
