@@ -10361,12 +10361,12 @@ export default function Dashboard() {
                 </div>
               </div>
               </div>
-              <div className="px-4 py-3 border-t border-white/20 bg-black/30">
+              <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex justify-end">
                 <Button 
                   type="submit" 
                   form="school-settings-form"
                   variant="outline"
-                  className="w-full border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
                   style={{
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px'
