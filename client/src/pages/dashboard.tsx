@@ -8030,7 +8030,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right */}
-        <div className="fixed flex items-center gap-[5px] flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '6px', top: '12px', height: '35px', zIndex: 100 }}>
+        <div className="fixed flex items-center gap-[5px] flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '6px', top: '10px', height: '35px', zIndex: 100 }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
