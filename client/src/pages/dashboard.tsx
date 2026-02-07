@@ -7031,19 +7031,6 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            {/* Progress Bar - Always visible */}
-            <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10">
-              <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-300 rounded-full"
-                  style={{ width: totalChunks > 0 ? `${((currentChunkIndex + 1) / totalChunks) * 100}%` : '0%' }}
-                />
-              </div>
-              <span className="text-[11px] text-white font-medium min-w-[40px]">
-                {totalChunks > 0 ? `${currentChunkIndex + 1}/${totalChunks}` : '0/0'}
-              </span>
-            </div>
-            
             <Button
               size="icon"
               variant="ghost"
@@ -7322,18 +7309,32 @@ export default function Dashboard() {
             ) : (
               <div />
             )}
-            <Button
-              variant="outline"
-              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
-              style={{
-                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                fontSize: '12px'
-              }}
-              onClick={() => setPreviewFile(null)}
-              data-testid="button-preview-done"
-            >
-              Done
-            </Button>
+            <div className="flex items-center gap-3">
+              {/* Progress Bar */}
+              <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10">
+                <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-300 rounded-full"
+                    style={{ width: totalChunks > 0 ? `${((currentChunkIndex + 1) / totalChunks) * 100}%` : '0%' }}
+                  />
+                </div>
+                <span className="text-[11px] text-white font-medium min-w-[40px]">
+                  {totalChunks > 0 ? `${currentChunkIndex + 1}/${totalChunks}` : '0/0'}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
+                style={{
+                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                  fontSize: '12px'
+                }}
+                onClick={() => setPreviewFile(null)}
+                data-testid="button-preview-done"
+              >
+                Done
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
