@@ -10224,7 +10224,7 @@ export default function Dashboard() {
               <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column - School & Semester Settings */}
-                <div className="flex flex-col gap-4 pt-4">
+                <div className="flex flex-col gap-4 pt-2">
                 <SchoolForm 
                   schoolData={schoolData}
                   semesterSettings={semesterSettings}
@@ -10234,7 +10234,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
-                <div className="flex flex-col gap-4 pt-4">
+                <div className="flex flex-col gap-4 pt-2">
                 {/* Course Legend */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-[10px] font-medium">Courses</Label>
