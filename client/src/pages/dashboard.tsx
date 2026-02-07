@@ -11243,7 +11243,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -11280,7 +11280,7 @@ export default function Dashboard() {
                 );
                 return (
                   <div 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
