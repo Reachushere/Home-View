@@ -12638,10 +12638,19 @@ export default function Dashboard() {
                   const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
                   topPosition += (currentMinutes / 60) * currentRowHeight;
                   
+                  const isTodayInView = weekDays.some(d => isSameDay(d, now));
+                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
+                  const isTodaySat = todayDayIdx === 6;
+                  
                   return (
                     <div 
                       className="absolute left-0 z-[5] pointer-events-none"
-                      style={{ top: `${topPosition}px`, right: `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }}
+                      style={{ 
+                        top: `${topPosition}px`, 
+                        right: isTodaySat 
+                          ? `calc((0.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                          : `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                      }}
                     >
                       <div 
                         className="w-full border-t border-dashed"
