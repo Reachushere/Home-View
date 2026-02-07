@@ -12150,8 +12150,8 @@ export default function Dashboard() {
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
-                      // Apply shimmer to today column only (current hour row shimmer is applied at row level)
-                      const shouldShimmer = isToday && !isCurrentHour;
+                      // Apply shimmer to today column (including current hour intersection)
+                      const shouldShimmer = isToday;
                       return (
                         <div 
                           key={dayIdx} 
