@@ -2171,7 +2171,8 @@ export default function Dashboard() {
     queryKey: ["/api/weeks"],
   });
 
-  // Automatically set selectedWeek based on today's date
+  // Automatically set selectedWeek based on today's date (re-checks when date changes)
+  const lastAutoWeekDateRef = useRef(new Date().getDate());
   useEffect(() => {
     if (weeks.length > 0) {
       const today = new Date();
@@ -2186,8 +2187,28 @@ export default function Dashboard() {
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
       }
+      lastAutoWeekDateRef.current = today.getDate();
     }
   }, [weeks]);
+
+  useEffect(() => {
+    if (weeks.length === 0) return;
+    const currentDate = currentTime.getDate();
+    if (currentDate !== lastAutoWeekDateRef.current) {
+      lastAutoWeekDateRef.current = currentDate;
+      const todayDateOnly = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
+      const currentWeek = weeks.find(w => {
+        const start = parseISO(w.startDate);
+        const end = parseISO(w.endDate);
+        const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+        return todayDateOnly >= startDateOnly && todayDateOnly <= endDateOnly;
+      });
+      if (currentWeek) {
+        setSelectedWeek(currentWeek.weekNumber);
+      }
+    }
+  }, [currentTime, weeks]);
 
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -11197,8 +11218,8 @@ export default function Dashboard() {
             <div className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-              <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#160502' : colorSettings.headerBar }}>
-                <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: selectedWeek === 4 ? 'rgba(255,255,255,0.8)' : '#fb923c' }}>Week {selectedWeek}</span>
+              <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
+                <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#fb923c' }}>Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
