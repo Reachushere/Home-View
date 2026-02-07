@@ -12430,6 +12430,7 @@ export default function Dashboard() {
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const isToday = isSameDay(day, new Date());
+                      if (hour === 0) console.log('SAT DEBUG:', { dayStr: format(day, 'yyyy-MM-dd'), nowStr: format(new Date(), 'yyyy-MM-dd'), isToday, dayTime: day.getTime(), bg: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5' });
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       return (
@@ -12638,7 +12639,7 @@ export default function Dashboard() {
                       style={{ 
                         top: `${topPosition}px`, 
                         right: isTodaySat 
-                          ? `calc((0.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                          ? '0px'
                           : `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
                       }}
                     >
