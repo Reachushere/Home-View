@@ -11150,7 +11150,7 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
             <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
-          <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
+          <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
             {new Date().getDay() !== 6 && (
             <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
@@ -11158,7 +11158,7 @@ export default function Dashboard() {
             </div>
             )}
             
-            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
+            <div className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#160502' : colorSettings.headerBar }}>
@@ -12587,14 +12587,14 @@ export default function Dashboard() {
                   );
                 })()}
             </div>
-                      </CardContent>
+                      </div>
           {/* Calendar Height Resize Handle */}
           <div
             className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize z-50 hover:bg-blue-400/30 active:bg-blue-400/50"
             onMouseDown={handleResizeStart}
             data-testid="calendar-height-resize-handle"
           />
-          </Card>
+          </div>
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
