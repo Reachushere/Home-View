@@ -12191,19 +12191,17 @@ export default function Dashboard() {
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const satBg = isTodaySaturday || isCurrentHour ? '#d4d4d4' : '#faf8f5';
                       return (
                         <div 
                           className={`border-l border-border/50 relative`}
                           style={{ 
-                            backgroundColor: satBg,
+                            backgroundColor: '#d4d4d4',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px',
                             overflow: 'hidden',
                             gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9
                           }}
                         >
-                          <div className="absolute inset-0 z-0" />
                           {/* Hour boundary dotted line */}
                           <div className="absolute left-0 right-0 border-t border-dotted border-gray-400 z-[1]" style={{ top: '0' }} />
                           {/* Half-hour dotted line */}
