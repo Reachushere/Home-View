@@ -4823,7 +4823,11 @@ export default function Dashboard() {
   const isTodaySaturday = currentDayOfWeek === 6;
   
   // Get the raw days from the school week (Saturday to Friday)
-  const rawWeekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
+  // IMPORTANT: eachDayOfInterval resets times to midnight, which can cause timezone issues
+  // (e.g., midnight UTC = previous day in EST). Normalize all dates to noon local time.
+  const rawWeekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate }).map(d => {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
+  });
   
   let weekDays: Date[];
   if (rawWeekDays.length >= 7) {
