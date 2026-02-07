@@ -7479,12 +7479,12 @@ export default function Dashboard() {
       {/* Top Controls - Positioned directly on background */}
       <div className="absolute z-20 left-0 right-0 top-0 flex items-center mx-3" style={{ 
         height: '50px',
-        marginTop: '7px'
+        marginTop: '5px'
       }}>
         {/* Logo and Name - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
-          <div className="flex flex-col fixed" style={{ left: '66px', top: '14px', zIndex: 100 }}>
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '10px', zIndex: 100 }} />
+          <div className="flex flex-col fixed" style={{ left: '66px', top: '12px', zIndex: 100 }}>
             <span className="text-white font-bold text-[11px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
             <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
           </div>
@@ -8816,7 +8816,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) */}
-      <div className="fixed pointer-events-none" style={{ top: '9px', left: '50%', transform: 'translateX(-50%) translateX(-58.5px)', zIndex: 1 }}>
+      <div className="fixed pointer-events-none" style={{ top: '7px', left: '50%', transform: 'translateX(-50%) translateX(-58.5px)', zIndex: 1 }}>
         <div 
           style={{ 
             width: `${521 + (blinkSettings.buttonSpacing * 10)}px`, 
