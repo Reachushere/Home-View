@@ -716,16 +716,6 @@ export default function Dashboard() {
     isTomorrow: boolean;
   }>>([]);
   
-  // NEW: Prep arrows from Today box to prep extensions
-  const [prepArrowConnections, setPrepArrowConnections] = useState<Array<{
-    taskId: number;
-    fromX: number;
-    fromY: number;
-    toX: number;
-    toY: number;
-    color: string;
-    boxType: 'today' | 'tomorrow';
-  }>>([]);
   const mainContentRef = useRef<HTMLElement | null>(null);
   
     
@@ -5040,111 +5030,6 @@ export default function Dashboard() {
     };
   }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks]);
 
-  // NEW: Calculate prep arrows from Today box to prep extensions
-  useEffect(() => {
-    if (calendarView !== "week") {
-      setPrepArrowConnections([]);
-      return;
-    }
-    
-    const calculatePrepArrows = () => {
-      const connections: typeof prepArrowConnections = [];
-      
-      // Helper function to add prep arrow connection pointing to specific day column
-      const addPrepConnection = (task: typeof dueTodayTasks[0], checkboxSelector: string, targetDate: Date) => {
-        // Check if this task has a prep extension (has startDate before dueDate)
-        if (!task.startDate || !task.dueDate) return;
-        
-        const taskStartDate = startOfDay(new Date(task.startDate));
-        const taskDueDate = startOfDay(new Date(task.dueDate));
-        if (taskStartDate >= taskDueDate) return;
-        
-        // Only draw arrow if targetDate is a prep day (not the due date)
-        const targetDateStart = startOfDay(targetDate);
-        if (isSameDay(targetDateStart, taskDueDate)) return;
-        
-        // Find the checkbox using the specific attribute
-        const checkboxEl = document.querySelector(checkboxSelector) as HTMLElement | null;
-        
-        // Find the prep extension element
-        const prepExtensionEl = document.querySelector(`[data-testid="prep-extension-${task.id}"]`) as HTMLElement | null;
-        
-        if (checkboxEl && prepExtensionEl) {
-          // Get course color - black for tasks without a course
-          const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-          let color = "#000000"; // Default to black when no course
-          if (courseCode === "CPPA122") color = "#47B045";
-          else if (courseCode === "CFNF400") color = "#FA67B3";
-          else if (courseCode === "CASL101") color = "#818cf8";
-          
-          // Calculate which day column within the prep extension corresponds to targetDate
-          const daysDiff = Math.floor((targetDateStart.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
-          const prepDaysCount = Math.floor((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
-          
-          // Get the prep extension position and size
-          const prepRect = prepExtensionEl.getBoundingClientRect();
-          const dayColumnWidth = prepRect.width / prepDaysCount;
-          
-          // Calculate the center of the target day's column within the prep extension
-          const toX = prepRect.left + (daysDiff * dayColumnWidth) + (dayColumnWidth / 2);
-          const toY = prepRect.top + prepRect.height / 2;
-          
-          // Start arrow from left side of checkbox
-          const checkboxRect = checkboxEl.getBoundingClientRect();
-          const fromX = checkboxRect.left;
-          const fromY = checkboxRect.top + checkboxRect.height / 2;
-          
-          // Skip if target is off-screen
-          if (toY < 0 || toY > window.innerHeight) return;
-          
-          // Skip if prep extension is scrolled behind course rows
-          const courseRowsContainer = document.querySelector('[data-testid="course-rows-container"]');
-          if (courseRowsContainer) {
-            const courseRowsRect = courseRowsContainer.getBoundingClientRect();
-            if (prepRect.bottom < courseRowsRect.bottom) {
-              return;
-            }
-          }
-          
-          connections.push({
-            taskId: task.id,
-            fromX,
-            fromY,
-            toX,
-            toY,
-            color,
-            boxType: checkboxSelector.includes('today') ? 'today' : 'tomorrow'
-          });
-        }
-      };
-      
-      // Find tasks in Today box that have prep extensions - point to today's column
-      dueTodayTasks.forEach(task => {
-        addPrepConnection(task, `input[data-today-checkbox="${task.id}"]`, today);
-      });
-      
-      // Find tasks in Tomorrow box that have prep extensions - point to tomorrow's column
-      dueTomorrowTasks.forEach(task => {
-        addPrepConnection(task, `input[data-tomorrow-checkbox="${task.id}"]`, tomorrow);
-      });
-      
-      setPrepArrowConnections(connections);
-    };
-    
-    // Calculate after DOM updates
-    const timer = setTimeout(calculatePrepArrows, 250);
-    
-    // Recalculate on scroll and resize
-    const handleUpdate = () => setTimeout(calculatePrepArrows, 50);
-    window.addEventListener('scroll', handleUpdate, true);
-    window.addEventListener('resize', handleUpdate);
-    
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('scroll', handleUpdate, true);
-      window.removeEventListener('resize', handleUpdate);
-    };
-  }, [calendarView, dueTodayTasks]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
@@ -5227,204 +5112,6 @@ export default function Dashboard() {
     });
   };
   
-  // Get prep extension overlays for tasks with prep days
-  const getPrepExtensionsForWeek = () => {
-    return allTasks.filter(t => {
-      if (t.isCompleted) return false;
-      if (!t.startDate) return false;
-      if (!t.eventStartTime) return false; // Only for timed tasks
-      
-      const dueDate = new Date(t.dueDate);
-      const startDate = new Date(t.startDate);
-      const prepDays = differenceInCalendarDays(dueDate, startDate);
-      if (prepDays <= 0) return false;
-      
-      // Check if task's due date or any prep day is in current week view
-      const isInWeek = weekDays.some(day => isSameDay(day, dueDate) || (day >= startDate && day < dueDate));
-      return isInWeek;
-    }).map(t => {
-      const dueDate = new Date(t.dueDate);
-      const startDate = new Date(t.startDate!);
-      const dueDayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
-      const prepDaysCount = differenceInCalendarDays(dueDate, startDate);
-      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
-      const [endHour, endMin] = t.eventEndTime ? t.eventEndTime.split(':').map(Number) : [startHour + 1, 0];
-      
-      // Calculate the starting day index for the prep extension
-      const prepStartDayIdx = Math.max(0, dueDayIdx - prepDaysCount);
-      
-      // Return data - position will be calculated at render time
-      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, startHour, startMin, endHour, endMin, hour: startHour };
-    });
-  };
-  
-  // Check if a task is covered by a prep extension from another task
-  const isTaskCoveredByPrepExtension = (day: Date, hour: number, taskId: number) => {
-    const prepExtensions = getPrepExtensionsForWeek();
-    const dayIdx = weekDays.findIndex(d => isSameDay(d, day));
-    
-    // Check against formal prep extensions (timed tasks)
-    for (const ext of prepExtensions) {
-      // Don't check against itself
-      if (ext.task.id === taskId) continue;
-      
-      // Check if this day is within the prep extension range (not including due date)
-      // OR if this is the due date (where the prep bar extends to the left)
-      if ((dayIdx >= ext.prepStartDayIdx && dayIdx < ext.dueDayIdx) || dayIdx === ext.dueDayIdx) {
-        // Check if the hour matches
-        if (hour === ext.hour) {
-          return true;
-        }
-      }
-    }
-    
-    // Also check for any task with prep days that COVERS this cell (even without eventStartTime)
-    // This handles prep extensions that span multiple days before the due date
-    const tasksCoveringThisCell = allTasks.filter(t => {
-      if (t.id === taskId) return false;
-      if (t.isCompleted) return false;
-      if (!t.startDate) return false; // Must have prep days
-      
-      const taskDue = new Date(t.dueDate);
-      const taskStart = new Date(t.startDate);
-      
-      // Check if current day is within the prep range (startDate to dueDate inclusive)
-      const dayStart = startOfDay(day);
-      const isInPrepRange = dayStart >= startOfDay(taskStart) && dayStart <= startOfDay(taskDue);
-      if (!isInPrepRange) return false;
-      
-      // Check hour - use eventStartTime if available, otherwise extract from dueDate
-      const taskHour = t.eventStartTime 
-        ? parseInt(t.eventStartTime.split(':')[0]) 
-        : taskDue.getHours();
-      
-      return taskHour === hour;
-    });
-    
-    // If there's a prep extension covering this cell, push other tasks down
-    if (tasksCoveringThisCell.length > 0) {
-      return true;
-    }
-    
-    return false;
-  };
-  
-  // Check if a time slot hour has any prep conflicts that require extra height
-  // This must match the logic in isTaskCoveredByPrepExtension
-  const getTimeSlotPrepConflictHeight = (hour: number) => {
-    const prepExtensions = getPrepExtensionsForWeek();
-    const multiHourTasks = getMultiHourTasksForWeek();
-    
-    // Method 1: Check formal prep extensions (timed tasks)
-    for (const ext of prepExtensions) {
-      if (ext.hour !== hour) continue;
-      
-      // Check if any task exists in the prep extension's covered days at this hour
-      // Include due date column (where prep bar extends to the left and may cover other tasks)
-      for (let dayIdx = ext.prepStartDayIdx; dayIdx <= ext.dueDayIdx; dayIdx++) {
-        const day = weekDays[dayIdx];
-        
-        // Check regular tasks
-        const tasksInSlot = getTasksForHour(day, hour);
-        const hasRegularConflict = tasksInSlot.some(t => t.id !== ext.task.id);
-        if (hasRegularConflict) {
-          return 24; // Extra height to accommodate pushed-down task
-        }
-        
-        // Check multi-hour tasks
-        const hasMultiHourConflict = multiHourTasks.some(({ task: t, dayIdx: tDayIdx }) => {
-          if (t.id === ext.task.id) return false;
-          if (tDayIdx !== dayIdx) return false;
-          const tHour = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : 0;
-          return tHour === hour;
-        });
-        if (hasMultiHourConflict) {
-          return 24; // Extra height to accommodate pushed-down task
-        }
-      }
-    }
-    
-    // Method 2: Check tasks with prep days (startDate) that cover cells at this hour
-    // This matches the second check in isTaskCoveredByPrepExtension
-    const tasksWithPrepDays = allTasks.filter(t => {
-      if (t.isCompleted) return false;
-      if (isCASL101Finished(t)) return false;
-      if (!t.startDate) return false; // Must have prep days
-      
-      const taskDue = new Date(t.dueDate);
-      const taskHour = t.eventStartTime 
-        ? parseInt(t.eventStartTime.split(':')[0]) 
-        : taskDue.getHours();
-      
-      return taskHour === hour;
-    });
-    
-    // For each task with prep days at this hour, check if there are other tasks in its prep range
-    for (const prepTask of tasksWithPrepDays) {
-      const prepTaskDue = new Date(prepTask.dueDate);
-      const prepTaskStart = new Date(prepTask.startDate!);
-      
-      // Check each day in the prep range
-      for (const day of weekDays) {
-        const dayStart = startOfDay(day);
-        const isInPrepRange = dayStart >= startOfDay(prepTaskStart) && dayStart <= startOfDay(prepTaskDue);
-        if (!isInPrepRange) continue;
-        
-        // Check if there are other tasks at this hour on this day
-        const tasksInSlot = getTasksForHour(day, hour);
-        const hasConflict = tasksInSlot.some(t => t.id !== prepTask.id);
-        if (hasConflict) {
-          return 24;
-        }
-        
-        // Check multi-hour tasks
-        const dayIdx = weekDays.findIndex(d => isSameDay(d, day));
-        const hasMultiHourConflict = multiHourTasks.some(({ task: t, dayIdx: tDayIdx }) => {
-          if (t.id === prepTask.id) return false;
-          if (tDayIdx !== dayIdx) return false;
-          const tHour = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : 0;
-          return tHour === hour;
-        });
-        if (hasMultiHourConflict) {
-          return 24;
-        }
-      }
-    }
-    
-    return 0;
-  };
-  
-  // Pre-calculate prep conflict heights for all hours to avoid circular dependencies
-  // This is computed once and used for positioning multi-hour tasks
-  const prepConflictHeights = useMemo(() => {
-    const heights: Record<number, number> = {};
-    for (let h = 6; h <= 24; h++) {
-      heights[h] = getTimeSlotPrepConflictHeight(h);
-    }
-    return heights;
-  }, [allTasks, weekDays]);
-  
-  // Check if a task with prep days has conflicts that require extending its height
-  // Returns the extra height needed to match the bottom of pushed-down tasks
-  const getPrepTaskHeightExtension = (taskId: number, hour: number, prepStartDayIdx: number, dueDayIdx: number) => {
-    // Check if any task exists in the prep extension's covered days at this hour
-    for (let dayIdx = prepStartDayIdx; dayIdx < dueDayIdx; dayIdx++) {
-      const day = weekDays[dayIdx];
-      
-      // Check multi-hour tasks in this day/hour
-      const multiHourTasks = getMultiHourTasksForWeek().filter(({ task: t, dayIdx: tDayIdx }) => {
-        if (t.id === taskId) return false;
-        if (tDayIdx !== dayIdx) return false;
-        const tHour = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : 0;
-        return tHour === hour;
-      });
-      
-      if (multiHourTasks.length > 0) {
-        return 24; // Match the offset applied to pushed-down tasks
-      }
-    }
-    return 0;
-  };
   
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
@@ -11780,7 +11467,6 @@ export default function Dashboard() {
                   {/* Saturday column cell */}
                   {weekDays[6] && (() => {
                     const day = weekDays[6];
-                    const isDayToday = isSameDay(day, new Date());
                     const cellDate = startOfDay(day);
                     const dueTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
@@ -11788,19 +11474,50 @@ export default function Dashboard() {
                       const taskDueDate = startOfDay(new Date(task.dueDate));
                       return isSameDay(taskDueDate, cellDate);
                     }) || [];
+                    const prepTasks = tasks?.filter(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      if (!task.startDate) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      const taskStartDate = startOfDay(new Date(task.startDate));
+                      return cellDate >= taskStartDate && cellDate < taskDueDate;
+                    }) || [];
+                    const rgb = hexToRgb(course.label);
+                    const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                    const allItems: { task: typeof dueTasks[0], isPrep: boolean }[] = [
+                      ...dueTasks.map(t => ({ task: t, isPrep: false })),
+                      ...prepTasks.map(t => ({ task: t, isPrep: true })),
+                    ];
                     return (
                       <div 
-                        className="border-l border-border/50 relative overflow-hidden min-w-0"
-                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 8px' }}
+                        className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
+                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 4px' }}
                       >
-                        {dueTasks.map(task => {
+                        {allItems.map((item, itemIdx) => {
+                          const task = item.task;
                           const today = startOfDay(new Date());
                           const tomorrow = addDays(today, 1);
                           const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                           const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                          if (item.isPrep) {
+                            return (
+                              <div 
+                                key={`prep-${task.id}`}
+                                className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
+                                style={{ 
+                                  backgroundColor: 'rgba(156, 163, 175, 0.15)',
+                                  borderColor: 'rgba(156, 163, 175, 0.5)',
+                                }}
+                                onClick={() => setEditingTask(task)}
+                                title={`Prep Day - ${task.title}`}
+                              >
+                                <span className="truncate font-bold text-gray-700">Prep Day - {task.title}</span>
+                              </div>
+                            );
+                          }
                           return (
                             <div key={task.id} className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (course.colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (course.colors?.border || '#9ca3af') }}
+                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`, borderColor: task.isCompleted ? '#d1d5db' : borderColor }}
                               onClick={() => setEditingTask(task)}
                             >
                               <span className="truncate font-bold">{task.title}</span>
@@ -12020,9 +11737,7 @@ export default function Dashboard() {
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
-                  // TEMP: Disable prep conflict height to debug white lines
-                  const prepConflictHeight = 0; // getTimeSlotPrepConflictHeight(hour);
-                  const rowHeight = (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight) + prepConflictHeight;
+                  const rowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
                   return (
                   <div 
                     key={hour} 
@@ -12085,16 +11800,10 @@ export default function Dashboard() {
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
-                          {/* Half-hour dotted line - positioned in middle of task area (after any conflict offset) */}
+                          {/* Half-hour dotted line */}
                           <div 
                             className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" 
-                            style={{
-                              // When there's a prep conflict, tasks are pushed down 24px, so the half-hour line should be at: conflictOffset + (normalHeight / 2)
-                              // This keeps it centered within the task area
-                              top: prepConflictHeight > 0 
-                                ? `${prepConflictHeight + ((gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight) / 2)}px`
-                                : '50%'
-                            }}
+                            style={{ top: '50%' }}
                           />
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
                           {hourTasks.filter(task => {
@@ -12382,21 +12091,10 @@ export default function Dashboard() {
                           {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
                         </div>
                       )}
-                      {/* Left border segment for tasks with prep days - from below prep bar to bottom */}
-                      {hasPrepDays && prepDaysCount > 0 && (
-                        <div 
-                          className="absolute left-0 bottom-0 w-px"
-                          style={{
-                            height: `calc(100% - 20px)`,
-                            backgroundColor: colors?.border || '#9ca3af'
-                          }}
-                        />
-                      )}
                     </div>
                   );
                 })}
                 
-                {/* Prep Extensions Overlay - disabled to avoid duplicate with inline prep extension */}
                 
                 {/* Current time indicator line - rendered last to appear on top */}
                 {(() => {
@@ -12409,11 +12107,9 @@ export default function Dashboard() {
                   // Only show if current time is within calendar range
                   if (currentHour < startHour || currentHour > endHour) return null;
                   
-                  // Calculate position - include prep conflict heights
                   let topPosition = 0;
                   for (let h = startHour; h < currentHour; h++) {
                     topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                    topPosition += prepConflictHeights[h] || 0;
                   }
                   const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
                   topPosition += (currentMinutes / 60) * currentRowHeight;
@@ -14774,128 +14470,6 @@ export default function Dashboard() {
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="1"
-                  />
-                </g>
-              );
-            })}
-          </svg>
-        )}
-
-        {/* Layer 3: Prep arrows from Today box to prep extensions (z-index: 47, above green columns at z-42) */}
-        {blinkSettings.showArrows && prepArrowConnections.length > 0 && (
-          <svg 
-            className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 47 }}
-          >
-            <defs>
-              <marker
-                id="arrowhead-prep-pink"
-                markerWidth="7"
-                markerHeight="10"
-                refX="3.5"
-                refY="10"
-                orient="90"
-              >
-                <polygon points="0 0, 7 0, 3.5 10" fill="#ec4899" fillOpacity="0.75" />
-              </marker>
-              <marker
-                id="arrowhead-prep-green"
-                markerWidth="7"
-                markerHeight="10"
-                refX="3.5"
-                refY="10"
-                orient="90"
-              >
-                <polygon points="0 0, 7 0, 3.5 10" fill="#22c55e" fillOpacity="0.75" />
-              </marker>
-              <marker
-                id="arrowhead-prep-indigo"
-                markerWidth="7"
-                markerHeight="10"
-                refX="3.5"
-                refY="10"
-                orient="90"
-              >
-                <polygon points="0 0, 7 0, 3.5 10" fill="#6366f1" fillOpacity="0.75" />
-              </marker>
-              <marker
-                id="arrowhead-prep-black"
-                markerWidth="7"
-                markerHeight="10"
-                refX="3.5"
-                refY="10"
-                orient="90"
-              >
-                <polygon points="0 0, 7 0, 3.5 10" fill="#000000" fillOpacity="0.75" />
-              </marker>
-            </defs>
-            {prepArrowConnections.map((conn) => {
-              // Exit 21px to the left from checkbox
-              const exitX = conn.fromX - 21;
-              
-              // Get marker ID based on color
-              let markerId = "arrowhead-prep-black"; // Default to black
-              if (conn.color === "#22c55e") markerId = "arrowhead-prep-green";
-              else if (conn.color === "#ec4899") markerId = "arrowhead-prep-pink";
-              else if (conn.color === "#6366f1") markerId = "arrowhead-prep-indigo";
-              
-              // Path: curved from checkbox to prep text, ending vertically pointing DOWN
-              const endY = conn.toY - 14; // Arrowhead ends 14px above the text center
-              const midY = (conn.fromY + endY) / 2; // Midpoint for smooth curve
-              
-              // Use quadratic bezier curves for smooth path
-              // Start at checkbox, go 21px straight left, then curve down to target X, then straight down
-              const path = `M ${conn.fromX} ${conn.fromY} ` +
-                `L ${exitX} ${conn.fromY} ` + // Go 21px straight left
-                `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target X
-                `L ${conn.toX} ${endY}`; // Straight down to arrowhead
-              
-              // Find the date cell header row bottom to determine where opaque ends
-              const dateCellRow = document.querySelector('[data-calendar-grid="true"]');
-              let dateCellBottom = conn.fromY + 150; // Default fallback
-              if (dateCellRow) {
-                const gridRect = dateCellRow.getBoundingClientRect();
-                // Date cells are at the top of the calendar grid, estimate bottom at ~60px from grid top
-                dateCellBottom = gridRect.top + 60;
-              }
-              
-              // Calculate approximate path length to date cell bottom
-              // Path: 21px left + curve down to midY + straight to endY
-              // The opaque portion should end at dateCellBottom
-              const straightLeftLength = 21;
-              const verticalToCellBottom = Math.max(0, dateCellBottom - conn.fromY);
-              const opaquePathLength = straightLeftLength + verticalToCellBottom;
-              
-              // Each dash cycle is 8px (5px dash + 3px gap), calculate number of dashes
-              const numOpaqueDashes = Math.floor(opaquePathLength / 8);
-              
-              // Build dynamic dasharray for opaque portion
-              let opaqueDasharray = "";
-              for (let i = 0; i < numOpaqueDashes; i++) {
-                opaqueDasharray += "5,3,";
-              }
-              opaqueDasharray += "5,0,0,99999"; // End with final dash then huge gap
-              
-              return (
-                <g key={`prep-arrow-${conn.taskId}`}>
-                  {/* Transparent base - full path */}
-                  <path
-                    d={path}
-                    stroke={conn.color}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.25"
-                    markerEnd={`url(#${markerId})`}
-                  />
-                  {/* Opaque overlay - ends at date cell bottom */}
-                  <path
-                    d={path}
-                    stroke={conn.color}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray={opaqueDasharray}
                     strokeOpacity="1"
                   />
                 </g>
