@@ -12636,12 +12636,12 @@ export default function Dashboard() {
                   
                   return (
                     <div 
-                      className="absolute left-0 z-[5] pointer-events-none"
-                      style={{ top: `${topPosition}px`, right: `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }}
+                      className="absolute left-0 right-0 z-[5] pointer-events-none"
+                      style={{ top: `${topPosition}px` }}
                     >
                       <div 
-                        className="w-full border-t border-dashed"
-                        style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
+                        className="w-full"
+                        style={{ borderTop: '2px solid #ef4444' }}
                       />
                     </div>
                   );
