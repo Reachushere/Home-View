@@ -1672,7 +1672,7 @@ export default function Dashboard() {
 
   const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '' };
+    return saved ? { postalCode: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
