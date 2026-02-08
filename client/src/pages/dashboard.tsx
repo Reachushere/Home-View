@@ -6943,7 +6943,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* File Preview Dialog with Media Controls */}
-      <Dialog open={!!previewFile} onOpenChange={(open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } setPreviewFile(null); setOneDrivePreviewFiles([]); } }}>
+      <Dialog open={!!previewFile} onOpenChange={(open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } setPreviewFile(null); setOneDrivePreviewFiles([]); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
         <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
@@ -7756,7 +7756,12 @@ export default function Dashboard() {
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                   fontSize: '12px'
                 }}
-                onClick={() => setPreviewFile(null)}
+                onClick={() => {
+                  setPreviewFile(null);
+                  setOneDrivePreviewFiles([]);
+                  queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                  refreshFileCounts();
+                }}
                 data-testid="button-preview-done"
               >
                 Done

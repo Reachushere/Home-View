@@ -1232,7 +1232,16 @@ export async function registerRoutes(
           counts[folderKey].partialProgress += 100;
         } else {
           counts[folderKey].unlistened++;
-          if (file.totalChunks && file.totalChunks > 0 && file.lastChunkIndex != null && file.lastChunkIndex > 0) {
+          if (file.checkedChunks && file.totalChunks && file.totalChunks > 0) {
+            try {
+              const checked = JSON.parse(file.checkedChunks) as number[];
+              counts[folderKey].partialProgress += Math.round((checked.length / file.totalChunks) * 100);
+            } catch {
+              if (file.lastChunkIndex != null && file.lastChunkIndex > 0) {
+                counts[folderKey].partialProgress += Math.round((file.lastChunkIndex / file.totalChunks) * 100);
+              }
+            }
+          } else if (file.totalChunks && file.totalChunks > 0 && file.lastChunkIndex != null && file.lastChunkIndex > 0) {
             counts[folderKey].partialProgress += Math.round((file.lastChunkIndex / file.totalChunks) * 100);
           }
         }
