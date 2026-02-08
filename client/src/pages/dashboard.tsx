@@ -11661,6 +11661,9 @@ export default function Dashboard() {
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
                     const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
+                    const moduleFolderCount = fileCounts[moduleFolderKey];
+                    const readingFolderCount = fileCounts[readingFolderKey];
+                    const progressUnread = (moduleFolderCount?.unlistened || 0) + (readingFolderCount?.unlistened || 0);
                     const progressBg = (() => {
                       const cId = courseCode.toLowerCase();
                       if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
@@ -11819,6 +11822,11 @@ export default function Dashboard() {
                               {courseCode.slice(0, 4)}
                             </span>
                           </div>
+                          {progressUnread > 0 && (
+                            <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-6px', zIndex: 1 }}>
+                              {progressUnread}
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
