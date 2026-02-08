@@ -13107,9 +13107,10 @@ export default function Dashboard() {
             onMouseDown={handleResizeStart}
             data-testid="calendar-height-resize-handle"
           />
-          {/* Set Default - attached to calendar glass box */}
+          </div>
+          {/* Set Default - attached below calendar glass box */}
           {!isTodoFlyoutOpen && (
-            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '-13px', right: '7px' }}>
+            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '-15px', right: '7px' }}>
               <input
                 type="checkbox"
                 checked={showDeviceSaved}
@@ -13120,7 +13121,6 @@ export default function Dashboard() {
               {showDeviceSaved ? "Saved!" : "Set Default"}
             </label>
           )}
-          </div>
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
