@@ -11584,7 +11584,7 @@ export default function Dashboard() {
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
                       backgroundColor: isSameDay(day, new Date()) ? '#c0c0c0' : 'white',
-                      ...(isSameDay(day, new Date()) ? { boxShadow: '0 1px 0 0 #c0c0c0', zIndex: 45 } : {}),
+                      ...(isSameDay(day, new Date()) ? { marginBottom: '-1px', paddingBottom: 'calc(2px + 1px)', zIndex: 45 } : {}),
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
