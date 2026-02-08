@@ -11661,10 +11661,20 @@ export default function Dashboard() {
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
                     const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
+                    const progressBg = (() => {
+                      const cId = courseCode.toLowerCase();
+                      if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
+                      if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
+                      if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                      const rgb = hexToRgb(courseHexColor);
+                      const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
+                      const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
+                      return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
+                    })();
                     return (
                       <div 
                         className="border-l border-border/50 flex items-center gap-[3px] px-[3px]"
-                        style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                        style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
                       >
                         <div className="flex-1 flex flex-col justify-center gap-[4px] min-w-0" style={{ maxWidth: '58px' }}>
                         {hasNoData ? (
