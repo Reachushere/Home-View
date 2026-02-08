@@ -13351,7 +13351,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0 }}>
+        <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0, marginTop: '35px' }}>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch absolute" style={{ zIndex: 35, left: '-15px', right: '51px', top: '6px', bottom: '6px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
