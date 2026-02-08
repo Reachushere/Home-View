@@ -8804,8 +8804,10 @@ export default function Dashboard() {
         const arrowTopY = midY - (arrowH / 2);
         const arrowBotY = midY + (arrowH / 2);
         const r = 28;
+        const calH = calendarHeight - 35;
+        const pillTop = calendarTop + (calH / 2) - (pillH / 2);
         return (
-          <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: `${totalW}px`, height: `${pillH}px` }}>
+          <div className="absolute z-40 pointer-events-none" style={{ top: `${pillTop}px`, right: '13px', width: `${totalW}px`, height: `${pillH}px` }}>
             <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible' }}>
               <defs>
                 <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
@@ -8844,7 +8846,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (1 * 52)}px`, 
+          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (1 * 52)}px`, 
           right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8883,7 +8885,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (2 * 52)}px`, 
+          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (2 * 52)}px`, 
           right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8930,7 +8932,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (4 * 52)}px`, 
+          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (4 * 52)}px`, 
           right: '17px',
           borderRadius: '50%',
           background: isKitchenPlaying 
@@ -8973,7 +8975,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (5 * 52)}px`, 
+          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (5 * 52)}px`, 
           right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9069,7 +9071,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3}px`, 
+          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4}px`, 
           right: '17px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9110,7 +9112,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (3 * 52)}px`, 
+          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (3 * 52)}px`, 
           right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
