@@ -386,7 +386,8 @@ export default function Dashboard() {
   const [isKitchenPlaying, setIsKitchenPlaying] = useState(false);
   const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [isTopPillOpen, setIsTopPillOpen] = useState(true);
+  const [isTopPillOpen, setIsTopPillOpen] = useState(false);
+  const [topPillMounted, setTopPillMounted] = useState(false);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openTopPill = useCallback(() => {
     setIsTopPillOpen(true);
@@ -395,9 +396,15 @@ export default function Dashboard() {
     setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTopPillMounted(true);
+        setIsTopPillOpen(true);
+      });
+    });
     topPillTimeoutRef.current = setTimeout(() => {
       closeTopPill();
-    }, 1800);
+    }, 2200);
     return () => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); };
   }, []);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
@@ -7403,8 +7410,8 @@ export default function Dashboard() {
           zIndex: 20,
           left: 'calc(50% - 90px)',
           transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
-          transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          animation: !isTopPillOpen ? 'top-pill-container-nudge 18s ease-in-out infinite' : 'none',
+          transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+          animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 18s ease-in-out 0.5s infinite' : 'none',
           top: '0px',
           height: '55px',
           display: 'flex',
