@@ -11693,7 +11693,7 @@ export default function Dashboard() {
                                       <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                     )}
                                   </div>
-                                  <span className="text-[7px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
+                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
                                 </>
                               ) : (
                                 <span className="text-[8px] text-white leading-none">N/A</span>
@@ -11708,7 +11708,7 @@ export default function Dashboard() {
                                       <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                     )}
                                   </div>
-                                  <span className="text-[7px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
+                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
                                 </>
                               ) : (
                                 <span className="text-[8px] text-white leading-none">N/A</span>
@@ -11723,7 +11723,7 @@ export default function Dashboard() {
                                       <div className="h-full rounded-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
                                     )}
                                   </div>
-                                  <span className="text-[7px] font-bold flex-shrink-0 leading-none text-white">{otherP.percent}%</span>
+                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{otherP.percent}%</span>
                                 </>
                               ) : (
                                 <span className="text-[8px] text-white leading-none">N/A</span>
