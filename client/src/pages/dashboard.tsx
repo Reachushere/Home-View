@@ -4406,6 +4406,10 @@ export default function Dashboard() {
   });
   
   const [isCalendarSettingsOpen, setIsCalendarSettingsOpen] = useState(false);
+  const [showAllDayRow, setShowAllDayRow] = useState<boolean>(() => {
+    const saved = localStorage.getItem('showAllDayRow');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
   
   // Fetch available Google calendars
@@ -11181,6 +11185,26 @@ export default function Dashboard() {
                   <p><strong>Secondary Calendar:</strong> {selectedSecondaryCalendar && selectedSecondaryCalendar !== "none" ? availableCalendars?.find(c => c.id === selectedSecondaryCalendar)?.summary || selectedSecondaryCalendar : "None"}</p>
                   <p><strong>Second Account:</strong> {secondAccountStatus?.connected ? secondAccountStatus.email : "Not connected"}</p>
                 </div>
+
+                {/* Show All Day Row Toggle */}
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">All Day Row</Label>
+                      <p className="text-xs text-muted-foreground">Show the all-day row at the top of the calendar</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={showAllDayRow}
+                      onChange={(e) => {
+                        setShowAllDayRow(e.target.checked);
+                        localStorage.setItem('showAllDayRow', JSON.stringify(e.target.checked));
+                      }}
+                      className="h-4 w-4 accent-blue-500"
+                      data-testid="toggle-show-allday-row"
+                    />
+                  </div>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
@@ -12034,7 +12058,7 @@ export default function Dashboard() {
                 ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+            {showAllDayRow && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative border-b border-border/50" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
@@ -12224,7 +12248,7 @@ export default function Dashboard() {
                 onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
                 data-testid="allday-row-resize-handle"
               />
-            </div>
+            </div>)}
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative flex flex-col" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', backgroundColor: '#faf8f5' }}>
