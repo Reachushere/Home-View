@@ -507,9 +507,16 @@ export default function Dashboard() {
   const closeTopPill = useCallback(() => {
     const el = topPillRef.current;
     if (el) {
-      el.style.animation = '';
-      el.style.transform = '';
-      el.style.transition = '';
+      el.style.animation = 'none';
+      el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      el.style.transform = 'translateX(-50%) translateY(-56px)';
+      setTimeout(() => {
+        if (el) {
+          el.style.animation = '';
+          el.style.transform = '';
+          el.style.transition = '';
+        }
+      }, 450);
     }
     setIsTopPillOpen(false);
   }, []);
