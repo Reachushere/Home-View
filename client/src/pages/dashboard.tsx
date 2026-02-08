@@ -8799,19 +8799,7 @@ export default function Dashboard() {
       </Dialog>
 
       
-      {/* Set Default Layout Checkbox - Bottom of screen */}
-      {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '12px', right: '51px' }}>
-          <input
-            type="checkbox"
-            checked={showDeviceSaved}
-            onChange={saveAsDeviceDefault}
-            className="w-3 h-3 rounded border-white/40 bg-transparent accent-green-500"
-            data-testid="checkbox-save-device-default"
-          />
-          {showDeviceSaved ? "Saved!" : "Set Default"}
-        </label>
-      )}
+      {/* Set Default Layout Checkbox - moved to task boxes area */}
       
       {/* Copyright - Right side of page, rotated */}
       {!isTodoFlyoutOpen && (
@@ -13317,6 +13305,18 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0, marginTop: '58px' }}>
+        {!isTodoFlyoutOpen && (
+          <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ top: '-14px', right: '51px' }}>
+            <input
+              type="checkbox"
+              checked={showDeviceSaved}
+              onChange={saveAsDeviceDefault}
+              className="w-3 h-3 rounded border-white/40 bg-transparent accent-green-500"
+              data-testid="checkbox-save-device-default"
+            />
+            {showDeviceSaved ? "Saved!" : "Set Default"}
+          </label>
+        )}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch absolute" style={{ zIndex: 35, left: '-15px', right: '51px', top: '6px', bottom: '6px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
