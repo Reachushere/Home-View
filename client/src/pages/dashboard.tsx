@@ -12947,6 +12947,48 @@ export default function Dashboard() {
                           <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-600' : 'border-gray-400'}`} style={{ top: '0' }} />
                           {/* Half-hour dotted line */}
                           <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-600' : 'border-gray-400'}`} style={{ top: '50%' }} />
+                          {/* Render tasks for this hour */}
+                          {hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).map((task, taskIdx) => {
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const colors = dynamicCourseColors[courseCode];
+                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), new Date());
+                            const columnWidth = 100 / Math.max(1, hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).length);
+                            let taskHeight = 40;
+                            let topOffset = 2;
+                            if (task.eventStartTime) {
+                              const [, startMin] = task.eventStartTime.split(':').map(Number);
+                              topOffset = (startMin / 60) * 44;
+                            }
+                            return (
+                              <div
+                                key={task.id}
+                                onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task.id); }}
+                                onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
+                                onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
+                                className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "task-blink-border" : ""}`}
+                                style={{
+                                  top: `${topOffset}px`,
+                                  left: `calc(${taskIdx * columnWidth}% + 1px)`,
+                                  width: `calc(${columnWidth}% - 2px)`,
+                                  height: `${taskHeight}px`,
+                                  zIndex: 43,
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                                  border: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                }}
+                                data-testid={`sat-time-task-${task.id}`}
+                              >
+                                <div className="flex items-center gap-1 px-0.5 py-1">
+                                  {!isCASL101Task(task) && (
+                                    <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black" data-testid={`checkbox-sat-${task.id}`} />
+                                  )}
+                                  <span className="text-[8px] font-bold text-black truncate">{task.title}</span>
+                                </div>
+                                {task.eventStartTime && (
+                                  <div className="px-1 text-[7px] text-gray-600">{task.eventStartTime}{task.eventEndTime ? ` - ${task.eventEndTime}` : ''}</div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       );
                     })()}
