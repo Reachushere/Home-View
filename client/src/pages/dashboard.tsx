@@ -283,6 +283,7 @@ export default function Dashboard() {
   const allDayRowRef = useRef<HTMLDivElement>(null);
   const [calendarTop, setCalendarTop] = useState(247); // Default offset
   const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
+  const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedFiles');
@@ -4904,6 +4905,7 @@ export default function Dashboard() {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
         setCalendarTop(rect.top + window.scrollY);
         setCalendarRight(window.innerWidth - rect.right);
+        setCalendarLeft(rect.left);
       }
       if (clockContainerRef.current) {
         setClockWidth(clockContainerRef.current.offsetWidth);
@@ -13341,7 +13343,7 @@ export default function Dashboard() {
             {showDeviceSaved ? "Saved!" : "Set Default"}
           </label>
         )}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: '27px', right: '51px', bottom: '12px', height: '157px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft}px`, right: '51px', bottom: '12px', height: '157px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
