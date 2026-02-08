@@ -8805,32 +8805,28 @@ export default function Dashboard() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }} 
         />
-        {/* Left-pointing triangle arrow */}
+        {/* Left-pointing triangle arrow using clip-path */}
         <div style={{
           position: 'absolute',
-          left: '-11px',
+          left: '-12px',
           top: '50%',
           transform: 'translateY(-50%)',
-          zIndex: 1,
-        }}>
-          <div style={{
-            width: '0',
-            height: '0',
-            borderTop: '12px solid transparent',
-            borderBottom: '12px solid transparent',
-            borderRight: '12px solid rgba(255, 255, 255, 0.4)',
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: '0px',
-            left: '2px',
-            width: '0',
-            height: '0',
-            borderTop: '12px solid transparent',
-            borderBottom: '12px solid transparent',
-            borderRight: '12px solid rgba(255, 255, 255, 0.35)',
-          }} />
-        </div>
+          width: '14px',
+          height: '26px',
+          background: 'rgba(255, 255, 255, 0.35)',
+          clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)',
+        }} />
+        <div style={{
+          position: 'absolute',
+          left: '-13px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '15px',
+          height: '28px',
+          background: 'rgba(255, 255, 255, 0.4)',
+          clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)',
+          zIndex: -1,
+        }} />
       </div>
       
       
