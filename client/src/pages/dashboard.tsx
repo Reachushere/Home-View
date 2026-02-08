@@ -13327,7 +13327,7 @@ export default function Dashboard() {
               marginLeft: '0px', 
               marginRight: '0px',
               paddingBottom: '5px',
-              ...(thisWeekBoxHeight ? { height: `${thisWeekBoxHeight}px`, flex: 'none' } : {})
+              ...(thisWeekBoxHeight ? { height: `${thisWeekBoxHeight}px`, flexGrow: 1, flexShrink: 0, flexBasis: 0 } : {})
             }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
