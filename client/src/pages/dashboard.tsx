@@ -8808,22 +8808,21 @@ export default function Dashboard() {
         {/* Left-pointing triangle arrow */}
         <div style={{
           position: 'absolute',
-          left: '-11px',
+          left: '-9px',
           top: '50%',
           transform: 'translateY(-50%)',
-          width: '13px',
-          height: '26px',
+          width: '10px',
+          height: '22px',
           overflow: 'hidden',
         }}>
           <div style={{
             position: 'absolute',
             top: '50%',
-            left: '4px',
-            width: '18px',
-            height: '18px',
+            right: '-8px',
+            width: '16px',
+            height: '16px',
             background: 'rgba(255, 255, 255, 0.35)',
             border: '1px solid rgba(255, 255, 255, 0.4)',
-            borderRadius: '2px',
             transform: 'translateY(-50%) rotate(45deg)',
           }} />
         </div>
