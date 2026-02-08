@@ -13109,7 +13109,7 @@ export default function Dashboard() {
           />
           {/* Set Default - attached to calendar glass box */}
           {!isTodoFlyoutOpen && (
-            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '2px', right: '7px' }}>
+            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '-13px', right: '7px' }}>
               <input
                 type="checkbox"
                 checked={showDeviceSaved}
