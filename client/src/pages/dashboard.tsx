@@ -7444,26 +7444,26 @@ export default function Dashboard() {
                       const paragraphs = chunk.split(/\n\n+/);
                       
                       return (
-                        <div 
-                          key={chunkIdx}
-                          className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-4 mb-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
-                          onClick={() => playFromChunk(chunkIdx)}
-                          title={`Click to play from Section ${chunkIdx + 1}`}
-                        >
+                        <div key={chunkIdx} className="flex gap-2 mb-4">
+                          <div className="flex-shrink-0 pt-4">
+                            <input
+                              type="checkbox"
+                              checked={checkedChunks.has(chunkIdx)}
+                              onChange={() => toggleDashChunkChecked(chunkIdx)}
+                              className="w-5 h-5 rounded border-gray-400 accent-green-600 cursor-pointer"
+                              data-testid={`checkbox-chunk-${chunkIdx}`}
+                            />
+                          </div>
+                          <div 
+                            className={`flex-1 ${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
+                            onClick={() => playFromChunk(chunkIdx)}
+                            title={`Click to play from Section ${chunkIdx + 1}`}
+                          >
                           {/* Chunk header */}
                           <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-gray-300 dark:border-gray-600">
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={checkedChunks.has(chunkIdx)}
-                                onChange={(e) => { e.stopPropagation(); toggleDashChunkChecked(chunkIdx); }}
-                                className="w-4 h-4 rounded border-gray-400 accent-green-600 cursor-pointer"
-                                data-testid={`checkbox-chunk-${chunkIdx}`}
-                              />
-                              <span className={`text-[11px] font-semibold ${checkedChunks.has(chunkIdx) ? 'text-green-600 dark:text-green-400 line-through' : 'text-gray-600 dark:text-gray-400'}`}>
-                                Section {chunkIdx + 1} of {chunks.length}
-                              </span>
-                            </div>
+                            <span className={`text-[11px] font-semibold ${checkedChunks.has(chunkIdx) ? 'text-green-600 dark:text-green-400 line-through' : 'text-gray-600 dark:text-gray-400'}`}>
+                              Section {chunkIdx + 1} of {chunks.length}
+                            </span>
                             <Button
                               size="sm"
                               variant="ghost"
@@ -7526,6 +7526,7 @@ export default function Dashboard() {
                               </div>
                             );
                           })}
+                          </div>
                         </div>
                       );
                     });
