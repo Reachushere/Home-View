@@ -5136,11 +5136,11 @@ export default function Dashboard() {
       
       const now = new Date();
       const currentHour = now.getHours();
-      const startHour = 0; // calendar starts at 12am
+      const calStart = 6; // calendar starts at 6am
       
       // Calculate scroll position to show the entire current hour row at the top
       let scrollPosition = 0;
-      for (let h = startHour; h < currentHour && h < 24; h++) {
+      for (let h = calStart; h < currentHour && h < 24; h++) {
         scrollPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
       }
       
@@ -12956,8 +12956,9 @@ export default function Dashboard() {
                 
                 {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
                 {getMultiHourTasksForWeek().map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
+                  const calendarStartHour = 6;
                   let topPx = 0;
-                  for (let h = 0; h < startHour; h++) {
+                  for (let h = calendarStartHour; h < startHour; h++) {
                     topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
                   }
                   
@@ -13062,14 +13063,14 @@ export default function Dashboard() {
                   const now = new Date();
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
-                  const startHour = 0;
-                  const endHour = 24;
+                  const calStartHour = 6;
+                  const calEndHour = 23;
                   
                   // Only show if current time is within calendar range
-                  if (currentHour < startHour || currentHour > endHour) return null;
+                  if (currentHour < calStartHour || currentHour > calEndHour) return null;
                   
                   let topPosition = 0;
-                  for (let h = startHour; h < currentHour; h++) {
+                  for (let h = calStartHour; h < currentHour; h++) {
                     topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
                   }
                   const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
