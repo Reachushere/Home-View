@@ -8970,9 +8970,9 @@ export default function Dashboard() {
               style={{
                 position: 'absolute',
                 top: `${arrowTopY}px`,
-                left: `${arrowW - 14}px`,
-                width: '14px',
-                height: '40px',
+                left: `${arrowW - 23}px`,
+                width: '23px',
+                height: '46px',
                 borderRadius: '9999px 0 0 9999px',
                 background: 'rgba(255, 255, 255, 0.25)',
                 border: '1px solid rgba(255, 255, 255, 0.35)',
