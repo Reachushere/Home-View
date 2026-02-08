@@ -5158,7 +5158,7 @@ export default function Dashboard() {
   const calStart = isTravelMode ? 0 : 6;
   const timeSlots = isTravelMode
     ? Array.from({ length: 24 }, (_, i) => i) // 12am-11pm (0-23)
-    : Array.from({ length: 18 }, (_, i) => i + 6); // 6am-11pm (6-23)
+    : Array.from({ length: 16 }, (_, i) => i + 6); // 6am-9pm (6-21)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
@@ -13146,7 +13146,7 @@ export default function Dashboard() {
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
                   const calStartHour = calStart;
-                  const calEndHour = 23;
+                  const calEndHour = isTravelMode ? 23 : 21;
                   
                   // Only show if current time is within calendar range
                   if (currentHour < calStartHour || currentHour > calEndHour) return null;
