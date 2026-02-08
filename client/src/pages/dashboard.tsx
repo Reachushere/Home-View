@@ -250,6 +250,19 @@ export default function Dashboard() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newTaskType, setNewTaskType] = useState<string>("module");
   const [initialStartTime, setInitialStartTime] = useState<string>("");
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [quickAddStep, setQuickAddStep] = useState(0);
+  const [quickAddData, setQuickAddData] = useState({
+    type: "",
+    title: "",
+    courseName: "",
+    dueDate: "",
+    dueDateHour: "18",
+    dueDateMinute: "00",
+    prepDays: 0,
+    priority: "medium",
+    description: "",
+  });
   const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
@@ -8105,6 +8118,11 @@ export default function Dashboard() {
             flexShrink: 0,
           }}
           data-testid="button-pomodoro-add"
+          onClick={() => {
+            setQuickAddStep(0);
+            setQuickAddData({ type: "", title: "", courseName: "", dueDate: "", dueDateHour: "18", dueDateMinute: "00", prepDays: 0, priority: "medium", description: "" });
+            setIsQuickAddOpen(true);
+          }}
         >
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
@@ -9657,6 +9675,289 @@ export default function Dashboard() {
             </section>
           </div>
           
+          {/* Quick Add Wizard Dialog */}
+          {isQuickAddOpen && (
+            <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={() => setIsQuickAddOpen(false)}>
+              <div className="absolute inset-0 bg-black/40" />
+              <div 
+                className="relative rounded-xl overflow-hidden"
+                style={{
+                  width: '380px',
+                  background: 'linear-gradient(135deg, rgba(30,30,40,0.97), rgba(10,10,20,0.98))',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                  fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                }}
+                onClick={(e) => e.stopPropagation()}
+                data-testid="quick-add-wizard"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-3 bg-black/30 border-b border-white/15">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-3.5 w-3.5 text-white/70" />
+                    <span className="text-[11px] text-white/70 font-normal tracking-wide uppercase">
+                      {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Due Date' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : 'Add Task'}
+                    </span>
+                  </div>
+                  <button onClick={() => setIsQuickAddOpen(false)} className="text-white/50 hover:text-white transition-colors" data-testid="button-close-quick-add">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Step indicator */}
+                <div className="flex gap-1 px-5 pt-3">
+                  {[0,1,2,3,4,5,6].map(s => (
+                    <div key={s} className="flex-1 h-[2px] rounded-full transition-colors duration-300" style={{ background: s <= quickAddStep ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.1)' }} />
+                  ))}
+                </div>
+
+                {/* Content area */}
+                <div className="px-5 py-5 min-h-[200px] flex flex-col">
+                  {/* Step 0: Task Type */}
+                  {quickAddStep === 0 && (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-white/60 text-[11px] mb-2">What would you like to add?</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {TASK_TYPES.filter(t => t !== "class").map(type => (
+                          <button
+                            key={type}
+                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white'}`}
+                            onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
+                            data-testid={`quick-add-type-${type}`}
+                          >
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 1: Title */}
+                  {quickAddStep === 1 && (
+                    <div className="flex flex-col gap-3 flex-1">
+                      <p className="text-white/60 text-[11px]">Enter the {quickAddData.type} name</p>
+                      <input
+                        type="text"
+                        value={quickAddData.title}
+                        onChange={(e) => setQuickAddData(p => ({ ...p, title: e.target.value }))}
+                        placeholder={`e.g. Chapter 5 ${quickAddData.type}`}
+                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                        autoFocus
+                        data-testid="quick-add-title"
+                        onKeyDown={(e) => { if (e.key === 'Enter' && quickAddData.title.trim()) setQuickAddStep(2); }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Step 2: Course */}
+                  {quickAddStep === 2 && (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-white/60 text-[11px] mb-1">Select the course</p>
+                      <button
+                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === '' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'}`}
+                        onClick={() => { setQuickAddData(p => ({ ...p, courseName: '' })); setQuickAddStep(3); }}
+                        data-testid="quick-add-course-none"
+                      >
+                        No course
+                      </button>
+                      {COURSES.map(course => (
+                        <button
+                          key={course.code}
+                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white'}`}
+                          onClick={() => { setQuickAddData(p => ({ ...p, courseName: `${course.code} - ${course.name}` })); setQuickAddStep(3); }}
+                          data-testid={`quick-add-course-${course.code}`}
+                        >
+                          {course.code} - {course.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Step 3: Due Date */}
+                  {quickAddStep === 3 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">When is it due?</p>
+                      <input
+                        type="date"
+                        value={quickAddData.dueDate}
+                        onChange={(e) => setQuickAddData(p => ({ ...p, dueDate: e.target.value }))}
+                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 transition-colors [color-scheme:dark]"
+                        data-testid="quick-add-due-date"
+                      />
+                      <div className="flex gap-2 items-center">
+                        <span className="text-white/50 text-[11px]">Time:</span>
+                        <select
+                          value={quickAddData.dueDateHour}
+                          onChange={(e) => setQuickAddData(p => ({ ...p, dueDateHour: e.target.value }))}
+                          className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                          data-testid="quick-add-hour"
+                        >
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>
+                              {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                            </option>
+                          ))}
+                        </select>
+                        <span className="text-white/40">:</span>
+                        <select
+                          value={quickAddData.dueDateMinute}
+                          onChange={(e) => setQuickAddData(p => ({ ...p, dueDateMinute: e.target.value }))}
+                          className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                          data-testid="quick-add-minute"
+                        >
+                          {['00', '15', '30', '45'].map(m => (
+                            <option key={m} value={m} style={{ color: 'black' }}>{m}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 4: Prep Days */}
+                  {quickAddStep === 4 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">How many preparation days are needed?</p>
+                      <select
+                        value={quickAddData.prepDays}
+                        onChange={(e) => setQuickAddData(p => ({ ...p, prepDays: parseInt(e.target.value) }))}
+                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                        data-testid="quick-add-prep-days"
+                      >
+                        {Array.from({ length: 15 }, (_, i) => (
+                          <option key={i} value={i} style={{ color: 'black' }}>{i === 0 ? 'None' : `${i} day${i > 1 ? 's' : ''}`}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Step 5: Priority */}
+                  {quickAddStep === 5 && (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-white/60 text-[11px] mb-1">Set priority level</p>
+                      {(['low', 'medium', 'high'] as const).map(p => (
+                        <button
+                          key={p}
+                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.priority === p ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white'}`}
+                          onClick={() => { setQuickAddData(prev => ({ ...prev, priority: p })); setQuickAddStep(6); }}
+                          data-testid={`quick-add-priority-${p}`}
+                        >
+                          {p.charAt(0).toUpperCase() + p.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Step 6: Review & Submit */}
+                  {quickAddStep === 6 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px] mb-1">Review your task</p>
+                      <div className="bg-white/5 rounded-lg p-3 space-y-2 border border-white/10">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Type</span>
+                          <span className="text-white">{quickAddData.type.charAt(0).toUpperCase() + quickAddData.type.slice(1)}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Title</span>
+                          <span className="text-white truncate ml-4">{quickAddData.title}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Course</span>
+                          <span className="text-white">{quickAddData.courseName || 'None'}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Due Date</span>
+                          <span className="text-white">{quickAddData.dueDate ? format(new Date(quickAddData.dueDate + 'T' + quickAddData.dueDateHour + ':' + quickAddData.dueDateMinute), "MMM d, yyyy 'at' h:mm a") : 'Not set'}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Prep Days</span>
+                          <span className="text-white">{quickAddData.prepDays === 0 ? 'None' : `${quickAddData.prepDays} day${quickAddData.prepDays > 1 ? 's' : ''}`}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Priority</span>
+                          <span className="text-white">{quickAddData.priority.charAt(0).toUpperCase() + quickAddData.priority.slice(1)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer with navigation */}
+                <div className="flex items-center justify-between px-5 py-3 border-t border-white/10">
+                  <button
+                    onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else setIsQuickAddOpen(false); }}
+                    className="text-white/50 hover:text-white text-[11px] transition-colors flex items-center gap-1"
+                    data-testid="quick-add-back"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    {quickAddStep === 0 ? 'Cancel' : 'Back'}
+                  </button>
+
+                  {quickAddStep < 6 && quickAddStep > 0 && (
+                    <button
+                      onClick={() => setQuickAddStep(s => s + 1)}
+                      disabled={quickAddStep === 1 && !quickAddData.title.trim() || quickAddStep === 3 && !quickAddData.dueDate}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-[12px] font-medium transition-all duration-200 bg-white/15 text-white hover:bg-white/25 disabled:opacity-30 disabled:cursor-not-allowed"
+                      data-testid="quick-add-next"
+                    >
+                      Next
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+
+                  {quickAddStep === 6 && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const dueDate = new Date(quickAddData.dueDate + 'T' + quickAddData.dueDateHour + ':' + quickAddData.dueDateMinute);
+                          let startDate: string | null = null;
+                          if (quickAddData.prepDays > 0) {
+                            const sd = new Date(dueDate);
+                            sd.setDate(sd.getDate() - quickAddData.prepDays);
+                            startDate = sd.toISOString();
+                          }
+                          await apiRequest("POST", "/api/tasks", {
+                            title: quickAddData.title,
+                            type: quickAddData.type,
+                            courseName: quickAddData.courseName || null,
+                            dueDate: dueDate.toISOString(),
+                            startDate,
+                            priority: quickAddData.priority,
+                            weekNumber: selectedWeek,
+                            description: quickAddData.description || "",
+                            reminder1: DEFAULT_REMINDER_1,
+                            reminder2: DEFAULT_REMINDER_2,
+                            reminder3: null,
+                            reminder4: null,
+                            attachments: [],
+                            referenceLink: "",
+                            repeatType: "none",
+                            repeatInterval: null,
+                            repeatIntervalUnit: null,
+                            repeatEndDate: null,
+                            eventStartTime: null,
+                            eventEndTime: null,
+                            notes: null,
+                          });
+                          queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                          queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+                          setIsQuickAddOpen(false);
+                          toast({ title: "Task added", description: `${quickAddData.title} has been added to your calendar.` });
+                        } catch (err) {
+                          toast({ title: "Error", description: "Failed to add task. Please try again.", variant: "destructive" });
+                        }
+                      }}
+                      className="flex items-center gap-2 px-5 py-2 rounded-lg text-[12px] font-medium bg-white/20 text-white hover:bg-white/30 transition-all duration-200 border border-white/20"
+                      data-testid="quick-add-submit"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add Task
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* AAS Reminder Popup */}
           <Dialog open={showAasReminder} onOpenChange={setShowAasReminder}>
             <DialogContent className="max-w-sm text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%' }}>
