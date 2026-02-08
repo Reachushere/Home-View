@@ -11666,45 +11666,45 @@ export default function Dashboard() {
                         className="border-l border-border/50 flex items-center gap-[3px] px-[3px]"
                         style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
                       >
-                        <div className="flex-1 flex flex-col justify-center gap-[3px] min-w-0">
+                        <div className="flex-1 flex flex-col justify-center gap-[4px] min-w-0" style={{ maxWidth: '28px' }}>
                         {hasNoData ? (
-                          <span className="text-[8px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
+                          <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
                           <>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[7px] font-bold w-[7px] flex-shrink-0 leading-none uppercase" style={{ color: moduleP.hasFiles ? getProgressColor(moduleP.percent) : 'white' }}>M</span>
+                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: moduleP.hasFiles ? getProgressColor(moduleP.percent) : 'white' }}>M</span>
                               {moduleP.hasFiles ? (
-                                <div className="flex-1 h-[2px] overflow-hidden" style={{ backgroundColor: moduleP.percent === 0 ? '#ef4444' : moduleP.percent < 100 ? 'white' : undefined }}>
+                                <div className="flex-1 h-[4px] overflow-hidden" style={{ backgroundColor: moduleP.percent === 0 ? '#ef4444' : moduleP.percent < 100 ? 'white' : undefined }}>
                                   {moduleP.percent > 0 && (
                                     <div className="h-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-[6px] text-white leading-none">N/A</span>
+                                <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[7px] font-bold w-[7px] flex-shrink-0 leading-none uppercase" style={{ color: readingP.hasFiles ? getProgressColor(readingP.percent) : 'white' }}>R</span>
+                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: readingP.hasFiles ? getProgressColor(readingP.percent) : 'white' }}>R</span>
                               {readingP.hasFiles ? (
-                                <div className="flex-1 h-[2px] overflow-hidden" style={{ backgroundColor: readingP.percent === 0 ? '#ef4444' : readingP.percent < 100 ? 'white' : undefined }}>
+                                <div className="flex-1 h-[4px] overflow-hidden" style={{ backgroundColor: readingP.percent === 0 ? '#ef4444' : readingP.percent < 100 ? 'white' : undefined }}>
                                   {readingP.percent > 0 && (
                                     <div className="h-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-[6px] text-white leading-none">N/A</span>
+                                <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[7px] font-bold w-[7px] flex-shrink-0 leading-none uppercase" style={{ color: otherP.hasFiles ? getProgressColor(otherP.percent) : 'white' }}>O</span>
+                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: otherP.hasFiles ? getProgressColor(otherP.percent) : 'white' }}>O</span>
                               {otherP.hasFiles ? (
-                                <div className="flex-1 h-[2px] overflow-hidden" style={{ backgroundColor: otherP.percent === 0 ? '#ef4444' : otherP.percent < 100 ? 'white' : undefined }}>
+                                <div className="flex-1 h-[4px] overflow-hidden" style={{ backgroundColor: otherP.percent === 0 ? '#ef4444' : otherP.percent < 100 ? 'white' : undefined }}>
                                   {otherP.percent > 0 && (
                                     <div className="h-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-[6px] text-white leading-none">N/A</span>
+                                <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
                           </>
