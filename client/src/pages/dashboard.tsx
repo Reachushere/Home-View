@@ -11838,13 +11838,13 @@ export default function Dashboard() {
                         className="border-l border-border/50 flex items-center gap-[3px]"
                         style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '0px', paddingRight: '6px' }}
                       >
-                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px' }}>
+                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px', paddingLeft: '4px' }}>
                         {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
                           <>
                             <div className="flex flex-col gap-[2px]">
-                              <span className="text-[7px] font-medium leading-none uppercase text-white/60 tracking-wider">Module</span>
+                              <span className="text-[8px] font-medium leading-none uppercase text-white/60 tracking-wider">Module</span>
                               {moduleP.hasFiles ? (
                                 <div className="flex items-center gap-[3px]">
                                   <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -11859,7 +11859,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex flex-col gap-[2px]">
-                              <span className="text-[7px] font-medium leading-none uppercase text-white/60 tracking-wider">Reading</span>
+                              <span className="text-[8px] font-medium leading-none uppercase text-white/60 tracking-wider">Reading</span>
                               {readingP.hasFiles ? (
                                 <div className="flex items-center gap-[3px]">
                                   <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
