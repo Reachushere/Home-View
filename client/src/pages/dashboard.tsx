@@ -8806,26 +8806,35 @@ export default function Dashboard() {
           }} 
         />
         {/* Left-pointing triangle arrow */}
-        <svg 
-          style={{ 
-            position: 'absolute', 
-            left: '-7px', 
-            top: '50%', 
-            transform: 'translateY(-50%)',
-            overflow: 'visible',
-          }} 
-          width="9" 
-          height="16" 
-          viewBox="0 0 9 16" 
-          fill="none"
-        >
-          <path 
-            d="M9 -1 L1 8 L9 17" 
-            fill="rgba(255, 255, 255, 0.35)" 
-          />
-          <line x1="9" y1="-1" x2="1" y2="8" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1" />
-          <line x1="1" y1="8" x2="9" y2="17" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1" />
-        </svg>
+        <div style={{
+          position: 'absolute',
+          left: '-8px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '10px',
+          height: '18px',
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '0',
+            height: '0',
+            borderTop: '9px solid transparent',
+            borderBottom: '9px solid transparent',
+            borderRight: '9px solid rgba(255, 255, 255, 0.4)',
+          }} />
+          <div style={{
+            position: 'absolute',
+            top: '1px',
+            left: '1px',
+            width: '0',
+            height: '0',
+            borderTop: '8px solid transparent',
+            borderBottom: '8px solid transparent',
+            borderRight: '8px solid rgba(255, 255, 255, 0.35)',
+          }} />
+        </div>
       </div>
       
       
