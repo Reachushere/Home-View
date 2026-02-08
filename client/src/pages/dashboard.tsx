@@ -8148,6 +8148,7 @@ export default function Dashboard() {
             marginRight: '8px',
             marginTop: '-1px',
             flexShrink: 0,
+            border: '1.5px solid rgba(255, 255, 255, 0.45)',
           }}
           data-testid="button-pomodoro-add"
           onClick={() => {
@@ -8158,7 +8159,7 @@ export default function Dashboard() {
         >
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
-        <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
           <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
             pomodoroMode === "work" ? "text-white" : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -8182,7 +8183,7 @@ export default function Dashboard() {
       {/* Clock - Fixed on screen, never slides */}
       <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100 }}>
         <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
-          <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
+          <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px', border: '1.5px solid rgba(255, 255, 255, 0.45)' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
