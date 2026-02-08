@@ -248,9 +248,9 @@ button[role="combobox"] > span {
 
 @keyframes side-pill-container-nudge {
   0%, 90% { transform: translateX(56px); }
-  93% { transform: translateX(51px); }
+  93% { transform: translateX(46px); }
   96% { transform: translateX(56px); }
-  98% { transform: translateX(53px); }
+  98% { transform: translateX(50px); }
   100% { transform: translateX(56px); }
 }
 
@@ -260,9 +260,9 @@ button[role="combobox"] > span {
 
 @keyframes top-pill-container-nudge {
   0%, 90% { transform: translateX(-50%) translateY(-56px); }
-  93% { transform: translateX(-50%) translateY(-51px); }
+  93% { transform: translateX(-50%) translateY(-46px); }
   96% { transform: translateX(-50%) translateY(-56px); }
-  98% { transform: translateX(-50%) translateY(-53px); }
+  98% { transform: translateX(-50%) translateY(-50px); }
   100% { transform: translateX(-50%) translateY(-56px); }
 }
 
