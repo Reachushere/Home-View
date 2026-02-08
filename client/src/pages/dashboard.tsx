@@ -8808,11 +8808,11 @@ export default function Dashboard() {
         {/* Left-pointing triangle arrow */}
         <div style={{
           position: 'absolute',
-          left: '-8px',
+          left: '-13px',
           top: '50%',
           transform: 'translateY(-50%)',
-          width: '10px',
-          height: '18px',
+          width: '16px',
+          height: '28px',
         }}>
           <div style={{
             position: 'absolute',
@@ -8820,9 +8820,9 @@ export default function Dashboard() {
             left: '0',
             width: '0',
             height: '0',
-            borderTop: '9px solid transparent',
-            borderBottom: '9px solid transparent',
-            borderRight: '9px solid rgba(255, 255, 255, 0.4)',
+            borderTop: '14px solid transparent',
+            borderBottom: '14px solid transparent',
+            borderRight: '14px solid rgba(255, 255, 255, 0.4)',
           }} />
           <div style={{
             position: 'absolute',
@@ -8830,9 +8830,9 @@ export default function Dashboard() {
             left: '1px',
             width: '0',
             height: '0',
-            borderTop: '8px solid transparent',
-            borderBottom: '8px solid transparent',
-            borderRight: '8px solid rgba(255, 255, 255, 0.35)',
+            borderTop: '13px solid transparent',
+            borderBottom: '13px solid transparent',
+            borderRight: '13px solid rgba(255, 255, 255, 0.35)',
           }} />
         </div>
       </div>
