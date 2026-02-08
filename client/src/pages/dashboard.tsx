@@ -8075,6 +8075,21 @@ export default function Dashboard() {
 
       {/* Pomodoro Timer - Fixed on screen, never slides */}
       <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '5px', zIndex: 100 }}>
+        <div
+          className="flex items-center justify-center rounded-full cursor-pointer hover:opacity-80 transition-opacity"
+          style={{
+            width: '35px',
+            height: '35px',
+            backgroundImage: `url(${clockBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            marginRight: '5px',
+            flexShrink: 0,
+          }}
+          data-testid="button-pomodoro-add"
+        >
+          <Plus className="h-4.5 w-4.5 text-white" strokeWidth={2.5} />
+        </div>
         <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
             pomodoroMode === "work" ? "text-white" : 
