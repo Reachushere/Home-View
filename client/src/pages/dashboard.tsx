@@ -11769,7 +11769,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? '#f7f7f7' : "black" }}
+                    style={{ backgroundColor: isToday ? '#fafafa' : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -12512,7 +12512,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0 ${isSameDay(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#f7f7f7' : 'white',
+                      backgroundColor: isSameDay(day, new Date()) ? '#fafafa' : 'white',
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -12721,7 +12721,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday ? '#f7f7f7' : isCurrentHour ? '#e0e0e0' : '#faf8f5'
+                            backgroundColor: isToday ? '#fafafa' : isCurrentHour ? '#e0e0e0' : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
