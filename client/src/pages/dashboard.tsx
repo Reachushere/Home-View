@@ -11610,12 +11610,12 @@ export default function Dashboard() {
                             </span>
                           </div>
                           {moduleUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', left: '-2px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', right: '-7px', zIndex: 1 }}>
                               {moduleUnread}
                             </div>
                           )}
                           {readingUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', left: '-2px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', right: '-7px', zIndex: 1 }}>
                               {readingUnread}
                             </div>
                           )}
