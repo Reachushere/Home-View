@@ -253,6 +253,7 @@ export default function Dashboard() {
   const [newTaskType, setNewTaskType] = useState<string>("module");
   const [initialStartTime, setInitialStartTime] = useState<string>("");
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [showQuickAddCloseConfirm, setShowQuickAddCloseConfirm] = useState(false);
   const [quickAddStep, setQuickAddStep] = useState(0);
   const [quickAddData, setQuickAddData] = useState({
     type: "",
@@ -282,6 +283,14 @@ export default function Dashboard() {
     repeatIntervalUnit: null as string | null,
     repeatEndDate: "",
   });
+  const quickAddHasData = quickAddData.type !== "" || quickAddData.title.trim() !== "" || quickAddData.courseName !== "" || quickAddData.dueDate !== "" || quickAddData.notes.trim() !== "" || quickAddData.attachments.length > 0 || quickAddData.subtasks.length > 0;
+  const handleQuickAddClose = () => {
+    if (quickAddHasData) {
+      setShowQuickAddCloseConfirm(true);
+    } else {
+      setIsQuickAddOpen(false);
+    }
+  };
   const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
@@ -9710,7 +9719,7 @@ export default function Dashboard() {
           
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={() => setIsQuickAddOpen(false)}>
+            <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={handleQuickAddClose}>
               <div className="absolute inset-0 bg-black/40" />
               <div 
                 className="relative rounded-xl overflow-hidden"
@@ -9732,7 +9741,7 @@ export default function Dashboard() {
                       {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </span>
                   </div>
-                  <button onClick={() => setIsQuickAddOpen(false)} className="text-white/50 hover:text-white transition-colors" data-testid="button-close-quick-add">
+                  <button onClick={handleQuickAddClose} className="text-white/50 hover:text-white transition-colors" data-testid="button-close-quick-add">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
@@ -10253,7 +10262,7 @@ export default function Dashboard() {
                 {/* Footer with navigation */}
                 <div className="flex items-center justify-between px-5 py-3 border-t border-white/10">
                   <button
-                    onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else setIsQuickAddOpen(false); }}
+                    onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
                     className="text-white/50 hover:text-white text-[11px] transition-colors flex items-center gap-1"
                     data-testid="quick-add-back"
                   >
@@ -10341,6 +10350,29 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
+              {showQuickAddCloseConfirm && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', borderRadius: 'inherit' }}>
+                  <div className="flex flex-col items-center gap-4 px-6 py-5 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(40,40,50,0.98), rgba(20,20,30,0.99))', border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                    <p className="text-white text-[12px] text-center">You have unsaved changes.<br />Discard this task?</p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowQuickAddCloseConfirm(false)}
+                        className="px-4 py-2 rounded-lg text-[11px] text-white/70 hover:text-white bg-white/10 hover:bg-white/20 border border-white/15 transition-all duration-200"
+                        data-testid="quick-add-cancel-discard"
+                      >
+                        Go Back
+                      </button>
+                      <button
+                        onClick={() => { setShowQuickAddCloseConfirm(false); setIsQuickAddOpen(false); }}
+                        className="px-4 py-2 rounded-lg text-[11px] text-white bg-red-600/80 hover:bg-red-600 border border-red-500/30 transition-all duration-200"
+                        data-testid="quick-add-confirm-discard"
+                      >
+                        Discard
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
