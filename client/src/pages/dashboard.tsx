@@ -296,13 +296,13 @@ export default function Dashboard() {
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
   const [calendarHeight, setCalendarHeight] = useState(() => {
-    const defaultHeight = 519;
+    const defaultHeight = 510;
     const maxHeight = window.innerHeight - 200;
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v5';
+    const resetKey = 'calendarHeight_reset_v6';
     if (!localStorage.getItem(resetKey)) {
       localStorage.removeItem('calendarHeight');
       localStorage.removeItem(`calendarHeight_${deviceId}`);
