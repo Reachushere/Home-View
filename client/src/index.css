@@ -234,6 +234,18 @@ button[role="combobox"] > span {
   animation: gentle-jiggle 0.3s ease-in-out 3;
 }
 
+@keyframes pill-nudge {
+  0%, 90% { transform: translateX(0); }
+  93% { transform: translateX(-4px); }
+  96% { transform: translateX(0); }
+  98% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.pill-arrow-idle {
+  animation: pill-nudge 18s ease-in-out infinite;
+}
+
 @keyframes blink {
   0%, 100% { 
     outline: 3px solid #c0c0c0;
