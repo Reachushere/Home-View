@@ -72,6 +72,7 @@ export default function PDFReaderPage() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [chunkWords, setChunkWords] = useState<string[]>([]);
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
+  const [chunksList, setChunksList] = useState<string[]>([]);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -162,6 +163,7 @@ export default function PDFReaderPage() {
     setIsPreloading(false);
     setTotalChunks(0);
     setCheckedChunks(new Set());
+    setChunksList([]);
     chunksRef.current = [];
     pdfDocRef.current = null;
     isExtractingRef.current = false;
@@ -363,8 +365,10 @@ export default function PDFReaderPage() {
       return;
     }
 
-    chunksRef.current = chunkText(textToRead);
-    setTotalChunks(chunksRef.current.length);
+    const newChunks = chunkText(textToRead);
+    chunksRef.current = newChunks;
+    setChunksList(newChunks);
+    setTotalChunks(newChunks.length);
     setCurrentChunk(0);
     setIsPlaying(true);
     setIsPaused(false);
@@ -506,8 +510,10 @@ export default function PDFReaderPage() {
 
   useEffect(() => {
     if (extractedText && chunksRef.current.length === 0) {
-      chunksRef.current = chunkText(extractedText);
-      setTotalChunks(chunksRef.current.length);
+      const newChunks = chunkText(extractedText);
+      chunksRef.current = newChunks;
+      setChunksList(newChunks);
+      setTotalChunks(newChunks.length);
       const key = getFileKey();
       setCheckedChunks(loadCheckedChunks(key));
     }
@@ -831,7 +837,7 @@ export default function PDFReaderPage() {
                 </Button>
               </div>
 
-              {totalChunks > 0 && (
+              {chunksList.length > 0 && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-700">Chunks ({checkedChunks.size}/{totalChunks})</span>
@@ -844,7 +850,7 @@ export default function PDFReaderPage() {
                     />
                   </div>
                   <div className="max-h-[200px] overflow-y-auto space-y-1 border rounded-lg p-2">
-                    {chunksRef.current.map((chunk, idx) => (
+                    {chunksList.map((chunk, idx) => (
                       <div
                         key={idx}
                         className={`flex items-center gap-2 px-2 py-1.5 rounded transition-colors ${
