@@ -3043,8 +3043,10 @@ export default function Dashboard() {
   // Play text using OpenAI TTS (for Fire tablets and other devices without browser TTS)
   const playWithOpenAiTts = async (text: string, voice: typeof openaiVoice = openaiVoice, chunkIndex?: number) => {
     try {
-      // Stop any existing audio
       if (openaiAudioRef.current) {
+        openaiAudioRef.current.onended = null;
+        openaiAudioRef.current.onerror = null;
+        openaiAudioRef.current.ontimeupdate = null;
         openaiAudioRef.current.pause();
         openaiAudioRef.current = null;
       }
@@ -3118,6 +3120,7 @@ export default function Dashboard() {
         const chunksLen = ttsChunksRef.current.length;
         const curIdx = currentChunkIndexRef.current;
         console.log(`[TTS onended] Chunk ${curIdx + 1}/${chunksLen} ended. shouldContinue=${shouldContinueRef.current}, hasFile=${!!currentFile}`);
+        autoCheckChunk(curIdx);
         if (shouldContinueRef.current && curIdx < chunksLen - 1) {
           currentChunkIndexRef.current = curIdx + 1;
           setCurrentChunkIndex(curIdx + 1);
@@ -3181,11 +3184,15 @@ export default function Dashboard() {
   // Stop OpenAI TTS playback
   const stopOpenAiTts = () => {
     if (openaiAudioRef.current) {
+      openaiAudioRef.current.onended = null;
+      openaiAudioRef.current.onerror = null;
+      openaiAudioRef.current.ontimeupdate = null;
       openaiAudioRef.current.pause();
       openaiAudioRef.current = null;
     }
     shouldContinueRef.current = false;
     setIsPlaying(false);
+    isPlayingRef.current = false;
   };
   
   // Save/load TTS progress for each file
@@ -3613,6 +3620,25 @@ export default function Dashboard() {
     saveDashCheckedChunks(key, newChecked, totalChunks);
   };
 
+  const autoCheckChunk = (chunkIdx: number) => {
+    const file = previewFileRef.current;
+    if (!file) return;
+    const key = `file_${file.id}`;
+    const saved = localStorage.getItem(`checkedChunks_${key}`);
+    const current = saved ? new Set<number>(JSON.parse(saved)) : new Set<number>();
+    if (current.has(chunkIdx)) return;
+    for (let i = 0; i <= chunkIdx; i++) {
+      current.add(i);
+    }
+    const total = ttsChunksRef.current.length || totalChunks;
+    localStorage.setItem(`checkedChunks_${key}`, JSON.stringify(Array.from(current)));
+    localStorage.setItem(`chunkProgress_${key}`, JSON.stringify({ checked: current.size, total }));
+    const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+    allProgress[key] = { checked: current.size, total };
+    localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
+    setCheckedChunks(new Set(current));
+  };
+
   useEffect(() => {
     if (previewFile && totalChunks > 0) {
       const key = `file_${previewFile.id}`;
@@ -3848,6 +3874,7 @@ export default function Dashboard() {
     
     utterance.onend = () => {
       console.log(`Chunk ${chunkIndex + 1}/${chunks.length} ended`);
+      autoCheckChunk(chunkIndex);
       if (shouldContinueRef.current) {
         setTimeout(() => {
           speakChunk(chunkIndex + 1, chunks, voices, wordOffset + chunkWordCount);
