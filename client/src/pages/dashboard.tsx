@@ -8820,7 +8820,7 @@ export default function Dashboard() {
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       <div className="absolute z-50 flex items-end justify-between" style={{ top: `${calendarTop - 28}px`, left: '0px', right: `${calendarRight}px` }}>
-        <div className="flex items-center gap-1" style={{ marginLeft: '80px' }}>
+        <div className="flex items-center gap-1" style={{ marginLeft: '55px' }}>
           <Button 
             variant="ghost"
             className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[2px] mr-1"
