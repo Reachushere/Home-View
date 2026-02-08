@@ -11680,7 +11680,7 @@ export default function Dashboard() {
                         className="border-l border-border/50 flex items-center gap-[3px]"
                         style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '3px', paddingRight: '6px' }}
                       >
-                        <div className="flex-1 flex flex-col justify-center gap-[4px] min-w-0" style={{ maxWidth: '68px' }}>
+                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ maxWidth: '68px', gap: '22px' }}>
                         {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
