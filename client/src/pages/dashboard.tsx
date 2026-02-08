@@ -5150,8 +5150,12 @@ export default function Dashboard() {
     weekDays = rawWeekDays.slice(0, 7); // Safety limit
   }
   
-  // Time slots for the day view (6am-11pm)
-  const timeSlots = Array.from({ length: 18 }, (_, i) => i + 6); // 6am-11pm (6-23)
+  // Time slots for the day view - show all 24 hours when travelling, otherwise 6am-11pm
+  const isTravelMode = !!(schoolData.isTravelling || profileData.travelTimezone);
+  const calStart = isTravelMode ? 0 : 6;
+  const timeSlots = isTravelMode
+    ? Array.from({ length: 24 }, (_, i) => i) // 12am-11pm (0-23)
+    : Array.from({ length: 18 }, (_, i) => i + 6); // 6am-11pm (6-23)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
@@ -5163,11 +5167,11 @@ export default function Dashboard() {
       
       const now = new Date();
       const currentHour = now.getHours();
-      const calStart = 6; // calendar starts at 6am
+      const calStartHour = isTravelMode ? 0 : 6;
       
       // Calculate scroll position to show the entire current hour row at the top
       let scrollPosition = 0;
-      for (let h = calStart; h < currentHour && h < 24; h++) {
+      for (let h = calStartHour; h < currentHour && h < 24; h++) {
         scrollPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
       }
       
@@ -13138,7 +13142,7 @@ export default function Dashboard() {
                   const now = new Date();
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
-                  const calStartHour = 6;
+                  const calStartHour = calStart;
                   const calEndHour = 23;
                   
                   // Only show if current time is within calendar range
