@@ -4032,6 +4032,30 @@ export default function Dashboard() {
         // Check for saved progress (localStorage first, then DB fallback)
         let startChunk = 0;
         let startWordOffset = 0;
+        
+        if (!resumeFromProgress && previewFile) {
+          const key = `file_${previewFile.id}`;
+          const savedChecked = localStorage.getItem(`checkedChunks_${key}`);
+          if (savedChecked) {
+            const checkedSet = new Set<number>(JSON.parse(savedChecked));
+            for (let i = 0; i < chunks.length; i++) {
+              if (!checkedSet.has(i)) {
+                startChunk = i;
+                break;
+              }
+              if (i === chunks.length - 1) {
+                startChunk = 0;
+              }
+            }
+            if (startChunk > 0) {
+              for (let i = 0; i < startChunk; i++) {
+                startWordOffset += chunks[i].split(/\s+/).length;
+              }
+              toast({ title: `Starting from section ${startChunk + 1} of ${chunks.length}` });
+            }
+          }
+        }
+        
         if (resumeFromProgress && previewFile) {
           const progress = getTtsProgress(previewFile.id);
           if (progress) {
