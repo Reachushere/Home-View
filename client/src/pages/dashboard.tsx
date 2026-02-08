@@ -13380,7 +13380,7 @@ export default function Dashboard() {
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
         {!isTodoFlyoutOpen && (
-          <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '170px', right: '51px' }}>
+          <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '170px', right: `${calendarRight - 15}px` }}>
             <input
               type="checkbox"
               checked={showDeviceSaved}
