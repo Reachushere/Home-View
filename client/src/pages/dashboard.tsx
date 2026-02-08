@@ -8884,19 +8884,7 @@ export default function Dashboard() {
                 </filter>
               </defs>
               <path 
-                d={isPillMenuOpen 
-                  ? `
-                  M 0 ${r}
-                  Q 0 0, ${r} 0
-                  L ${totalW - r} 0
-                  Q ${totalW} 0, ${totalW} ${r}
-                  L ${totalW} ${pillH - r}
-                  Q ${totalW} ${pillH}, ${totalW - r} ${pillH}
-                  L ${r} ${pillH}
-                  Q 0 ${pillH}, 0 ${pillH - r}
-                  Z
-                `
-                  : `
+                d={`
                   M ${arrowW} ${r}
                   Q ${arrowW} 0, ${arrowW + r} 0
                   L ${totalW - r} 0
