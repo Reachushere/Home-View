@@ -712,7 +712,7 @@ button[role="combobox"] > span {
     transparent 100%
   );
   transform: translateY(-100%);
-  animation: red-separator-shimmer-sweep 14s ease-in-out infinite;
+  animation: red-separator-shimmer-sweep 10s ease-in-out infinite;
   pointer-events: none;
 }
 
