@@ -5794,7 +5794,8 @@ export default function Dashboard() {
         backgroundImage: `url(${dashboardBg})`,
         backgroundSize: '100% 100%',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        minWidth: '1024px'
       }}
     >
       {/* Main Background Color Overlay */}

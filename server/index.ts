@@ -3,6 +3,8 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { startReminderScheduler } from "./reminderScheduler";
+import crypto from "crypto";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const httpServer = createServer(app);
@@ -12,6 +14,8 @@ declare module "http" {
     rawBody: unknown;
   }
 }
+
+app.use(cookieParser());
 
 app.use(
   express.json({
@@ -23,6 +27,71 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+const SITE_PASSWORD = process.env.SITE_PASSWORD;
+const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
+const activeSessions = new Set<string>();
+
+function generateSessionToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+app.post("/api/auth/login", (req: Request, res: Response) => {
+  const { password } = req.body;
+  if (!SITE_PASSWORD) {
+    return res.json({ success: true });
+  }
+  if (password === SITE_PASSWORD) {
+    const token = generateSessionToken();
+    activeSessions.add(token);
+    res.cookie("uni_cal_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+    return res.json({ success: true });
+  }
+  return res.status(401).json({ success: false, message: "Incorrect password" });
+});
+
+app.get("/api/auth/check", (req: Request, res: Response) => {
+  if (!SITE_PASSWORD) {
+    return res.json({ authenticated: true });
+  }
+  const token = req.cookies?.uni_cal_session;
+  if (token && activeSessions.has(token)) {
+    return res.json({ authenticated: true });
+  }
+  return res.json({ authenticated: false });
+});
+
+app.post("/api/auth/logout", (req: Request, res: Response) => {
+  const token = req.cookies?.uni_cal_session;
+  if (token) {
+    activeSessions.delete(token);
+  }
+  res.clearCookie("uni_cal_session");
+  return res.json({ success: true });
+});
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (!SITE_PASSWORD) return next();
+  if (req.path.startsWith("/api/auth/")) return next();
+  if (req.path === "/login") return next();
+  if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();
+
+  const token = req.cookies?.uni_cal_session;
+  if (token && activeSessions.has(token)) {
+    return next();
+  }
+
+  if (req.path.startsWith("/api/")) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  return next();
+});
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
