@@ -9762,7 +9762,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Content area */}
-                <div className="px-5 py-5 min-h-[200px] max-h-[400px] overflow-y-auto flex flex-col" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+                <div className="px-5 py-5 min-h-[200px] max-h-[400px] overflow-y-auto flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
