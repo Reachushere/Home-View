@@ -12,7 +12,7 @@ import { objectStorageClient } from "./replit_integrations/object_storage/object
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
-import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, type TaskReminder } from "./email";
+import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles } from "./onedrive";
 
@@ -2764,6 +2764,20 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error sending test HA push:", err);
       res.status(500).json({ message: "Failed to send test push notification" });
+    }
+  });
+
+  app.post("/api/echo/test", async (_req, res) => {
+    try {
+      const result = await sendEchoVoiceAnnouncement("This is a test announcement from Uni-Cal.");
+      if (result.success) {
+        res.json({ message: "Test voice announcement sent to Echo devices" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send Echo announcement" });
+      }
+    } catch (err) {
+      console.error("Error sending test Echo announcement:", err);
+      res.status(500).json({ message: "Failed to send Echo announcement" });
     }
   });
 

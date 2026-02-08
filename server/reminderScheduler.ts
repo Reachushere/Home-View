@@ -1,5 +1,5 @@
 import { storage } from "./storage";
-import { sendTaskReminder, sendHaTaskReminder, sendDailyDigest, type TaskReminder } from "./email";
+import { sendTaskReminder, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendDailyDigest, type TaskReminder } from "./email";
 
 const sentReminders = new Set<string>();
 
@@ -59,9 +59,15 @@ export async function checkReminders() {
             type: task.type,
           };
 
-          const [emailResult, haResult] = await Promise.allSettled([
+          const timeLabel = reminderMinutes >= 60 
+            ? `${Math.round(reminderMinutes / 60)} hour${Math.round(reminderMinutes / 60) !== 1 ? 's' : ''}` 
+            : `${reminderMinutes} minutes`;
+          const voiceMessage = `Reminder: ${task.title}${task.courseName ? `, for ${task.courseName}` : ''}, is due in ${timeLabel}.`;
+
+          const [emailResult, haResult, echoResult] = await Promise.allSettled([
             sendTaskReminder(taskReminder),
             sendHaTaskReminder(taskReminder),
+            sendEchoVoiceAnnouncement(voiceMessage),
           ]);
 
           if (emailResult.status === "fulfilled" && emailResult.value.success) {
@@ -76,6 +82,13 @@ export async function checkReminders() {
           } else {
             const err = haResult.status === "rejected" ? haResult.reason : haResult.value.error;
             console.error(`[Reminder] HA push failed for "${task.title}":`, err);
+          }
+
+          if (echoResult.status === "fulfilled" && echoResult.value.success) {
+            console.log(`[Reminder] Echo voice announcement sent for "${task.title}"`);
+          } else {
+            const err = echoResult.status === "rejected" ? echoResult.reason : echoResult.value.error;
+            console.error(`[Reminder] Echo voice announcement failed for "${task.title}":`, err);
           }
 
           sentReminders.add(key);

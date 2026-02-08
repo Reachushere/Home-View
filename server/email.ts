@@ -263,6 +263,43 @@ export async function sendHaTaskReminder(task: TaskReminder): Promise<{ success:
   return sendHaPushNotification(title, message);
 }
 
+export async function sendEchoVoiceAnnouncement(message: string): Promise<{ success: boolean; error?: string }> {
+  if (!HA_TOKEN) {
+    return { success: false, error: 'Home Assistant Token not configured' };
+  }
+
+  const haUrl = HA_URL.replace(/\/$/, '');
+  const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
+  const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
+
+  try {
+    const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${HA_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: message,
+        data: { type: "announce" },
+        target: [BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Echo voice announcement error:', errorText);
+      return { success: false, error: `HA API error: ${response.status}` };
+    }
+
+    console.log('Echo voice announcement sent successfully');
+    return { success: true };
+  } catch (err) {
+    console.error('Echo voice announcement error:', err);
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
 export async function sendTestHaPush(): Promise<{ success: boolean; error?: string }> {
   return sendHaPushNotification('Uni-Cal Test', 'Push notifications via Home Assistant are working!');
 }
