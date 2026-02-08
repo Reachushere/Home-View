@@ -11713,8 +11713,8 @@ export default function Dashboard() {
                         <div
                           className="flex-shrink-0 cursor-pointer"
                           style={{
-                            width: '24px',
-                            height: '24px',
+                            width: '44px',
+                            height: '44px',
                             borderRadius: '50%',
                             background: `linear-gradient(180deg, ${courseHexColor} 0%, ${courseHexColor}cc 100%)`,
                             border: `1px solid ${courseHexColor}`,
