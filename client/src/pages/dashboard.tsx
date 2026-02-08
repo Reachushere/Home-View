@@ -8839,11 +8839,9 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-        </div>
-        <div className="flex-1 flex justify-end">
           <Button 
             variant="ghost"
-            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline"
+            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline ml-1"
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
