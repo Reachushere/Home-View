@@ -12258,6 +12258,7 @@ export default function Dashboard() {
                     });
                     const moduleFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-module`);
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
+                    const allChunkProgressData = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
                     const calcFileProgress = (files: WeeklyFile[], folderKey: string) => {
                       if (files.length === 0) {
                         const fc = fileCounts[folderKey];
@@ -12269,13 +12270,19 @@ export default function Dashboard() {
                       }
                       let totalProgress = 0;
                       for (const f of files) {
-                        const isCurrentlyPlaying = !f.listened && previewFile && f.id === previewFile.id && isPlaying && totalChunks > 0;
+                        const chunkKey = `file_${f.id}`;
+                        const chunkData = allChunkProgressData[chunkKey];
                         if (f.listened) {
                           totalProgress += 100;
-                        } else if (isCurrentlyPlaying) {
-                          totalProgress += Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
-                        } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
-                          totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                        } else if (chunkData && chunkData.total > 0) {
+                          totalProgress += Math.round((chunkData.checked / chunkData.total) * 100);
+                        } else {
+                          const isCurrentlyPlaying = !f.listened && previewFile && f.id === previewFile.id && isPlaying && totalChunks > 0;
+                          if (isCurrentlyPlaying) {
+                            totalProgress += Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
+                          } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
+                            totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                          }
                         }
                       }
                       return { percent: Math.min(100, Math.round(totalProgress / files.length)), hasFiles: true };

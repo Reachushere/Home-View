@@ -71,6 +71,7 @@ export default function PDFReaderPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [chunkWords, setChunkWords] = useState<string[]>([]);
+  const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -114,6 +115,39 @@ export default function PDFReaderPage() {
     }
   };
   
+  const getFileKey = () => {
+    if (fileId) return `file_${fileId}`;
+    const url = currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '');
+    return `onedrive_${btoa(url).slice(0, 40)}`;
+  };
+
+  const loadCheckedChunks = (key: string): Set<number> => {
+    const saved = localStorage.getItem(`checkedChunks_${key}`);
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  };
+
+  const saveCheckedChunks = (key: string, checked: Set<number>, total: number) => {
+    localStorage.setItem(`checkedChunks_${key}`, JSON.stringify(Array.from(checked)));
+    localStorage.setItem(`chunkProgress_${key}`, JSON.stringify({ checked: checked.size, total }));
+    const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+    allProgress[key] = { checked: checked.size, total };
+    localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
+  };
+
+  const toggleChunkChecked = (idx: number) => {
+    const key = getFileKey();
+    const newChecked = new Set(checkedChunks);
+    if (newChecked.has(idx)) {
+      newChecked.delete(idx);
+    } else {
+      newChecked.add(idx);
+    }
+    setCheckedChunks(newChecked);
+    saveCheckedChunks(key, newChecked, totalChunks);
+  };
+
+  const chunkProgress = totalChunks > 0 ? Math.round((checkedChunks.size / totalChunks) * 100) : 0;
+
   // Switch to a different file
   const switchToFile = (file: {name: string; downloadUrl: string; path: string}) => {
     setCurrentFileUrl(file.downloadUrl);
@@ -124,7 +158,9 @@ export default function PDFReaderPage() {
     setIsPlaying(false);
     setIsPaused(false);
     setIsPreloading(false);
-    // Reset cached PDF document
+    setTotalChunks(0);
+    setCheckedChunks(new Set());
+    chunksRef.current = [];
     pdfDocRef.current = null;
     isExtractingRef.current = false;
     if (audioRef.current) {
@@ -330,6 +366,8 @@ export default function PDFReaderPage() {
     setCurrentChunk(0);
     setIsPlaying(true);
     setIsPaused(false);
+    const key = getFileKey();
+    setCheckedChunks(loadCheckedChunks(key));
     
     playNextChunk(0);
   };
@@ -463,6 +501,15 @@ export default function PDFReaderPage() {
       setCurrentPage(currentPage + 1);
     }
   };
+
+  useEffect(() => {
+    if (extractedText && chunksRef.current.length === 0) {
+      chunksRef.current = chunkText(extractedText);
+      setTotalChunks(chunksRef.current.length);
+      const key = getFileKey();
+      setCheckedChunks(loadCheckedChunks(key));
+    }
+  }, [extractedText]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -641,13 +688,13 @@ export default function PDFReaderPage() {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-green-700">Now Playing</span>
                     <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                      Chunk {currentChunk + 1} of {totalChunks}
+                      Chunk {currentChunk + 1} of {totalChunks} ({chunkProgress}% done)
                     </span>
                   </div>
                   <div className="bg-green-200 rounded-full h-2 overflow-hidden mb-3">
                     <div
                       className="bg-green-500 h-full transition-all duration-300"
-                      style={{ width: `${((currentChunk + 1) / totalChunks) * 100}%` }}
+                      style={{ width: `${chunkProgress}%` }}
                     />
                   </div>
                   {/* Word-by-word highlighting display */}
@@ -781,6 +828,62 @@ export default function PDFReaderPage() {
                   <SkipForward className="h-5 w-5" />
                 </Button>
               </div>
+
+              {totalChunks > 0 && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">Chunks ({checkedChunks.size}/{totalChunks})</span>
+                    <span className="text-xs text-gray-500">{chunkProgress}% complete</span>
+                  </div>
+                  <div className="bg-gray-200 rounded-full h-2 overflow-hidden mb-3">
+                    <div
+                      className="bg-amber-500 h-full transition-all duration-300"
+                      style={{ width: `${chunkProgress}%` }}
+                    />
+                  </div>
+                  <div className="max-h-[200px] overflow-y-auto space-y-1 border rounded-lg p-2">
+                    {chunksRef.current.map((chunk, idx) => (
+                      <div
+                        key={idx}
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded transition-colors ${
+                          currentChunk === idx && isPlaying ? 'bg-amber-50 border border-amber-200' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checkedChunks.has(idx)}
+                          onChange={() => toggleChunkChecked(idx)}
+                          className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 shrink-0"
+                          data-testid={`checkbox-chunk-${idx}`}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 shrink-0"
+                          onClick={() => {
+                            if (audioRef.current) {
+                              audioRef.current.pause();
+                            }
+                            setIsPlaying(true);
+                            setIsPaused(false);
+                            playNextChunk(idx);
+                          }}
+                          data-testid={`button-play-chunk-${idx}`}
+                        >
+                          {currentChunk === idx && isPlaying && !isPaused ? (
+                            <Pause className="h-3.5 w-3.5 text-amber-600" />
+                          ) : (
+                            <Play className="h-3.5 w-3.5 text-amber-600 ml-0.5" />
+                          )}
+                        </Button>
+                        <span className={`text-xs truncate ${checkedChunks.has(idx) ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                          {idx + 1}. {chunk.slice(0, 60)}...
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="text-center text-sm text-gray-500">
                 <p>Powered by OpenAI TTS</p>
