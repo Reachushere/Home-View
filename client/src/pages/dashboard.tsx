@@ -7428,7 +7428,7 @@ export default function Dashboard() {
           position: 'absolute',
           zIndex: 20,
           left: 'calc(50% - 90px)',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
+          transform: `translateX(-50%) translateY(${isTopPillOpen ? '1px' : '-56px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 18s ease-in-out 0.5s infinite' : 'none',
           top: '0px',
@@ -10953,7 +10953,7 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: '#000000', borderBottom: '1px solid white', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
               >
                 <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
               </div>
@@ -11572,12 +11572,12 @@ export default function Dashboard() {
                             </span>
                           </div>
                           {moduleUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', right: '-9px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', left: '-2px', zIndex: 1 }}>
                               {moduleUnread}
                             </div>
                           )}
                           {readingUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', right: '-9px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', left: '-2px', zIndex: 1 }}>
                               {readingUnread}
                             </div>
                           )}
