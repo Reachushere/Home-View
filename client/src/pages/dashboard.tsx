@@ -11715,21 +11715,6 @@ export default function Dashboard() {
                                 <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
-                            <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase text-white">O</span>
-                              {otherP.hasFiles ? (
-                                <>
-                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)', maxWidth: '80px' }}>
-                                    {otherP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
-                                    )}
-                                  </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{otherP.percent}%</span>
-                                </>
-                              ) : (
-                                <span className="text-[8px] text-white leading-none">N/A</span>
-                              )}
-                            </div>
                           </>
                         )}
                         </div>
