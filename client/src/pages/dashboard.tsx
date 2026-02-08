@@ -8732,7 +8732,7 @@ export default function Dashboard() {
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-30 cursor-pointer">
+        <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer">
           <input
             type="checkbox"
             checked={showDeviceSaved}
@@ -8747,7 +8747,7 @@ export default function Dashboard() {
       {/* Copyright - Right side of page, rotated */}
       {!isTodoFlyoutOpen && (
         <div 
-          className="fixed right-1 text-white/60 text-[10px] font-medium z-30 pointer-events-none"
+          className="fixed right-1 text-white/60 text-[10px] font-medium z-[70] pointer-events-none"
           style={{ bottom: '70px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
         >
           © 2026
@@ -9349,7 +9349,7 @@ export default function Dashboard() {
       })}
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '29px', paddingRight: '24px', marginTop: '63px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '29px', paddingRight: '6px', marginTop: '63px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
@@ -10720,7 +10720,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-19px', paddingLeft: '25px', paddingRight: '23px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-2px', paddingLeft: '25px', paddingRight: '6px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
