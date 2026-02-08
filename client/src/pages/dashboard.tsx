@@ -3105,9 +3105,8 @@ export default function Dashboard() {
         
         if (audio.duration && audio.duration > 0 && chunkWordCount > 0) {
           const progress = audio.currentTime / audio.duration;
-          const leadWords = Math.ceil(chunkWordCount * 0.02) + 2;
           const estimatedWordIdx = Math.min(
-            Math.floor(progress * chunkWordCount) + leadWords,
+            Math.floor(progress * chunkWordCount),
             chunkWordCount - 1
           );
           setCurrentWordIndex(wordOffset + estimatedWordIdx);
