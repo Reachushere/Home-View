@@ -11875,7 +11875,7 @@ export default function Dashboard() {
                         ) : (
                           <>
                             <div className="flex flex-col gap-[2px]">
-                              <span className="text-[8px] font-medium leading-none uppercase text-white tracking-wider">Module</span>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                               {moduleP.hasFiles ? (
                                 <div className="flex items-center gap-[3px]">
                                   <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -11890,7 +11890,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex flex-col gap-[2px]">
-                              <span className="text-[8px] font-medium leading-none uppercase text-white tracking-wider">Reading</span>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                               {readingP.hasFiles ? (
                                 <div className="flex items-center gap-[3px]">
                                   <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
