@@ -77,6 +77,7 @@ app.post("/api/auth/logout", (req: Request, res: Response) => {
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (!SITE_PASSWORD) return next();
+  if (process.env.NODE_ENV !== "production") return next();
   if (req.path.startsWith("/api/auth/")) return next();
   if (req.path === "/login") return next();
   if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();

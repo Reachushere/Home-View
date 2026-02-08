@@ -3631,6 +3631,7 @@ export default function Dashboard() {
     fetch(`/api/files/${previewFile.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
     }).catch(err => console.error('Failed to save checked chunks:', err));
   };
@@ -3666,6 +3667,7 @@ export default function Dashboard() {
     fetch(`/api/files/${file.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
     }).catch(err => console.error('Failed to save auto-checked chunks:', err));
   };

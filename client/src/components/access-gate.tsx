@@ -38,9 +38,7 @@ export function AccessGate({ children }: AccessGateProps) {
       }
     } catch {}
 
-    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    const isDevMode = import.meta.env.DEV && isLocalhost;
-    if (isDevMode) {
+    if (import.meta.env.DEV) {
       setIsAuthorized(true);
       return;
     }

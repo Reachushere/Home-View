@@ -2,6 +2,11 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+const originalFetch = window.fetch.bind(window);
+window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+  return originalFetch(input, { credentials: 'include', ...init });
+};
+
 // Global error handler for debugging on Fire tablets
 window.onerror = function(message, source, lineno, colno, error) {
   const errorDiv = document.createElement('div');
