@@ -8794,40 +8794,72 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: '52px', height: `${(6 * 52) + 9}px` }}>
-        <div 
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            background: 'rgba(255, 255, 255, 0.35)',
-            borderRadius: '28px',
-            border: '1px solid rgba(255, 255, 255, 0.4)',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }} 
-        />
-        {/* Left-pointing triangle arrow using clip-path */}
-        <div style={{
-          position: 'absolute',
-          left: '-12px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: '14px',
-          height: '26px',
-          background: 'rgba(255, 255, 255, 0.35)',
-          clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)',
-        }} />
-        <div style={{
-          position: 'absolute',
-          left: '-13px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: '15px',
-          height: '28px',
-          background: 'rgba(255, 255, 255, 0.4)',
-          clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)',
-          zIndex: -1,
-        }} />
-      </div>
+      {(() => {
+        const pillW = 52;
+        const pillH = (6 * 52) + 9;
+        const arrowW = 12;
+        const arrowH = 24;
+        const totalW = pillW + arrowW;
+        const r = 28;
+        const midY = pillH / 2;
+        const arrowTop = midY - (arrowH / 2);
+        const arrowBot = midY + (arrowH / 2);
+        const aWPct = (arrowW / totalW * 100).toFixed(2);
+        const pillLeftPct = (arrowW / totalW * 100).toFixed(2);
+        const rXPct = (r / totalW * 100).toFixed(2);
+        const rYPct = (r / pillH * 100).toFixed(2);
+        const atPct = (arrowTop / pillH * 100).toFixed(2);
+        const abPct = (arrowBot / pillH * 100).toFixed(2);
+        const midPct = '50';
+        return (
+          <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: `${totalW}px`, height: `${pillH}px` }}>
+            {/* Border layer (slightly larger) */}
+            <svg style={{ position: 'absolute', top: '-1px', left: '-1px', width: `${totalW + 2}px`, height: `${pillH + 2}px` }}>
+              <defs>
+                <clipPath id="pillArrowBorder">
+                  <path d={`
+                    M ${arrowW + 1} ${r + 1}
+                    Q ${arrowW + 1} 1, ${arrowW + r + 1} 1
+                    L ${totalW - r + 1} 1
+                    Q ${totalW + 1} 1, ${totalW + 1} ${r + 1}
+                    L ${totalW + 1} ${pillH - r + 1}
+                    Q ${totalW + 1} ${pillH + 1}, ${totalW - r + 1} ${pillH + 1}
+                    L ${arrowW + r + 1} ${pillH + 1}
+                    Q ${arrowW + 1} ${pillH + 1}, ${arrowW + 1} ${pillH - r + 1}
+                    L ${arrowW + 1} ${arrowBot + 1}
+                    L 1 ${midY + 1}
+                    L ${arrowW + 1} ${arrowTop + 1}
+                    Z
+                  `} />
+                </clipPath>
+              </defs>
+              <rect x="0" y="0" width={totalW + 2} height={pillH + 2} fill="rgba(255, 255, 255, 0.4)" clipPath="url(#pillArrowBorder)" />
+            </svg>
+            {/* Fill layer */}
+            <svg style={{ position: 'absolute', top: '0', left: '0', width: `${totalW}px`, height: `${pillH}px` }}>
+              <defs>
+                <clipPath id="pillArrowFill">
+                  <path d={`
+                    M ${arrowW} ${r}
+                    Q ${arrowW} 0, ${arrowW + r} 0
+                    L ${totalW - r} 0
+                    Q ${totalW} 0, ${totalW} ${r}
+                    L ${totalW} ${pillH - r}
+                    Q ${totalW} ${pillH}, ${totalW - r} ${pillH}
+                    L ${arrowW + r} ${pillH}
+                    Q ${arrowW} ${pillH}, ${arrowW} ${pillH - r}
+                    L ${arrowW} ${arrowBot}
+                    L 0 ${midY}
+                    L ${arrowW} ${arrowTop}
+                    Z
+                  `} />
+                </clipPath>
+              </defs>
+              <rect x="0" y="0" width={totalW} height={pillH} fill="rgba(255, 255, 255, 0.35)" clipPath="url(#pillArrowFill)" />
+            </svg>
+          </div>
+        );
+      })()}
       
       
       {/* Push Button - Below course buttons on tall pill */}
