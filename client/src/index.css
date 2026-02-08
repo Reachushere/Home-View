@@ -235,15 +235,15 @@ button[role="combobox"] > span {
 }
 
 @keyframes pill-nudge {
-  0%, 90% { transform: translateX(0); }
-  93% { transform: translateX(-4px); }
-  96% { transform: translateX(0); }
-  98% { transform: translateX(-2px); }
-  100% { transform: translateX(0); }
+  0%, 90% { transform: translateX(0px); }
+  93% { transform: translateX(-5px); }
+  96% { transform: translateX(0px); }
+  98% { transform: translateX(-3px); }
+  100% { transform: translateX(0px); }
 }
 
 .pill-arrow-idle {
-  animation: pill-nudge 18s ease-in-out infinite;
+  animation: pill-nudge 18s ease-in-out infinite !important;
 }
 
 @keyframes blink {
