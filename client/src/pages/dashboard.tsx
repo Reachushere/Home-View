@@ -1670,9 +1670,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
+    return saved ? { postalCode: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1743,7 +1743,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -16086,9 +16086,9 @@ function ProfileForm({
   onSave,
   onCancel 
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }) => void;
   onCancel: () => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
@@ -16097,10 +16097,11 @@ function ProfileForm({
   const [timezone, setTimezone] = useState(profileData.timezone);
   const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
+  const [postalCode, setPostalCode] = useState(profileData.postalCode || '');
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode });
   };
   
   return (
@@ -16140,6 +16141,19 @@ function ProfileForm({
           style={{ fontSize: '10px' }}
           data-testid="input-profile-birthdate"
         />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="postalCode" className="text-[10px]">Postal Code / Zip Code</Label>
+        <Input 
+          id="postalCode" 
+          value={postalCode}
+          onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
+          placeholder="e.g. M5V 2T6 or 90210"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
+          data-testid="input-profile-postalcode"
+        />
+        <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
