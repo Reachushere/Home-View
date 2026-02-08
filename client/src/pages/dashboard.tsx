@@ -416,10 +416,12 @@ export default function Dashboard() {
         el.style.transform = '';
         el.style.transition = '';
         el.removeEventListener('transitionend', onEnd);
+        setIsPillMenuOpen(false);
       };
       el.addEventListener('transitionend', onEnd);
+    } else {
+      setIsPillMenuOpen(false);
     }
-    setIsPillMenuOpen(false);
   }, []);
   useEffect(() => {
     requestAnimationFrame(() => {
