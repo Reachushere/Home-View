@@ -10800,7 +10800,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
+        <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1 }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -12877,7 +12877,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
+        <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1 }}>
           <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
@@ -13313,7 +13313,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div style={{ order: 1, height: '157px', position: 'relative', flexShrink: 0 }}>
+        <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0 }}>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch absolute" style={{ zIndex: 35, left: '-15px', right: '-15px', top: '6px', bottom: '6px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
