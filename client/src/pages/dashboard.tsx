@@ -11673,8 +11673,8 @@ export default function Dashboard() {
                     })();
                     return (
                       <div 
-                        className="border-l border-border/50 flex items-center gap-[3px] px-[3px]"
-                        style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                        className="border-l border-border/50 flex items-center gap-[3px]"
+                        style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '3px', paddingRight: '6px' }}
                       >
                         <div className="flex-1 flex flex-col justify-center gap-[4px] min-w-0" style={{ maxWidth: '68px' }}>
                         {hasNoData ? (
