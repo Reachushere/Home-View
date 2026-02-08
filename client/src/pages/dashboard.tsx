@@ -13411,18 +13411,18 @@ export default function Dashboard() {
               {/* Task rows - each row is position:relative with all content absolutely positioned at same baseline */}
               {dueThisWeekTasks.slice(0, 5).map((task, idx) => (
               <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-                <div style={{ position: 'absolute', left: '0px', bottom: '2px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '50%', transform: 'translateY(-50%)', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
                 <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '50%', transform: 'translateY(-50%)', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task), opacity: 0.9 }} />
                 </div>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '10px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               ))}
               {dueThisWeekTasks.length > 5 && (
