@@ -8878,7 +8878,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-1" style={{ marginLeft: '55px' }}>
           <Button 
             variant="ghost"
-            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[2px] mr-1"
+            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[2px] mr-1 -ml-[3px]"
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -11610,7 +11610,7 @@ export default function Dashboard() {
                             </span>
                           </div>
                           {moduleUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', right: '-7px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-5px', right: '-7px', zIndex: 1 }}>
                               {moduleUnread}
                             </div>
                           )}
