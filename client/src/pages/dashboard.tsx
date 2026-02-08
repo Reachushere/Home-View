@@ -8747,8 +8747,8 @@ export default function Dashboard() {
       {/* Copyright - Right side of page, rotated */}
       {!isTodoFlyoutOpen && (
         <div 
-          className="fixed text-white/60 text-[10px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '49px', right: '1px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+          className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
+          style={{ bottom: '48px', right: '1px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
