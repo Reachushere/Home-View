@@ -388,11 +388,27 @@ export default function Dashboard() {
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTopPillOpen, setIsTopPillOpen] = useState(false);
   const [topPillMounted, setTopPillMounted] = useState(false);
+  const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openTopPill = useCallback(() => {
+    const el = topPillRef.current;
+    if (el && !isTopPillOpen) {
+      const current = getComputedStyle(el).transform;
+      el.style.animation = 'none';
+      el.style.transform = current;
+      void el.offsetHeight;
+      el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      el.style.transform = 'translateX(-50%) translateY(0px)';
+    }
     setIsTopPillOpen(true);
-  }, []);
+  }, [isTopPillOpen]);
   const closeTopPill = useCallback(() => {
+    const el = topPillRef.current;
+    if (el) {
+      el.style.animation = '';
+      el.style.transform = '';
+      el.style.transition = '';
+    }
     setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
@@ -7405,6 +7421,7 @@ export default function Dashboard() {
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
+        ref={topPillRef}
         style={{
           position: 'absolute',
           zIndex: 20,
