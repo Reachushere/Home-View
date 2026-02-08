@@ -7392,11 +7392,12 @@ export default function Dashboard() {
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
+        className={!isTopPillOpen ? 'top-pill-container-idle' : ''}
         style={{
           position: 'absolute',
           zIndex: 20,
           left: '50%',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '-3px' : '-53px'})`,
+          transform: `translateX(-50%) translateY(${isTopPillOpen ? '-3px' : '-56px'})`,
           transition: 'transform 0.3s ease-in-out',
           top: '0px',
           height: '55px',
@@ -7451,15 +7452,14 @@ export default function Dashboard() {
           }}
         />
         <div
-          className={!isTopPillOpen ? 'top-pill-arrow-idle' : ''}
           style={{
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-15px',
+            bottom: '-14px',
             width: '40px',
-            height: '15px',
-            borderRadius: '0 0 20px 20px',
+            height: '14px',
+            borderRadius: '0 0 9999px 9999px',
             background: 'rgba(255, 255, 255, 0.25)',
             border: '1px solid rgba(255, 255, 255, 0.35)',
             borderTop: 'none',

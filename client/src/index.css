@@ -246,16 +246,16 @@ button[role="combobox"] > span {
   animation: pill-nudge 18s ease-in-out infinite !important;
 }
 
-@keyframes top-pill-nudge {
-  0%, 90% { transform: translateX(-50%) translateY(0px); }
-  93% { transform: translateX(-50%) translateY(5px); }
-  96% { transform: translateX(-50%) translateY(0px); }
-  98% { transform: translateX(-50%) translateY(3px); }
-  100% { transform: translateX(-50%) translateY(0px); }
+@keyframes top-pill-container-nudge {
+  0%, 90% { transform: translateX(-50%) translateY(-56px); }
+  93% { transform: translateX(-50%) translateY(-51px); }
+  96% { transform: translateX(-50%) translateY(-56px); }
+  98% { transform: translateX(-50%) translateY(-53px); }
+  100% { transform: translateX(-50%) translateY(-56px); }
 }
 
-.top-pill-arrow-idle {
-  animation: top-pill-nudge 18s ease-in-out infinite !important;
+.top-pill-container-idle {
+  animation: top-pill-container-nudge 18s ease-in-out infinite !important;
 }
 
 @keyframes blink {
