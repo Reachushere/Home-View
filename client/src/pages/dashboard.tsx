@@ -8923,14 +8923,14 @@ export default function Dashboard() {
 
         return (
           <div 
-            className="absolute z-[60]"
+            className={`absolute z-[60] ${!isPillMenuOpen ? 'side-pill-container-idle' : ''}`}
             style={{ 
               top: `${pillTop}px`, 
               right: '0px', 
               width: `${totalW + 4}px`, 
               height: `${pillH}px`,
               transform: `translateX(${slideOffset}px)`,
-              transition: 'transform 0.3s ease-in-out',
+              transition: !isPillMenuOpen ? undefined : 'transform 0.3s ease-in-out',
             }}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
@@ -8966,35 +8966,23 @@ export default function Dashboard() {
                 filter="url(#pillShadow)"
               />
             </svg>
-            {/* Arrow tip - only visible when pill is closed, bounces to attract attention */}
-            <svg 
-              className={!isPillMenuOpen ? 'pill-arrow-idle' : ''}
-              width={arrowW + 2} 
-              height={arrowH + 2} 
-              viewBox={`-1 -1 ${arrowW + 2} ${arrowH + 2}`} 
-              style={{ 
-                position: 'absolute', 
-                top: `${arrowTopY - 1}px`, 
-                left: '-1px', 
-                overflow: 'visible', 
+            {/* Rounded tab - only visible when pill is closed */}
+            <div
+              style={{
+                position: 'absolute',
+                top: `${arrowTopY}px`,
+                left: `${arrowW - 14}px`,
+                width: '14px',
+                height: '40px',
+                borderRadius: '9999px 0 0 9999px',
+                background: 'rgba(255, 255, 255, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.35)',
+                borderRight: 'none',
                 pointerEvents: 'none',
-                opacity: isPillMenuOpen ? 0 : 1,
+                opacity: isPillMenuOpen ? 0 : 0.9,
                 transition: 'opacity 0.3s ease-in-out',
               }}
-            >
-              <path 
-                d={`
-                  M ${arrowW} 0
-                  L ${arrowW} ${arrowH}
-                  L 1 ${arrowH / 2}
-                  Z
-                `}
-                fill="rgba(255, 255, 255, 0.35)"
-                stroke="rgba(255, 255, 255, 0.45)"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-              />
-            </svg>
+            />
 
             {/* Bell Button - Slot 0 */}
             <div 
