@@ -11721,7 +11721,64 @@ export default function Dashboard() {
                           }}
                           data-testid={`progress-pill-${courseCode.toLowerCase()}`}
                           title={`${courseCode} progress`}
-                          onClick={() => setOpenCourseDropdown(openCourseDropdown === courseCode.toLowerCase() ? null : courseCode.toLowerCase())}
+                          onClick={async () => {
+                            setIsLoadingOneDriveFiles(true);
+                            const courseId = courseCode.toLowerCase();
+                            const basePath = `/School/1. TMU/Courses/2026/Winter`;
+                            try {
+                              const baseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(basePath)}`);
+                              const baseFolders = await baseResponse.json();
+                              if (!Array.isArray(baseFolders)) throw new Error('Failed to list course folders');
+                              const matchedFolder = baseFolders.find((f: any) => 
+                                f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
+                              );
+                              if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
+                              const coursePath = matchedFolder.path;
+                              const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                              const courseFolders = await courseResponse.json();
+                              const weekFolder = courseFolders.find((f: any) => 
+                                f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                              );
+                              if (weekFolder) {
+                                const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                                const weekContents = await weekResponse.json();
+                                const moduleFolder = weekContents.find((f: any) => 
+                                  f.type === 'folder' && f.name.toLowerCase().includes('module')
+                                );
+                                if (moduleFolder) {
+                                  const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
+                                  const moduleFilesData = await moduleResponse.json();
+                                  const pdfFiles = moduleFilesData.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                                  if (pdfFiles.length > 0) {
+                                    const folder = `week-${selectedWeek}-${courseId}-module`;
+                                    const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
+                                      const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
+                                      try {
+                                        const resp = await fetch('/api/files/ensure', {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ objectPath: stablePath, originalName: pdf.name, displayName: pdf.name, folder }),
+                                        });
+                                        if (resp.ok) {
+                                          const dbFile = await resp.json();
+                                          return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false } as FileItem;
+                                        }
+                                      } catch {}
+                                      return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
+                                    }));
+                                    setOneDrivePreviewFiles(ensuredFiles);
+                                    setPreviewFile(ensuredFiles[0]);
+                                    queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                                    refreshFileCounts();
+                                  }
+                                }
+                              }
+                            } catch (error) {
+                              console.error('Error fetching module files:', error);
+                            } finally {
+                              setIsLoadingOneDriveFiles(false);
+                            }
+                          }}
                         >
                           <div
                             className="hover:opacity-80 transition-all duration-200"
