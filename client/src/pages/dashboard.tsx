@@ -164,9 +164,10 @@ const defaultCourseDisplayNames: Record<string, string> = {
 let _courseDisplayNames: Record<string, string> = { ...defaultCourseDisplayNames };
 const getCourseRowDisplayName = (courseName: string): string => {
   const courseCode = courseName.split(' - ')[0];
-  const displayCode = _courseDisplayNames[courseCode] || courseCode;
-  const courseSuffix = courseName.split(' - ').slice(1).join(' - ');
-  return courseSuffix ? `${displayCode} - ${courseSuffix}` : displayCode;
+  if (_courseDisplayNames[courseCode]) {
+    return _courseDisplayNames[courseCode];
+  }
+  return courseName;
 };
 
 // Course folder configuration for sidebar hamburger menus
