@@ -10349,7 +10349,7 @@ export default function Dashboard() {
                           toast({ title: "Error", description: "Failed to add task. Please try again.", variant: "destructive" });
                         }
                       }}
-                      className="flex items-center gap-2 px-5 py-2 rounded-lg text-[12px] font-medium bg-white/20 text-white hover:bg-white/30 transition-all duration-200 border !border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]"
+                      className="flex items-center gap-2 px-5 py-2 rounded-lg text-[12px] font-medium bg-white/20 text-white hover:bg-white/30 transition-all duration-200 border border-white/40 shadow-[0_0_8px_rgba(255,255,255,0.3)] hover:shadow-[0_0_12px_rgba(255,255,255,0.5)]"
                       data-testid="quick-add-submit"
                     >
                       <Plus className="h-3.5 w-3.5" />
