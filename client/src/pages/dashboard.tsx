@@ -11666,63 +11666,83 @@ export default function Dashboard() {
                         className="border-l border-border/50 flex items-center gap-[3px] px-[3px]"
                         style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
                       >
-                        <div className="flex-1 flex flex-col justify-center gap-[4px] min-w-0">
+                        <div className="flex-1 flex flex-col justify-center gap-[3px] min-w-0">
                         {hasNoData ? (
-                          <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
+                          <span className="text-[8px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
                           <>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[8px] font-bold w-[8px] flex-shrink-0 leading-none uppercase" style={{ color: moduleP.hasFiles ? getProgressColor(moduleP.percent) : 'white' }}>M</span>
+                              <span className="text-[7px] font-bold w-[7px] flex-shrink-0 leading-none uppercase" style={{ color: moduleP.hasFiles ? getProgressColor(moduleP.percent) : 'white' }}>M</span>
                               {moduleP.hasFiles ? (
-                                <div className="flex-1 h-[3px] overflow-hidden" style={{ backgroundColor: moduleP.percent === 0 ? '#ef4444' : moduleP.percent < 100 ? 'white' : undefined }}>
+                                <div className="flex-1 h-[2px] overflow-hidden" style={{ backgroundColor: moduleP.percent === 0 ? '#ef4444' : moduleP.percent < 100 ? 'white' : undefined }}>
                                   {moduleP.percent > 0 && (
                                     <div className="h-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-[7px] text-white leading-none">N/A</span>
+                                <span className="text-[6px] text-white leading-none">N/A</span>
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[8px] font-bold w-[8px] flex-shrink-0 leading-none uppercase" style={{ color: readingP.hasFiles ? getProgressColor(readingP.percent) : 'white' }}>R</span>
+                              <span className="text-[7px] font-bold w-[7px] flex-shrink-0 leading-none uppercase" style={{ color: readingP.hasFiles ? getProgressColor(readingP.percent) : 'white' }}>R</span>
                               {readingP.hasFiles ? (
-                                <div className="flex-1 h-[3px] overflow-hidden" style={{ backgroundColor: readingP.percent === 0 ? '#ef4444' : readingP.percent < 100 ? 'white' : undefined }}>
+                                <div className="flex-1 h-[2px] overflow-hidden" style={{ backgroundColor: readingP.percent === 0 ? '#ef4444' : readingP.percent < 100 ? 'white' : undefined }}>
                                   {readingP.percent > 0 && (
                                     <div className="h-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-[7px] text-white leading-none">N/A</span>
+                                <span className="text-[6px] text-white leading-none">N/A</span>
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[8px] font-bold w-[8px] flex-shrink-0 leading-none uppercase" style={{ color: otherP.hasFiles ? getProgressColor(otherP.percent) : 'white' }}>O</span>
+                              <span className="text-[7px] font-bold w-[7px] flex-shrink-0 leading-none uppercase" style={{ color: otherP.hasFiles ? getProgressColor(otherP.percent) : 'white' }}>O</span>
                               {otherP.hasFiles ? (
-                                <div className="flex-1 h-[3px] overflow-hidden" style={{ backgroundColor: otherP.percent === 0 ? '#ef4444' : otherP.percent < 100 ? 'white' : undefined }}>
+                                <div className="flex-1 h-[2px] overflow-hidden" style={{ backgroundColor: otherP.percent === 0 ? '#ef4444' : otherP.percent < 100 ? 'white' : undefined }}>
                                   {otherP.percent > 0 && (
                                     <div className="h-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-[7px] text-white leading-none">N/A</span>
+                                <span className="text-[6px] text-white leading-none">N/A</span>
                               )}
                             </div>
                           </>
                         )}
                         </div>
                         <div
-                          className="flex-shrink-0 cursor-pointer"
+                          className="flex-shrink-0 relative cursor-pointer"
                           style={{
                             width: '44px',
                             height: '44px',
                             borderRadius: '50%',
-                            background: `linear-gradient(180deg, ${courseHexColor} 0%, ${courseHexColor}cc 100%)`,
-                            border: `1px solid ${courseHexColor}`,
-                            boxShadow: `0 0 4px ${courseHexColor}66`,
+                            background: getBorderGradient(courseHexColor),
+                            padding: '1px',
                           }}
                           data-testid={`progress-pill-${courseCode.toLowerCase()}`}
                           title={`${courseCode} progress`}
-                        />
+                        >
+                          <div
+                            className="hover:opacity-80 transition-all duration-200"
+                            style={{
+                              position: 'absolute',
+                              top: '1px',
+                              left: '1px',
+                              width: '42px',
+                              height: '42px',
+                              borderRadius: '50%',
+                              background: getButtonGradient(courseHexColor),
+                              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            <span className="text-[9px] font-medium text-white" style={{ WebkitFontSmoothing: 'antialiased' }}>
+                              {courseCode.slice(0, 4)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     );
                   })()}
