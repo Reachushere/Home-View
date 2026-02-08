@@ -2367,24 +2367,24 @@ export default function Dashboard() {
 
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
-    queryFn: () => fetch("/api/tasks").then(r => r.json()),
+    queryFn: () => fetch("/api/tasks").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
-    queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => r.json()),
+    queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
   // Fetch all projects for calendar display
   const { data: allProjects = [] } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
-    queryFn: () => fetch("/api/projects").then(r => r.json()),
+    queryFn: () => fetch("/api/projects").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
   // Fetch sticky notes
   const { data: stickyNotes = [] } = useQuery<StickyNoteType[]>({
     queryKey: ["/api/sticky-notes"],
-    queryFn: () => fetch("/api/sticky-notes").then(r => r.json()),
+    queryFn: () => fetch("/api/sticky-notes").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
   // Sticky note state for dragging
@@ -2934,7 +2934,7 @@ export default function Dashboard() {
   
   const { data: calendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/events", { weekNumber: selectedWeek }],
-    queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`).then(r => r.json()).catch(() => []),
+    queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
     refetchInterval: 60000, // Refresh every minute
   });
 
@@ -2946,7 +2946,7 @@ export default function Dashboard() {
   // Semester settings query
   const { data: semesterSettings } = useQuery<SemesterSettings | null>({
     queryKey: ["/api/semester"],
-    queryFn: () => fetch("/api/semester").then(r => r.json()),
+    queryFn: () => fetch("/api/semester").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
   // Deleted folders query for hamburger menu filtering
