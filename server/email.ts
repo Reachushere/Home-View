@@ -269,8 +269,13 @@ export async function sendEchoVoiceAnnouncement(message: string): Promise<{ succ
   }
 
   const haUrl = HA_URL.replace(/\/$/, '');
-  const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
-  const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
+  const ECHO_TARGETS = [
+    "media_player.cat_wr",
+    "media_player.echo_cat_left_am",
+    "media_player.echo_cat_right_am",
+    "media_player.echo_cat_washroom_middle",
+    "media_player.echo_kitchen_studio_black_am",
+  ];
 
   try {
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -282,7 +287,7 @@ export async function sendEchoVoiceAnnouncement(message: string): Promise<{ succ
       body: JSON.stringify({
         message: message,
         data: { type: "announce" },
-        target: [BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY],
+        target: ECHO_TARGETS,
       }),
     });
 
