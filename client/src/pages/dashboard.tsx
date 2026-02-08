@@ -11680,7 +11680,7 @@ export default function Dashboard() {
                         className="border-l border-border/50 flex items-center gap-[3px]"
                         style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '3px', paddingRight: '6px' }}
                       >
-                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ maxWidth: '68px', gap: '22px' }}>
+                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ maxWidth: '68px', gap: '23px' }}>
                         {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
@@ -11815,7 +11815,7 @@ export default function Dashboard() {
                             </div>
                           )}
                           {readingUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '25px', right: '-8px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '26px', right: '-8px', zIndex: 1 }}>
                               {readingUnread}
                             </div>
                           )}
