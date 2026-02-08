@@ -3100,11 +3100,11 @@ export default function Dashboard() {
           }
         }
         
-        // Time-based word highlighting for OpenAI TTS
         if (audio.duration && audio.duration > 0 && chunkWordCount > 0) {
           const progress = audio.currentTime / audio.duration;
+          const leadWords = Math.ceil(chunkWordCount * 0.02) + 2;
           const estimatedWordIdx = Math.min(
-            Math.floor(progress * chunkWordCount),
+            Math.floor(progress * chunkWordCount) + leadWords,
             chunkWordCount - 1
           );
           setCurrentWordIndex(wordOffset + estimatedWordIdx);
