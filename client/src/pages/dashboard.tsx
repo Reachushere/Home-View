@@ -3010,6 +3010,7 @@ export default function Dashboard() {
   const ttsChunksRef = useRef<string[]>([]);
   const currentChunkIndexRef = useRef(0);
   const shouldContinueRef = useRef(false);
+  const ttsKeepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   // OpenAI TTS for Fire tablets (no browser speechSynthesis)
   const openaiAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -3112,42 +3113,68 @@ export default function Dashboard() {
       
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
-        // Set final word index to end of chunk
         setCurrentWordIndex(wordOffset + chunkWordCount - 1);
         const currentFile = previewFileRef.current;
-        if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
-          currentChunkIndexRef.current++;
-          setCurrentChunkIndex(currentChunkIndexRef.current);
+        const chunksLen = ttsChunksRef.current.length;
+        const curIdx = currentChunkIndexRef.current;
+        console.log(`[TTS onended] Chunk ${curIdx + 1}/${chunksLen} ended. shouldContinue=${shouldContinueRef.current}, hasFile=${!!currentFile}`);
+        if (shouldContinueRef.current && curIdx < chunksLen - 1) {
+          currentChunkIndexRef.current = curIdx + 1;
+          setCurrentChunkIndex(curIdx + 1);
           if (currentFile) {
-            saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
+            saveTtsProgress(currentFile.id, curIdx + 1, 0);
           }
-          const nextChunk = ttsChunksRef.current[currentChunkIndexRef.current];
+          const nextChunk = ttsChunksRef.current[curIdx + 1];
           if (nextChunk) {
-            playWithOpenAiTts(nextChunk, voice, currentChunkIndexRef.current);
+            console.log(`[TTS onended] Starting chunk ${curIdx + 2}/${chunksLen}`);
+            playWithOpenAiTts(nextChunk, voice, curIdx + 1);
+          } else {
+            console.warn(`[TTS onended] Next chunk ${curIdx + 2} is empty/undefined`);
+            setIsPlaying(false);
+            isPlayingRef.current = false;
           }
         } else {
+          console.log(`[TTS onended] Stopping. shouldContinue=${shouldContinueRef.current}, atEnd=${curIdx >= chunksLen - 1}`);
           setIsPlaying(false);
+          isPlayingRef.current = false;
           if (currentFile) {
-            saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
+            saveTtsProgress(currentFile.id, curIdx, 0);
           }
         }
       };
       
-      audio.onerror = () => {
+      audio.onerror = (e) => {
+        console.error('[TTS audio.onerror]', e);
         URL.revokeObjectURL(audioUrl);
         setIsPlaying(false);
+        isPlayingRef.current = false;
         toast({ title: "Audio playback failed", variant: "destructive" });
       };
       
       isPlayingRef.current = true;
       setIsPlaying(true);
       setCurrentWordIndex(wordOffset);
-      await audio.play();
+      try {
+        await audio.play();
+      } catch (playError) {
+        console.warn('[TTS] audio.play() rejected, retrying with user gesture context...', playError);
+        await new Promise(r => setTimeout(r, 200));
+        try {
+          await audio.play();
+        } catch (retryError) {
+          console.error('[TTS] audio.play() retry also failed', retryError);
+          toast({ title: "Autoplay blocked. Tap play to continue.", variant: "destructive" });
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+          return;
+        }
+      }
       
     } catch (error) {
       console.error('OpenAI TTS error:', error);
       toast({ title: "Failed to generate speech", variant: "destructive" });
       setIsPlaying(false);
+      isPlayingRef.current = false;
     }
   };
   
@@ -6797,7 +6824,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* File Preview Dialog with Media Controls */}
-      <Dialog open={!!previewFile} onOpenChange={(open) => { if (!open) { setPreviewFile(null); setOneDrivePreviewFiles([]); } }}>
+      <Dialog open={!!previewFile} onOpenChange={(open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } setPreviewFile(null); setOneDrivePreviewFiles([]); } }}>
         <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
