@@ -2292,7 +2292,7 @@ export default function Dashboard() {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing || !resizeRef.current) return;
       const delta = e.clientY - resizeRef.current.startY;
-      const newHeight = Math.max(200, Math.min(800, resizeRef.current.startHeight + delta));
+      const newHeight = Math.max(200, Math.min(window.innerHeight - 60, resizeRef.current.startHeight + delta));
       setCalendarHeight(newHeight);
     };
 
