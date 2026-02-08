@@ -1176,7 +1176,7 @@ export default function Dashboard() {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions for 7 days (Sun-Sat)
-      progressColumnWidth: 0.8, // separate from day columns
+      progressColumnWidth: 0.75, // separate from day columns
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
@@ -1193,7 +1193,7 @@ export default function Dashboard() {
         parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
       }
       if (parsed.progressColumnWidth === undefined || parsed.progressColumnWidth <= 0.5) {
-        parsed.progressColumnWidth = 0.8;
+        parsed.progressColumnWidth = 0.75;
       }
     };
     
