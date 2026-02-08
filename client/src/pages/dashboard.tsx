@@ -8795,7 +8795,7 @@ export default function Dashboard() {
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '12px', right: '39px' }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '12px', right: '51px' }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
