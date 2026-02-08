@@ -87,6 +87,10 @@ const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
+// Track travelling state (synced from client) to suppress Echo announcements
+let isTravellingMode = false;
+export function getIsTravellingMode() { return isTravellingMode; }
+
 // Track TTS reading session for resume functionality
 interface TTSSession {
   fullText: string;
@@ -2765,6 +2769,17 @@ export async function registerRoutes(
       console.error("Error sending test HA push:", err);
       res.status(500).json({ message: "Failed to send test push notification" });
     }
+  });
+
+  app.get("/api/travelling", (_req, res) => {
+    res.json({ isTravelling: isTravellingMode });
+  });
+
+  app.post("/api/travelling", (req, res) => {
+    const { isTravelling } = req.body;
+    isTravellingMode = !!isTravelling;
+    console.log(`[Travelling] Mode set to: ${isTravellingMode}`);
+    res.json({ isTravelling: isTravellingMode });
   });
 
   app.post("/api/echo/test", async (_req, res) => {

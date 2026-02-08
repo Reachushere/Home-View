@@ -1,5 +1,6 @@
 import { storage } from "./storage";
 import { sendTaskReminder, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendDailyDigest, type TaskReminder } from "./email";
+import { getIsTravellingMode } from "./routes";
 
 const sentReminders = new Set<string>();
 
@@ -64,12 +65,20 @@ export async function checkReminders() {
             : `${reminderMinutes} minutes`;
           const voiceMessage = `Reminder: ${task.title}${task.courseName ? `, for ${task.courseName}` : ''}, is due in ${timeLabel}.`;
 
-          const [emailResult, haResult, echoResult] = await Promise.allSettled([
+          const isTravelling = getIsTravellingMode();
+          const notifications: Promise<{ success: boolean; error?: string }>[] = [
             sendTaskReminder(taskReminder),
             sendHaTaskReminder(taskReminder),
-            sendEchoVoiceAnnouncement(voiceMessage),
-          ]);
+          ];
+          if (!isTravelling) {
+            notifications.push(sendEchoVoiceAnnouncement(voiceMessage));
+          } else {
+            console.log(`[Reminder] Skipping Echo announcement for "${task.title}" (travelling mode)`);
+          }
 
+          const results = await Promise.allSettled(notifications);
+
+          const [emailResult, haResult] = results;
           if (emailResult.status === "fulfilled" && emailResult.value.success) {
             console.log(`[Reminder] Email sent for "${task.title}"`);
           } else {
@@ -84,11 +93,14 @@ export async function checkReminders() {
             console.error(`[Reminder] HA push failed for "${task.title}":`, err);
           }
 
-          if (echoResult.status === "fulfilled" && echoResult.value.success) {
-            console.log(`[Reminder] Echo voice announcement sent for "${task.title}"`);
-          } else {
-            const err = echoResult.status === "rejected" ? echoResult.reason : echoResult.value.error;
-            console.error(`[Reminder] Echo voice announcement failed for "${task.title}":`, err);
+          if (!isTravelling && results[2]) {
+            const echoResult = results[2];
+            if (echoResult.status === "fulfilled" && echoResult.value.success) {
+              console.log(`[Reminder] Echo voice announcement sent for "${task.title}"`);
+            } else {
+              const err = echoResult.status === "rejected" ? echoResult.reason : echoResult.value.error;
+              console.error(`[Reminder] Echo voice announcement failed for "${task.title}":`, err);
+            }
           }
 
           sentReminders.add(key);
