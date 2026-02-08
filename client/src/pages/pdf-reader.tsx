@@ -140,7 +140,9 @@ export default function PDFReaderPage() {
     if (newChecked.has(idx)) {
       newChecked.delete(idx);
     } else {
-      newChecked.add(idx);
+      for (let i = 0; i <= idx; i++) {
+        newChecked.add(i);
+      }
     }
     setCheckedChunks(newChecked);
     saveCheckedChunks(key, newChecked, totalChunks);
