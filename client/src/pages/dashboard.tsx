@@ -11830,7 +11830,7 @@ export default function Dashboard() {
                             </div>
                           )}
                           {readingUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '18px', right: '-8px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '21px', right: '-8px', zIndex: 1 }}>
                               {readingUnread}
                             </div>
                           )}
