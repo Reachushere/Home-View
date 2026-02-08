@@ -508,6 +508,7 @@ export default function Dashboard() {
     const el = topPillRef.current;
     if (el) {
       el.style.animation = 'none';
+      void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
       el.style.transform = 'translateX(-50%) translateY(-56px)';
       setTimeout(() => {
@@ -516,9 +517,11 @@ export default function Dashboard() {
           el.style.transform = '';
           el.style.transition = '';
         }
+        setIsTopPillOpen(false);
       }, 450);
+    } else {
+      setIsTopPillOpen(false);
     }
-    setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
     requestAnimationFrame(() => {
