@@ -9013,7 +9013,7 @@ export default function Dashboard() {
                   Q ${arrowW} ${pillH}, ${arrowW} ${pillH - r}
                   Z
                 `}
-                fill="rgba(255, 255, 255, 0.35)"
+                fill="rgba(255, 255, 255, 0.45)"
                 stroke="rgba(255, 255, 255, 0.45)"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
