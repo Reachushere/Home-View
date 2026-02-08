@@ -11568,11 +11568,11 @@ export default function Dashboard() {
                 ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div ref={allDayRowRef} className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative" style={{ backgroundColor: colorSettings.headerBar }}>
+            <div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative border-b border-border/50" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {/* Day cells - Sun-Fri */}
               {weekDays.slice(0, 6).map((day, dayIdx) => {
                 const allDayTasks = getAllDayTasks(day);
@@ -11581,10 +11581,9 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={dayIdx} 
-                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0 ${isSameDay(day, new Date()) ? '' : 'border-b border-border/50'}`}
                     style={{ 
                       backgroundColor: isSameDay(day, new Date()) ? '#c0c0c0' : 'white',
-                      ...(isSameDay(day, new Date()) ? { marginBottom: '-1px', paddingBottom: 'calc(2px + 1px)', zIndex: 45 } : {}),
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -11698,8 +11697,8 @@ export default function Dashboard() {
               })}
               {/* Progress column - half-width, black background */}
               <div 
-                className="border-l border-border/50 relative"
-                style={{ backgroundColor: '#000000', marginBottom: '-1px', paddingBottom: '1px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                className="border-l border-b border-border/50 relative"
+                style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
               />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
@@ -11708,7 +11707,7 @@ export default function Dashboard() {
                 const allDayEvents = getAllDayCalendarEvents(day);
                 return (
                   <div 
-                    className="border-l relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    className="border-l border-b border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ backgroundColor: '#ababab', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
