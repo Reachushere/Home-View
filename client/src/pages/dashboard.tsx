@@ -11989,6 +11989,7 @@ export default function Dashboard() {
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
                       const day = weekDays[6];
+                      const isSatToday = isSameDay(day, new Date());
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
@@ -12006,9 +12007,9 @@ export default function Dashboard() {
                           }}
                         >
                           {/* Hour boundary dotted line */}
-                          <div className="absolute left-0 right-0 border-t border-dotted border-gray-400 z-[1]" style={{ top: '0' }} />
+                          <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-600' : 'border-gray-400'}`} style={{ top: '0' }} />
                           {/* Half-hour dotted line */}
-                          <div className="absolute left-0 right-0 border-t border-dotted border-gray-400 z-[1]" style={{ top: '50%' }} />
+                          <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-600' : 'border-gray-400'}`} style={{ top: '50%' }} />
                         </div>
                       );
                     })()}
