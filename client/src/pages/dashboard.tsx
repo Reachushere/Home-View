@@ -8805,6 +8805,28 @@ export default function Dashboard() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }} 
         />
+        {/* Left-pointing triangle arrow */}
+        <svg 
+          style={{ 
+            position: 'absolute', 
+            left: '-10px', 
+            top: '50%', 
+            transform: 'translateY(-50%)',
+          }} 
+          width="11" 
+          height="18" 
+          viewBox="0 0 11 18" 
+          fill="none"
+        >
+          <path 
+            d="M10 1 L1 9 L10 17" 
+            fill="rgba(255, 255, 255, 0.35)" 
+            stroke="rgba(255, 255, 255, 0.4)" 
+            strokeWidth="1"
+            strokeLinejoin="round"
+          />
+          <line x1="10" y1="1" x2="10" y2="17" stroke="rgba(255, 255, 255, 0.35)" strokeWidth="2" />
+        </svg>
       </div>
       
       
