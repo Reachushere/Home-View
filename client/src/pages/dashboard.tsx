@@ -11721,6 +11721,7 @@ export default function Dashboard() {
                           }}
                           data-testid={`progress-pill-${courseCode.toLowerCase()}`}
                           title={`${courseCode} progress`}
+                          onClick={() => setOpenCourseDropdown(openCourseDropdown === courseCode.toLowerCase() ? null : courseCode.toLowerCase())}
                         >
                           <div
                             className="hover:opacity-80 transition-all duration-200"
