@@ -12409,12 +12409,12 @@ export default function Dashboard() {
                             <Play className="h-3 w-3 text-white" style={{ marginLeft: '2px' }} />
                           </div>
                           {moduleUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-5px', right: '-4px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-5px', right: '2px', zIndex: 1 }}>
                               {moduleUnread}
                             </div>
                           )}
                           {readingUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', right: '-4px', zIndex: 1 }}>
+                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', right: '2px', zIndex: 1 }}>
                               {readingUnread}
                             </div>
                           )}
