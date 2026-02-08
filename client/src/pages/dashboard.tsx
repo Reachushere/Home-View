@@ -8827,12 +8827,12 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               clipPath: `path('${shapePath.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()}')`,
             }} />
-            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+            <svg style={{ position: 'absolute', top: '-1px', left: '-1px', width: `${totalW + 2}px`, height: `${pillH + 2}px`, pointerEvents: 'none', overflow: 'visible' }} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`}>
               <path 
                 d={shapePath}
                 fill="none"
-                stroke="rgba(255, 255, 255, 0.4)"
-                strokeWidth="1"
+                stroke="rgba(255, 255, 255, 0.5)"
+                strokeWidth="1.5"
               />
             </svg>
           </div>
