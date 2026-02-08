@@ -384,6 +384,8 @@ export default function Dashboard() {
   }, []);
   const [isKitchenReadingLoading, setIsKitchenReadingLoading] = useState(false);
   const [isKitchenPlaying, setIsKitchenPlaying] = useState(false);
+  const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
+  const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
   const [moveFileCurrentFolder, setMoveFileCurrentFolder] = useState<string>('');
@@ -8793,7 +8795,7 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Tall Pill Panel - Right side of calendar (CSS) */}
+      {/* Tall Pill Panel - Slides in from right edge */}
       {(() => {
         const pillW = 52;
         const pillH = (6 * 52) + 9;
@@ -8806,9 +8808,76 @@ export default function Dashboard() {
         const r = 28;
         const calH = calendarHeight - 35;
         const pillTop = calendarTop + (calH / 2) - (pillH / 2);
+        const slideOffset = isPillMenuOpen ? 0 : pillW + 4;
+        
+        const startAutoHide = () => {
+          if (pillMenuTimeoutRef.current) clearTimeout(pillMenuTimeoutRef.current);
+          pillMenuTimeoutRef.current = setTimeout(() => {
+            setIsPillMenuOpen(false);
+          }, 2500);
+        };
+        const cancelAutoHide = () => {
+          if (pillMenuTimeoutRef.current) clearTimeout(pillMenuTimeoutRef.current);
+        };
+        const handleOpen = () => {
+          setIsPillMenuOpen(true);
+          startAutoHide();
+        };
+        const handleEnter = () => {
+          cancelAutoHide();
+        };
+        const handleLeave = () => {
+          startAutoHide();
+        };
+
+        const btnStyle = (slot: number, bg: string, extraStyle?: React.CSSProperties): React.CSSProperties => ({
+          position: 'absolute',
+          width: '44px',
+          height: '44px',
+          top: `${4 + (slot * 52)}px`,
+          right: '4px',
+          borderRadius: '50%',
+          background: bg,
+          padding: '1px',
+          cursor: 'pointer',
+          pointerEvents: 'auto',
+          ...extraStyle,
+        });
+        const innerStyle = (bg: string, shadow?: string): React.CSSProperties => ({
+          position: 'absolute',
+          top: '1px',
+          left: '1px',
+          width: '42px',
+          height: '42px',
+          borderRadius: '50%',
+          background: bg,
+          boxShadow: shadow || 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        });
+
         return (
-          <div className="absolute z-40 pointer-events-none" style={{ top: `${pillTop}px`, right: '13px', width: `${totalW}px`, height: `${pillH}px` }}>
-            <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible' }}>
+          <div 
+            className="absolute z-[60]"
+            style={{ 
+              top: `${pillTop}px`, 
+              right: '0px', 
+              width: `${totalW + 4}px`, 
+              height: `${pillH}px`,
+              transform: `translateX(${slideOffset}px)`,
+              transition: 'transform 0.3s ease-in-out',
+            }}
+            onMouseEnter={handleEnter}
+            onMouseLeave={handleLeave}
+          >
+            {/* Arrow hover zone - always accessible */}
+            <div 
+              style={{ position: 'absolute', left: '-6px', top: '0', width: `${arrowW + 12}px`, height: `${pillH}px`, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }}
+              onMouseEnter={handleOpen}
+            />
+            {/* SVG pill shape */}
+            <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
               <defs>
                 <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
                   <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.1)" />
@@ -8836,175 +8905,82 @@ export default function Dashboard() {
                 filter="url(#pillShadow)"
               />
             </svg>
+
+            {/* Bell Button - Slot 0 */}
+            <div 
+              style={btnStyle(0, isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="button-mute-toggle"
+              onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
+              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)}>
+                {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
+              </div>
+            </div>
+
+            {/* Push Button - Slot 1 */}
+            <div 
+              style={btnStyle(1, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="honeycomb-push"
+              onClick={() => { toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" }); syncAllCalendarMutation.mutate(); }}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Push tasks to Google Calendar">
+                <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+              </div>
+            </div>
+
+            {/* Pull Button - Slot 2 */}
+            <div 
+              style={btnStyle(2, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="honeycomb-pull"
+              onClick={async () => {
+                toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
+                try {
+                  const res = await fetch('/api/calendar/pull', { method: 'POST' });
+                  if (res.ok) { toast({ title: "Pull complete", description: "Calendar events synced" }); queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }
+                } catch (error) { toast({ title: "Pull failed", variant: "destructive" }); }
+              }}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Pull events from Google Calendar">
+                <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+              </div>
+            </div>
+
+            {/* Sync Button - Slot 3 */}
+            <div 
+              style={btnStyle(3, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="button-sync-calendar"
+              onClick={() => { if (!syncAllCalendarMutation.isPending) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } }}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}>
+                {syncAllCalendarMutation.isPending ? <Loader2 className="h-[18px] w-[18px] text-white animate-spin" /> : <RefreshCw className="h-[18px] w-[18px] text-white" />}
+              </div>
+            </div>
+
+            {/* Kitchen Stop Button - Slot 4 */}
+            <div 
+              style={btnStyle(4, isKitchenPlaying ? 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', { animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none' })}
+              data-testid="button-kitchen-stop"
+              onClick={handleKitchenStop}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : undefined)} title="Stop Kitchen Reading">
+                <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
+              </div>
+            </div>
+
+            {/* Radio Button - Slot 5 */}
+            <div 
+              style={btnStyle(5, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="button-radio-dialog"
+              onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Radio Controls">
+                <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
+              </div>
+            </div>
           </div>
         );
       })()}
-      
-      
-      {/* Push Button - Below course buttons on tall pill */}
-      <div 
-        className="absolute z-[60] pointer-events-auto cursor-pointer"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (1 * 52)}px`, 
-          right: '17px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-        }}
-        data-testid="honeycomb-push"
-        onClick={() => {
-          toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" });
-          syncAllCalendarMutation.mutate();
-        }}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          title="Push tasks to Google Calendar"
-        >
-          <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        </div>
-      </div>
-
-      {/* Pull Button - Below push button (moved above radio) */}
-      <div 
-        className="absolute z-[60] pointer-events-auto cursor-pointer"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (2 * 52)}px`, 
-          right: '17px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-        }}
-        data-testid="honeycomb-pull"
-        onClick={async () => {
-          toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
-          try {
-            const res = await fetch('/api/calendar/pull', { method: 'POST' });
-            if (res.ok) {
-              toast({ title: "Pull complete", description: "Calendar events synced" });
-              queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-            }
-          } catch (error) {
-            toast({ title: "Pull failed", variant: "destructive" });
-          }
-        }}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          title="Pull events from Google Calendar"
-        >
-          <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        </div>
-      </div>
-
-      {/* Kitchen Stop Button - Swapped with sync */}
-      <div 
-        className="absolute z-[60] pointer-events-auto cursor-pointer"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (4 * 52)}px`, 
-          right: '17px',
-          borderRadius: '50%',
-          background: isKitchenPlaying 
-            ? 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)'
-            : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-          animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none',
-        }}
-        data-testid="button-kitchen-stop"
-        onClick={handleKitchenStop}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: isKitchenPlaying
-              ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)'
-              : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: isKitchenPlaying
-              ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)'
-              : 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          title="Stop Kitchen Reading"
-        >
-          <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
-        </div>
-      </div>
-
-      {/* Radio Button - Moved up after removing arrows toggle */}
-      <div 
-        className="absolute z-[60] pointer-events-auto cursor-pointer"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (5 * 52)}px`, 
-          right: '17px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-        }}
-        data-testid="button-radio-dialog"
-        onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '2px',
-            left: '2px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          title="Radio Controls"
-        >
-          <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
-        </div>
-      </div>
       {/* Spring out honeycombs for course readings - moved outside files button */}
       {/* CPPA122 */}
       <div 
@@ -9066,85 +9042,7 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Bell Button - Moved up after removing arrows toggle */}
-      <div 
-        className="absolute z-50 pointer-events-auto cursor-pointer"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4}px`, 
-          right: '17px',
-          borderRadius: '50%',
-          background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-        }}
-        data-testid="button-mute-toggle"
-        onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-        title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: isMuted 
-              ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' 
-              : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: isMuted 
-              ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)'
-              : 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
-        </div>
-      </div>
-
       
-      {/* Sync Button - Swapped with stop */}
-      <div 
-        className="absolute z-50 pointer-events-auto cursor-pointer"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: `${calendarTop + ((calendarHeight - 35) / 2) - (((6 * 52) + 9) / 2) + 4 + (3 * 52)}px`, 
-          right: '17px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-        }}
-        data-testid="button-sync-calendar"
-        onClick={() => { if (!syncAllCalendarMutation.isPending) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } }}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {syncAllCalendarMutation.isPending ? (
-            <Loader2 className="h-[18px] w-[18px] text-white animate-spin" />
-          ) : (
-            <RefreshCw className="h-[18px] w-[18px] text-white" />
-          )}
-        </div>
-      </div>
 
       {/* Render Sticky Notes */}
       {stickyNotes.map((note) => {
