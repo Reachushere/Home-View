@@ -8879,7 +8879,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '50px', right: '1px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+          style={{ bottom: '50px', right: '0px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -13382,7 +13382,7 @@ export default function Dashboard() {
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
         {!isTodoFlyoutOpen && (
-          <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '170px', right: `${calendarRight - 15}px` }}>
+          <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '171px', right: `${calendarRight - 11}px` }}>
             <input
               type="checkbox"
               checked={showDeviceSaved}
