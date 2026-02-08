@@ -7398,16 +7398,13 @@ export default function Dashboard() {
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
-        ref={topPillRef}
         style={{
           position: 'absolute',
           zIndex: 20,
           left: 'calc(50% - 90px)',
-          ...(!topPillAnimationStopped ? {
-            transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
-            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            animation: !isTopPillOpen ? 'top-pill-container-nudge 18s ease-in-out infinite' : 'none',
-          } : {}),
+          transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
+          transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          animation: !isTopPillOpen ? 'top-pill-container-nudge 18s ease-in-out infinite' : 'none',
           top: '0px',
           height: '55px',
           display: 'flex',
@@ -13319,7 +13316,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0, marginTop: '35px' }}>
+        <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0, marginTop: '50px' }}>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch absolute" style={{ zIndex: 35, left: '-15px', right: '51px', top: '6px', bottom: '6px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
