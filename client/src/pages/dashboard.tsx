@@ -7453,21 +7453,21 @@ export default function Dashboard() {
         <svg
           className={!isTopPillOpen ? 'top-pill-arrow-idle' : ''}
           width="30"
-          height="18"
-          viewBox="-1 -1 32 20"
+          height="17"
+          viewBox="-1 -1 32 19"
           style={{
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-18px',
+            bottom: '-17px',
             overflow: 'visible',
             pointerEvents: 'none',
-            opacity: isTopPillOpen ? 0 : 1,
+            opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
           }}
         >
           <path
-            d="M 0 0 L 30 0 L 15 16 Z"
+            d="M 0 0 L 30 0 L 15 15 Z"
             fill="rgba(255, 255, 255, 0.35)"
             stroke="rgba(255, 255, 255, 0.45)"
             strokeWidth="1.5"
@@ -8799,23 +8799,10 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Wide Pill Banner - Top middle (CSS) */}
-      <div className="fixed pointer-events-none" style={{ top: '7px', left: '50%', transform: 'translateX(-50%) translateX(-58.5px)', zIndex: 1 }}>
-        <div 
-          style={{ 
-            width: `${521 + (blinkSettings.buttonSpacing * 10)}px`, 
-            height: '50px', 
-            background: 'rgba(255, 255, 255, 0.35)',
-            borderRadius: '25px',
-            border: '1px solid rgba(255, 255, 255, 0.4)',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }} 
-        />
-      </div>
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '12px', right: '44px' }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '12px', right: '39px' }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
