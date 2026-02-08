@@ -8806,7 +8806,7 @@ export default function Dashboard() {
         const r = 28;
         return (
           <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: `${totalW}px`, height: `${pillH}px` }}>
-            <svg width={totalW} height={pillH} style={{ position: 'absolute', top: 0, left: 0 }}>
+            <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible' }}>
               <defs>
                 <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
                   <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.1)" />
