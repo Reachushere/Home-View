@@ -232,6 +232,14 @@ interface WeekInfo {
   taskCount: number;
 }
 
+function getPointerXY(e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent): { clientX: number; clientY: number } {
+  if ('touches' in e) {
+    const t = e.touches[0] || (e as TouchEvent).changedTouches?.[0];
+    return t ? { clientX: t.clientX, clientY: t.clientY } : { clientX: 0, clientY: 0 };
+  }
+  return { clientX: (e as MouseEvent).clientX, clientY: (e as MouseEvent).clientY };
+}
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -1103,11 +1111,12 @@ export default function Dashboard() {
   
   // Handle task column resize (inverted = true for left-side handles)
   const resizeInvertedRef = useRef(false);
-  const handleTaskColumnResizeStart = (e: React.MouseEvent, column: string, inverted = false) => {
+  const handleTaskColumnResizeStart = (e: React.MouseEvent | React.TouchEvent, column: string, inverted = false) => {
     e.preventDefault();
     e.stopPropagation();
+    const { clientX } = getPointerXY(e);
     setResizingColumn(column);
-    resizeStartX.current = e.clientX;
+    resizeStartX.current = clientX;
     resizeStartWidth.current = taskColumnWidths[column as keyof typeof taskColumnWidths];
     resizeInvertedRef.current = inverted;
   };
@@ -1115,9 +1124,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (!resizingColumn) return;
     
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - resizeStartX.current;
-      // Invert direction for left-side handles (drag right = shrink, drag left = grow)
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const { clientX } = getPointerXY(e);
+      const diff = clientX - resizeStartX.current;
       const adjustedDiff = resizeInvertedRef.current ? -diff : diff;
       const newWidth = Math.max(30, Math.min(300, resizeStartWidth.current + adjustedDiff));
       setTaskColumnWidths(prev => ({
@@ -1126,15 +1135,19 @@ export default function Dashboard() {
       }));
     };
     
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       setResizingColumn(null);
     };
     
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchmove', handleMove, { passive: false });
+    document.addEventListener('touchend', handleEnd);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
     };
   }, [resizingColumn]);
   
@@ -1488,9 +1501,10 @@ export default function Dashboard() {
   }, [contextMenu]);
   
   // Handle column resize
-  const handleColumnResizeStart = (e: React.MouseEvent, columnIndex: number) => {
+  const handleColumnResizeStart = (e: React.MouseEvent | React.TouchEvent, columnIndex: number) => {
     e.preventDefault();
     e.stopPropagation();
+    const { clientX } = getPointerXY(e);
     const startWidth = columnIndex === -1 
       ? gridSizes.timeColumnWidth 
       : columnIndex === -2
@@ -1499,13 +1513,13 @@ export default function Dashboard() {
     setColumnResizing({
       isResizing: true,
       columnIndex,
-      startX: e.clientX,
+      startX: clientX,
       startWidth
     });
   };
   
   // Handle row resize
-  const handleRowResizeStart = (e: React.MouseEvent, rowType: 'allDay' | 'course' | 'timeSlot', hourIndex?: number) => {
+  const handleRowResizeStart = (e: React.MouseEvent | React.TouchEvent, rowType: 'allDay' | 'course' | 'timeSlot', hourIndex?: number) => {
     e.preventDefault();
     e.stopPropagation();
     let startHeight: number;
@@ -1518,30 +1532,29 @@ export default function Dashboard() {
     } else {
       startHeight = gridSizes.timeSlotHeight;
     }
+    const { clientY } = getPointerXY(e);
     setRowResizing({
       isResizing: true,
       rowType,
       hourIndex,
-      startY: e.clientY,
+      startY: clientY,
       startHeight
     });
   };
   
-  // Global mouse move/up handlers for resizing
+  // Global move/end handlers for resizing (mouse + touch)
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const { clientX, clientY } = getPointerXY(e);
       if (columnResizing?.isResizing) {
-        const delta = e.clientX - columnResizing.startX;
+        const delta = clientX - columnResizing.startX;
         if (columnResizing.columnIndex === -1) {
-          // Resizing time column
           const newWidth = Math.max(115, Math.min(200, columnResizing.startWidth + delta));
           setGridSizes(prev => ({ ...prev, timeColumnWidth: newWidth }));
         } else if (columnResizing.columnIndex === -2) {
-          // Resizing module column
           const newWidth = Math.max(50, Math.min(150, columnResizing.startWidth + delta));
           setGridSizes(prev => ({ ...prev, moduleColumnWidth: newWidth }));
         } else {
-          // Resizing day column - adjust flex proportion
           const newWidths = [...gridSizes.dayColumnWidths];
           const newProportion = Math.max(0.5, columnResizing.startWidth + delta / 100);
           newWidths[columnResizing.columnIndex] = newProportion;
@@ -1549,41 +1562,43 @@ export default function Dashboard() {
         }
       }
       if (rowResizing?.isResizing) {
-        const delta = e.clientY - rowResizing.startY;
+        const delta = clientY - rowResizing.startY;
         const newHeight = Math.max(20, rowResizing.startHeight + delta);
         if (rowResizing.rowType === 'allDay') {
           setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
         } else if (rowResizing.rowType === 'course') {
           setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
         } else if (rowResizing.rowType === 'timeSlot' && rowResizing.hourIndex !== undefined) {
-          // Individual time slot row resizing - minimum 24px to keep time text visible
           setGridSizes(prev => {
             const newHeights = [...prev.timeSlotHeights];
             newHeights[rowResizing.hourIndex!] = Math.max(24, Math.min(150, newHeight));
             return { ...prev, timeSlotHeights: newHeights };
           });
         } else if (rowResizing.rowType === 'timeSlot') {
-          // Global time slot resizing (fallback)
           setGridSizes(prev => ({ ...prev, timeSlotHeight: Math.min(100, newHeight) }));
         }
       }
     };
     
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       setColumnResizing(null);
       setRowResizing(null);
     };
     
     if (columnResizing?.isResizing || rowResizing?.isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+      document.addEventListener('touchmove', handleMove, { passive: false });
+      document.addEventListener('touchend', handleEnd);
       document.body.style.cursor = columnResizing?.isResizing ? 'col-resize' : 'row-resize';
       document.body.style.userSelect = 'none';
     }
     
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
@@ -1646,10 +1661,11 @@ export default function Dashboard() {
   };
 
   // This Week box resize handlers
-  const handleThisWeekResizeStart = (e: React.MouseEvent) => {
+  const handleThisWeekResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    const { clientY } = getPointerXY(e);
     setIsResizingThisWeek(true);
-    thisWeekResizeStartY.current = e.clientY;
+    thisWeekResizeStartY.current = clientY;
     const section = (e.target as HTMLElement).closest('section');
     thisWeekResizeStartHeight.current = section?.offsetHeight || 125;
   };
@@ -1657,21 +1673,26 @@ export default function Dashboard() {
   useEffect(() => {
     if (!isResizingThisWeek) return;
     
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaY = e.clientY - thisWeekResizeStartY.current;
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const { clientY } = getPointerXY(e);
+      const deltaY = clientY - thisWeekResizeStartY.current;
       const newHeight = Math.max(85, thisWeekResizeStartHeight.current + deltaY);
       setThisWeekBoxHeight(newHeight);
     };
     
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       setIsResizingThisWeek(false);
     };
     
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchmove', handleMove, { passive: false });
+    document.addEventListener('touchend', handleEnd);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
     };
   }, [isResizingThisWeek]);
 
@@ -2297,33 +2318,39 @@ export default function Dashboard() {
   }, [playJiggleSound, isMuted]);
 
   // Calendar resize handlers
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    const { clientY } = getPointerXY(e);
     setIsResizing(true);
-    resizeRef.current = { startY: e.clientY, startHeight: calendarHeight };
+    resizeRef.current = { startY: clientY, startHeight: calendarHeight };
   }, [calendarHeight]);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!isResizing || !resizeRef.current) return;
-      const delta = e.clientY - resizeRef.current.startY;
+      const { clientY } = getPointerXY(e);
+      const delta = clientY - resizeRef.current.startY;
       const newHeight = Math.max(200, Math.min(window.innerHeight - 60, resizeRef.current.startHeight + delta));
       setCalendarHeight(newHeight);
     };
 
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       setIsResizing(false);
       resizeRef.current = null;
     };
 
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+      document.addEventListener('touchmove', handleMove, { passive: false });
+      document.addEventListener('touchend', handleEnd);
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
     };
   }, [isResizing]);
 
@@ -2478,19 +2505,18 @@ export default function Dashboard() {
   };
 
   // Handle sticky note drag
-  const handleStickyNoteMouseDown = (e: React.MouseEvent, noteId: number, note: StickyNoteType) => {
+  const handleStickyNotePointerDown = (e: React.MouseEvent | React.TouchEvent, noteId: number, note: StickyNoteType) => {
     e.preventDefault();
-    // Update both state and refs for reliable access in callbacks
+    const { clientX, clientY } = getPointerXY(e);
     setDraggingStickyNote(noteId);
     draggingStickyNoteRef.current = noteId;
     
     const rect = (e.target as HTMLElement).closest('[data-sticky-note]')?.getBoundingClientRect();
     if (rect) {
-      const offset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      const offset = { x: clientX - rect.left, y: clientY - rect.top };
       setStickyNoteOffset(offset);
       stickyNoteOffsetRef.current = offset;
       
-      // Initialize drag position from current note position
       const initialPos = { x: note.positionX, y: note.positionY };
       setDragPosition(initialPos);
       dragPositionRef.current = initialPos;
@@ -2508,11 +2534,13 @@ export default function Dashboard() {
     });
   };
 
-  const handleStickyNoteMouseMove = useCallback((e: MouseEvent) => {
+  const handleStickyNotePointerMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (draggingStickyNoteRef.current !== null) {
+      if ('touches' in e) e.preventDefault();
+      const { clientX, clientY } = getPointerXY(e);
       const offset = stickyNoteOffsetRef.current;
-      const newX = Math.max(0, e.clientX - offset.x);
-      const newY = Math.max(0, e.clientY - offset.y);
+      const newX = Math.max(0, clientX - offset.x);
+      const newY = Math.max(0, clientY - offset.y);
       const newPos = { x: newX, y: newY };
       dragPositionRef.current = newPos;
       const el = document.querySelector(`[data-sticky-note-id="${draggingStickyNoteRef.current}"]`) as HTMLElement;
@@ -2523,8 +2551,7 @@ export default function Dashboard() {
     }
   }, []);
 
-  const handleStickyNoteMouseUp = useCallback((e: MouseEvent) => {
-    // Use refs for reliable access to current values
+  const handleStickyNotePointerUp = useCallback((e: MouseEvent | TouchEvent) => {
     const currentDragPosition = dragPositionRef.current;
     const currentNoteId = draggingStickyNoteRef.current;
     
@@ -2533,8 +2560,7 @@ export default function Dashboard() {
       // Check if dropped in all-day row area - snap to cell left of today
       if (allDayRowRef.current) {
         const allDayRect = allDayRowRef.current.getBoundingClientRect();
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
+        const { clientX: mouseX, clientY: mouseY } = getPointerXY(e);
         
         // Check if mouse is within the all-day row area (with some tolerance)
         if (mouseY >= allDayRect.top - 20 && mouseY <= allDayRect.bottom + 20 && 
@@ -2605,14 +2631,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
-      window.addEventListener('mousemove', handleStickyNoteMouseMove);
-      window.addEventListener('mouseup', handleStickyNoteMouseUp);
+      window.addEventListener('mousemove', handleStickyNotePointerMove);
+      window.addEventListener('mouseup', handleStickyNotePointerUp);
+      window.addEventListener('touchmove', handleStickyNotePointerMove, { passive: false });
+      window.addEventListener('touchend', handleStickyNotePointerUp);
       return () => {
-        window.removeEventListener('mousemove', handleStickyNoteMouseMove);
-        window.removeEventListener('mouseup', handleStickyNoteMouseUp);
+        window.removeEventListener('mousemove', handleStickyNotePointerMove);
+        window.removeEventListener('mouseup', handleStickyNotePointerUp);
+        window.removeEventListener('touchmove', handleStickyNotePointerMove);
+        window.removeEventListener('touchend', handleStickyNotePointerUp);
       };
     }
-  }, [draggingStickyNote, handleStickyNoteMouseMove, handleStickyNoteMouseUp]);
+  }, [draggingStickyNote, handleStickyNotePointerMove, handleStickyNotePointerUp]);
 
   // Auto-return sticky notes to home position after 2 hours
   useEffect(() => {
@@ -2647,11 +2677,12 @@ export default function Dashboard() {
   }, [stickyNotes]);
 
   // Handle sticky note resize
-  const handleStickyNoteResizeStart = (e: React.MouseEvent, noteId: number, note: StickyNoteType) => {
+  const handleStickyNoteResizeStart = (e: React.MouseEvent | React.TouchEvent, noteId: number, note: StickyNoteType) => {
     e.preventDefault();
     e.stopPropagation();
+    const { clientX, clientY } = getPointerXY(e);
     setResizingStickyNote(noteId);
-    setResizeStartPos({ x: e.clientX, y: e.clientY });
+    setResizeStartPos({ x: clientX, y: clientY });
     setResizeStartSize({ width: note.width, height: note.height });
     // Bring to front
     const newZIndex = maxStickyZIndex + 1;
@@ -2659,10 +2690,11 @@ export default function Dashboard() {
     updateStickyNoteMutation.mutate({ id: noteId, updates: { zIndex: newZIndex } });
   };
 
-  const handleStickyNoteResizeMove = useCallback((e: MouseEvent) => {
+  const handleStickyNoteResizeMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (resizingStickyNote !== null) {
-      const deltaX = e.clientX - resizeStartPos.x;
-      const deltaY = e.clientY - resizeStartPos.y;
+      const { clientX, clientY } = getPointerXY(e);
+      const deltaX = clientX - resizeStartPos.x;
+      const deltaY = clientY - resizeStartPos.y;
       const newWidth = Math.max(120, Math.floor(resizeStartSize.width + deltaX));
       const newHeight = Math.max(80, Math.floor(resizeStartSize.height + deltaY));
       updateStickyNoteMutation.mutate({ 
@@ -2680,9 +2712,13 @@ export default function Dashboard() {
     if (resizingStickyNote !== null) {
       window.addEventListener('mousemove', handleStickyNoteResizeMove);
       window.addEventListener('mouseup', handleStickyNoteResizeEnd);
+      window.addEventListener('touchmove', handleStickyNoteResizeMove, { passive: false });
+      window.addEventListener('touchend', handleStickyNoteResizeEnd);
       return () => {
         window.removeEventListener('mousemove', handleStickyNoteResizeMove);
         window.removeEventListener('mouseup', handleStickyNoteResizeEnd);
+        window.removeEventListener('touchmove', handleStickyNoteResizeMove);
+        window.removeEventListener('touchend', handleStickyNoteResizeEnd);
       };
     }
   }, [resizingStickyNote, handleStickyNoteResizeMove, handleStickyNoteResizeEnd]);
@@ -9549,8 +9585,9 @@ export default function Dashboard() {
             {/* Header bar - draggable from anywhere */}
             <div
               className="flex items-center justify-between px-1 py-1 select-none cursor-move"
-              style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}` }}
-              onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
+              style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}`, touchAction: 'none' }}
+              onMouseDown={(e) => handleStickyNotePointerDown(e, note.id, note)}
+              onTouchStart={(e) => handleStickyNotePointerDown(e, note.id, note)}
             >
               <div className="flex items-center gap-1 flex-1">
                 <DropdownMenu>
@@ -9793,6 +9830,7 @@ export default function Dashboard() {
                     background: `linear-gradient(135deg, transparent 50%, ${colors.header} 50%)`,
                   }}
                   onMouseDown={(e) => handleStickyNoteResizeStart(e, note.id, note)}
+                  onTouchStart={(e) => handleStickyNoteResizeStart(e, note.id, note)}
                   data-testid={`sticky-note-resize-${note.id}`}
                 />
               </>
@@ -11973,6 +12011,10 @@ export default function Dashboard() {
                     e.stopPropagation();
                     handleColumnResizeStart(e, -1);
                   }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                    handleColumnResizeStart(e, -1);
+                  }}
                   data-testid="time-column-resize-handle"
                 />
               </div>
@@ -12001,6 +12043,7 @@ export default function Dashboard() {
                         className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
                         style={{ zIndex: 9999 }}
                         onMouseDown={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
                         data-testid={`day-column-resize-handle-${idx}`}
                       />
                     )}
@@ -12721,6 +12764,7 @@ export default function Dashboard() {
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
                     onMouseDown={(e) => handleRowResizeStart(e, 'course')}
+                    onTouchStart={(e) => handleRowResizeStart(e, 'course')}
                     data-testid={`course-row-resize-handle-${course.name}`}
                   />
                   </div>
@@ -12918,6 +12962,7 @@ export default function Dashboard() {
               <div
                 className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
                 onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
+                onTouchStart={(e) => handleRowResizeStart(e, 'allDay')}
                 data-testid="allday-row-resize-handle"
               />
             </div>)}
@@ -13229,6 +13274,7 @@ export default function Dashboard() {
                     <div 
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
                       onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot', hour)}
+                      onTouchStart={(e) => handleRowResizeStart(e, 'timeSlot', hour)}
                       data-testid={`resize-timeslot-row-${hour}`}
                     />
                                       </div>
@@ -13385,7 +13431,9 @@ export default function Dashboard() {
           {/* Calendar Height Resize Handle */}
           <div
             className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize z-50 hover:bg-blue-400/30 active:bg-blue-400/50"
+            style={{ touchAction: 'none' }}
             onMouseDown={handleResizeStart}
+            onTouchStart={handleResizeStart}
             data-testid="calendar-height-resize-handle"
           />
           </div>
@@ -13413,29 +13461,62 @@ export default function Dashboard() {
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
-              onMouseDown={(e) => {
+              style={{ touchAction: 'none' }}
+              onMouseDown={(e: React.MouseEvent) => {
                 e.preventDefault();
                 setIsResizingWeeksFlyout(true);
                 const startX = e.clientX;
                 const startWidth = Math.max(flyoutWidth, flyout2Width);
                 
-                const handleMouseMove = (moveEvent: MouseEvent) => {
-                  const delta = startX - moveEvent.clientX;
+                const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+                  const { clientX } = getPointerXY(moveEvent);
+                  const delta = startX - clientX;
                   const newWidth = Math.max(150, Math.min(400, startWidth + delta));
-                  // Sync all flyout widths together
                   setFlyoutWidth(newWidth);
                   setFlyout2Width(newWidth);
                   setWeeksFlyoutWidth(newWidth);
                 };
                 
-                const handleMouseUp = () => {
+                const handleEnd = () => {
                   setIsResizingWeeksFlyout(false);
-                  document.removeEventListener('mousemove', handleMouseMove);
-                  document.removeEventListener('mouseup', handleMouseUp);
+                  document.removeEventListener('mousemove', handleMove);
+                  document.removeEventListener('mouseup', handleEnd);
+                  document.removeEventListener('touchmove', handleMove);
+                  document.removeEventListener('touchend', handleEnd);
                 };
                 
-                document.addEventListener('mousemove', handleMouseMove);
-                document.addEventListener('mouseup', handleMouseUp);
+                document.addEventListener('mousemove', handleMove);
+                document.addEventListener('mouseup', handleEnd);
+                document.addEventListener('touchmove', handleMove, { passive: false });
+                document.addEventListener('touchend', handleEnd);
+              }}
+              onTouchStart={(e: React.TouchEvent) => {
+                e.preventDefault();
+                setIsResizingWeeksFlyout(true);
+                const { clientX: startX } = getPointerXY(e);
+                const startWidth = Math.max(flyoutWidth, flyout2Width);
+                
+                const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+                  const { clientX } = getPointerXY(moveEvent);
+                  const delta = startX - clientX;
+                  const newWidth = Math.max(150, Math.min(400, startWidth + delta));
+                  setFlyoutWidth(newWidth);
+                  setFlyout2Width(newWidth);
+                  setWeeksFlyoutWidth(newWidth);
+                };
+                
+                const handleEnd = () => {
+                  setIsResizingWeeksFlyout(false);
+                  document.removeEventListener('mousemove', handleMove);
+                  document.removeEventListener('mouseup', handleEnd);
+                  document.removeEventListener('touchmove', handleMove);
+                  document.removeEventListener('touchend', handleEnd);
+                };
+                
+                document.addEventListener('mousemove', handleMove);
+                document.addEventListener('mouseup', handleEnd);
+                document.addEventListener('touchmove', handleMove, { passive: false });
+                document.addEventListener('touchend', handleEnd);
               }}
               data-testid="weeks-flyout-resize-handle"
             />
@@ -14208,27 +14289,27 @@ export default function Dashboard() {
                 {/* Col 1: Checkbox placeholder */}
                 <div style={{ width: '16px', flexShrink: 0 }} />
                 {/* Handle 1 */}
-                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)} />
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'taskName', true)} />
                 {/* Col 2: Progress bar placeholder */}
                 <div style={{ width: '44px', flexShrink: 0 }} />
                 {/* Handle 2 */}
-                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')} />
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'taskName')} />
                 {/* Col 3: Task */}
                 <div style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Task</div>
                 {/* Handle 3 */}
-                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')} />
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'courseCode')} />
                 {/* Col 4: Code */}
                 <div style={{ width: `${taskColumnWidths.courseCode}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Code</div>
                 {/* Handle 4 */}
-                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')} />
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'courseName')} />
                 {/* Col 5: Course */}
                 <div style={{ width: `${taskColumnWidths.courseName}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Course</div>
                 {/* Handle 5 */}
-                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
                 {/* Col 6: Due */}
                 <div style={{ width: `${taskColumnWidths.dueDate}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Due</div>
                 {/* Handle 6 */}
-                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
                 {/* Col 7: Days */}
                 <div className="text-[8px] text-white/50 font-normal">Days</div>
               </div>
