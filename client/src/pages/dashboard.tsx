@@ -9744,8 +9744,8 @@ export default function Dashboard() {
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-3 bg-black/30 border-b border-white/15">
                   <div className="flex items-center gap-2">
-                    <Plus className="h-3.5 w-3.5 text-white/70" />
-                    <span className="text-[11px] text-white/70 font-normal tracking-wide uppercase">
+                    <Plus className="h-3.5 w-3.5 text-white" />
+                    <span className="text-[11px] text-white font-normal tracking-wide uppercase">
                       {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </span>
                   </div>
@@ -10349,7 +10349,7 @@ export default function Dashboard() {
                           toast({ title: "Error", description: "Failed to add task. Please try again.", variant: "destructive" });
                         }
                       }}
-                      className="flex items-center gap-2 px-5 py-2 rounded-lg text-[12px] font-medium bg-white/20 text-white hover:bg-white/30 transition-all duration-200 border border-white/20"
+                      className="flex items-center gap-2 px-5 py-2 rounded-lg text-[12px] font-medium bg-white/20 text-white hover:bg-white/30 transition-all duration-200 border !border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]"
                       data-testid="quick-add-submit"
                     >
                       <Plus className="h-3.5 w-3.5" />
