@@ -8794,50 +8794,39 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      {(() => {
-        const pillW = 52;
-        const pillH = (6 * 52) + 9;
-        const arrowW = 12;
-        const arrowH = 24;
-        const totalW = pillW + arrowW;
-        const r = 28;
-        const midY = pillH / 2;
-        const arrowTop = midY - (arrowH / 2);
-        const arrowBot = midY + (arrowH / 2);
-        const shapePath = `
-          M ${arrowW} ${r}
-          Q ${arrowW} 0, ${arrowW + r} 0
-          L ${totalW - r} 0
-          Q ${totalW} 0, ${totalW} ${r}
-          L ${totalW} ${pillH - r}
-          Q ${totalW} ${pillH}, ${totalW - r} ${pillH}
-          L ${arrowW + r} ${pillH}
-          Q ${arrowW} ${pillH}, ${arrowW} ${pillH - r}
-          L ${arrowW} ${arrowBot}
-          L 0 ${midY}
-          L ${arrowW} ${arrowTop}
-          Z
-        `;
-        return (
-          <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: `${totalW}px`, height: `${pillH}px` }}>
-            <div style={{
-              width: '100%',
-              height: '100%',
-              background: 'rgba(255, 255, 255, 0.35)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              clipPath: `path('${shapePath.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()}')`,
-            }} />
-            <svg style={{ position: 'absolute', top: '-1px', left: '-1px', width: `${totalW + 2}px`, height: `${pillH + 2}px`, pointerEvents: 'none', overflow: 'visible' }} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`}>
-              <path 
-                d={shapePath}
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.5)"
-                strokeWidth="1.5"
-              />
-            </svg>
-          </div>
-        );
-      })()}
+      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: '52px', height: `${(6 * 52) + 9}px` }}>
+        <div 
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            background: 'rgba(255, 255, 255, 0.35)',
+            borderRadius: '28px',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }} 
+        />
+        {/* Left-pointing triangle arrow */}
+        <svg 
+          style={{ 
+            position: 'absolute', 
+            left: '-14px', 
+            top: '50%', 
+            transform: 'translateY(-50%)',
+            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
+          }} 
+          width="16" 
+          height="30" 
+          viewBox="0 0 16 30"
+        >
+          <polygon 
+            points="16,0 1,15 16,30" 
+            fill="rgba(255, 255, 255, 0.35)" 
+            stroke="rgba(255, 255, 255, 0.4)" 
+            strokeWidth="1"
+          />
+          <line x1="16" y1="0" x2="16" y2="30" stroke="rgba(255, 255, 255, 0.35)" strokeWidth="3" />
+        </svg>
+      </div>
       
       
       {/* Push Button - Below course buttons on tall pill */}
