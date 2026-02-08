@@ -11921,12 +11921,12 @@ export default function Dashboard() {
                           />
                           {/* Hour boundary dotted line */}
                           <div 
-                            className="absolute left-0 right-0 border-t border-dotted border-gray-400 dark:border-gray-500 z-[1]" 
+                            className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isToday ? 'border-black' : 'border-gray-400 dark:border-gray-500'}`}
                             style={{ top: '0' }}
                           />
                           {/* Half-hour dotted line */}
                           <div 
-                            className="absolute left-0 right-0 border-t border-dotted border-gray-400 dark:border-gray-500 z-[1]" 
+                            className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isToday ? 'border-black' : 'border-gray-400 dark:border-gray-500'}`}
                             style={{ top: '50%' }}
                           />
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
