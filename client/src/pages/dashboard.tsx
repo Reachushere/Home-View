@@ -12791,7 +12791,10 @@ export default function Dashboard() {
                               const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
                               const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
                               const startMinutes = startHour * 60 + startMin;
-                              const endMinutes = endHour * 60 + endMin;
+                              let endMinutes = endHour * 60 + endMin;
+                              if (endMinutes <= startMinutes) endMinutes = startMinutes + 60;
+                              const calendarEndMinutes = 24 * 60;
+                              endMinutes = Math.min(endMinutes, calendarEndMinutes);
                               const durationMinutes = endMinutes - startMinutes;
                               taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               topOffset = (startMin / 60) * 44;
