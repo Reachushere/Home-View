@@ -387,6 +387,42 @@ export default function Dashboard() {
   const [isKitchenPlaying, setIsKitchenPlaying] = useState(false);
   const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sidePillRef = useRef<HTMLDivElement>(null);
+  const [sidePillMounted, setSidePillMounted] = useState(false);
+  const sidePillSlideOffset = useRef(60);
+  const openSidePill = useCallback(() => {
+    const el = sidePillRef.current;
+    if (el && !isPillMenuOpen) {
+      const current = getComputedStyle(el).transform;
+      el.style.animation = 'none';
+      el.style.transform = current;
+      void el.offsetHeight;
+      el.style.transition = 'transform 0.3s ease-in-out';
+      el.style.transform = 'translateX(0px)';
+    }
+    setIsPillMenuOpen(true);
+  }, [isPillMenuOpen]);
+  const closeSidePill = useCallback(() => {
+    const el = sidePillRef.current;
+    if (el) {
+      el.style.animation = '';
+      el.style.transform = '';
+      el.style.transition = '';
+    }
+    setIsPillMenuOpen(false);
+  }, []);
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setSidePillMounted(true);
+        setIsPillMenuOpen(true);
+      });
+    });
+    const sideTimeout = setTimeout(() => {
+      closeSidePill();
+    }, 2200);
+    return () => clearTimeout(sideTimeout);
+  }, []);
   const [isTopPillOpen, setIsTopPillOpen] = useState(false);
   const [topPillMounted, setTopPillMounted] = useState(false);
   const topPillRef = useRef<HTMLDivElement>(null);
@@ -8888,19 +8924,20 @@ export default function Dashboard() {
         const r = 28;
         const calH = calendarHeight - 35;
         const pillTop = calendarTop + (calH / 2) - (pillH / 2);
-        const slideOffset = isPillMenuOpen ? 0 : pillW + 4;
+        const slideOffset = pillW + 4;
+        sidePillSlideOffset.current = slideOffset;
         
         const startAutoHide = () => {
           if (pillMenuTimeoutRef.current) clearTimeout(pillMenuTimeoutRef.current);
           pillMenuTimeoutRef.current = setTimeout(() => {
-            setIsPillMenuOpen(false);
+            closeSidePill();
           }, 1800);
         };
         const cancelAutoHide = () => {
           if (pillMenuTimeoutRef.current) clearTimeout(pillMenuTimeoutRef.current);
         };
         const handleOpen = () => {
-          setIsPillMenuOpen(true);
+          openSidePill();
           startAutoHide();
         };
         const handleEnter = () => {
@@ -8939,14 +8976,15 @@ export default function Dashboard() {
 
         return (
           <div 
+            ref={sidePillRef}
             className={`absolute z-[60] ${!isPillMenuOpen ? 'side-pill-container-idle' : ''}`}
             style={{ 
               top: `${pillTop}px`, 
               right: '0px', 
               width: `${totalW + 4}px`, 
               height: `${pillH}px`,
-              transform: isPillMenuOpen ? 'translateX(0px)' : `translateX(${slideOffset}px)`,
-              transition: isPillMenuOpen ? 'transform 0.3s ease-in-out' : 'none',
+              transform: `translateX(${isPillMenuOpen ? '0px' : `${slideOffset}px`})`,
+              transition: sidePillMounted ? 'transform 0.3s ease-in-out' : 'none',
             }}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
