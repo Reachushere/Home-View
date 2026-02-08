@@ -8876,27 +8876,15 @@ export default function Dashboard() {
               style={{ position: 'absolute', left: '-6px', top: '0', width: `${arrowW + 12}px`, height: `${pillH}px`, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }}
               onMouseEnter={handleOpen}
             />
-            {/* SVG pill shape */}
-            <svg className={!isPillMenuOpen ? 'pill-arrow-idle' : ''} width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
+            {/* SVG pill body (no arrow) */}
+            <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
               <defs>
                 <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
                   <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.1)" />
                 </filter>
               </defs>
               <path 
-                d={isPillMenuOpen 
-                  ? `
-                  M 0 ${r}
-                  Q 0 0, ${r} 0
-                  L ${totalW - r} 0
-                  Q ${totalW} 0, ${totalW} ${r}
-                  L ${totalW} ${pillH - r}
-                  Q ${totalW} ${pillH}, ${totalW - r} ${pillH}
-                  L ${r} ${pillH}
-                  Q 0 ${pillH}, 0 ${pillH - r}
-                  Z
-                `
-                  : `
+                d={`
                   M ${arrowW} ${r}
                   Q ${arrowW} 0, ${arrowW + r} 0
                   L ${totalW - r} 0
@@ -8905,9 +8893,6 @@ export default function Dashboard() {
                   Q ${totalW} ${pillH}, ${totalW - r} ${pillH}
                   L ${arrowW + r} ${pillH}
                   Q ${arrowW} ${pillH}, ${arrowW} ${pillH - r}
-                  L ${arrowW} ${arrowBotY}
-                  L 1 ${midY}
-                  L ${arrowW} ${arrowTopY}
                   Z
                 `}
                 fill="rgba(255, 255, 255, 0.35)"
@@ -8915,6 +8900,35 @@ export default function Dashboard() {
                 strokeWidth="1.5"
                 strokeLinejoin="round"
                 filter="url(#pillShadow)"
+              />
+            </svg>
+            {/* Arrow tip - only visible when pill is closed, bounces to attract attention */}
+            <svg 
+              className={!isPillMenuOpen ? 'pill-arrow-idle' : ''}
+              width={arrowW + 2} 
+              height={arrowH + 2} 
+              viewBox={`-1 -1 ${arrowW + 2} ${arrowH + 2}`} 
+              style={{ 
+                position: 'absolute', 
+                top: `${arrowTopY - 1}px`, 
+                left: '-1px', 
+                overflow: 'visible', 
+                pointerEvents: 'none',
+                opacity: isPillMenuOpen ? 0 : 1,
+                transition: 'opacity 0.3s ease-in-out',
+              }}
+            >
+              <path 
+                d={`
+                  M ${arrowW} 0
+                  L ${arrowW} ${arrowH}
+                  L 1 ${arrowH / 2}
+                  Z
+                `}
+                fill="rgba(255, 255, 255, 0.35)"
+                stroke="rgba(255, 255, 255, 0.45)"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
               />
             </svg>
 
