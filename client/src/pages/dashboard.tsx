@@ -7383,16 +7383,26 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Top Pill - Slide up/down container for all top controls */}
+      {/* Logo and Name - Fixed on screen, never slides */}
+      <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[35px] w-[35px] fixed" style={{ left: '12px', top: '14px', zIndex: 100 }} />
+      <div className="flex flex-col fixed" style={{ left: '55px', top: '12px', zIndex: 100 }}>
+        <span className="text-white font-bold text-[11px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
+        <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+      </div>
+
+      {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
         style={{
           position: 'absolute',
           zIndex: 20,
-          left: 0,
-          right: 0,
-          top: 0,
-          transform: isTopPillOpen ? 'translateY(0px)' : 'translateY(-60px)',
+          left: '50%',
+          transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-70px'})`,
           transition: 'transform 0.3s ease-in-out',
+          top: '5px',
+          height: '55px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         onMouseEnter={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
@@ -7404,24 +7414,69 @@ export default function Dashboard() {
           }, 1800);
         }}
       >
-      {/* Top Controls - Positioned directly on background */}
-      <div className="absolute z-20 left-0 right-0 top-0 flex items-center mx-3" style={{ 
-        height: '50px',
-        marginTop: '5px'
-      }}>
-        {/* Logo and Name - Fixed Left */}
-        <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[35px] w-[35px] fixed" style={{ left: '12px', top: '14px', zIndex: 100 }} />
-          <div className="flex flex-col fixed" style={{ left: '55px', top: '12px', zIndex: 100 }}>
-            <span className="text-white font-bold text-[11px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
-            <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
-          </div>
-        </div>
+        {/* Glass pill background */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(255, 255, 255, 0.15)',
+          borderRadius: '28px',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          pointerEvents: 'none',
+        }} />
+        
+        {/* Down arrow at bottom center */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            bottom: '-28px',
+            width: '60px',
+            height: '28px',
+            cursor: 'pointer',
+            pointerEvents: 'auto',
+            zIndex: 2,
+          }}
+          onClick={() => {
+            setIsTopPillOpen(true);
+            if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+            topPillTimeoutRef.current = setTimeout(() => {
+              setIsTopPillOpen(false);
+            }, 1800);
+          }}
+          onMouseEnter={() => {
+            setIsTopPillOpen(true);
+            if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          }}
+        />
+        <svg
+          className={!isTopPillOpen ? 'top-pill-arrow-idle' : ''}
+          width="30"
+          height="18"
+          viewBox="-1 -1 32 20"
+          style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            bottom: '-18px',
+            overflow: 'visible',
+            pointerEvents: 'none',
+            opacity: isTopPillOpen ? 0 : 1,
+            transition: 'opacity 0.3s ease-in-out',
+          }}
+        >
+          <path
+            d="M 0 0 L 30 0 L 15 16 Z"
+            fill="rgba(255, 255, 255, 0.35)"
+            stroke="rgba(255, 255, 255, 0.45)"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
 
-        {/* All items with equal gaps - absolutely centered on screen */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center h-full max-w-[calc(100vw-450px)] md:max-w-none" style={{ marginLeft: '-66px', paddingLeft: '15px', zIndex: 50 }}>
-          {/* Icon buttons and task buttons with adjustable spacing */}
-          <div className="flex items-center flex-wrap justify-center flex-shrink" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
+        {/* Icon buttons and task buttons with adjustable spacing */}
+        <div className="flex items-center flex-wrap justify-center flex-shrink px-4" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
           {/* Hamburger Menu */}
           <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
@@ -7954,37 +8009,37 @@ export default function Dashboard() {
           {/* Quick Add Button */}
           <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); bringFlyoutToFront('addTask'); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
-                    </div>
         </div>
+      </div>
 
-        {/* Pomodoro Timer - Fixed, positioned left of clock */}
-        <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
-          <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
-              pomodoroMode === "work" ? "text-white" : 
-              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px' }} data-testid="pomodoro-timer">
-              {formatPomodoroTime(pomodoroTime)}
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
-              </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-                <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-              </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-                <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-              </button>
-            </div>
+      {/* Pomodoro Timer - Fixed on screen, never slides */}
+      <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
+        <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
+            pomodoroMode === "work" ? "text-white" : 
+            pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px' }} data-testid="pomodoro-timer">
+            {formatPomodoroTime(pomodoroTime)}
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+              {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+            </button>
+            <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+              <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+            </button>
+            <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+              <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Clock - Fixed Right */}
-        <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
-          <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
-            <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
-              <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
+      {/* Clock - Fixed on screen, never slides */}
+      <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
+        <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
+          <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
+            <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
@@ -8007,59 +8062,7 @@ export default function Dashboard() {
             )}
             </div>
           </div>
-          </div>
         </div>
-      </div>
-
-      {/* Down arrow for top pill - hover zone + arrow SVG */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          bottom: '-30px',
-          width: '60px',
-          height: '30px',
-          cursor: 'pointer',
-          pointerEvents: 'auto',
-          zIndex: 2,
-        }}
-        onClick={() => {
-          setIsTopPillOpen(true);
-          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          topPillTimeoutRef.current = setTimeout(() => {
-            setIsTopPillOpen(false);
-          }, 1800);
-        }}
-        onMouseEnter={() => {
-          setIsTopPillOpen(true);
-          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-        }}
-      />
-      <svg
-        className={!isTopPillOpen ? 'top-pill-arrow-idle' : ''}
-        width="30"
-        height="18"
-        viewBox="-1 -1 32 20"
-        style={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          bottom: '-19px',
-          overflow: 'visible',
-          pointerEvents: 'none',
-          opacity: isTopPillOpen ? 0 : 1,
-          transition: 'opacity 0.3s ease-in-out',
-        }}
-      >
-        <path
-          d="M 0 0 L 30 0 L 15 16 Z"
-          fill="rgba(255, 255, 255, 0.35)"
-          stroke="rgba(255, 255, 255, 0.45)"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-      </svg>
       </div>
 
       {/* Settings Panel Popup - Certificate Tracking Only */}
