@@ -7537,7 +7537,7 @@ export default function Dashboard() {
         />
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-wrap justify-center flex-shrink px-4" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
+        <div className="flex items-center flex-wrap justify-center flex-shrink px-4" style={{ gap: `${blinkSettings.buttonSpacing + 4}px`, marginTop: '-2px' }}>
           {/* Hamburger Menu */}
           <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
