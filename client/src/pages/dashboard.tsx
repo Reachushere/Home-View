@@ -8886,19 +8886,6 @@ export default function Dashboard() {
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       <div className="absolute z-50 flex items-end justify-between" style={{ top: `${calendarTop - 28}px`, left: '0px', right: `${calendarRight}px` }}>
         <div className="flex items-center gap-1" style={{ marginLeft: '55px' }}>
-          <Button 
-            variant="ghost"
-            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[2px] mr-1 -ml-[3px]"
-            onClick={() => {
-              if (calendarView === "week") {
-                setCurrentMonth(new Date());
-              }
-              setCalendarView(calendarView === "month" ? "week" : "month");
-            }}
-            data-testid="button-month-view"
-          >
-            {calendarView === "month" ? "Week" : "Month"}
-          </Button>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -8918,6 +8905,19 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
+          <Button 
+            variant="ghost"
+            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[2px] ml-1"
+            onClick={() => {
+              if (calendarView === "week") {
+                setCurrentMonth(new Date());
+              }
+              setCalendarView(calendarView === "month" ? "week" : "month");
+            }}
+            data-testid="button-month-view"
+          >
+            {calendarView === "month" ? "Week" : "Month"}
+          </Button>
         </div>
       </div>
       
