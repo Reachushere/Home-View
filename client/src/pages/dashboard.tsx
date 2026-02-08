@@ -8835,7 +8835,7 @@ export default function Dashboard() {
           width: '44px',
           height: '44px',
           top: `${4 + (slot * 52)}px`,
-          right: '4px',
+          right: '6px',
           borderRadius: '50%',
           background: bg,
           padding: '1px',
