@@ -1595,7 +1595,7 @@ export default function Dashboard() {
   const row1ContainerRef = useRef<HTMLDivElement>(null);
   // HARDCODED header positions - NEVER change without explicit user permission
   // remaining=25, task=75, code=177, course=214, due=365, days=right-aligned to right edge
-  const HEADER_POS = { remaining: 25, task: 75, code: 177, course: 222, due: 365 };
+  const HEADER_POS = { remaining: 25, task: 75, code: 177, course: 217, due: 365 };
   const [row1Positions, setRow1Positions] = useState({ task: 70, code: 170, course: 240, due: 340, days: 400, progressBar: 18, progressBarTop: 0 });
   
   // Save box order to localStorage
@@ -11646,7 +11646,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col flex-shrink-0" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px', height: `${calendarHeight - 35 + 12}px` }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, paddingTop: '7px' }}>
@@ -12685,7 +12685,7 @@ export default function Dashboard() {
             </div>)}
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative flex flex-col" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', backgroundColor: '#faf8f5' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
