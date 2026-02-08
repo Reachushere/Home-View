@@ -11812,39 +11812,39 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 flex items-center gap-[3px]"
-                        style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '4px', paddingRight: '6px' }}
+                        style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '0px', paddingRight: '6px' }}
                       >
-                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ maxWidth: '68px', gap: '24px' }}>
+                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px' }}>
                         {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
                           <>
-                            <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase text-white">M</span>
+                            <div className="flex flex-col gap-[2px]">
+                              <span className="text-[7px] font-medium leading-none uppercase text-white/60 tracking-wider">Module</span>
                               {moduleP.hasFiles ? (
-                                <>
-                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)', maxWidth: '80px' }}>
+                                <div className="flex items-center gap-[3px]">
+                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
                                     {moduleP.percent > 0 && (
                                       <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                     )}
                                   </div>
                                   <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
-                                </>
+                                </div>
                               ) : (
                                 <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
-                            <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase text-white">R</span>
+                            <div className="flex flex-col gap-[2px]">
+                              <span className="text-[7px] font-medium leading-none uppercase text-white/60 tracking-wider">Reading</span>
                               {readingP.hasFiles ? (
-                                <>
-                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)', maxWidth: '80px' }}>
+                                <div className="flex items-center gap-[3px]">
+                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
                                     {readingP.percent > 0 && (
                                       <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                     )}
                                   </div>
                                   <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
-                                </>
+                                </div>
                               ) : (
                                 <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
