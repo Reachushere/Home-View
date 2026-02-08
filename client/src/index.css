@@ -248,9 +248,9 @@ button[role="combobox"] > span {
 
 @keyframes side-pill-container-nudge {
   0%, 90% { transform: translateX(56px); }
-  93% { transform: translateX(53px); }
+  93% { transform: translateX(54px); }
   96% { transform: translateX(56px); }
-  98% { transform: translateX(54px); }
+  98% { transform: translateX(55px); }
   100% { transform: translateX(56px); }
 }
 
