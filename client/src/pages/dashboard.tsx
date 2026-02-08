@@ -8091,7 +8091,7 @@ export default function Dashboard() {
       </div>
 
       {/* Pomodoro Timer - Fixed on screen, never slides */}
-      <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '5px', zIndex: 100 }}>
+      <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 10}px`, top: '5px', zIndex: 100 }}>
         <div
           className="flex items-center justify-center rounded-full cursor-pointer hover:opacity-80 transition-opacity"
           style={{
@@ -8100,7 +8100,7 @@ export default function Dashboard() {
             backgroundImage: `url(${clockBg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            marginRight: '5px',
+            marginRight: '8px',
             marginTop: '-1px',
             flexShrink: 0,
           }}
