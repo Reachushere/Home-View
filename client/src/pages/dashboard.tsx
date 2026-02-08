@@ -14194,7 +14194,7 @@ export default function Dashboard() {
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '0px' }}>Course</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
@@ -14231,7 +14231,7 @@ export default function Dashboard() {
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px` }}>Course</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
@@ -14247,7 +14247,7 @@ export default function Dashboard() {
                 </div>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 9}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', right: '0px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
