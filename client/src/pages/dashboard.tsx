@@ -3810,8 +3810,6 @@ export default function Dashboard() {
     // Auto-switch to appropriate TTS mode
     if (useBrowserTts && previewSpeaker !== "browser_tts") {
       setPreviewSpeaker("browser_tts");
-    } else if (!useBrowserTts && previewSpeaker !== "openai_tts") {
-      setPreviewSpeaker("openai_tts");
     }
     
     // Make sure we have chunks
