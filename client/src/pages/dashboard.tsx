@@ -8830,8 +8830,9 @@ export default function Dashboard() {
                   Z
                 `}
                 fill="rgba(255, 255, 255, 0.35)"
-                stroke="rgba(255, 255, 255, 0.4)"
-                strokeWidth="1"
+                stroke="rgba(255, 255, 255, 0.45)"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
                 filter="url(#pillShadow)"
               />
             </svg>
