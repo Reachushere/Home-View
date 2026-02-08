@@ -7396,7 +7396,7 @@ export default function Dashboard() {
           position: 'absolute',
           zIndex: 20,
           left: '50%',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '-3px' : '-58px'})`,
+          transform: `translateX(-50%) translateY(${isTopPillOpen ? '-3px' : '-53px'})`,
           transition: 'transform 0.3s ease-in-out',
           top: '0px',
           height: '55px',
@@ -7431,9 +7431,9 @@ export default function Dashboard() {
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-28px',
+            bottom: '-18px',
             width: '60px',
-            height: '28px',
+            height: '18px',
             cursor: 'pointer',
             pointerEvents: 'auto',
             zIndex: 2,
@@ -7450,30 +7450,24 @@ export default function Dashboard() {
             if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           }}
         />
-        <svg
+        <div
           className={!isTopPillOpen ? 'top-pill-arrow-idle' : ''}
-          width="30"
-          height="17"
-          viewBox="-1 -1 32 19"
           style={{
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-17px',
-            overflow: 'visible',
+            bottom: '-12px',
+            width: '40px',
+            height: '12px',
+            borderRadius: '0 0 20px 20px',
+            background: 'rgba(255, 255, 255, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.35)',
+            borderTop: 'none',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
           }}
-        >
-          <path
-            d="M 0 0 L 30 0 L 15 15 Z"
-            fill="rgba(255, 255, 255, 0.35)"
-            stroke="rgba(255, 255, 255, 0.45)"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
+        />
 
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-wrap justify-center flex-shrink px-4" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
