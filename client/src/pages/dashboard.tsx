@@ -11741,6 +11741,7 @@ export default function Dashboard() {
                             borderRadius: '50%',
                             background: getBorderGradient(courseHexColor),
                             padding: '1px',
+                            marginLeft: '2px',
                           }}
                           data-testid={`progress-pill-${courseCode.toLowerCase()}`}
                           title={`${courseCode} progress`}
