@@ -8732,7 +8732,7 @@ export default function Dashboard() {
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '10px', right: '16px' }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '11px', right: '24px' }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
@@ -11584,7 +11584,7 @@ export default function Dashboard() {
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
                       backgroundColor: isSameDay(day, new Date()) ? '#c0c0c0' : 'white',
-                      boxShadow: isSameDay(day, new Date()) ? '0 1px 0 0 #c0c0c0' : undefined,
+                      ...(isSameDay(day, new Date()) ? { boxShadow: '0 1px 0 0 #c0c0c0', zIndex: 45 } : {}),
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
