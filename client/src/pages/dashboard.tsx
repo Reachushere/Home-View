@@ -12393,7 +12393,7 @@ export default function Dashboard() {
                             style={{
                               position: 'absolute',
                               top: '1px',
-                              left: '3px',
+                              left: '2px',
                               width: '42px',
                               height: '42px',
                               borderRadius: '50%',
