@@ -8827,12 +8827,20 @@ export default function Dashboard() {
           <div style={{
             position: 'absolute',
             top: '1px',
-            left: '1px',
+            left: '2px',
             width: '0',
             height: '0',
             borderTop: '13px solid transparent',
             borderBottom: '13px solid transparent',
             borderRight: '13px solid rgba(255, 255, 255, 0.35)',
+          }} />
+          <div style={{
+            position: 'absolute',
+            top: '0',
+            right: '-2px',
+            width: '3px',
+            height: '100%',
+            background: 'rgba(255, 255, 255, 0.35)',
           }} />
         </div>
       </div>
