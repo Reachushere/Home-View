@@ -1155,7 +1155,7 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
-  const refreshFileCounts = useCallback(async () => {
+  const refreshFileCounts = useCallback(async (retryCount = 0) => {
     try {
       const response = await fetch('/api/files/counts');
       if (response.ok) {
@@ -1181,9 +1181,14 @@ export default function Dashboard() {
           legacyCounts[key] = (value as { total: number }).total;
         }
         setOneDriveFileCounts(legacyCounts);
+      } else if (retryCount < 2) {
+        setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
       }
     } catch (error) {
       console.error('Error fetching file counts:', error);
+      if (retryCount < 2) {
+        setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
+      }
     }
   }, [selectedWeek]);
 
@@ -2368,23 +2373,31 @@ export default function Dashboard() {
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
     queryFn: () => fetch("/api/tasks").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    retry: 2,
+    retryDelay: 1000,
   });
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
     queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Fetch all projects for calendar display
   const { data: allProjects = [] } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
     queryFn: () => fetch("/api/projects").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Fetch sticky notes
   const { data: stickyNotes = [] } = useQuery<StickyNoteType[]>({
     queryKey: ["/api/sticky-notes"],
     queryFn: () => fetch("/api/sticky-notes").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Sticky note state for dragging
@@ -2802,6 +2815,8 @@ export default function Dashboard() {
   
   const { data: weeklyFiles = [] } = useQuery<WeeklyFile[]>({
     queryKey: ["/api/files"],
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // OneDrive files for files flyout
@@ -2935,7 +2950,9 @@ export default function Dashboard() {
   const { data: calendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/events", { weekNumber: selectedWeek }],
     queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
-    refetchInterval: 60000, // Refresh every minute
+    refetchInterval: 60000,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Filter files for the current week (exclude completed/listened files)
@@ -2947,6 +2964,8 @@ export default function Dashboard() {
   const { data: semesterSettings } = useQuery<SemesterSettings | null>({
     queryKey: ["/api/semester"],
     queryFn: () => fetch("/api/semester").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Deleted folders query for hamburger menu filtering
@@ -12422,11 +12441,12 @@ export default function Dashboard() {
                     const moduleFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-module`);
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
                     const calcFileProgress = (files: WeeklyFile[], folderKey: string) => {
+                      const fc = fileCounts[folderKey];
+                      const fcPct = (fc && fc.total > 0) ? (fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0)) : -1;
+                      const fcHasFiles = fc && fc.total > 0;
                       if (files.length === 0) {
-                        const fc = fileCounts[folderKey];
-                        if (fc && fc.total > 0) {
-                          const pct = fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0);
-                          return { percent: pct, hasFiles: true };
+                        if (fcHasFiles) {
+                          return { percent: Math.max(0, fcPct), hasFiles: true };
                         }
                         return { percent: 0, hasFiles: false };
                       }
@@ -12452,7 +12472,8 @@ export default function Dashboard() {
                           }
                         }
                       }
-                      return { percent: Math.min(100, Math.round(totalProgress / files.length)), hasFiles: true };
+                      const filesPct = Math.min(100, Math.round(totalProgress / files.length));
+                      return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: true };
                     };
                     const getProgressColor = (percent: number) => {
                       if (percent === 100) return '#22c55e';
