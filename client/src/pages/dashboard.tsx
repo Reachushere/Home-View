@@ -7397,7 +7397,7 @@ export default function Dashboard() {
           position: 'absolute',
           zIndex: 20,
           left: 'calc(50% - 90px)',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '-3px' : '-56px'})`,
+          transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
           transition: 'transform 0.3s ease-in-out',
           top: '0px',
           height: '55px',
