@@ -7450,7 +7450,7 @@ export default function Dashboard() {
                               type="checkbox"
                               checked={checkedChunks.has(chunkIdx)}
                               onChange={() => toggleDashChunkChecked(chunkIdx)}
-                              className="w-5 h-5 rounded border-gray-400 accent-green-600 cursor-pointer"
+                              className="w-7 h-7 rounded border-gray-400 accent-green-600 cursor-pointer"
                               data-testid={`checkbox-chunk-${chunkIdx}`}
                             />
                           </div>
