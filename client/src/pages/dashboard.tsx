@@ -405,9 +405,19 @@ export default function Dashboard() {
   const closeSidePill = useCallback(() => {
     const el = sidePillRef.current;
     if (el) {
-      el.style.animation = '';
-      el.style.transform = '';
-      el.style.transition = '';
+      const current = getComputedStyle(el).transform;
+      el.style.animation = 'none';
+      el.style.transform = current;
+      void el.offsetHeight;
+      el.style.transition = 'transform 0.3s ease-in-out';
+      el.style.transform = `translateX(${sidePillSlideOffset.current}px)`;
+      const onEnd = () => {
+        el.style.animation = '';
+        el.style.transform = '';
+        el.style.transition = '';
+        el.removeEventListener('transitionend', onEnd);
+      };
+      el.addEventListener('transitionend', onEnd);
     }
     setIsPillMenuOpen(false);
   }, []);
