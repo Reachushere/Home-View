@@ -13324,7 +13324,7 @@ export default function Dashboard() {
             {showDeviceSaved ? "Saved!" : "Set Default"}
           </label>
         )}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: '10px', right: '51px', bottom: '12px', height: '157px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: '27px', right: '51px', bottom: '12px', height: '157px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
