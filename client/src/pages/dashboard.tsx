@@ -3007,6 +3007,7 @@ export default function Dashboard() {
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
+  const checkedChunksRef = useRef<Set<number>>(new Set());
   const ttsChunksRef = useRef<string[]>([]);
   const currentChunkIndexRef = useRef(0);
   const shouldContinueRef = useRef(false);
@@ -3590,16 +3591,14 @@ export default function Dashboard() {
     if (chunks.length > 0 && (previewSpeaker === "openai_tts" || !window.speechSynthesis)) {
       // Determine which chunk we'll actually start from (first unchecked)
       let startIdx = 0;
-      if (previewFile) {
-        const key = `file_${previewFile.id}`;
-        const savedChecked = localStorage.getItem(`checkedChunks_${key}`);
-        if (savedChecked) {
-          const checkedSet = new Set<number>(JSON.parse(savedChecked));
+      if (previewFile?.checkedChunks) {
+        try {
+          const checkedSet = new Set<number>(JSON.parse(previewFile.checkedChunks));
           for (let i = 0; i < chunks.length; i++) {
             if (!checkedSet.has(i)) { startIdx = i; break; }
             if (i === chunks.length - 1) startIdx = 0;
           }
-        }
+        } catch { /* ignore */ }
       }
       prefetchNextChunk(startIdx, openaiVoice);
     }
@@ -3615,22 +3614,29 @@ export default function Dashboard() {
     return `file_${previewFile.id}`;
   };
 
-  const loadDashCheckedChunks = (key: string): Set<number> => {
-    const saved = localStorage.getItem(`checkedChunks_${key}`);
-    return saved ? new Set(JSON.parse(saved)) : new Set();
+  const loadDashCheckedChunks = (): Set<number> => {
+    if (previewFile?.checkedChunks) {
+      try {
+        return new Set<number>(JSON.parse(previewFile.checkedChunks));
+      } catch { /* fall through */ }
+    }
+    return new Set();
   };
 
-  const saveDashCheckedChunks = (key: string, checked: Set<number>, total: number) => {
-    localStorage.setItem(`checkedChunks_${key}`, JSON.stringify(Array.from(checked)));
-    localStorage.setItem(`chunkProgress_${key}`, JSON.stringify({ checked: checked.size, total }));
-    const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
-    allProgress[key] = { checked: checked.size, total };
-    localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
+  const saveDashCheckedChunks = (checked: Set<number>, total: number) => {
+    if (!previewFile) return;
+    const checkedArr = Array.from(checked);
+    const checkedJson = JSON.stringify(checkedArr);
+    previewFile.checkedChunks = checkedJson;
+    fetch(`/api/files/${previewFile.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
+    }).catch(err => console.error('Failed to save checked chunks:', err));
   };
 
   const toggleDashChunkChecked = (idx: number) => {
-    const key = getDashFileKey();
-    if (!key) return;
+    if (!previewFile) return;
     const newChecked = new Set(checkedChunks);
     if (newChecked.has(idx)) {
       newChecked.delete(idx);
@@ -3640,34 +3646,38 @@ export default function Dashboard() {
       }
     }
     setCheckedChunks(newChecked);
-    saveDashCheckedChunks(key, newChecked, totalChunks);
+    checkedChunksRef.current = newChecked;
+    saveDashCheckedChunks(newChecked, totalChunks);
   };
 
   const autoCheckChunk = (chunkIdx: number) => {
     const file = previewFileRef.current;
     if (!file) return;
-    const key = `file_${file.id}`;
-    const saved = localStorage.getItem(`checkedChunks_${key}`);
-    const current = saved ? new Set<number>(JSON.parse(saved)) : new Set<number>();
+    const current = new Set(checkedChunksRef.current);
     if (current.has(chunkIdx)) return;
     for (let i = 0; i <= chunkIdx; i++) {
       current.add(i);
     }
     const total = ttsChunksRef.current.length || totalChunks;
-    localStorage.setItem(`checkedChunks_${key}`, JSON.stringify(Array.from(current)));
-    localStorage.setItem(`chunkProgress_${key}`, JSON.stringify({ checked: current.size, total }));
-    const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
-    allProgress[key] = { checked: current.size, total };
-    localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
     setCheckedChunks(new Set(current));
+    checkedChunksRef.current = current;
+    const checkedJson = JSON.stringify(Array.from(current));
+    file.checkedChunks = checkedJson;
+    fetch(`/api/files/${file.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
+    }).catch(err => console.error('Failed to save auto-checked chunks:', err));
   };
 
   useEffect(() => {
     if (previewFile && totalChunks > 0) {
-      const key = `file_${previewFile.id}`;
-      setCheckedChunks(loadDashCheckedChunks(key));
+      const loaded = loadDashCheckedChunks();
+      setCheckedChunks(loaded);
+      checkedChunksRef.current = loaded;
     } else {
       setCheckedChunks(new Set());
+      checkedChunksRef.current = new Set();
     }
   }, [previewFile?.id, totalChunks]);
 
@@ -4113,10 +4123,8 @@ export default function Dashboard() {
         let startWordOffset = 0;
         
         if (!resumeFromProgress && previewFile) {
-          const key = `file_${previewFile.id}`;
-          const savedChecked = localStorage.getItem(`checkedChunks_${key}`);
-          if (savedChecked) {
-            const checkedSet = new Set<number>(JSON.parse(savedChecked));
+          const checkedSet = checkedChunksRef.current;
+          if (checkedSet.size > 0) {
             for (let i = 0; i < chunks.length; i++) {
               if (!checkedSet.has(i)) {
                 startChunk = i;

@@ -15,7 +15,7 @@ export interface IStorage {
   getFile(id: number): Promise<FileRecord | undefined>;
   getFileByPath(objectPath: string): Promise<FileRecord | undefined>;
   createFile(file: InsertFile): Promise<FileRecord>;
-  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; ttsAudioUrl?: string; ttsGeneratedAt?: Date }): Promise<FileRecord>;
+  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date }): Promise<FileRecord>;
   deleteFile(id: number): Promise<void>;
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
   createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
@@ -163,7 +163,7 @@ export class DatabaseStorage implements IStorage {
     return file;
   }
 
-  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; ttsAudioUrl?: string; ttsGeneratedAt?: Date }): Promise<FileRecord> {
+  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date }): Promise<FileRecord> {
     const setData: Record<string, unknown> = {};
     if (updates.displayName !== undefined) {
       setData.displayName = updates.displayName;
@@ -179,6 +179,9 @@ export class DatabaseStorage implements IStorage {
     }
     if (updates.totalChunks !== undefined) {
       setData.totalChunks = updates.totalChunks;
+    }
+    if (updates.checkedChunks !== undefined) {
+      setData.checkedChunks = updates.checkedChunks;
     }
     if (updates.ttsAudioUrl !== undefined) {
       setData.ttsAudioUrl = updates.ttsAudioUrl;

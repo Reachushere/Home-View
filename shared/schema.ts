@@ -161,6 +161,7 @@ export const files = pgTable("files", {
   listened: boolean("listened").default(false),
   lastChunkIndex: integer("last_chunk_index").default(0),
   totalChunks: integer("total_chunks").default(0),
+  checkedChunks: text("checked_chunks"),
   ttsAudioUrl: text("tts_audio_url"),
   ttsGeneratedAt: timestamp("tts_generated_at"),
   createdAt: timestamp("created_at").defaultNow(),
