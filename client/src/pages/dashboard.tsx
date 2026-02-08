@@ -8809,29 +8809,22 @@ export default function Dashboard() {
         <svg 
           style={{ 
             position: 'absolute', 
-            left: '-8px', 
+            left: '-7px', 
             top: '50%', 
             transform: 'translateY(-50%)',
             overflow: 'visible',
           }} 
           width="9" 
-          height="18" 
-          viewBox="0 0 9 18" 
+          height="16" 
+          viewBox="0 0 9 16" 
           fill="none"
         >
           <path 
-            d="M9 0 L0.5 9 L9 18" 
+            d="M9 -1 L1 8 L9 17" 
             fill="rgba(255, 255, 255, 0.35)" 
           />
-          <path 
-            d="M9 0 L0.5 9 L9 18" 
-            fill="none" 
-            stroke="rgba(255, 255, 255, 0.4)" 
-            strokeWidth="1"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-          <rect x="8" y="0" width="2" height="18" fill="rgba(255, 255, 255, 0.35)" />
+          <line x1="9" y1="-1" x2="1" y2="8" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1" />
+          <line x1="1" y1="8" x2="9" y2="17" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1" />
         </svg>
       </div>
       
