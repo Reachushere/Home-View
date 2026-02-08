@@ -9183,7 +9183,7 @@ export default function Dashboard() {
             <div 
               style={btnStyle(3, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="button-sync-calendar"
-              onClick={() => { if (!syncAllCalendarMutation.isPending) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } }}
+              onClick={() => { if (!syncAllCalendarMutation.isPending) { if (window.confirm('Are you sure you want to sync?')) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } } }}
             >
               <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}>
                 {syncAllCalendarMutation.isPending ? <Loader2 className="h-[18px] w-[18px] text-white animate-spin" /> : <RefreshCw className="h-[18px] w-[18px] text-white" />}
