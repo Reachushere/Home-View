@@ -297,19 +297,26 @@ export default function Dashboard() {
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = 534;
+    const maxHeight = window.innerHeight - 200;
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+    const resetKey = 'calendarHeight_reset_v2';
+    if (!localStorage.getItem(resetKey)) {
+      localStorage.removeItem('calendarHeight');
+      localStorage.removeItem(`calendarHeight_${deviceId}`);
+      localStorage.setItem(resetKey, '1');
+    }
     const deviceSaved = localStorage.getItem(`calendarHeight_${deviceId}`);
     if (deviceSaved) {
       const val = parseInt(deviceSaved, 10);
-      if (!isNaN(val) && val > 0) return val;
+      if (!isNaN(val) && val > 0) return Math.min(val, maxHeight);
     }
     const saved = localStorage.getItem('calendarHeight');
     if (saved) {
       const val = parseInt(saved, 10);
-      if (!isNaN(val) && val > 0) return val;
+      if (!isNaN(val) && val > 0) return Math.min(val, maxHeight);
     }
     return defaultHeight;
   });
