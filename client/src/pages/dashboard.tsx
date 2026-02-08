@@ -264,6 +264,23 @@ export default function Dashboard() {
     prepDays: 0,
     priority: "medium",
     description: "",
+    eventStartTime: "",
+    eventEndTime: "",
+    reminder1: DEFAULT_REMINDER_1,
+    reminder2: DEFAULT_REMINDER_2,
+    reminder3: null as number | null,
+    reminder4: null as number | null,
+    attachments: [] as string[],
+    pasteUrl: "",
+    notes: "",
+    referenceLink: "",
+    subtasks: [] as { title: string; completed: boolean }[],
+    subtaskInput: "",
+    projectId: null as number | null,
+    repeatType: "none" as string,
+    repeatInterval: null as number | null,
+    repeatIntervalUnit: null as string | null,
+    repeatEndDate: "",
   });
   const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -8135,7 +8152,7 @@ export default function Dashboard() {
           data-testid="button-pomodoro-add"
           onClick={() => {
             setQuickAddStep(0);
-            setQuickAddData({ type: "", title: "", courseName: "", dueDate: "", dueDateHour: "18", dueDateMinute: "00", prepDays: 0, priority: "medium", description: "" });
+            setQuickAddData({ type: "", title: "", courseName: "", dueDate: "", dueDateHour: "18", dueDateMinute: "00", prepDays: 0, priority: "medium", description: "", eventStartTime: "", eventEndTime: "", reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: "", notes: "", referenceLink: "", subtasks: [], subtaskInput: "", projectId: null, repeatType: "none", repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: "" });
             setIsQuickAddOpen(true);
           }}
         >
@@ -9711,7 +9728,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <Plus className="h-3.5 w-3.5 text-white/70" />
                     <span className="text-[11px] text-white/70 font-normal tracking-wide uppercase">
-                      {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Due Date' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : 'Add Task'}
+                      {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </span>
                   </div>
                   <button onClick={() => setIsQuickAddOpen(false)} className="text-white/50 hover:text-white transition-colors" data-testid="button-close-quick-add">
@@ -9721,13 +9738,13 @@ export default function Dashboard() {
 
                 {/* Step indicator */}
                 <div className="flex gap-1 px-5 pt-3">
-                  {[0,1,2,3,4,5,6].map(s => (
+                  {Array.from({ length: 12 }, (_, s) => (
                     <div key={s} className="flex-1 h-[2px] rounded-full transition-colors duration-300" style={{ background: s <= quickAddStep ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.1)' }} />
                   ))}
                 </div>
 
                 {/* Content area */}
-                <div className="px-5 py-5 min-h-[200px] flex flex-col">
+                <div className="px-5 py-5 min-h-[200px] max-h-[400px] overflow-y-auto flex flex-col" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
@@ -9788,7 +9805,7 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* Step 3: Due Date */}
+                  {/* Step 3: Due Date + Start/End Time */}
                   {quickAddStep === 3 && (
                     <div className="flex flex-col gap-3">
                       <p className="text-white/60 text-[11px]">When is it due?</p>
@@ -9800,7 +9817,7 @@ export default function Dashboard() {
                         data-testid="quick-add-due-date"
                       />
                       <div className="flex gap-2 items-center">
-                        <span className="text-white/50 text-[11px]">Time:</span>
+                        <span className="text-white/50 text-[11px]">Due time:</span>
                         <select
                           value={quickAddData.dueDateHour}
                           onChange={(e) => setQuickAddData(p => ({ ...p, dueDateHour: e.target.value }))}
@@ -9824,6 +9841,29 @@ export default function Dashboard() {
                             <option key={m} value={m} style={{ color: 'black' }}>{m}</option>
                           ))}
                         </select>
+                      </div>
+                      <div className="border-t border-white/10 pt-3 mt-1">
+                        <p className="text-white/60 text-[11px] mb-2">Event time block (optional)</p>
+                        <div className="flex gap-2 items-center">
+                          <span className="text-white/50 text-[11px] w-[38px]">Start:</span>
+                          <input
+                            type="time"
+                            value={quickAddData.eventStartTime}
+                            onChange={(e) => setQuickAddData(p => ({ ...p, eventStartTime: e.target.value }))}
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                            data-testid="quick-add-start-time"
+                          />
+                        </div>
+                        <div className="flex gap-2 items-center mt-2">
+                          <span className="text-white/50 text-[11px] w-[38px]">End:</span>
+                          <input
+                            type="time"
+                            value={quickAddData.eventEndTime}
+                            onChange={(e) => setQuickAddData(p => ({ ...p, eventEndTime: e.target.value }))}
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                            data-testid="quick-add-end-time"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -9862,8 +9902,265 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* Step 6: Review & Submit */}
+                  {/* Step 6: Reminders */}
                   {quickAddStep === 6 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">Set reminders before due date</p>
+                      {[
+                        { label: 'Reminder 1', key: 'reminder1' as const },
+                        { label: 'Reminder 2', key: 'reminder2' as const },
+                        { label: 'Reminder 3', key: 'reminder3' as const },
+                        { label: 'Reminder 4', key: 'reminder4' as const },
+                      ].map(r => (
+                        <div key={r.key} className="flex gap-2 items-center">
+                          <span className="text-white/50 text-[11px] w-[72px]">{r.label}:</span>
+                          <select
+                            value={quickAddData[r.key] ?? 0}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value);
+                              setQuickAddData(p => ({ ...p, [r.key]: val === 0 && (r.key === 'reminder3' || r.key === 'reminder4') ? null : val }));
+                            }}
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                            data-testid={`quick-add-${r.key}`}
+                          >
+                            {REMINDER_OPTIONS.map(opt => (
+                              <option key={opt.value} value={opt.value} style={{ color: 'black' }}>{opt.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Step 7: Attachments */}
+                  {quickAddStep === 7 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">Add attachments</p>
+                      <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                        <Upload className="h-4 w-4 text-white/50" />
+                        <span className="text-white/60 text-[12px]">Upload file</span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          multiple
+                          onChange={async (e) => {
+                            const files = e.target.files;
+                            if (!files) return;
+                            for (const file of Array.from(files)) {
+                              try {
+                                const response = await uploadDroppedFile(file);
+                                if (response?.objectPath) {
+                                  setQuickAddData(p => ({ ...p, attachments: [...p.attachments, response.objectPath] }));
+                                }
+                              } catch (err) {
+                                toast({ title: "Upload failed", description: file.name, variant: "destructive" });
+                              }
+                            }
+                          }}
+                          data-testid="quick-add-file-upload"
+                        />
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={quickAddData.pasteUrl}
+                          onChange={(e) => setQuickAddData(p => ({ ...p, pasteUrl: e.target.value }))}
+                          placeholder="Paste URL to attach..."
+                          className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                          data-testid="quick-add-paste-url"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && quickAddData.pasteUrl.trim()) {
+                              setQuickAddData(p => ({ ...p, attachments: [...p.attachments, p.pasteUrl.trim()], pasteUrl: '' }));
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={() => {
+                            if (quickAddData.pasteUrl.trim()) {
+                              setQuickAddData(p => ({ ...p, attachments: [...p.attachments, p.pasteUrl.trim()], pasteUrl: '' }));
+                            }
+                          }}
+                          className="px-3 py-2 rounded-lg text-[11px] bg-white/15 text-white hover:bg-white/25 transition-colors"
+                          data-testid="quick-add-paste-url-add"
+                        >
+                          Add
+                        </button>
+                      </div>
+                      {quickAddData.attachments.length > 0 && (
+                        <div className="flex flex-col gap-1.5">
+                          {quickAddData.attachments.map((att, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                              <Paperclip className="h-3 w-3 text-white/40 flex-shrink-0" />
+                              <span className="text-white/70 text-[11px] truncate flex-1">{att.split('/').pop() || att}</span>
+                              <button
+                                onClick={() => setQuickAddData(p => ({ ...p, attachments: p.attachments.filter((_, i) => i !== idx) }))}
+                                className="text-white/30 hover:text-red-400 transition-colors"
+                                data-testid={`quick-add-remove-attachment-${idx}`}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {quickAddData.attachments.length === 0 && (
+                        <p className="text-white/30 text-[10px] text-center">No attachments added yet</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Step 8: Notes & Reference Links */}
+                  {quickAddStep === 8 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">Add notes and reference links</p>
+                      <div>
+                        <span className="text-white/50 text-[11px]">Notes</span>
+                        <textarea
+                          value={quickAddData.notes}
+                          onChange={(e) => setQuickAddData(p => ({ ...p, notes: e.target.value }))}
+                          placeholder="Add any notes..."
+                          rows={3}
+                          className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors resize-none"
+                          data-testid="quick-add-notes"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-white/50 text-[11px]">Reference link</span>
+                        <input
+                          type="url"
+                          value={quickAddData.referenceLink}
+                          onChange={(e) => setQuickAddData(p => ({ ...p, referenceLink: e.target.value }))}
+                          placeholder="https://..."
+                          className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                          data-testid="quick-add-reference-link"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 9: Subtasks & Project */}
+                  {quickAddStep === 9 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">Add subtasks and link to a project</p>
+                      <div>
+                        <span className="text-white/50 text-[11px]">Subtasks</span>
+                        <div className="flex gap-2 mt-1">
+                          <input
+                            type="text"
+                            value={quickAddData.subtaskInput}
+                            onChange={(e) => setQuickAddData(p => ({ ...p, subtaskInput: e.target.value }))}
+                            placeholder="Add a subtask..."
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                            data-testid="quick-add-subtask-input"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && quickAddData.subtaskInput.trim()) {
+                                setQuickAddData(p => ({ ...p, subtasks: [...p.subtasks, { title: p.subtaskInput.trim(), completed: false }], subtaskInput: '' }));
+                              }
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              if (quickAddData.subtaskInput.trim()) {
+                                setQuickAddData(p => ({ ...p, subtasks: [...p.subtasks, { title: p.subtaskInput.trim(), completed: false }], subtaskInput: '' }));
+                              }
+                            }}
+                            className="px-3 py-2 rounded-lg text-[11px] bg-white/15 text-white hover:bg-white/25 transition-colors"
+                            data-testid="quick-add-subtask-add"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        {quickAddData.subtasks.length > 0 && (
+                          <div className="flex flex-col gap-1.5 mt-2">
+                            {quickAddData.subtasks.map((st, idx) => (
+                              <div key={idx} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                                <div className="w-3 h-3 rounded-sm border border-white/30 flex-shrink-0" />
+                                <span className="text-white/70 text-[11px] flex-1">{st.title}</span>
+                                <button
+                                  onClick={() => setQuickAddData(p => ({ ...p, subtasks: p.subtasks.filter((_, i) => i !== idx) }))}
+                                  className="text-white/30 hover:text-red-400 transition-colors"
+                                  data-testid={`quick-add-remove-subtask-${idx}`}
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="border-t border-white/10 pt-3">
+                        <span className="text-white/50 text-[11px]">Link to project</span>
+                        <select
+                          value={quickAddData.projectId ?? ''}
+                          onChange={(e) => setQuickAddData(p => ({ ...p, projectId: e.target.value ? parseInt(e.target.value) : null }))}
+                          className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                          data-testid="quick-add-project"
+                        >
+                          <option value="" style={{ color: 'black' }}>No project</option>
+                          {allProjects.map(proj => (
+                            <option key={proj.id} value={proj.id} style={{ color: 'black' }}>{proj.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 10: Repeat */}
+                  {quickAddStep === 10 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/60 text-[11px]">Set task repetition</p>
+                      <div className="flex flex-col gap-2">
+                        {REPEAT_TYPES.map(rt => (
+                          <button
+                            key={rt}
+                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.repeatType === rt ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white'}`}
+                            onClick={() => setQuickAddData(p => ({ ...p, repeatType: rt }))}
+                            data-testid={`quick-add-repeat-${rt}`}
+                          >
+                            {rt.charAt(0).toUpperCase() + rt.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                      {quickAddData.repeatType === 'custom' && (
+                        <div className="flex gap-2 items-center mt-1">
+                          <span className="text-white/50 text-[11px]">Every</span>
+                          <input
+                            type="number"
+                            min={1}
+                            value={quickAddData.repeatInterval ?? 1}
+                            onChange={(e) => setQuickAddData(p => ({ ...p, repeatInterval: parseInt(e.target.value) || 1 }))}
+                            className="w-16 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40"
+                            data-testid="quick-add-repeat-interval"
+                          />
+                          <select
+                            value={quickAddData.repeatIntervalUnit ?? 'days'}
+                            onChange={(e) => setQuickAddData(p => ({ ...p, repeatIntervalUnit: e.target.value }))}
+                            className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                            data-testid="quick-add-repeat-unit"
+                          >
+                            {REPEAT_INTERVAL_UNITS.map(u => (
+                              <option key={u} value={u} style={{ color: 'black' }}>{u}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      {quickAddData.repeatType !== 'none' && (
+                        <div className="mt-1">
+                          <span className="text-white/50 text-[11px]">End date (optional)</span>
+                          <input
+                            type="date"
+                            value={quickAddData.repeatEndDate}
+                            onChange={(e) => setQuickAddData(p => ({ ...p, repeatEndDate: e.target.value }))}
+                            className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                            data-testid="quick-add-repeat-end-date"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Step 11: Review & Submit */}
+                  {quickAddStep === 11 && (
                     <div className="flex flex-col gap-3">
                       <p className="text-white/60 text-[11px] mb-1">Review your task</p>
                       <div className="bg-white/5 rounded-lg p-3 space-y-2 border border-white/10">
@@ -9883,6 +10180,12 @@ export default function Dashboard() {
                           <span className="text-white/50">Due Date</span>
                           <span className="text-white">{quickAddData.dueDate ? format(new Date(quickAddData.dueDate + 'T' + quickAddData.dueDateHour + ':' + quickAddData.dueDateMinute), "MMM d, yyyy 'at' h:mm a") : 'Not set'}</span>
                         </div>
+                        {(quickAddData.eventStartTime || quickAddData.eventEndTime) && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Time Block</span>
+                            <span className="text-white">{quickAddData.eventStartTime || '?'} - {quickAddData.eventEndTime || '?'}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-[11px]">
                           <span className="text-white/50">Prep Days</span>
                           <span className="text-white">{quickAddData.prepDays === 0 ? 'None' : `${quickAddData.prepDays} day${quickAddData.prepDays > 1 ? 's' : ''}`}</span>
@@ -9891,6 +10194,56 @@ export default function Dashboard() {
                           <span className="text-white/50">Priority</span>
                           <span className="text-white">{quickAddData.priority.charAt(0).toUpperCase() + quickAddData.priority.slice(1)}</span>
                         </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Reminders</span>
+                          <span className="text-white text-right">
+                            {[quickAddData.reminder1, quickAddData.reminder2, quickAddData.reminder3, quickAddData.reminder4]
+                              .filter(r => r !== null && r !== undefined && r > 0)
+                              .map(r => REMINDER_OPTIONS.find(o => o.value === r)?.label || `${r}m`)
+                              .join(', ') || 'None'}
+                          </span>
+                        </div>
+                        {quickAddData.attachments.length > 0 && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Attachments</span>
+                            <span className="text-white">{quickAddData.attachments.length} file{quickAddData.attachments.length > 1 ? 's' : ''}</span>
+                          </div>
+                        )}
+                        {quickAddData.notes && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Notes</span>
+                            <span className="text-white truncate ml-4">{quickAddData.notes.substring(0, 40)}{quickAddData.notes.length > 40 ? '...' : ''}</span>
+                          </div>
+                        )}
+                        {quickAddData.referenceLink && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Reference</span>
+                            <span className="text-white truncate ml-4">{quickAddData.referenceLink.substring(0, 30)}...</span>
+                          </div>
+                        )}
+                        {quickAddData.subtasks.length > 0 && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Subtasks</span>
+                            <span className="text-white">{quickAddData.subtasks.length}</span>
+                          </div>
+                        )}
+                        {quickAddData.projectId && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Project</span>
+                            <span className="text-white">{allProjects.find(p => p.id === quickAddData.projectId)?.name || 'Unknown'}</span>
+                          </div>
+                        )}
+                        {quickAddData.repeatType !== 'none' && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Repeat</span>
+                            <span className="text-white">
+                              {quickAddData.repeatType === 'custom'
+                                ? `Every ${quickAddData.repeatInterval || 1} ${quickAddData.repeatIntervalUnit || 'days'}`
+                                : quickAddData.repeatType.charAt(0).toUpperCase() + quickAddData.repeatType.slice(1)}
+                              {quickAddData.repeatEndDate ? ` until ${format(new Date(quickAddData.repeatEndDate + 'T00:00'), 'MMM d, yyyy')}` : ''}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -9907,10 +10260,10 @@ export default function Dashboard() {
                     {quickAddStep === 0 ? 'Cancel' : 'Back'}
                   </button>
 
-                  {quickAddStep < 6 && quickAddStep > 0 && (
+                  {quickAddStep < 11 && quickAddStep > 0 && (
                     <button
                       onClick={() => setQuickAddStep(s => s + 1)}
-                      disabled={quickAddStep === 1 && !quickAddData.title.trim() || quickAddStep === 3 && !quickAddData.dueDate}
+                      disabled={(quickAddStep === 1 && !quickAddData.title.trim()) || (quickAddStep === 3 && !quickAddData.dueDate)}
                       className="flex items-center gap-1 px-4 py-2 rounded-lg text-[12px] font-medium transition-all duration-200 bg-white/15 text-white hover:bg-white/25 disabled:opacity-30 disabled:cursor-not-allowed"
                       data-testid="quick-add-next"
                     >
@@ -9919,7 +10272,7 @@ export default function Dashboard() {
                     </button>
                   )}
 
-                  {quickAddStep === 6 && (
+                  {quickAddStep === 11 && (
                     <button
                       onClick={async () => {
                         try {
@@ -9930,7 +10283,7 @@ export default function Dashboard() {
                             sd.setDate(sd.getDate() - quickAddData.prepDays);
                             startDate = sd.toISOString();
                           }
-                          await apiRequest("POST", "/api/tasks", {
+                          const res = await apiRequest("POST", "/api/tasks", {
                             title: quickAddData.title,
                             type: quickAddData.type,
                             courseName: quickAddData.courseName || null,
@@ -9939,22 +10292,39 @@ export default function Dashboard() {
                             priority: quickAddData.priority,
                             weekNumber: selectedWeek,
                             description: quickAddData.description || "",
-                            reminder1: DEFAULT_REMINDER_1,
-                            reminder2: DEFAULT_REMINDER_2,
-                            reminder3: null,
-                            reminder4: null,
-                            attachments: [],
-                            referenceLink: "",
-                            repeatType: "none",
-                            repeatInterval: null,
-                            repeatIntervalUnit: null,
-                            repeatEndDate: null,
-                            eventStartTime: null,
-                            eventEndTime: null,
-                            notes: null,
+                            reminder1: quickAddData.reminder1,
+                            reminder2: quickAddData.reminder2,
+                            reminder3: quickAddData.reminder3,
+                            reminder4: quickAddData.reminder4,
+                            attachments: quickAddData.attachments.length > 0 ? quickAddData.attachments : [],
+                            referenceLink: quickAddData.referenceLink || "",
+                            repeatType: quickAddData.repeatType,
+                            repeatInterval: quickAddData.repeatType === 'custom' ? quickAddData.repeatInterval : null,
+                            repeatIntervalUnit: quickAddData.repeatType === 'custom' ? quickAddData.repeatIntervalUnit : null,
+                            repeatEndDate: quickAddData.repeatEndDate ? new Date(quickAddData.repeatEndDate + 'T00:00').toISOString() : null,
+                            eventStartTime: quickAddData.eventStartTime || null,
+                            eventEndTime: quickAddData.eventEndTime || null,
+                            notes: quickAddData.notes || null,
+                            projectId: quickAddData.projectId,
                           });
+                          const newTask = await res.json();
+                          if (quickAddData.subtasks.length > 0 && newTask?.id) {
+                            for (let i = 0; i < quickAddData.subtasks.length; i++) {
+                              try {
+                                await apiRequest("POST", "/api/subtasks", {
+                                  taskId: newTask.id,
+                                  title: quickAddData.subtasks[i].title,
+                                  isCompleted: false,
+                                  position: i,
+                                });
+                              } catch (e) {
+                                console.error('Failed to create subtask:', e);
+                              }
+                            }
+                          }
                           queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
                           queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+                          queryClient.invalidateQueries({ queryKey: ["/api/subtasks"] });
                           setIsQuickAddOpen(false);
                           toast({ title: "Task added", description: `${quickAddData.title} has been added to your calendar.` });
                         } catch (err) {
