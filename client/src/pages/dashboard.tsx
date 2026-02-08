@@ -8928,8 +8928,8 @@ export default function Dashboard() {
               right: '0px', 
               width: `${totalW + 4}px`, 
               height: `${pillH}px`,
-              transform: `translateX(${slideOffset}px)`,
-              transition: !isPillMenuOpen ? undefined : 'transform 0.3s ease-in-out',
+              transform: isPillMenuOpen ? 'translateX(0px)' : `translateX(${slideOffset}px)`,
+              transition: isPillMenuOpen ? 'transform 0.3s ease-in-out' : 'none',
             }}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
