@@ -11682,7 +11682,7 @@ export default function Dashboard() {
                         ) : (
                           <>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: moduleP.hasFiles ? getProgressColor(moduleP.percent) : 'white' }}>M</span>
+                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase text-white">M</span>
                               {moduleP.hasFiles ? (
                                 <>
                                   <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -11697,7 +11697,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: readingP.hasFiles ? getProgressColor(readingP.percent) : 'white' }}>R</span>
+                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase text-white">R</span>
                               {readingP.hasFiles ? (
                                 <>
                                   <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -11712,7 +11712,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: otherP.hasFiles ? getProgressColor(otherP.percent) : 'white' }}>O</span>
+                              <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase text-white">O</span>
                               {otherP.hasFiles ? (
                                 <>
                                   <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
