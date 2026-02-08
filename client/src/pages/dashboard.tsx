@@ -386,6 +386,14 @@ export default function Dashboard() {
   const [isKitchenPlaying, setIsKitchenPlaying] = useState(false);
   const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isTopPillOpen, setIsTopPillOpen] = useState(true);
+  const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    topPillTimeoutRef.current = setTimeout(() => {
+      setIsTopPillOpen(false);
+    }, 1800);
+    return () => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); };
+  }, []);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
   const [moveFileCurrentFolder, setMoveFileCurrentFolder] = useState<string>('');
@@ -7375,6 +7383,27 @@ export default function Dashboard() {
         />
       )}
 
+      {/* Top Pill - Slide up/down container for all top controls */}
+      <div 
+        style={{
+          position: 'absolute',
+          zIndex: 20,
+          left: 0,
+          right: 0,
+          top: 0,
+          transform: isTopPillOpen ? 'translateY(0px)' : 'translateY(-60px)',
+          transition: 'transform 0.3s ease-in-out',
+        }}
+        onMouseEnter={() => {
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+        }}
+        onMouseLeave={() => {
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          topPillTimeoutRef.current = setTimeout(() => {
+            setIsTopPillOpen(false);
+          }, 1800);
+        }}
+      >
       {/* Top Controls - Positioned directly on background */}
       <div className="absolute z-20 left-0 right-0 top-0 flex items-center mx-3" style={{ 
         height: '50px',
@@ -7382,8 +7411,8 @@ export default function Dashboard() {
       }}>
         {/* Logo and Name - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '10px', zIndex: 100 }} />
-          <div className="flex flex-col fixed" style={{ left: '66px', top: '10px', zIndex: 100 }}>
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] absolute" style={{ left: '12px', top: '10px', zIndex: 100 }} />
+          <div className="flex flex-col absolute" style={{ left: '66px', top: '10px', zIndex: 100 }}>
             <span className="text-white font-bold text-[11px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
             <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
           </div>
@@ -7928,8 +7957,8 @@ export default function Dashboard() {
                     </div>
         </div>
 
-        {/* Pomodoro Timer - Fixed, positioned left of clock */}
-        <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
+        {/* Pomodoro Timer - positioned left of clock */}
+        <div className="absolute flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
@@ -7951,8 +7980,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Clock - Fixed Right */}
-        <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
+        {/* Clock - Right */}
+        <div ref={clockContainerRef} className="absolute h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
           <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
             <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
               <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
@@ -7980,6 +8009,57 @@ export default function Dashboard() {
           </div>
           </div>
         </div>
+      </div>
+
+      {/* Down arrow for top pill - hover zone + arrow SVG */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          bottom: '-30px',
+          width: '60px',
+          height: '30px',
+          cursor: 'pointer',
+          pointerEvents: 'auto',
+          zIndex: 2,
+        }}
+        onClick={() => {
+          setIsTopPillOpen(true);
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          topPillTimeoutRef.current = setTimeout(() => {
+            setIsTopPillOpen(false);
+          }, 1800);
+        }}
+        onMouseEnter={() => {
+          setIsTopPillOpen(true);
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+        }}
+      />
+      <svg
+        className={!isTopPillOpen ? 'top-pill-arrow-idle' : ''}
+        width="30"
+        height="18"
+        viewBox="-1 -1 32 20"
+        style={{
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          bottom: '-19px',
+          overflow: 'visible',
+          pointerEvents: 'none',
+          opacity: isTopPillOpen ? 0 : 1,
+          transition: 'opacity 0.3s ease-in-out',
+        }}
+      >
+        <path
+          d="M 0 0 L 30 0 L 15 16 Z"
+          fill="rgba(255, 255, 255, 0.35)"
+          stroke="rgba(255, 255, 255, 0.45)"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
       </div>
 
       {/* Settings Panel Popup - Certificate Tracking Only */}
