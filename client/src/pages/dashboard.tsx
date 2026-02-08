@@ -8007,7 +8007,7 @@ export default function Dashboard() {
       </div>
 
       {/* Pomodoro Timer - Fixed on screen, never slides */}
-      <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '6px', zIndex: 100 }}>
+      <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '5px', zIndex: 100 }}>
         <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
             pomodoroMode === "work" ? "text-white" : 
@@ -8030,7 +8030,7 @@ export default function Dashboard() {
       </div>
 
       {/* Clock - Fixed on screen, never slides */}
-      <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '6px', zIndex: 100 }}>
+      <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100 }}>
         <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
           <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
