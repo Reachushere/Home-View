@@ -387,10 +387,48 @@ export default function Dashboard() {
   const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTopPillOpen, setIsTopPillOpen] = useState(true);
+  const [topPillAnimationStopped, setTopPillAnimationStopped] = useState(false);
+  const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openTopPill = useCallback(() => {
+    const el = topPillRef.current;
+    if (el && !isTopPillOpen) {
+      const computed = getComputedStyle(el).transform;
+      el.style.animation = 'none';
+      el.style.transform = computed;
+      void el.offsetHeight;
+      requestAnimationFrame(() => {
+        el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        el.style.transform = 'translateX(-50%) translateY(0px)';
+        setTopPillAnimationStopped(true);
+        setIsTopPillOpen(true);
+      });
+    } else {
+      setIsTopPillOpen(true);
+    }
+  }, [isTopPillOpen]);
+  const closeTopPill = useCallback(() => {
+    const el = topPillRef.current;
+    if (el) {
+      el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      el.style.transform = 'translateX(-50%) translateY(-56px)';
+      setIsTopPillOpen(false);
+      setTimeout(() => {
+        if (el) {
+          el.style.transition = '';
+          el.style.transform = '';
+          el.style.animation = '';
+        }
+        setTopPillAnimationStopped(false);
+      }, 450);
+    } else {
+      setIsTopPillOpen(false);
+      setTopPillAnimationStopped(false);
+    }
+  }, []);
   useEffect(() => {
     topPillTimeoutRef.current = setTimeout(() => {
-      setIsTopPillOpen(false);
+      closeTopPill();
     }, 1800);
     return () => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); };
   }, []);
@@ -7392,13 +7430,16 @@ export default function Dashboard() {
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
+        ref={topPillRef}
         style={{
           position: 'absolute',
           zIndex: 20,
           left: 'calc(50% - 90px)',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
-          transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          animation: !isTopPillOpen ? 'top-pill-container-nudge 18s ease-in-out infinite' : 'none',
+          ...(!topPillAnimationStopped ? {
+            transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
+            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            animation: !isTopPillOpen ? 'top-pill-container-nudge 18s ease-in-out infinite' : 'none',
+          } : {}),
           top: '0px',
           height: '55px',
           display: 'flex',
@@ -7411,7 +7452,7 @@ export default function Dashboard() {
         onMouseLeave={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           topPillTimeoutRef.current = setTimeout(() => {
-            setIsTopPillOpen(false);
+            closeTopPill();
           }, 1800);
         }}
       >
@@ -7440,14 +7481,14 @@ export default function Dashboard() {
             zIndex: 2,
           }}
           onClick={() => {
-            setIsTopPillOpen(true);
+            openTopPill();
             if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
             topPillTimeoutRef.current = setTimeout(() => {
-              setIsTopPillOpen(false);
+              closeTopPill();
             }, 1800);
           }}
           onMouseEnter={() => {
-            setIsTopPillOpen(true);
+            openTopPill();
             if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           }}
         />
