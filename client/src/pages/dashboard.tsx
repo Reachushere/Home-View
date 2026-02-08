@@ -8859,7 +8859,7 @@ export default function Dashboard() {
 
         return (
           <div 
-            className={`absolute z-[60] ${!isPillMenuOpen ? 'pill-arrow-idle' : ''}`}
+            className="absolute z-[60]"
             style={{ 
               top: `${pillTop}px`, 
               right: '0px', 
@@ -8877,7 +8877,7 @@ export default function Dashboard() {
               onMouseEnter={handleOpen}
             />
             {/* SVG pill shape */}
-            <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
+            <svg className={!isPillMenuOpen ? 'pill-arrow-idle' : ''} width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
               <defs>
                 <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
                   <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.1)" />
