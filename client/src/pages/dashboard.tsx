@@ -13313,7 +13313,8 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-[6px] mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, marginLeft: '-15px', marginRight: '-15px', width: 'auto', height: '145px' }} data-task-boxes-container="true">
+        <div style={{ order: 1, height: '157px', position: 'relative', flexShrink: 0 }}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch absolute" style={{ zIndex: 35, left: '-15px', right: '-15px', top: '6px', bottom: '6px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
@@ -13659,6 +13660,7 @@ export default function Dashboard() {
               <div className="flex-1 flex flex-col" />
             </div>
           </section>
+        </div>
         </div>
           );
         })()}
