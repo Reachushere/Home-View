@@ -7392,13 +7392,13 @@ export default function Dashboard() {
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
-        className={!isTopPillOpen ? 'top-pill-container-idle' : ''}
         style={{
           position: 'absolute',
           zIndex: 20,
           left: 'calc(50% - 90px)',
           transform: `translateX(-50%) translateY(${isTopPillOpen ? '0px' : '-56px'})`,
-          transition: 'transform 0.3s ease-in-out',
+          transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          animation: !isTopPillOpen ? 'top-pill-container-nudge 18s ease-in-out infinite' : 'none',
           top: '0px',
           height: '55px',
           display: 'flex',

@@ -267,7 +267,7 @@ button[role="combobox"] > span {
 }
 
 .top-pill-container-idle {
-  animation: top-pill-container-nudge 18s ease-in-out infinite !important;
+  animation: top-pill-container-nudge 18s ease-in-out infinite;
 }
 
 @keyframes blink {
