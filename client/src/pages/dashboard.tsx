@@ -7411,8 +7411,8 @@ export default function Dashboard() {
       }}>
         {/* Logo and Name - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[35px] w-[35px] absolute" style={{ left: '12px', top: '14px', zIndex: 100 }} />
-          <div className="flex flex-col absolute" style={{ left: '55px', top: '12px', zIndex: 100 }}>
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[35px] w-[35px] fixed" style={{ left: '12px', top: '14px', zIndex: 100 }} />
+          <div className="flex flex-col fixed" style={{ left: '55px', top: '12px', zIndex: 100 }}>
             <span className="text-white font-bold text-[11px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
             <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
           </div>
@@ -7957,8 +7957,8 @@ export default function Dashboard() {
                     </div>
         </div>
 
-        {/* Pomodoro Timer - positioned left of clock */}
-        <div className="absolute flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
+        {/* Pomodoro Timer - Fixed, positioned left of clock */}
+        <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
@@ -7980,8 +7980,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Clock - Right */}
-        <div ref={clockContainerRef} className="absolute h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
+        {/* Clock - Fixed Right */}
+        <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
           <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
             <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
               <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
