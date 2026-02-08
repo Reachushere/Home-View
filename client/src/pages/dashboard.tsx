@@ -13247,8 +13247,8 @@ export default function Dashboard() {
                 : colorSettings.boxBackground,
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
-              marginLeft: boxOrder.indexOf('this-week') === 0 ? '0px' : '0px', 
-              marginRight: boxOrder.indexOf('this-week') === 2 ? '0px' : '0px',
+              marginLeft: '0px', 
+              marginRight: '0px',
               paddingBottom: '5px',
               ...(thisWeekBoxHeight ? { height: `${thisWeekBoxHeight}px`, flex: 'none' } : {})
             }} 
@@ -13365,8 +13365,8 @@ export default function Dashboard() {
                 : colorSettings.boxBackground,
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
-              marginLeft: boxOrder.indexOf('today') === 0 ? '0px' : '0px', 
-              marginRight: boxOrder.indexOf('today') === 2 ? '0px' : '0px',
+              marginLeft: '0px', 
+              marginRight: '0px',
               paddingBottom: '5px'
             }} 
             data-testid="section-due-today"
@@ -13479,8 +13479,8 @@ export default function Dashboard() {
                 : colorSettings.boxBackground,
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
-              marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', 
-              marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px',
+              marginLeft: '0px', 
+              marginRight: '0px',
               paddingBottom: '5px'
             }} 
             data-testid="section-due-tomorrow"
