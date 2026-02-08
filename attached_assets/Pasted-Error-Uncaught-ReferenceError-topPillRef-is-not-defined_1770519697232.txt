@@ -1,0 +1,17 @@
+Error: Uncaught ReferenceError: topPillRef is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1770519688704
+Line: 8309, Col: 20
+ReferenceError: topPillRef is not defined
+    at Dashboard (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1770519688704:8309:20)
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)Error: Uncaught ReferenceError: topPillRef is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1770519688704
+Line: 8309, Col: 20
+ReferenceError: topPillRef is not defined

@@ -387,44 +387,12 @@ export default function Dashboard() {
   const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTopPillOpen, setIsTopPillOpen] = useState(true);
-  const [topPillAnimationStopped, setTopPillAnimationStopped] = useState(false);
-  const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openTopPill = useCallback(() => {
-    const el = topPillRef.current;
-    if (el && !isTopPillOpen) {
-      const computed = getComputedStyle(el).transform;
-      el.style.animation = 'none';
-      el.style.transform = computed;
-      void el.offsetHeight;
-      requestAnimationFrame(() => {
-        el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-        el.style.transform = 'translateX(-50%) translateY(0px)';
-        setTopPillAnimationStopped(true);
-        setIsTopPillOpen(true);
-      });
-    } else {
-      setIsTopPillOpen(true);
-    }
-  }, [isTopPillOpen]);
+    setIsTopPillOpen(true);
+  }, []);
   const closeTopPill = useCallback(() => {
-    const el = topPillRef.current;
-    if (el) {
-      el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateX(-50%) translateY(-56px)';
-      setIsTopPillOpen(false);
-      setTimeout(() => {
-        if (el) {
-          el.style.transition = '';
-          el.style.transform = '';
-          el.style.animation = '';
-        }
-        setTopPillAnimationStopped(false);
-      }, 450);
-    } else {
-      setIsTopPillOpen(false);
-      setTopPillAnimationStopped(false);
-    }
+    setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
     topPillTimeoutRef.current = setTimeout(() => {
