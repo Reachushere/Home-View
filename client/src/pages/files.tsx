@@ -284,7 +284,7 @@ export default function FilesPage() {
   }
   const { data: weeks = [] } = useQuery<Week[]>({
     queryKey: ["/api/weeks"],
-    queryFn: () => fetch("/api/weeks").then(r => r.json()),
+    queryFn: () => fetch("/api/weeks").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
   // Helper to get week number from week id
