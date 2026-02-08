@@ -3585,6 +3585,29 @@ export default function Dashboard() {
     ttsChunksRef.current = chunks;
     setTtsChunks(chunks);
     setTotalChunks(chunks.length);
+
+    // Pre-fetch the first chunk's audio for OpenAI TTS so playback starts instantly
+    if (chunks.length > 0 && (previewSpeaker === "openai_tts" || !window.speechSynthesis)) {
+      // Determine which chunk we'll actually start from (first unchecked)
+      let startIdx = 0;
+      if (previewFile) {
+        const key = `file_${previewFile.id}`;
+        const savedChecked = localStorage.getItem(`checkedChunks_${key}`);
+        if (savedChecked) {
+          const checkedSet = new Set<number>(JSON.parse(savedChecked));
+          for (let i = 0; i < chunks.length; i++) {
+            if (!checkedSet.has(i)) { startIdx = i; break; }
+            if (i === chunks.length - 1) startIdx = 0;
+          }
+        }
+      }
+      prefetchNextChunk(startIdx, openaiVoice);
+    }
+
+    // Pre-warm browser voices cache
+    if (window.speechSynthesis && !cachedVoicesRef.current) {
+      waitForVoices();
+    }
   }, [previewText]);
 
   const getDashFileKey = () => {
@@ -3748,39 +3771,41 @@ export default function Dashboard() {
   const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed
   
   // Helper to wait for voices to be loaded (Chrome/Android fix)
+  const cachedVoicesRef = useRef<SpeechSynthesisVoice[] | null>(null);
   const waitForVoices = (): Promise<SpeechSynthesisVoice[]> => {
     return new Promise((resolve) => {
       if (!window.speechSynthesis) {
-        console.log("TTS: speechSynthesis not available");
         resolve([]);
         return;
       }
+      if (cachedVoicesRef.current && cachedVoicesRef.current.length > 0) {
+        resolve(cachedVoicesRef.current);
+        return;
+      }
       const voices = window.speechSynthesis.getVoices();
-      console.log("TTS: Initial voices check:", voices?.length || 0);
       if (voices && voices.length > 0) {
+        cachedVoicesRef.current = voices;
         resolve(voices);
         return;
       }
-      // Chrome loads voices asynchronously
       const handleVoicesChanged = () => {
         const loadedVoices = window.speechSynthesis.getVoices();
-        console.log("TTS: Voices loaded via event:", loadedVoices?.length || 0);
+        cachedVoicesRef.current = loadedVoices;
         resolve(loadedVoices || []);
       };
       window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged, { once: true });
-      // Timeout after 3 seconds - try multiple times
       let attempts = 0;
       const tryGetVoices = () => {
         attempts++;
         const fallbackVoices = window.speechSynthesis.getVoices() || [];
-        console.log(`TTS: Attempt ${attempts} got ${fallbackVoices.length} voices`);
         if (fallbackVoices.length > 0 || attempts >= 5) {
+          cachedVoicesRef.current = fallbackVoices;
           resolve(fallbackVoices);
         } else {
-          setTimeout(tryGetVoices, 500);
+          setTimeout(tryGetVoices, 300);
         }
       };
-      setTimeout(tryGetVoices, 500);
+      setTimeout(tryGetVoices, 300);
     });
   };
   
@@ -4041,7 +4066,7 @@ export default function Dashboard() {
         shouldContinueRef.current = false;
         setIsPlaying(false);
         isPlayingRef.current = false;
-        await new Promise(r => setTimeout(r, 150)); // Slightly longer wait to ensure complete stop
+        await new Promise(r => setTimeout(r, 50));
         
         // Use pre-initialized chunks if available (from useEffect), otherwise create them
         let chunks = ttsChunksRef.current;
