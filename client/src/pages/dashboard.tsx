@@ -13311,9 +13311,9 @@ export default function Dashboard() {
           };
           
           return (
-        <div style={{ order: 3, height: '157px', position: 'relative', flexShrink: 0, marginTop: '58px' }}>
+        <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
         {!isTodoFlyoutOpen && (
-          <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ top: '-14px', right: '51px' }}>
+          <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '170px', right: '51px' }}>
             <input
               type="checkbox"
               checked={showDeviceSaved}
@@ -13324,7 +13324,7 @@ export default function Dashboard() {
             {showDeviceSaved ? "Saved!" : "Set Default"}
           </label>
         )}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch absolute" style={{ zIndex: 35, left: '-15px', right: '51px', top: '6px', bottom: '6px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: '10px', right: '51px', bottom: '12px', height: '157px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
