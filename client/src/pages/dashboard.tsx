@@ -2372,14 +2372,14 @@ export default function Dashboard() {
 
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
-    queryFn: () => fetch("/api/tasks").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    queryFn: () => fetch("/api/tasks", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
     retry: 2,
     retryDelay: 1000,
   });
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
-    queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
     retry: 2,
     retryDelay: 1000,
   });
@@ -2387,7 +2387,7 @@ export default function Dashboard() {
   // Fetch all projects for calendar display
   const { data: allProjects = [] } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
-    queryFn: () => fetch("/api/projects").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    queryFn: () => fetch("/api/projects", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
     retry: 2,
     retryDelay: 1000,
   });
@@ -2395,7 +2395,7 @@ export default function Dashboard() {
   // Fetch sticky notes
   const { data: stickyNotes = [] } = useQuery<StickyNoteType[]>({
     queryKey: ["/api/sticky-notes"],
-    queryFn: () => fetch("/api/sticky-notes").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    queryFn: () => fetch("/api/sticky-notes", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
     retry: 2,
     retryDelay: 1000,
   });
@@ -2949,7 +2949,7 @@ export default function Dashboard() {
   
   const { data: calendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/events", { weekNumber: selectedWeek }],
-    queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
+    queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
     refetchInterval: 60000,
     retry: 2,
     retryDelay: 1000,
@@ -2963,7 +2963,7 @@ export default function Dashboard() {
   // Semester settings query
   const { data: semesterSettings } = useQuery<SemesterSettings | null>({
     queryKey: ["/api/semester"],
-    queryFn: () => fetch("/api/semester").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+    queryFn: () => fetch("/api/semester", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
     retry: 2,
     retryDelay: 1000,
   });
@@ -7698,7 +7698,11 @@ export default function Dashboard() {
                 <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 rounded-full"
-                    style={{ width: `${totalChunks > 0 ? Math.round((checkedChunks.size / totalChunks) * 100) : 0}%` }}
+                    style={{ width: `${totalChunks > 0 
+                      ? Math.round((checkedChunks.size / totalChunks) * 100)
+                      : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
+                        ? Math.round((previewFile.lastChunkIndex / previewFile.totalChunks) * 100)
+                        : 0}%` }}
                   />
                 </div>
                 <span className="text-[11px] text-emerald-400 font-medium min-w-[40px]">
@@ -13922,12 +13926,16 @@ export default function Dashboard() {
                                                       checked={file.listened || false}
                                                       onCheckedChange={async (checked) => {
                                                         try {
-                                                          await fetch(`/api/files/${file.id}`, {
+                                                          const resp = await fetch(`/api/files/${file.id}`, {
                                                             method: 'PATCH',
                                                             headers: { 'Content-Type': 'application/json' },
+                                                            credentials: 'include',
                                                             body: JSON.stringify({ listened: checked === true })
                                                           });
+                                                          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                                                           queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                          queryClient.invalidateQueries({ queryKey: ['/api/files/counts'] });
+                                                          queryClient.invalidateQueries({ queryKey: ['/api/onedrive/week-counts'] });
                                                         } catch (err) {
                                                           console.error('Failed to update listened status:', err);
                                                         }

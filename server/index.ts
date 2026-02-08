@@ -30,10 +30,31 @@ app.use(express.urlencoded({ extended: false }));
 
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
-const activeSessions = new Set<string>();
 
-function generateSessionToken(): string {
-  return crypto.randomBytes(32).toString("hex");
+const TOKEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function createSessionToken(): string {
+  const timestamp = Date.now().toString(36);
+  const sig = crypto.createHmac("sha256", SESSION_SECRET)
+    .update(`uni-cal-auth:${SITE_PASSWORD}:${timestamp}`)
+    .digest("hex");
+  return `${timestamp}.${sig}`;
+}
+
+function isValidToken(token: string): boolean {
+  if (!SITE_PASSWORD) return true;
+  if (!token || typeof token !== "string") return false;
+  const dotIndex = token.indexOf(".");
+  if (dotIndex === -1) return false;
+  const timestamp = token.substring(0, dotIndex);
+  const sig = token.substring(dotIndex + 1);
+  if (!/^[a-z0-9]+$/.test(timestamp) || !/^[a-f0-9]{64}$/.test(sig)) return false;
+  const created = parseInt(timestamp, 36);
+  if (isNaN(created) || Date.now() - created > TOKEN_MAX_AGE_MS) return false;
+  const expected = crypto.createHmac("sha256", SESSION_SECRET)
+    .update(`uni-cal-auth:${SITE_PASSWORD}:${timestamp}`)
+    .digest("hex");
+  return sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
 }
 
 app.post("/api/auth/login", (req: Request, res: Response) => {
@@ -42,8 +63,7 @@ app.post("/api/auth/login", (req: Request, res: Response) => {
     return res.json({ success: true });
   }
   if (password === SITE_PASSWORD) {
-    const token = generateSessionToken();
-    activeSessions.add(token);
+    const token = createSessionToken();
     res.cookie("uni_cal_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -60,17 +80,17 @@ app.get("/api/auth/check", (req: Request, res: Response) => {
     return res.json({ authenticated: true });
   }
   const token = req.cookies?.uni_cal_session;
-  if (token && activeSessions.has(token)) {
-    return res.json({ authenticated: true });
+  if (token) {
+    try {
+      if (isValidToken(token)) {
+        return res.json({ authenticated: true });
+      }
+    } catch (e) {}
   }
   return res.json({ authenticated: false });
 });
 
-app.post("/api/auth/logout", (req: Request, res: Response) => {
-  const token = req.cookies?.uni_cal_session;
-  if (token) {
-    activeSessions.delete(token);
-  }
+app.post("/api/auth/logout", (_req: Request, res: Response) => {
   res.clearCookie("uni_cal_session");
   return res.json({ success: true });
 });
@@ -83,8 +103,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();
 
   const token = req.cookies?.uni_cal_session;
-  if (token && activeSessions.has(token)) {
-    return next();
+  if (token) {
+    try {
+      if (isValidToken(token)) {
+        return next();
+      }
+    } catch (e) {}
   }
 
   if (req.path.startsWith("/api/")) {
