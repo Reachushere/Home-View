@@ -386,43 +386,31 @@ export default function Dashboard() {
   const [isKitchenReadingLoading, setIsKitchenReadingLoading] = useState(false);
   const [isKitchenPlaying, setIsKitchenPlaying] = useState(false);
   const [isPillMenuOpen, setIsPillMenuOpen] = useState(false);
+  const [sidePillIdle, setSidePillIdle] = useState(false);
   const pillMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sidePillRef = useRef<HTMLDivElement>(null);
   const [sidePillMounted, setSidePillMounted] = useState(false);
   const sidePillSlideOffset = useRef(60);
   const openSidePill = useCallback(() => {
-    const el = sidePillRef.current;
-    if (el && !isPillMenuOpen) {
-      const current = getComputedStyle(el).transform;
-      el.style.animation = 'none';
-      el.style.transform = current;
-      void el.offsetHeight;
-      el.style.transition = 'transform 0.3s ease-in-out';
-      el.style.transform = 'translateX(0px)';
-    }
+    setSidePillIdle(false);
     setIsPillMenuOpen(true);
-  }, [isPillMenuOpen]);
-  const closeSidePill = useCallback(() => {
-    const el = sidePillRef.current;
-    if (el) {
-      const current = getComputedStyle(el).transform;
-      el.style.animation = 'none';
-      el.style.transform = current;
-      void el.offsetHeight;
-      el.style.transition = 'transform 0.3s ease-in-out';
-      el.style.transform = `translateX(${sidePillSlideOffset.current}px)`;
-      const onEnd = () => {
-        el.style.animation = '';
-        el.style.transform = '';
-        el.style.transition = '';
-        el.removeEventListener('transitionend', onEnd);
-        setIsPillMenuOpen(false);
-      };
-      el.addEventListener('transitionend', onEnd);
-    } else {
-      setIsPillMenuOpen(false);
-    }
   }, []);
+  const closeSidePill = useCallback(() => {
+    setIsPillMenuOpen(false);
+  }, []);
+  useEffect(() => {
+    if (!isPillMenuOpen && sidePillMounted) {
+      const el = sidePillRef.current;
+      if (el) {
+        const onEnd = () => {
+          setSidePillIdle(true);
+          el.removeEventListener('transitionend', onEnd);
+        };
+        el.addEventListener('transitionend', onEnd);
+        return () => el.removeEventListener('transitionend', onEnd);
+      }
+    }
+  }, [isPillMenuOpen, sidePillMounted]);
   useEffect(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -8989,7 +8977,7 @@ export default function Dashboard() {
         return (
           <div 
             ref={sidePillRef}
-            className={`absolute z-[60] ${!isPillMenuOpen ? 'side-pill-container-idle' : ''}`}
+            className={`absolute z-[60] ${sidePillIdle ? 'side-pill-container-idle' : ''}`}
             style={{ 
               top: `${pillTop}px`, 
               right: '0px', 
