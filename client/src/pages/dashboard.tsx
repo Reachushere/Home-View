@@ -3006,6 +3006,7 @@ export default function Dashboard() {
   const [ttsChunks, setTtsChunks] = useState<string[]>([]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
+  const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
   const ttsChunksRef = useRef<string[]>([]);
   const currentChunkIndexRef = useRef(0);
   const shouldContinueRef = useRef(false);
@@ -3551,6 +3552,48 @@ export default function Dashboard() {
     setTtsChunks(chunks);
     setTotalChunks(chunks.length);
   }, [previewText]);
+
+  const getDashFileKey = () => {
+    if (!previewFile) return '';
+    return `file_${previewFile.id}`;
+  };
+
+  const loadDashCheckedChunks = (key: string): Set<number> => {
+    const saved = localStorage.getItem(`checkedChunks_${key}`);
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  };
+
+  const saveDashCheckedChunks = (key: string, checked: Set<number>, total: number) => {
+    localStorage.setItem(`checkedChunks_${key}`, JSON.stringify(Array.from(checked)));
+    localStorage.setItem(`chunkProgress_${key}`, JSON.stringify({ checked: checked.size, total }));
+    const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+    allProgress[key] = { checked: checked.size, total };
+    localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
+  };
+
+  const toggleDashChunkChecked = (idx: number) => {
+    const key = getDashFileKey();
+    if (!key) return;
+    const newChecked = new Set(checkedChunks);
+    if (newChecked.has(idx)) {
+      newChecked.delete(idx);
+    } else {
+      for (let i = 0; i <= idx; i++) {
+        newChecked.add(i);
+      }
+    }
+    setCheckedChunks(newChecked);
+    saveDashCheckedChunks(key, newChecked, totalChunks);
+  };
+
+  useEffect(() => {
+    if (previewFile && totalChunks > 0) {
+      const key = `file_${previewFile.id}`;
+      setCheckedChunks(loadDashCheckedChunks(key));
+    } else {
+      setCheckedChunks(new Set());
+    }
+  }, [previewFile?.id, totalChunks]);
 
   // Cleanup interval and timeout on unmount
   useEffect(() => {
@@ -7408,10 +7451,19 @@ export default function Dashboard() {
                           title={`Click to play from Section ${chunkIdx + 1}`}
                         >
                           {/* Chunk header */}
-                          <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-300 dark:border-gray-600">
-                            <span className="text-[11px] font-semibold text-gray-600 dark:text-gray-400">
-                              Section {chunkIdx + 1} of {chunks.length}
-                            </span>
+                          <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-gray-300 dark:border-gray-600">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={checkedChunks.has(chunkIdx)}
+                                onChange={(e) => { e.stopPropagation(); toggleDashChunkChecked(chunkIdx); }}
+                                className="w-4 h-4 rounded border-gray-400 accent-green-600 cursor-pointer"
+                                data-testid={`checkbox-chunk-${chunkIdx}`}
+                              />
+                              <span className={`text-[11px] font-semibold ${checkedChunks.has(chunkIdx) ? 'text-green-600 dark:text-green-400 line-through' : 'text-gray-600 dark:text-gray-400'}`}>
+                                Section {chunkIdx + 1} of {chunks.length}
+                              </span>
+                            </div>
                             <Button
                               size="sm"
                               variant="ghost"
@@ -7506,6 +7558,19 @@ export default function Dashboard() {
               <div />
             )}
             <div className="flex items-center gap-3">
+              {totalChunks > 0 && (
+                <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10" data-testid="chunk-completion-bar">
+                  <div className="w-16 h-2.5 bg-gray-700 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 rounded-full"
+                      style={{ width: `${totalChunks > 0 ? Math.round((checkedChunks.size / totalChunks) * 100) : 0}%` }}
+                    />
+                  </div>
+                  <span className="text-[11px] text-emerald-400 font-medium">
+                    {checkedChunks.size}/{totalChunks}
+                  </span>
+                </div>
+              )}
               {/* Progress Bar */}
               <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10">
                 <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
