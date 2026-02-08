@@ -1166,7 +1166,7 @@ export default function Dashboard() {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions for 7 days (Sun-Sat)
-      progressColumnWidth: 0.5, // separate from day columns
+      progressColumnWidth: 0.8, // separate from day columns
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
@@ -1182,8 +1182,8 @@ export default function Dashboard() {
       if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 7) {
         parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
       }
-      if (parsed.progressColumnWidth === undefined) {
-        parsed.progressColumnWidth = 0.5;
+      if (parsed.progressColumnWidth === undefined || parsed.progressColumnWidth <= 0.5) {
+        parsed.progressColumnWidth = 0.8;
       }
     };
     
@@ -11660,11 +11660,13 @@ export default function Dashboard() {
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
                     const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
+                    const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
                     return (
                       <div 
-                        className="border-l border-border/50 flex flex-col justify-center gap-[4px] px-[3px]"
+                        className="border-l border-border/50 flex items-center gap-[3px] px-[3px]"
                         style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
                       >
+                        <div className="flex-1 flex flex-col justify-center gap-[4px] min-w-0">
                         {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
@@ -11707,6 +11709,20 @@ export default function Dashboard() {
                             </div>
                           </>
                         )}
+                        </div>
+                        <div
+                          className="flex-shrink-0 cursor-pointer"
+                          style={{
+                            width: '8px',
+                            height: '28px',
+                            borderRadius: '4px',
+                            background: `linear-gradient(180deg, ${courseHexColor} 0%, ${courseHexColor}cc 100%)`,
+                            border: `1px solid ${courseHexColor}`,
+                            boxShadow: `0 0 4px ${courseHexColor}66`,
+                          }}
+                          data-testid={`progress-pill-${courseCode.toLowerCase()}`}
+                          title={`${courseCode} progress`}
+                        />
                       </div>
                     );
                   })()}
