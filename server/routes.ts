@@ -99,12 +99,11 @@ interface TTSSession {
   sessionCreatedAt: number;
 }
 let currentTTSSession: TTSSession | null = null;
-const MAX_CONSECUTIVE_ERRORS = 3;
+const MAX_CONSECUTIVE_ERRORS = 5;
 const MAX_SESSION_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours max session
-// Alexa reads faster than expected - ~200 words per minute at normal speed
-// At 80% speed: ~160 wpm = ~800 chars/min = ~13.3 chars/sec
-// But we want to send next chunk BEFORE current finishes, so use higher value
-const CHARS_PER_SECOND = 18; // Send next chunk early to avoid gaps
+// Alexa TTS at 90% speed: ~180 wpm = ~900 chars/min = ~15 chars/sec
+// Use conservative estimate to avoid cutting off speech mid-sentence
+const CHARS_PER_SECOND = 13; // Conservative: let chunk finish before sending next
 const CHUNK_SIZE = 2000; // Characters per TTS chunk
 
 // Helper to generate OpenAI TTS audio and save to object storage for playback
@@ -359,6 +358,9 @@ async function sendNextChunk() {
         stopTTSSession(`Giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
         return;
       }
+      // Rewind position so the failed chunk gets retried
+      currentTTSSession.currentPosition -= chunkLength;
+      console.log(`[TTS] Rewound position to ${currentTTSSession.currentPosition} for retry`);
     } else {
       currentTTSSession.consecutiveErrors = 0;
       console.log("[TTS] Chunk sent successfully");
@@ -367,7 +369,16 @@ async function sendNextChunk() {
     // Schedule next chunk only if session is still active and healthy
     if (currentTTSSession && currentTTSSession.isPlaying && 
         currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
-      scheduleNextChunk();
+      // On error, wait longer before retrying to let transient issues resolve
+      if (currentTTSSession.consecutiveErrors > 0) {
+        console.log(`[TTS] Retry in 10s due to error (attempt ${currentTTSSession.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS})`);
+        currentTTSSession.autoTimer = setTimeout(() => {
+          console.log("[TTS] Retry timer fired, calling sendNextChunk");
+          sendNextChunk();
+        }, 10000);
+      } else {
+        scheduleNextChunk();
+      }
     } else {
       console.log("[TTS] Not scheduling next - session ended or no more content");
     }
@@ -375,10 +386,18 @@ async function sendNextChunk() {
     console.error("[TTS] Auto-continue error:", error);
     if (currentTTSSession) {
       currentTTSSession.consecutiveErrors++;
+      // Rewind position for retry
+      currentTTSSession.currentPosition -= chunkLength;
       if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
         stopTTSSession(`Network error, giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
         return;
       }
+      // Retry after delay
+      console.log(`[TTS] Network error retry in 10s (attempt ${currentTTSSession.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS})`);
+      currentTTSSession.autoTimer = setTimeout(() => {
+        console.log("[TTS] Network retry timer fired");
+        sendNextChunk();
+      }, 10000);
     }
   }
 }
@@ -407,7 +426,8 @@ function scheduleNextChunk() {
   
   const baseSeconds = CHUNK_SIZE / CHARS_PER_SECOND;
   const adjustedSeconds = baseSeconds / SPEED_RATE;
-  const delayMs = adjustedSeconds * 1000;
+  // Add 3-second buffer for Alexa processing overhead
+  const delayMs = adjustedSeconds * 1000 + 3000;
   
   console.log(`[TTS] Scheduling next chunk in ${(delayMs / 1000).toFixed(1)}s`);
   
