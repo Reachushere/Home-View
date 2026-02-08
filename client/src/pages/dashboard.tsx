@@ -16167,15 +16167,15 @@ function ProfileForm({
         </div>
         {isTraveling && (
           <div className="space-y-2">
-            <Label htmlFor="travelTimezone" className="text-[10px]">Travel Time Zone</Label>
+            <Label htmlFor="travelTimezone" className="text-[10px]">Where are you travelling to?</Label>
             <p className="text-[9px] text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
             <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
               <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-travel-timezone">
-                <SelectValue placeholder="Select travel time zone" />
+                <SelectValue placeholder="Pick a city" />
               </SelectTrigger>
-              <SelectContent className="bg-white !text-[10px]">
-                {timezones.map(tz => (
-                  <SelectItem key={tz.value} value={tz.value} className="text-black !text-[10px]">{tz.label}</SelectItem>
+              <SelectContent className="bg-white !text-[10px] max-h-[200px]">
+                {TRAVEL_CITIES.map(c => (
+                  <SelectItem key={c.value} value={c.value} className="text-black !text-[10px]">{c.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -16199,6 +16199,106 @@ function ProfileForm({
     </form>
   );
 }
+
+const TRAVEL_CITIES = [
+  { label: 'Abu Dhabi', value: 'Asia/Dubai' },
+  { label: 'Accra', value: 'Africa/Accra' },
+  { label: 'Adelaide', value: 'Australia/Adelaide' },
+  { label: 'Amsterdam', value: 'Europe/Amsterdam' },
+  { label: 'Anchorage', value: 'America/Anchorage' },
+  { label: 'Athens', value: 'Europe/Athens' },
+  { label: 'Atlanta', value: 'America/New_York' },
+  { label: 'Auckland', value: 'Pacific/Auckland' },
+  { label: 'Baghdad', value: 'Asia/Baghdad' },
+  { label: 'Bangkok', value: 'Asia/Bangkok' },
+  { label: 'Barcelona', value: 'Europe/Madrid' },
+  { label: 'Beijing', value: 'Asia/Shanghai' },
+  { label: 'Beirut', value: 'Asia/Beirut' },
+  { label: 'Berlin', value: 'Europe/Berlin' },
+  { label: 'Bogota', value: 'America/Bogota' },
+  { label: 'Boston', value: 'America/New_York' },
+  { label: 'Brisbane', value: 'Australia/Brisbane' },
+  { label: 'Brussels', value: 'Europe/Brussels' },
+  { label: 'Budapest', value: 'Europe/Budapest' },
+  { label: 'Buenos Aires', value: 'America/Argentina/Buenos_Aires' },
+  { label: 'Cairo', value: 'Africa/Cairo' },
+  { label: 'Calgary', value: 'America/Edmonton' },
+  { label: 'Cape Town', value: 'Africa/Johannesburg' },
+  { label: 'Casablanca', value: 'Africa/Casablanca' },
+  { label: 'Chicago', value: 'America/Chicago' },
+  { label: 'Copenhagen', value: 'Europe/Copenhagen' },
+  { label: 'Dallas', value: 'America/Chicago' },
+  { label: 'Delhi', value: 'Asia/Kolkata' },
+  { label: 'Denver', value: 'America/Denver' },
+  { label: 'Doha', value: 'Asia/Qatar' },
+  { label: 'Dubai', value: 'Asia/Dubai' },
+  { label: 'Dublin', value: 'Europe/Dublin' },
+  { label: 'Edmonton', value: 'America/Edmonton' },
+  { label: 'Frankfurt', value: 'Europe/Berlin' },
+  { label: 'Halifax', value: 'America/Halifax' },
+  { label: 'Hanoi', value: 'Asia/Ho_Chi_Minh' },
+  { label: 'Helsinki', value: 'Europe/Helsinki' },
+  { label: 'Ho Chi Minh City', value: 'Asia/Ho_Chi_Minh' },
+  { label: 'Hong Kong', value: 'Asia/Hong_Kong' },
+  { label: 'Honolulu', value: 'Pacific/Honolulu' },
+  { label: 'Houston', value: 'America/Chicago' },
+  { label: 'Istanbul', value: 'Europe/Istanbul' },
+  { label: 'Jakarta', value: 'Asia/Jakarta' },
+  { label: 'Johannesburg', value: 'Africa/Johannesburg' },
+  { label: 'Kuala Lumpur', value: 'Asia/Kuala_Lumpur' },
+  { label: 'Lagos', value: 'Africa/Lagos' },
+  { label: 'Las Vegas', value: 'America/Los_Angeles' },
+  { label: 'Lima', value: 'America/Lima' },
+  { label: 'Lisbon', value: 'Europe/Lisbon' },
+  { label: 'London', value: 'Europe/London' },
+  { label: 'Los Angeles', value: 'America/Los_Angeles' },
+  { label: 'Madrid', value: 'Europe/Madrid' },
+  { label: 'Manila', value: 'Asia/Manila' },
+  { label: 'Melbourne', value: 'Australia/Melbourne' },
+  { label: 'Mexico City', value: 'America/Mexico_City' },
+  { label: 'Miami', value: 'America/New_York' },
+  { label: 'Milan', value: 'Europe/Rome' },
+  { label: 'Montreal', value: 'America/Toronto' },
+  { label: 'Moscow', value: 'Europe/Moscow' },
+  { label: 'Mumbai', value: 'Asia/Kolkata' },
+  { label: 'Munich', value: 'Europe/Berlin' },
+  { label: 'Nairobi', value: 'Africa/Nairobi' },
+  { label: 'Nashville', value: 'America/Chicago' },
+  { label: 'New York', value: 'America/New_York' },
+  { label: 'Osaka', value: 'Asia/Tokyo' },
+  { label: 'Oslo', value: 'Europe/Oslo' },
+  { label: 'Ottawa', value: 'America/Toronto' },
+  { label: 'Paris', value: 'Europe/Paris' },
+  { label: 'Perth', value: 'Australia/Perth' },
+  { label: 'Philadelphia', value: 'America/New_York' },
+  { label: 'Phoenix', value: 'America/Phoenix' },
+  { label: 'Prague', value: 'Europe/Prague' },
+  { label: 'Quebec City', value: 'America/Toronto' },
+  { label: 'Regina', value: 'America/Regina' },
+  { label: 'Reykjavik', value: 'Atlantic/Reykjavik' },
+  { label: 'Rio de Janeiro', value: 'America/Sao_Paulo' },
+  { label: 'Rome', value: 'Europe/Rome' },
+  { label: 'San Francisco', value: 'America/Los_Angeles' },
+  { label: 'Santiago', value: 'America/Santiago' },
+  { label: 'Sao Paulo', value: 'America/Sao_Paulo' },
+  { label: 'Seattle', value: 'America/Los_Angeles' },
+  { label: 'Seoul', value: 'Asia/Seoul' },
+  { label: 'Shanghai', value: 'Asia/Shanghai' },
+  { label: 'Singapore', value: 'Asia/Singapore' },
+  { label: 'St. John\'s', value: 'America/St_Johns' },
+  { label: 'Stockholm', value: 'Europe/Stockholm' },
+  { label: 'Sydney', value: 'Australia/Sydney' },
+  { label: 'Taipei', value: 'Asia/Taipei' },
+  { label: 'Tel Aviv', value: 'Asia/Jerusalem' },
+  { label: 'Tokyo', value: 'Asia/Tokyo' },
+  { label: 'Toronto', value: 'America/Toronto' },
+  { label: 'Vancouver', value: 'America/Vancouver' },
+  { label: 'Vienna', value: 'Europe/Vienna' },
+  { label: 'Warsaw', value: 'Europe/Warsaw' },
+  { label: 'Washington D.C.', value: 'America/New_York' },
+  { label: 'Winnipeg', value: 'America/Winnipeg' },
+  { label: 'Zurich', value: 'Europe/Zurich' },
+];
 
 const NORTH_AMERICAN_SCHOOLS = [
   'Boston University',
@@ -16444,50 +16544,14 @@ function SchoolForm({
               </div>
               {isTravelling && (
                 <div className="space-y-1 ml-5">
-                  <Label htmlFor="travelTimezone" className="text-[10px] text-white/70">Travel Time Zone</Label>
+                  <Label htmlFor="travelTimezone" className="text-[10px] text-white/70">Where are you travelling to?</Label>
                   <Select value={travelTimezone} onValueChange={setTravelTimezone}>
                     <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-travel-timezone">
-                      <SelectValue placeholder="Where are you?" />
+                      <SelectValue placeholder="Pick a city" />
                     </SelectTrigger>
                     <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
-                      {[
-                        { value: 'America/Toronto', label: 'Eastern (Toronto)' },
-                        { value: 'America/New_York', label: 'Eastern (New York)' },
-                        { value: 'America/Chicago', label: 'Central (Chicago)' },
-                        { value: 'America/Denver', label: 'Mountain (Denver)' },
-                        { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
-                        { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
-                        { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
-                        { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
-                        { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
-                        { value: 'America/St_Johns', label: 'Newfoundland (St. John\'s)' },
-                        { value: 'America/Regina', label: 'Central - No DST (Regina)' },
-                        { value: 'Pacific/Honolulu', label: 'Hawaii' },
-                        { value: 'America/Anchorage', label: 'Alaska' },
-                        { value: 'America/Mexico_City', label: 'Central (Mexico City)' },
-                        { value: 'America/Bogota', label: 'Colombia (Bogota)' },
-                        { value: 'America/Sao_Paulo', label: 'Brazil (Sao Paulo)' },
-                        { value: 'Europe/London', label: 'GMT (London)' },
-                        { value: 'Europe/Paris', label: 'CET (Paris)' },
-                        { value: 'Europe/Berlin', label: 'CET (Berlin)' },
-                        { value: 'Europe/Rome', label: 'CET (Rome)' },
-                        { value: 'Europe/Madrid', label: 'CET (Madrid)' },
-                        { value: 'Europe/Amsterdam', label: 'CET (Amsterdam)' },
-                        { value: 'Europe/Athens', label: 'EET (Athens)' },
-                        { value: 'Europe/Istanbul', label: 'Turkey (Istanbul)' },
-                        { value: 'Asia/Dubai', label: 'Gulf (Dubai)' },
-                        { value: 'Asia/Kolkata', label: 'India (Kolkata)' },
-                        { value: 'Asia/Bangkok', label: 'Indochina (Bangkok)' },
-                        { value: 'Asia/Singapore', label: 'Singapore' },
-                        { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
-                        { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
-                        { value: 'Asia/Seoul', label: 'KST (Seoul)' },
-                        { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
-                        { value: 'Australia/Melbourne', label: 'AEST (Melbourne)' },
-                        { value: 'Pacific/Auckland', label: 'NZST (Auckland)' },
-                        { value: 'UTC', label: 'UTC' },
-                      ].map(tz => (
-                        <SelectItem key={tz.value} value={tz.value} className="!text-black !text-[10px]">{tz.label}</SelectItem>
+                      {TRAVEL_CITIES.map(c => (
+                        <SelectItem key={c.value} value={c.value} className="!text-black !text-[10px]">{c.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
