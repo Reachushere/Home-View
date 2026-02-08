@@ -5116,8 +5116,8 @@ export default function Dashboard() {
     weekDays = rawWeekDays.slice(0, 7); // Safety limit
   }
   
-  // Time slots for the day view (6am-midnight)
-  const timeSlots = Array.from({ length: 24 }, (_, i) => i); // 12am-11pm (0-23)
+  // Time slots for the day view (6am-11pm)
+  const timeSlots = Array.from({ length: 18 }, (_, i) => i + 6); // 6am-11pm (6-23)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
