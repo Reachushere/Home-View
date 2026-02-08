@@ -2769,7 +2769,7 @@ export async function registerRoutes(
 
   app.post("/api/echo/test", async (_req, res) => {
     try {
-      const result = await sendEchoVoiceAnnouncement("This is a test announcement from Uni-Cal.");
+      const result = await sendEchoVoiceAnnouncement("Hey Bryn! This is a test announcement from Uni-Cal.");
       if (result.success) {
         res.json({ message: "Test voice announcement sent to Echo devices" });
       } else {
