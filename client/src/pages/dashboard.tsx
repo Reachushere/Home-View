@@ -3076,6 +3076,14 @@ export default function Dashboard() {
         prefetchNextChunk(currentIdx + 1, voice);
       }
       
+      // Calculate word offset for highlighting: count words in all previous chunks
+      let wordOffset = 0;
+      for (let i = 0; i < currentIdx; i++) {
+        wordOffset += ttsChunksRef.current[i].split(/\s+/).filter((w: string) => w.length > 0).length;
+      }
+      const chunkWords = text.split(/\s+/).filter(w => w.length > 0);
+      const chunkWordCount = chunkWords.length;
+      
       let lastSaveTime = 0;
       audio.ontimeupdate = () => {
         const now = Date.now();
@@ -3086,10 +3094,22 @@ export default function Dashboard() {
             saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
           }
         }
+        
+        // Time-based word highlighting for OpenAI TTS
+        if (audio.duration && audio.duration > 0 && chunkWordCount > 0) {
+          const progress = audio.currentTime / audio.duration;
+          const estimatedWordIdx = Math.min(
+            Math.floor(progress * chunkWordCount),
+            chunkWordCount - 1
+          );
+          setCurrentWordIndex(wordOffset + estimatedWordIdx);
+        }
       };
       
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
+        // Set final word index to end of chunk
+        setCurrentWordIndex(wordOffset + chunkWordCount - 1);
         const currentFile = previewFileRef.current;
         if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
           currentChunkIndexRef.current++;
@@ -3115,7 +3135,9 @@ export default function Dashboard() {
         toast({ title: "Audio playback failed", variant: "destructive" });
       };
       
+      isPlayingRef.current = true;
       setIsPlaying(true);
+      setCurrentWordIndex(wordOffset);
       await audio.play();
       
     } catch (error) {
