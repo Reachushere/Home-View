@@ -2965,6 +2965,7 @@ export default function Dashboard() {
     listened?: boolean;
     lastChunkIndex?: number;
     totalChunks?: number;
+    checkedChunks?: string;
   }
   const { data: allFiles = [] } = useQuery<FileItem[]>({
     queryKey: ["/api/files"],
@@ -13003,7 +13004,7 @@ export default function Dashboard() {
                               const durationMinutes = endMinutes - startMinutes;
                               taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               topOffset = (startMin / 60) * 44;
-                              const slotHeight = timeSlotHeights[startHour] || 44;
+                              const slotHeight = 44;
                               const maxTaskHeight = slotHeight - topOffset - 2;
                               if (taskHeight > maxTaskHeight && startHour >= 23) {
                                 taskHeight = Math.max(20, maxTaskHeight);
