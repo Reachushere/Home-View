@@ -8798,7 +8798,7 @@ export default function Dashboard() {
       {/* Tall Pill Panel - Slides in from right edge */}
       {(() => {
         const pillW = 52;
-        const pillH = (6 * 52) + 9;
+        const pillH = (6 * 52) + 7;
         const arrowW = 15;
         const arrowH = 30;
         const totalW = pillW + arrowW;
