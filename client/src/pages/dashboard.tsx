@@ -153,17 +153,18 @@ const courseColors: Record<string, { bg: string; border: string; text: string; d
   "CASL101": { bg: "bg-indigo-50 dark:bg-indigo-900/30", border: "border-indigo-400", text: "text-indigo-600 dark:text-indigo-300", dot: "bg-indigo-400", prepBg: "bg-indigo-50 dark:bg-indigo-900/30", prepBorder: "border-indigo-200", prepText: "text-indigo-500 dark:text-indigo-400" },
 };
 
-// Display name mapping for course row labels
-const courseDisplayNames: Record<string, string> = {
+// Display name mapping for course row labels (defaults, overridden by localStorage)
+const defaultCourseDisplayNames: Record<string, string> = {
   "CPPA122": "CPPA122-LP",
   "CFNF400": "CFNF400-HS",
   "CASL101": "CASL101 American Sign Language",
 };
 
-// Helper function to get display name for course row labels
+// Helper function to get display name for course row labels (uses dynamic state)
+let _courseDisplayNames: Record<string, string> = { ...defaultCourseDisplayNames };
 const getCourseRowDisplayName = (courseName: string): string => {
   const courseCode = courseName.split(' - ')[0];
-  const displayCode = courseDisplayNames[courseCode] || courseCode;
+  const displayCode = _courseDisplayNames[courseCode] || courseCode;
   const courseSuffix = courseName.split(' - ').slice(1).join(' - ');
   return courseSuffix ? `${displayCode} - ${courseSuffix}` : displayCode;
 };
@@ -959,7 +960,16 @@ export default function Dashboard() {
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
-  const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '' });
+  const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
+  const [courseDisplayNames, setCourseDisplayNames] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('courseDisplayNames');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      _courseDisplayNames = { ...defaultCourseDisplayNames, ...parsed };
+      return _courseDisplayNames;
+    }
+    return { ...defaultCourseDisplayNames };
+  });
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   // Discussion post checkbox states (persisted per week in localStorage)
   const [startDiscussionComplete, setStartDiscussionComplete] = useState<boolean>(() => {
@@ -10183,6 +10193,7 @@ export default function Dashboard() {
                                 name: courseName !== courseCode ? courseName : '',
                                 professor: course.professor || '',
                                 email: course.professorEmail || '',
+                                calendarLabel: courseDisplayNames[courseCode] || courseCode,
                               });
                               setSchoolEditCourseIdx(index);
                             }}
@@ -10240,6 +10251,17 @@ export default function Dashboard() {
                           />
                         </div>
                         <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Calendar Label</label>
+                          <input
+                            type="text"
+                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            value={schoolEditCourseData.calendarLabel}
+                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, calendarLabel: e.target.value }))}
+                            placeholder={schoolEditCourseData.code}
+                            data-testid="input-edit-calendar-label"
+                          />
+                        </div>
+                        <div>
                           <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
                           <input
                             type="text"
@@ -10287,6 +10309,15 @@ export default function Dashboard() {
                             setCoursesData({ courses: updatedCourses });
                             localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
                             saveCourses({ courses: updatedCourses });
+                            const newDisplayNames = { ...courseDisplayNames };
+                            if (schoolEditCourseData.calendarLabel.trim()) {
+                              newDisplayNames[schoolEditCourseData.code] = schoolEditCourseData.calendarLabel.trim();
+                            } else {
+                              delete newDisplayNames[schoolEditCourseData.code];
+                            }
+                            setCourseDisplayNames(newDisplayNames);
+                            _courseDisplayNames = newDisplayNames;
+                            localStorage.setItem('courseDisplayNames', JSON.stringify(newDisplayNames));
                             setSchoolEditCourseIdx(null);
                           }}
                           data-testid="button-save-edit-course"
