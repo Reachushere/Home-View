@@ -8814,7 +8814,7 @@ export default function Dashboard() {
           if (pillMenuTimeoutRef.current) clearTimeout(pillMenuTimeoutRef.current);
           pillMenuTimeoutRef.current = setTimeout(() => {
             setIsPillMenuOpen(false);
-          }, 2500);
+          }, 1800);
         };
         const cancelAutoHide = () => {
           if (pillMenuTimeoutRef.current) clearTimeout(pillMenuTimeoutRef.current);
