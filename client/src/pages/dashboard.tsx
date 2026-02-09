@@ -14744,7 +14744,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: `linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%), url(${clockBg})`,
+              background: `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%), url(${clockBg})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
@@ -14868,7 +14868,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: `linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%), url(${clockBg})`,
+              background: `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%), url(${clockBg})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
@@ -14985,7 +14985,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: `linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%), url(${clockBg})`,
+              background: `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%), url(${clockBg})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
