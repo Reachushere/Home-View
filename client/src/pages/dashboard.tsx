@@ -14707,7 +14707,7 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex items-center gap-2 flex-1 ml-2">
+                <span className="flex items-center flex-1 ml-2">
                   3-10 Days ({dueThisWeekTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
@@ -14958,7 +14958,7 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex items-center gap-2 flex-1 ml-2">
+                <span className="flex items-center flex-1 ml-2">
                   Tomorrow ({dueTomorrowTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
