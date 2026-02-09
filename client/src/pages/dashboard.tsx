@@ -9561,8 +9561,8 @@ export default function Dashboard() {
                   Z
                 `}
                 fill="rgba(255, 255, 255, 0.06)"
-                stroke="rgba(255, 255, 255, 0.15)"
-                strokeWidth="1"
+                stroke="rgba(255, 255, 255, 0.35)"
+                strokeWidth="1.5"
                 strokeLinejoin="round"
                 filter="url(#pillShadow)"
               />
