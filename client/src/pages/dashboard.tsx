@@ -14722,9 +14722,7 @@ export default function Dashboard() {
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(addDays(new Date(), 2), 'd')}</div>
                   </div>
-                  {[...Array(7)].map((_, i) => (
-                    <span key={`b2-${i}`} style={{ fontSize: '6px', color: 'white', flexShrink: 0, lineHeight: 1 }}>&#9654;</span>
-                  ))}
+                  <span style={{ fontSize: '6px', color: 'white', flexShrink: 0, lineHeight: 1 }}>&#9654;</span>
                   <div style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(thisWeekEnd, 'd')}</div>
