@@ -8106,7 +8106,7 @@ export default function Dashboard() {
                 <span style={{ color: '#ffffff', fontSize: '32px', fontFamily: "'Raleway', sans-serif", fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
                 <span style={{ color: '#ffffff', fontSize: '10px', fontFamily: "'Raleway', sans-serif", fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>days</span>
               </div>
-              <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '10px', fontFamily: "'Raleway', sans-serif", fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '3px' }}>
+              <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11px', fontFamily: "'Raleway', sans-serif", fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '3px' }}>
                 {next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
             </div>
