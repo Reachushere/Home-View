@@ -12401,7 +12401,7 @@ export default function Dashboard() {
                   return count * 20 + 4;
                 }));
                 return (
-              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderBottom: `1px solid ${filteredCourses[filteredCourses.length - 1]?.color || 'black'}` }}>
+              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderBottom: '1px solid #999' }}>
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
