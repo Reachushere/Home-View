@@ -8060,8 +8060,8 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Chang School Logo - Fixed top left where Uni-Cal used to be */}
-      <img src={changSchoolLogo} alt="The Chang School" className="fixed" style={{ left: '16px', top: '5px', height: '35px', objectFit: 'contain', zIndex: 100 }} />
+      {/* School Logo - Fixed top left, customizable via school settings */}
+      <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} className="fixed" style={{ left: '16px', top: '5px', height: '35px', objectFit: 'contain', zIndex: 100 }} />
       <div className="fixed" style={{ left: '162px', top: '22.5px', transform: 'translateY(-50%)', width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', zIndex: 100 }} />
       <div className="flex items-center gap-2 fixed" style={{ left: '172px', top: '22.5px', transform: 'translateY(-50%)', zIndex: 100 }}>
         <div className="flex flex-col">
@@ -17046,6 +17046,21 @@ function SchoolForm({
   const [isTravelling, setIsTravelling] = useState(schoolData.isTravelling || false);
   const [travelTimezone, setTravelTimezone] = useState(schoolData.travelTimezone || '');
   const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
+  const [logoPreview, setLogoPreview] = useState<string | null>(schoolData.schoolLogo);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setLogoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
   
   const daysOfWeek = [
     { value: 'sunday', label: 'Sunday' },
@@ -17060,7 +17075,7 @@ function SchoolForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, semesterType });
+    onSave({ schoolLogo: logoPreview, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, semesterType });
   };
 
   const semesterEnd = week1StartDate 
@@ -17072,6 +17087,46 @@ function SchoolForm({
       <div className="border rounded-lg p-3 space-y-3">
         <Label className="text-[10px] font-medium">School</Label>
         <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-[10px]">School Logo</Label>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-auto flex items-center justify-center rounded overflow-hidden bg-white/10 px-2">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="School logo" className="h-8 object-contain" />
+                ) : (
+                  <img src={changSchoolLogo} alt="Default logo" className="h-8 object-contain" />
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  className="px-2 py-1 text-[9px] bg-white/20 hover:bg-white/30 rounded text-white transition-colors"
+                  data-testid="button-upload-logo"
+                >
+                  Upload New Logo
+                </button>
+                {logoPreview && (
+                  <button
+                    type="button"
+                    onClick={() => setLogoPreview(null)}
+                    className="px-2 py-1 text-[9px] bg-red-500/30 hover:bg-red-500/50 rounded text-white transition-colors"
+                    data-testid="button-remove-logo"
+                  >
+                    Reset to Default
+                  </button>
+                )}
+              </div>
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="hidden"
+                data-testid="input-logo-upload"
+              />
+            </div>
+          </div>
           <div className="space-y-1">
             <Label htmlFor="schoolName" className="text-[10px]">School Name</Label>
             <Select value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'} onValueChange={(v) => { setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}>
