@@ -13275,7 +13275,7 @@ export default function Dashboard() {
                     className={`grid relative group/row flex-shrink-0`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: '#faf8f5' }}
                   >
-                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(0,0,0,0.45)' : undefined }}>
+                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : '#faf8f5' }} data-testid="module-column-cell" />}
@@ -13296,7 +13296,7 @@ export default function Dashboard() {
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             backgroundColor: isToday ? '#eef2f7' : isCurrentHour ? '#eef2f7' : '#faf8f5',
-                            borderTop: hour === 12 ? '2.5px solid rgba(0,0,0,0.45)' : undefined
+                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -13516,7 +13516,7 @@ export default function Dashboard() {
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
                             gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9,
-                            borderTop: hour === 12 ? '2.5px solid rgba(0,0,0,0.45)' : undefined
+                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
                           }}
                         >
                           {/* Hour boundary dotted line */}
