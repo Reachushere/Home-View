@@ -9561,31 +9561,29 @@ export default function Dashboard() {
           </div>
           <span className="text-[10px] text-white/60 font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
-        <div className="flex items-end gap-2" style={{ marginRight: '16px' }}>
-          <Button 
-            variant="ghost"
-            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[4px]"
-            style={{ marginRight: '5px' }}
-            onClick={() => {
-              if (calendarView === "week") {
-                setCurrentMonth(new Date());
-              }
-              setCalendarView(calendarView === "month" ? "week" : "month");
-            }}
-            data-testid="button-month-view"
-          >
-            {calendarView === "month" ? "Week" : "Month"}
-          </Button>
-          {isAdmin && (
-            <Share 
-              className="h-4 w-4 text-white/80 cursor-pointer hover:text-white relative -top-[4px]"
-              strokeWidth={2.5}
-              onClick={generateShareLink}
-              data-testid="button-share-main"
-            />
-          )}
-        </div>
+        <Button 
+          variant="ghost"
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[4px]"
+          onClick={() => {
+            if (calendarView === "week") {
+              setCurrentMonth(new Date());
+            }
+            setCalendarView(calendarView === "month" ? "week" : "month");
+          }}
+          data-testid="button-month-view"
+        >
+          {calendarView === "month" ? "Week" : "Month"}
+        </Button>
       </div>
+      {isAdmin && (
+        <Share 
+          className="absolute z-50 h-4 w-4 text-white/80 cursor-pointer hover:text-white"
+          strokeWidth={2.5}
+          style={{ right: '16px', top: `${calendarTop - 28 + 4}px` }}
+          onClick={generateShareLink}
+          data-testid="button-share-main"
+        />
+      )}
       
       {/* Tall Pill Panel - Slides in from right edge */}
       {(() => {
