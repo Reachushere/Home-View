@@ -7893,6 +7893,23 @@ export default function Dashboard() {
         <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
       </div>
 
+      {/* Chang School Logo - fixed, right of center, vertically aligned with Uni-Cal logo */}
+      <img
+        src={changSchoolLogo}
+        alt="The Chang School of Continuing Education"
+        className="fixed"
+        style={{
+          right: '80px',
+          top: '5px',
+          height: '32px',
+          objectFit: 'contain',
+          zIndex: 100,
+          opacity: isTopPillOpen ? 0 : 1,
+          transition: 'opacity 0.4s ease-in-out',
+          pointerEvents: 'none',
+        }}
+      />
+
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
         ref={topPillRef}
@@ -12064,19 +12081,6 @@ export default function Dashboard() {
             }}
           />
           
-          {/* Chang School Logo - centered above glass box, fades when top pill opens */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginBottom: '2px',
-            opacity: isTopPillOpen ? 0 : 1,
-            transition: 'opacity 0.4s ease-in-out',
-            pointerEvents: 'none',
-            flexShrink: 0,
-          }}>
-            <img src={changSchoolLogo} alt="The Chang School of Continuing Education" style={{ height: '28px', objectFit: 'contain' }} />
-          </div>
-
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
