@@ -8084,7 +8084,8 @@ export default function Dashboard() {
         let prepDaysText = '';
         let prepTaskName = '';
         if (nextPrep) {
-          prepTaskName = nextPrep.title;
+          const prepCourseCode = nextPrep.courseName ? nextPrep.courseName.split(' - ')[0] : '';
+          prepTaskName = prepCourseCode ? `${prepCourseCode} ${nextPrep.title}` : nextPrep.title;
           if (nextPrep.prepDaysLeft > 0) {
             prepDaysText = `${nextPrep.prepDaysLeft}`;
           } else if (nextPrep.prepDaysLeft === 0) {
