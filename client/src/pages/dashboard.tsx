@@ -8057,20 +8057,23 @@ export default function Dashboard() {
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
           <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
-        {isAdmin && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="text-white hover:text-white hover:bg-white/10"
-            onClick={generateShareLink}
-            disabled={isGeneratingLink}
-            data-testid="button-share-main"
-            title="Share schedule"
-          >
-            <Share className="h-6 w-6" strokeWidth={2.5} />
-          </Button>
-        )}
       </div>
+
+      {/* Share button - below clock, right-aligned */}
+      {isAdmin && (
+        <Button
+          size="icon"
+          variant="ghost"
+          className="fixed text-white hover:text-white hover:bg-white/10"
+          style={{ right: '16px', top: '42px', zIndex: 100 }}
+          onClick={generateShareLink}
+          disabled={isGeneratingLink}
+          data-testid="button-share-main"
+          title="Share schedule"
+        >
+          <Share className="h-6 w-6" strokeWidth={2.5} />
+        </Button>
+      )}
 
       {/* Next Task Countdown - center, where Chang School logo used to be */}
       {(() => {
