@@ -441,11 +441,17 @@ function scheduleNextChunk() {
   }, delayMs);
 }
 
+const BUILD_VERSION = Date.now().toString();
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   
+  app.get('/api/version', (_req, res) => {
+    res.json({ version: BUILD_VERSION });
+  });
+
   app.post('/api/client-error', (req, res) => {
     const { message, stack, userAgent, url, timestamp } = req.body || {};
     console.error(`[CLIENT ERROR] ${timestamp || new Date().toISOString()} | UA: ${userAgent || 'unknown'} | URL: ${url || 'unknown'} | ${message} | Stack: ${stack || 'none'}`);

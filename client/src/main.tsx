@@ -47,4 +47,21 @@ window.onunhandledrejection = function(event) {
   reportError(msg, event.reason?.stack);
 };
 
+let knownVersion: string | null = null;
+async function checkVersion() {
+  try {
+    const resp = await originalFetch('/api/version');
+    if (resp.ok) {
+      const data = await resp.json();
+      if (knownVersion && data.version !== knownVersion) {
+        window.location.reload();
+        return;
+      }
+      knownVersion = data.version;
+    }
+  } catch {}
+}
+checkVersion();
+setInterval(checkVersion, 30000);
+
 createRoot(document.getElementById("root")!).render(<App />);
