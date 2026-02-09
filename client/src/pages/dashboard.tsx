@@ -8101,7 +8101,7 @@ export default function Dashboard() {
               position: 'absolute',
               left: '50%',
               transform: 'translateX(-50%) translateY(-50%)',
-              top: '36px',
+              top: '39px',
               zIndex: 5,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
