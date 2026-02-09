@@ -1180,8 +1180,12 @@ export default function Dashboard() {
           if (odResponse.ok) {
             const odCounts = await odResponse.json();
             for (const [key, value] of Object.entries(odCounts)) {
-              if (!counts[key] || (counts[key] as any).total === 0) {
+              const existing = counts[key] as any;
+              const odVal = value as any;
+              if (!existing || existing.total === 0) {
                 counts[key] = value;
+              } else if (odVal && odVal.total > existing.total) {
+                counts[key] = { ...existing, total: odVal.total, unlistened: odVal.total - existing.listened };
               }
             }
           }
@@ -6985,7 +6989,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* File Preview Dialog with Media Controls */}
-      <Dialog open={!!previewFile} onOpenChange={(open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } setPreviewFile(null); setOneDrivePreviewFiles([]); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
+      <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
         <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
@@ -7842,10 +7846,24 @@ export default function Dashboard() {
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                   fontSize: '12px'
                 }}
-                onClick={() => {
+                onClick={async () => {
+                  const fileToSave = previewFile;
+                  const chunksToSave = new Set(checkedChunksRef.current);
+                  const totalToSave = ttsChunksRef.current.length || totalChunks;
+                  if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) {
+                    const checkedJson = JSON.stringify(Array.from(chunksToSave));
+                    try {
+                      await fetch(`/api/files/${fileToSave.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }),
+                      });
+                    } catch (err) { console.error('Final save error:', err); }
+                  }
                   setPreviewFile(null);
                   setOneDrivePreviewFiles([]);
-                  queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                  await queryClient.invalidateQueries({ queryKey: ['/api/files'] });
                   refreshFileCounts();
                 }}
                 data-testid="button-preview-done"
@@ -12754,7 +12772,7 @@ export default function Dashboard() {
                                         });
                                         if (resp.ok) {
                                           const dbFile = await resp.json();
-                                          return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false } as FileItem;
+                                          return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false, checkedChunks: dbFile.checkedChunks || undefined, totalChunks: dbFile.totalChunks || undefined, lastChunkIndex: dbFile.lastChunkIndex || undefined } as FileItem;
                                         }
                                       } catch {}
                                       return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
