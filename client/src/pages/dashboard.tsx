@@ -7893,20 +7893,6 @@ export default function Dashboard() {
         <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
       </div>
 
-      {/* Chang School Logo - centered above calendar, fades when top pill opens */}
-      <div style={{
-        position: 'absolute',
-        top: '-38px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 15,
-        opacity: isTopPillOpen ? 0 : 1,
-        transition: 'opacity 0.4s ease-in-out',
-        pointerEvents: 'none',
-      }}>
-        <img src={changSchoolLogo} alt="The Chang School of Continuing Education" style={{ height: '32px', objectFit: 'contain' }} />
-      </div>
-
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
         ref={topPillRef}
@@ -12078,6 +12064,19 @@ export default function Dashboard() {
             }}
           />
           
+          {/* Chang School Logo - centered above glass box, fades when top pill opens */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '2px',
+            opacity: isTopPillOpen ? 0 : 1,
+            transition: 'opacity 0.4s ease-in-out',
+            pointerEvents: 'none',
+            flexShrink: 0,
+          }}>
+            <img src={changSchoolLogo} alt="The Chang School of Continuing Education" style={{ height: '28px', objectFit: 'contain' }} />
+          </div>
+
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
