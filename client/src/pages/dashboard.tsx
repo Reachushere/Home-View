@@ -8079,10 +8079,10 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #999 0%, #bbb 100%)', padding: '1px', zIndex: 100 }}>
+            <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #888 0%, #ccc 100%)', padding: '1px', zIndex: 100 }}>
               <div 
                 className="!h-[42px] !w-[42px] rounded-full flex items-center justify-center"
-                style={{ background: 'linear-gradient(180deg, #aaa 0%, #ccc 50%, #ddd 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.2)' }}
+                style={{ background: 'linear-gradient(0deg, #ccc 0%, #888 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.25)' }}
                 data-testid="button-undo-complete"
                 title="No task to undo"
               >
