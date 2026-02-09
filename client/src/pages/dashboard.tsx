@@ -7037,7 +7037,7 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`w-auto min-w-[80px] max-w-[200px] h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
+                        className={`w-auto h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 whitespace-nowrap ${
                           isModule 
                             ? 'border !border-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' 
                             : 'border-gray-700 hover:border-green-500/50'
@@ -7085,7 +7085,7 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`w-auto min-w-[80px] max-w-[200px] h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
+                        className={`w-auto h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 whitespace-nowrap ${
                           isReading 
                             ? 'border !border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]' 
                             : 'border-gray-700 hover:border-blue-500/50'
