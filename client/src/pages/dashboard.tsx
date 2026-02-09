@@ -14708,7 +14708,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <span className="flex items-center gap-1 flex-1 ml-2">
-                  10 Days ({dueThisWeekTasks.length}){' '}<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(0, 200, 0)' }}>{(() => {
+                  10 Days <span style={{ color: 'rgb(0, 200, 0)' }}>({dueThisWeekTasks.length})</span>{' '}<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
@@ -14836,7 +14836,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <span className="flex items-center gap-1 flex-1 ml-2">
-                  Today ({dueTodayTasks.length})<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
+                  Today <span style={{ color: 'rgb(255, 0, 0)' }}>({dueTodayTasks.length})</span><span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, minWidth: '24px' }}>
                   <div className="calendar-icon-shimmer" style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
@@ -14954,7 +14954,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <span className="flex items-center gap-1 flex-1 ml-2">
-                  Tomorrow ({dueTomorrowTasks.length}){' '}<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
+                  Tomorrow <span style={{ color: 'rgb(255, 165, 0)' }}>({dueTomorrowTasks.length})</span>{' '}<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '3px', flexShrink: 0 }}>
                   <div style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
