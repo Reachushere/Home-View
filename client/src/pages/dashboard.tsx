@@ -7834,12 +7834,12 @@ export default function Dashboard() {
                         : 0}%` }}
                   />
                 </div>
-                <span className="text-[11px] text-emerald-400 font-medium min-w-[40px]">
+                <span className="text-[11px] text-emerald-400 font-medium min-w-[60px]">
                   {totalChunks > 0 
-                    ? `${checkedChunks.size}/${totalChunks}` 
+                    ? `${checkedChunks.size}/${totalChunks} (${Math.round((checkedChunks.size / totalChunks) * 100)}%)` 
                     : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
-                      ? `${previewFile.lastChunkIndex}/${previewFile.totalChunks}`
-                      : '0/0'}
+                      ? `${previewFile.lastChunkIndex}/${previewFile.totalChunks} (${Math.round((previewFile.lastChunkIndex / previewFile.totalChunks) * 100)}%)`
+                      : '0/0 (0%)'}
                 </span>
               </div>
               <Button
