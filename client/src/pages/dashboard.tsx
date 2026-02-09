@@ -8035,7 +8035,7 @@ export default function Dashboard() {
             data-testid="button-share-main"
             title="Share schedule"
           >
-            <Share className="h-3.5 w-3.5" />
+            <Share className="h-4.5 w-4.5" strokeWidth={2.5} />
           </Button>
         )}
       </div>
