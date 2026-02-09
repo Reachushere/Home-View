@@ -8087,6 +8087,7 @@ export default function Dashboard() {
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
         return (
           <div
+            className="font-raleway"
             style={{
               position: 'absolute',
               left: '50%',
@@ -8099,7 +8100,6 @@ export default function Dashboard() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              fontFamily: "'Raleway', sans-serif",
             }}
             data-testid="next-task-countdown"
           >
