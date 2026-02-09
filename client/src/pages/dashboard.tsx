@@ -3389,14 +3389,14 @@ export default function Dashboard() {
 
   // Load PDF when file is selected
   useEffect(() => {
-    if (previewFile && previewFile.objectPath) {
-      // Check if objectPath is a direct URL (OneDrive) or needs API fetch
-      const isDirectUrl = previewFile.objectPath.startsWith('http');
-      const fetchUrl = isDirectUrl ? previewFile.objectPath : `/api/files/${previewFile.id}/download`;
+    if (previewFile && previewFile.id) {
+      const fetchUrl = `/api/files/${previewFile.id}/download`;
       
-      // Create blob URL for PDF
-      fetch(fetchUrl)
-        .then(res => res.blob())
+      fetch(fetchUrl, { credentials: 'include' })
+        .then(res => {
+          if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+          return res.blob();
+        })
         .then(blob => {
           const url = URL.createObjectURL(blob);
           setPdfUrl(url);
@@ -3409,7 +3409,7 @@ export default function Dashboard() {
         setPdfUrl(null);
       }
     };
-  }, [previewFile?.id, previewFile?.objectPath]);
+  }, [previewFile?.id]);
 
   // Function to filter out French text, links, and box content from content
   const removeFrenchText = (text: string): string => {
@@ -7578,13 +7578,31 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden p-4">
+            <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden">
               {isLoadingText ? (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center h-full p-4">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
                 </div>
               ) : previewText ? (
+                <div className="flex min-h-full">
+                  {/* Black checkbox strip - runs full height of content */}
+                  {ttsChunks.length > 0 && (
+                    <div className="flex-shrink-0 w-12 bg-black flex flex-col" data-testid="checkbox-strip">
+                      {ttsChunks.map((_, chunkIdx) => (
+                        <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px' }}>
+                          <input
+                            type="checkbox"
+                            checked={checkedChunks.has(chunkIdx)}
+                            onChange={() => toggleDashChunkChecked(chunkIdx)}
+                            className="w-7 h-7 rounded border-gray-500 accent-green-600 cursor-pointer"
+                            data-testid={`checkbox-chunk-${chunkIdx}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex-1 p-4">
                 <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
                     // Use the same chunks as TTS to ensure play button plays the correct section
@@ -7614,18 +7632,9 @@ export default function Dashboard() {
                       const paragraphs = chunk.split(/\n\n+/);
                       
                       return (
-                        <div key={chunkIdx} className="flex gap-2 mb-4">
-                          <div className="flex-shrink-0 pt-4">
-                            <input
-                              type="checkbox"
-                              checked={checkedChunks.has(chunkIdx)}
-                              onChange={() => toggleDashChunkChecked(chunkIdx)}
-                              className="w-7 h-7 rounded border-gray-400 accent-green-600 cursor-pointer"
-                              data-testid={`checkbox-chunk-${chunkIdx}`}
-                            />
-                          </div>
+                        <div key={chunkIdx} className="mb-4">
                           <div 
-                            className={`flex-1 ${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
+                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
                             onClick={() => playFromChunk(chunkIdx)}
                             title={`Click to play from Section ${chunkIdx + 1}`}
                           >
@@ -7702,8 +7711,10 @@ export default function Dashboard() {
                     });
                   })()}
                 </div>
+                  </div>
+                </div>
               ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
+                <div className="flex items-center justify-center h-full p-4 text-muted-foreground">
                   No text content available
                 </div>
               )}
