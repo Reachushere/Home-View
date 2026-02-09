@@ -8107,7 +8107,7 @@ export default function Dashboard() {
                 <span style={{ color: '#ffffff', fontSize: '10px', fontFamily: "'Raleway', sans-serif", fontWeight: 400, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>days</span>
               </div>
               <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '10px', fontFamily: "'Raleway', sans-serif", fontWeight: 400, textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
-                ({next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''})
+                {next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
             </div>
           </div>
