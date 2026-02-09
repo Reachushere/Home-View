@@ -1894,7 +1894,7 @@ export default function Dashboard() {
     const lighterR = Math.min(255, rgb.r + 100);
     const lighterG = Math.min(255, rgb.g + 100);
     const lighterB = Math.min(255, rgb.b + 100);
-    return `linear-gradient(180deg, rgb(${darkerR}, ${darkerG}, ${darkerB}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`;
+    return `linear-gradient(180deg, rgb(${lighterR}, ${lighterG}, ${lighterB}) 0%, rgb(${darkerR}, ${darkerG}, ${darkerB}) 100%)`;
   };
   
   // Helper to generate reversed border gradient (for wrapper) from course hex color
