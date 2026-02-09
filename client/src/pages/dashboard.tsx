@@ -7655,14 +7655,11 @@ export default function Dashboard() {
                     const stripCourseCode = stripFolderParts.length >= 3 ? stripFolderParts[2]?.toUpperCase() : null;
                     const stripCourse = stripCourseCode ? coursesData.courses.find(c => c.name && c.name.toUpperCase().includes(stripCourseCode)) : null;
                     const stripColor = stripCourse?.color || '#000000';
-                    const stripRgb = hexToRgb(stripColor);
-                    const sD = `rgb(${Math.max(0,stripRgb.r-40)},${Math.max(0,stripRgb.g-40)},${Math.max(0,stripRgb.b-40)})`;
-                    const sL = `rgb(${Math.min(255,stripRgb.r+100)},${Math.min(255,stripRgb.g+100)},${Math.min(255,stripRgb.b+100)})`;
-                    const stripGradient = `repeating-linear-gradient(180deg, ${sD} 0px, ${sL} 80px, ${sD} 160px)`;
+                    const stripGradient = getButtonGradient(stripColor);
                     return (
-                    <div className="flex-shrink-0 w-10 flex flex-col" style={{ background: stripGradient }} data-testid="checkbox-strip">
+                    <div className="flex-shrink-0 w-10 flex flex-col" data-testid="checkbox-strip">
                       {ttsChunks.map((_, chunkIdx) => (
-                        <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px' }}>
+                        <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px', background: stripGradient }}>
                           <div
                             onClick={() => toggleDashChunkChecked(chunkIdx)}
                             className="cursor-pointer select-none flex items-center justify-center"
