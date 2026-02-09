@@ -3069,6 +3069,7 @@ export default function Dashboard() {
     }, 1000);
   };
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("browser_tts");
+  const previewSpeakerRef = useRef<string>("browser_tts");
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -3532,6 +3533,7 @@ export default function Dashboard() {
       isPlayingRef.current = false;
       // Reset speaker to Bluetooth (browser_tts) when opening a new file
       setPreviewSpeaker("browser_tts");
+      previewSpeakerRef.current = "browser_tts";
       // CRITICAL: Stop any existing audio to prevent double voices
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
@@ -4092,6 +4094,7 @@ export default function Dashboard() {
     // Auto-switch to appropriate TTS mode
     if (useBrowserTts && previewSpeaker !== "browser_tts") {
       setPreviewSpeaker("browser_tts");
+      previewSpeakerRef.current = "browser_tts";
     }
     
     // Make sure we have chunks
@@ -4432,6 +4435,32 @@ export default function Dashboard() {
       console.error("Stop error:", error);
     }
   };
+
+  // Stop all playback when the app/tab is closed
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Stop browser TTS
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      // Stop OpenAI TTS audio
+      if (openaiAudioRef.current) {
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current = null;
+      }
+      // Stop Echo/HA speakers via sendBeacon (works during page unload)
+      const speaker = previewSpeakerRef.current;
+      if (speaker && speaker !== "browser_tts" && speaker !== "openai_tts" && isPlayingRef.current) {
+        const blob = new Blob(
+          [JSON.stringify({ entityId: speaker })],
+          { type: "application/json" }
+        );
+        navigator.sendBeacon("/api/media/stop", blob);
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   // Skip forward/back functions for browser TTS, OpenAI TTS, and Echo
   const handleSkipForward = async () => {
@@ -7266,7 +7295,7 @@ export default function Dashboard() {
             {/* Speaker Selector */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <span className="text-[9px] text-white">Speaker:</span>
-              <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
+              <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
                 <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
                 </SelectTrigger>
