@@ -1305,13 +1305,14 @@ export default function Dashboard() {
       currentHourRowBackground: '#d4d4d4',
       todayCurrentHourCellBackground: '#160502'
     };
-    // Check if migration has been done
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV8');
+    // Force migration V9: update mainBackground to brighter color
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV9');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, todayCellBackground: '#d4d4d4', currentHourRowBackground: '#d4d4d4', mainBackground: '#22223a' };
+      // Force mainBackground to new brighter value regardless of saved
+      const migrated = { ...defaults, ...existing, mainBackground: '#22223a' };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV8', 'done');
+      localStorage.setItem('colorSettingsMigrationV9', 'done');
       return migrated;
     }
     if (saved) {
