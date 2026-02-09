@@ -8083,7 +8083,10 @@ export default function Dashboard() {
           .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
         const next = upcoming[0];
         if (!next) return null;
-        const diffDays = Math.ceil((new Date(next.dueDate!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const dueDate = new Date(next.dueDate!);
+        const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+        const diffDays = Math.round((dueDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
         return (
           <div
