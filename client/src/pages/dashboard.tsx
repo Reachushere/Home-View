@@ -8059,21 +8059,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Share button - below clock, right-aligned */}
-      {isAdmin && (
-        <Button
-          size="icon"
-          variant="ghost"
-          className="fixed text-white hover:text-white hover:bg-white/10"
-          style={{ right: '16px', top: '42px', zIndex: 100 }}
-          onClick={generateShareLink}
-          disabled={isGeneratingLink}
-          data-testid="button-share-main"
-          title="Share schedule"
-        >
-          <Share className="h-6 w-6" strokeWidth={2.5} />
-        </Button>
-      )}
 
       {/* Next Task Countdown - center, where Chang School logo used to be */}
       {(() => {
@@ -9576,20 +9561,30 @@ export default function Dashboard() {
           </div>
           <span className="text-[10px] text-white/60 font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
-        <Button 
-          variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[4px]"
-          style={{ marginRight: '21px' }}
-          onClick={() => {
-            if (calendarView === "week") {
-              setCurrentMonth(new Date());
-            }
-            setCalendarView(calendarView === "month" ? "week" : "month");
-          }}
-          data-testid="button-month-view"
-        >
-          {calendarView === "month" ? "Week" : "Month"}
-        </Button>
+        <div className="flex items-end gap-2" style={{ marginRight: '16px' }}>
+          <Button 
+            variant="ghost"
+            className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline relative -top-[4px]"
+            style={{ marginRight: '5px' }}
+            onClick={() => {
+              if (calendarView === "week") {
+                setCurrentMonth(new Date());
+              }
+              setCalendarView(calendarView === "month" ? "week" : "month");
+            }}
+            data-testid="button-month-view"
+          >
+            {calendarView === "month" ? "Week" : "Month"}
+          </Button>
+          {isAdmin && (
+            <Share 
+              className="h-4 w-4 text-white/80 cursor-pointer hover:text-white relative -top-[4px]"
+              strokeWidth={2.5}
+              onClick={generateShareLink}
+              data-testid="button-share-main"
+            />
+          )}
+        </div>
       </div>
       
       {/* Tall Pill Panel - Slides in from right edge */}
