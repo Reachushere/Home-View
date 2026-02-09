@@ -3924,6 +3924,7 @@ export default function Dashboard() {
   // Browser TTS ref
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed
+  const [browserTtsVolume, setBrowserTtsVolume] = useState(1.0); // 100% volume
   
   // Helper to wait for voices to be loaded (Chrome/Android fix)
   const cachedVoicesRef = useRef<SpeechSynthesisVoice[] | null>(null);
@@ -4016,6 +4017,7 @@ export default function Dashboard() {
     const chunk = chunks[chunkIndex];
     const utterance = new SpeechSynthesisUtterance(chunk);
     utterance.rate = browserTtsRate;
+    utterance.volume = browserTtsVolume;
     utterance.pitch = 1;
     
     const voice = selectedVoice 
@@ -4495,6 +4497,7 @@ export default function Dashboard() {
       const remainingText = words.slice(newIndex).join(' ');
       const utterance = new SpeechSynthesisUtterance(remainingText);
       utterance.rate = browserTtsRate;
+    utterance.volume = browserTtsVolume;
       utterance.pitch = 1;
       
       // Use selected voice
@@ -4539,6 +4542,7 @@ export default function Dashboard() {
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const utterance = new SpeechSynthesisUtterance(words.join(' '));
     utterance.rate = browserTtsRate;
+    utterance.volume = browserTtsVolume;
     utterance.pitch = 1;
     
     const voices = window.speechSynthesis.getVoices() || [];
@@ -4581,6 +4585,7 @@ export default function Dashboard() {
     const remainingText = words.slice(currentWordIndex).join(' ');
     const utterance = new SpeechSynthesisUtterance(remainingText);
     utterance.rate = browserTtsRate;
+    utterance.volume = browserTtsVolume;
     utterance.pitch = 1;
     
     const voices = window.speechSynthesis.getVoices() || [];
@@ -4671,6 +4676,7 @@ export default function Dashboard() {
       const remainingText = words.slice(newIndex).join(' ');
       const utterance = new SpeechSynthesisUtterance(remainingText);
       utterance.rate = browserTtsRate;
+    utterance.volume = browserTtsVolume;
       utterance.pitch = 1;
       
       // Use selected voice
@@ -4698,12 +4704,16 @@ export default function Dashboard() {
 
   const handleVolumeChange = async (action: "up" | "down") => {
     try {
-      // Adjust browser TTS rate if using browser
+      // Adjust browser TTS volume
       if (previewSpeaker === "browser_tts") {
-        setBrowserTtsRate(prev => {
-          const newRate = action === "up" ? Math.min(prev + 0.1, 2) : Math.max(prev - 0.1, 0.5);
-          toast({ title: `Speech rate: ${Math.round(newRate * 100)}%` });
-          return newRate;
+        setBrowserTtsVolume(prev => {
+          const newVol = action === "up" ? Math.min(prev + 0.1, 1) : Math.max(prev - 0.1, 0);
+          setRadioVolume(Math.round(newVol * 100));
+          if (speechUtteranceRef.current) {
+            speechUtteranceRef.current.volume = newVol;
+          }
+          toast({ title: `Volume: ${Math.round(newVol * 100)}%` });
+          return newVol;
         });
         return;
       }
@@ -7384,8 +7394,11 @@ export default function Dashboard() {
                 onValueChange={(val) => {
                   setRadioVolume(val[0]);
                   if (previewSpeaker === "browser_tts") {
-                    const rate = 0.5 + (val[0] / 100) * 1.5;
-                    setBrowserTtsRate(rate);
+                    const newVol = val[0] / 100;
+                    setBrowserTtsVolume(newVol);
+                    if (speechUtteranceRef.current) {
+                      speechUtteranceRef.current.volume = newVol;
+                    }
                   } else if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
                     if (openaiAudioRef.current) {
                       openaiAudioRef.current.volume = val[0] / 100;
@@ -7817,6 +7830,7 @@ export default function Dashboard() {
                       window.speechSynthesis.cancel();
                       const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
                       utterance.rate = browserTtsRate;
+    utterance.volume = browserTtsVolume;
                       const voice = availableVoices.find(v => v.name === selectedVoice);
                       if (voice) utterance.voice = voice;
                       window.speechSynthesis.speak(utterance);
