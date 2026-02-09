@@ -1175,30 +1175,43 @@ export default function Dashboard() {
       if (response.ok) {
         const counts = await response.json();
         
-        try {
-          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}`);
-          if (odResponse.ok) {
-            const odCounts = await odResponse.json();
-            for (const [key, value] of Object.entries(odCounts)) {
-              const existing = counts[key] as any;
-              const odVal = value as any;
-              if (!existing || existing.total === 0) {
-                counts[key] = value;
-              } else if (odVal && odVal.total > existing.total) {
-                counts[key] = { ...existing, total: odVal.total, unlistened: odVal.total - existing.listened };
-              }
-            }
-          }
-        } catch (odError) {
-          console.error('Error fetching OneDrive week counts:', odError);
-        }
-        
         setFileCounts(counts);
+        setFileCountsLoaded(true);
         const legacyCounts: Record<string, number> = {};
         for (const [key, value] of Object.entries(counts)) {
           legacyCounts[key] = (value as { total: number }).total;
         }
         setOneDriveFileCounts(legacyCounts);
+        
+        try {
+          const odController = new AbortController();
+          const odTimeout = setTimeout(() => odController.abort(), 10000);
+          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}`, { signal: odController.signal });
+          clearTimeout(odTimeout);
+          if (odResponse.ok) {
+            const odCounts = await odResponse.json();
+            const merged = { ...counts };
+            for (const [key, value] of Object.entries(odCounts)) {
+              const existing = merged[key] as any;
+              const odVal = value as any;
+              if (!existing || existing.total === 0) {
+                merged[key] = value;
+              } else if (odVal && odVal.total > existing.total) {
+                merged[key] = { ...existing, total: odVal.total, unlistened: odVal.total - existing.listened };
+              }
+            }
+            setFileCounts(merged);
+            const mergedLegacy: Record<string, number> = {};
+            for (const [key, value] of Object.entries(merged)) {
+              mergedLegacy[key] = (value as { total: number }).total;
+            }
+            setOneDriveFileCounts(mergedLegacy);
+          }
+        } catch (odError) {
+          if ((odError as any)?.name !== 'AbortError') {
+            console.error('Error fetching OneDrive week counts:', odError);
+          }
+        }
       } else if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
       }
@@ -3039,6 +3052,7 @@ export default function Dashboard() {
   const [isLoadingOneDriveFiles, setIsLoadingOneDriveFiles] = useState(false);
   // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
   const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number; partialProgress?: number }>>({});
+  const [fileCountsLoaded, setFileCountsLoaded] = useState(false);
   // Legacy: for backward compatibility with OneDrive-only counts
   const [oneDriveFileCounts, setOneDriveFileCounts] = useState<Record<string, number>>({});
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
@@ -12676,7 +12690,8 @@ export default function Dashboard() {
                     const readingP = calcFileProgress(readingFiles, readingFolderKey);
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
-                    const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
+                    const hasNoData = fileCountsLoaded && !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
+                    const isLoadingCounts = !fileCountsLoaded && !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
                     const moduleFolderCount = fileCounts[moduleFolderKey];
                     const readingFolderCount = fileCounts[readingFolderKey];
@@ -12698,7 +12713,12 @@ export default function Dashboard() {
                         style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '0px', paddingRight: '6px' }}
                       >
                         <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px', paddingLeft: '4px' }}>
-                        {hasNoData ? (
+                        {isLoadingCounts ? (
+                          <div className="flex flex-col items-center justify-center gap-1">
+                            <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                            <span className="text-[8px] text-white/50">Loading</span>
+                          </div>
+                        ) : hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
                           <>
