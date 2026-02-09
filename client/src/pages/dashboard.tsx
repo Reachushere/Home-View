@@ -8122,8 +8122,8 @@ export default function Dashboard() {
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
               {prepDaysText && (
-                <span style={{ fontFamily: "'Raleway', sans-serif", color: 'rgba(255,255,255,0.75)', fontSize: '9.5px', fontWeight: 600, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
-                  {prepDaysText === 'today' ? `Also, start preparing for ${prepTaskName} today` : prepDaysText === 'now' ? `Also, preparation for ${prepTaskName} is in progress` : (<>Also, start preparing for {prepTaskName} in <span style={{ fontSize: '12px', fontWeight: 800, color: '#ffffff' }}>{prepDaysText}</span> days</>)}
+                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.8)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>
+                  {prepDaysText === 'today' ? `Also, start preparing for ${prepTaskName} today` : prepDaysText === 'now' ? `Also, preparation for ${prepTaskName} is in progress` : (<>Also, start preparing for {prepTaskName} in <span style={{ fontSize: '13px', fontWeight: 900 }}>{prepDaysText}</span> days</>)}
                 </span>
               )}
             </div>
