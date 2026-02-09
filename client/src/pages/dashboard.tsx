@@ -12215,7 +12215,7 @@ export default function Dashboard() {
             const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
             const courseForTask = nextTask.courseName ? coursesData.courses.find(c => nextTask.courseName!.includes(c.name.split(' - ')[0])) : null;
             return (
-              <div style={{ marginLeft: '99px', marginTop: '-25px', marginBottom: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", order: 0 }} data-testid="next-task-countdown">
+              <div style={{ marginLeft: '204px', marginTop: '-80px', marginBottom: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", order: 0 }} data-testid="next-task-countdown">
                 <div style={{ color: '#ffffff', fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
                   Your Next Task is in:
                 </div>
