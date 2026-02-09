@@ -13507,7 +13507,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l relative p-0.5`}
                           style={{ 
-                            backgroundColor: isSatToday ? '#eef2f7' : '#faf8f5',
+                            backgroundColor: isSatToday ? '#eef2f7' : isCurrentHour ? '#eef2f7' : '#faf8f5',
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
