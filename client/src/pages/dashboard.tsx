@@ -1169,8 +1169,6 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
 
-  const [fileCountsLoaded, setFileCountsLoaded] = useState(false);
-  
   const refreshFileCounts = useCallback(async (retryCount = 0) => {
     try {
       const response = await fetch('/api/files/counts');
@@ -1178,7 +1176,6 @@ export default function Dashboard() {
         const counts = await response.json();
         
         setFileCounts(counts);
-        setFileCountsLoaded(true);
         const legacyCounts: Record<string, number> = {};
         for (const [key, value] of Object.entries(counts)) {
           legacyCounts[key] = (value as { total: number }).total;
@@ -1216,15 +1213,11 @@ export default function Dashboard() {
         }
       } else if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
-      } else {
-        setFileCountsLoaded(true);
       }
     } catch (error) {
       console.error('Error fetching file counts:', error);
       if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
-      } else {
-        setFileCountsLoaded(true);
       }
     }
   }, [selectedWeek]);
@@ -1233,15 +1226,6 @@ export default function Dashboard() {
     refreshFileCounts();
   }, [refreshFileCounts]);
 
-  useEffect(() => {
-    if (!fileCountsLoaded) {
-      const safetyTimer = setTimeout(() => {
-        setFileCountsLoaded(true);
-      }, 8000);
-      return () => clearTimeout(safetyTimer);
-    }
-  }, [fileCountsLoaded]);
-  
   // Close modules/readings honeycomb when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -12704,8 +12688,7 @@ export default function Dashboard() {
                     const readingP = calcFileProgress(readingFiles, readingFolderKey);
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
-                    const hasNoData = fileCountsLoaded && !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
-                    const isLoadingCounts = !fileCountsLoaded && !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
+                    const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
                     const moduleFolderCount = fileCounts[moduleFolderKey];
                     const readingFolderCount = fileCounts[readingFolderKey];
@@ -12727,12 +12710,7 @@ export default function Dashboard() {
                         style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '0px', paddingRight: '6px' }}
                       >
                         <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px', paddingLeft: '4px' }}>
-                        {isLoadingCounts ? (
-                          <div className="flex flex-col items-center justify-center gap-1">
-                            <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                            <span className="text-[8px] text-white/50">Loading</span>
-                          </div>
-                        ) : hasNoData ? (
+                        {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
                         ) : (
                           <>
