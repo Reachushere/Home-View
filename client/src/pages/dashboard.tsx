@@ -14707,8 +14707,8 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex items-center flex-1 ml-2">
-                  3-10 Days ({dueThisWeekTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(0, 200, 0)' }}>{(() => {
+                <span className="flex items-center gap-1 flex-1 ml-2">
+                  3-10 Days ({dueThisWeekTasks.length})<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
@@ -14842,8 +14842,8 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex items-center flex-1 ml-2">
-                  Today ({dueTodayTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
+                <span className="flex items-center gap-1 flex-1 ml-2">
+                  Today ({dueTodayTasks.length})<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
                   <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
@@ -14958,8 +14958,8 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex items-center flex-1 ml-2">
-                  Tomorrow ({dueTomorrowTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
+                <span className="flex items-center gap-1 flex-1 ml-2">
+                  Tomorrow ({dueTomorrowTasks.length})<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
                   <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
