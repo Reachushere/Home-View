@@ -12237,6 +12237,34 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* Next Task Countdown */}
+          {(() => {
+            const now = new Date();
+            const upcomingTasks = allTasks
+              .filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > now)
+              .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+            const nextTask = upcomingTasks[0];
+            if (!nextTask) return null;
+            const dueDate = new Date(nextTask.dueDate!);
+            const diffMs = dueDate.getTime() - now.getTime();
+            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            const courseForTask = courses.find(c => c.id === nextTask.courseId);
+            return (
+              <div style={{ position: 'absolute', top: '-70px', left: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", zIndex: 10 }} data-testid="next-task-countdown">
+                <div style={{ color: 'white', fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
+                  Your Next Task is in:
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                  <span style={{ color: 'white', fontSize: '36px', fontWeight: 800, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>{diffDays}</span>
+                  <span style={{ color: 'white', fontSize: '14px', fontWeight: 600, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>Days</span>
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 500 }}>
+                  ({nextTask.title}{courseForTask ? ` - ${courseForTask.name.split(' - ')[0]}` : ''})
+                </div>
+              </div>
+            );
+          })()}
+          
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 5px)', marginTop: '-2px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
