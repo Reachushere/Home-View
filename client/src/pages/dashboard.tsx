@@ -1306,12 +1306,12 @@ export default function Dashboard() {
       todayCurrentHourCellBackground: '#160502'
     };
     // Check if migration has been done
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV7');
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV8');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, todayCellBackground: '#d4d4d4', currentHourRowBackground: '#d4d4d4' };
+      const migrated = { ...defaults, ...existing, todayCellBackground: '#d4d4d4', currentHourRowBackground: '#d4d4d4', mainBackground: '#22223a' };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV7', 'done');
+      localStorage.setItem('colorSettingsMigrationV8', 'done');
       return migrated;
     }
     if (saved) {
@@ -14679,7 +14679,7 @@ export default function Dashboard() {
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
                 : colorSettings.boxBackground,
-              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14723,7 +14723,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(1px)', WebkitBackdropFilter: 'blur(1px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {dueThisWeekTasks.length === 0 ? (
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
@@ -14804,7 +14804,7 @@ export default function Dashboard() {
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
                 : colorSettings.boxBackground,
-              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14840,7 +14840,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(1px)', WebkitBackdropFilter: 'blur(1px)', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
@@ -14920,7 +14920,7 @@ export default function Dashboard() {
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
                 : colorSettings.boxBackground,
-              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14956,7 +14956,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(1px)', WebkitBackdropFilter: 'blur(1px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
