@@ -7086,7 +7086,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-4px' }}>
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -7272,7 +7272,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-11px' }}>
             <Button
               size="icon"
               variant="outline"
@@ -7505,7 +7505,7 @@ export default function Dashboard() {
           </div>
           
           {/* Split View: PDF on left, Highlighted Text on right */}
-          <div className="flex-1 flex min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
+          <div className="flex-1 flex min-h-0 mx-6 mb-2 mt-1 overflow-hidden">
             {/* PDF Viewer */}
             <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(42% - 30px)' }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
