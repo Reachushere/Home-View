@@ -7893,17 +7893,18 @@ export default function Dashboard() {
         <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
       </div>
 
-      {/* Chang School Logo - fixed, right of center, vertically aligned with Uni-Cal logo */}
+      {/* Chang School Logo - centered below top pill, fades when pill opens */}
       <img
         src={changSchoolLogo}
         alt="The Chang School of Continuing Education"
-        className="fixed"
         style={{
-          right: '80px',
-          top: '5px',
-          height: '32px',
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: '58px',
+          height: '28px',
           objectFit: 'contain',
-          zIndex: 100,
+          zIndex: 15,
           opacity: isTopPillOpen ? 0 : 1,
           transition: 'opacity 0.4s ease-in-out',
           pointerEvents: 'none',
