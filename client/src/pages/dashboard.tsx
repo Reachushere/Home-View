@@ -8060,13 +8060,13 @@ export default function Dashboard() {
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6 text-white/60 hover:text-white hover:bg-white/10"
+            className="text-white hover:text-white hover:bg-white/10"
             onClick={generateShareLink}
             disabled={isGeneratingLink}
             data-testid="button-share-main"
             title="Share schedule"
           >
-            <Share className="h-5 w-5" strokeWidth={3} />
+            <Share className="h-6 w-6" strokeWidth={2.5} />
           </Button>
         )}
       </div>
