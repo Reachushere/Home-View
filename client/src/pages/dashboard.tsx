@@ -14712,7 +14712,7 @@ export default function Dashboard() {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '3px', flexShrink: 0 }}>
                   <div style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(addDays(new Date(), 2), 'd')}</div>
@@ -14838,9 +14838,11 @@ export default function Dashboard() {
                 <span className="flex items-center gap-1 flex-1 ml-2">
                   Today ({dueTodayTasks.length})<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
-                <div className="calendar-icon-shimmer" style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-                  <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
-                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(new Date(), 'd')}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, minWidth: '24px' }}>
+                  <div className="calendar-icon-shimmer" style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(new Date(), 'd')}</div>
+                  </div>
                 </div>
               </h4>
             </div>
@@ -14954,7 +14956,7 @@ export default function Dashboard() {
                 <span className="flex items-center gap-1 flex-1 ml-2">
                   Tomorrow ({dueTomorrowTasks.length}){' '}<span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '3px', flexShrink: 0 }}>
                   <div style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(addDays(new Date(), 1), 'd')}</div>
