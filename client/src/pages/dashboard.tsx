@@ -8118,7 +8118,7 @@ export default function Dashboard() {
                 <span style={{ color: '#ffffff', fontSize: '28px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
                 <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>days</span>
               </div>
-              <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px' }}>
+              <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '-2px' }}>
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
               {prepDaysText && (
