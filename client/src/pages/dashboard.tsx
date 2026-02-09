@@ -14718,14 +14718,14 @@ export default function Dashboard() {
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
                   </div>
                   {[...Array(2)].map((_, i) => (
-                    <div key={`b1-${i}`} style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'white', flexShrink: 0 }} />
+                    <span key={`b1-${i}`} style={{ fontSize: '6px', color: 'white', flexShrink: 0, lineHeight: 1 }}>&#9654;</span>
                   ))}
                   <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekStart, 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(thisWeekStart, 'd')}</div>
                   </div>
                   {[...Array(Math.max(0, differenceInDays(thisWeekEnd, thisWeekStart) - 1))].map((_, i) => (
-                    <div key={`b2-${i}`} style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'white', flexShrink: 0 }} />
+                    <span key={`b2-${i}`} style={{ fontSize: '6px', color: 'white', flexShrink: 0, lineHeight: 1 }}>&#9654;</span>
                   ))}
                   <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
@@ -14966,7 +14966,7 @@ export default function Dashboard() {
                     <div style={{ background: 'rgb(100, 160, 220)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
                   </div>
-                  <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'white', flexShrink: 0 }} />
+                  <span style={{ fontSize: '6px', color: 'white', flexShrink: 0, lineHeight: 1 }}>&#9654;</span>
                   <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(addDays(new Date(), 1), 'd')}</div>
