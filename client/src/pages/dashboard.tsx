@@ -7102,10 +7102,10 @@ export default function Dashboard() {
               };
               
               return (
-                <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-wrap">
+                <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-nowrap min-w-0 overflow-hidden">
                   {/* Module Files Dropdown */}
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-white hidden sm:inline">Module:</span>
+                  <div className="flex items-center gap-1 min-w-0 shrink">
+                    <span className="text-[9px] text-white hidden sm:inline shrink-0">Module:</span>
                     <Select 
                       value={(() => {
                         if (isModule && previewFile) return previewFile.id.toString();
@@ -7122,21 +7122,21 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`w-auto h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 whitespace-nowrap ${
+                        className={`max-w-[120px] h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
                           isModule 
                             ? 'border !border-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
                             : 'border-gray-700 hover:border-white/50'
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-module-file">
-                        <SelectValue>
+                        <span className="truncate block max-w-[90px]">
                           {(() => {
                             if (moduleFiles.length === 0) return 'No modules';
                             const unlistenedFile = moduleFiles.find(f => !f.listened);
                             const fileToShow = isModule && previewFile ? previewFile : (unlistenedFile || moduleFiles[0]);
                             return fileToShow ? (fileToShow.displayName || fileToShow.originalName).replace(/\.pdf$/i, '') : 'No modules';
                           })()}
-                        </SelectValue>
+                        </span>
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {moduleFiles.length === 0 && (
@@ -7156,8 +7156,8 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Reading Files Dropdown */}
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-white hidden sm:inline">Reading:</span>
+                  <div className="flex items-center gap-1 min-w-0 shrink">
+                    <span className="text-[9px] text-white hidden sm:inline shrink-0">Reading:</span>
                     <Select 
                       value={(() => {
                         if (isReading && previewFile) return previewFile.id.toString();
@@ -7170,14 +7170,14 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`w-auto h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 whitespace-nowrap ${
+                        className={`max-w-[120px] h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
                           isReading 
                             ? 'border !border-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
                             : 'border-gray-700 hover:border-white/50'
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-reading-file">
-                        <SelectValue placeholder="No readings" />
+                        <span className="truncate block max-w-[90px]">{readingFiles.length === 0 ? 'No readings' : (readingFiles[0]?.displayName || readingFiles[0]?.originalName || 'No readings').replace(/\.pdf$/i, '')}</span>
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
