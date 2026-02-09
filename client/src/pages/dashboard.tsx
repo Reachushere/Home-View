@@ -1168,6 +1168,8 @@ export default function Dashboard() {
     setStartDiscussionComplete(savedStart === 'true');
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
+
+  const [fileCountsLoaded, setFileCountsLoaded] = useState(false);
   
   const refreshFileCounts = useCallback(async (retryCount = 0) => {
     try {
@@ -3065,7 +3067,6 @@ export default function Dashboard() {
   const [isLoadingOneDriveFiles, setIsLoadingOneDriveFiles] = useState(false);
   // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
   const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number; partialProgress?: number }>>({});
-  const [fileCountsLoaded, setFileCountsLoaded] = useState(false);
   // Legacy: for backward compatibility with OneDrive-only counts
   const [oneDriveFileCounts, setOneDriveFileCounts] = useState<Record<string, number>>({});
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
