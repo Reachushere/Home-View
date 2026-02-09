@@ -1651,8 +1651,8 @@ export default function Dashboard() {
   const row1ContainerRef = useRef<HTMLDivElement>(null);
   // HARDCODED header positions - NEVER change without explicit user permission
   // remaining=25, task=75, code=177, course=214, due=365, days=right-aligned to right edge
-  const HEADER_POS = { remaining: 25, task: 77, code: 187, course: 236, due: 376 };
-  const [row1Positions, setRow1Positions] = useState({ task: 70, code: 166, course: 240, due: 340, days: 400, progressBar: 18, progressBarTop: 0 });
+  const HEADER_POS = { remaining: 25, task: 77, code: 187, course: 230, due: 367 };
+  const [row1Positions, setRow1Positions] = useState({ task: 70, code: 166, course: 234, due: 331, days: 400, progressBar: 18, progressBarTop: 0 });
   
   // Save box order to localStorage
   useEffect(() => {
