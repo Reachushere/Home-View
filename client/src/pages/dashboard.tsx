@@ -4733,8 +4733,21 @@ export default function Dashboard() {
 
   const handleVolumeChange = async (action: "up" | "down") => {
     try {
-      // Adjust browser TTS volume
-      if (previewSpeaker === "browser_tts") {
+      // Check what's ACTUALLY playing, not just the speaker setting
+      // OpenAI audio takes priority - if it exists, adjust it regardless of speaker setting
+      if (openaiAudioRef.current) {
+        const currentVolume = openaiAudioRef.current.volume;
+        const newVolume = action === "up" 
+          ? Math.min(currentVolume + 0.1, 1) 
+          : Math.max(currentVolume - 0.1, 0);
+        openaiAudioRef.current.volume = newVolume;
+        setRadioVolume(Math.round(newVolume * 100));
+        toast({ title: `Volume: ${Math.round(newVolume * 100)}%` });
+        return;
+      }
+      
+      // Browser TTS - adjust volume for current and future utterances
+      if (previewSpeaker === "browser_tts" || (window.speechSynthesis && window.speechSynthesis.speaking)) {
         setBrowserTtsVolume(prev => {
           const newVol = action === "up" ? Math.min(prev + 0.1, 1) : Math.max(prev - 0.1, 0);
           setRadioVolume(Math.round(newVol * 100));
@@ -4747,25 +4760,23 @@ export default function Dashboard() {
         return;
       }
       
-      // For OpenAI TTS on Fire tablets - adjust audio element volume
-      if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
-        if (openaiAudioRef.current) {
-          const currentVolume = openaiAudioRef.current.volume;
-          const newVolume = action === "up" 
-            ? Math.min(currentVolume + 0.1, 1) 
-            : Math.max(currentVolume - 0.1, 0);
-          openaiAudioRef.current.volume = newVolume;
-          setRadioVolume(Math.round(newVolume * 100));
-          toast({ title: `Volume: ${Math.round(newVolume * 100)}%` });
-        }
+      // Echo/HA speakers - call API
+      if (previewSpeaker && previewSpeaker !== "browser_tts" && previewSpeaker !== "openai_tts") {
+        await fetch("/api/media/volume", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, entityId: previewSpeaker }),
+        });
+        const newVol = action === "up" ? Math.min(radioVolume + 5, 100) : Math.max(radioVolume - 5, 0);
+        setRadioVolume(newVol);
+        toast({ title: `Volume: ${newVol}%` });
         return;
       }
       
-      await fetch("/api/media/volume", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, entityId: previewSpeaker }),
-      });
+      // Fallback - just update the display
+      const newVol = action === "up" ? Math.min(radioVolume + 5, 100) : Math.max(radioVolume - 5, 0);
+      setRadioVolume(newVol);
+      toast({ title: `Volume: ${newVol}%` });
     } catch (error) {
       console.error("Volume error:", error);
     }
