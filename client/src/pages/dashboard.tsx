@@ -8109,7 +8109,7 @@ export default function Dashboard() {
       <div 
         ref={topPillRef}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           zIndex: 110,
           left: 'calc(50% - 101px)',
           transform: `translateX(-50%) translateY(${isTopPillOpen ? '1px' : '-56px'})`,
