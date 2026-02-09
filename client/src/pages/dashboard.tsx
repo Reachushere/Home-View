@@ -7787,7 +7787,6 @@ export default function Dashboard() {
                   })()}
                 </div>
                   </div>
-                  </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full p-4 text-muted-foreground">
