@@ -8121,8 +8121,8 @@ export default function Dashboard() {
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
               {prepDaysText && (
-                <span style={{ fontFamily: "'Raleway', sans-serif", color: 'rgba(255,255,255,0.6)', fontSize: '9.5px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
-                  {prepDaysText === 'today' ? `Start preparing for ${prepTaskName} today` : prepDaysText === 'now' ? `Preparation for ${prepTaskName} is in progress` : `Start preparing for ${prepTaskName} in ${prepDaysText} days`}
+                <span style={{ fontFamily: "'Raleway', sans-serif", color: 'rgba(255,255,255,0.6)', fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
+                  {prepDaysText === 'today' ? `Start preparing for ${prepTaskName} today` : prepDaysText === 'now' ? `Preparation for ${prepTaskName} is in progress` : (<>Start preparing for {prepTaskName} in <span style={{ fontSize: '13px', fontWeight: 900 }}>{prepDaysText}</span> days</>)}
                 </span>
               )}
             </div>
