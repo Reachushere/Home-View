@@ -340,6 +340,29 @@ button[role="combobox"] > span {
   }
 }
 
+.calendar-icon-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.calendar-icon-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 70%,
+    transparent 100%
+  );
+  animation: calendar-shimmer 2.5s ease-in-out infinite;
+}
+@keyframes calendar-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 /* Prep bar shimmer - opposite timing to main shimmer */
 .animate-prep-shimmer {
   position: relative;
