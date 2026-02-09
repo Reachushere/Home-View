@@ -7713,7 +7713,7 @@ export default function Dashboard() {
                     const sRgb = hexToRgb(stripColor);
                     const sD = `rgb(${Math.max(0,sRgb.r-40)},${Math.max(0,sRgb.g-40)},${Math.max(0,sRgb.b-40)})`;
                     const sL = `rgb(${Math.min(255,sRgb.r+100)},${Math.min(255,sRgb.g+100)},${Math.min(255,sRgb.b+100)})`;
-                    const stripGradient = `linear-gradient(180deg, ${sL} 0%, ${sD} 100%)`;
+                    const stripGradient = `linear-gradient(180deg, ${sD} 0%, ${sL} 100%)`;
 
                     const chunkColors = [
                       'bg-blue-50 dark:bg-blue-950/40',
