@@ -8074,16 +8074,21 @@ export default function Dashboard() {
         const diffDays = Math.round((dueDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
         let prepText = '';
-        if (next.startDate) {
-          const startDate = new Date(next.startDate);
-          const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-          const prepDaysLeft = Math.round((startDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
-          if (prepDaysLeft > 0) {
-            prepText = `and start preparing in ${prepDaysLeft} day${prepDaysLeft !== 1 ? 's' : ''}`;
-          } else if (prepDaysLeft === 0) {
-            prepText = 'and start preparing today';
+        const nextPrep = upcoming
+          .filter(t => t.startDate)
+          .map(t => {
+            const sd = new Date(t.startDate!);
+            const sdOnly = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate());
+            return { ...t, startDateOnly: sdOnly, prepDaysLeft: Math.round((sdOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24)) };
+          })
+          .sort((a, b) => a.startDateOnly.getTime() - b.startDateOnly.getTime())[0];
+        if (nextPrep) {
+          if (nextPrep.prepDaysLeft > 0) {
+            prepText = `and start preparing for ${nextPrep.title} in ${nextPrep.prepDaysLeft} day${nextPrep.prepDaysLeft !== 1 ? 's' : ''}`;
+          } else if (nextPrep.prepDaysLeft === 0) {
+            prepText = `and start preparing for ${nextPrep.title} today`;
           } else {
-            prepText = 'and preparation is in progress';
+            prepText = `and preparation for ${nextPrep.title} is in progress`;
           }
         }
         return (
@@ -8114,7 +8119,7 @@ export default function Dashboard() {
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
               {prepText && (
-                <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap', marginTop: '1px' }}>
+                <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
                   {prepText}
                 </span>
               )}
