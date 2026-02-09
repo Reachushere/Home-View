@@ -1318,14 +1318,13 @@ export default function Dashboard() {
       currentHourRowBackground: '#d4d4d4',
       todayCurrentHourCellBackground: '#160502'
     };
-    // Force migration V9: update mainBackground to brighter color
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV9');
+    // Force migration V10: reduce box transparency for less frosted look
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV10');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      // Force mainBackground to new brighter value regardless of saved
-      const migrated = { ...defaults, ...existing, mainBackground: '#22223a' };
+      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxTransparency: 25 };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV9', 'done');
+      localStorage.setItem('colorSettingsMigrationV10', 'done');
       return migrated;
     }
     if (saved) {
