@@ -1312,7 +1312,7 @@ export default function Dashboard() {
       headerBar: '#160502',
       mainBackground: '#22223a',
       boxGlassEffect: true,
-      boxTransparency: 28,
+      boxTransparency: 20,
       mainBackgroundOverlay: false,
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
@@ -5931,7 +5931,7 @@ export default function Dashboard() {
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          filter: 'brightness(1.45)',
+          filter: 'brightness(1.8)',
           zIndex: 0
         }}
       />
