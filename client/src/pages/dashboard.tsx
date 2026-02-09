@@ -12265,7 +12265,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 5px)', marginTop: '-2px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 10px)', marginTop: '3px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -14437,7 +14437,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1 }}>
-          <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px' }} className="relative overflow-visible">
+          <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 10px)', marginTop: '3px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
             className="absolute pointer-events-none"
