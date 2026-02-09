@@ -12474,7 +12474,7 @@ export default function Dashboard() {
                 // If there are full-week tasks, render them using grid column spanning
                 if (hasFullWeekTasks) {
                   return (
-                    <div key={course.name} className="border-b border-border/50 w-full flex-shrink-0">
+                    <div key={course.name} className="w-full flex-shrink-0" style={{ borderBottom: `1px solid ${courseData.color}` }}>
                       {fullWeekTasks.map((task, taskIdx) => {
                         const today = startOfDay(new Date());
                         const tomorrow = addDays(today, 1);
@@ -12660,7 +12660,7 @@ export default function Dashboard() {
                 // Use pre-computed max height so all course rows are the same height
                 
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
+                <div key={course.name} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px`, borderBottom: `1px solid ${courseData.color}` }}>
                   <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ backgroundColor: course.label }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
