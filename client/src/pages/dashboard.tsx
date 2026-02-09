@@ -7029,7 +7029,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-wrap">
                   {/* Module Files Dropdown */}
                   <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-white/60 hidden sm:inline">Module:</span>
+                    <span className="text-[9px] text-white hidden sm:inline">Module:</span>
                     <Select 
                       value={(() => {
                         if (isModule && previewFile) return previewFile.id.toString();
@@ -7081,7 +7081,7 @@ export default function Dashboard() {
                   
                   {/* Reading Files Dropdown */}
                   <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-white/60 hidden sm:inline">Reading:</span>
+                    <span className="text-[9px] text-white hidden sm:inline">Reading:</span>
                     <Select 
                       value={(() => {
                         if (isReading && previewFile) return previewFile.id.toString();
@@ -7153,7 +7153,7 @@ export default function Dashboard() {
             
             {/* Speaker Selector */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-[9px] text-white/60">Speaker:</span>
+              <span className="text-[9px] text-white">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
                 <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
@@ -7174,7 +7174,7 @@ export default function Dashboard() {
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-[9px] text-white/60">Voice:</span>
+                <span className="text-[9px] text-white">Voice:</span>
                 <Select value={selectedVoice} onValueChange={setSelectedVoice}>
                   <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
                     <SelectValue placeholder="Select Voice" />
@@ -7211,7 +7211,7 @@ export default function Dashboard() {
             {/* OpenAI Voice selector - shows for OpenAI TTS (Fire tablets) */}
             {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
               <div className="flex items-center gap-2">
-                <span className="text-[9px] text-white/60">Voice:</span>
+                <span className="text-[9px] text-white">Voice:</span>
                 <Select 
                   value={openaiVoice} 
                   onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}
@@ -7609,8 +7609,9 @@ export default function Dashboard() {
                     const stripCourseCode = stripFolderParts.length >= 3 ? stripFolderParts[2]?.toUpperCase() : null;
                     const stripCourse = stripCourseCode ? coursesData.courses.find(c => c.name && c.name.toUpperCase().includes(stripCourseCode)) : null;
                     const stripColor = stripCourse?.color || '#000000';
+                    const stripGradient = getButtonGradient(stripColor);
                     return (
-                    <div className="flex-shrink-0 w-12 flex flex-col" style={{ backgroundColor: stripColor }} data-testid="checkbox-strip">
+                    <div className="flex-shrink-0 w-12 flex flex-col" style={{ background: stripGradient }} data-testid="checkbox-strip">
                       {ttsChunks.map((_, chunkIdx) => (
                         <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px' }}>
                           <input
