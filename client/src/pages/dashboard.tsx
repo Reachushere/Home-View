@@ -7260,7 +7260,7 @@ export default function Dashboard() {
             {previewSpeaker === "browser_tts" && (
               <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-1">
                 <Gauge className="h-3 w-3 text-gray-400" />
-                <span className="text-[9px] text-white/60">Speed</span>
+                <span className="text-[9px] text-white">Speed</span>
                 <Button
                   size="icon"
                   variant="ghost"
