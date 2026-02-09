@@ -3783,12 +3783,14 @@ export default function Dashboard() {
               return;
             }
             for (let i = 0; i < allChunkEls.length; i++) {
-              if (!checked.has(i)) {
+              const testId = allChunkEls[i].getAttribute('data-testid') || '';
+              const idx = parseInt(testId.replace('checkbox-chunk-', ''), 10);
+              if (!isNaN(idx) && !checked.has(idx)) {
                 allChunkEls[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
               }
             }
-          }, attempt === 0 ? 500 : 300);
+          }, attempt === 0 ? 800 : 400);
         };
         attemptScroll(0);
       };
