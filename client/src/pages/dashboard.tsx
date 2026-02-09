@@ -3390,7 +3390,16 @@ export default function Dashboard() {
   // Load PDF when file is selected
   useEffect(() => {
     if (previewFile && previewFile.id) {
-      const fetchUrl = `/api/files/${previewFile.id}/download`;
+      setPdfUrl(null);
+      
+      // If the objectPath is a direct HTTP URL (OneDrive download URL), proxy it
+      const objectPath = previewFile.objectPath || '';
+      let fetchUrl: string;
+      if (objectPath.startsWith('http')) {
+        fetchUrl = `/api/proxy-pdf?url=${encodeURIComponent(objectPath)}`;
+      } else {
+        fetchUrl = `/api/files/${previewFile.id}/download`;
+      }
       
       fetch(fetchUrl, { credentials: 'include' })
         .then(res => {
@@ -3398,7 +3407,7 @@ export default function Dashboard() {
           return res.blob();
         })
         .then(blob => {
-          const url = URL.createObjectURL(blob);
+          const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
           setPdfUrl(url);
         })
         .catch(err => console.error('Error loading PDF:', err));

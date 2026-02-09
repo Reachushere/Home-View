@@ -1279,6 +1279,43 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/proxy-pdf - Proxy a PDF from an external URL (e.g., OneDrive download URL)
+  app.get("/api/proxy-pdf", async (req, res) => {
+    try {
+      const url = req.query.url as string;
+      if (!url || !url.startsWith('http')) {
+        return res.status(400).json({ error: "Valid URL is required" });
+      }
+      
+      const pdfResponse = await fetch(url);
+      if (!pdfResponse.ok) {
+        return res.status(502).json({ error: `Failed to fetch PDF: ${pdfResponse.status}` });
+      }
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      const contentLength = pdfResponse.headers.get('content-length');
+      if (contentLength) {
+        res.setHeader('Content-Length', contentLength);
+      }
+      
+      if (pdfResponse.body) {
+        const reader = pdfResponse.body.getReader();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(value);
+        }
+        res.end();
+      } else {
+        const buffer = await pdfResponse.arrayBuffer();
+        res.send(Buffer.from(buffer));
+      }
+    } catch (err) {
+      console.error("Error proxying PDF:", err);
+      res.status(500).json({ error: "Failed to proxy PDF" });
+    }
+  });
+
   // GET /api/files/:id/download - Download the actual file
   app.get("/api/files/:id/download", async (req, res) => {
     try {
@@ -1295,9 +1332,86 @@ export async function registerRoutes(
         const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
         
         await objectStorageService.downloadObject(objectFile, res);
+      } else if (mediaUrl.startsWith("onedrive://")) {
+        // OneDrive file - look up the actual download URL from OneDrive
+        const fileName = mediaUrl.split('/').pop() || '';
+        const folderPart = mediaUrl.replace('onedrive://', '').split('/')[0] || '';
+        // Parse folder like "week-5-cppa122-module" to find the OneDrive path
+        const parts = folderPart.split('-');
+        const weekNum = parts[1];
+        const courseCode = parts[2]?.toUpperCase();
+        
+        if (courseCode && weekNum) {
+          try {
+            const basePath = `/School/1. TMU/Courses/2026/Winter`;
+            const baseFolders = await listOneDriveItems(basePath);
+            const matchedFolder = baseFolders.find((f: any) => 
+              f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
+            );
+            if (matchedFolder) {
+              const courseFolders = await listOneDriveItems(matchedFolder.path);
+              const weekFolder = courseFolders.find((f: any) => 
+                f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`)
+              );
+              if (weekFolder) {
+                const weekContents = await listOneDriveItems(weekFolder.path);
+                const typeFolder = weekContents.find((f: any) => 
+                  f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module')
+                );
+                if (typeFolder) {
+                  const files = await listOneDriveItems(typeFolder.path);
+                  const matchedFile = files.find((f: any) => f.name === fileName);
+                  if (matchedFile?.downloadUrl) {
+                    const pdfResponse = await fetch(matchedFile.downloadUrl);
+                    if (pdfResponse.ok && pdfResponse.body) {
+                      res.setHeader('Content-Type', 'application/pdf');
+                      res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+                      const reader = pdfResponse.body.getReader();
+                      const pump = async () => {
+                        while (true) {
+                          const { done, value } = await reader.read();
+                          if (done) break;
+                          res.write(value);
+                        }
+                        res.end();
+                      };
+                      await pump();
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+            return res.status(404).json({ error: "OneDrive file not found" });
+          } catch (onedriveErr) {
+            console.error("Error fetching from OneDrive:", onedriveErr);
+            return res.status(500).json({ error: "Failed to fetch OneDrive file" });
+          }
+        } else {
+          return res.status(400).json({ error: "Invalid OneDrive path format" });
+        }
+      } else if (mediaUrl.startsWith("http")) {
+        // External URL - proxy the download to avoid CORS issues
+        try {
+          const pdfResponse = await fetch(mediaUrl);
+          if (pdfResponse.ok && pdfResponse.body) {
+            res.setHeader('Content-Type', pdfResponse.headers.get('content-type') || 'application/pdf');
+            const reader = pdfResponse.body.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              res.write(value);
+            }
+            res.end();
+          } else {
+            res.status(502).json({ error: "Failed to fetch external file" });
+          }
+        } catch (fetchErr) {
+          console.error("Error proxying file:", fetchErr);
+          res.status(502).json({ error: "Failed to proxy file download" });
+        }
       } else {
-        // For external URLs, redirect
-        res.redirect(mediaUrl);
+        res.status(400).json({ error: "Unsupported file path format" });
       }
     } catch (err) {
       console.error("Error downloading file:", err);
