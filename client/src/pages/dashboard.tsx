@@ -14679,7 +14679,7 @@ export default function Dashboard() {
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
                 : colorSettings.boxBackground,
-              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14804,7 +14804,7 @@ export default function Dashboard() {
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
                 : colorSettings.boxBackground,
-              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14920,7 +14920,7 @@ export default function Dashboard() {
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
                 : colorSettings.boxBackground,
-              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
