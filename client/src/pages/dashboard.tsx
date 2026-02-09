@@ -14422,23 +14422,23 @@ export default function Dashboard() {
                 {/* Handle 2 */}
                 <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'taskName')} />
                 {/* Col 3: Task */}
-                <div style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Task</div>
+                <div style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0 }} className="text-[8px] text-white font-normal">Task</div>
                 {/* Handle 3 */}
                 <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'courseCode')} />
                 {/* Col 4: Code */}
-                <div style={{ width: `${taskColumnWidths.courseCode}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Code</div>
+                <div style={{ width: `${taskColumnWidths.courseCode}px`, flexShrink: 0 }} className="text-[8px] text-white font-normal">Code</div>
                 {/* Handle 4 */}
                 <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'courseName')} />
                 {/* Col 5: Course */}
-                <div style={{ width: `${taskColumnWidths.courseName}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Course</div>
+                <div style={{ width: `${taskColumnWidths.courseName}px`, flexShrink: 0 }} className="text-[8px] text-white font-normal">Course</div>
                 {/* Handle 5 */}
                 <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
                 {/* Col 6: Due */}
-                <div style={{ width: `${taskColumnWidths.dueDate}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Due</div>
+                <div style={{ width: `${taskColumnWidths.dueDate}px`, flexShrink: 0 }} className="text-[8px] text-white font-normal">Due</div>
                 {/* Handle 6 */}
                 <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} onTouchStart={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
                 {/* Col 7: Days */}
-                <div className="text-[8px] text-white/50 font-normal">Days</div>
+                <div className="text-[8px] text-white font-normal">Days</div>
               </div>
             );
           };
@@ -14695,7 +14695,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'rgba(255, 255, 255, 0.15)',
+                background: colorSettings.headerBar,
                 padding: '6px 12px'
               }}
             >
@@ -14725,12 +14725,12 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due this week</div>
@@ -14762,12 +14762,12 @@ export default function Dashboard() {
               {/* Desktop Layout - ALL rows use HEADER_POS constants, NO measurement needed */}
               {/* Headers row */}
               <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px` }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px` }}>Course</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task rows - each row is position:relative with all content absolutely positioned at same baseline */}
               {dueThisWeekTasks.slice(0, 5).map((task, idx) => (
@@ -14842,12 +14842,12 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due today</div>
@@ -14878,12 +14878,12 @@ export default function Dashboard() {
                 <>
               {/* Headers row - uses HEADER_POS */}
               <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task rows - all use HEADER_POS */}
               {dueTodayTasks.slice(0, 3).map((task, idx) => (
@@ -14956,12 +14956,12 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due tomorrow</div>
@@ -14992,12 +14992,12 @@ export default function Dashboard() {
                 <>
               {/* Headers row - uses HEADER_POS */}
               <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
+                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task rows - all use HEADER_POS */}
               {dueTomorrowTasks.slice(0, 3).map((task, idx) => (
