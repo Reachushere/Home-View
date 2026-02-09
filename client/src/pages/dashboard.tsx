@@ -7649,9 +7649,14 @@ export default function Dashboard() {
                       </Button>
                     </div>
                   )}
-                  <div className="flex flex-1">
-                  {/* Course-colored checkbox strip - runs full height of content */}
-                  {ttsChunks.length > 0 && (() => {
+                  <div className="flex-1 p-4">
+                <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                  {(() => {
+                    const chunks = ttsChunks.length > 0 ? ttsChunks : [];
+                    if (chunks.length === 0) {
+                      return <div className="text-muted-foreground">Loading text sections...</div>;
+                    }
+                    
                     const stripFolderParts = previewFile?.folder?.split('-') || [];
                     const stripCourseCode = stripFolderParts.length >= 3 ? stripFolderParts[2]?.toUpperCase() : null;
                     const stripCourse = stripCourseCode ? coursesData.courses.find(c => c.name && c.name.toUpperCase().includes(stripCourseCode)) : null;
@@ -7660,43 +7665,7 @@ export default function Dashboard() {
                     const sD = `rgb(${Math.max(0,sRgb.r-40)},${Math.max(0,sRgb.g-40)},${Math.max(0,sRgb.b-40)})`;
                     const sL = `rgb(${Math.min(255,sRgb.r+100)},${Math.min(255,sRgb.g+100)},${Math.min(255,sRgb.b+100)})`;
                     const stripGradient = `linear-gradient(180deg, ${sL} 0%, ${sD} 100%)`;
-                    return (
-                    <div className="flex-shrink-0 w-10 flex flex-col" data-testid="checkbox-strip">
-                      {ttsChunks.map((_, chunkIdx) => (
-                        <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px', background: stripGradient }}>
-                          <div
-                            onClick={() => toggleDashChunkChecked(chunkIdx)}
-                            className="cursor-pointer select-none flex items-center justify-center"
-                            style={{
-                              width: '16px',
-                              height: '16px',
-                              borderRadius: '3px',
-                              border: checkedChunks.has(chunkIdx) ? '1.5px solid #000000' : '1.5px solid rgba(255,255,255,0.8)',
-                              backgroundColor: checkedChunks.has(chunkIdx) ? '#000000' : '#ffffff',
-                              color: '#ffffff',
-                              fontSize: '11px',
-                              fontWeight: 'bold',
-                              lineHeight: 1,
-                            }}
-                            data-testid={`checkbox-chunk-${chunkIdx}`}
-                          >
-                            {checkedChunks.has(chunkIdx) && '\u2713'}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    );
-                  })()}
-                  <div className="flex-1 p-4">
-                <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                  {(() => {
-                    // Use the same chunks as TTS to ensure play button plays the correct section
-                    const chunks = ttsChunks.length > 0 ? ttsChunks : [];
-                    if (chunks.length === 0) {
-                      return <div className="text-muted-foreground">Loading text sections...</div>;
-                    }
-                    
-                    // Chunk background colors (alternating)
+
                     const chunkColors = [
                       'bg-blue-50 dark:bg-blue-950/40',
                       'bg-green-50 dark:bg-green-950/40',
@@ -7706,20 +7675,40 @@ export default function Dashboard() {
                       'bg-cyan-50 dark:bg-cyan-950/40',
                     ];
                     
-                    // Track global word index for highlighting
                     let globalWordIndex = 0;
                     
                     return chunks.map((chunk, chunkIdx) => {
                       const chunkColor = chunkColors[chunkIdx % chunkColors.length];
                       const isCurrentChunk = isPlaying && chunkIdx === currentChunkIndex;
                       
-                      // Split chunk into paragraphs (double newline)
                       const paragraphs = chunk.split(/\n\n+/);
                       
                       return (
-                        <div key={chunkIdx} className="mb-4">
+                        <div key={chunkIdx} className="mb-4 flex">
+                          {/* Checkbox aligned to this chunk */}
+                          <div className="flex-shrink-0 w-10 flex items-start justify-center pt-5" style={{ background: stripGradient }} data-testid="checkbox-strip">
+                            <div
+                              onClick={(e) => { e.stopPropagation(); toggleDashChunkChecked(chunkIdx); }}
+                              className="cursor-pointer select-none flex items-center justify-center"
+                              style={{
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '3px',
+                                border: checkedChunks.has(chunkIdx) ? '1.5px solid #000000' : '1.5px solid rgba(255,255,255,0.8)',
+                                backgroundColor: checkedChunks.has(chunkIdx) ? '#000000' : '#ffffff',
+                                color: '#ffffff',
+                                fontSize: '11px',
+                                fontWeight: 'bold',
+                                lineHeight: 1,
+                              }}
+                              data-testid={`checkbox-chunk-${chunkIdx}`}
+                            >
+                              {checkedChunks.has(chunkIdx) && '\u2713'}
+                            </div>
+                          </div>
+                          <div className="flex-1">
                           <div 
-                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
+                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-r-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
                             onClick={() => playFromChunk(chunkIdx)}
                             title={`Click to play from Section ${chunkIdx + 1}`}
                           >
@@ -7790,6 +7779,7 @@ export default function Dashboard() {
                               </div>
                             );
                           })}
+                          </div>
                           </div>
                         </div>
                       );
