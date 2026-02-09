@@ -7803,7 +7803,11 @@ export default function Dashboard() {
           </div>
           
           {/* Voice Controls + Done Button Row */}
-          <div className="flex items-center justify-between mx-6 mt-2 mb-2">
+          <div className="flex items-center mx-6 mt-2 mb-2">
+            {/* Left spacer matching PDF width */}
+            <div style={{ flex: '1 1 0', maxWidth: 'calc(100% - 580px)', minWidth: '200px' }} />
+            {/* Voice + Done aligned with TTS panel */}
+            <div className="flex items-center justify-between" style={{ width: `${ttsWidth + 20}px` }}>
             {/* Voice controls - compact */}
             <div className="flex items-center gap-3 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
               {/* Voice selector - browser TTS */}
@@ -7986,6 +7990,7 @@ export default function Dashboard() {
               >
                 Done
               </Button>
+            </div>
             </div>
           </div>
         </DialogContent>
