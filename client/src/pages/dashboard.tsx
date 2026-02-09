@@ -7109,7 +7109,6 @@ export default function Dashboard() {
                       value={(() => {
                         if (isModule && previewFile) return previewFile.id.toString();
                         if (moduleFiles.length === 0) return 'none';
-                        // Default to first unlistened module, or first module if all listened
                         const unlistenedFile = moduleFiles.find(f => !f.listened);
                         const defaultFile = unlistenedFile || moduleFiles[0];
                         return defaultFile?.id?.toString() || 'none';
@@ -7121,14 +7120,14 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`max-w-[120px] h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
+                        className={`h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
                           isModule 
                             ? 'border !border-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
                             : 'border-gray-700 hover:border-white/50'
                         }`}
-                        style={{ color: 'white' }}
+                        style={{ color: 'white', maxWidth: 'fit-content' }}
                         data-testid="select-module-file">
-                        <span className="truncate block max-w-[90px]">
+                        <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>
                           {(() => {
                             if (moduleFiles.length === 0) return 'No modules';
                             const unlistenedFile = moduleFiles.find(f => !f.listened);
@@ -7169,14 +7168,14 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`max-w-[120px] h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
+                        className={`h-5 text-[9px] px-2 bg-gray-800 transition-all duration-200 ${
                           isReading 
                             ? 'border !border-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
                             : 'border-gray-700 hover:border-white/50'
                         }`}
-                        style={{ color: 'white' }}
+                        style={{ color: 'white', maxWidth: 'fit-content' }}
                         data-testid="select-reading-file">
-                        <span className="truncate block max-w-[90px]">{readingFiles.length === 0 ? 'No readings' : (readingFiles[0]?.displayName || readingFiles[0]?.originalName || 'No readings').replace(/\.pdf$/i, '')}</span>
+                        <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>{readingFiles.length === 0 ? 'No readings' : (() => { const f = isReading && previewFile ? previewFile : readingFiles[0]; return f ? (f.displayName || f.originalName || 'No readings').replace(/\.pdf$/i, '') : 'No readings'; })()}</span>
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
