@@ -12428,7 +12428,7 @@ export default function Dashboard() {
                   return count * 20 + 4;
                 }));
                 return (
-              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderBottom: '1px solid #999' }}>
+              <div ref={courseRowsRef} data-testid="course-rows-container">
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
