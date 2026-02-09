@@ -14724,7 +14724,7 @@ export default function Dashboard() {
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekStart, 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(thisWeekStart, 'd')}</div>
                   </div>
-                  {[...Array(3)].map((_, i) => (
+                  {[...Array(6)].map((_, i) => (
                     <span key={`b2-${i}`} style={{ fontSize: '6px', color: 'white', flexShrink: 0, lineHeight: 1 }}>&#9654;</span>
                   ))}
                   <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
