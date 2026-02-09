@@ -14708,7 +14708,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <span className="flex items-center gap-2 flex-1 ml-2">
-                  3 to 10 Day ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '1px', color: 'rgb(0, 200, 0)' }}>{(() => {
+                  3-10 Days ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '1px', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
