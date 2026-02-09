@@ -7899,9 +7899,9 @@ export default function Dashboard() {
         alt="The Chang School of Continuing Education"
         style={{
           position: 'absolute',
-          left: 'calc(50% - 100px)',
+          left: 'calc(50% - 108px)',
           transform: 'translateX(-50%) translateY(-50%)',
-          top: '42px',
+          top: '40px',
           height: '42px',
           objectFit: 'contain',
           zIndex: 5,
