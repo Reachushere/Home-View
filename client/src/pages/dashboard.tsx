@@ -7507,7 +7507,7 @@ export default function Dashboard() {
           {/* Split View: PDF on left, Highlighted Text on right */}
           <div className="flex-1 flex min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
             {/* PDF Viewer */}
-            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: '1 1 0', maxWidth: 'calc(100% - 580px)' }}>
+            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(50% - 30px)' }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
@@ -7626,7 +7626,7 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden shrink-0" style={{ width: `${ttsWidth}px` }}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }}>
               {isLoadingText ? (
                 <div className="flex items-center justify-center h-full p-4">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -7805,9 +7805,9 @@ export default function Dashboard() {
           {/* Voice Controls + Done Button Row */}
           <div className="flex items-center mx-6 mt-2 mb-2">
             {/* Left spacer matching PDF width */}
-            <div style={{ flex: '1 1 0', maxWidth: 'calc(100% - 580px)', minWidth: '200px' }} />
+            <div style={{ flex: '0 0 auto', width: 'calc(50% - 30px)', minWidth: '200px' }} />
             {/* Voice + Done aligned with TTS panel */}
-            <div className="flex items-center justify-between" style={{ width: `${ttsWidth + 20}px` }}>
+            <div className="flex items-center justify-between" style={{ flex: '1 1 0' }}>
             {/* Voice controls - compact */}
             <div className="flex items-center gap-3 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
               {/* Voice selector - browser TTS */}
