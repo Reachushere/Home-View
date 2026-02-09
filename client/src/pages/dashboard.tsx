@@ -7026,14 +7026,27 @@ export default function Dashboard() {
       <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
         <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
           {(() => {
-            // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
             const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
-            const colors = courseCodeFromFolder ? dynamicCourseColors[courseCodeFromFolder] : null;
+            const cId = courseCodeFromFolder?.toLowerCase() || '';
+            const playerHeaderGradient = (() => {
+              if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
+              if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
+              if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+              if (courseCodeFromFolder) {
+                const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCodeFromFolder)?.color || '#6b7280';
+                const rgb = hexToRgb(courseHex);
+                const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
+                const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
+                return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
+              }
+              return 'linear-gradient(to br, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))';
+            })();
             
             return (
               <DialogHeader 
-                className="px-6 py-4 border-b border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95"
+                className="px-6 py-4 border-b border-white/20"
+                style={{ background: playerHeaderGradient }}
               >
                 <DialogTitle 
                   className="flex items-center gap-2 text-sm text-white"
@@ -7046,7 +7059,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ background: (() => { const fp = previewFile?.folder?.split('-') || []; const cc = fp.length >= 3 ? fp[2]?.toLowerCase() : ''; if (cc === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)'; if (cc === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)'; if (cc === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)'; const uc = cc.toUpperCase(); const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === uc)?.color; if (courseHex) { const rgb = hexToRgb(courseHex); const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40); const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100); return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`; } return 'linear-gradient(to right, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))'; })() }}>
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -7195,7 +7208,7 @@ export default function Dashboard() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-[9px] text-white/60 min-w-[40px] text-center">
+                    <span className="text-[9px] text-white min-w-[40px] text-center">
                       {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
                     </span>
                     <Button
@@ -7854,18 +7867,38 @@ export default function Dashboard() {
             )}
             <div className="flex items-center gap-3">
               {/* Progress Bar - shows checked chunks / total */}
+              {(() => {
+                const fp = previewFile?.folder?.split('-') || [];
+                const cc = fp.length >= 3 ? fp[2]?.toLowerCase() : '';
+                let barColor = 'linear-gradient(to right, #10b981, #34d399)';
+                let textColor = '#34d399';
+                if (cc === 'cppa122') { barColor = 'linear-gradient(to right, #0F5004, #47B045)'; textColor = '#47B045'; }
+                else if (cc === 'cfnf400') { barColor = 'linear-gradient(to right, rgba(222,24,100,0.88), rgba(250,103,179,0.78))'; textColor = '#FA67B3'; }
+                else if (cc === 'casl101') { barColor = 'linear-gradient(to right, rgba(80,4,66,0.88), rgba(176,69,162,0.78))'; textColor = '#B045A2'; }
+                else if (cc) {
+                  const uc = cc.toUpperCase();
+                  const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === uc)?.color;
+                  if (courseHex) {
+                    const rgb = hexToRgb(courseHex);
+                    const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
+                    const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
+                    barColor = `linear-gradient(to right, rgb(${dR},${dG},${dB}), rgb(${lR},${lG},${lB}))`;
+                    textColor = `rgb(${lR},${lG},${lB})`;
+                  }
+                }
+                return (
               <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10" data-testid="chunk-completion-bar">
                 <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 rounded-full"
-                    style={{ width: `${totalChunks > 0 
+                    className="h-full transition-all duration-300 rounded-full"
+                    style={{ background: barColor, width: `${totalChunks > 0 
                       ? Math.round((checkedChunks.size / totalChunks) * 100)
                       : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
                         ? Math.round((previewFile.lastChunkIndex / previewFile.totalChunks) * 100)
                         : 0}%` }}
                   />
                 </div>
-                <span className="text-[11px] text-emerald-400 font-medium min-w-[60px]">
+                <span className="text-[11px] font-medium min-w-[60px]" style={{ color: textColor }}>
                   {totalChunks > 0 
                     ? `${checkedChunks.size}/${totalChunks} (${Math.round((checkedChunks.size / totalChunks) * 100)}%)` 
                     : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
@@ -7873,6 +7906,8 @@ export default function Dashboard() {
                       : '0/0 (0%)'}
                 </span>
               </div>
+                );
+              })()}
               <Button
                 variant="outline"
                 className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
