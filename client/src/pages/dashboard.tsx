@@ -12237,10 +12237,7 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 5px)', marginTop: '-2px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
-          
-          {/* Next Task Countdown */}
+          {/* Next Task Countdown - above calendar */}
           {(() => {
             const now = new Date();
             const upcomingTasks = allTasks
@@ -12251,22 +12248,25 @@ export default function Dashboard() {
             const dueDate = new Date(nextTask.dueDate!);
             const diffMs = dueDate.getTime() - now.getTime();
             const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-            const courseForTask = nextTask.courseId ? coursesData.courses.find(c => c.name.includes(String(nextTask.courseId)) || String(nextTask.courseId).includes(c.name.split(' - ')[0])) : null;
+            const courseForTask = nextTask.courseName ? coursesData.courses.find(c => nextTask.courseName!.includes(c.name.split(' - ')[0])) : null;
             return (
-              <div style={{ position: 'absolute', top: '-75px', left: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", zIndex: 60 }} data-testid="next-task-countdown">
-                <div style={{ color: 'white', fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
+              <div style={{ marginLeft: '4px', marginBottom: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", flexShrink: 0 }} data-testid="next-task-countdown">
+                <div style={{ color: '#ffffff', fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
                   Your Next Task is in:
                 </div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                  <span style={{ color: 'white', fontSize: '36px', fontWeight: 800, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>{diffDays}</span>
-                  <span style={{ color: 'white', fontSize: '14px', fontWeight: 600, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>Days</span>
+                  <span style={{ color: '#ffffff', fontSize: '36px', fontWeight: 800, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>{diffDays}</span>
+                  <span style={{ color: '#ffffff', fontSize: '14px', fontWeight: 600, textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>Days</span>
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 500 }}>
+                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '10px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
                   ({nextTask.title}{courseForTask ? ` - ${courseForTask.name.split(' - ')[0]}` : ''})
                 </div>
               </div>
             );
           })()}
+          
+          {/* Calendar wrapper - leaves space for honeycombs on right */}
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', flex: 1, minHeight: 0, marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
