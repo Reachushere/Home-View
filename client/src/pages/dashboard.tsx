@@ -1297,7 +1297,7 @@ export default function Dashboard() {
     const defaults = {
       boxBackground: '#ffffff',
       headerBar: '#160502',
-      mainBackground: '#1a1a2e',
+      mainBackground: '#22223a',
       boxGlassEffect: true,
       boxTransparency: 35,
       mainBackgroundOverlay: false,
