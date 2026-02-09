@@ -14744,11 +14744,10 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
-              backgroundSize: 'cover, cover',
-              backgroundPosition: 'center, center',
+              background: colorSettings.boxGlassEffect 
+                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                : colorSettings.boxBackground,
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
-              border: '1.5px solid rgba(255, 255, 255, 0.45)',
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14868,11 +14867,10 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
-              backgroundSize: 'cover, cover',
-              backgroundPosition: 'center, center',
+              background: colorSettings.boxGlassEffect 
+                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                : colorSettings.boxBackground,
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
-              border: '1.5px solid rgba(255, 255, 255, 0.45)',
               order: boxOrder.indexOf('today') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -14985,11 +14983,10 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
-              backgroundSize: 'cover, cover',
-              backgroundPosition: 'center, center',
+              background: colorSettings.boxGlassEffect 
+                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                : colorSettings.boxBackground,
               boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
-              border: '1.5px solid rgba(255, 255, 255, 0.45)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
