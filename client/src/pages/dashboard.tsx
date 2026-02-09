@@ -1732,7 +1732,7 @@ export default function Dashboard() {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-      { name: 'CASL101 - American Sign Language', color: '#818cf8', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
@@ -5647,7 +5647,7 @@ export default function Dashboard() {
           let color = "#000000";
           if (courseCode === "CPPA122") color = "#47B045";
           else if (courseCode === "CFNF400") color = "#FA67B3";
-          else if (courseCode === "CASL101") color = "#818cf8";
+          else if (courseCode === "CASL101") color = "#6366f1";
           
           // Start arrow from left side of checkbox, or fall back to left of task box
           let fromX: number;
@@ -13270,7 +13270,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: '#faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: '#faf8f5', borderTop: hour === 12 ? '2.5px solid rgba(0,0,0,0.45)' : undefined }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -13981,7 +13981,7 @@ export default function Dashboard() {
                       const courseColorMap: Record<string, string> = {
                         'CPPA122': '#47B045', // green
                         'CFNF400': '#FA67B3', // pink
-                        'CASL101': '#818cf8', // indigo
+                        'CASL101': '#6366f1', // indigo
                       };
                       let folderColor: string | undefined;
                       // First check if we're inside a course folder (path contains course code)
@@ -14530,7 +14530,7 @@ export default function Dashboard() {
             if (!courseName) return '#888888';
             if (courseName.startsWith('CPPA122')) return '#47B045'; // green
             if (courseName.startsWith('CFNF400')) return '#FA67B3'; // pink
-            if (courseName.startsWith('CASL101')) return '#818cf8'; // indigo
+            if (courseName.startsWith('CASL101')) return '#6366f1'; // indigo
             return '#888888';
           };
           
