@@ -14702,13 +14702,17 @@ export default function Dashboard() {
                 onDragStart={() => handleBoxDragStart('this-week')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-white" />
+                <div className="grid grid-cols-3 gap-[2px]" style={{ flexShrink: 0 }}>
+                  {[...Array(9)].map((_, i) => (
+                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
+                  ))}
+                </div>
+                <span className="flex items-center gap-2 flex-1 ml-2">
                   3 to 10 Day ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                   <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(100, 160, 220)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
@@ -14721,12 +14725,6 @@ export default function Dashboard() {
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(thisWeekEnd, 'd')}</div>
                   </div>
-                </div>
-                {/* 9-dot grip */}
-                <div className="grid grid-cols-3 gap-[2px]">
-                  {[...Array(9)].map((_, i) => (
-                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
-                  ))}
                 </div>
               </h4>
             </div>
@@ -14833,21 +14831,17 @@ export default function Dashboard() {
                 onDragStart={() => handleBoxDragStart('today')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-white" />
-                  Today ({dueTodayTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
-                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
-                  </div>
-                </div>
-                {/* 9-dot grip */}
-                <div className="grid grid-cols-3 gap-[2px]">
+                <div className="grid grid-cols-3 gap-[2px]" style={{ flexShrink: 0 }}>
                   {[...Array(9)].map((_, i) => (
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
+                </div>
+                <span className="flex items-center gap-2 flex-1 ml-2">
+                  Today ({dueTodayTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
+                </span>
+                <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+                  <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
                 </div>
               </h4>
             </div>
@@ -14953,11 +14947,15 @@ export default function Dashboard() {
                 onDragStart={() => handleBoxDragStart('tomorrow')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-white" />
+                <div className="grid grid-cols-3 gap-[2px]" style={{ flexShrink: 0 }}>
+                  {[...Array(9)].map((_, i) => (
+                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
+                  ))}
+                </div>
+                <span className="flex items-center gap-2 flex-1 ml-2">
                   Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                   <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(100, 160, 220)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
@@ -14966,12 +14964,6 @@ export default function Dashboard() {
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(addDays(new Date(), 1), 'd')}</div>
                   </div>
-                </div>
-                {/* 9-dot grip */}
-                <div className="grid grid-cols-3 gap-[2px]">
-                  {[...Array(9)].map((_, i) => (
-                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
-                  ))}
                 </div>
               </h4>
             </div>
