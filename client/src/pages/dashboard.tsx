@@ -7602,7 +7602,29 @@ export default function Dashboard() {
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
                 </div>
               ) : previewText ? (
-                <div className="flex min-h-full">
+                <div className="flex flex-col min-h-full">
+                  {/* Jump to Unlistened button */}
+                  {ttsChunks.length > 0 && checkedChunks.size > 0 && checkedChunks.size < ttsChunks.length && (
+                    <div className="sticky top-0 z-10 flex justify-center py-1.5 bg-gray-100/95 dark:bg-gray-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 text-[10px] gap-1"
+                        onClick={() => {
+                          const firstUnchecked = ttsChunks.findIndex((_, i) => !checkedChunks.has(i));
+                          if (firstUnchecked >= 0) {
+                            const el = document.querySelector(`[data-testid="checkbox-chunk-${firstUnchecked}"]`);
+                            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }
+                        }}
+                        data-testid="button-jump-unlistened"
+                      >
+                        <SkipForward className="h-3 w-3" />
+                        Jump to Unlistened
+                      </Button>
+                    </div>
+                  )}
+                  <div className="flex flex-1">
                   {/* Course-colored checkbox strip - runs full height of content */}
                   {ttsChunks.length > 0 && (() => {
                     const stripFolderParts = previewFile?.folder?.split('-') || [];
@@ -7658,7 +7680,7 @@ export default function Dashboard() {
                       return (
                         <div key={chunkIdx} className="mb-4">
                           <div 
-                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
+                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
                             onClick={() => playFromChunk(chunkIdx)}
                             title={`Click to play from Section ${chunkIdx + 1}`}
                           >
@@ -7735,6 +7757,7 @@ export default function Dashboard() {
                     });
                   })()}
                 </div>
+                  </div>
                   </div>
                 </div>
               ) : (
