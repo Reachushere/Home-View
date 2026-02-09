@@ -1308,23 +1308,23 @@ export default function Dashboard() {
   }>(() => {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
-      boxBackground: '#1a1a2e',
+      boxBackground: '#0a0a14',
       headerBar: '#160502',
       mainBackground: '#22223a',
       boxGlassEffect: true,
-      boxTransparency: 45,
+      boxTransparency: 55,
       mainBackgroundOverlay: false,
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
       todayCurrentHourCellBackground: '#160502'
     };
-    // Force migration V11: adjust box transparency for less frosted look
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV12');
+    // Force migration V13: dark frosted boxes
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV13');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#1a1a2e', boxTransparency: 45 };
+      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#0a0a14', boxTransparency: 55 };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV12', 'done');
+      localStorage.setItem('colorSettingsMigrationV13', 'done');
       return migrated;
     }
     if (saved) {
