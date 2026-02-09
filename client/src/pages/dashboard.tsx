@@ -12202,34 +12202,6 @@ export default function Dashboard() {
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
-        {/* Next Task Countdown - on main background above calendar */}
-        {calendarView === "week" && (() => {
-            const now = new Date();
-            const upcomingTasks = allTasks
-              .filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > now)
-              .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
-            const nextTask = upcomingTasks[0];
-            if (!nextTask) return null;
-            const dueDate = new Date(nextTask.dueDate!);
-            const diffMs = dueDate.getTime() - now.getTime();
-            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-            const courseForTask = nextTask.courseName ? coursesData.courses.find(c => nextTask.courseName!.includes(c.name.split(' - ')[0])) : null;
-            return (
-              <div style={{ position: 'absolute', left: '204px', top: '-80px', fontFamily: "'Nunito', 'Avenir', sans-serif", zIndex: 10 }} data-testid="next-task-countdown">
-                <div style={{ color: '#ffffff', fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
-                  Your Next Task is in:
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                  <span style={{ color: '#ffffff', fontSize: '36px', fontWeight: 800, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>{diffDays}</span>
-                  <span style={{ color: '#ffffff', fontSize: '14px', fontWeight: 600, textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>Days</span>
-                </div>
-                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '10px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-                  ({nextTask.title}{courseForTask ? ` - ${courseForTask.name.split(' - ')[0]}` : ''})
-                </div>
-              </div>
-            );
-        })()}
-
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, paddingTop: '7px' }}>
