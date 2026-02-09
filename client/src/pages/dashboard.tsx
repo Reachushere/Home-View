@@ -14702,7 +14702,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  One Week Ahead ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: '#F3E468' }}>{(() => {
+                  One Week Ahead ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
@@ -14933,7 +14933,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: '#F3E468' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
+                  Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
