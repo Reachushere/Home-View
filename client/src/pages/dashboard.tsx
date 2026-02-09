@@ -9560,7 +9560,6 @@ export default function Dashboard() {
           <span className="text-[10px] text-white/80 whitespace-nowrap font-normal tracking-wide" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
-          <span className="text-[10px] text-white/60 font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '6px' }}>Week {selectedWeek}</span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
@@ -9569,6 +9568,7 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
+          <span className="text-[10px] text-white/60 font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
