@@ -1214,11 +1214,15 @@ export default function Dashboard() {
         }
       } else if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
+      } else {
+        setFileCountsLoaded(true);
       }
     } catch (error) {
       console.error('Error fetching file counts:', error);
       if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
+      } else {
+        setFileCountsLoaded(true);
       }
     }
   }, [selectedWeek]);
@@ -1226,6 +1230,15 @@ export default function Dashboard() {
   useEffect(() => {
     refreshFileCounts();
   }, [refreshFileCounts]);
+
+  useEffect(() => {
+    if (!fileCountsLoaded) {
+      const safetyTimer = setTimeout(() => {
+        setFileCountsLoaded(true);
+      }, 8000);
+      return () => clearTimeout(safetyTimer);
+    }
+  }, [fileCountsLoaded]);
   
   // Close modules/readings honeycomb when clicking outside
   useEffect(() => {
