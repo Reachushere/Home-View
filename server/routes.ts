@@ -1294,29 +1294,7 @@ export async function registerRoutes(
         const objectStorageService = new ObjectStorageService();
         const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
         
-        // Download file content as buffer
-        const [content] = await objectFile.download();
-        
-        // Set content type based on file extension
-        const ext = (file.originalName || '').toLowerCase().split('.').pop();
-        const contentTypes: Record<string, string> = {
-          'pdf': 'application/pdf',
-          'jpg': 'image/jpeg',
-          'jpeg': 'image/jpeg',
-          'png': 'image/png',
-          'gif': 'image/gif',
-          'mp3': 'audio/mpeg',
-          'mp4': 'video/mp4',
-          'doc': 'application/msword',
-          'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        };
-        
-        res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
-        // Use inline for PDFs to allow browser rendering, attachment for other files
-        const disposition = ext === 'pdf' ? 'inline' : 'attachment';
-        res.setHeader('Content-Disposition', `${disposition}; filename="${file.displayName || file.originalName}"`);
-        res.setHeader('Content-Length', content.length.toString());
-        res.send(content);
+        await objectStorageService.downloadObject(objectFile, res);
       } else {
         // For external URLs, redirect
         res.redirect(mediaUrl);
