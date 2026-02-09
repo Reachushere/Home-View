@@ -8069,6 +8069,35 @@ export default function Dashboard() {
             <Share className="h-6 w-6" strokeWidth={2.5} />
           </Button>
         )}
+        {(() => {
+          const now = new Date();
+          const upcoming = allTasks
+            .filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > now)
+            .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+          const next = upcoming[0];
+          if (!next) return null;
+          const diffDays = Math.ceil((new Date(next.dueDate!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
+          return (
+            <div style={{ marginLeft: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: "'Nunito', 'Avenir', sans-serif" }} data-testid="next-task-countdown">
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>Your</span>
+                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>next</span>
+                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>task</span>
+                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>is in:</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ color: '#ffffff', fontSize: '32px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
+                <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 800, textShadow: '0 1px 3px rgba(0,0,0,0.5)', marginTop: '-2px' }}>days</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+                <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '8px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  ({next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''})
+                </span>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Chang School Logo - fixed, horizontally under hover tab, vertically centered with Uni-Cal logo */}
