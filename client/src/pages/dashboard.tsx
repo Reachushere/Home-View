@@ -7604,7 +7604,7 @@ export default function Dashboard() {
               ) : previewText ? (
                 <div className="flex flex-col min-h-full">
                   {/* Jump to Unlistened button */}
-                  {ttsChunks.length > 0 && checkedChunks.size > 0 && checkedChunks.size < ttsChunks.length && (
+                  {ttsChunks.length > 0 && (
                     <div className="sticky top-0 z-10 flex justify-center py-1.5 bg-gray-100/95 dark:bg-gray-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
                       <Button
                         size="sm"
