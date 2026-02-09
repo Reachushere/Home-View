@@ -9545,7 +9545,7 @@ export default function Dashboard() {
             <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
               <defs>
                 <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
-                  <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.1)" />
+                  <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.15)" />
                 </filter>
               </defs>
               <path 
@@ -9560,9 +9560,9 @@ export default function Dashboard() {
                   Q ${arrowW} ${pillH}, ${arrowW} ${pillH - r}
                   Z
                 `}
-                fill="rgba(255, 255, 255, 0.45)"
-                stroke="rgba(255, 255, 255, 0.45)"
-                strokeWidth="1.5"
+                fill="rgba(255, 255, 255, 0.06)"
+                stroke="rgba(255, 255, 255, 0.15)"
+                strokeWidth="1"
                 strokeLinejoin="round"
                 filter="url(#pillShadow)"
               />
