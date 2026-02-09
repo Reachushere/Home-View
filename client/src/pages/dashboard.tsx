@@ -14831,7 +14831,7 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>Today (<span style={{ color: 'rgb(255, 0, 0)' }}>{dueTodayTasks.length}</span>)</span><span className="text-[10px]" style={{ color: 'rgb(255, 0, 0)', marginRight: '10px' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
+                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>Today (<span style={{ color: 'rgb(255, 0, 0)' }}>{dueTodayTasks.length}</span>)</span><span className="text-[10px]" style={{ color: 'rgb(255, 0, 0)', marginRight: '10px' }}>{format(new Date(), 'EEE, MMMM d')}</span>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, minWidth: '24px' }}>
                   <div className="calendar-icon-shimmer" style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
                     <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
@@ -14947,7 +14947,7 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>Tomorrow (<span style={{ color: 'rgb(255, 165, 0)' }}>{dueTomorrowTasks.length}</span>)</span><span className="text-[10px]" style={{ color: 'rgb(255, 165, 0)', marginRight: '10px' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
+                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>Tomorrow (<span style={{ color: 'rgb(255, 165, 0)' }}>{dueTomorrowTasks.length}</span>)</span><span className="text-[10px]" style={{ color: 'rgb(255, 165, 0)', marginRight: '10px' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d')}</span>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '3px', flexShrink: 0 }}>
                   <div style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
