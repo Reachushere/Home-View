@@ -1312,7 +1312,7 @@ export default function Dashboard() {
       headerBar: '#160502',
       mainBackground: '#22223a',
       boxGlassEffect: true,
-      boxTransparency: 35,
+      boxTransparency: 25,
       mainBackgroundOverlay: false,
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
