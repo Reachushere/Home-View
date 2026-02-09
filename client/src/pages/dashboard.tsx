@@ -1312,19 +1312,19 @@ export default function Dashboard() {
       headerBar: '#160502',
       mainBackground: '#22223a',
       boxGlassEffect: true,
-      boxTransparency: 30,
+      boxTransparency: 18,
       mainBackgroundOverlay: false,
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
       todayCurrentHourCellBackground: '#160502'
     };
-    // Force migration V14: restore original frosted boxes with slightly less frost
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV14');
+    // Force migration V15: less white frosted boxes
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV15');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#ffffff', boxTransparency: 30 };
+      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#ffffff', boxTransparency: 18 };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV14', 'done');
+      localStorage.setItem('colorSettingsMigrationV15', 'done');
       return migrated;
     }
     if (saved) {
