@@ -7893,30 +7893,23 @@ export default function Dashboard() {
         <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
       </div>
 
-      {/* Chang School Logo - below hover tab, centered, vertically aligned with Uni-Cal logo height */}
-      <div
+      {/* Chang School Logo - fixed, centered below hover tab, same vertical center as Uni-Cal logo */}
+      <img
+        src={changSchoolLogo}
+        alt="The Chang School of Continuing Education"
+        className="fixed"
         style={{
-          position: 'absolute',
-          top: '56px',
-          left: 0,
-          right: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          zIndex: 15,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: '48px',
+          height: '35px',
+          objectFit: 'contain',
+          zIndex: 100,
           opacity: isTopPillOpen ? 0 : 1,
           transition: 'opacity 0.4s ease-in-out',
           pointerEvents: 'none',
         }}
-      >
-        <img
-          src={changSchoolLogo}
-          alt="The Chang School of Continuing Education"
-          style={{
-            height: '35px',
-            objectFit: 'contain',
-          }}
-        />
-      </div>
+      />
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
