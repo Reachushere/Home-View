@@ -14704,11 +14704,15 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  3 to 10 Day Schedule ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(0, 200, 0)' }}>{(() => {
+                  3 to 10 Day ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ background: 'rgb(100, 160, 220)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
+                  </div>
                   <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekStart, 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(thisWeekStart, 'd')}</div>
@@ -14954,6 +14958,10 @@ export default function Dashboard() {
                   Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ background: 'rgb(100, 160, 220)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
+                  </div>
                   <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(addDays(new Date(), 1), 'd')}</div>
