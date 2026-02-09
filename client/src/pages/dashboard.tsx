@@ -8049,8 +8049,8 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Logo and Name - Fixed on screen, never slides */}
-      <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[35px] w-[35px] fixed" style={{ left: '16px', top: '5px', zIndex: 100 }} />
+      {/* Chang School Logo - Fixed top left where Uni-Cal used to be */}
+      <img src={changSchoolLogo} alt="The Chang School" className="fixed" style={{ left: '16px', top: '5px', height: '35px', objectFit: 'contain', zIndex: 100 }} />
       <div className="flex items-center gap-2 fixed" style={{ left: '57px', top: '4px', zIndex: 100 }}>
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
@@ -8069,54 +8069,54 @@ export default function Dashboard() {
             <Share className="h-6 w-6" strokeWidth={2.5} />
           </Button>
         )}
-        {(() => {
-          const now = new Date();
-          const upcoming = allTasks
-            .filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > now)
-            .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
-          const next = upcoming[0];
-          if (!next) return null;
-          const diffDays = Math.ceil((new Date(next.dueDate!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
-          return (
-            <div style={{ marginLeft: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: "'Nunito', 'Avenir', sans-serif" }} data-testid="next-task-countdown">
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>Your</span>
-                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>next</span>
-                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>task</span>
-                <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>is in:</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ color: '#ffffff', fontSize: '32px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
-                <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 800, textShadow: '0 1px 3px rgba(0,0,0,0.5)', marginTop: '-2px' }}>days</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-                <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '8px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  ({next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''})
-                </span>
-              </div>
-            </div>
-          );
-        })()}
       </div>
 
-      {/* Chang School Logo - fixed, horizontally under hover tab, vertically centered with Uni-Cal logo */}
-      <img
-        src={changSchoolLogo}
-        alt="The Chang School of Continuing Education"
-        style={{
-          position: 'absolute',
-          left: 'calc(50% - 113px)',
-          transform: 'translateX(-50%) translateY(-50%)',
-          top: '36px',
-          height: '42px',
-          objectFit: 'contain',
-          zIndex: 5,
-          opacity: isTopPillOpen ? 0 : 1,
-          transition: 'opacity 0.4s ease-in-out',
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Next Task Countdown - center, where Chang School logo used to be */}
+      {(() => {
+        const now = new Date();
+        const upcoming = allTasks
+          .filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > now)
+          .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+        const next = upcoming[0];
+        if (!next) return null;
+        const diffDays = Math.ceil((new Date(next.dueDate!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
+        return (
+          <div
+            style={{
+              position: 'absolute',
+              left: 'calc(50% - 113px)',
+              transform: 'translateX(-50%) translateY(-50%)',
+              top: '36px',
+              zIndex: 5,
+              opacity: isTopPillOpen ? 0 : 1,
+              transition: 'opacity 0.4s ease-in-out',
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontFamily: "'Nunito', 'Avenir', sans-serif",
+            }}
+            data-testid="next-task-countdown"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>Your</span>
+              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>next</span>
+              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>task</span>
+              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>is in:</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: '#ffffff', fontSize: '32px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
+              <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 800, textShadow: '0 1px 3px rgba(0,0,0,0.5)', marginTop: '-2px' }}>days</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+              <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '8px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                ({next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''})
+              </span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
@@ -9564,6 +9564,7 @@ export default function Dashboard() {
           <span className="text-[10px] text-white/80 whitespace-nowrap font-normal tracking-wide" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
+          <span className="text-[10px] text-white/60 font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '6px' }}>Week {selectedWeek}</span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
@@ -12324,7 +12325,7 @@ export default function Dashboard() {
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: 'rgba(255,255,255,0.8)' }}>Week {selectedWeek}</span>
+                <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '28px', width: '28px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
