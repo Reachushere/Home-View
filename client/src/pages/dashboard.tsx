@@ -7897,14 +7897,14 @@ export default function Dashboard() {
       <img
         src={changSchoolLogo}
         alt="The Chang School of Continuing Education"
-        className="fixed"
         style={{
+          position: 'absolute',
           left: 'calc(50% - 65px)',
           transform: 'translateX(-50%) translateY(-50%)',
           top: '32px',
           height: '42px',
           objectFit: 'contain',
-          zIndex: 10,
+          zIndex: 5,
           opacity: isTopPillOpen ? 0 : 1,
           transition: 'opacity 0.4s ease-in-out',
           pointerEvents: 'none',
