@@ -5898,13 +5898,21 @@ export default function Dashboard() {
     <div 
       className="flex h-screen flex-col overflow-hidden relative"
       style={{ 
-        backgroundImage: `url(${dashboardBg})`,
-        backgroundSize: '100% 100%',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
         minWidth: '1024px'
       }}
     >
+      {/* Background image layer with brightness */}
+      <div 
+        className="absolute inset-0"
+        style={{ 
+          backgroundImage: `url(${dashboardBg})`,
+          backgroundSize: '100% 100%',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          filter: 'brightness(1.15)',
+          zIndex: 0
+        }}
+      />
       {/* Main Background Color Overlay */}
       {colorSettings.mainBackgroundOverlay && (
         <div 
