@@ -3701,11 +3701,14 @@ export default function Dashboard() {
     const checkedArr = Array.from(checked);
     const checkedJson = JSON.stringify(checkedArr);
     previewFile.checkedChunks = checkedJson;
+    previewFile.totalChunks = total;
     fetch(`/api/files/${previewFile.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
     }).catch(err => console.error('Failed to save checked chunks:', err));
   };
 
@@ -3742,14 +3745,35 @@ export default function Dashboard() {
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
     }).catch(err => console.error('Failed to save auto-checked chunks:', err));
   };
 
   useEffect(() => {
     if (previewFile && totalChunks > 0) {
-      const loaded = loadDashCheckedChunks();
-      setCheckedChunks(loaded);
-      checkedChunksRef.current = loaded;
+      fetch(`/api/files/${previewFile.id}`, { credentials: 'include' })
+        .then(res => res.json())
+        .then((freshFile: any) => {
+          if (freshFile && freshFile.checkedChunks) {
+            try {
+              const loaded = new Set<number>(JSON.parse(freshFile.checkedChunks));
+              setCheckedChunks(loaded);
+              checkedChunksRef.current = loaded;
+              previewFile.checkedChunks = freshFile.checkedChunks;
+              previewFile.totalChunks = freshFile.totalChunks;
+              return;
+            } catch { /* fall through */ }
+          }
+          const loaded = loadDashCheckedChunks();
+          setCheckedChunks(loaded);
+          checkedChunksRef.current = loaded;
+        })
+        .catch(() => {
+          const loaded = loadDashCheckedChunks();
+          setCheckedChunks(loaded);
+          checkedChunksRef.current = loaded;
+        });
     } else {
       setCheckedChunks(new Set());
       checkedChunksRef.current = new Set();
