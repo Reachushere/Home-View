@@ -7595,8 +7595,8 @@ export default function Dashboard() {
           
           {/* Split View: PDF on left, Highlighted Text on right */}
           <div className="flex-1 flex gap-4 min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
-            {/* PDF Viewer - 8.5x11 aspect ratio */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ flex: '1.25', minWidth: 0 }}>
+            {/* PDF Viewer */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col flex-1" style={{ minWidth: 0 }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
@@ -7669,7 +7669,7 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden" style={{ flex: '0.75' }}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden shrink-0" style={{ width: '320px' }}>
               {isLoadingText ? (
                 <div className="flex items-center justify-center h-full p-4">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
