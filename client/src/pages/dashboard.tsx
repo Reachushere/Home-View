@@ -8114,7 +8114,7 @@ export default function Dashboard() {
           >
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ color: '#ffffff', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>Your next task is in:</span>
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', marginTop: '-6px', marginBottom: '2px', width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', marginTop: '-6px', marginBottom: '0px', width: '100%' }}>
                 <span style={{ color: '#ffffff', fontSize: '28px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
                 <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>days</span>
               </div>
