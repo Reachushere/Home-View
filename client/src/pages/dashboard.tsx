@@ -8079,11 +8079,11 @@ export default function Dashboard() {
           const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
           const prepDaysLeft = Math.round((startDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
           if (prepDaysLeft > 0) {
-            prepText = `Prep starts in ${prepDaysLeft} day${prepDaysLeft !== 1 ? 's' : ''}`;
+            prepText = `and start preparing in ${prepDaysLeft} day${prepDaysLeft !== 1 ? 's' : ''}`;
           } else if (prepDaysLeft === 0) {
-            prepText = 'Prep starts today';
+            prepText = 'and start preparing today';
           } else {
-            prepText = 'Prep in progress';
+            prepText = 'and preparation is in progress';
           }
         }
         return (
