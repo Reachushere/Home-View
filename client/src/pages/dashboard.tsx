@@ -14553,8 +14553,8 @@ export default function Dashboard() {
                         type="checkbox"
                         checked={task.isCompleted ?? false}
                         onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                        className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer"
-                        style={{ accentColor: getCourseColor(task.courseName) }}
+                        className="h-3.5 w-3.5 rounded-sm cursor-pointer"
+                        style={{ accentColor: getCourseColor(task.courseName), outline: '1.5px solid white', outlineOffset: '-1px' }}
                         data-testid={`checkbox-task-${task.id}`}
                         {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
                         {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
