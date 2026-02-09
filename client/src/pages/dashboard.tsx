@@ -3773,6 +3773,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (previewFile && totalChunks > 0) {
+      const scrollToFirstUnlistened = (checked: Set<number>) => {
+        setTimeout(() => {
+          const totalC = ttsChunksRef.current.length || totalChunks;
+          for (let i = 0; i < totalC; i++) {
+            if (!checked.has(i)) {
+              const el = document.querySelector(`[data-testid="checkbox-chunk-${i}"]`);
+              el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              break;
+            }
+          }
+        }, 300);
+      };
       fetch(`/api/files/${previewFile.id}`, { credentials: 'include' })
         .then(res => res.json())
         .then((freshFile: any) => {
@@ -3783,17 +3795,20 @@ export default function Dashboard() {
               checkedChunksRef.current = loaded;
               previewFile.checkedChunks = freshFile.checkedChunks;
               previewFile.totalChunks = freshFile.totalChunks;
+              scrollToFirstUnlistened(loaded);
               return;
             } catch { /* fall through */ }
           }
           const loaded = loadDashCheckedChunks();
           setCheckedChunks(loaded);
           checkedChunksRef.current = loaded;
+          scrollToFirstUnlistened(loaded);
         })
         .catch(() => {
           const loaded = loadDashCheckedChunks();
           setCheckedChunks(loaded);
           checkedChunksRef.current = loaded;
+          scrollToFirstUnlistened(loaded);
         });
     } else {
       setCheckedChunks(new Set());
