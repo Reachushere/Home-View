@@ -12237,6 +12237,9 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* Calendar column wrapper - stacks countdown above calendar */}
+          <div style={{ display: 'flex', flexDirection: 'column', width: 'calc(100% - 68px)', flex: 1, minHeight: 0 }}>
+          
           {/* Next Task Countdown - above calendar */}
           {(() => {
             const now = new Date();
@@ -12266,7 +12269,7 @@ export default function Dashboard() {
           })()}
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', flex: 1, minHeight: 0, marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ flex: 1, minHeight: 0, marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -15669,6 +15672,7 @@ export default function Dashboard() {
                 })()}
               </div>
             </div>
+          </div>
           </div>
         </div>
         
