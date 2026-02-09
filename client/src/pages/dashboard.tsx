@@ -9548,7 +9548,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white/80 whitespace-nowrap font-normal tracking-wide" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="text-week-dates">
+          <span className="text-[10px] text-white whitespace-nowrap font-normal tracking-wide" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
@@ -9559,7 +9559,7 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white/60 font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
+          <span className="text-[10px] text-white font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
