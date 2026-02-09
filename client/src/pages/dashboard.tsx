@@ -5,7 +5,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
-import changSchoolLogo from "@assets/Chang-School_1770606426441.png";
+import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
@@ -7893,18 +7893,18 @@ export default function Dashboard() {
         <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
       </div>
 
-      {/* Chang School Logo - fixed, centered below hover tab, same vertical center as Uni-Cal logo */}
+      {/* Chang School Logo - fixed, horizontally under hover tab, vertically centered with Uni-Cal logo */}
       <img
         src={changSchoolLogo}
         alt="The Chang School of Continuing Education"
         className="fixed"
         style={{
           left: '50%',
-          transform: 'translateX(-50%)',
-          top: '48px',
-          height: '35px',
+          transform: 'translateX(-50%) translateY(-50%)',
+          top: '22px',
+          height: '30px',
           objectFit: 'contain',
-          zIndex: 100,
+          zIndex: 10,
           opacity: isTopPillOpen ? 0 : 1,
           transition: 'opacity 0.4s ease-in-out',
           pointerEvents: 'none',
