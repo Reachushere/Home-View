@@ -8051,7 +8051,7 @@ export default function Dashboard() {
 
       {/* Chang School Logo - Fixed top left where Uni-Cal used to be */}
       <img src={changSchoolLogo} alt="The Chang School" className="fixed" style={{ left: '16px', top: '5px', height: '35px', objectFit: 'contain', zIndex: 100 }} />
-      <div className="fixed" style={{ left: '158px', top: '6px', width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', zIndex: 100 }} />
+      <div className="fixed" style={{ left: '162px', top: '6px', width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', zIndex: 100 }} />
       <div className="flex items-center gap-2 fixed" style={{ left: '180px', top: '4px', zIndex: 100 }}>
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
