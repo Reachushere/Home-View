@@ -8019,7 +8019,7 @@ export default function Dashboard() {
           inset: 0,
           background: 'rgba(255, 255, 255, 0.06)',
           borderRadius: '28px',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          border: '1.5px solid rgba(255, 255, 255, 0.35)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           pointerEvents: 'none',
         }} />
@@ -9561,7 +9561,7 @@ export default function Dashboard() {
                   Z
                 `}
                 fill="rgba(255, 255, 255, 0.06)"
-                stroke="rgba(255, 255, 255, 0.35)"
+                stroke="rgba(255, 255, 255, 0.45)"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
                 filter="url(#pillShadow)"
