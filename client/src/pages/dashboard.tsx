@@ -5260,24 +5260,17 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // One Week Ahead: tasks due Mon-Fri of the school week, excluding today and tomorrow
-  const tomorrow = addDays(today, 1);
-  const dayAfterTomorrow = startOfDay(addDays(today, 2));
-  // Find the Friday of the current week (getDay: 0=Sun, 5=Fri)
-  const todayDay = today.getDay();
-  const daysUntilFriday = todayDay <= 5 ? 5 - todayDay : 5 + 7 - todayDay;
-  const thisWeekEnd = startOfDay(addDays(today, daysUntilFriday));
-  // thisWeekStart for header display: day after tomorrow or next Monday, whichever is later
-  const thisWeekStart = dayAfterTomorrow;
+  // 3 to 10 Day Schedule: tasks due 3-10 days from today (excludes today and tomorrow)
+  const threeDaysOut = startOfDay(addDays(today, 3));
+  const tenDaysOut = startOfDay(addDays(today, 10));
+  const thisWeekStart = threeDaysOut;
+  const thisWeekEnd = tenDaysOut;
   const dueThisWeekTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
     const dueDateStart = startOfDay(new Date(t.dueDate));
-    const dayOfWeek = dueDateStart.getDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) return false;
-    if (isSameDay(dueDateStart, today) || isSameDay(dueDateStart, tomorrow)) return false;
-    return dueDateStart >= dayAfterTomorrow && dueDateStart <= thisWeekEnd;
+    return dueDateStart >= threeDaysOut && dueDateStart <= tenDaysOut;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   // Measure first row positions after render for second row alignment
@@ -14711,7 +14704,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  One Week Ahead ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(0, 200, 0)' }}>{(() => {
+                  3 to 10 Day Schedule ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(0, 200, 0)' }}>{(() => {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
