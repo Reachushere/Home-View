@@ -3633,6 +3633,14 @@ export default function Dashboard() {
     cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
     cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
     cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
+    cleanTextForTts = cleanTextForTts.replace(/\([^)]*?(?:\d{4}[a-z]?|pp?\.\s*\d|[A-Z][a-z]+,?\s+\d{4}|§\s*\d|[ivxlcdm]+(?:,\s*[ivxlcdm]+)*)[^)]*?\)/g, '');
+    cleanTextForTts = cleanTextForTts.replace(/\(([0-9a-zA-Z.,;\s]+)\)/g, (match, inner) => {
+      if (/^[\d.,;\s]+$/.test(inner.trim())) return '';
+      if (/^[a-zA-Z]([.,;\s]+[a-zA-Z])*[.,;\s]*$/.test(inner.trim())) return '';
+      if (/^[\d.,;\sa-zA-Z]+$/.test(inner.trim()) && inner.trim().length < 20) return '';
+      return match;
+    });
+    cleanTextForTts = cleanTextForTts.replace(/\s{2,}/g, ' ');
     cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
     cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
     cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
@@ -7586,9 +7594,14 @@ export default function Dashboard() {
                 </div>
               ) : previewText ? (
                 <div className="flex min-h-full">
-                  {/* Black checkbox strip - runs full height of content */}
-                  {ttsChunks.length > 0 && (
-                    <div className="flex-shrink-0 w-12 bg-black flex flex-col" data-testid="checkbox-strip">
+                  {/* Course-colored checkbox strip - runs full height of content */}
+                  {ttsChunks.length > 0 && (() => {
+                    const stripFolderParts = previewFile?.folder?.split('-') || [];
+                    const stripCourseCode = stripFolderParts.length >= 3 ? stripFolderParts[2]?.toUpperCase() : null;
+                    const stripCourse = stripCourseCode ? coursesData.courses.find(c => c.name && c.name.toUpperCase().includes(stripCourseCode)) : null;
+                    const stripColor = stripCourse?.color || '#000000';
+                    return (
+                    <div className="flex-shrink-0 w-12 flex flex-col" style={{ backgroundColor: stripColor }} data-testid="checkbox-strip">
                       {ttsChunks.map((_, chunkIdx) => (
                         <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px' }}>
                           <input
@@ -7601,7 +7614,8 @@ export default function Dashboard() {
                         </div>
                       ))}
                     </div>
-                  )}
+                    );
+                  })()}
                   <div className="flex-1 p-4">
                 <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
