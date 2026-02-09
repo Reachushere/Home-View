@@ -8458,10 +8458,7 @@ export default function Dashboard() {
             <div
               style={{
                 position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
+                inset: '3px',
                 borderRadius: '50%',
                 background: 'linear-gradient(0deg, #FF9E75 0%, #F2530E 100%)',
                 display: 'flex',
@@ -8497,10 +8494,7 @@ export default function Dashboard() {
             <div
               style={{
                 position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
+                inset: '3px',
                 borderRadius: '50%',
                 background: 'linear-gradient(0deg, #FF9E75 0%, #F2530E 100%)',
                 display: 'flex',
