@@ -1047,11 +1047,12 @@ button[role="combobox"] > span {
   }
 }
 
+.font-raleway,
+.font-raleway * {
+  font-family: 'Raleway', sans-serif !important;
+}
+
 @layer utilities {
-  .font-raleway,
-  .font-raleway * {
-    font-family: 'Raleway', sans-serif !important;
-  }
   .task-missed {
     @apply border-destructive/50 bg-destructive/5;
   }
