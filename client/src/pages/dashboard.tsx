@@ -14671,10 +14671,10 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '12px', height: '157px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '12px', height: '175px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
@@ -14708,6 +14708,16 @@ export default function Dashboard() {
                     return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekStart, 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(thisWeekStart, 'd')}</div>
+                  </div>
+                  <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(thisWeekEnd, 'd')}</div>
+                  </div>
+                </div>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
                   {[...Array(9)].map((_, i) => (
@@ -14792,7 +14802,7 @@ export default function Dashboard() {
 
           {/* Due Today - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
@@ -14823,6 +14833,12 @@ export default function Dashboard() {
                   <Calendar className="h-3 w-3 text-white" />
                   Today ({dueTodayTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(new Date(), 'd')}</div>
+                  </div>
+                </div>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
                   {[...Array(9)].map((_, i) => (
@@ -14906,7 +14922,7 @@ export default function Dashboard() {
 
           {/* Due Tomorrow - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
@@ -14937,6 +14953,12 @@ export default function Dashboard() {
                   <Calendar className="h-3 w-3 text-white" />
                   Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px', color: 'rgb(255, 165, 0)' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '7px', fontWeight: 700, color: 'white', lineHeight: '10px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#333', lineHeight: '18px' }}>{format(addDays(new Date(), 1), 'd')}</div>
+                  </div>
+                </div>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
                   {[...Array(9)].map((_, i) => (
