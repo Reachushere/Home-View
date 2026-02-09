@@ -8121,7 +8121,7 @@ export default function Dashboard() {
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
               {prepDaysText && (
-                <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
+                <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', fontWeight: 600, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
                   {prepDaysText === 'today' ? `Start preparing for ${prepTaskName} today` : prepDaysText === 'now' ? `Preparation for ${prepTaskName} is in progress` : `Start preparing for ${prepTaskName} in ${prepDaysText} days`}
                 </span>
               )}
