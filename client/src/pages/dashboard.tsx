@@ -8725,7 +8725,7 @@ export default function Dashboard() {
             backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
             backgroundSize: 'cover, cover',
             backgroundPosition: 'center, center',
-            marginRight: '8px',
+            marginRight: '10px',
             marginTop: '-1px',
             flexShrink: 0,
             border: '1.5px solid rgba(255, 255, 255, 0.45)',
