@@ -14777,12 +14777,8 @@ export default function Dashboard() {
                 <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task rows - each row is position:relative with all content absolutely positioned at same baseline */}
-              {dueThisWeekTasks.slice(0, 5).map((task, idx) => {
-                const taskCourseCode = (task.courseName?.split(' - ')[0] || '').trim().toUpperCase();
-                const taskCourseHex = dynamicCourseColors[taskCourseCode]?.hex;
-                const taskLineGradient = taskCourseHex ? getButtonGradient(taskCourseHex) : 'linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.12))';
-                return (
-              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px' }}>
+              {dueThisWeekTasks.slice(0, 5).map((task, idx) => (
+              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '50%', transform: 'translateY(-50%)', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
@@ -14795,10 +14791,8 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 9}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', right: '0px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1.5px', background: taskLineGradient, opacity: 0.7 }} />
               </div>
-              );
-              })}
+              ))}
               {dueThisWeekTasks.length > 5 && (
                 <div className="text-xs text-white/50 text-center" style={{ marginTop: '2px' }}>+{dueThisWeekTasks.length - 5} more</div>
               )}
@@ -14901,12 +14895,8 @@ export default function Dashboard() {
                 <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task rows - all use HEADER_POS */}
-              {dueTodayTasks.slice(0, 3).map((task, idx) => {
-                const taskCourseCode = (task.courseName?.split(' - ')[0] || '').trim().toUpperCase();
-                const taskCourseHex = dynamicCourseColors[taskCourseCode]?.hex;
-                const taskLineGradient = taskCourseHex ? getButtonGradient(taskCourseHex) : 'linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.12))';
-                return (
-              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px' }}>
+              {dueTodayTasks.slice(0, 3).map((task, idx) => (
+              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
@@ -14919,10 +14909,8 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '10px', lineHeight: '1', color: getProgressColor(task, 'today'), textAlign: 'right' }}>{task.dueDate ? `${differenceInCalendarDays(new Date(task.dueDate), new Date())}d` : ''}</span>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1.5px', background: taskLineGradient, opacity: 0.7 }} />
               </div>
-              );
-              })}
+              ))}
                 </>
               )}
               <div className="flex-1 flex flex-col" />
@@ -15025,12 +15013,8 @@ export default function Dashboard() {
                 <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task rows - all use HEADER_POS */}
-              {dueTomorrowTasks.slice(0, 3).map((task, idx) => {
-                const taskCourseCode = (task.courseName?.split(' - ')[0] || '').trim().toUpperCase();
-                const taskCourseHex = dynamicCourseColors[taskCourseCode]?.hex;
-                const taskLineGradient = taskCourseHex ? getButtonGradient(taskCourseHex) : 'linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.12))';
-                return (
-              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px' }}>
+              {dueTomorrowTasks.slice(0, 3).map((task, idx) => (
+              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
@@ -15043,10 +15027,8 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '1px', fontSize: '10px', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', textAlign: 'right' }}>{getTomorrowDaysDisplay(task)}</span>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1.5px', background: taskLineGradient, opacity: 0.7 }} />
               </div>
-              );
-              })}
+              ))}
                 </>
               )}
               <div className="flex-1 flex flex-col" />
