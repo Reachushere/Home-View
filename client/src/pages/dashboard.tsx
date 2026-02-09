@@ -1312,19 +1312,19 @@ export default function Dashboard() {
       headerBar: '#160502',
       mainBackground: '#22223a',
       boxGlassEffect: true,
-      boxTransparency: 18,
+      boxTransparency: 28,
       mainBackgroundOverlay: false,
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
       todayCurrentHourCellBackground: '#160502'
     };
-    // Force migration V15: less white frosted boxes
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV15');
+    // Force migration V16: slightly less frosted than original 35
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV16');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#ffffff', boxTransparency: 18 };
+      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#ffffff', boxTransparency: 28 };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV15', 'done');
+      localStorage.setItem('colorSettingsMigrationV16', 'done');
       return migrated;
     }
     if (saved) {
