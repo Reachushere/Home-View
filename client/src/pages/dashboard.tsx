@@ -8096,7 +8096,7 @@ export default function Dashboard() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontFamily: "'Raleway', sans-serif",
             }}
             data-testid="next-task-countdown"
           >
