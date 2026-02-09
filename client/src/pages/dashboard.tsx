@@ -14709,7 +14709,7 @@ export default function Dashboard() {
                 </div>
                 <span className="flex items-center gap-2 flex-1 ml-2">
                   3-10 Days ({dueThisWeekTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(0, 200, 0)' }}>{(() => {
-                    return `${format(thisWeekStart, 'EEE, MMMM d')} - ${format(thisWeekEnd, 'EEE, MMMM d')}`;
+                    return `${format(thisWeekStart, 'EEE, MMMM d')} ${format(thisWeekEnd, 'EEE, MMMM d')}`;
                   })()}</span>
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
@@ -14842,7 +14842,7 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex items-center gap-2 flex-1 ml-2">
+                <span className="flex items-center flex-1 ml-2">
                   Today ({dueTodayTasks.length}) <span className="text-[10px]" style={{ verticalAlign: 'bottom', color: 'rgb(255, 0, 0)' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 <div className="calendar-icon-shimmer" style={{ width: '28px', height: '30px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
