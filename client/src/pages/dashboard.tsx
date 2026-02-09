@@ -14751,7 +14751,7 @@ export default function Dashboard() {
                   <div style={{ width: '3px', flexShrink: 0 }} />
                   {/* Col 3: Task name */}
                   <button 
-                    className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
+                    className="text-[12px] text-white font-bold truncate hover:underline cursor-pointer leading-none"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
                     style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0, textAlign: 'left' }}
