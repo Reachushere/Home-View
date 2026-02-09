@@ -3354,6 +3354,9 @@ export default function Dashboard() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pageWordBoundaries, setPageWordBoundaries] = useState<number[]>([]); // Word index where each page starts
   const [pdfZoom, setPdfZoom] = useState(1.10); // Default 110% zoom
+  const [ttsWidth, setTtsWidth] = useState(320);
+  const ttsDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
   
   // Calculate which PDF page a word index belongs to
   const getPageForWordIndex = (wordIndex: number): number => {
@@ -7594,9 +7597,9 @@ export default function Dashboard() {
           </div>
           
           {/* Split View: PDF on left, Highlighted Text on right */}
-          <div className="flex-1 flex gap-4 min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
+          <div className="flex-1 flex min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
             {/* PDF Viewer */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col flex-1" style={{ minWidth: 0 }}>
+            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: 1 }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
@@ -7653,7 +7656,7 @@ export default function Dashboard() {
                         <Page 
                           key={i + 1}
                           pageNumber={i + 1} 
-                          width={Math.round(380 * pdfZoom)}
+                          width={Math.round((pdfContainerRef.current?.clientWidth ? pdfContainerRef.current.clientWidth - 20 : 380) * pdfZoom)}
                           renderTextLayer={false}
                           renderAnnotationLayer={false}
                         />
@@ -7668,8 +7671,54 @@ export default function Dashboard() {
               </div>
             </div>
             
+            {/* Draggable Divider */}
+            <div 
+              className="w-2 shrink-0 cursor-col-resize flex items-center justify-center group"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                ttsDragRef.current = { startX: e.clientX, startWidth: ttsWidth };
+                const onMouseMove = (ev: MouseEvent) => {
+                  if (!ttsDragRef.current) return;
+                  const delta = ttsDragRef.current.startX - ev.clientX;
+                  const newWidth = Math.max(200, Math.min(800, ttsDragRef.current.startWidth + delta));
+                  setTtsWidth(newWidth);
+                };
+                const onMouseUp = () => {
+                  ttsDragRef.current = null;
+                  document.removeEventListener('mousemove', onMouseMove);
+                  document.removeEventListener('mouseup', onMouseUp);
+                  document.body.style.cursor = '';
+                  document.body.style.userSelect = '';
+                };
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+              }}
+              onTouchStart={(e) => {
+                const touch = e.touches[0];
+                ttsDragRef.current = { startX: touch.clientX, startWidth: ttsWidth };
+                const onTouchMove = (ev: TouchEvent) => {
+                  if (!ttsDragRef.current) return;
+                  const delta = ttsDragRef.current.startX - ev.touches[0].clientX;
+                  const newWidth = Math.max(200, Math.min(800, ttsDragRef.current.startWidth + delta));
+                  setTtsWidth(newWidth);
+                };
+                const onTouchEnd = () => {
+                  ttsDragRef.current = null;
+                  document.removeEventListener('touchmove', onTouchMove);
+                  document.removeEventListener('touchend', onTouchEnd);
+                };
+                document.addEventListener('touchmove', onTouchMove);
+                document.addEventListener('touchend', onTouchEnd);
+              }}
+              data-testid="tts-drag-handle"
+            >
+              <div className="w-1 h-12 rounded-full bg-gray-400/50 group-hover:bg-gray-400 transition-colors" />
+            </div>
+            
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden shrink-0" style={{ width: '320px' }}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden shrink-0" style={{ width: `${ttsWidth}px` }}>
               {isLoadingText ? (
                 <div className="flex items-center justify-center h-full p-4">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
