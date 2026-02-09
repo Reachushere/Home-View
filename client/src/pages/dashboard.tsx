@@ -7369,24 +7369,15 @@ export default function Dashboard() {
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-5 w-5 text-white hover:bg-white/20"
-                onClick={() => {
-                  const newVal = Math.max(0, radioVolume - 5);
-                  setRadioVolume(newVal);
-                  if (previewSpeaker === "browser_tts") {
-                    const rate = 0.5 + (newVal / 100) * 1.5;
-                    setBrowserTtsRate(rate);
-                  } else {
-                    fetch("/api/media/volume", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
-                    }).catch(console.error);
-                  }
+                className="h-7 w-7 min-h-[28px] min-w-[28px] text-white hover:bg-white/20"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleVolumeChange("down");
                 }}
                 data-testid="button-volume-down"
               >
-                <Minus className="h-3 w-3 text-white" />
+                <Minus className="h-3.5 w-3.5 text-white" />
               </Button>
               <Slider
                 value={[radioVolume]}
@@ -7395,6 +7386,10 @@ export default function Dashboard() {
                   if (previewSpeaker === "browser_tts") {
                     const rate = 0.5 + (val[0] / 100) * 1.5;
                     setBrowserTtsRate(rate);
+                  } else if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
+                    if (openaiAudioRef.current) {
+                      openaiAudioRef.current.volume = val[0] / 100;
+                    }
                   } else {
                     fetch("/api/media/volume", {
                       method: "POST",
@@ -7412,24 +7407,15 @@ export default function Dashboard() {
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-5 w-5 text-white hover:bg-white/20"
-                onClick={() => {
-                  const newVal = Math.min(100, radioVolume + 5);
-                  setRadioVolume(newVal);
-                  if (previewSpeaker === "browser_tts") {
-                    const rate = 0.5 + (newVal / 100) * 1.5;
-                    setBrowserTtsRate(rate);
-                  } else {
-                    fetch("/api/media/volume", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
-                    }).catch(console.error);
-                  }
+                className="h-7 w-7 min-h-[28px] min-w-[28px] text-white hover:bg-white/20"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleVolumeChange("up");
                 }}
                 data-testid="button-volume-up"
               >
-                <Plus className="h-3 w-3 text-white" />
+                <Plus className="h-3.5 w-3.5 text-white" />
               </Button>
               <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
             </div>
