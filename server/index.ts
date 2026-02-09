@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
 
-const TOKEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+const TOKEN_MAX_AGE_MS = 10 * 365 * 24 * 60 * 60 * 1000;
 
 function createSessionToken(): string {
   const timestamp = Date.now().toString(36);
@@ -68,7 +68,7 @@ app.post("/api/auth/login", (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
     });
     return res.json({ success: true });
   }
