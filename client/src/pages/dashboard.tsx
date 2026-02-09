@@ -8073,6 +8073,19 @@ export default function Dashboard() {
         const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
         const diffDays = Math.round((dueDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
+        let prepText = '';
+        if (next.startDate) {
+          const startDate = new Date(next.startDate);
+          const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+          const prepDaysLeft = Math.round((startDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (prepDaysLeft > 0) {
+            prepText = `Prep starts in ${prepDaysLeft} day${prepDaysLeft !== 1 ? 's' : ''}`;
+          } else if (prepDaysLeft === 0) {
+            prepText = 'Prep starts today';
+          } else {
+            prepText = 'Prep in progress';
+          }
+        }
         return (
           <div
             className="font-raleway"
@@ -8100,6 +8113,11 @@ export default function Dashboard() {
               <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '3px' }}>
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
+              {prepText && (
+                <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap', marginTop: '1px' }}>
+                  {prepText}
+                </span>
+              )}
             </div>
           </div>
         );
