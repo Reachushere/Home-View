@@ -5260,15 +5260,24 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // One Week Ahead: tasks due in the 7 days starting from today
-  const thisWeekStart = startOfDay(today);
-  const thisWeekEnd = addDays(thisWeekStart, 6); // 7 days total (inclusive)
+  // One Week Ahead: tasks due Mon-Fri of the school week, excluding today and tomorrow
+  const tomorrow = addDays(today, 1);
+  const dayAfterTomorrow = startOfDay(addDays(today, 2));
+  // Find the Friday of the current week (getDay: 0=Sun, 5=Fri)
+  const todayDay = today.getDay();
+  const daysUntilFriday = todayDay <= 5 ? 5 - todayDay : 5 + 7 - todayDay;
+  const thisWeekEnd = startOfDay(addDays(today, daysUntilFriday));
+  // thisWeekStart for header display: day after tomorrow or next Monday, whichever is later
+  const thisWeekStart = dayAfterTomorrow;
   const dueThisWeekTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
     const dueDateStart = startOfDay(new Date(t.dueDate));
-    return dueDateStart >= thisWeekStart && dueDateStart <= thisWeekEnd;
+    const dayOfWeek = dueDateStart.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) return false;
+    if (isSameDay(dueDateStart, today) || isSameDay(dueDateStart, tomorrow)) return false;
+    return dueDateStart >= dayAfterTomorrow && dueDateStart <= thisWeekEnd;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   // Measure first row positions after render for second row alignment
