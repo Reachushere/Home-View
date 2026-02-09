@@ -12347,7 +12347,10 @@ export default function Dashboard() {
                 className="flex items-center justify-center border-l border-border"
                 style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
               >
-                <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 inline-flex items-center gap-0.5">Progress <Paperclip className="h-3 w-3 text-white/60" /></span></span>
+                <div className="flex flex-col items-center justify-center gap-0.5">
+                  <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
+                  <Paperclip className="h-4 w-4 text-white/60" />
+                </div>
               </div>
               {/* Saturday header */}
               {weekDays[6] && (() => {
