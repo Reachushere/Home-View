@@ -8086,7 +8086,7 @@ export default function Dashboard() {
           <div
             style={{
               position: 'absolute',
-              left: 'calc(50% - 113px)',
+              left: '50%',
               transform: 'translateX(-50%) translateY(-50%)',
               top: '36px',
               zIndex: 5,
