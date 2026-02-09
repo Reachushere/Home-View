@@ -8073,7 +8073,6 @@ export default function Dashboard() {
         const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
         const diffDays = Math.round((dueDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
-        let prepText = '';
         const nextPrep = upcoming
           .filter(t => t.startDate)
           .map(t => {
@@ -8082,13 +8081,16 @@ export default function Dashboard() {
             return { ...t, startDateOnly: sdOnly, prepDaysLeft: Math.round((sdOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24)) };
           })
           .sort((a, b) => a.startDateOnly.getTime() - b.startDateOnly.getTime())[0];
+        let prepDaysText = '';
+        let prepTaskName = '';
         if (nextPrep) {
+          prepTaskName = nextPrep.title;
           if (nextPrep.prepDaysLeft > 0) {
-            prepText = `and start preparing for ${nextPrep.title} in ${nextPrep.prepDaysLeft} day${nextPrep.prepDaysLeft !== 1 ? 's' : ''}`;
+            prepDaysText = `${nextPrep.prepDaysLeft}`;
           } else if (nextPrep.prepDaysLeft === 0) {
-            prepText = `and start preparing for ${nextPrep.title} today`;
+            prepDaysText = 'today';
           } else {
-            prepText = `and preparation for ${nextPrep.title} is in progress`;
+            prepDaysText = 'now';
           }
         }
         return (
@@ -8118,9 +8120,9 @@ export default function Dashboard() {
               <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '3px' }}>
                 {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
               </span>
-              {prepText && (
+              {prepDaysText && (
                 <span className="font-raleway" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
-                  {prepText}
+                  {prepDaysText === 'today' ? `Start preparing for ${prepTaskName} today` : prepDaysText === 'now' ? `Preparation for ${prepTaskName} is in progress` : `Start preparing for ${prepTaskName} in ${prepDaysText} days`}
                 </span>
               )}
             </div>
