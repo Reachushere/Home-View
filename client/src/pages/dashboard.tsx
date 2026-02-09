@@ -7507,7 +7507,7 @@ export default function Dashboard() {
           {/* Split View: PDF on left, Highlighted Text on right */}
           <div className="flex-1 flex min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
             {/* PDF Viewer */}
-            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(50% - 30px)' }}>
+            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(42% - 30px)' }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
