@@ -1623,18 +1623,6 @@ export default function Dashboard() {
     };
   }, [columnResizing, rowResizing, gridSizes.dayColumnWidths]);
   
-  // Generate grid template columns based on sizes
-  // dayColumnWidths has 7 entries (Sun-Sat), progress column inserted between Fri (5) and Sat (6)
-  const getGridTemplateColumns = () => {
-    const sunToFri = gridSizes.dayColumnWidths.slice(0, 6).map(w => `${w}fr`).join(' ');
-    const sat = `${gridSizes.dayColumnWidths[6]}fr`;
-    const progress = `${gridSizes.progressColumnWidth}fr`;
-    if (gridSizes.moduleColumnWidth > 0) {
-      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${sunToFri} ${progress} ${sat}`;
-    }
-    return `${gridSizes.timeColumnWidth}px ${sunToFri} ${progress} ${sat}`;
-  };
-  
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
   const [thisWeekBoxHeight, setThisWeekBoxHeight] = useState<number | null>(null);
   const [isResizingThisWeek, setIsResizingThisWeek] = useState(false);
@@ -1719,15 +1707,38 @@ export default function Dashboard() {
     const saved = localStorage.getItem('profileData');
     return saved ? { postalCode: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '' };
   });
-  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string }>(() => {
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
     if (saved) {
       const parsed = JSON.parse(saved);
+      if (!parsed.lastDayOfSchoolWeek) parsed.lastDayOfSchoolWeek = 'friday';
       return { schoolName: 'Toronto Metropolitan University', ...parsed };
     }
-    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-12', firstDayOfWeek: 'saturday', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto' };
+    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-12', firstDayOfWeek: 'saturday', lastDayOfSchoolWeek: 'friday', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto' };
   });
-  
+
+  // Map lastDayOfSchoolWeek to the display column index (0=Sun, 1=Mon, ... 6=Sat)
+  const lastSchoolDayIndex = (() => {
+    const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+    return dayMap[schoolData.lastDayOfSchoolWeek] ?? 5;
+  })();
+
+  // Progress column grid position (1-based, accounting for time column and optional module column)
+  const progressGridCol = (gridSizes.moduleColumnWidth > 0 ? 2 : 1) + lastSchoolDayIndex + 1 + 1;
+  const afterProgressGridCol = progressGridCol + 1;
+
+  // Generate grid template columns based on sizes
+  // dayColumnWidths has 7 entries (Sun-Sat), progress column inserted after lastSchoolDayIndex
+  const getGridTemplateColumns = () => {
+    const beforeProgress = gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).map(w => `${w}fr`).join(' ');
+    const afterProgress = gridSizes.dayColumnWidths.slice(lastSchoolDayIndex + 1).map(w => `${w}fr`).join(' ');
+    const progress = `${gridSizes.progressColumnWidth}fr`;
+    if (gridSizes.moduleColumnWidth > 0) {
+      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${beforeProgress} ${progress} ${afterProgress}`;
+    }
+    return `${gridSizes.timeColumnWidth}px ${beforeProgress} ${progress} ${afterProgress}`;
+  };
+
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
@@ -1795,7 +1806,7 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => {
+  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => {
     const { semesterType: semType, ...schoolOnly } = data;
     setSchoolData(schoolOnly);
     localStorage.setItem('schoolData', JSON.stringify(schoolOnly));
@@ -12322,7 +12333,7 @@ export default function Dashboard() {
                 </div>
               );
             })}
-            <div style={{ minWidth: 0, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }} /> {/* Progress column spacer */}
+            <div style={{ minWidth: 0, gridColumn: progressGridCol }} /> {/* Progress column spacer */}
             {/* Saturday column - show reminder if Saturday is today */}
             {(() => {
               const satDay = weekDays[6];
@@ -12331,7 +12342,7 @@ export default function Dashboard() {
                 t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), satDay)
               );
               return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: afterProgressGridCol }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
                   {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
                 </div>
               );
@@ -12339,7 +12350,7 @@ export default function Dashboard() {
           </div>
           <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '16px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
+            <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
             
@@ -12398,7 +12409,7 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
               >
                 <div className="flex items-center justify-center gap-1">
                   <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
@@ -12416,7 +12427,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isTodaySaturday ? '#eef2f7' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isTodaySaturday ? '#eef2f7' : "black", gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
@@ -12656,9 +12667,9 @@ export default function Dashboard() {
                             })}
                             
                             {/* Progress column - empty with black background */}
-                            <div style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }} />
+                            <div style={{ backgroundColor: '#000000', gridColumn: progressGridCol }} />
                             {/* Saturday column - always course bg */}
-                            <div style={{ backgroundColor: course.bg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }} />
+                            <div style={{ backgroundColor: course.bg, gridColumn: afterProgressGridCol }} />
                           </div>
                         );
                       })}
@@ -12901,7 +12912,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 flex items-center gap-[3px]"
-                        style={{ background: progressBg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8, paddingLeft: '0px', paddingRight: '6px' }}
+                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '6px' }}
                       >
                         <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px', paddingLeft: '4px' }}>
                         {hasNoData ? (
@@ -13073,7 +13084,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 4px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
@@ -13253,7 +13264,7 @@ export default function Dashboard() {
               {/* Progress column - half-width, black background */}
               <div 
                 className="border-l border-border/50 relative"
-                style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
               />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
@@ -13263,7 +13274,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-b border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: afterProgressGridCol }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -13549,7 +13560,7 @@ export default function Dashboard() {
                     {/* Progress column - half-width, black background */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
+                      style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
                     />
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
@@ -13568,7 +13579,7 @@ export default function Dashboard() {
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
-                            gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9,
+                            gridColumn: afterProgressGridCol,
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
                           }}
                         >
@@ -17020,9 +17031,9 @@ function SchoolForm({
   onSave,
   onCancel 
 }: { 
-  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string };
+  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => void;
+  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => void;
   onCancel: () => void;
 }) {
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -17030,6 +17041,7 @@ function SchoolForm({
   const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
   const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
+  const [lastDayOfSchoolWeek, setLastDayOfSchoolWeek] = useState(schoolData.lastDayOfSchoolWeek || 'friday');
   const [timezone, setTimezone] = useState(schoolData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto');
   const [isTravelling, setIsTravelling] = useState(schoolData.isTravelling || false);
   const [travelTimezone, setTravelTimezone] = useState(schoolData.travelTimezone || '');
@@ -17048,7 +17060,7 @@ function SchoolForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, semesterType });
+    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, semesterType });
   };
 
   const semesterEnd = week1StartDate 
@@ -17087,6 +17099,19 @@ function SchoolForm({
             <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
               <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
+                <SelectValue placeholder="Select day" />
+              </SelectTrigger>
+              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                {daysOfWeek.map(day => (
+                  <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="lastDayOfSchoolWeek" className="text-[10px]">Last Day of School Week</Label>
+            <Select value={lastDayOfSchoolWeek} onValueChange={setLastDayOfSchoolWeek}>
+              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-last-day-of-school-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
               <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
