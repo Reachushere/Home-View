@@ -5909,7 +5909,7 @@ export default function Dashboard() {
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          filter: 'brightness(1.15)',
+          filter: 'brightness(1.3)',
           zIndex: 0
         }}
       />
