@@ -5266,13 +5266,23 @@ export default function Dashboard() {
   const tenDaysOut = startOfDay(addDays(today, 10));
   const thisWeekStart = threeDaysOut;
   const thisWeekEnd = tenDaysOut;
-  const dueThisWeekTasks = allTasks.filter(t => {
-    if (t.isMissed || t.isCompleted) return false;
-    if (isCASL101Finished(t)) return false;
-    if (!t.dueDate) return false;
-    const dueDateStart = startOfDay(new Date(t.dueDate));
-    return dueDateStart >= threeDaysOut && dueDateStart <= tenDaysOut;
-  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  const dueThisWeekTasks = (() => {
+    const filtered = allTasks.filter(t => {
+      if (t.isMissed || t.isCompleted) return false;
+      if (isCASL101Finished(t)) return false;
+      if (!t.dueDate) return false;
+      const dueDateStart = startOfDay(new Date(t.dueDate));
+      return dueDateStart >= threeDaysOut && dueDateStart <= tenDaysOut;
+    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    const seen = new Set<string>();
+    return filtered.filter(t => {
+      const course = (t.courseName?.split(' - ')[0] || '').trim().toUpperCase();
+      if (!course) return true;
+      if (seen.has(course)) return false;
+      seen.add(course);
+      return true;
+    });
+  })();
 
   // Measure first row positions after render for second row alignment
   // IMPORTANT: Does NOT depend on dueThisWeekTasks - positions only update on resize handle changes
