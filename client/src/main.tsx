@@ -4,7 +4,19 @@ import "./index.css";
 
 const originalFetch = window.fetch.bind(window);
 window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
-  return originalFetch(input, { credentials: 'include', ...init });
+  const token = localStorage.getItem('uni_cal_token');
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return originalFetch(input, {
+    credentials: 'include',
+    ...init,
+    headers: {
+      ...headers,
+      ...(init?.headers || {}),
+    },
+  });
 };
 
 function reportError(message: string, stack?: string) {

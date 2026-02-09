@@ -57,10 +57,20 @@ function isValidToken(token: string): boolean {
   return sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
 }
 
+function getAuthToken(req: Request): string | undefined {
+  const cookieToken = req.cookies?.uni_cal_session;
+  if (cookieToken) return cookieToken;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
+  return undefined;
+}
+
 app.post("/api/auth/login", (req: Request, res: Response) => {
   const { password } = req.body;
   if (!SITE_PASSWORD) {
-    return res.json({ success: true });
+    return res.json({ success: true, token: '' });
   }
   if (password === SITE_PASSWORD) {
     const token = createSessionToken();
@@ -70,7 +80,7 @@ app.post("/api/auth/login", (req: Request, res: Response) => {
       sameSite: "lax",
       maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
     });
-    return res.json({ success: true });
+    return res.json({ success: true, token });
   }
   return res.status(401).json({ success: false, message: "Incorrect password" });
 });
@@ -79,7 +89,7 @@ app.get("/api/auth/check", (req: Request, res: Response) => {
   if (!SITE_PASSWORD) {
     return res.json({ authenticated: true });
   }
-  const token = req.cookies?.uni_cal_session;
+  const token = getAuthToken(req);
   if (token) {
     try {
       if (isValidToken(token)) {
@@ -103,7 +113,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path === "/login") return next();
   if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();
 
-  const token = req.cookies?.uni_cal_session;
+  const token = getAuthToken(req);
   if (token) {
     try {
       if (isValidToken(token)) {

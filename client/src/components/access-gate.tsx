@@ -60,6 +60,9 @@ export function AccessGate({ children }: AccessGateProps) {
       });
       const data = await res.json();
       if (data.success) {
+        if (data.token) {
+          localStorage.setItem('uni_cal_token', data.token);
+        }
         setIsAuthorized(true);
       } else {
         setError(data.message || "Incorrect password");
