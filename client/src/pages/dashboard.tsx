@@ -7901,7 +7901,7 @@ export default function Dashboard() {
           position: 'absolute',
           left: 'calc(50% - 113px)',
           transform: 'translateX(-50%) translateY(-50%)',
-          top: '38px',
+          top: '35px',
           height: '42px',
           objectFit: 'contain',
           zIndex: 5,
