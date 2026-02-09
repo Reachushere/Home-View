@@ -7802,125 +7802,106 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Voice & Speed Controls Bar - Bottom */}
-          <div className="flex items-center justify-between gap-4 p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-            {/* Voice selector - shows for browser TTS */}
-            {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] text-white">Voice:</span>
-                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                  <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
-                    <SelectValue placeholder="Select Voice" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {availableVoices.map(voice => (
-                      <SelectItem key={voice.name} value={voice.name} className="text-[10px]">
-                        {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 text-white hover:bg-gray-700"
-                  onClick={() => {
-                    if (!window.speechSynthesis) return;
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
-                    utterance.rate = browserTtsRate;
-                    const voice = availableVoices.find(v => v.name === selectedVoice);
-                    if (voice) utterance.voice = voice;
-                    window.speechSynthesis.speak(utterance);
-                  }}
-                  data-testid="button-preview-voice"
-                  title="Preview voice"
-                >
-                  <Volume2 className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-            
-            {/* OpenAI Voice selector - shows for OpenAI TTS (Fire tablets) */}
-            {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] text-white">Voice:</span>
-                <Select 
-                  value={openaiVoice} 
-                  onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}
-                >
-                  <SelectTrigger className="w-[120px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="alloy" className="text-[10px]">Alloy</SelectItem>
-                    <SelectItem value="echo" className="text-[10px]">Echo</SelectItem>
-                    <SelectItem value="fable" className="text-[10px]">Fable</SelectItem>
-                    <SelectItem value="onyx" className="text-[10px]">Onyx</SelectItem>
-                    <SelectItem value="nova" className="text-[10px]">Nova</SelectItem>
-                    <SelectItem value="shimmer" className="text-[10px]">Shimmer</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 text-white hover:bg-gray-700"
-                  onClick={async () => {
-                    try {
-                      const response = await fetch("/api/tts", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ text: "Hello, this is a sample of my voice.", voice: openaiVoice }),
-                      });
-                      if (response.ok) {
-                        const blob = await response.blob();
-                        const audio = new Audio(URL.createObjectURL(blob));
-                        audio.play();
+          {/* Voice Controls + Done Button Row */}
+          <div className="flex items-center justify-between p-2 px-4 mx-6 mt-2 mb-2">
+            {/* Voice controls - compact */}
+            <div className="flex items-center gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+              {/* Voice selector - browser TTS */}
+              {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[8px] text-white/70">Voice:</span>
+                  <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                    <SelectTrigger className="w-[130px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                      <SelectValue placeholder="Select Voice" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {availableVoices.map(voice => (
+                        <SelectItem key={voice.name} value={voice.name} className="text-[10px]">
+                          {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-5 w-5 text-white hover:bg-gray-700"
+                    onClick={() => {
+                      if (!window.speechSynthesis) return;
+                      window.speechSynthesis.cancel();
+                      const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
+                      utterance.rate = browserTtsRate;
+                      const voice = availableVoices.find(v => v.name === selectedVoice);
+                      if (voice) utterance.voice = voice;
+                      window.speechSynthesis.speak(utterance);
+                    }}
+                    data-testid="button-preview-voice"
+                    title="Preview voice"
+                  >
+                    <Volume2 className="h-2.5 w-2.5" />
+                  </Button>
+                </div>
+              )}
+              {/* OpenAI Voice selector */}
+              {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[8px] text-white/70">Voice:</span>
+                  <Select value={openaiVoice} onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}>
+                    <SelectTrigger className="w-[90px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="alloy" className="text-[10px]">Alloy</SelectItem>
+                      <SelectItem value="echo" className="text-[10px]">Echo</SelectItem>
+                      <SelectItem value="fable" className="text-[10px]">Fable</SelectItem>
+                      <SelectItem value="onyx" className="text-[10px]">Onyx</SelectItem>
+                      <SelectItem value="nova" className="text-[10px]">Nova</SelectItem>
+                      <SelectItem value="shimmer" className="text-[10px]">Shimmer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-5 w-5 text-white hover:bg-gray-700"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch("/api/tts", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ text: "Hello, this is a sample of my voice.", voice: openaiVoice }),
+                        });
+                        if (response.ok) {
+                          const blob = await response.blob();
+                          const audio = new Audio(URL.createObjectURL(blob));
+                          audio.play();
+                        }
+                      } catch (err) {
+                        console.error("Voice preview error:", err);
                       }
-                    } catch (err) {
-                      console.error("Voice preview error:", err);
-                    }
-                  }}
-                  data-testid="button-preview-openai-voice"
-                  title="Preview voice"
-                >
-                  <Volume2 className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-            
-            {/* Speed control - shows for browser TTS */}
-            {previewSpeaker === "browser_tts" && (
-              <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-1">
-                <Gauge className="h-3 w-3 text-gray-400" />
-                <span className="text-[9px] text-white">Speed</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
-                  onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
-                  title="Slow down"
-                  data-testid="button-speed-down"
-                >
-                  <MinusCircle className="h-3 w-3" />
-                </Button>
-                <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
-                  onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
-                  title="Speed up"
-                  data-testid="button-speed-up"
-                >
-                  <PlusCircle className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-          </div>
+                    }}
+                    data-testid="button-preview-openai-voice"
+                    title="Preview voice"
+                  >
+                    <Volume2 className="h-2.5 w-2.5" />
+                  </Button>
+                </div>
+              )}
+              {/* Speed - browser TTS */}
+              {previewSpeaker === "browser_tts" && (
+                <div className="flex items-center gap-1">
+                  <div className="w-px h-4 bg-white/20" />
+                  <Gauge className="h-2.5 w-2.5 text-gray-400" />
+                  <Button size="icon" variant="ghost" className="h-4 w-4 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))} data-testid="button-speed-down">
+                    <MinusCircle className="h-2.5 w-2.5" />
+                  </Button>
+                  <span className="text-[9px] text-white font-medium w-6 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                  <Button size="icon" variant="ghost" className="h-4 w-4 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))} data-testid="button-speed-up">
+                    <PlusCircle className="h-2.5 w-2.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
 
-          {/* Done Button and Progress */}
-          <div className="flex justify-end items-center p-4 mx-6 mb-2" style={{ marginTop: '-8px' }}>
             <div className="flex items-center gap-3">
               {/* Progress Bar - shows checked chunks / total */}
               {(() => {
