@@ -14716,7 +14716,7 @@ export default function Dashboard() {
                     <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
                   ))}
                 </div>
-                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>2-10 Days (<span style={{ color: 'rgb(0, 200, 0)' }}>{dueThisWeekTasks.length}</span>)</span><span className="text-[10px]" style={{ color: 'rgb(0, 200, 0)', marginRight: '6px' }}>{format(addDays(new Date(), 2), 'EEE, MMMM d')} - {format(thisWeekEnd, 'EEE, MMMM d')}</span>
+                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>2 - 10 Days (<span style={{ color: 'rgb(0, 200, 0)' }}>{dueThisWeekTasks.length}</span>)</span><span className="text-[10px]" style={{ color: 'rgb(0, 200, 0)', marginRight: '6px' }}>{format(addDays(new Date(), 2), 'EEE, MMMM d')} - {format(thisWeekEnd, 'EEE, MMMM d')}</span>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '3px', flexShrink: 0 }}>
                   <div style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
