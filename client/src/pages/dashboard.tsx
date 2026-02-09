@@ -3774,16 +3774,23 @@ export default function Dashboard() {
   useEffect(() => {
     if (previewFile && totalChunks > 0) {
       const scrollToFirstUnlistened = (checked: Set<number>) => {
-        setTimeout(() => {
-          const totalC = ttsChunksRef.current.length || totalChunks;
-          for (let i = 0; i < totalC; i++) {
-            if (!checked.has(i)) {
-              const el = document.querySelector(`[data-testid="checkbox-chunk-${i}"]`);
-              el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              break;
+        const attemptScroll = (attempt: number) => {
+          if (attempt > 10) return;
+          setTimeout(() => {
+            const allChunkEls = document.querySelectorAll('[data-testid^="checkbox-chunk-"]');
+            if (allChunkEls.length === 0) {
+              attemptScroll(attempt + 1);
+              return;
             }
-          }
-        }, 300);
+            for (let i = 0; i < allChunkEls.length; i++) {
+              if (!checked.has(i)) {
+                allChunkEls[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+              }
+            }
+          }, attempt === 0 ? 500 : 300);
+        };
+        attemptScroll(0);
       };
       fetch(`/api/files/${previewFile.id}`, { credentials: 'include' })
         .then(res => res.json())
