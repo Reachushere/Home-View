@@ -12327,8 +12327,8 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold" style={{ color: '#fff' }}>{dayNum}</div>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 5 && (
                       <div
@@ -12367,8 +12367,8 @@ export default function Dashboard() {
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#E8E656' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold" style={{ color: '#fff' }}>{dayNum}</div>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: '#fff' }}>{dayNum}</div>
                     </div>
                   </div>
                 );
