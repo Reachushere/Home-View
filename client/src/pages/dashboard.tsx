@@ -7805,13 +7805,13 @@ export default function Dashboard() {
           {/* Voice Controls + Done Button Row */}
           <div className="flex items-center justify-between p-2 px-4 mx-6 mt-2 mb-2">
             {/* Voice controls - compact */}
-            <div className="flex items-center gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+            <div className="flex items-center gap-3 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
               {/* Voice selector - browser TTS */}
               {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[8px] text-white/70">Voice:</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-white">Voice:</span>
                   <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                    <SelectTrigger className="w-[130px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                    <SelectTrigger className="w-[200px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
                       <SelectValue placeholder="Select Voice" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -7825,7 +7825,7 @@ export default function Dashboard() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-5 w-5 text-white hover:bg-gray-700"
+                    className="h-6 w-6 text-white hover:bg-gray-700"
                     onClick={() => {
                       if (!window.speechSynthesis) return;
                       window.speechSynthesis.cancel();
@@ -7838,16 +7838,16 @@ export default function Dashboard() {
                     data-testid="button-preview-voice"
                     title="Preview voice"
                   >
-                    <Volume2 className="h-2.5 w-2.5" />
+                    <Volume2 className="h-3 w-3" />
                   </Button>
                 </div>
               )}
               {/* OpenAI Voice selector */}
               {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[8px] text-white/70">Voice:</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-white">Voice:</span>
                   <Select value={openaiVoice} onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}>
-                    <SelectTrigger className="w-[90px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
+                    <SelectTrigger className="w-[110px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -7862,7 +7862,7 @@ export default function Dashboard() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-5 w-5 text-white hover:bg-gray-700"
+                    className="h-6 w-6 text-white hover:bg-gray-700"
                     onClick={async () => {
                       try {
                         const response = await fetch("/api/tts", {
@@ -7882,22 +7882,32 @@ export default function Dashboard() {
                     data-testid="button-preview-openai-voice"
                     title="Preview voice"
                   >
-                    <Volume2 className="h-2.5 w-2.5" />
+                    <Volume2 className="h-3 w-3" />
                   </Button>
                 </div>
               )}
-              {/* Speed - browser TTS */}
+              {/* Speed control with slider - browser TTS */}
               {previewSpeaker === "browser_tts" && (
-                <div className="flex items-center gap-1">
-                  <div className="w-px h-4 bg-white/20" />
-                  <Gauge className="h-2.5 w-2.5 text-gray-400" />
-                  <Button size="icon" variant="ghost" className="h-4 w-4 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))} data-testid="button-speed-down">
-                    <MinusCircle className="h-2.5 w-2.5" />
+                <div className="flex items-center gap-2">
+                  <div className="w-px h-5 bg-white/20" />
+                  <Gauge className="h-3 w-3 text-gray-400" />
+                  <span className="text-[9px] text-white">Speed</span>
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))} data-testid="button-speed-down">
+                    <MinusCircle className="h-3 w-3" />
                   </Button>
-                  <span className="text-[9px] text-white font-medium w-6 text-center">{Math.round(browserTtsRate * 100)}%</span>
-                  <Button size="icon" variant="ghost" className="h-4 w-4 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))} data-testid="button-speed-up">
-                    <PlusCircle className="h-2.5 w-2.5" />
+                  <Slider
+                    value={[browserTtsRate]}
+                    onValueChange={(val) => setBrowserTtsRate(val[0])}
+                    min={0.5}
+                    max={2}
+                    step={0.05}
+                    className="w-20 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0"
+                    data-testid="slider-speed"
+                  />
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))} data-testid="button-speed-up">
+                    <PlusCircle className="h-3 w-3" />
                   </Button>
+                  <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 </div>
               )}
             </div>
