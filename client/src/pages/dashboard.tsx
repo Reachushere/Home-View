@@ -113,6 +113,7 @@ import {
   Mail,
   Smartphone,
   Share2,
+  Share,
   Copy,
   Eye,
   Lock,
@@ -7085,7 +7086,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ background: (() => { const fp = previewFile?.folder?.split('-') || []; const cc = fp.length >= 3 ? fp[2]?.toLowerCase() : ''; if (cc === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)'; if (cc === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)'; if (cc === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)'; const uc = cc.toUpperCase(); const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === uc)?.color; if (courseHex) { const rgb = hexToRgb(courseHex); const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40); const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100); return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`; } return 'linear-gradient(to right, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))'; })() }}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -7268,123 +7269,6 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          
-          {/* Voice & Speed Controls Bar */}
-          <div className="flex items-center justify-between gap-4 p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-            {/* Voice selector - shows for browser TTS */}
-            {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] text-white">Voice:</span>
-                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                  <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
-                    <SelectValue placeholder="Select Voice" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {availableVoices.map(voice => (
-                      <SelectItem key={voice.name} value={voice.name} className="text-[10px]">
-                        {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 text-white hover:bg-gray-700"
-                  onClick={() => {
-                    if (!window.speechSynthesis) return;
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
-                    utterance.rate = browserTtsRate;
-                    const voice = availableVoices.find(v => v.name === selectedVoice);
-                    if (voice) utterance.voice = voice;
-                    window.speechSynthesis.speak(utterance);
-                  }}
-                  data-testid="button-preview-voice"
-                  title="Preview voice"
-                >
-                  <Volume2 className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-            
-            {/* OpenAI Voice selector - shows for OpenAI TTS (Fire tablets) */}
-            {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] text-white">Voice:</span>
-                <Select 
-                  value={openaiVoice} 
-                  onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}
-                >
-                  <SelectTrigger className="w-[120px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="alloy" className="text-[10px]">Alloy</SelectItem>
-                    <SelectItem value="echo" className="text-[10px]">Echo</SelectItem>
-                    <SelectItem value="fable" className="text-[10px]">Fable</SelectItem>
-                    <SelectItem value="onyx" className="text-[10px]">Onyx</SelectItem>
-                    <SelectItem value="nova" className="text-[10px]">Nova</SelectItem>
-                    <SelectItem value="shimmer" className="text-[10px]">Shimmer</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 text-white hover:bg-gray-700"
-                  onClick={async () => {
-                    try {
-                      const response = await fetch("/api/tts", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ text: "Hello, this is a sample of my voice.", voice: openaiVoice }),
-                      });
-                      if (response.ok) {
-                        const blob = await response.blob();
-                        const audio = new Audio(URL.createObjectURL(blob));
-                        audio.play();
-                      }
-                    } catch (err) {
-                      console.error("Voice preview error:", err);
-                    }
-                  }}
-                  data-testid="button-preview-openai-voice"
-                  title="Preview voice"
-                >
-                  <Volume2 className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-            
-            {/* Speed control - shows for browser TTS */}
-            {previewSpeaker === "browser_tts" && (
-              <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-1">
-                <Gauge className="h-3 w-3 text-gray-400" />
-                <span className="text-[9px] text-white">Speed</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
-                  onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
-                  title="Slow down"
-                  data-testid="button-speed-down"
-                >
-                  <MinusCircle className="h-3 w-3" />
-                </Button>
-                <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
-                  onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
-                  title="Speed up"
-                  data-testid="button-speed-up"
-                >
-                  <PlusCircle className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
           </div>
           
           {/* Playback Controls Bar */}
@@ -7772,7 +7656,7 @@ export default function Dashboard() {
                     </div>
                   )}
                   <div className="flex-1 p-4">
-                <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                <div className="text-xs leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
                     const chunks = ttsChunks.length > 0 ? ttsChunks : [];
                     if (chunks.length === 0) {
@@ -7830,7 +7714,7 @@ export default function Dashboard() {
                           </div>
                           <div className="flex-1">
                           <div 
-                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-r-lg p-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
+                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-r-lg p-3 cursor-pointer hover:opacity-90 transition-opacity relative`}
                             onClick={() => playFromChunk(chunkIdx)}
                             title={`Click to play from Section ${chunkIdx + 1}`}
                           >
@@ -7871,7 +7755,7 @@ export default function Dashboard() {
                                   return (
                                     <div key={`${pIdx}-${lIdx}`}>
                                       <p 
-                                        className={`${isBullet ? 'pl-6' : ''} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-4' : ''}`}
+                                        className={`${isBullet ? 'pl-6' : ''} ${isHeader && !isBullet ? 'font-bold text-[13px] mt-4' : ''}`}
                                         style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
                                       >
                                       {words.map((word, wIdx) => {
@@ -7894,7 +7778,7 @@ export default function Dashboard() {
                                       })}
                                       </p>
                                       {/* Line break after each line */}
-                                      <div className="h-3" />
+                                      <div className="h-2" />
                                     </div>
                                   );
                                 })}
@@ -7918,24 +7802,125 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Share and Done Buttons */}
-          <div className="flex justify-between items-center p-4 mx-6 mb-2" style={{ marginTop: '-20px' }}>
-            {/* Share Button - Only for admin */}
-            {isAdmin ? (
-              <Button
-                variant="outline"
-                className="border !border-white/30 text-white hover:text-white hover:!border-white/50 hover:bg-white/10 transition-all duration-200 h-8 px-4"
-                style={{ fontSize: '12px' }}
-                onClick={generateShareLink}
-                disabled={isGeneratingLink}
-                data-testid="button-share-from-reader"
-              >
-                <Share2 className="h-3 w-3 mr-2" />
-                {isGeneratingLink ? "Generating..." : "Share"}
-              </Button>
-            ) : (
-              <div />
+          {/* Voice & Speed Controls Bar - Bottom */}
+          <div className="flex items-center justify-between gap-4 p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+            {/* Voice selector - shows for browser TTS */}
+            {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] text-white">Voice:</span>
+                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                  <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                    <SelectValue placeholder="Select Voice" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {availableVoices.map(voice => (
+                      <SelectItem key={voice.name} value={voice.name} className="text-[10px]">
+                        {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 text-white hover:bg-gray-700"
+                  onClick={() => {
+                    if (!window.speechSynthesis) return;
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
+                    utterance.rate = browserTtsRate;
+                    const voice = availableVoices.find(v => v.name === selectedVoice);
+                    if (voice) utterance.voice = voice;
+                    window.speechSynthesis.speak(utterance);
+                  }}
+                  data-testid="button-preview-voice"
+                  title="Preview voice"
+                >
+                  <Volume2 className="h-3 w-3" />
+                </Button>
+              </div>
             )}
+            
+            {/* OpenAI Voice selector - shows for OpenAI TTS (Fire tablets) */}
+            {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] text-white">Voice:</span>
+                <Select 
+                  value={openaiVoice} 
+                  onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}
+                >
+                  <SelectTrigger className="w-[120px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alloy" className="text-[10px]">Alloy</SelectItem>
+                    <SelectItem value="echo" className="text-[10px]">Echo</SelectItem>
+                    <SelectItem value="fable" className="text-[10px]">Fable</SelectItem>
+                    <SelectItem value="onyx" className="text-[10px]">Onyx</SelectItem>
+                    <SelectItem value="nova" className="text-[10px]">Nova</SelectItem>
+                    <SelectItem value="shimmer" className="text-[10px]">Shimmer</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 text-white hover:bg-gray-700"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch("/api/tts", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text: "Hello, this is a sample of my voice.", voice: openaiVoice }),
+                      });
+                      if (response.ok) {
+                        const blob = await response.blob();
+                        const audio = new Audio(URL.createObjectURL(blob));
+                        audio.play();
+                      }
+                    } catch (err) {
+                      console.error("Voice preview error:", err);
+                    }
+                  }}
+                  data-testid="button-preview-openai-voice"
+                  title="Preview voice"
+                >
+                  <Volume2 className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+            
+            {/* Speed control - shows for browser TTS */}
+            {previewSpeaker === "browser_tts" && (
+              <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-1">
+                <Gauge className="h-3 w-3 text-gray-400" />
+                <span className="text-[9px] text-white">Speed</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
+                  title="Slow down"
+                  data-testid="button-speed-down"
+                >
+                  <MinusCircle className="h-3 w-3" />
+                </Button>
+                <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
+                  title="Speed up"
+                  data-testid="button-speed-up"
+                >
+                  <PlusCircle className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Done Button and Progress */}
+          <div className="flex justify-end items-center p-4 mx-6 mb-2" style={{ marginTop: '-8px' }}>
             <div className="flex items-center gap-3">
               {/* Progress Bar - shows checked chunks / total */}
               {(() => {
@@ -8035,9 +8020,24 @@ export default function Dashboard() {
 
       {/* Logo and Name - Fixed on screen, never slides */}
       <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[35px] w-[35px] fixed" style={{ left: '16px', top: '5px', zIndex: 100 }} />
-      <div className="flex flex-col fixed" style={{ left: '57px', top: '4px', zIndex: 100 }}>
-        <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
-        <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+      <div className="flex items-center gap-2 fixed" style={{ left: '57px', top: '4px', zIndex: 100 }}>
+        <div className="flex flex-col">
+          <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
+          <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+        </div>
+        {isAdmin && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6 text-white/60 hover:text-white hover:bg-white/10"
+            onClick={generateShareLink}
+            disabled={isGeneratingLink}
+            data-testid="button-share-main"
+            title="Share schedule"
+          >
+            <Share className="h-3.5 w-3.5" />
+          </Button>
+        )}
       </div>
 
       {/* Chang School Logo - fixed, horizontally under hover tab, vertically centered with Uni-Cal logo */}
