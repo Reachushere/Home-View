@@ -8051,7 +8051,7 @@ export default function Dashboard() {
 
       {/* Chang School Logo - Fixed top left where Uni-Cal used to be */}
       <img src={changSchoolLogo} alt="The Chang School" className="fixed" style={{ left: '16px', top: '5px', height: '35px', objectFit: 'contain', zIndex: 100 }} />
-      <div className="fixed" style={{ left: '170px', top: '6px', width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', zIndex: 100 }} />
+      <div className="fixed" style={{ left: '158px', top: '6px', width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', zIndex: 100 }} />
       <div className="flex items-center gap-2 fixed" style={{ left: '180px', top: '4px', zIndex: 100 }}>
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
@@ -8100,18 +8100,11 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>Your</span>
-              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>next</span>
-              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>task</span>
-              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>is in:</span>
-            </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ color: '#ffffff', fontSize: '32px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
+              <span style={{ color: '#ffffff', fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>Your next task is in:</span>
+              <span style={{ color: '#ffffff', fontSize: '32px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginTop: '1px' }}>{diffDays}</span>
               <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 800, textShadow: '0 1px 3px rgba(0,0,0,0.5)', marginTop: '-2px' }}>days</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-              <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '8px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '8px', fontWeight: 500, textShadow: '0 1px 2px rgba(0,0,0,0.4)', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
                 ({next.title}{courseForNext ? ` - ${courseForNext.name.split(' - ')[0]}` : ''})
               </span>
             </div>
