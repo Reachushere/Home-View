@@ -5,6 +5,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
+import changSchoolLogo from "@assets/Chang-School_1770606426441.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
@@ -1894,7 +1895,7 @@ export default function Dashboard() {
     const lighterR = Math.min(255, rgb.r + 100);
     const lighterG = Math.min(255, rgb.g + 100);
     const lighterB = Math.min(255, rgb.b + 100);
-    return `linear-gradient(180deg, rgb(${lighterR}, ${lighterG}, ${lighterB}) 0%, rgb(${darkerR}, ${darkerG}, ${darkerB}) 100%)`;
+    return `linear-gradient(180deg, rgb(${darkerR}, ${darkerG}, ${darkerB}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`;
   };
   
   // Helper to generate reversed border gradient (for wrapper) from course hex color
@@ -7655,7 +7656,10 @@ export default function Dashboard() {
                     const stripCourseCode = stripFolderParts.length >= 3 ? stripFolderParts[2]?.toUpperCase() : null;
                     const stripCourse = stripCourseCode ? coursesData.courses.find(c => c.name && c.name.toUpperCase().includes(stripCourseCode)) : null;
                     const stripColor = stripCourse?.color || '#000000';
-                    const stripGradient = getButtonGradient(stripColor);
+                    const sRgb = hexToRgb(stripColor);
+                    const sD = `rgb(${Math.max(0,sRgb.r-40)},${Math.max(0,sRgb.g-40)},${Math.max(0,sRgb.b-40)})`;
+                    const sL = `rgb(${Math.min(255,sRgb.r+100)},${Math.min(255,sRgb.g+100)},${Math.min(255,sRgb.b+100)})`;
+                    const stripGradient = `linear-gradient(180deg, ${sL} 0%, ${sD} 100%)`;
                     return (
                     <div className="flex-shrink-0 w-10 flex flex-col" data-testid="checkbox-strip">
                       {ttsChunks.map((_, chunkIdx) => (
@@ -7887,6 +7891,20 @@ export default function Dashboard() {
       <div className="flex flex-col fixed" style={{ left: '57px', top: '4px', zIndex: 100 }}>
         <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
         <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+      </div>
+
+      {/* Chang School Logo - centered above calendar, fades when top pill opens */}
+      <div style={{
+        position: 'absolute',
+        top: '-38px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 15,
+        opacity: isTopPillOpen ? 0 : 1,
+        transition: 'opacity 0.4s ease-in-out',
+        pointerEvents: 'none',
+      }}>
+        <img src={changSchoolLogo} alt="The Chang School of Continuing Education" style={{ height: '32px', objectFit: 'contain' }} />
       </div>
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
