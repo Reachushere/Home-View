@@ -7633,20 +7633,20 @@ export default function Dashboard() {
                     const stripColor = stripCourse?.color || '#000000';
                     const stripGradient = getButtonGradient(stripColor);
                     return (
-                    <div className="flex-shrink-0 w-12 flex flex-col" style={{ background: stripGradient }} data-testid="checkbox-strip">
+                    <div className="flex-shrink-0 w-10 flex flex-col" style={{ background: stripGradient }} data-testid="checkbox-strip">
                       {ttsChunks.map((_, chunkIdx) => (
                         <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px' }}>
                           <div
                             onClick={() => toggleDashChunkChecked(chunkIdx)}
                             className="cursor-pointer select-none flex items-center justify-center"
                             style={{
-                              width: '28px',
-                              height: '28px',
-                              borderRadius: '4px',
-                              border: checkedChunks.has(chunkIdx) ? '2px solid #16a34a' : '2px solid rgba(255,255,255,0.7)',
+                              width: '16px',
+                              height: '16px',
+                              borderRadius: '3px',
+                              border: checkedChunks.has(chunkIdx) ? '1.5px solid #16a34a' : '1.5px solid rgba(255,255,255,0.8)',
                               backgroundColor: checkedChunks.has(chunkIdx) ? '#16a34a' : '#ffffff',
                               color: '#ffffff',
-                              fontSize: '18px',
+                              fontSize: '11px',
                               fontWeight: 'bold',
                               lineHeight: 1,
                             }}
