@@ -2775,7 +2775,7 @@ export default function Dashboard() {
     if (textareaEl) {
       setTimeout(() => textareaEl.focus(), 0);
     }
-  }, [localStickyNoteContent, handleStickyNoteContentChange]);
+  }, [stickyNotes, localStickyNoteContent, handleStickyNoteContentChange]);
 
   const handleStickyNoteKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>, noteId: number) => {
     if (e.key === 'Enter') {
