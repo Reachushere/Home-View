@@ -1216,6 +1216,7 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error('Error fetching file counts:', error);
+      try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `refreshFileCounts error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
       if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
       }
@@ -12813,6 +12814,7 @@ export default function Dashboard() {
                               }
                             } catch (error) {
                               console.error('Error fetching module files:', error);
+                              try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
                             } finally {
                               setIsLoadingOneDriveFiles(false);
                             }

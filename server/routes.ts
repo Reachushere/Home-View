@@ -446,6 +446,12 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.post('/api/client-error', (req, res) => {
+    const { message, stack, userAgent, url, timestamp } = req.body || {};
+    console.error(`[CLIENT ERROR] ${timestamp || new Date().toISOString()} | UA: ${userAgent || 'unknown'} | URL: ${url || 'unknown'} | ${message} | Stack: ${stack || 'none'}`);
+    res.json({ ok: true });
+  });
+
   // GET /api/tasks
   app.get(api.tasks.list.path, async (req, res) => {
     const weekNumber = req.query.weekNumber ? Number(req.query.weekNumber) : undefined;
