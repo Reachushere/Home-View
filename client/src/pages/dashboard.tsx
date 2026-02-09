@@ -7636,13 +7636,24 @@ export default function Dashboard() {
                     <div className="flex-shrink-0 w-12 flex flex-col" style={{ background: stripGradient }} data-testid="checkbox-strip">
                       {ttsChunks.map((_, chunkIdx) => (
                         <div key={chunkIdx} className="flex items-start justify-center pt-5 flex-1" style={{ minHeight: '80px' }}>
-                          <input
-                            type="checkbox"
-                            checked={checkedChunks.has(chunkIdx)}
-                            onChange={() => toggleDashChunkChecked(chunkIdx)}
-                            className="w-7 h-7 rounded cursor-pointer appearance-none border-2 border-white/60 bg-white checked:bg-green-600 checked:border-green-600 relative checked:after:content-['✓'] checked:after:text-white checked:after:text-lg checked:after:font-bold checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center"
+                          <div
+                            onClick={() => toggleDashChunkChecked(chunkIdx)}
+                            className="cursor-pointer select-none flex items-center justify-center"
+                            style={{
+                              width: '28px',
+                              height: '28px',
+                              borderRadius: '4px',
+                              border: checkedChunks.has(chunkIdx) ? '2px solid #16a34a' : '2px solid rgba(255,255,255,0.7)',
+                              backgroundColor: checkedChunks.has(chunkIdx) ? '#16a34a' : '#ffffff',
+                              color: '#ffffff',
+                              fontSize: '18px',
+                              fontWeight: 'bold',
+                              lineHeight: 1,
+                            }}
                             data-testid={`checkbox-chunk-${chunkIdx}`}
-                          />
+                          >
+                            {checkedChunks.has(chunkIdx) && '\u2713'}
+                          </div>
                         </div>
                       ))}
                     </div>
