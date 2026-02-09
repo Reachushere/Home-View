@@ -14790,7 +14790,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden', backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center' }}>
               {dueThisWeekTasks.length === 0 ? (
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
@@ -14908,7 +14908,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden', backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
@@ -15025,7 +15025,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden', backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
