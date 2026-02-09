@@ -14695,7 +14695,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: colorSettings.headerBar,
+                background: 'rgba(255, 255, 255, 0.15)',
                 padding: '6px 12px'
               }}
             >
@@ -14720,7 +14720,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {dueThisWeekTasks.length === 0 ? (
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
@@ -14835,7 +14835,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
@@ -14949,7 +14949,7 @@ export default function Dashboard() {
                 </div>
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
