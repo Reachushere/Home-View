@@ -3353,7 +3353,7 @@ export default function Dashboard() {
   const [currentPdfPage, setCurrentPdfPage] = useState(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pageWordBoundaries, setPageWordBoundaries] = useState<number[]>([]); // Word index where each page starts
-  const [pdfZoom, setPdfZoom] = useState(1.10); // Default 110% zoom
+  const [pdfZoom, setPdfZoom] = useState(0.85); // Default 85% zoom
   const [ttsWidth, setTtsWidth] = useState(320);
   const ttsDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
   const pdfContainerRef = useRef<HTMLDivElement>(null);
