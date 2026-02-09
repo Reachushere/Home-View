@@ -12237,6 +12237,9 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* Calendar wrapper - leaves space for honeycombs on right */}
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 5px)', marginTop: '-2px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          
           {/* Next Task Countdown */}
           {(() => {
             const now = new Date();
@@ -12250,7 +12253,7 @@ export default function Dashboard() {
             const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
             const courseForTask = nextTask.courseId ? coursesData.courses.find(c => c.name.includes(String(nextTask.courseId)) || String(nextTask.courseId).includes(c.name.split(' - ')[0])) : null;
             return (
-              <div style={{ position: 'absolute', top: '-70px', left: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", zIndex: 10 }} data-testid="next-task-countdown">
+              <div style={{ position: 'absolute', top: '-75px', left: '2px', fontFamily: "'Nunito', 'Avenir', sans-serif", zIndex: 60 }} data-testid="next-task-countdown">
                 <div style={{ color: 'white', fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
                   Your Next Task is in:
                 </div>
@@ -12264,9 +12267,6 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          
-          {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 5px)', marginTop: '-2px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
