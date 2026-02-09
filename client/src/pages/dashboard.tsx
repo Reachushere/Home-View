@@ -14844,7 +14844,7 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '12px', height: '175px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
@@ -14967,7 +14967,7 @@ export default function Dashboard() {
 
           {/* Due Today - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
@@ -15083,7 +15083,7 @@ export default function Dashboard() {
 
           {/* Due Tomorrow - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
               background: colorSettings.boxGlassEffect 
                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
