@@ -1540,4 +1540,8 @@ input[type="checkbox"]:checked::after {
   animation: fade-in 550ms ease-out forwards;
 }
 
-
+.dark-clock-overlay {
+  background-image: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.7) 100%), var(--clock-bg-url);
+  background-size: cover, cover;
+  background-position: center, center;
+}
