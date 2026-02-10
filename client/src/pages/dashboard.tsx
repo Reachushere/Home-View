@@ -3131,6 +3131,8 @@ export default function Dashboard() {
   const [deletedWordHistory, setDeletedWordHistory] = useState<Set<number>[]>([]);
   const [showRemoveButton, setShowRemoveButton] = useState(false);
   const [removeButtonPos, setRemoveButtonPos] = useState({ x: 0, y: 0 });
+  const [isEditingTtsText, setIsEditingTtsText] = useState(false);
+  const [editableTtsText, setEditableTtsText] = useState("");
   const ttsTextContainerRef = useRef<HTMLDivElement>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
@@ -7647,6 +7649,32 @@ export default function Dashboard() {
             </Button>
             
             <div className="w-px h-6 bg-white/30" />
+
+            <div className="flex flex-col items-center gap-0.5">
+              <button
+                className={`media-btn media-btn-sm ${isEditingTtsText ? 'ring-2 ring-amber-400' : ''}`}
+                data-testid="button-edit-tts-text"
+                title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
+                onClick={() => {
+                  if (isEditingTtsText) {
+                    setIsEditingTtsText(false);
+                  } else {
+                    if (isPlaying) {
+                      handleStopMedia();
+                    }
+                    if (previewText) {
+                      setEditableTtsText(previewText);
+                      setIsEditingTtsText(true);
+                    }
+                  }
+                }}
+              >
+                <Pencil className="h-3.5 w-3.5 text-white" />
+              </button>
+              <span className="text-[9px] text-white/60 leading-none">Edit</span>
+            </div>
+
+            <div className="w-px h-6 bg-white/30" />
             
             <div className="flex items-center gap-1">
               <Checkbox
@@ -7893,6 +7921,48 @@ export default function Dashboard() {
                 <div className="flex items-center justify-center h-full p-4">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
+                </div>
+              ) : isEditingTtsText && editableTtsText ? (
+                <div className="flex flex-col h-full p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-white">Edit TTS Text</span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-green-400 hover:text-green-300 hover:bg-green-900/30"
+                        data-testid="button-save-text-edit"
+                        onClick={() => {
+                          setPreviewText(editableTtsText);
+                          setIsEditingTtsText(false);
+                        }}
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        Save
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-red-400 hover:text-red-300 hover:bg-red-900/30"
+                        data-testid="button-cancel-text-edit"
+                        onClick={() => {
+                          setIsEditingTtsText(false);
+                          setEditableTtsText(previewText);
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                  <textarea
+                    data-testid="textarea-edit-tts-text"
+                    value={editableTtsText}
+                    onChange={(e) => setEditableTtsText(e.target.value)}
+                    className="flex-1 w-full p-3 text-sm border border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-gray-800 text-gray-100 font-mono"
+                    placeholder="Edit the text here..."
+                  />
+                  <p className="text-xs text-gray-400 mt-2">{editableTtsText.length} characters</p>
                 </div>
               ) : previewText ? (
                 <div className="flex flex-col min-h-full">
