@@ -778,69 +778,54 @@ export default function PDFReaderPage() {
                 <h2 className="text-xl font-semibold text-gray-800">OpenAI Text-to-Speech</h2>
               </div>
 
-              {extractedText && !isPlaying && (
-                <div className="mb-4">
-                  {isEditingText ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Edit Text Before Reading</span>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            data-testid="button-save-text-edit"
-                            onClick={() => {
-                              setExtractedText(editableText);
-                              const newChunks = chunkText(editableText);
-                              chunksRef.current = newChunks;
-                              setChunksList(newChunks);
-                              setTotalChunks(newChunks.length);
-                              setIsEditingText(false);
-                              toast({ title: "Text updated", description: "Your edits have been saved." });
-                            }}
-                          >
-                            <Check className="h-4 w-4 text-green-600" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            data-testid="button-cancel-text-edit"
-                            onClick={() => {
-                              setIsEditingText(false);
-                              setEditableText(extractedText);
-                            }}
-                          >
-                            <X className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </div>
-                      <textarea
-                        data-testid="textarea-edit-tts-text"
-                        value={editableText}
-                        onChange={(e) => setEditableText(e.target.value)}
-                        className="w-full h-64 p-3 text-sm border border-gray-300 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white text-gray-800"
-                        placeholder="Edit the extracted text here..."
-                      />
-                      <p className="text-xs text-gray-500">{editableText.length} characters</p>
+              {isEditingText && (
+                <div className="mb-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Edit TTS Text</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        data-testid="button-save-text-edit"
+                        onClick={() => {
+                          setExtractedText(editableText);
+                          const newChunks = chunkText(editableText);
+                          chunksRef.current = newChunks;
+                          setChunksList(newChunks);
+                          setTotalChunks(newChunks.length);
+                          setCurrentChunk(0);
+                          currentChunkRef.current = 0;
+                          setIsEditingText(false);
+                          toast({ title: "Text updated", description: "Your edits have been saved. Press play to read the updated text." });
+                        }}
+                      >
+                        <Check className="h-4 w-4 text-green-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        data-testid="button-cancel-text-edit"
+                        onClick={() => {
+                          setIsEditingText(false);
+                          setEditableText(extractedText);
+                        }}
+                      >
+                        <X className="h-4 w-4 text-red-500" />
+                      </Button>
                     </div>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      data-testid="button-edit-tts-text"
-                      onClick={() => {
-                        setEditableText(extractedText);
-                        setIsEditingText(true);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Edit Text Before Reading ({extractedText.length} chars)
-                    </Button>
-                  )}
+                  </div>
+                  <textarea
+                    data-testid="textarea-edit-tts-text"
+                    value={editableText}
+                    onChange={(e) => setEditableText(e.target.value)}
+                    className="w-full h-64 p-3 text-sm border border-gray-300 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white text-gray-800"
+                    placeholder="Edit the extracted text here..."
+                  />
+                  <p className="text-xs text-gray-500">{editableText.length} characters</p>
                 </div>
               )}
 
-              {isPlaying && (
+              {isPlaying && !isEditingText && (
                 <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-green-700">Now Playing</span>
@@ -1066,6 +1051,30 @@ export default function PDFReaderPage() {
                   disabled={!isPlaying || currentChunk >= totalChunks - 1}
                 >
                   <SkipForward className="h-5 w-5 text-white" />
+                </button>
+
+                <button
+                  className={`media-btn media-btn-lg ${isEditingText ? 'ring-2 ring-amber-400' : ''}`}
+                  data-testid="button-edit-tts-text"
+                  onClick={() => {
+                    if (isEditingText) {
+                      setIsEditingText(false);
+                      setEditableText(extractedText);
+                    } else {
+                      if (isPlaying) {
+                        stopReading();
+                      }
+                      if (extractedText) {
+                        setEditableText(extractedText);
+                        setIsEditingText(true);
+                      } else {
+                        toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
+                      }
+                    }
+                  }}
+                  disabled={isPreloading}
+                >
+                  <Pencil className="h-5 w-5 text-white" />
                 </button>
               </div>
 
