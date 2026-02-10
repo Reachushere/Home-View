@@ -12026,7 +12026,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Weeks */}
-                <div className="border rounded-lg p-3 flex flex-col flex-1" style={{ marginTop: "-17px" }}>
+                <div className="border rounded-lg p-3 flex flex-col flex-1 !-mt-[1px]">
                   <Label className="text-[10px] font-medium mb-1 block">Weeks</Label>
                   <div className="flex flex-col flex-1 justify-evenly">
                   {[...weeks].sort((a, b) => {
