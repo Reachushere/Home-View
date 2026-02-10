@@ -17739,7 +17739,7 @@ function SchoolForm({
             </Select>
           </div>
           <div className="text-[9px] text-muted-foreground pt-1">
-            Semester ends: {semesterEnd}
+            Current Semester Ends: {semesterEnd}
           </div>
         </div>
       </div>
