@@ -7848,10 +7848,14 @@ export default function Dashboard() {
               variant="ghost"
               className="h-7 w-7 text-white"
               onClick={() => {
-                setTtsSearchOpen(prev => !prev);
+                const opening = !ttsSearchOpen;
+                setTtsSearchOpen(opening);
                 setTtsSearchQuery("");
                 setTtsSearchMatchIndex(0);
-                setTimeout(() => ttsSearchInputRef.current?.focus(), 100);
+                if (opening && isEditingTtsText) {
+                  setIsEditingTtsText(false);
+                }
+                if (opening) setTimeout(() => ttsSearchInputRef.current?.focus(), 100);
               }}
               data-testid="button-tts-search"
             >
@@ -7866,7 +7870,7 @@ export default function Dashboard() {
                 ref={ttsSearchInputRef}
                 type="text"
                 value={ttsSearchQuery}
-                onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); }}
+                onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); if (isEditingTtsText) setIsEditingTtsText(false); }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     if (e.shiftKey) {
