@@ -12952,7 +12952,7 @@ export default function Dashboard() {
                 const rgb = hexToRgb(courseData.color);
                 const course = { 
                   name: courseName, 
-                  bg: courseName === 'CASL101' ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.35)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
+                  bg: courseName === 'CASL101' ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
                   label: courseData.color, 
                   colors: dynamicCourseColors[courseName] 
                 };
