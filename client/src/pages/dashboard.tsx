@@ -17724,7 +17724,7 @@ function ProfileForm({
         <select
           value={timezone}
           onChange={(e) => setTimezone(e.target.value)}
-          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
           data-testid="select-profile-timezone"
         >
           {timezones.map(tz => (
@@ -17750,7 +17750,7 @@ function ProfileForm({
             <select
               value={travelTimezone || timezone}
               onChange={(e) => setTravelTimezone(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
               data-testid="select-travel-timezone"
             >
               <option value="" className="text-black bg-white">Pick a city</option>
@@ -17956,14 +17956,16 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
         type="date"
         value={dateVal}
         onChange={(e) => handleDateChange(e.target.value)}
-        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        style={{ color: 'black' }}
         data-testid={testId + '-date'}
       />
       <input
         type="time"
         value={timeVal}
         onChange={(e) => handleTimeChange(e.target.value)}
-        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        style={{ color: 'black' }}
         data-testid={testId + '-time'}
       />
     </div>
@@ -18103,7 +18105,7 @@ function SchoolForm({
             <select
               value={firstDayOfWeek}
               onChange={(e) => setFirstDayOfWeek(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
               data-testid="select-first-day-of-week"
             >
               {daysOfWeek.map(day => (
@@ -18116,7 +18118,7 @@ function SchoolForm({
             <select
               value={lastDayOfSchoolWeek}
               onChange={(e) => setLastDayOfSchoolWeek(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
               data-testid="select-last-day-of-school-week"
             >
               {daysOfWeek.map(day => (
@@ -18156,7 +18158,7 @@ function SchoolForm({
                 <select
                   value={semesterType}
                   onChange={(e) => setSemesterType(e.target.value)}
-                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-semester-type"
                 >
                   <option value="fall" className="text-black bg-white">Fall</option>
@@ -18171,7 +18173,7 @@ function SchoolForm({
                 <select
                   value={String(numberOfWeeks)}
                   onChange={(e) => setNumberOfWeeks(Number(e.target.value))}
-                  className="h-8 w-24 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="h-8 w-24 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-number-of-weeks"
                 >
                   {[10, 11, 12, 13, 14, 15, 16].map(w => (
@@ -18184,7 +18186,7 @@ function SchoolForm({
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-timezone"
                 >
                   {[
@@ -18234,7 +18236,7 @@ function SchoolForm({
                   <select
                     value={travelTimezone}
                     onChange={(e) => setTravelTimezone(e.target.value)}
-                    className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
                     data-testid="select-travel-timezone"
                   >
                     <option value="" className="text-black bg-white">Pick a city</option>
