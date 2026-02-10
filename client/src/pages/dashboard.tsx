@@ -2268,6 +2268,33 @@ export default function Dashboard() {
     }
   }, []);
 
+  const speakNewDay = useCallback(() => {
+    if (!window.speechSynthesis) return;
+    try {
+      const utterance = new SpeechSynthesisUtterance("New Day");
+      utterance.rate = 0.9;
+      utterance.pitch = 1.1;
+      const voices = window.speechSynthesis.getVoices() || [];
+      const femaleVoice = voices.find(v => 
+        v.name.toLowerCase().includes('female') || 
+        v.name.toLowerCase().includes('samantha') ||
+        v.name.toLowerCase().includes('victoria') ||
+        v.name.toLowerCase().includes('karen') ||
+        v.name.toLowerCase().includes('moira') ||
+        v.name.toLowerCase().includes('fiona') ||
+        v.name.toLowerCase().includes('zira') ||
+        v.name.includes('Google UK English Female') ||
+        v.name.includes('Google US English')
+      );
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.log('Speech synthesis not available');
+    }
+  }, []);
+
   // Update clock every second and detect week change (Sunday midnight)
   const lastWeekRef = useRef((() => {
     const now = new Date();
@@ -2286,7 +2313,11 @@ export default function Dashboard() {
     const timer = setInterval(() => {
       const now = new Date();
       const currentDate = now.getDate();
-      lastDateRef.current = currentDate;
+      
+      if (currentDate !== lastDateRef.current) {
+        lastDateRef.current = currentDate;
+        speakNewDay();
+      }
       
       const weekNum = getWeekNumber(now);
       if (weekNum !== lastWeekRef.current) {
@@ -2296,7 +2327,7 @@ export default function Dashboard() {
       setCurrentTime(now);
     }, 1000);
     return () => clearInterval(timer);
-  }, [speakNewWeek]);
+  }, [speakNewWeek, speakNewDay]);
 
   // Check if mute period has expired
   useEffect(() => {
