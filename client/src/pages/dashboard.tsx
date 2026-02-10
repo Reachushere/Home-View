@@ -10621,16 +10621,20 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-2">
                       <p className="text-white/60 text-[11px] mb-2">What would you like to add?</p>
                       <div className="grid grid-cols-2 gap-2">
-                        {TASK_TYPES.filter(t => t !== "class").map(type => (
-                          <button
-                            key={type}
-                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
-                            onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
-                            data-testid={`quick-add-type-${type}`}
-                          >
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </button>
-                        ))}
+                        {TASK_TYPES.filter(t => t !== "class").map(type => {
+                          const TypeIcon = iconMap[type] || FileText;
+                          return (
+                            <button
+                              key={type}
+                              className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
+                              onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
+                              data-testid={`quick-add-type-${type}`}
+                            >
+                              <TypeIcon className="h-3.5 w-3.5" />
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </button>
+                          );
+                        })}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-white/5 text-white border border-white/10 hover:bg-white/10 flex items-center gap-1.5"
                           onClick={() => { setIsQuickAddOpen(false); setIsNewCourseWizardOpen(true); }}
