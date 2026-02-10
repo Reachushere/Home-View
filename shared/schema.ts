@@ -100,6 +100,8 @@ export const semesterSettings = pgTable("semester_settings", {
   course1StartDate: timestamp("course1_start_date"),
   course1EndDate: timestamp("course1_end_date"),
   course1SpringSummerTerm: text("course1_spring_summer_term"),
+  course1CourseType: text("course1_course_type"), // core, open_elective, liberal_studies
+  course1FinalGrade: integer("course1_final_grade"), // Final grade percentage
   course2Code: text("course2_code").notNull(),
   course2Name: text("course2_name").notNull(),
   course2Professor: text("course2_professor"),
@@ -113,6 +115,8 @@ export const semesterSettings = pgTable("semester_settings", {
   course2StartDate: timestamp("course2_start_date"),
   course2EndDate: timestamp("course2_end_date"),
   course2SpringSummerTerm: text("course2_spring_summer_term"),
+  course2CourseType: text("course2_course_type"),
+  course2FinalGrade: integer("course2_final_grade"),
   course3Code: text("course3_code").notNull(),
   course3Name: text("course3_name").notNull(),
   course3Professor: text("course3_professor"),
@@ -126,6 +130,8 @@ export const semesterSettings = pgTable("semester_settings", {
   course3StartDate: timestamp("course3_start_date"),
   course3EndDate: timestamp("course3_end_date"),
   course3SpringSummerTerm: text("course3_spring_summer_term"),
+  course3CourseType: text("course3_course_type"),
+  course3FinalGrade: integer("course3_final_grade"),
   secondaryCalendarId: text("secondary_calendar_id"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -294,6 +300,9 @@ export const tasks = pgTable("tasks", {
   repeatIntervalUnit: text("repeat_interval_unit"), // days or weeks (for custom)
   repeatEndDate: timestamp("repeat_end_date"), // Optional: when to stop repeating
   parentTaskId: integer("parent_task_id"), // Links repeated instances to original task
+  gradeWeight: integer("grade_weight"), // Percentage of final grade (e.g., 25 = 25%)
+  gradeValue: integer("grade_value"), // Score achieved (e.g., 35 out of 40)
+  gradeTotal: integer("grade_total"), // Total possible points (e.g., 40)
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings

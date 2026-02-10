@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -1775,6 +1776,7 @@ export default function Dashboard() {
   });
   const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
   const [isNewCourseDialogOpen, setIsNewCourseDialogOpen] = useState(false);
+  const [isNewCourseWizardOpen, setIsNewCourseWizardOpen] = useState(false);
   const newCourseDialogClosingRef = useRef(false);
 
   const [aasSentStatus, setAasSentStatus] = useState<Record<string, boolean>>(() => {
@@ -11367,7 +11369,7 @@ export default function Dashboard() {
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px'
                   }}
-                  onClick={() => setIsNewCourseDialogOpen(true)}
+                  onClick={() => setIsNewCourseWizardOpen(true)}
                   data-testid="button-new-course-school"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
@@ -11592,6 +11594,45 @@ export default function Dashboard() {
                   </div>
                 )}
                 
+                {/* Current Grades */}
+                <div className="border rounded-lg p-3 space-y-2">
+                  <Label className="text-[10px] font-medium flex items-center gap-1.5">
+                    <GraduationCap className="h-3.5 w-3.5 text-amber-400" />
+                    Current Grades
+                  </Label>
+                  {coursesData.courses.filter(c => c.name.trim()).map((course, index) => {
+                    const courseCode = course.name.split(' - ')[0];
+                    const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && (t.gradeWeight || 0) > 0);
+                    const gradedTasks = courseTasks.filter(t => t.gradeValue !== null && t.gradeValue !== undefined);
+                    const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
+                    const earnedWeightedPercent = gradedTasks.reduce((sum, t) => {
+                      const pct = (t.gradeTotal && t.gradeTotal > 0) ? (t.gradeValue! / t.gradeTotal) * 100 : 0;
+                      return sum + (pct * (t.gradeWeight || 0) / 100);
+                    }, 0);
+                    const gradedWeight = gradedTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
+                    const currentGrade = gradedWeight > 0 ? (earnedWeightedPercent / gradedWeight) * 100 : null;
+                    return (
+                      <div key={index} className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10">
+                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: course.color }} />
+                        <span className="text-[10px] text-white/80 flex-1">{courseCode}</span>
+                        <div className="flex items-center gap-2 text-[9px]">
+                          {currentGrade !== null ? (
+                            <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
+                              {currentGrade.toFixed(1)}%
+                            </span>
+                          ) : (
+                            <span className="text-white/30">No grades</span>
+                          )}
+                          <span className="text-white/30">({gradedTasks.length}/{courseTasks.length} graded)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {coursesData.courses.filter(c => c.name.trim()).length === 0 && (
+                    <p className="text-[9px] text-white/40 italic">No courses set up</p>
+                  )}
+                </div>
+
                 {/* Weeks */}
                 <div className="border rounded-lg p-3 space-y-0">
                   <Label className="text-[10px] font-medium">Weeks</Label>
@@ -11792,6 +11833,101 @@ export default function Dashboard() {
               />
             </DialogContent>
           </Dialog>
+
+          {isNewCourseWizardOpen && (
+            <NewCourseWizard
+              existingSemesterType={newSemesterForm.semesterType || "winter"}
+              onClose={() => setIsNewCourseWizardOpen(false)}
+              onSave={(wizardData) => {
+                const fullName = `${wizardData.courseCode} - ${wizardData.courseName}`;
+                const updatedCourses = [...coursesData.courses];
+                const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
+                if (emptyIdx === -1 && updatedCourses.filter(c => c.name.trim()).length >= 3) {
+                  toast({ title: "Maximum courses reached", description: "You can only have up to 3 courses.", variant: "destructive" });
+                  return;
+                }
+                const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
+                if (emptyIdx !== -1) {
+                  updatedCourses[emptyIdx] = {
+                    name: fullName,
+                    color: wizardData.color,
+                    professor: wizardData.professorName,
+                    professorEmail: wizardData.professorEmail,
+                  };
+                } else {
+                  updatedCourses.push({
+                    name: fullName,
+                    color: wizardData.color,
+                    professor: wizardData.professorName,
+                    professorEmail: wizardData.professorEmail,
+                  });
+                }
+                setCoursesData({ courses: updatedCourses });
+                localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+
+                const prefix = `course${targetIdx + 1}`;
+                if (targetIdx < 3) {
+                  const schedulePayload: Record<string, any> = {
+                    semesterType: wizardData.semesterType,
+                    [`${prefix}DeliveryMode`]: wizardData.deliveryMode || null,
+                    [`${prefix}ClassDay`]: wizardData.classDay || null,
+                    [`${prefix}ClassDay2`]: wizardData.classDay2 || null,
+                    [`${prefix}ClassTime`]: wizardData.classTime || null,
+                    [`${prefix}ClassEndTime`]: wizardData.classEndTime || null,
+                    [`${prefix}SpringSummerTerm`]: wizardData.springSummerTerm || null,
+                    [`${prefix}StartDate`]: wizardData.startDate ? new Date(wizardData.startDate).toISOString() : null,
+                    [`${prefix}EndDate`]: wizardData.endDate ? new Date(wizardData.endDate).toISOString() : null,
+                    [`${prefix}CourseType`]: wizardData.courseType || null,
+                  };
+                  saveSemesterScheduleMutation.mutate(schedulePayload);
+                }
+
+                setIsNewCourseWizardOpen(false);
+                toast({ title: "Course added", description: `${fullName} has been added.` });
+
+                if (wizardData.tasks.length > 0) {
+                  (async () => {
+                    let created = 0;
+                    for (const task of wizardData.tasks) {
+                      if (task.title && task.dueDate) {
+                        try {
+                          const dueDate = new Date(task.dueDate);
+                          if (task.dueTime) {
+                            const [h, m] = task.dueTime.split(':').map(Number);
+                            dueDate.setHours(h, m, 0, 0);
+                          } else {
+                            dueDate.setHours(23, 59, 0, 0);
+                          }
+                          await apiRequest("POST", "/api/tasks", {
+                            title: task.title,
+                            description: task.description || '',
+                            type: task.type || 'other',
+                            courseName: fullName,
+                            dueDate: dueDate.toISOString(),
+                            priority: task.type === 'exam' || task.type === 'quiz' ? 'high' : 'medium',
+                            weekNumber: getWeekNumber(dueDate),
+                            reminder1: task.reminder1 || DEFAULT_REMINDER_1,
+                            reminder2: task.reminder2 || DEFAULT_REMINDER_2,
+                            reminder3: task.reminder3 || null,
+                            reminder4: task.reminder4 || null,
+                            gradeWeight: task.gradeWeight || null,
+                            gradeTotal: task.gradeTotal || null,
+                          });
+                          created++;
+                        } catch (err) {
+                          console.error("Failed to create wizard task:", err);
+                        }
+                      }
+                    }
+                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                    if (created > 0) {
+                      toast({ title: "Tasks created", description: `${created} task(s) added for ${wizardData.courseCode}.` });
+                    }
+                  })();
+                }
+              }}
+            />
+          )}
 
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
