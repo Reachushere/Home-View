@@ -160,6 +160,20 @@ export async function checkDailyDigest() {
         dueDate: new Date().toISOString(),
         courseName: haMsg,
       });
+
+      const isTravelling = getIsTravellingMode();
+      if (!isTravelling) {
+        const taskList = upcomingTasks.map(t => t.title).join(", ");
+        const voiceMsg = `Good morning. You have ${upcomingTasks.length} task${upcomingTasks.length !== 1 ? 's' : ''} due soon: ${taskList}.`;
+        const echoResult = await sendEchoVoiceAnnouncement(voiceMsg);
+        if (echoResult.success) {
+          console.log(`[Reminder] Daily digest Echo announcement sent`);
+        } else {
+          console.error(`[Reminder] Daily digest Echo announcement failed:`, echoResult.error);
+        }
+      } else {
+        console.log(`[Reminder] Skipping daily digest Echo announcement (travelling mode)`);
+      }
     } else {
       console.log("[Reminder] No upcoming tasks for daily digest");
     }

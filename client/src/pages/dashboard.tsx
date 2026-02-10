@@ -7656,7 +7656,7 @@ export default function Dashboard() {
                 className={`media-btn media-btn-sm ${isEditingTtsText ? 'ring-2 ring-amber-400' : ''}`}
                 data-testid="button-edit-tts-text"
                 title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
-                onClick={() => {
+                onPointerDown={(e) => { e.preventDefault();
                   if (isEditingTtsText) {
                     setIsEditingTtsText(false);
                   } else {
@@ -7940,7 +7940,8 @@ export default function Dashboard() {
                         variant="ghost"
                         className="h-7 text-green-400 hover:text-green-300 hover:bg-green-900/30"
                         data-testid="button-save-text-edit"
-                        onClick={() => {
+                        onPointerDown={(e) => {
+                          e.preventDefault();
                           setPreviewText(editableTtsText);
                           setIsEditingTtsText(false);
                         }}
@@ -7953,7 +7954,8 @@ export default function Dashboard() {
                         variant="ghost"
                         className="h-7 text-red-400 hover:text-red-300 hover:bg-red-900/30"
                         data-testid="button-cancel-text-edit"
-                        onClick={() => {
+                        onPointerDown={(e) => {
+                          e.preventDefault();
                           setIsEditingTtsText(false);
                           setEditableTtsText(previewText);
                         }}
