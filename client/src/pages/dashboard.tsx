@@ -13627,8 +13627,7 @@ export default function Dashboard() {
                   }
                   return false;
                 }) || [];
-                if (otherTasks.length === 0) return null;
-                const otherRowHeight = Math.max(24, otherTasks.length * 20 + 4);
+                const otherRowHeight = otherTasks.length === 0 ? 24 : Math.max(24, otherTasks.length * 20 + 4);
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px`, borderBottom: '1px solid #333' }}>
                     <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex items-center justify-center text-white/80" style={{ backgroundColor: '#000000' }}>
