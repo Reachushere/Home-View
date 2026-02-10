@@ -1705,9 +1705,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '' };
+    return saved ? { postalCode: '', location: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1816,7 +1816,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -17650,9 +17650,9 @@ function ProfileForm({
   onSave,
   onCancel 
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }) => void;
   onCancel: () => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
@@ -17662,10 +17662,11 @@ function ProfileForm({
   const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
   const [postalCode, setPostalCode] = useState(profileData.postalCode || '');
+  const [location, setLocation] = useState(profileData.location || '');
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location });
   };
   
   return (
@@ -17718,6 +17719,20 @@ function ProfileForm({
           data-testid="input-profile-postalcode"
         />
         <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="location" className="text-[10px]">Location</Label>
+        <select
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+          data-testid="select-profile-location"
+        >
+          <option value="">Select your city</option>
+          {TRAVEL_CITIES.map(c => (
+            <option key={c.label} value={c.label}>{c.label}</option>
+          ))}
+        </select>
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
