@@ -2316,7 +2316,10 @@ export default function Dashboard() {
       
       if (currentDate !== lastDateRef.current) {
         lastDateRef.current = currentDate;
-        speakNewDay();
+        const isTravelling = !!(JSON.parse(localStorage.getItem('schoolData') || '{}').isTravelling);
+        if (!isTravelling) {
+          speakNewDay();
+        }
       }
       
       const weekNum = getWeekNumber(now);
