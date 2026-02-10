@@ -2073,6 +2073,7 @@ export default function Dashboard() {
   // Pomodoro Timer State
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
   const [pomodoroRunning, setPomodoroRunning] = useState(false);
+  const [pomodoroStarted, setPomodoroStarted] = useState(false);
   const [pomodoroMode, setPomodoroMode] = useState<"work" | "shortBreak" | "longBreak">("work");
   const [pomodoroCount, setPomodoroCount] = useState(0);
   const pomodoroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -2159,6 +2160,7 @@ export default function Dashboard() {
   };
 
   const resetPomodoro = () => {
+    setPomodoroStarted(false);
     setPomodoroRunning(false);
     if (pomodoroMode === "work") setPomodoroTime(25 * 60);
     else if (pomodoroMode === "shortBreak") setPomodoroTime(5 * 60);
@@ -9366,11 +9368,16 @@ export default function Dashboard() {
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
         <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
-          <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
-            pomodoroMode === "work" ? (pomodoroRunning ? "" : "text-white") : 
+          <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1.5 ${
+            pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', ...(pomodoroMode === "work" && pomodoroRunning ? { color: '#ef4444' } : {}) }} data-testid="pomodoro-timer">
+          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
             {formatPomodoroTime(pomodoroTime)}
+            {pomodoroMode === "work" && pomodoroStarted && (
+              <span style={{ fontSize: '14px', lineHeight: 1 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="rgb(255, 0, 0)" stroke="none"><path d="M12 2C12 2 9 5 9 5C9 5 6 2 6 2C4 3 2 6 2 9C2 13 5.5 17 12 22C18.5 17 22 13 22 9C22 6 20 3 18 2C18 2 15 5 15 5C15 5 12 2 12 2Z" /><ellipse cx="12" cy="12" rx="7" ry="8" fill="rgb(255, 0, 0)" /><path d="M10 4C10 3 11 1.5 12 1.5C13 1.5 13.5 2 13 3C12.5 4 11 4.5 10 4Z" fill="#2d8a2d" /><path d="M12 1.5C12.5 0.5 13.5 0 14.5 0.5C15 1 15 2 14 3C13 3.5 12.5 3 12 1.5Z" fill="#3da33d" /></svg>
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
