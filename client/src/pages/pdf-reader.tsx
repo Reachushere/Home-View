@@ -610,15 +610,8 @@ export default function PDFReaderPage() {
   useEffect(() => {
     playbackSpeedRef.current = playbackSpeed;
     if (audioRef.current) {
-      const wasPlaying = !audioRef.current.paused;
-      if (wasPlaying) {
-        audioRef.current.pause();
-      }
       audioRef.current.playbackRate = playbackSpeed;
-      if (wasPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
-      console.log(`[TTS] Speed changed live: ${playbackSpeed}x (wasPlaying=${wasPlaying})`);
+      console.log(`[TTS] Speed changed: ${playbackSpeed}x, actual=${audioRef.current.playbackRate}`);
     }
   }, [playbackSpeed]);
 
