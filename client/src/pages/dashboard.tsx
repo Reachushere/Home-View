@@ -3134,6 +3134,7 @@ export default function Dashboard() {
   const [isEditingTtsText, setIsEditingTtsText] = useState(false);
   const [editableTtsText, setEditableTtsText] = useState("");
   const ttsTextContainerRef = useRef<HTMLDivElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
@@ -7663,8 +7664,15 @@ export default function Dashboard() {
                       handleStopMedia();
                     }
                     if (previewText) {
+                      const container = ttsTextContainerRef.current;
+                      const scrollRatio = (container && container.scrollHeight > 0) ? container.scrollTop / container.scrollHeight : 0;
                       setEditableTtsText(previewText);
                       setIsEditingTtsText(true);
+                      setTimeout(() => {
+                        if (editTextareaRef.current) {
+                          editTextareaRef.current.scrollTop = scrollRatio * editTextareaRef.current.scrollHeight;
+                        }
+                      }, 50);
                     }
                   }
                 }}
@@ -7956,6 +7964,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <textarea
+                    ref={editTextareaRef}
                     data-testid="textarea-edit-tts-text"
                     value={editableTtsText}
                     onChange={(e) => setEditableTtsText(e.target.value)}
