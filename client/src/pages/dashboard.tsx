@@ -13563,6 +13563,89 @@ export default function Dashboard() {
                   </div>
                 );
               })}
+
+              {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
+              {(() => {
+                const otherTasks = tasks?.filter(task => {
+                  if (task.type !== 'other') return false;
+                  if (task.isCompleted) return false;
+                  const taskDueDate = startOfDay(new Date(task.dueDate));
+                  const weekStart = startOfDay(weekDays[0]);
+                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
+                  if (task.startDate) {
+                    const taskStartDate = startOfDay(new Date(task.startDate));
+                    if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
+                  }
+                  return false;
+                }) || [];
+                if (otherTasks.length === 0) return null;
+                const otherRowHeight = Math.max(24, otherTasks.length * 20 + 4);
+                return (
+                  <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px`, borderBottom: '1px solid #333' }}>
+                    <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex items-center justify-center text-white/80" style={{ backgroundColor: '#000000' }}>
+                      OTHER
+                    </div>
+                    {gridSizes.moduleColumnWidth > 0 && (
+                      <div style={{ backgroundColor: '#111' }} />
+                    )}
+                    {weekDays.slice(0, 6).map((day, dayIdx) => {
+                      const cellDate = startOfDay(day);
+                      const dayOtherTasks = otherTasks.filter(task => {
+                        const taskDueDate = startOfDay(new Date(task.dueDate));
+                        if (isSameDay(taskDueDate, cellDate)) return true;
+                        if (task.startDate) {
+                          const taskStartDate = startOfDay(new Date(task.startDate));
+                          return cellDate >= taskStartDate && cellDate < taskDueDate;
+                        }
+                        return false;
+                      });
+                      return (
+                        <div
+                          key={dayIdx}
+                          className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
+                          style={{ backgroundColor: '#111', padding: '2px 2px 2px 4px' }}
+                          data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
+                        >
+                          {dayOtherTasks.map(task => {
+                            const today = startOfDay(new Date());
+                            const tomorrow = addDays(today, 1);
+                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            return (
+                              <div
+                                key={task.id}
+                                className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                style={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                  borderColor: 'rgba(255, 255, 255, 0.25)',
+                                }}
+                                onClick={() => setEditingTask(task)}
+                                title={task.title}
+                                data-testid={`other-task-${task.id}`}
+                              >
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-3 w-3 shrink-0 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                  data-testid={`checkbox-other-${task.id}`}
+                                />
+                                <span
+                                  className={`truncate font-bold text-white/80 ${task.isCompleted ? "line-through" : ""}`}
+                                >
+                                  {task.title}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                    <div style={{ backgroundColor: '#000000', gridColumn: progressGridCol }} />
+                    <div style={{ backgroundColor: '#111', gridColumn: afterProgressGridCol }} />
+                  </div>
+                );
+              })()}
               </div>
                 ); })()}
 
