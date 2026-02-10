@@ -3478,16 +3478,17 @@ export default function Dashboard() {
       .replace(/\d+:\d+/g, '') // Remove timestamps like 1:23
       .replace(/\n\s*\n\s*\n/g, '\n\n'); // Clean up extra blank lines
     
-    // Remove entire paragraphs containing JSTOR references
+    cleanedText = cleanedText.replace(/Copyright\s+\d{4}\s+.*?All Rights Reserved\.?.*?(?=\.\s|$)/gi, '');
+    
     const paragraphs = cleanedText.split(/\n\n+/);
     const filteredParagraphs = paragraphs.filter(para => {
+      const words = para.split(/\s+/).length;
+      if (words > 60) return true;
       const lowerPara = para.toLowerCase();
-      // Skip paragraphs with JSTOR, author info, or publication metadata
       if (lowerPara.includes('jstor') || 
           lowerPara.includes('stable url') ||
           lowerPara.includes('accessed:') ||
           lowerPara.includes('published by:') ||
-          lowerPara.includes('all rights reserved') ||
           /^author[s]?:/i.test(para.trim())) {
         return false;
       }
