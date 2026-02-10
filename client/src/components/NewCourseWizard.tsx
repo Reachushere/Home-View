@@ -701,7 +701,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
 
         {renderStepIndicator()}
 
-        <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: "thin" }}>
+        <div className="overflow-y-auto p-4" style={{ scrollbarWidth: "thin", height: "400px" }}>
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
