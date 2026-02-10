@@ -13629,12 +13629,12 @@ export default function Dashboard() {
                 }) || [];
                 const otherRowHeight = otherTasks.length === 0 ? 24 : Math.max(24, otherTasks.length * 20 + 4);
                 return (
-                  <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px`, borderBottom: '1px solid #333' }}>
-                    <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex items-center justify-center text-white/80" style={{ backgroundColor: '#000000' }}>
+                  <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px`, borderBottom: '1px solid #6b7280' }}>
+                    <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex items-center justify-center text-white/80" style={{ backgroundColor: '#6b7280' }}>
                       OTHER
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && (
-                      <div style={{ backgroundColor: '#111' }} />
+                      <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)' }} />
                     )}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const cellDate = startOfDay(day);
@@ -13651,7 +13651,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: '#111', padding: '2px 2px 2px 4px' }}
+                          style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px' }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
