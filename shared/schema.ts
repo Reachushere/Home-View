@@ -102,6 +102,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course1SpringSummerTerm: text("course1_spring_summer_term"),
   course1CourseType: text("course1_course_type"), // core, open_elective, liberal_studies
   course1FinalGrade: integer("course1_final_grade"), // Final grade percentage
+  course1Completed: boolean("course1_completed").default(false),
   course2Code: text("course2_code").notNull(),
   course2Name: text("course2_name").notNull(),
   course2Professor: text("course2_professor"),
@@ -117,6 +118,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course2SpringSummerTerm: text("course2_spring_summer_term"),
   course2CourseType: text("course2_course_type"),
   course2FinalGrade: integer("course2_final_grade"),
+  course2Completed: boolean("course2_completed").default(false),
   course3Code: text("course3_code").notNull(),
   course3Name: text("course3_name").notNull(),
   course3Professor: text("course3_professor"),
@@ -132,6 +134,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course3SpringSummerTerm: text("course3_spring_summer_term"),
   course3CourseType: text("course3_course_type"),
   course3FinalGrade: integer("course3_final_grade"),
+  course3Completed: boolean("course3_completed").default(false),
   secondaryCalendarId: text("secondary_calendar_id"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
