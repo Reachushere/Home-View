@@ -17747,35 +17747,7 @@ function ProfileForm({
           ))}
         </select>
       </div>
-      <div className="border rounded-lg p-3 space-y-3">
-        <div className="flex items-center gap-2">
-          <Checkbox 
-            id="traveling" 
-            checked={isTraveling}
-            onCheckedChange={(checked) => setIsTraveling(!!checked)}
-            className="h-3 w-3"
-            data-testid="checkbox-traveling"
-          />
-          <Label htmlFor="traveling" className="text-[10px] font-medium cursor-pointer">I'm traveling</Label>
-        </div>
-        {isTraveling && (
-          <div className="space-y-2">
-            <Label htmlFor="travelTimezone" className="text-[10px]">Where are you travelling to?</Label>
-            <p className="text-[9px] text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
-            <select
-              value={travelTimezone || timezone}
-              onChange={(e) => setTravelTimezone(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
-              data-testid="select-travel-timezone"
-            >
-              <option value="" className="text-black bg-white">Pick a city</option>
-              {TRAVEL_CITIES.map(c => (
-                <option key={c.value} value={c.value} className="text-black bg-white">{c.label}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
+
       <div className="flex justify-end">
         <Button 
           type="submit" 
