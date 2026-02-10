@@ -4112,6 +4112,7 @@ export default function Dashboard() {
   const [browserTtsVolume, setBrowserTtsVolume] = useState(1.0); // 100% volume
   const browserTtsRateRef = useRef(0.9);
   const browserTtsVolumeRef = useRef(1.0);
+  const ttsCharIndexRef = useRef(0);
   useEffect(() => { browserTtsRateRef.current = browserTtsRate; }, [browserTtsRate]);
   useEffect(() => { browserTtsVolumeRef.current = browserTtsVolume; }, [browserTtsVolume]);
   
@@ -4224,6 +4225,7 @@ export default function Dashboard() {
     
     utterance.onboundary = (event) => {
       if (event.name === 'word') {
+        ttsCharIndexRef.current = event.charIndex;
         setCurrentWordIndex(wordOffset + localWordIndex);
         localWordIndex++;
         const fileForSave = previewFileRef.current;
@@ -4239,6 +4241,7 @@ export default function Dashboard() {
     
     utterance.onstart = () => {
       console.log(`Chunk ${chunkIndex + 1}/${chunks.length} started`);
+      ttsCharIndexRef.current = 0;
       setCurrentChunkIndex(chunkIndex);
       currentChunkIndexRef.current = chunkIndex;
     };
@@ -5011,22 +5014,31 @@ export default function Dashboard() {
         return;
       }
       
-      // Browser TTS - adjust volume by restarting current chunk
+      // Browser TTS - adjust volume from current position
       if (previewSpeaker === "browser_tts" || (window.speechSynthesis && window.speechSynthesis.speaking)) {
         setBrowserTtsVolume(prev => {
           const newVol = action === "up" ? Math.min(prev + 0.1, 1) : Math.max(prev - 0.1, 0);
           browserTtsVolumeRef.current = newVol;
           setRadioVolume(Math.round(newVol * 100));
           if (window.speechSynthesis.speaking) {
+            const ci = currentChunkIndexRef.current;
+            const charPos = ttsCharIndexRef.current;
+            const chunks = ttsChunksRef.current;
+            const remaining = chunks[ci].substring(charPos);
             window.speechSynthesis.cancel();
-            setTimeout(() => {
-              const ci = currentChunkIndexRef.current;
-              const chunks = ttsChunksRef.current;
+            if (remaining.trim()) {
+              const u = new SpeechSynthesisUtterance(remaining);
+              u.rate = browserTtsRateRef.current;
+              u.volume = newVol;
               const voices = window.speechSynthesis.getVoices();
-              let wo = 0;
-              for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
-              speakChunk(ci, chunks, voices, wo);
-            }, 50);
+              const sv = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+              if (sv) u.voice = sv;
+              u.onboundary = (ev) => { if (ev.name === 'word') ttsCharIndexRef.current = charPos + ev.charIndex; };
+              u.onend = () => { if (shouldContinueRef.current) { let wo = 0; for (let i = 0; i <= ci; i++) wo += chunks[i].split(/\s+/).length; setTimeout(() => speakChunk(ci + 1, chunks, voices, wo), 100); } };
+              u.onerror = (ev) => { if (ev.error !== 'interrupted') { setIsPlaying(false); isPlayingRef.current = false; } };
+              speechUtteranceRef.current = u;
+              window.speechSynthesis.speak(u);
+            }
           }
           toast({ title: `Volume: ${Math.round(newVol * 100)}%` });
           return newVol;
@@ -8414,15 +8426,24 @@ export default function Dashboard() {
                       const newRate = Math.max(0.5, r - 0.05);
                       browserTtsRateRef.current = newRate;
                       if (window.speechSynthesis.speaking) {
+                        const ci = currentChunkIndexRef.current;
+                        const charPos = ttsCharIndexRef.current;
+                        const chunks = ttsChunksRef.current;
+                        const remaining = chunks[ci].substring(charPos);
                         window.speechSynthesis.cancel();
-                        setTimeout(() => {
-                          const ci = currentChunkIndexRef.current;
-                          const chunks = ttsChunksRef.current;
+                        if (remaining.trim()) {
+                          const u = new SpeechSynthesisUtterance(remaining);
+                          u.rate = newRate;
+                          u.volume = browserTtsVolumeRef.current;
                           const voices = window.speechSynthesis.getVoices();
-                          let wo = 0;
-                          for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
-                          speakChunk(ci, chunks, voices, wo);
-                        }, 50);
+                          const sv = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+                          if (sv) u.voice = sv;
+                          u.onboundary = (ev) => { if (ev.name === 'word') ttsCharIndexRef.current = charPos + ev.charIndex; };
+                          u.onend = () => { if (shouldContinueRef.current) { let wo = 0; for (let i = 0; i <= ci; i++) wo += chunks[i].split(/\s+/).length; setTimeout(() => speakChunk(ci + 1, chunks, voices, wo), 100); } };
+                          u.onerror = (ev) => { if (ev.error !== 'interrupted') { setIsPlaying(false); isPlayingRef.current = false; } };
+                          speechUtteranceRef.current = u;
+                          window.speechSynthesis.speak(u);
+                        }
                       }
                       return newRate;
                     });
@@ -8436,15 +8457,24 @@ export default function Dashboard() {
                       setBrowserTtsRate(newRate);
                       browserTtsRateRef.current = newRate;
                       if (window.speechSynthesis.speaking) {
+                        const ci = currentChunkIndexRef.current;
+                        const charPos = ttsCharIndexRef.current;
+                        const chunks = ttsChunksRef.current;
+                        const remaining = chunks[ci].substring(charPos);
                         window.speechSynthesis.cancel();
-                        setTimeout(() => {
-                          const ci = currentChunkIndexRef.current;
-                          const chunks = ttsChunksRef.current;
+                        if (remaining.trim()) {
+                          const u = new SpeechSynthesisUtterance(remaining);
+                          u.rate = newRate;
+                          u.volume = browserTtsVolumeRef.current;
                           const voices = window.speechSynthesis.getVoices();
-                          let wo = 0;
-                          for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
-                          speakChunk(ci, chunks, voices, wo);
-                        }, 50);
+                          const sv = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+                          if (sv) u.voice = sv;
+                          u.onboundary = (ev) => { if (ev.name === 'word') ttsCharIndexRef.current = charPos + ev.charIndex; };
+                          u.onend = () => { if (shouldContinueRef.current) { let wo = 0; for (let i = 0; i <= ci; i++) wo += chunks[i].split(/\s+/).length; setTimeout(() => speakChunk(ci + 1, chunks, voices, wo), 100); } };
+                          u.onerror = (ev) => { if (ev.error !== 'interrupted') { setIsPlaying(false); isPlayingRef.current = false; } };
+                          speechUtteranceRef.current = u;
+                          window.speechSynthesis.speak(u);
+                        }
                       }
                     }}
                     min={0.5}
@@ -8458,15 +8488,24 @@ export default function Dashboard() {
                       const newRate = Math.min(2, r + 0.05);
                       browserTtsRateRef.current = newRate;
                       if (window.speechSynthesis.speaking) {
+                        const ci = currentChunkIndexRef.current;
+                        const charPos = ttsCharIndexRef.current;
+                        const chunks = ttsChunksRef.current;
+                        const remaining = chunks[ci].substring(charPos);
                         window.speechSynthesis.cancel();
-                        setTimeout(() => {
-                          const ci = currentChunkIndexRef.current;
-                          const chunks = ttsChunksRef.current;
+                        if (remaining.trim()) {
+                          const u = new SpeechSynthesisUtterance(remaining);
+                          u.rate = newRate;
+                          u.volume = browserTtsVolumeRef.current;
                           const voices = window.speechSynthesis.getVoices();
-                          let wo = 0;
-                          for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
-                          speakChunk(ci, chunks, voices, wo);
-                        }, 50);
+                          const sv = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+                          if (sv) u.voice = sv;
+                          u.onboundary = (ev) => { if (ev.name === 'word') ttsCharIndexRef.current = charPos + ev.charIndex; };
+                          u.onend = () => { if (shouldContinueRef.current) { let wo = 0; for (let i = 0; i <= ci; i++) wo += chunks[i].split(/\s+/).length; setTimeout(() => speakChunk(ci + 1, chunks, voices, wo), 100); } };
+                          u.onerror = (ev) => { if (ev.error !== 'interrupted') { setIsPlaying(false); isPlayingRef.current = false; } };
+                          speechUtteranceRef.current = u;
+                          window.speechSynthesis.speak(u);
+                        }
                       }
                       return newRate;
                     });
