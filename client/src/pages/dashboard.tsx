@@ -11587,6 +11587,31 @@ export default function Dashboard() {
                             {semCourse.time && <span>{semCourse.time}{semCourse.endTime ? `-${semCourse.endTime}` : ''}</span>}
                           </div>
                         )}
+                        {(() => {
+                          const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
+                          const gradedCompleted = courseTasks.filter(t => t.isCompleted && t.gradeValue !== null && t.gradeValue !== undefined);
+                          const totalWeightGraded = gradedCompleted.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
+                          const weightedScore = gradedCompleted.reduce((sum, t) => {
+                            const pct = (t.gradeTotal && t.gradeTotal > 0) ? ((t.gradeValue || 0) / t.gradeTotal) * 100 : (t.gradeValue || 0);
+                            return sum + (pct * (t.gradeWeight || 0) / 100);
+                          }, 0);
+                          const currentGrade = totalWeightGraded > 0 ? (weightedScore / totalWeightGraded) * 100 : null;
+                          const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
+                          if (courseTasks.length === 0) return null;
+                          return (
+                            <div className="flex items-center gap-2 pl-4 text-[9px]" data-testid={`grade-display-${courseCode}`}>
+                              <span className="text-white/40">Grade:</span>
+                              {currentGrade !== null ? (
+                                <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
+                                  {currentGrade.toFixed(1)}%
+                                </span>
+                              ) : (
+                                <span className="text-white/30">--</span>
+                              )}
+                              <span className="text-white/30">({totalWeightGraded}% of {totalWeight}% graded)</span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     );
                   })}
@@ -11705,17 +11730,17 @@ export default function Dashboard() {
                   </Label>
                   {coursesData.courses.filter(c => c.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
-                    const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && (t.gradeWeight || 0) > 0);
-                    const gradedTasks = courseTasks.filter(t => t.gradeValue !== null && t.gradeValue !== undefined);
-                    const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                    const earnedWeightedPercent = gradedTasks.reduce((sum, t) => {
-                      const pct = (t.gradeTotal && t.gradeTotal > 0) ? (t.gradeValue! / t.gradeTotal) * 100 : 0;
+                    const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
+                    const gradedCompleted = courseTasks.filter(t => t.isCompleted && t.gradeValue !== null && t.gradeValue !== undefined);
+                    const totalWeightGraded = gradedCompleted.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
+                    const weightedScore = gradedCompleted.reduce((sum, t) => {
+                      const pct = (t.gradeTotal && t.gradeTotal > 0) ? ((t.gradeValue || 0) / t.gradeTotal) * 100 : (t.gradeValue || 0);
                       return sum + (pct * (t.gradeWeight || 0) / 100);
                     }, 0);
-                    const gradedWeight = gradedTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                    const currentGrade = gradedWeight > 0 ? (earnedWeightedPercent / gradedWeight) * 100 : null;
+                    const currentGrade = totalWeightGraded > 0 ? (weightedScore / totalWeightGraded) * 100 : null;
+                    const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
                     return (
-                      <div key={index} className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10">
+                      <div key={index} className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10" data-testid={`carousel-grade-${courseCode}`}>
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: course.color }} />
                         <span className="text-[10px] text-white/80 flex-1">{courseCode}</span>
                         <div className="flex items-center gap-2 text-[9px]">
@@ -11726,7 +11751,7 @@ export default function Dashboard() {
                           ) : (
                             <span className="text-white/30">No grades</span>
                           )}
-                          <span className="text-white/30">({gradedTasks.length}/{courseTasks.length} graded)</span>
+                          <span className="text-white/30">({totalWeightGraded}% of {totalWeight}% graded)</span>
                         </div>
                       </div>
                     );

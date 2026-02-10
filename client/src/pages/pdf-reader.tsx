@@ -100,7 +100,24 @@ export default function PDFReaderPage() {
   
   const isOneDrive = isOneDriveRoute && oneDriveUrl;
   const pdfUrl = isOneDrive ? (currentFileUrl || decodeURIComponent(oneDriveUrl)) : file?.objectPath;
-  const fileName = isOneDrive ? (currentFileName || (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF")) : file?.displayName;
+  const rawFileName = isOneDrive ? (currentFileName || (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF")) : file?.displayName;
+  const fileName = (() => {
+    if (!rawFileName) return rawFileName;
+    let clean = rawFileName
+      .replace(/^CPPA\s*122[-_\s.]*/i, '')
+      .replace(/^CFNF\s*400[-_\s.]*/i, '')
+      .replace(/^CASL\s*101[-_\s.]*/i, '')
+      .replace(/^CSOC\s*103[-_\s.]*/i, '')
+      .replace(/^CPHL\s*110[-_\s.]*/i, '')
+      .replace(/^CASL\s*201[-_\s.]*/i, '')
+      .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
+      .replace(/\.pdf$/i, '')
+      .trim();
+    while (clean.match(/^[.\s\-_:•·]/)) {
+      clean = clean.replace(/^[.\s\-_:•·]+/, '').trim();
+    }
+    return clean || rawFileName;
+  })();
   
   // Mark current file as listened when playing
   const markCurrentFileListened = () => {
