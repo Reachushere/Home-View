@@ -9399,7 +9399,7 @@ export default function Dashboard() {
           <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
-              <span className="text-[13px] font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#E8E656' }}>
+              <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#E8E656' }}>
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
               <div className="w-[1px] h-4 bg-white/50 mx-1" />
