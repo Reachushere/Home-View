@@ -20,7 +20,10 @@ import {
   ChevronRight,
   FileText,
   Loader2,
-  RotateCcw
+  RotateCcw,
+  Pencil,
+  Check,
+  X
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -76,6 +79,8 @@ export default function PDFReaderPage() {
   const [chunkWords, setChunkWords] = useState<string[]>([]);
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
   const [chunksList, setChunksList] = useState<string[]>([]);
+  const [isEditingText, setIsEditingText] = useState(false);
+  const [editableText, setEditableText] = useState("");
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -87,9 +92,6 @@ export default function PDFReaderPage() {
   const isPausedRef = useRef<boolean>(false);
   const playbackSpeedRef = useRef<number>(1);
   const volumeRef = useRef<number>(1);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -340,30 +342,15 @@ export default function PDFReaderPage() {
       
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
+        audioRef.current.volume = volumeRef.current;
         audioRef.current.playbackRate = playbackSpeedRef.current;
-        
-        if (!audioContextRef.current) {
-          const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-          audioContextRef.current = new AudioCtx();
-          gainNodeRef.current = audioContextRef.current.createGain();
-          gainNodeRef.current.connect(audioContextRef.current.destination);
-          sourceNodeRef.current = audioContextRef.current.createMediaElementSource(audioRef.current);
-          sourceNodeRef.current.connect(gainNodeRef.current);
-          console.log('[TTS] Web Audio API pipeline created');
-        }
-        
-        if (audioContextRef.current.state === 'suspended') {
-          await audioContextRef.current.resume();
-        }
-        
-        gainNodeRef.current!.gain.value = volumeRef.current;
-        console.log(`[TTS] Set gain=${volumeRef.current}, playbackRate=${playbackSpeedRef.current}`);
         
         audioRef.current.onloadedmetadata = () => {
           if (audioRef.current) {
             audioDurationRef.current = audioRef.current.duration;
             audioRef.current.playbackRate = playbackSpeedRef.current;
-            console.log(`[TTS] Audio metadata loaded: duration=${audioRef.current.duration}s, speed=${playbackSpeedRef.current}x`);
+            audioRef.current.volume = volumeRef.current;
+            console.log(`[TTS] Metadata: dur=${audioRef.current.duration}s, speed=${playbackSpeedRef.current}x, vol=${volumeRef.current}`);
           }
         };
         
@@ -372,7 +359,9 @@ export default function PDFReaderPage() {
         };
         
         await audioRef.current.play();
-        console.log('[TTS] Playback started');
+        audioRef.current.playbackRate = playbackSpeedRef.current;
+        audioRef.current.volume = volumeRef.current;
+        console.log(`[TTS] Playing: speed=${audioRef.current.playbackRate}, vol=${audioRef.current.volume}`);
       }
     } catch (error) {
       console.error("[TTS] Error:", error);
@@ -617,12 +606,9 @@ export default function PDFReaderPage() {
 
   useEffect(() => {
     volumeRef.current = volume;
-    if (gainNodeRef.current) {
-      gainNodeRef.current.gain.value = volume;
-      console.log(`[TTS] Volume changed live via GainNode: ${volume}`);
-    }
     if (audioRef.current) {
       audioRef.current.volume = volume;
+      console.log(`[TTS] Volume changed: ${volume}`);
     }
   }, [volume]);
 
@@ -787,11 +773,73 @@ export default function PDFReaderPage() {
           {/* Right side: TTS Controls */}
           <div className="lg:w-1/2 bg-white border-l border-gray-200 p-6 overflow-auto">
             <div className="max-w-md mx-auto">
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-4">
                 <Volume2 className="h-6 w-6 text-amber-600" />
                 <h2 className="text-xl font-semibold text-gray-800">OpenAI Text-to-Speech</h2>
               </div>
-              
+
+              {extractedText && !isPlaying && (
+                <div className="mb-4">
+                  {isEditingText ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Edit Text Before Reading</span>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            data-testid="button-save-text-edit"
+                            onClick={() => {
+                              setExtractedText(editableText);
+                              const newChunks = chunkText(editableText);
+                              chunksRef.current = newChunks;
+                              setChunksList(newChunks);
+                              setTotalChunks(newChunks.length);
+                              setIsEditingText(false);
+                              toast({ title: "Text updated", description: "Your edits have been saved." });
+                            }}
+                          >
+                            <Check className="h-4 w-4 text-green-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            data-testid="button-cancel-text-edit"
+                            onClick={() => {
+                              setIsEditingText(false);
+                              setEditableText(extractedText);
+                            }}
+                          >
+                            <X className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
+                      <textarea
+                        data-testid="textarea-edit-tts-text"
+                        value={editableText}
+                        onChange={(e) => setEditableText(e.target.value)}
+                        className="w-full h-64 p-3 text-sm border border-gray-300 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white text-gray-800"
+                        placeholder="Edit the extracted text here..."
+                      />
+                      <p className="text-xs text-gray-500">{editableText.length} characters</p>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      data-testid="button-edit-tts-text"
+                      onClick={() => {
+                        setEditableText(extractedText);
+                        setIsEditingText(true);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit Text Before Reading ({extractedText.length} chars)
+                    </Button>
+                  )}
+                </div>
+              )}
+
               {isPlaying && (
                 <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center justify-between mb-2">
