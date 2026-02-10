@@ -7446,7 +7446,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-center gap-3 p-2 px-3 sm:px-5 mx-2 sm:mx-6 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-7px' }}>
+          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-7px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
@@ -7457,16 +7457,16 @@ export default function Dashboard() {
             </button>
             
             <button
-              className={`media-btn media-btn-play ${isPlaying ? 'media-btn-active' : ''}`}
+              className={`media-btn media-btn-sm ${isPlaying ? 'media-btn-active' : ''}`}
               onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
               data-testid="button-preview-play"
               title="Play from start"
             >
-              <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+              <Play className="h-3.5 w-3.5 text-white fill-white ml-0.5" />
             </button>
             
             <button
-              className="media-btn media-btn-sm media-btn-resume"
+              className="media-btn media-btn-sm"
               onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
               data-testid="button-preview-resume"
               title={`Resume from section ${(previewFile?.id ? getTtsProgress(previewFile.id)?.chunkIndex || 0 : 0) + 1}`}
@@ -7475,7 +7475,7 @@ export default function Dashboard() {
             </button>
             
             <button
-              className="media-btn media-btn-sm media-btn-stop"
+              className="media-btn media-btn-sm"
               onClick={handleStopMedia}
               data-testid="button-preview-stop"
             >
@@ -7491,24 +7491,24 @@ export default function Dashboard() {
               <SkipForward className="h-3.5 w-3.5 text-white" />
             </button>
             
-            <div className="w-px h-7 bg-white/20" />
+            <div className="w-px h-6 bg-white/30" />
             
             <button
-              className="media-btn media-btn-xs"
+              className="media-btn media-btn-sm"
               onClick={handleRestartFromBeginning}
               data-testid="button-preview-restart-beginning"
               title="Restart from beginning"
             >
-              <RotateCcw className="h-3 w-3 text-white" />
+              <RotateCcw className="h-3.5 w-3.5 text-white" />
             </button>
             
             <button
-              className="media-btn media-btn-xs"
+              className="media-btn media-btn-sm"
               onClick={handleRestartCurrentChunk}
               data-testid="button-preview-restart-current"
               title="Restart current section"
             >
-              <RefreshCw className="h-3 w-3 text-white" />
+              <RefreshCw className="h-3.5 w-3.5 text-white" />
             </button>
             
             <div className="w-px h-6 bg-white/30" />
