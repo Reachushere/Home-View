@@ -9373,11 +9373,16 @@ export default function Dashboard() {
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
           }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
             {formatPomodoroTime(pomodoroTime)}
-            {pomodoroMode === "work" && pomodoroStarted && (
-              <span style={{ fontSize: '14px', lineHeight: 1 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="rgb(255, 0, 0)" stroke="none"><path d="M12 2C12 2 9 5 9 5C9 5 6 2 6 2C4 3 2 6 2 9C2 13 5.5 17 12 22C18.5 17 22 13 22 9C22 6 20 3 18 2C18 2 15 5 15 5C15 5 12 2 12 2Z" /><ellipse cx="12" cy="12" rx="7" ry="8" fill="rgb(255, 0, 0)" /><path d="M10 4C10 3 11 1.5 12 1.5C13 1.5 13.5 2 13 3C12.5 4 11 4.5 10 4Z" fill="#2d8a2d" /><path d="M12 1.5C12.5 0.5 13.5 0 14.5 0.5C15 1 15 2 14 3C13 3.5 12.5 3 12 1.5Z" fill="#3da33d" /></svg>
-              </span>
-            )}
+            <span style={{ lineHeight: 1, flexShrink: 0 }}>
+              <svg width="16" height="16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="58" rx="38" ry="36" fill="rgb(255, 0, 0)" />
+                <ellipse cx="50" cy="56" rx="35" ry="33" fill="#e60000" />
+                <ellipse cx="38" cy="48" rx="8" ry="12" fill="rgba(255,255,255,0.15)" transform="rotate(-15 38 48)" />
+                <path d="M50 22 C50 22, 42 10, 35 14 C28 18, 38 26, 50 22Z" fill="#2d8a2d" />
+                <path d="M50 22 C50 22, 58 10, 65 14 C72 18, 62 26, 50 22Z" fill="#3da33d" />
+                <rect x="48" y="12" width="4" height="12" rx="2" fill="#2d8a2d" />
+              </svg>
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
