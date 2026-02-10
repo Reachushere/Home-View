@@ -85,6 +85,11 @@ export default function PDFReaderPage() {
   const currentChunkRef = useRef<number>(0);
   const isPlayingRef = useRef<boolean>(false);
   const isPausedRef = useRef<boolean>(false);
+  const playbackSpeedRef = useRef<number>(1);
+  const volumeRef = useRef<number>(1);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -192,7 +197,8 @@ export default function PDFReaderPage() {
     isExtractingRef.current = false;
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current = null;
+      audioRef.current.removeAttribute('src');
+      audioRef.current.load();
     }
   };
 
@@ -334,13 +340,30 @@ export default function PDFReaderPage() {
       
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
-        audioRef.current.playbackRate = playbackSpeed;
-        audioRef.current.volume = volume;
+        audioRef.current.playbackRate = playbackSpeedRef.current;
+        
+        if (!audioContextRef.current) {
+          const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+          audioContextRef.current = new AudioCtx();
+          gainNodeRef.current = audioContextRef.current.createGain();
+          gainNodeRef.current.connect(audioContextRef.current.destination);
+          sourceNodeRef.current = audioContextRef.current.createMediaElementSource(audioRef.current);
+          sourceNodeRef.current.connect(gainNodeRef.current);
+          console.log('[TTS] Web Audio API pipeline created');
+        }
+        
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+        
+        gainNodeRef.current!.gain.value = volumeRef.current;
+        console.log(`[TTS] Set gain=${volumeRef.current}, playbackRate=${playbackSpeedRef.current}`);
         
         audioRef.current.onloadedmetadata = () => {
           if (audioRef.current) {
             audioDurationRef.current = audioRef.current.duration;
-            console.log(`[TTS] Audio duration: ${audioRef.current.duration}s, speed: ${playbackSpeed}x, volume: ${volume}`);
+            audioRef.current.playbackRate = playbackSpeedRef.current;
+            console.log(`[TTS] Audio metadata loaded: duration=${audioRef.current.duration}s, speed=${playbackSpeedRef.current}x`);
           }
         };
         
@@ -585,12 +608,26 @@ export default function PDFReaderPage() {
   }, [extractedText]);
 
   useEffect(() => {
+    playbackSpeedRef.current = playbackSpeed;
     if (audioRef.current) {
+      const wasPlaying = !audioRef.current.paused;
+      if (wasPlaying) {
+        audioRef.current.pause();
+      }
       audioRef.current.playbackRate = playbackSpeed;
+      if (wasPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+      console.log(`[TTS] Speed changed live: ${playbackSpeed}x (wasPlaying=${wasPlaying})`);
     }
   }, [playbackSpeed]);
 
   useEffect(() => {
+    volumeRef.current = volume;
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = volume;
+      console.log(`[TTS] Volume changed live via GainNode: ${volume}`);
+    }
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
