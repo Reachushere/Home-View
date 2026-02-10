@@ -9372,7 +9372,6 @@ export default function Dashboard() {
             pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
           }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-            {formatPomodoroTime(pomodoroTime)}
             <span style={{ lineHeight: 1, flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="50" cy="58" rx="38" ry="36" fill="rgb(255, 0, 0)" />
@@ -9383,6 +9382,7 @@ export default function Dashboard() {
                 <rect x="48" y="12" width="4" height="12" rx="2" fill="#2d8a2d" />
               </svg>
             </span>
+            {formatPomodoroTime(pomodoroTime)}
           </div>
           <div className="flex items-center gap-3">
             <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
