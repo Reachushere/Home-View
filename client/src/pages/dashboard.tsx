@@ -13688,8 +13688,59 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', gridColumn: progressGridCol }} />
-                    <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', gridColumn: afterProgressGridCol }} />
+                    <div style={{ backgroundColor: '#000000', gridColumn: progressGridCol, border: 'none' }} />
+                    {weekDays[6] && (() => {
+                      const day = weekDays[6];
+                      const cellDate = startOfDay(day);
+                      const dayOtherTasks = otherTasks.filter(task => {
+                        const taskDueDate = startOfDay(new Date(task.dueDate));
+                        if (isSameDay(taskDueDate, cellDate)) return true;
+                        if (task.startDate) {
+                          const taskStartDate = startOfDay(new Date(task.startDate));
+                          return cellDate >= taskStartDate && cellDate < taskDueDate;
+                        }
+                        return false;
+                      });
+                      return (
+                        <div
+                          className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
+                          style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
+                          data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
+                        >
+                          {dayOtherTasks.map(task => {
+                            const today = startOfDay(new Date());
+                            const tomorrow = addDays(today, 1);
+                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            return (
+                              <div
+                                key={task.id}
+                                className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                style={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                  borderColor: 'rgba(255, 255, 255, 0.25)',
+                                }}
+                                onClick={() => setEditingTask(task)}
+                                title={task.title}
+                                data-testid={`other-task-sat-${task.id}`}
+                              >
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-3 w-3 shrink-0 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                  data-testid={`checkbox-other-sat-${task.id}`}
+                                />
+                                <span
+                                  className={`truncate font-bold text-white/80 ${task.isCompleted ? "line-through" : ""}`}
+                                >
+                                  {task.title}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
                   </div>
                 ); })()}
               </div>
