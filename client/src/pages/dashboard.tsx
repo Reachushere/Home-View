@@ -10651,7 +10651,11 @@ export default function Dashboard() {
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
-                      <p className="text-white/60 text-[11px] mb-2">What would you like to add?</p>
+                      <div className="text-center mb-2">
+                        <Layers className="h-8 w-8 text-violet-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Select Type</h3>
+                        <p className="text-[9px] text-white/50 mt-1">What would you like to add?</p>
+                      </div>
                       <div className="grid grid-cols-2 gap-2">
                         {TASK_TYPES.filter(t => t !== "class").map(type => {
                           const TypeIcon = iconMap[type] || FileText;
@@ -10682,7 +10686,11 @@ export default function Dashboard() {
                   {/* Step 1: Title */}
                   {quickAddStep === 1 && (
                     <div className="flex flex-col gap-3 flex-1">
-                      <p className="text-white/60 text-[11px]">Enter the {quickAddData.type} name</p>
+                      <div className="text-center mb-2">
+                        <FileText className="h-8 w-8 text-sky-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Task Name</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Enter the {quickAddData.type} name</p>
+                      </div>
                       <input
                         type="text"
                         value={quickAddData.title}
@@ -10699,7 +10707,11 @@ export default function Dashboard() {
                   {/* Step 2: Course */}
                   {quickAddStep === 2 && (
                     <div className="flex flex-col gap-2">
-                      <p className="text-white/60 text-[11px] mb-1">Select the course</p>
+                      <div className="text-center mb-2">
+                        <GraduationCap className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Course</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Select the course</p>
+                      </div>
                       <button
                         className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === '' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'}`}
                         onClick={() => { setQuickAddData(p => ({ ...p, courseName: '' })); setQuickAddStep(3); }}
@@ -10723,7 +10735,11 @@ export default function Dashboard() {
                   {/* Step 3: Due Date + Start/End Time */}
                   {quickAddStep === 3 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">When is it due?</p>
+                      <div className="text-center mb-2">
+                        <Calendar className="h-8 w-8 text-amber-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Date & Time</h3>
+                        <p className="text-[9px] text-white/50 mt-1">When is it due?</p>
+                      </div>
                       <input
                         type="date"
                         value={quickAddData.dueDate}
@@ -10786,7 +10802,11 @@ export default function Dashboard() {
                   {/* Step 4: Prep Days */}
                   {quickAddStep === 4 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">How many preparation days are needed?</p>
+                      <div className="text-center mb-2">
+                        <Clock className="h-8 w-8 text-teal-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Prep Days</h3>
+                        <p className="text-[9px] text-white/50 mt-1">How many preparation days are needed?</p>
+                      </div>
                       <select
                         value={quickAddData.prepDays}
                         onChange={(e) => setQuickAddData(p => ({ ...p, prepDays: parseInt(e.target.value) }))}
@@ -10803,7 +10823,11 @@ export default function Dashboard() {
                   {/* Step 5: Priority */}
                   {quickAddStep === 5 && (
                     <div className="flex flex-col gap-2">
-                      <p className="text-white/60 text-[11px] mb-1">Set priority level</p>
+                      <div className="text-center mb-2">
+                        <AlertCircle className="h-8 w-8 text-rose-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Priority</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Set priority level</p>
+                      </div>
                       {(['low', 'medium', 'high'] as const).map(p => (
                         <button
                           key={p}
@@ -10820,7 +10844,11 @@ export default function Dashboard() {
                   {/* Step 6: Reminders */}
                   {quickAddStep === 6 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">Set reminders before due date</p>
+                      <div className="text-center mb-2">
+                        <Bell className="h-8 w-8 text-orange-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Reminders</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Set reminders before due date</p>
+                      </div>
                       {[
                         { label: 'Reminder 1', key: 'reminder1' as const },
                         { label: 'Reminder 2', key: 'reminder2' as const },
@@ -10850,7 +10878,11 @@ export default function Dashboard() {
                   {/* Step 7: Attachments */}
                   {quickAddStep === 7 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">Add attachments</p>
+                      <div className="text-center mb-2">
+                        <Paperclip className="h-8 w-8 text-cyan-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Attachments</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Add attachments</p>
+                      </div>
                       <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
                         <Upload className="h-4 w-4 text-white/50" />
                         <span className="text-white/60 text-[12px]">Upload file</span>
@@ -10927,7 +10959,11 @@ export default function Dashboard() {
                   {/* Step 8: Notes & Reference Links */}
                   {quickAddStep === 8 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">Add notes and reference links</p>
+                      <div className="text-center mb-2">
+                        <StickyNote className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Notes & Links</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Add notes and reference links</p>
+                      </div>
                       <div>
                         <span className="text-white/50 text-[11px]">Notes</span>
                         <textarea
@@ -10956,7 +10992,11 @@ export default function Dashboard() {
                   {/* Step 9: Subtasks & Project */}
                   {quickAddStep === 9 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">Add subtasks and link to a project</p>
+                      <div className="text-center mb-2">
+                        <ListChecks className="h-8 w-8 text-indigo-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Subtasks & Project</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Add subtasks and link to a project</p>
+                      </div>
                       <div>
                         <span className="text-white/50 text-[11px]">Subtasks</span>
                         <div className="flex gap-2 mt-1">
@@ -11023,7 +11063,11 @@ export default function Dashboard() {
                   {/* Step 10: Repeat */}
                   {quickAddStep === 10 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px]">Set task repetition</p>
+                      <div className="text-center mb-2">
+                        <Repeat2 className="h-8 w-8 text-purple-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Repeat</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Set task repetition</p>
+                      </div>
                       <div className="flex flex-col gap-2">
                         {REPEAT_TYPES.map(rt => (
                           <button
@@ -11077,7 +11121,11 @@ export default function Dashboard() {
                   {/* Step 11: Review & Submit */}
                   {quickAddStep === 11 && (
                     <div className="flex flex-col gap-3">
-                      <p className="text-white/60 text-[11px] mb-1">Review your task</p>
+                      <div className="text-center mb-2">
+                        <ClipboardCheck className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Review</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Review your task</p>
+                      </div>
                       <div className="bg-white/5 rounded-lg p-3 space-y-2 border border-white/10">
                         <div className="flex justify-between text-[11px]">
                           <span className="text-white/50">Type</span>
