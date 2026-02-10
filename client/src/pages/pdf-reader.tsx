@@ -899,6 +899,66 @@ export default function PDFReaderPage() {
                 </div>
               )}
 
+              {/* Progress Indicators */}
+              <div className="space-y-3 mb-4 mt-6 border-t border-gray-200 pt-4">
+                {/* Current File Progress */}
+                <div data-testid="progress-current-file">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-gray-600">This File</span>
+                    <span className="text-xs text-gray-500">{checkedChunks.size}/{totalChunks} chunks ({chunkProgress}%)</span>
+                  </div>
+                  <div className="bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className="bg-amber-500 h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${chunkProgress}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* All Files in Folder Progress */}
+                {allFiles.length > 1 && (() => {
+                  const allChunkProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+                  let totalFilesComplete = 0;
+                  let totalChunksAll = 0;
+                  let totalCheckedAll = 0;
+                  for (const file of allFiles) {
+                    const fileKey = `onedrive_${btoa(file.downloadUrl).slice(0, 40)}`;
+                    const progress = allChunkProgress[fileKey];
+                    if (progress && progress.total > 0) {
+                      totalChunksAll += progress.total;
+                      totalCheckedAll += progress.checked;
+                      if (progress.checked >= progress.total) totalFilesComplete++;
+                    } else if (listenedFiles.has(file.path)) {
+                      totalFilesComplete++;
+                    }
+                  }
+                  if (fileId === null && (currentFileUrl || oneDriveUrl)) {
+                    const currentKey = getFileKey();
+                    if (allChunkProgress[currentKey]) {
+                      const existing = allChunkProgress[currentKey];
+                      totalChunksAll = totalChunksAll - existing.total + totalChunks;
+                      totalCheckedAll = totalCheckedAll - existing.checked + checkedChunks.size;
+                    }
+                  }
+                  const folderPct = totalChunksAll > 0 ? Math.round((totalCheckedAll / totalChunksAll) * 100) : 
+                    (allFiles.length > 0 ? Math.round((totalFilesComplete / allFiles.length) * 100) : 0);
+                  return (
+                    <div data-testid="progress-all-files">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-gray-600">All Files ({allFiles.length})</span>
+                        <span className="text-xs text-gray-500">{totalFilesComplete}/{allFiles.length} complete ({folderPct}%)</span>
+                      </div>
+                      <div className="bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div
+                          className="bg-green-500 h-full transition-all duration-300 rounded-full"
+                          style={{ width: `${folderPct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
               <div className="text-center text-sm text-gray-500">
                 <p>Powered by OpenAI TTS</p>
                 {isPreloading ? (
