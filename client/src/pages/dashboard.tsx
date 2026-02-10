@@ -9373,7 +9373,7 @@ export default function Dashboard() {
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
           }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '6px', gap: '5px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
             <span style={{ lineHeight: 1, flexShrink: 0 }}>
-              <svg width="16" height="16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <svg width="19" height="19" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="50" cy="58" rx="38" ry="36" fill="rgb(255, 0, 0)" />
                 <ellipse cx="50" cy="56" rx="35" ry="33" fill="#e60000" />
                 <ellipse cx="38" cy="48" rx="8" ry="12" fill="rgba(255,255,255,0.15)" transform="rotate(-15 38 48)" />
