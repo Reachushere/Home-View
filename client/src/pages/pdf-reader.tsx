@@ -13,7 +13,9 @@ import {
   Square, 
   SkipBack, 
   SkipForward,
+  Volume1,
   Volume2,
+  VolumeX,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -68,6 +70,7 @@ export default function PDFReaderPage() {
   const [totalChunks, setTotalChunks] = useState(0);
   const [voice, setVoice] = useState<Voice>("nova");
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [volume, setVolume] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [chunkWords, setChunkWords] = useState<string[]>([]);
@@ -326,6 +329,7 @@ export default function PDFReaderPage() {
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
         audioRef.current.playbackRate = playbackSpeed;
+        audioRef.current.volume = volume;
         
         // Wait for metadata to get duration
         audioRef.current.onloadedmetadata = () => {
@@ -541,6 +545,12 @@ export default function PDFReaderPage() {
       audioRef.current.playbackRate = playbackSpeed;
     }
   }, [playbackSpeed]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   if (fileLoading && !isOneDrive) {
     return (
