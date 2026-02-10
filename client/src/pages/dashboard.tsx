@@ -3576,7 +3576,8 @@ export default function Dashboard() {
       .replace(/\(.*?link.*?\)/gi, '') // Remove parenthetical link references
       .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
       .replace(/\d+:\d+/g, '') // Remove timestamps like 1:23
-      .replace(/\n\s*\n\s*\n/g, '\n\n'); // Clean up extra blank lines
+      .replace(/\n\s*\n\s*\n/g, '\n\n') // Clean up extra blank lines
+      .replace(/\btab\b/gi, '')
     
     cleanedText = cleanedText.replace(/Copyright\s+\d{4}\s+.*?All Rights Reserved\.?.*?(?=\.\s|$)/gi, '');
     
