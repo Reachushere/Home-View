@@ -4110,6 +4110,10 @@ export default function Dashboard() {
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed
   const [browserTtsVolume, setBrowserTtsVolume] = useState(1.0); // 100% volume
+  const browserTtsRateRef = useRef(0.9);
+  const browserTtsVolumeRef = useRef(1.0);
+  useEffect(() => { browserTtsRateRef.current = browserTtsRate; }, [browserTtsRate]);
+  useEffect(() => { browserTtsVolumeRef.current = browserTtsVolume; }, [browserTtsVolume]);
   
   // Helper to wait for voices to be loaded (Chrome/Android fix)
   const cachedVoicesRef = useRef<SpeechSynthesisVoice[] | null>(null);
@@ -4201,8 +4205,8 @@ export default function Dashboard() {
     
     const chunk = chunks[chunkIndex];
     const utterance = new SpeechSynthesisUtterance(chunk);
-    utterance.rate = browserTtsRate;
-    utterance.volume = browserTtsVolume;
+    utterance.rate = browserTtsRateRef.current;
+    utterance.volume = browserTtsVolumeRef.current;
     utterance.pitch = 1;
     
     const voice = selectedVoice 
@@ -4786,8 +4790,8 @@ export default function Dashboard() {
       // Resume from new position
       const remainingText = words.slice(newIndex).join(' ');
       const utterance = new SpeechSynthesisUtterance(remainingText);
-      utterance.rate = browserTtsRate;
-    utterance.volume = browserTtsVolume;
+      utterance.rate = browserTtsRateRef.current;
+    utterance.volume = browserTtsVolumeRef.current;
       utterance.pitch = 1;
       
       // Use selected voice
@@ -4831,8 +4835,8 @@ export default function Dashboard() {
     // Start playing from beginning
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const utterance = new SpeechSynthesisUtterance(words.join(' '));
-    utterance.rate = browserTtsRate;
-    utterance.volume = browserTtsVolume;
+    utterance.rate = browserTtsRateRef.current;
+    utterance.volume = browserTtsVolumeRef.current;
     utterance.pitch = 1;
     
     const voices = window.speechSynthesis.getVoices() || [];
@@ -4874,8 +4878,8 @@ export default function Dashboard() {
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const remainingText = words.slice(currentWordIndex).join(' ');
     const utterance = new SpeechSynthesisUtterance(remainingText);
-    utterance.rate = browserTtsRate;
-    utterance.volume = browserTtsVolume;
+    utterance.rate = browserTtsRateRef.current;
+    utterance.volume = browserTtsVolumeRef.current;
     utterance.pitch = 1;
     
     const voices = window.speechSynthesis.getVoices() || [];
@@ -4965,8 +4969,8 @@ export default function Dashboard() {
       // Resume from new position
       const remainingText = words.slice(newIndex).join(' ');
       const utterance = new SpeechSynthesisUtterance(remainingText);
-      utterance.rate = browserTtsRate;
-    utterance.volume = browserTtsVolume;
+      utterance.rate = browserTtsRateRef.current;
+    utterance.volume = browserTtsVolumeRef.current;
       utterance.pitch = 1;
       
       // Use selected voice
@@ -5007,13 +5011,22 @@ export default function Dashboard() {
         return;
       }
       
-      // Browser TTS - adjust volume for current and future utterances
+      // Browser TTS - adjust volume by restarting current chunk
       if (previewSpeaker === "browser_tts" || (window.speechSynthesis && window.speechSynthesis.speaking)) {
         setBrowserTtsVolume(prev => {
           const newVol = action === "up" ? Math.min(prev + 0.1, 1) : Math.max(prev - 0.1, 0);
+          browserTtsVolumeRef.current = newVol;
           setRadioVolume(Math.round(newVol * 100));
-          if (speechUtteranceRef.current) {
-            speechUtteranceRef.current.volume = newVol;
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            setTimeout(() => {
+              const ci = currentChunkIndexRef.current;
+              const chunks = ttsChunksRef.current;
+              const voices = window.speechSynthesis.getVoices();
+              let wo = 0;
+              for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
+              speakChunk(ci, chunks, voices, wo);
+            }, 50);
           }
           toast({ title: `Volume: ${Math.round(newVol * 100)}%` });
           return newVol;
@@ -8333,8 +8346,8 @@ export default function Dashboard() {
                       if (!window.speechSynthesis) return;
                       window.speechSynthesis.cancel();
                       const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
-                      utterance.rate = browserTtsRate;
-    utterance.volume = browserTtsVolume;
+                      utterance.rate = browserTtsRateRef.current;
+    utterance.volume = browserTtsVolumeRef.current;
                       const voice = availableVoices.find(v => v.name === selectedVoice);
                       if (voice) utterance.voice = voice;
                       window.speechSynthesis.speak(utterance);
@@ -8396,19 +8409,68 @@ export default function Dashboard() {
                   <div className="w-px h-5 bg-white/20" />
                   <Gauge className="h-3 w-3 text-gray-400" />
                   <span className="text-[9px] text-white">Speed</span>
-                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))} data-testid="button-speed-down">
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
+                    setBrowserTtsRate(r => {
+                      const newRate = Math.max(0.5, r - 0.05);
+                      browserTtsRateRef.current = newRate;
+                      if (window.speechSynthesis.speaking) {
+                        window.speechSynthesis.cancel();
+                        setTimeout(() => {
+                          const ci = currentChunkIndexRef.current;
+                          const chunks = ttsChunksRef.current;
+                          const voices = window.speechSynthesis.getVoices();
+                          let wo = 0;
+                          for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
+                          speakChunk(ci, chunks, voices, wo);
+                        }, 50);
+                      }
+                      return newRate;
+                    });
+                  }} data-testid="button-speed-down">
                     <MinusCircle className="h-3 w-3" />
                   </Button>
                   <Slider
                     value={[browserTtsRate]}
-                    onValueChange={(val) => setBrowserTtsRate(val[0])}
+                    onValueChange={(val) => {
+                      const newRate = val[0];
+                      setBrowserTtsRate(newRate);
+                      browserTtsRateRef.current = newRate;
+                      if (window.speechSynthesis.speaking) {
+                        window.speechSynthesis.cancel();
+                        setTimeout(() => {
+                          const ci = currentChunkIndexRef.current;
+                          const chunks = ttsChunksRef.current;
+                          const voices = window.speechSynthesis.getVoices();
+                          let wo = 0;
+                          for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
+                          speakChunk(ci, chunks, voices, wo);
+                        }, 50);
+                      }
+                    }}
                     min={0.5}
                     max={2}
                     step={0.05}
                     className="w-20 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0"
                     data-testid="slider-speed"
                   />
-                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))} data-testid="button-speed-up">
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
+                    setBrowserTtsRate(r => {
+                      const newRate = Math.min(2, r + 0.05);
+                      browserTtsRateRef.current = newRate;
+                      if (window.speechSynthesis.speaking) {
+                        window.speechSynthesis.cancel();
+                        setTimeout(() => {
+                          const ci = currentChunkIndexRef.current;
+                          const chunks = ttsChunksRef.current;
+                          const voices = window.speechSynthesis.getVoices();
+                          let wo = 0;
+                          for (let i = 0; i < ci; i++) wo += chunks[i].split(/\s+/).length;
+                          speakChunk(ci, chunks, voices, wo);
+                        }, 50);
+                      }
+                      return newRate;
+                    });
+                  }} data-testid="button-speed-up">
                     <PlusCircle className="h-3 w-3" />
                   </Button>
                   <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
