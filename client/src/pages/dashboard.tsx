@@ -9368,10 +9368,10 @@ export default function Dashboard() {
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
         <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
-          <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1.5 ${
+          <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
             pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '6px', gap: '5px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
             <span style={{ lineHeight: 1, flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="50" cy="58" rx="38" ry="36" fill="rgb(255, 0, 0)" />
