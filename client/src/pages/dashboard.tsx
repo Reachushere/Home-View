@@ -9374,12 +9374,12 @@ export default function Dashboard() {
           }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '6px', gap: '5px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
             <span style={{ lineHeight: 1, flexShrink: 0 }}>
               <svg width="19" height="19" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="50" cy="58" rx="38" ry="36" fill="rgb(255, 0, 0)" />
-                <ellipse cx="50" cy="56" rx="35" ry="33" fill="#e60000" />
-                <ellipse cx="38" cy="48" rx="8" ry="12" fill="rgba(255,255,255,0.15)" transform="rotate(-15 38 48)" />
-                <path d="M50 22 C50 22, 42 10, 35 14 C28 18, 38 26, 50 22Z" fill="#2d8a2d" />
-                <path d="M50 22 C50 22, 58 10, 65 14 C72 18, 62 26, 50 22Z" fill="#3da33d" />
-                <rect x="48" y="12" width="4" height="12" rx="2" fill="#2d8a2d" />
+                <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="#e53e3e" />
+                <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#fc5c5c" />
+                <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#c53030" />
+                <path d="M35 32 C35 28, 40 18, 45 20 C48 21, 48 26, 48 30 C44 29, 38 30, 35 32Z" fill="#38a169" />
+                <path d="M65 32 C65 28, 60 18, 55 20 C52 21, 52 26, 52 30 C56 29, 62 30, 65 32Z" fill="#2f855a" />
+                <rect x="48" y="10" width="4" height="20" rx="2" fill="#2f855a" />
               </svg>
             </span>
             {formatPomodoroTime(pomodoroTime)}
