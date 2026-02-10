@@ -781,6 +781,39 @@ export default function PDFReaderPage() {
                     step={0.25}
                   />
                 </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Volume</label>
+                  <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
+                    <button
+                      data-testid="button-volume-down"
+                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
+                      onClick={() => setVolume(v => Math.max(0, Math.round((v - 0.05) * 100) / 100))}
+                    >
+                      &ndash;
+                    </button>
+                    <div className="flex-1">
+                      <Slider
+                        data-testid="slider-volume"
+                        value={[volume]}
+                        onValueChange={([v]) => setVolume(v)}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_[data-orientation=horizontal]>.bg-primary]:bg-blue-500"
+                      />
+                    </div>
+                    <button
+                      data-testid="button-volume-up"
+                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
+                      onClick={() => setVolume(v => Math.min(1, Math.round((v + 0.05) * 100) / 100))}
+                    >
+                      +
+                    </button>
+                    <span className="text-white text-sm font-medium min-w-[3ch] text-right tabular-nums">
+                      {Math.round(volume * 100)}%
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center justify-center gap-4 mb-6">
