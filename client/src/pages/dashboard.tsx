@@ -3091,6 +3091,11 @@ export default function Dashboard() {
   const [ttsSearchQuery, setTtsSearchQuery] = useState("");
   const [ttsSearchMatchIndex, setTtsSearchMatchIndex] = useState(0);
   const ttsSearchInputRef = useRef<HTMLInputElement>(null);
+  const [deletedWordIndices, setDeletedWordIndices] = useState<Set<number>>(new Set());
+  const [deletedWordHistory, setDeletedWordHistory] = useState<Set<number>[]>([]);
+  const [showRemoveButton, setShowRemoveButton] = useState(false);
+  const [removeButtonPos, setRemoveButtonPos] = useState({ x: 0, y: 0 });
+  const ttsTextContainerRef = useRef<HTMLDivElement>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
@@ -3542,6 +3547,9 @@ export default function Dashboard() {
       isPlayingRef.current = false;
       setPreviewSpeaker("browser_tts");
       previewSpeakerRef.current = "browser_tts";
+      setDeletedWordIndices(new Set());
+      setDeletedWordHistory([]);
+      setShowRemoveButton(false);
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
@@ -4098,6 +4106,84 @@ export default function Dashboard() {
   };
 
   // Play from a specific chunk index
+  const handleTtsTextMouseDown = () => {
+    setShowRemoveButton(false);
+  };
+
+  const handleTtsTextSelection = (e: React.MouseEvent) => {
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+        setShowRemoveButton(false);
+        return;
+      }
+      const container = ttsTextContainerRef.current;
+      if (!container || !container.contains(selection.anchorNode) || !container.contains(selection.focusNode)) {
+        setShowRemoveButton(false);
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      setRemoveButtonPos({
+        x: rect.left + rect.width / 2 - containerRect.left,
+        y: rect.top - containerRect.top - 32,
+      });
+      setShowRemoveButton(true);
+    }, 10);
+  };
+
+  const handleRemoveSelectedText = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed) return;
+    const container = ttsTextContainerRef.current;
+    if (!container) return;
+    
+    const wordSpans = container.querySelectorAll('span[data-word-idx]');
+    const indicesToDelete = new Set<number>();
+    
+    for (const span of wordSpans) {
+      if (selection.containsNode(span, true)) {
+        const idx = parseInt(span.getAttribute('data-word-idx') || '-1');
+        if (idx >= 0) indicesToDelete.add(idx);
+      }
+    }
+    
+    if (indicesToDelete.size > 0) {
+      setDeletedWordHistory(prev => [...prev, new Set(deletedWordIndices)]);
+      setDeletedWordIndices(prev => {
+        const next = new Set(prev);
+        indicesToDelete.forEach(i => next.add(i));
+        return next;
+      });
+    }
+    
+    selection.removeAllRanges();
+    setShowRemoveButton(false);
+  };
+
+  const handleUndoDelete = () => {
+    if (deletedWordHistory.length > 0) {
+      const prev = deletedWordHistory[deletedWordHistory.length - 1];
+      setDeletedWordIndices(prev);
+      setDeletedWordHistory(h => h.slice(0, -1));
+    }
+  };
+
+  const filterDeletedWordsFromChunks = (chunks: string[], deleted: Set<number>): string[] => {
+    if (deleted.size === 0) return chunks;
+    let globalIdx = 0;
+    return chunks.map(chunk => {
+      const words = chunk.split(/\s+/);
+      const filtered = words.filter((_, wIdx) => {
+        const keep = !deleted.has(globalIdx);
+        globalIdx++;
+        return keep;
+      });
+      return filtered.join(' ');
+    }).filter(c => c.trim().length > 0);
+  };
+
   const playFromChunk = async (chunkIndex: number) => {
     const useBrowserTts = !!window.speechSynthesis;
     
@@ -7748,7 +7834,26 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden relative" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }} ref={ttsTextContainerRef} onMouseDown={handleTtsTextMouseDown} onMouseUp={handleTtsTextSelection} onTouchEnd={handleTtsTextSelection as any}>
+              {showRemoveButton && (
+                <div
+                  className="absolute z-50 flex items-center gap-1 bg-red-600 text-white rounded-lg shadow-lg px-2 py-1 cursor-pointer select-none"
+                  style={{ left: `${removeButtonPos.x}px`, top: `${removeButtonPos.y}px`, transform: 'translateX(-50%)' }}
+                  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveSelectedText(); }}
+                  data-testid="button-remove-text"
+                >
+                  <X className="h-3 w-3" />
+                  <span className="text-[10px] font-medium">Remove</span>
+                </div>
+              )}
+              {deletedWordIndices.size > 0 && (
+                <div className="absolute top-1 right-1 z-40 flex items-center gap-1">
+                  <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1" onClick={handleUndoDelete} data-testid="button-undo-delete">
+                    <Undo2 className="h-3 w-3" />
+                    Undo ({deletedWordIndices.size} words)
+                  </Button>
+                </div>
+              )}
               {isLoadingText ? (
                 <div className="flex items-center justify-center h-full p-4">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -7885,23 +7990,35 @@ export default function Dashboard() {
                                       >
                                       {words.map((word, wIdx) => {
                                         const wordGlobalIdx = lineStartIdx + wIdx;
+                                        const isDeleted = deletedWordIndices.has(wordGlobalIdx);
                                         const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
                                         
                                         const wordLower = word.toLowerCase();
-                                        const searchIdx = hasSearch ? wordLower.indexOf(searchLower) : -1;
+                                        const searchIdx = hasSearch && !isDeleted ? wordLower.indexOf(searchLower) : -1;
                                         let isActiveMatch = false;
-                                        let thisMatchIdx = -1;
                                         if (searchIdx >= 0) {
-                                          thisMatchIdx = searchMatchCounter;
                                           if (searchMatchCounter === ttsSearchMatchIndex) {
                                             isActiveMatch = true;
                                           }
                                           searchMatchCounter++;
                                         }
                                         
+                                        if (isDeleted) {
+                                          return (
+                                            <span
+                                              key={wordGlobalIdx}
+                                              data-word-idx={wordGlobalIdx}
+                                              className="line-through opacity-20 text-red-400 dark:text-red-600 text-[9px]"
+                                            >
+                                              {word}{' '}
+                                            </span>
+                                          );
+                                        }
+                                        
                                         return (
                                           <span
                                             key={wordGlobalIdx}
+                                            data-word-idx={wordGlobalIdx}
                                             ref={isCurrentWord ? (el) => {
                                               if (el && el !== activeWordRef.current) {
                                                 activeWordRef.current = el;
