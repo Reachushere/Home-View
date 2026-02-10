@@ -3165,8 +3165,19 @@ export default function Dashboard() {
   // Chunked TTS state for reliable playback
   const [ttsChunks, setTtsChunks] = useState<string[]>([]);
   const ttsSearchMatchCount = useMemo(() => {
-    if (ttsSearchQuery.trim().length < 2 || ttsChunks.length === 0) return 0;
+    if (ttsSearchQuery.trim().length < 2) return 0;
     const sLower = ttsSearchQuery.toLowerCase().trim();
+    if (isEditingTtsText && editableTtsText) {
+      const textLower = editableTtsText.toLowerCase();
+      let count = 0;
+      let pos = 0;
+      while ((pos = textLower.indexOf(sLower, pos)) !== -1) {
+        count++;
+        pos += 1;
+      }
+      return count;
+    }
+    if (ttsChunks.length === 0) return 0;
     const sWords = sLower.split(/\s+/).filter(w => w.length > 0);
     const allWords: string[] = [];
     for (const chunk of ttsChunks) {
@@ -3191,15 +3202,39 @@ export default function Dashboard() {
       if (match) count++;
     }
     return count;
-  }, [ttsSearchQuery, ttsChunks]);
+  }, [ttsSearchQuery, ttsChunks, isEditingTtsText, editableTtsText]);
   useEffect(() => {
     if (ttsSearchQuery.trim().length < 2 || ttsSearchMatchCount === 0) return;
     const timer = setTimeout(() => {
-      const el = document.querySelector('[data-active-search-match="true"]');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (isEditingTtsText && editTextareaRef.current) {
+        const textarea = editTextareaRef.current;
+        const text = textarea.value.toLowerCase();
+        const searchLower = ttsSearchQuery.toLowerCase().trim();
+        let pos = -1;
+        let matchIdx = 0;
+        let startFrom = 0;
+        while (matchIdx <= ttsSearchMatchIndex) {
+          pos = text.indexOf(searchLower, startFrom);
+          if (pos === -1) break;
+          if (matchIdx === ttsSearchMatchIndex) break;
+          startFrom = pos + 1;
+          matchIdx++;
+        }
+        if (pos >= 0) {
+          textarea.focus();
+          textarea.setSelectionRange(pos, pos + searchLower.length);
+          const linesBefore = textarea.value.substring(0, pos).split('\n').length - 1;
+          const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight) || 19;
+          const scrollTarget = linesBefore * lineHeight - textarea.clientHeight / 2;
+          textarea.scrollTop = Math.max(0, scrollTarget);
+        }
+      } else {
+        const el = document.querySelector('[data-active-search-match="true"]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }, 50);
     return () => clearTimeout(timer);
-  }, [ttsSearchMatchIndex, ttsSearchQuery, ttsSearchMatchCount]);
+  }, [ttsSearchMatchIndex, ttsSearchQuery, ttsSearchMatchCount, isEditingTtsText]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
@@ -7848,14 +7883,10 @@ export default function Dashboard() {
               variant="ghost"
               className="h-7 w-7 text-white"
               onClick={() => {
-                const opening = !ttsSearchOpen;
-                setTtsSearchOpen(opening);
+                setTtsSearchOpen(prev => !prev);
                 setTtsSearchQuery("");
                 setTtsSearchMatchIndex(0);
-                if (opening && isEditingTtsText) {
-                  setIsEditingTtsText(false);
-                }
-                if (opening) setTimeout(() => ttsSearchInputRef.current?.focus(), 100);
+                setTimeout(() => ttsSearchInputRef.current?.focus(), 100);
               }}
               data-testid="button-tts-search"
             >
@@ -7870,7 +7901,7 @@ export default function Dashboard() {
                 ref={ttsSearchInputRef}
                 type="text"
                 value={ttsSearchQuery}
-                onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); if (isEditingTtsText) setIsEditingTtsText(false); }}
+                onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     if (e.shiftKey) {
