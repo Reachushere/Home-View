@@ -17935,104 +17935,40 @@ const NORTH_AMERICAN_SCHOOLS = [
 ];
 
 function TravelDateTimePicker({ label, value, onChange, testId }: { label: string; value: string; onChange: (val: string) => void; testId: string }) {
-  const [open, setOpen] = useState(false);
-  const [tempDate, setTempDate] = useState<Date | undefined>(() => {
-    if (value) { const d = new Date(value); return isNaN(d.getTime()) ? undefined : d; }
-    return undefined;
-  });
-  const [tempHour, setTempHour] = useState(() => {
-    if (value) { const d = new Date(value); if (!isNaN(d.getTime())) { const h = d.getHours(); return String(h === 0 ? 12 : h > 12 ? h - 12 : h); } }
-    return "12";
-  });
-  const [tempMinute, setTempMinute] = useState(() => {
-    if (value) { const d = new Date(value); if (!isNaN(d.getTime())) { return String(d.getMinutes()).padStart(2, '0'); } }
-    return "00";
-  });
-  const [tempAmPm, setTempAmPm] = useState(() => {
-    if (value) { const d = new Date(value); if (!isNaN(d.getTime())) { return d.getHours() >= 12 ? "PM" : "AM"; } }
-    return "AM";
-  });
+  const dateVal = value ? value.split('T')[0] || '' : '';
+  const timeVal = value ? value.split('T')[1] || '' : '';
 
-  useEffect(() => {
-    if (value) {
-      const d = new Date(value);
-      if (!isNaN(d.getTime())) {
-        setTempDate(d);
-        const h = d.getHours();
-        setTempHour(String(h === 0 ? 12 : h > 12 ? h - 12 : h));
-        setTempMinute(String(d.getMinutes()).padStart(2, '0'));
-        setTempAmPm(h >= 12 ? "PM" : "AM");
-      }
-    }
-  }, [value]);
-
-  const handleApply = () => {
-    if (!tempDate) return;
-    let hours24 = parseInt(tempHour);
-    if (tempAmPm === "AM") { if (hours24 === 12) hours24 = 0; }
-    else { if (hours24 !== 12) hours24 += 12; }
-    const y = tempDate.getFullYear();
-    const m = String(tempDate.getMonth() + 1).padStart(2, '0');
-    const d = String(tempDate.getDate()).padStart(2, '0');
-    const hh = String(hours24).padStart(2, '0');
-    const mm = String(parseInt(tempMinute)).padStart(2, '0');
-    onChange(`${y}-${m}-${d}T${hh}:${mm}`);
-    setOpen(false);
+  const handleDateChange = (newDate: string) => {
+    const t = timeVal || '12:00';
+    if (newDate) onChange(newDate + 'T' + t);
   };
 
-  const displayText = value ? (() => {
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? "Select date & time" : format(d, "MMM d, yyyy h:mm a");
-  })() : "Select date & time";
-
-  const minutes = ["00","05","10","15","20","25","30","35","40","45","50","55"];
+  const handleTimeChange = (newTime: string) => {
+    const d = dateVal || new Date().toISOString().split('T')[0];
+    if (newTime) onChange(d + 'T' + newTime);
+  };
 
   return (
     <div className="space-y-1">
       <Label className="text-[10px] text-white/70">{label}</Label>
-      <Popover open={open} onOpenChange={setOpen} modal={false}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black text-left focus:outline-none focus:ring-2 focus:ring-orange-400"
-            data-testid={testId}
-          >
-            {displayText}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="bg-white text-black p-3 w-auto z-[10003]" align="start" side="bottom">
-          <CalendarPicker
-            mode="single"
-            selected={tempDate}
-            onSelect={setTempDate}
-            className="rounded-md border"
-          />
-          <div className="flex items-center gap-1 mt-2">
-            <div className="flex items-center border rounded overflow-hidden">
-              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-r" onClick={() => setTempHour(String(parseInt(tempHour) <= 1 ? 12 : parseInt(tempHour) - 1))}>-</button>
-              <span className="px-1.5 py-0.5 text-[11px] min-w-[20px] text-center">{tempHour}</span>
-              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-l" onClick={() => setTempHour(String(parseInt(tempHour) >= 12 ? 1 : parseInt(tempHour) + 1))}>+</button>
-            </div>
-            <span className="text-[11px]">:</span>
-            <div className="flex items-center border rounded overflow-hidden">
-              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-r" onClick={() => { const idx = minutes.indexOf(tempMinute); setTempMinute(minutes[idx <= 0 ? minutes.length - 1 : idx - 1]); }}>-</button>
-              <span className="px-1.5 py-0.5 text-[11px] min-w-[20px] text-center">{tempMinute}</span>
-              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-l" onClick={() => { const idx = minutes.indexOf(tempMinute); setTempMinute(minutes[idx >= minutes.length - 1 ? 0 : idx + 1]); }}>+</button>
-            </div>
-            <button type="button" className="px-2 py-0.5 text-[11px] border rounded bg-gray-100 hover:bg-gray-200" onClick={() => setTempAmPm(tempAmPm === 'AM' ? 'PM' : 'AM')}>{tempAmPm}</button>
-          </div>
-          <button
-            type="button"
-            className="w-full mt-2 px-2 py-1 text-[11px] font-medium rounded-md bg-orange-500 text-white hover:bg-orange-600"
-            onPointerDown={(e) => { e.preventDefault(); handleApply(); }}
-          >
-            Apply
-          </button>
-        </PopoverContent>
-      </Popover>
+      <input
+        type="date"
+        value={dateVal}
+        onChange={(e) => handleDateChange(e.target.value)}
+        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        data-testid={testId + '-date'}
+      />
+      <input
+        type="time"
+        value={timeVal}
+        onChange={(e) => handleTimeChange(e.target.value)}
+        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        data-testid={testId + '-time'}
+      />
     </div>
   );
 }
+
 
 function SchoolForm({ 
   schoolData, 
