@@ -17779,6 +17779,121 @@ const NORTH_AMERICAN_SCHOOLS = [
   'Other',
 ];
 
+function TravelDateTimePicker({ label, value, onChange, testId }: { label: string; value: string; onChange: (val: string) => void; testId: string }) {
+  const [open, setOpen] = useState(false);
+  const [tempDate, setTempDate] = useState<Date | undefined>(() => {
+    if (value) { const d = new Date(value); return isNaN(d.getTime()) ? undefined : d; }
+    return undefined;
+  });
+  const [tempHour, setTempHour] = useState(() => {
+    if (value) { const d = new Date(value); if (!isNaN(d.getTime())) { const h = d.getHours(); return String(h === 0 ? 12 : h > 12 ? h - 12 : h); } }
+    return "12";
+  });
+  const [tempMinute, setTempMinute] = useState(() => {
+    if (value) { const d = new Date(value); if (!isNaN(d.getTime())) { return String(d.getMinutes()).padStart(2, '0'); } }
+    return "00";
+  });
+  const [tempAmPm, setTempAmPm] = useState(() => {
+    if (value) { const d = new Date(value); if (!isNaN(d.getTime())) { return d.getHours() >= 12 ? "PM" : "AM"; } }
+    return "AM";
+  });
+
+  useEffect(() => {
+    if (value) {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) {
+        setTempDate(d);
+        const h = d.getHours();
+        setTempHour(String(h === 0 ? 12 : h > 12 ? h - 12 : h));
+        setTempMinute(String(d.getMinutes()).padStart(2, '0'));
+        setTempAmPm(h >= 12 ? "PM" : "AM");
+      }
+    }
+  }, [value]);
+
+  const handleApply = () => {
+    if (!tempDate) return;
+    let hours24 = parseInt(tempHour);
+    if (tempAmPm === "AM") { if (hours24 === 12) hours24 = 0; }
+    else { if (hours24 !== 12) hours24 += 12; }
+    const y = tempDate.getFullYear();
+    const m = String(tempDate.getMonth() + 1).padStart(2, '0');
+    const d = String(tempDate.getDate()).padStart(2, '0');
+    const hh = String(hours24).padStart(2, '0');
+    const mm = String(parseInt(tempMinute)).padStart(2, '0');
+    onChange(`${y}-${m}-${d}T${hh}:${mm}`);
+    setOpen(false);
+  };
+
+  const displayText = value ? (() => {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "Select date & time" : format(d, "MMM d, yyyy h:mm a");
+  })() : "Select date & time";
+
+  const minutes = ["00","05","10","15","20","25","30","35","40","45","50","55"];
+
+  return (
+    <div className="space-y-1">
+      <Label className="text-[10px] text-white/70">{label}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black text-left focus:outline-none focus:ring-2 focus:ring-orange-400"
+            data-testid={testId}
+          >
+            {displayText}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="bg-white text-black p-3 w-auto z-[9999]" align="start" side="bottom">
+          <CalendarPicker
+            mode="single"
+            selected={tempDate}
+            onSelect={setTempDate}
+            className="rounded-md border"
+          />
+          <div className="flex items-center gap-1 mt-2">
+            <select
+              value={tempHour}
+              onChange={(e) => setTempHour(e.target.value)}
+              className="text-[11px] bg-white text-black border rounded px-1 py-0.5"
+            >
+              {Array.from({ length: 12 }, (_, i) => i + 1).map(h => (
+                <option key={h} value={String(h)}>{h}</option>
+              ))}
+            </select>
+            <span className="text-[11px]">:</span>
+            <select
+              value={tempMinute}
+              onChange={(e) => setTempMinute(e.target.value)}
+              className="text-[11px] bg-white text-black border rounded px-1 py-0.5"
+            >
+              {minutes.map(m => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+            <select
+              value={tempAmPm}
+              onChange={(e) => setTempAmPm(e.target.value)}
+              className="text-[11px] bg-white text-black border rounded px-1 py-0.5"
+            >
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            className="w-full mt-2 px-2 py-1 text-[11px] font-medium rounded-md bg-orange-500 text-white hover:bg-orange-600"
+            onPointerDown={(e) => { e.preventDefault(); handleApply(); }}
+          >
+            Apply
+          </button>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
 function SchoolForm({ 
   schoolData, 
   semesterSettings,
@@ -18051,26 +18166,18 @@ function SchoolForm({
                   </Select>
                   <p className="text-[8px] text-orange-300/70">Due times will show in both your school and travel time zones.</p>
                   <div className="grid grid-cols-2 gap-2 mt-2">
-                    <div className="space-y-1">
-                      <Label className="text-[10px] text-white/70">Start Date & Time</Label>
-                      <input
-                        type="datetime-local"
-                        value={travelStartDate}
-                        onChange={(e) => setTravelStartDate(e.target.value)}
-                        className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
-                        data-testid="input-travel-start-date"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] text-white/70">End Date & Time</Label>
-                      <input
-                        type="datetime-local"
-                        value={travelEndDate}
-                        onChange={(e) => setTravelEndDate(e.target.value)}
-                        className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
-                        data-testid="input-travel-end-date"
-                      />
-                    </div>
+                    <TravelDateTimePicker
+                      label="Start Date & Time"
+                      value={travelStartDate}
+                      onChange={setTravelStartDate}
+                      testId="input-travel-start-date"
+                    />
+                    <TravelDateTimePicker
+                      label="End Date & Time"
+                      value={travelEndDate}
+                      onChange={setTravelEndDate}
+                      testId="input-travel-end-date"
+                    />
                   </div>
                 </div>
               )}
