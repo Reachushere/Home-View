@@ -1638,3 +1638,18 @@ input[type="checkbox"]:checked::after {
 .animate-fade-in {
   animation: fade-in 550ms ease-out forwards;
 }
+
+select option {
+  color: black !important;
+  background-color: white !important;
+}
+
+input[type="date"],
+input[type="time"] {
+  color: black !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0);
+}
