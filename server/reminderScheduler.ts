@@ -1,17 +1,65 @@
 import { storage } from "./storage";
 import { sendTaskReminder, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendDailyDigest, type TaskReminder } from "./email";
 import { getIsTravellingMode } from "./routes";
+import { db } from "./db";
+import { appState } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 const sentReminders = new Set<string>();
 
 const DAILY_DIGEST_HOUR = 7;
-let lastDigestDate = "";
 let schedulerRunning = false;
 let lastCheckTime: Date | null = null;
 let remindersSentCount = 0;
+let sentRemindersLoaded = false;
 
 function getReminderKey(taskId: number, reminderMinutes: number): string {
   return `${taskId}-${reminderMinutes}`;
+}
+
+async function getAppState(key: string): Promise<string | null> {
+  try {
+    const rows = await db.select().from(appState).where(eq(appState.key, key));
+    return rows.length > 0 ? rows[0].value : null;
+  } catch {
+    return null;
+  }
+}
+
+async function setAppState(key: string, value: string): Promise<void> {
+  try {
+    await db.insert(appState)
+      .values({ key, value, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: appState.key,
+        set: { value, updatedAt: new Date() },
+      });
+  } catch (err) {
+    console.error(`[Reminder] Failed to persist app state for key "${key}":`, err);
+  }
+}
+
+async function loadSentReminders(): Promise<void> {
+  if (sentRemindersLoaded) return;
+  try {
+    const stored = await getAppState("sent_reminders");
+    if (stored) {
+      const keys: string[] = JSON.parse(stored);
+      for (const k of keys) {
+        sentReminders.add(k);
+      }
+      console.log(`[Reminder] Loaded ${keys.length} sent reminder keys from database`);
+    }
+    sentRemindersLoaded = true;
+  } catch (err) {
+    console.error("[Reminder] Failed to load sent reminders:", err);
+    sentRemindersLoaded = true;
+  }
+}
+
+async function persistSentReminders(): Promise<void> {
+  const keys = Array.from(sentReminders);
+  await setAppState("sent_reminders", JSON.stringify(keys));
 }
 
 export function getSchedulerStatus() {
@@ -20,15 +68,16 @@ export function getSchedulerStatus() {
     lastCheck: lastCheckTime?.toISOString() || null,
     remindersSent: remindersSentCount,
     trackedReminders: sentReminders.size,
-    lastDigestDate,
   };
 }
 
 export async function checkReminders() {
   try {
+    await loadSentReminders();
     const allTasks = await storage.getTasks({ showCompleted: false });
     const now = new Date();
     lastCheckTime = now;
+    let stateChanged = false;
 
     for (const task of allTasks) {
       if (task.isCompleted || !task.dueDate) continue;
@@ -104,13 +153,21 @@ export async function checkReminders() {
           }
 
           sentReminders.add(key);
+          stateChanged = true;
           remindersSentCount++;
         }
 
         if (now > dueDate) {
-          sentReminders.add(key);
+          if (!sentReminders.has(key)) {
+            sentReminders.add(key);
+            stateChanged = true;
+          }
         }
       }
+    }
+
+    if (stateChanged) {
+      await persistSentReminders();
     }
   } catch (err) {
     console.error("[Reminder] Error checking reminders:", err);
@@ -122,11 +179,13 @@ export async function checkDailyDigest() {
     const now = new Date();
     const todayStr = now.toISOString().split("T")[0];
 
-    if (todayStr === lastDigestDate) return;
     if (now.getHours() < DAILY_DIGEST_HOUR) return;
 
+    const lastDigestDate = await getAppState("last_digest_date");
+    if (lastDigestDate === todayStr) return;
+
+    await setAppState("last_digest_date", todayStr);
     console.log("[Reminder] Sending daily digest...");
-    lastDigestDate = todayStr;
 
     const allTasks = await storage.getTasks({ showCompleted: false });
     const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
@@ -185,6 +244,12 @@ export async function checkDailyDigest() {
 let reminderInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startReminderScheduler() {
+  if (reminderInterval) {
+    clearInterval(reminderInterval);
+    reminderInterval = null;
+    console.log("[Reminder] Cleared existing scheduler interval before starting new one");
+  }
+
   console.log("=== [Reminder] Starting reminder scheduler (checking every 60 seconds) ===");
   schedulerRunning = true;
 

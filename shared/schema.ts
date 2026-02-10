@@ -403,5 +403,11 @@ export function getWeekDates(weekNum: number, customSemesterStart?: Date): { sta
   return { start: weekStart, end: weekEnd };
 }
 
+export const appState = pgTable("app_state", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Export chat models for AI integrations
 export * from "./models/chat";
