@@ -13691,7 +13691,7 @@ export default function Dashboard() {
                     <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', gridColumn: progressGridCol }} />
                     <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', gridColumn: afterProgressGridCol }} />
                   </div>
-              })()}
+                ); })()}
               </div>
                 ); })()}
 
