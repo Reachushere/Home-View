@@ -1719,6 +1719,20 @@ export default function Dashboard() {
     return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-12', firstDayOfWeek: 'saturday', lastDayOfSchoolWeek: 'friday', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto' };
   });
 
+  useEffect(() => {
+    if (schoolData.isTravelling) {
+      fetch('/api/travelling', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isTravelling: true,
+          startDate: schoolData.travelStartDate || null,
+          endDate: schoolData.travelEndDate || null,
+        }),
+      }).catch(err => console.error('Failed to sync initial travelling state:', err));
+    }
+  }, []);
+
   // Map lastDayOfSchoolWeek to the display column index (0=Sun, 1=Mon, ... 6=Sat)
   const lastSchoolDayIndex = (() => {
     const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
@@ -1816,6 +1830,15 @@ export default function Dashboard() {
     if (semType && semesterSettings) {
       saveSemesterScheduleMutation.mutate({ semesterType: semType });
     }
+    fetch('/api/travelling', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        isTravelling: !!data.isTravelling,
+        startDate: data.travelStartDate || null,
+        endDate: data.travelEndDate || null,
+      }),
+    }).catch(err => console.error('Failed to sync travelling state:', err));
     setIsSchoolDialogOpen(false);
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
@@ -3603,6 +3626,65 @@ export default function Dashboard() {
     return result.join('\n\n');
   };
 
+  const joinHyphenatedWords = (text: string): string => {
+    const knownJoins: Record<string, string> = {
+      "to-day": "today", "to-morrow": "tomorrow", "to-night": "tonight",
+      "to-gether": "together", "to-ward": "toward", "to-wards": "towards",
+      "al-ready": "already", "al-though": "although", "al-most": "almost",
+      "al-ways": "always", "al-so": "also", "al-together": "altogether",
+      "any-thing": "anything", "any-one": "anyone", "any-body": "anybody",
+      "any-where": "anywhere", "any-way": "anyway",
+      "every-thing": "everything", "every-one": "everyone", "every-body": "everybody",
+      "every-where": "everywhere", "every-day": "everyday",
+      "some-thing": "something", "some-one": "someone", "some-body": "somebody",
+      "some-where": "somewhere", "some-how": "somehow", "some-what": "somewhat",
+      "some-times": "sometimes", "some-time": "sometime",
+      "no-thing": "nothing", "no-body": "nobody", "no-where": "nowhere",
+      "mean-while": "meanwhile", "mean-ing": "meaning",
+      "how-ever": "however", "what-ever": "whatever", "when-ever": "whenever",
+      "where-ever": "wherever", "who-ever": "whoever",
+      "my-self": "myself", "him-self": "himself", "her-self": "herself",
+      "it-self": "itself", "them-selves": "themselves", "your-self": "yourself",
+      "our-selves": "ourselves", "your-selves": "yourselves",
+      "with-out": "without", "with-in": "within", "with-stand": "withstand",
+      "there-fore": "therefore", "there-by": "thereby", "there-in": "therein",
+      "there-after": "thereafter", "there-of": "thereof",
+      "be-cause": "because", "be-come": "become", "be-fore": "before",
+      "be-hind": "behind", "be-long": "belong", "be-tween": "between",
+      "be-yond": "beyond", "be-lieve": "believe", "be-gin": "begin",
+      "be-neath": "beneath", "be-side": "beside", "be-sides": "besides",
+      "over-come": "overcome", "over-look": "overlook", "over-whelm": "overwhelm",
+      "under-stand": "understand", "under-stood": "understood",
+      "under-neath": "underneath", "under-go": "undergo",
+      "up-on": "upon", "up-stairs": "upstairs", "up-ward": "upward",
+      "down-stairs": "downstairs", "down-ward": "downward",
+      "out-side": "outside", "out-ward": "outward",
+      "in-to": "into", "in-deed": "indeed", "in-stead": "instead",
+      "in-side": "inside",
+      "for-ever": "forever", "for-ward": "forward",
+      "per-haps": "perhaps",
+      "break-fast": "breakfast", "rail-way": "railway", "news-paper": "newspaper",
+      "bed-room": "bedroom", "class-room": "classroom", "bath-room": "bathroom",
+      "play-ground": "playground", "land-lord": "landlord", "land-lady": "landlady",
+      "gentle-man": "gentleman", "gentle-men": "gentlemen",
+      "church-yard": "churchyard", "court-yard": "courtyard",
+      "fire-place": "fireplace", "door-way": "doorway",
+      "sun-light": "sunlight", "moon-light": "moonlight", "day-light": "daylight",
+      "mid-night": "midnight", "after-noon": "afternoon",
+      "birth-day": "birthday",
+    };
+    let result = text;
+    result = result.replace(/(\w+)-\s*\n\s*(\w+)/g, '$1$2');
+    for (const [hyphenated, joined] of Object.entries(knownJoins)) {
+      const regex = new RegExp(hyphenated.replace('-', '[\\s-]'), 'gi');
+      result = result.replace(regex, (match) => {
+        const isUpper = match[0] === match[0].toUpperCase();
+        return isUpper ? joined[0].toUpperCase() + joined.slice(1) : joined;
+      });
+    }
+    return result;
+  };
+
   // Fetch text when file is selected for preview
   useEffect(() => {
     if (previewFile) {
@@ -3645,7 +3727,7 @@ export default function Dashboard() {
           .then(data => {
             console.log(`[TextFetch] URL response for ${fileId}: hasText=${!!data.text}, length=${data.text?.length || 0}`);
             if (data.text) {
-              const filteredText = removeFrenchText(data.text);
+              const filteredText = joinHyphenatedWords(removeFrenchText(data.text));
               setPreviewText(filteredText);
             }
           })
@@ -3660,7 +3742,7 @@ export default function Dashboard() {
           .then(data => {
             console.log(`[TextFetch] API response for file ${fileId}: hasText=${!!data.text}, length=${data.text?.length || 0}, error=${data.error || 'none'}`);
             if (data.text) {
-              const filteredText = removeFrenchText(data.text);
+              const filteredText = joinHyphenatedWords(removeFrenchText(data.text));
               console.log(`[TextFetch] Setting previewText for file ${fileId}: filteredLength=${filteredText.length}`);
               setPreviewText(filteredText);
             }

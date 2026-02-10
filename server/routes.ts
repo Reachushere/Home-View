@@ -89,7 +89,19 @@ const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
 // Track travelling state (synced from client) to suppress Echo announcements
 let isTravellingMode = false;
-export function getIsTravellingMode() { return isTravellingMode; }
+let travelStartDate: string | null = null;
+let travelEndDate: string | null = null;
+export function getIsTravellingMode(): boolean {
+  if (isTravellingMode && travelStartDate && travelEndDate) {
+    const now = new Date();
+    const start = new Date(travelStartDate);
+    const end = new Date(travelEndDate);
+    if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+      return now >= start && now <= end;
+    }
+  }
+  return isTravellingMode;
+}
 
 // Track TTS reading session for resume functionality
 interface TTSSession {
@@ -2887,14 +2899,17 @@ export async function registerRoutes(
   });
 
   app.get("/api/travelling", (_req, res) => {
-    res.json({ isTravelling: isTravellingMode });
+    res.json({ isTravelling: getIsTravellingMode(), travelStartDate, travelEndDate });
   });
 
   app.post("/api/travelling", (req, res) => {
-    const { isTravelling } = req.body;
+    const { isTravelling, startDate, endDate } = req.body;
     isTravellingMode = !!isTravelling;
-    console.log(`[Travelling] Mode set to: ${isTravellingMode}`);
-    res.json({ isTravelling: isTravellingMode });
+    travelStartDate = startDate || null;
+    travelEndDate = endDate || null;
+    const effectivelyTravelling = getIsTravellingMode();
+    console.log(`[Travelling] Mode set to: ${isTravellingMode}, dates: ${travelStartDate} - ${travelEndDate}, effective: ${effectivelyTravelling}`);
+    res.json({ isTravelling: effectivelyTravelling });
   });
 
   app.post("/api/echo/test", async (_req, res) => {
