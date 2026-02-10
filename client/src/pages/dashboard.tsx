@@ -7493,23 +7493,29 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            <button
-              className="media-btn media-btn-sm"
-              onClick={handleRestartFromBeginning}
-              data-testid="button-preview-restart-beginning"
-              title="Restart from beginning"
-            >
-              <RotateCcw className="h-3.5 w-3.5 text-white" />
-            </button>
+            <div className="flex flex-col items-center gap-0.5">
+              <button
+                className="media-btn media-btn-sm"
+                onClick={handleRestartFromBeginning}
+                data-testid="button-preview-restart-beginning"
+                title="Restart from beginning"
+              >
+                <RotateCcw className="h-3.5 w-3.5 text-white" />
+              </button>
+              <span className="text-[9px] text-white/60 leading-none">Restart</span>
+            </div>
             
-            <button
-              className="media-btn media-btn-sm"
-              onClick={handleRestartCurrentChunk}
-              data-testid="button-preview-restart-current"
-              title="Restart current section"
-            >
-              <RefreshCw className="h-3.5 w-3.5 text-white" />
-            </button>
+            <div className="flex flex-col items-center gap-0.5">
+              <button
+                className="media-btn media-btn-sm"
+                onClick={handleRestartCurrentChunk}
+                data-testid="button-preview-restart-current"
+                title="Restart current section"
+              >
+                <RefreshCw className="h-3.5 w-3.5 text-white" />
+              </button>
+              <span className="text-[9px] text-white/60 leading-none">Re-read</span>
+            </div>
             
             <div className="w-px h-6 bg-white/30" />
             
