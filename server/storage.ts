@@ -73,12 +73,20 @@ export class DatabaseStorage implements IStorage {
     
     const conditions = [];
     if (filters?.weekNumber) {
-      // Include tasks from selected week AND the following week (for calendar visibility)
+      // Include tasks from previous, selected, and following week (for calendar visibility)
       conditions.push(or(
+        eq(tasks.weekNumber, filters.weekNumber - 1),
         eq(tasks.weekNumber, filters.weekNumber),
         eq(tasks.weekNumber, filters.weekNumber + 1)
       ));
     }
+
+
+
+
+
+
+
     if (filters?.type) {
       conditions.push(eq(tasks.type, filters.type));
     }
