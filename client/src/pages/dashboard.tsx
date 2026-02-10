@@ -3495,37 +3495,28 @@ export default function Dashboard() {
     });
     cleanedText = filteredParagraphs.join('\n\n');
     
-    const frenchOnlyPatterns = [
-      /\b(être|avoir|faire|aller|pouvoir|vouloir|devoir|savoir)\b/gi,
-      /\b(était|étaient|sera|seront|été|suis|sommes|êtes)\b/gi,
-      /\b(avons|avez|avait|avaient|aura|auront)\b/gi,
-      /\b(fais|faisait|fera|feront)\b/gi,
-      /\b(je|tu|nous|vous|ils|elles)\b/gi,
-      /\b(mon|mes|ton|tes|ses|notre|nos|votre|vos|leur|leurs)\b/gi,
-      /\b(cet|cette|ceci|cela|ça)\b/gi,
-      /\b(très|moins|aussi|beaucoup|trop|peu)\b/gi,
-      /\b(dans|sous|avec|sans|chez|vers)\b/gi,
-      /\b(mais|donc|ni|dont|où)\b/gi,
-      /[àâéèêëïîôùûüÿç]/gi,
-    ];
+    const frenchWords = /\b(le|la|les|un|une|des|du|au|aux|et|ou|mais|donc|car|ni|que|qui|dont|où|je|tu|il|elle|nous|vous|ils|elles|on|mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs|ce|cet|cette|ces|être|avoir|faire|aller|est|sont|était|étaient|sera|été|suis|sommes|êtes|avons|avez|ont|avait|dans|sur|sous|avec|pour|par|sans|chez|entre|vers|très|plus|moins|aussi|bien|peu|beaucoup|trop|ne|pas|jamais|rien|tout|tous|toute|toutes|comme|même|autre|autres|si|alors|quand|pendant|après|avant|encore|déjà|peut|peuvent|doit|doivent|fait|font|dit|disent|voir|dire|prendre|mettre|quel|quelle|quels|quelles)\b/gi;
     
-    const sentences = cleanedText.split(/(?<=[.!?])\s+/);
+    const isFullyFrench = (text: string): boolean => {
+      const words = text.split(/\s+/).filter(w => w.length > 1);
+      if (words.length < 4) return false;
+      const matches = text.match(frenchWords);
+      const frenchCount = matches ? matches.length : 0;
+      return (frenchCount / words.length) > 0.55;
+    };
     
-    const englishSentences = sentences.filter(sentence => {
-      const words = sentence.split(/\s+/).length;
-      if (words < 5) return true;
-      
-      let frenchScore = 0;
-      for (const pattern of frenchOnlyPatterns) {
-        const matches = sentence.match(pattern);
-        if (matches) frenchScore += matches.length;
-      }
-      
-      const frenchRatio = frenchScore / words;
-      return frenchRatio < 0.25;
+    const paragraphs2 = cleanedText.split(/\n\n+/);
+    const englishParagraphs = paragraphs2.filter(para => {
+      if (isFullyFrench(para)) return false;
+      return true;
     });
     
-    return englishSentences.join(' ');
+    const result = englishParagraphs.map(para => {
+      const sentences = para.split(/(?<=[.!?])\s+/);
+      return sentences.filter(s => !isFullyFrench(s)).join(' ');
+    }).filter(p => p.trim().length > 0);
+    
+    return result.join('\n\n');
   };
 
   // Fetch text when file is selected for preview
