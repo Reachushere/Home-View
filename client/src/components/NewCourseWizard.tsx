@@ -26,7 +26,7 @@ const WIZARD_STEPS = [
   { id: 2, label: "Professor" },
   { id: 3, label: "Course Type" },
   { id: 4, label: "Semester" },
-  { id: 5, label: "Tasks & Grades" },
+  { id: 5, label: "Assignments & Grades" },
   { id: 6, label: "Review" },
 ];
 
@@ -460,7 +460,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
     <div className="space-y-3">
       <div className="text-center mb-2">
         <ClipboardCheck className="h-7 w-7 text-purple-400 mx-auto mb-1" />
-        <h3 className="text-sm font-medium text-white">Tasks & Grade Breakdown</h3>
+        <h3 className="text-sm font-medium text-white">Assignments & Grades</h3>
         <p className="text-[9px] text-white/50 mt-0.5">Add all known assignments, exams, and other graded items</p>
       </div>
 
