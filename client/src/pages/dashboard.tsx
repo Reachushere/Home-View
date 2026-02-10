@@ -9374,9 +9374,9 @@ export default function Dashboard() {
           }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '6px', gap: '5px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
             <span style={{ lineHeight: 1, flexShrink: 0 }}>
               <svg width="19" height="19" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="#e53e3e" />
-                <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#fc5c5c" />
-                <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#c53030" />
+                <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
+                <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#ff3333" />
+                <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#cc0000" />
                 <path d="M35 32 C35 28, 40 18, 45 20 C48 21, 48 26, 48 30 C44 29, 38 30, 35 32Z" fill="#38a169" />
                 <path d="M65 32 C65 28, 60 18, 55 20 C52 21, 52 26, 52 30 C56 29, 62 30, 65 32Z" fill="#2f855a" />
                 <rect x="48" y="10" width="4" height="20" rx="2" fill="#2f855a" />
