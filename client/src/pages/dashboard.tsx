@@ -3677,9 +3677,7 @@ export default function Dashboard() {
     result = result.replace(/(\w+)-\s*\n\s*(\w+)/g, '$1$2');
     result = result.replace(/(\w+)-\s+(\w+)/g, (match, p1, p2) => {
       const joined = p1 + p2;
-      const lower = joined.toLowerCase();
-      const isLikelyWord = lower.length > 3 && /^[a-z]+$/i.test(joined);
-      if (isLikelyWord && !match.match(/^(self|non|anti|pre|post|co|re|un|sub|inter|intra|multi|over|under|semi|super|cross|well|ill|full|half|high|low|long|short|mid|all|ex|e)-/i)) {
+      if (/^[a-z]+$/i.test(joined) && joined.length > 3) {
         return joined;
       }
       return match;
