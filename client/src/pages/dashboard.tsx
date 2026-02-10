@@ -10637,7 +10637,7 @@ export default function Dashboard() {
                         })}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-white/5 text-white border border-white/10 hover:bg-white/10 flex items-center gap-1.5"
-                          onClick={() => { setIsQuickAddOpen(false); setIsNewCourseWizardOpen(true); }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
                           <GraduationCap className="h-3.5 w-3.5" />
