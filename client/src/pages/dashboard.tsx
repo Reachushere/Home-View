@@ -11676,7 +11676,7 @@ export default function Dashboard() {
                   variant="outline"
                   className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6 self-start"
                   style={{
-                    marginTop: '3px',
+                    marginTop: '-1px',
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px'
                   }}
@@ -11723,6 +11723,56 @@ export default function Dashboard() {
                     return (
                       <div key={index} className="space-y-0.5">
                         <div className="flex items-center gap-1.5">
+                          <label className="flex items-center gap-1 cursor-pointer" data-testid={`checkbox-school-completed-${courseCode}`} onClick={() => {
+                            const idx = index + 1;
+                            const key = `course${idx}Completed`;
+                            const newVal = !(semesterSettings as any)?.[key];
+                            apiRequest('PATCH', '/api/semester', { [key]: newVal }).then(() => {
+                              queryClient.invalidateQueries({ queryKey: ['/api/semester'] });
+                            });
+                            const codeUpper = courseCode.toUpperCase();
+                            const carouselKeys: string[] = [];
+                            if (codeUpper === 'CPPA122' || codeUpper === 'PPA122') {
+                              carouselKeys.push('L1_PPA122', 'L2_PPA122');
+                            } else if (codeUpper === 'CPPA124' || codeUpper === 'PPA124') {
+                              carouselKeys.push('L1_PPA124');
+                            } else if (codeUpper.startsWith('CPPA') || codeUpper.startsWith('PPA')) {
+                              const num = codeUpper.replace(/^C?PPA/, '');
+                              carouselKeys.push('PPA' + num);
+                            }
+                            const ct = (semesterSettings as any)?.[`course${idx}CourseType`];
+                            const savedMapping = JSON.parse(localStorage.getItem('courseCarouselMapping') || '{}');
+                            if (ct === 'open_elective' || ct === 'liberal_studies' || (!ct && carouselKeys.length === 0)) {
+                              if (savedMapping[codeUpper]) {
+                                carouselKeys.push(savedMapping[codeUpper]);
+                              } else if (newVal) {
+                                const slots = ct === 'liberal_studies' ? ['LIBERAL'] : ['ELECTIVE1', 'ELECTIVE2', 'OPEN1', 'OPEN2'];
+                                for (const slot of slots) {
+                                  if (!checkedCourses[slot]) { 
+                                    carouselKeys.push(slot); 
+                                    savedMapping[codeUpper] = slot;
+                                    localStorage.setItem('courseCarouselMapping', JSON.stringify(savedMapping));
+                                    break; 
+                                  }
+                                }
+                              }
+                            }
+                            if (carouselKeys.length > 0) {
+                              const updated = { ...checkedCourses };
+                              carouselKeys.forEach(k => { updated[k] = newVal; });
+                              setCheckedCourses(updated);
+                              localStorage.setItem('checkedCourses', JSON.stringify(updated));
+                            }
+                            if (!newVal && savedMapping[codeUpper]) {
+                              delete savedMapping[codeUpper];
+                              localStorage.setItem('courseCarouselMapping', JSON.stringify(savedMapping));
+                            }                          }}>
+                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(semesterSettings as any)?.[`course${index + 1}Completed`] ? 'bg-green-500 border-green-500' : 'border-green-400/50 bg-transparent'}`}>
+                              {(semesterSettings as any)?.[`course${index + 1}Completed`] && (
+                                <Check className="w-2.5 h-2.5 text-white" />
+                              )}
+                            </div>
+                          </label>
                           <div className="relative flex-shrink-0">
                             <div 
                               className={`w-3 h-3 rounded-full cursor-pointer ${hasDueTomorrow ? "animate-blink" : ""}`} 
@@ -11783,59 +11833,6 @@ export default function Dashboard() {
                           >
                             <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" />
                           </button>
-                          <label className="flex items-center gap-1 cursor-pointer" data-testid={`checkbox-school-completed-${courseCode}`} onClick={() => {
-                            const idx = index + 1;
-                            const key = `course${idx}Completed`;
-                            const newVal = !(semesterSettings as any)?.[key];
-                            apiRequest('PATCH', '/api/semester', { [key]: newVal }).then(() => {
-                              queryClient.invalidateQueries({ queryKey: ['/api/semester'] });
-                            });
-                            const codeUpper = courseCode.toUpperCase();
-                            const carouselKeys: string[] = [];
-                            if (codeUpper === 'CPPA122' || codeUpper === 'PPA122') {
-                              carouselKeys.push('L1_PPA122', 'L2_PPA122');
-                            } else if (codeUpper === 'CPPA124' || codeUpper === 'PPA124') {
-                              carouselKeys.push('L1_PPA124');
-                            } else if (codeUpper.startsWith('CPPA') || codeUpper.startsWith('PPA')) {
-                              const num = codeUpper.replace(/^C?PPA/, '');
-                              carouselKeys.push('PPA' + num);
-                            }
-                            const ct = (semesterSettings as any)?.[`course${idx}CourseType`];
-                            const savedMapping = JSON.parse(localStorage.getItem('courseCarouselMapping') || '{}');
-                            if (ct === 'open_elective' || ct === 'liberal_studies' || (!ct && carouselKeys.length === 0)) {
-                              if (savedMapping[codeUpper]) {
-                                carouselKeys.push(savedMapping[codeUpper]);
-                              } else if (newVal) {
-                                const slots = ct === 'liberal_studies' ? ['LIBERAL'] : ['ELECTIVE1', 'ELECTIVE2', 'OPEN1', 'OPEN2'];
-                                for (const slot of slots) {
-                                  if (!checkedCourses[slot]) { 
-                                    carouselKeys.push(slot); 
-                                    savedMapping[codeUpper] = slot;
-                                    localStorage.setItem('courseCarouselMapping', JSON.stringify(savedMapping));
-                                    break; 
-                                  }
-                                }
-                              }
-                            }
-                            if (carouselKeys.length > 0) {
-                              const updated = { ...checkedCourses };
-                              carouselKeys.forEach(k => { updated[k] = newVal; });
-                              setCheckedCourses(updated);
-                              localStorage.setItem('checkedCourses', JSON.stringify(updated));
-                            }
-                            if (!newVal && savedMapping[codeUpper]) {
-                              delete savedMapping[codeUpper];
-                              localStorage.setItem('courseCarouselMapping', JSON.stringify(savedMapping));
-                            }                          }}>
-                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(semesterSettings as any)?.[`course${index + 1}Completed`] ? 'bg-green-500 border-green-500' : 'border-green-400/50 bg-transparent'}`}>
-                              {(semesterSettings as any)?.[`course${index + 1}Completed`] && (
-                                <Check className="w-2.5 h-2.5 text-white" />
-                              )}
-                            </div>
-                            <span className={`text-[10px] ${(semesterSettings as any)?.[`course${index + 1}Completed`] ? 'text-green-400' : 'text-green-400/50'}`}>
-                              Done
-                            </span>
-                          </label>
                           <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
                             <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
                               {aasSentStatus[courseCode] && (
@@ -13075,7 +13072,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 10px)', marginTop: '3px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 10px)', marginTop: '-1px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
