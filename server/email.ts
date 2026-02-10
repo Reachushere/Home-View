@@ -65,6 +65,7 @@ export async function sendDailyDigest(tasks: TaskReminder[]): Promise<{ success:
   }
 
   try {
+    const now = new Date();
     const taskListHtml = tasks.map(task => {
       const dueDate = new Date(task.dueDate);
       const formattedDate = dueDate.toLocaleDateString('en-GB', {
@@ -72,25 +73,53 @@ export async function sendDailyDigest(tasks: TaskReminder[]): Promise<{ success:
         day: 'numeric',
         month: 'short'
       });
+      const diffMs = dueDate.getTime() - now.getTime();
+      const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      let timeUntil = '';
+      if (diffMs < 0) {
+        const overdueDays = Math.abs(diffDays);
+        timeUntil = overdueDays === 0 ? 'Overdue (today)' : `Overdue by ${overdueDays} day${overdueDays > 1 ? 's' : ''}`;
+      } else if (diffHours < 1) {
+        timeUntil = 'Due in less than 1 hour';
+      } else if (diffHours < 24) {
+        timeUntil = `Due in ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+      } else if (diffDays === 1) {
+        timeUntil = 'Due tomorrow';
+      } else {
+        timeUntil = `Due in ${diffDays} day${diffDays > 1 ? 's' : ''}`;
+      }
       return `
         <tr>
           <td style="padding: 10px; border-bottom: 1px solid #eee;">${task.title}</td>
           <td style="padding: 10px; border-bottom: 1px solid #eee;">${task.courseName || '-'}</td>
-          <td style="padding: 10px; border-bottom: 1px solid #eee;">${formattedDate}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;">${formattedDate}<br/><span style="font-size: 12px; color: #888;">${timeUntil}</span></td>
         </tr>
       `;
     }).join('');
 
+    const firstDue = new Date(tasks[0].dueDate);
+    const firstDiffMs = firstDue.getTime() - now.getTime();
+    const firstDiffHours = Math.round(firstDiffMs / (1000 * 60 * 60));
+    const firstDiffDays = Math.round(firstDiffMs / (1000 * 60 * 60 * 24));
+    let subjectTiming = '';
+    if (tasks.length === 1) {
+      if (firstDiffMs < 0) subjectTiming = ' (overdue)';
+      else if (firstDiffHours < 24) subjectTiming = ` (in ${firstDiffHours} hour${firstDiffHours > 1 ? 's' : ''})`;
+      else if (firstDiffDays === 1) subjectTiming = ' (tomorrow)';
+      else subjectTiming = ` (in ${firstDiffDays} days)`;
+    }
+
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: TO_EMAIL,
-      subject: `Daily Task Digest: ${tasks.length} task${tasks.length > 1 ? 's' : ''} due soon`,
+      subject: `Daily Task Digest: ${tasks.length} task${tasks.length > 1 ? 's' : ''} due${subjectTiming}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #333; border-bottom: 2px solid #4578B0; padding-bottom: 10px;">
             Daily Task Digest
           </h2>
-          <p>You have <strong>${tasks.length} task${tasks.length > 1 ? 's' : ''}</strong> due soon:</p>
+          <p>You have <strong>${tasks.length} task${tasks.length > 1 ? 's' : ''}</strong> due:</p>
           <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
             <thead>
               <tr style="background: #042550; color: white;">
