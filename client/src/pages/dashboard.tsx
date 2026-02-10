@@ -3102,6 +3102,34 @@ export default function Dashboard() {
   
   // Chunked TTS state for reliable playback
   const [ttsChunks, setTtsChunks] = useState<string[]>([]);
+  const ttsSearchMatchCount = useMemo(() => {
+    if (ttsSearchQuery.trim().length < 2 || ttsChunks.length === 0) return 0;
+    const sLower = ttsSearchQuery.toLowerCase().trim();
+    const sWords = sLower.split(/\s+/).filter(w => w.length > 0);
+    const allWords: string[] = [];
+    for (const chunk of ttsChunks) {
+      const paragraphs = chunk.split(/\n\n+/);
+      for (const paragraph of paragraphs) {
+        const lines = paragraph.split(/\n/).filter(l => l.trim().length > 0);
+        for (const line of lines) {
+          const words = line.trim().split(/\s+/).filter(w => w.length > 0);
+          allWords.push(...words);
+        }
+      }
+    }
+    let count = 0;
+    for (let i = 0; i <= allWords.length - sWords.length; i++) {
+      let match = true;
+      for (let j = 0; j < sWords.length; j++) {
+        if (!allWords[i + j].toLowerCase().replace(/[.,;:!?"'()]/g, '').includes(sWords[j])) {
+          match = false;
+          break;
+        }
+      }
+      if (match) count++;
+    }
+    return count;
+  }, [ttsSearchQuery, ttsChunks]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
@@ -7669,8 +7697,7 @@ export default function Dashboard() {
                     if (e.shiftKey) {
                       setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
                     } else {
-                      const totalMatches = ttsSearchQuery.length >= 2 ? (previewText.toLowerCase().match(new RegExp(ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase(), 'g')) || []).length : 0;
-                      setTtsSearchMatchIndex(prev => prev < totalMatches - 1 ? prev + 1 : 0);
+                      setTtsSearchMatchIndex(prev => prev < ttsSearchMatchCount - 1 ? prev + 1 : 0);
                     }
                   }
                   if (e.key === 'Escape') {
@@ -7683,26 +7710,18 @@ export default function Dashboard() {
                 className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-gray-500"
                 data-testid="input-tts-search"
               />
-              {ttsSearchQuery.length >= 2 && (() => {
-                const escaped = ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const totalMatches = (previewText.toLowerCase().match(new RegExp(escaped.toLowerCase(), 'g')) || []).length;
-                return (
-                  <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                    {totalMatches > 0 ? `${ttsSearchMatchIndex + 1}/${totalMatches}` : '0/0'}
-                  </span>
-                );
-              })()}
+              {ttsSearchQuery.trim().length >= 2 && (
+                <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                  {ttsSearchMatchCount > 0 ? `${Math.min(ttsSearchMatchIndex + 1, ttsSearchMatchCount)}/${ttsSearchMatchCount}` : '0/0'}
+                </span>
+              )}
               <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
-                const escaped = ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const totalMatches = ttsSearchQuery.length >= 2 ? (previewText.toLowerCase().match(new RegExp(escaped.toLowerCase(), 'g')) || []).length : 0;
                 setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
               }} data-testid="button-search-prev">
                 <ChevronUp className="h-3 w-3" />
               </Button>
               <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
-                const escaped = ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const totalMatches = ttsSearchQuery.length >= 2 ? (previewText.toLowerCase().match(new RegExp(escaped.toLowerCase(), 'g')) || []).length : 0;
-                setTtsSearchMatchIndex(prev => prev < totalMatches - 1 ? prev + 1 : 0);
+                setTtsSearchMatchIndex(prev => prev < ttsSearchMatchCount - 1 ? prev + 1 : 0);
               }} data-testid="button-search-next">
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -7909,9 +7928,52 @@ export default function Dashboard() {
                     ];
                     
                     let globalWordIndex = 0;
-                    let searchMatchCounter = 0;
-                    const searchLower = ttsSearchQuery.toLowerCase();
-                    const hasSearch = ttsSearchQuery.length >= 2;
+                    const searchLower = ttsSearchQuery.toLowerCase().trim();
+                    const hasSearch = searchLower.length >= 2;
+                    
+                    const searchMatchWordSets: Set<number>[] = [];
+                    const activeMatchWordSet = new Set<number>();
+                    if (hasSearch) {
+                      const allWords: { word: string; globalIdx: number }[] = [];
+                      let gIdx = 0;
+                      for (const chunk of chunks) {
+                        const paragraphs = chunk.split(/\n\n+/);
+                        for (const paragraph of paragraphs) {
+                          const lines = paragraph.split(/\n/).filter(l => l.trim().length > 0);
+                          for (const line of lines) {
+                            const words = line.trim().split(/\s+/).filter(w => w.length > 0);
+                            for (const w of words) {
+                              allWords.push({ word: w, globalIdx: gIdx });
+                              gIdx++;
+                            }
+                          }
+                        }
+                      }
+                      const searchWords = searchLower.split(/\s+/).filter(w => w.length > 0);
+                      for (let i = 0; i <= allWords.length - searchWords.length; i++) {
+                        let match = true;
+                        for (let j = 0; j < searchWords.length; j++) {
+                          const w = allWords[i + j].word.toLowerCase().replace(/[.,;:!?"'()]/g, '');
+                          if (!w.includes(searchWords[j])) {
+                            match = false;
+                            break;
+                          }
+                        }
+                        if (match) {
+                          const matchIndices = new Set<number>();
+                          for (let j = 0; j < searchWords.length; j++) {
+                            matchIndices.add(allWords[i + j].globalIdx);
+                          }
+                          searchMatchWordSets.push(matchIndices);
+                        }
+                      }
+                      if (searchMatchWordSets.length > 0) {
+                        const activeIdx = Math.min(ttsSearchMatchIndex, searchMatchWordSets.length - 1);
+                        searchMatchWordSets[activeIdx].forEach(idx => activeMatchWordSet.add(idx));
+                      }
+                    }
+                    const allHighlightedWords = new Set<number>();
+                    searchMatchWordSets.forEach(s => s.forEach(idx => allHighlightedWords.add(idx)));
                     
                     return chunks.map((chunk, chunkIdx) => {
                       const chunkColor = chunkColors[chunkIdx % chunkColors.length];
@@ -7993,15 +8055,8 @@ export default function Dashboard() {
                                         const isDeleted = deletedWordIndices.has(wordGlobalIdx);
                                         const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
                                         
-                                        const wordLower = word.toLowerCase();
-                                        const searchIdx = hasSearch && !isDeleted ? wordLower.indexOf(searchLower) : -1;
-                                        let isActiveMatch = false;
-                                        if (searchIdx >= 0) {
-                                          if (searchMatchCounter === ttsSearchMatchIndex) {
-                                            isActiveMatch = true;
-                                          }
-                                          searchMatchCounter++;
-                                        }
+                                        const isSearchHighlight = hasSearch && !isDeleted && allHighlightedWords.has(wordGlobalIdx);
+                                        const isActiveMatch = hasSearch && !isDeleted && activeMatchWordSet.has(wordGlobalIdx);
                                         
                                         if (isDeleted) {
                                           return (
@@ -8027,7 +8082,7 @@ export default function Dashboard() {
                                             } : isActiveMatch ? (el) => {
                                               if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                             } : undefined}
-                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : isActiveMatch ? "bg-orange-400 dark:bg-orange-500 text-white px-0.5 rounded ring-2 ring-orange-500" : searchIdx >= 0 ? "bg-orange-200 dark:bg-orange-800/60 px-0.5 rounded" : ""}
+                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : isActiveMatch ? "bg-orange-400 dark:bg-orange-500 text-white px-0.5 rounded ring-2 ring-orange-500" : isSearchHighlight ? "bg-orange-200 dark:bg-orange-800/60 px-0.5 rounded" : ""}
                                           >
                                             {word}{' '}
                                           </span>
