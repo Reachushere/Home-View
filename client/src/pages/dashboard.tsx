@@ -17936,7 +17936,6 @@ const NORTH_AMERICAN_SCHOOLS = [
 
 function TravelDateTimePicker({ label, value, onChange, testId }: { label: string; value: string; onChange: (val: string) => void; testId: string }) {
   const [open, setOpen] = useState(false);
-  console.log('[TravelDatePicker] Component rendered, label:', label, 'open:', open, 'value:', value);
   const [tempDate, setTempDate] = useState<Date | undefined>(() => {
     if (value) { const d = new Date(value); return isNaN(d.getTime()) ? undefined : d; }
     return undefined;
@@ -17991,7 +17990,7 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
   return (
     <div className="space-y-1">
       <Label className="text-[10px] text-white/70">{label}</Label>
-      <Popover open={open} onOpenChange={(v) => { console.log('[TravelDatePicker] onOpenChange:', v); setOpen(v); }} modal={false}>
+      <Popover open={open} onOpenChange={setOpen} modal={false}>
         <PopoverTrigger asChild>
           <button
             type="button"
@@ -18005,37 +18004,22 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
           <CalendarPicker
             mode="single"
             selected={tempDate}
-            onSelect={(d: Date | undefined) => { console.log('[TravelDatePicker] date selected:', d); setTempDate(d); }}
+            onSelect={setTempDate}
             className="rounded-md border"
           />
           <div className="flex items-center gap-1 mt-2">
-            <select
-              value={tempHour}
-              onChange={(e) => setTempHour(e.target.value)}
-              className="text-[11px] bg-white text-black border rounded px-1 py-0.5"
-            >
-              {Array.from({ length: 12 }, (_, i) => i + 1).map(h => (
-                <option key={h} value={String(h)}>{h}</option>
-              ))}
-            </select>
+            <div className="flex items-center border rounded overflow-hidden">
+              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-r" onClick={() => setTempHour(String(parseInt(tempHour) <= 1 ? 12 : parseInt(tempHour) - 1))}>-</button>
+              <span className="px-1.5 py-0.5 text-[11px] min-w-[20px] text-center">{tempHour}</span>
+              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-l" onClick={() => setTempHour(String(parseInt(tempHour) >= 12 ? 1 : parseInt(tempHour) + 1))}>+</button>
+            </div>
             <span className="text-[11px]">:</span>
-            <select
-              value={tempMinute}
-              onChange={(e) => setTempMinute(e.target.value)}
-              className="text-[11px] bg-white text-black border rounded px-1 py-0.5"
-            >
-              {minutes.map(m => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-            <select
-              value={tempAmPm}
-              onChange={(e) => setTempAmPm(e.target.value)}
-              className="text-[11px] bg-white text-black border rounded px-1 py-0.5"
-            >
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
-            </select>
+            <div className="flex items-center border rounded overflow-hidden">
+              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-r" onClick={() => { const idx = minutes.indexOf(tempMinute); setTempMinute(minutes[idx <= 0 ? minutes.length - 1 : idx - 1]); }}>-</button>
+              <span className="px-1.5 py-0.5 text-[11px] min-w-[20px] text-center">{tempMinute}</span>
+              <button type="button" className="px-1.5 py-0.5 text-[11px] bg-gray-100 hover:bg-gray-200 border-l" onClick={() => { const idx = minutes.indexOf(tempMinute); setTempMinute(minutes[idx >= minutes.length - 1 ? 0 : idx + 1]); }}>+</button>
+            </div>
+            <button type="button" className="px-2 py-0.5 text-[11px] border rounded bg-gray-100 hover:bg-gray-200" onClick={() => setTempAmPm(tempAmPm === 'AM' ? 'PM' : 'AM')}>{tempAmPm}</button>
           </div>
           <button
             type="button"
