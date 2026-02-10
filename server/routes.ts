@@ -1402,6 +1402,34 @@ export async function registerRoutes(
         } else {
           return res.status(400).json({ error: "Invalid OneDrive path format" });
         }
+      } else if (mediaUrl.startsWith("/School/")) {
+        try {
+          const { getOneDriveClient } = await import("./onedrive");
+          const client = await getOneDriveClient();
+          const encodedPath = encodeURIComponent(mediaUrl).replace(/%2F/g, '/');
+          const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+          const downloadUrl = item['@microsoft.graph.downloadUrl'];
+          if (!downloadUrl) {
+            return res.status(400).json({ error: "Could not get OneDrive download URL" });
+          }
+          const pdfResponse = await fetch(downloadUrl);
+          if (pdfResponse.ok && pdfResponse.body) {
+            res.setHeader('Content-Type', pdfResponse.headers.get('content-type') || 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${mediaUrl.split('/').pop()}"`);
+            const reader = pdfResponse.body.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              res.write(value);
+            }
+            res.end();
+          } else {
+            res.status(502).json({ error: "Failed to fetch file from OneDrive" });
+          }
+        } catch (fetchErr) {
+          console.error("Error fetching OneDrive file for download:", fetchErr);
+          res.status(500).json({ error: "Failed to fetch OneDrive file" });
+        }
       } else if (mediaUrl.startsWith("http")) {
         // External URL - proxy the download to avoid CORS issues
         try {
@@ -1455,13 +1483,35 @@ export async function registerRoutes(
           console.error("Error reading from object storage:", error);
           return res.status(400).json({ error: "Failed to read file from storage" });
         }
-      } else {
+      } else if (mediaUrl.startsWith("/School/") || mediaUrl.startsWith("onedrive://")) {
+        try {
+          const { getOneDriveClient } = await import("./onedrive");
+          const client = await getOneDriveClient();
+          const encodedPath = encodeURIComponent(mediaUrl).replace(/%2F/g, '/');
+          const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+          const downloadUrl = item['@microsoft.graph.downloadUrl'];
+          if (!downloadUrl) {
+            return res.status(400).json({ error: "Could not get OneDrive download URL" });
+          }
+          const fileResponse = await fetch(downloadUrl);
+          if (!fileResponse.ok) {
+            return res.status(400).json({ error: "Failed to fetch file from OneDrive" });
+          }
+          const arrayBuffer = await fileResponse.arrayBuffer();
+          fileBuffer = Buffer.from(arrayBuffer);
+        } catch (error) {
+          console.error("Error fetching from OneDrive for text extraction:", error);
+          return res.status(400).json({ error: "Failed to fetch file from OneDrive" });
+        }
+      } else if (mediaUrl.startsWith("http")) {
         const fileResponse = await fetch(mediaUrl);
         if (!fileResponse.ok) {
           return res.status(400).json({ error: "Failed to fetch file content" });
         }
         const arrayBuffer = await fileResponse.arrayBuffer();
         fileBuffer = Buffer.from(arrayBuffer);
+      } else {
+        return res.status(400).json({ error: "Unsupported file path format" });
       }
       
       if (!fileBuffer) {
