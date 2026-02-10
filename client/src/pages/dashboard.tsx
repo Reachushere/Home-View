@@ -9367,9 +9367,9 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
           <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
-            pomodoroMode === "work" ? "text-white" : 
+            pomodoroMode === "work" ? (pomodoroRunning ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px' }} data-testid="pomodoro-timer">
+          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', ...(pomodoroMode === "work" && pomodoroRunning ? { color: '#ef4444' } : {}) }} data-testid="pomodoro-timer">
             {formatPomodoroTime(pomodoroTime)}
           </div>
           <div className="flex items-center gap-3">
