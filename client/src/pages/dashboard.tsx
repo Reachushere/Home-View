@@ -17721,16 +17721,16 @@ function ProfileForm({
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
-        <Select value={timezone} onValueChange={setTimezone}>
-          <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-profile-timezone">
-            <SelectValue placeholder="Select time zone" />
-          </SelectTrigger>
-          <SelectContent className="bg-white !text-[10px]">
-            {timezones.map(tz => (
-              <SelectItem key={tz.value} value={tz.value} className="text-black !text-[10px]">{tz.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <select
+          value={timezone}
+          onChange={(e) => setTimezone(e.target.value)}
+          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+          data-testid="select-profile-timezone"
+        >
+          {timezones.map(tz => (
+            <option key={tz.value} value={tz.value}>{tz.label}</option>
+          ))}
+        </select>
       </div>
       <div className="border rounded-lg p-3 space-y-3">
         <div className="flex items-center gap-2">
@@ -18077,16 +18077,16 @@ function SchoolForm({
           </div>
           <div className="space-y-1">
             <Label htmlFor="schoolName" className="text-[10px]">School Name</Label>
-            <Select value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'} onValueChange={(v) => { setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}>
-              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-school-name">
-                <SelectValue placeholder="Select school" />
-              </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
-                {NORTH_AMERICAN_SCHOOLS.map(s => (
-                  <SelectItem key={s} value={s} className="!text-black !text-[10px]">{s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'}
+              onChange={(e) => { const v = e.target.value; setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              data-testid="select-school-name"
+            >
+              {NORTH_AMERICAN_SCHOOLS.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
             {(schoolName === 'Other' || !NORTH_AMERICAN_SCHOOLS.includes(schoolName)) && (
               <Input
                 value={customSchoolName || (NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? '' : schoolName)}
@@ -18100,29 +18100,29 @@ function SchoolForm({
           </div>
           <div className="space-y-1">
             <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
-            <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
-                <SelectValue placeholder="Select day" />
-              </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={firstDayOfWeek}
+              onChange={(e) => setFirstDayOfWeek(e.target.value)}
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              data-testid="select-first-day-of-week"
+            >
+              {daysOfWeek.map(day => (
+                <option key={day.value} value={day.value}>{day.label}</option>
+              ))}
+            </select>
           </div>
           <div className="space-y-1">
             <Label htmlFor="lastDayOfSchoolWeek" className="text-[10px]">Last Day of School Week</Label>
-            <Select value={lastDayOfSchoolWeek} onValueChange={setLastDayOfSchoolWeek}>
-              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-last-day-of-school-week">
-                <SelectValue placeholder="Select day" />
-              </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={lastDayOfSchoolWeek}
+              onChange={(e) => setLastDayOfSchoolWeek(e.target.value)}
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              data-testid="select-last-day-of-school-week"
+            >
+              {daysOfWeek.map(day => (
+                <option key={day.value} value={day.value}>{day.label}</option>
+              ))}
+            </select>
           </div>
           <div className="text-[9px] text-muted-foreground pt-1">
             Current Semester Ends: {semesterEnd}
@@ -18153,65 +18153,65 @@ function SchoolForm({
               </div>
               <div className="space-y-1">
                 <Label htmlFor="semesterType" className="text-[10px] text-white/70">Semester Type</Label>
-                <Select value={semesterType} onValueChange={setSemesterType}>
-                  <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-semester-type">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                    <SelectItem value="fall" className="!text-black !text-[10px]">Fall</SelectItem>
-                    <SelectItem value="winter" className="!text-black !text-[10px]">Winter</SelectItem>
-                    <SelectItem value="spring_summer" className="!text-black !text-[10px]">Spring/Summer</SelectItem>
-                  </SelectContent>
-                </Select>
+                <select
+                  value={semesterType}
+                  onChange={(e) => setSemesterType(e.target.value)}
+                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  data-testid="select-semester-type"
+                >
+                  <option value="fall">Fall</option>
+                  <option value="winter">Winter</option>
+                  <option value="spring_summer">Spring/Summer</option>
+                </select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">Number of School Weeks</Label>
-                <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-                  <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8 w-24 px-2" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
-                    <SelectValue placeholder="Select weeks" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white [&_*]:!text-black !text-[10px] min-w-0 w-24">
-                    {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                      <SelectItem key={w} value={String(w)} className="!text-black !text-[10px] py-1">{w} weeks</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <select
+                  value={String(numberOfWeeks)}
+                  onChange={(e) => setNumberOfWeeks(Number(e.target.value))}
+                  className="h-8 w-24 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  data-testid="select-number-of-weeks"
+                >
+                  {[10, 11, 12, 13, 14, 15, 16].map(w => (
+                    <option key={w} value={String(w)}>{w} weeks</option>
+                  ))}
+                </select>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="timezone" className="text-[10px] text-white/70">Time Zone</Label>
-                <Select value={timezone} onValueChange={setTimezone}>
-                  <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-timezone">
-                    <SelectValue placeholder="Select timezone" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
-                    {[
-                      { value: 'America/Toronto', label: 'Eastern (Toronto)' },
-                      { value: 'America/New_York', label: 'Eastern (New York)' },
-                      { value: 'America/Chicago', label: 'Central (Chicago)' },
-                      { value: 'America/Denver', label: 'Mountain (Denver)' },
-                      { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
-                      { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
-                      { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
-                      { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
-                      { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
-                      { value: 'America/St_Johns', label: 'Newfoundland (St. John\'s)' },
-                      { value: 'America/Regina', label: 'Central - No DST (Regina)' },
-                      { value: 'Pacific/Honolulu', label: 'Hawaii' },
-                      { value: 'America/Anchorage', label: 'Alaska' },
-                      { value: 'Europe/London', label: 'GMT (London)' },
-                      { value: 'Europe/Paris', label: 'CET (Paris)' },
-                      { value: 'Europe/Berlin', label: 'CET (Berlin)' },
-                      { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
-                      { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
-                      { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
-                      { value: 'UTC', label: 'UTC' },
-                    ].map(tz => (
-                      <SelectItem key={tz.value} value={tz.value} className="!text-black !text-[10px]">{tz.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <select
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
+                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  data-testid="select-timezone"
+                >
+                  {[
+                    { value: 'America/Toronto', label: 'Eastern (Toronto)' },
+                    { value: 'America/New_York', label: 'Eastern (New York)' },
+                    { value: 'America/Chicago', label: 'Central (Chicago)' },
+                    { value: 'America/Denver', label: 'Mountain (Denver)' },
+                    { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
+                    { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
+                    { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
+                    { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
+                    { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
+                    { value: 'America/St_Johns', label: "Newfoundland (St. John's)" },
+                    { value: 'America/Regina', label: 'Central - No DST (Regina)' },
+                    { value: 'Pacific/Honolulu', label: 'Hawaii' },
+                    { value: 'America/Anchorage', label: 'Alaska' },
+                    { value: 'Europe/London', label: 'GMT (London)' },
+                    { value: 'Europe/Paris', label: 'CET (Paris)' },
+                    { value: 'Europe/Berlin', label: 'CET (Berlin)' },
+                    { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
+                    { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
+                    { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
+                    { value: 'UTC', label: 'UTC' },
+                  ].map(tz => (
+                    <option key={tz.value} value={tz.value}>{tz.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="space-y-2 pt-1">
