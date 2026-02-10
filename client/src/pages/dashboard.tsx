@@ -3495,25 +3495,31 @@ export default function Dashboard() {
     });
     cleanedText = filteredParagraphs.join('\n\n');
     
-    const frenchWords = /\b(le|la|les|un|une|des|du|au|aux|et|ou|mais|donc|car|ni|que|qui|dont|où|je|tu|il|elle|nous|vous|ils|elles|on|mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs|ce|cet|cette|ces|être|avoir|faire|aller|est|sont|était|étaient|sera|été|suis|sommes|êtes|avons|avez|ont|avait|dans|sur|sous|avec|pour|par|sans|chez|entre|vers|très|plus|moins|aussi|bien|peu|beaucoup|trop|ne|pas|jamais|rien|tout|tous|toute|toutes|comme|même|autre|autres|si|alors|quand|pendant|après|avant|encore|déjà|peut|peuvent|doit|doivent|fait|font|dit|disent|voir|dire|prendre|mettre|quel|quelle|quels|quelles)\b/gi;
+    const frenchStructure = /\b(l'|d'|n'|s'|j'|c'|qu'|m'|t')\w+/gi;
+    const frenchVerbs = /\b(est|sont|était|étaient|être|avoir|été|fait|peut|peuvent|doit|doivent|avait|avaient|sera|seront)\b/gi;
+    const frenchPronouns = /\b(je|tu|il|elle|nous|vous|ils|elles|ce|cette|ces|cet)\b/gi;
+    const frenchPreps = /\b(dans|avec|pour|sans|sur|sous|chez|vers|entre|depuis|après|avant|donc|mais|dont|où)\b/gi;
     
-    const isFullyFrench = (text: string): boolean => {
-      const words = text.split(/\s+/).filter(w => w.length > 1);
-      if (words.length < 4) return false;
-      const matches = text.match(frenchWords);
-      const frenchCount = matches ? matches.length : 0;
-      return (frenchCount / words.length) > 0.55;
+    const isFullSentenceFrench = (sentence: string): boolean => {
+      const words = sentence.split(/\s+/).filter(w => w.length > 0);
+      if (words.length < 5) return false;
+      const structMatches = sentence.match(frenchStructure);
+      if (!structMatches || structMatches.length < 2) return false;
+      const verbMatches = sentence.match(frenchVerbs);
+      const pronounMatches = sentence.match(frenchPronouns);
+      const prepMatches = sentence.match(frenchPreps);
+      const totalFrench = (structMatches?.length || 0) + (verbMatches?.length || 0) + (pronounMatches?.length || 0) + (prepMatches?.length || 0);
+      return (totalFrench / words.length) > 0.4;
     };
     
-    const paragraphs2 = cleanedText.split(/\n\n+/);
-    const englishParagraphs = paragraphs2.filter(para => {
-      if (isFullyFrench(para)) return false;
-      return true;
-    });
+    const allSentences = cleanedText.split(/(?<=[.!?])\s+/);
+    const hasFrench = allSentences.some(s => isFullSentenceFrench(s));
+    if (!hasFrench) return cleanedText;
     
-    const result = englishParagraphs.map(para => {
+    const paragraphs2 = cleanedText.split(/\n\n+/);
+    const result = paragraphs2.map(para => {
       const sentences = para.split(/(?<=[.!?])\s+/);
-      return sentences.filter(s => !isFullyFrench(s)).join(' ');
+      return sentences.filter(s => !isFullSentenceFrench(s)).join(' ');
     }).filter(p => p.trim().length > 0);
     
     return result.join('\n\n');
