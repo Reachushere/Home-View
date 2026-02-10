@@ -11667,7 +11667,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden px-4 pb-4 pt-0">
+              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column - New Course + School & Semester Settings */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px' }}>
