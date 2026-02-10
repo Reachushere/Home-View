@@ -17708,19 +17708,6 @@ function ProfileForm({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="postalCode" className="text-[10px]">Postal Code / Zip Code</Label>
-        <Input 
-          id="postalCode" 
-          value={postalCode}
-          onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
-          placeholder="e.g. M5V 2T6 or 90210"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-postalcode"
-        />
-        <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
-      </div>
-      <div className="space-y-2">
         <Label htmlFor="location" className="text-[10px]">Location</Label>
         <select
           value={location}
@@ -17733,6 +17720,19 @@ function ProfileForm({
             <option key={c.label} value={c.label}>{c.label}</option>
           ))}
         </select>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="postalCode" className="text-[10px]">Postal Code / Zip Code</Label>
+        <Input 
+          id="postalCode" 
+          value={postalCode}
+          onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
+          placeholder="e.g. M5V 2T6 or 90210"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
+          data-testid="input-profile-postalcode"
+        />
+        <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
