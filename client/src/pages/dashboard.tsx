@@ -17990,7 +17990,7 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
   return (
     <div className="space-y-1">
       <Label className="text-[10px] text-white/70">{label}</Label>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} modal={false}>
         <PopoverTrigger asChild>
           <button
             type="button"
