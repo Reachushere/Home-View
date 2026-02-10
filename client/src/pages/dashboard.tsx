@@ -11737,8 +11737,8 @@ export default function Dashboard() {
                 </div>
 
                 {/* Weeks */}
-                <div className="border rounded-lg p-3 space-y-0">
-                  <Label className="text-[10px] font-medium">Weeks</Label>
+                <div className="border rounded-lg p-3 space-y-0" style={{ gap: 0 }}>
+                  <Label className="text-[10px] font-medium mb-1 block">Weeks</Label>
                   {[...weeks].sort((a, b) => {
                     const today = startOfDay(new Date());
                     const aEndDay = startOfDay(parseISO(a.endDate));
@@ -11753,10 +11753,10 @@ export default function Dashboard() {
                     const isWeekFinished = startOfDay(weekEnd) < startOfDay(new Date());
                     const isSelected = selectedWeek === week.weekNumber && !selectedDate;
                     return (
-                      <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md`} style={isSelected ? { backgroundColor: 'rgba(255,255,255,0.15)' } : undefined}>
+                      <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md`} style={{ marginTop: 0, marginBottom: 0, ...(isSelected ? { backgroundColor: 'rgba(255,255,255,0.15)' } : {}) }}>
                         <Button
                           variant="ghost"
-                          className={`justify-start gap-1 h-auto py-0 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
+                          className={`justify-start gap-1 h-auto !py-0 !min-h-0 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
                           size="sm"
                           onClick={() => {
                             setSelectedWeek(week.weekNumber);
