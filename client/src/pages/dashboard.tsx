@@ -10582,28 +10582,25 @@ export default function Dashboard() {
           
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={handleQuickAddClose}>
-              <div className="absolute inset-0 bg-black/40" />
+            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={handleQuickAddClose}>
               <div 
-                className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
-                  width: '480px',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                 }}
                 onClick={(e) => e.stopPropagation()}
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3 bg-black/30 border-b border-white/15">
+                <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
                   <div className="flex items-center gap-2">
                     <Plus className="h-3.5 w-3.5 text-white" />
-                    <span className="text-[11px] text-white font-normal tracking-wide uppercase">
+                    <h2 className="text-xs font-normal text-white tracking-wide uppercase">
                       {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
-                    </span>
+                    </h2>
                   </div>
-                  <button onClick={handleQuickAddClose} className="text-white/50 hover:text-white transition-colors" data-testid="button-close-quick-add">
-                    <X className="h-4 w-4" />
+                  <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
+                    <X className="h-5 w-5" />
                   </button>
                 </div>
 
@@ -10650,7 +10647,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Content area */}
-                <div className="px-5 py-5 min-h-[200px] max-h-[400px] overflow-y-auto flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white" style={{ scrollbarWidth: 'thin', height: '400px' }}>
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
@@ -11168,30 +11165,44 @@ export default function Dashboard() {
                 </div>
 
                 {/* Footer with navigation */}
-                <div className="flex items-center justify-between px-5 py-3 border-t border-white/10">
-                  <button
+                <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
+                  <Button
+                    variant="outline"
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
-                    className="text-white/50 hover:text-white text-[11px] transition-colors flex items-center gap-1"
+                    className="border !border-white/30 text-white/60 transition-all duration-200"
+                    style={{ fontSize: "11px" }}
                     data-testid="quick-add-back"
                   >
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    {quickAddStep === 0 ? 'Cancel' : 'Back'}
-                  </button>
+                    {quickAddStep === 0 ? 'Cancel' : <><ChevronLeft className="h-3 w-3 mr-1" /> Back</>}
+                  </Button>
 
-                  {quickAddStep < 11 && quickAddStep > 0 && (
-                    <button
-                      onClick={() => setQuickAddStep(s => s + 1)}
-                      disabled={(quickAddStep === 1 && !quickAddData.title.trim()) || (quickAddStep === 3 && !quickAddData.dueDate)}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-[12px] font-medium transition-all duration-200 bg-white/15 text-white hover:bg-white/25 disabled:opacity-30 disabled:cursor-not-allowed"
-                      data-testid="quick-add-next"
-                    >
-                      Next
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </button>
-                  )}
+                  {quickAddStep < 11 && quickAddStep > 0 && (() => {
+                    const canNext = !((quickAddStep === 1 && !quickAddData.title.trim()) || (quickAddStep === 3 && !quickAddData.dueDate));
+                    return (
+                      <Button
+                        variant="outline"
+                        onClick={() => setQuickAddStep(s => s + 1)}
+                        disabled={!canNext}
+                        className="border !border-white/50 text-white transition-all duration-200 disabled:opacity-30"
+                        style={{
+                          boxShadow: canNext ? "0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)" : "none",
+                          fontSize: "11px",
+                        }}
+                        data-testid="quick-add-next"
+                      >
+                        Next <ChevronRight className="h-3 w-3 ml-1" />
+                      </Button>
+                    );
+                  })()}
 
                   {quickAddStep === 11 && (
-                    <button
+                    <Button
+                      variant="outline"
+                      className="border !border-white/50 text-white transition-all duration-200"
+                      style={{
+                        boxShadow: "0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)",
+                        fontSize: "11px",
+                      }}
                       onClick={async () => {
                         try {
                           const dueDate = new Date(quickAddData.dueDate + 'T' + quickAddData.dueDateHour + ':' + quickAddData.dueDateMinute);
@@ -11249,12 +11260,11 @@ export default function Dashboard() {
                           toast({ title: "Error", description: "Failed to add task. Please try again.", variant: "destructive" });
                         }
                       }}
-                      className="flex items-center gap-2 px-5 py-2 rounded-lg text-[12px] font-medium bg-white/20 text-white hover:bg-white/30 transition-all duration-200 border border-white/40 shadow-[0_0_8px_rgba(255,255,255,0.3)] hover:shadow-[0_0_12px_rgba(255,255,255,0.5)]"
                       data-testid="quick-add-submit"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <Plus className="h-3 w-3 mr-1" />
                       Add Task
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
