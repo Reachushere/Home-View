@@ -9367,7 +9367,7 @@ export default function Dashboard() {
         >
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
-        <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
+        <div className="flex items-center gap-4 rounded-full px-3 h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
           <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
             pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
