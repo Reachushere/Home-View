@@ -18110,7 +18110,7 @@ function SchoolForm({
   
   return (
     <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
-      <div className="border rounded-lg p-3 space-y-3">
+      <div className="border rounded-lg p-3 space-y-3 !-mt-[1px]">
         <Label className="text-[10px] font-medium">School</Label>
         <div className="space-y-3">
           <div className="space-y-1">
