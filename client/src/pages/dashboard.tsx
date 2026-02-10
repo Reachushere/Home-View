@@ -120,6 +120,7 @@ import {
   AlertCircle,
   Plane,
   List,
+  Search,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -3086,6 +3087,10 @@ export default function Dashboard() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [syncHighlight, setSyncHighlight] = useState(true); // Sync text highlighting with TTS
+  const [ttsSearchOpen, setTtsSearchOpen] = useState(false);
+  const [ttsSearchQuery, setTtsSearchQuery] = useState("");
+  const [ttsSearchMatchIndex, setTtsSearchMatchIndex] = useState(0);
+  const ttsSearchInputRef = useRef<HTMLInputElement>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
@@ -7546,7 +7551,80 @@ export default function Dashboard() {
                 Complete
               </Label>
             </div>
+            
+            <div className="w-px h-6 bg-white/30" />
+            
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 text-white"
+              onClick={() => {
+                setTtsSearchOpen(prev => !prev);
+                setTtsSearchQuery("");
+                setTtsSearchMatchIndex(0);
+                setTimeout(() => ttsSearchInputRef.current?.focus(), 100);
+              }}
+              data-testid="button-tts-search"
+            >
+              <Search className="h-3.5 w-3.5" />
+            </Button>
           </div>
+          
+          {ttsSearchOpen && (
+            <div className="flex items-center gap-2 mx-6 mt-1 px-3 py-1.5 bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-600">
+              <Search className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+              <input
+                ref={ttsSearchInputRef}
+                type="text"
+                value={ttsSearchQuery}
+                onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (e.shiftKey) {
+                      setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
+                    } else {
+                      const totalMatches = ttsSearchQuery.length >= 2 ? (previewText.toLowerCase().match(new RegExp(ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase(), 'g')) || []).length : 0;
+                      setTtsSearchMatchIndex(prev => prev < totalMatches - 1 ? prev + 1 : 0);
+                    }
+                  }
+                  if (e.key === 'Escape') {
+                    setTtsSearchOpen(false);
+                    setTtsSearchQuery("");
+                    setTtsSearchMatchIndex(0);
+                  }
+                }}
+                placeholder="Search text..."
+                className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-gray-500"
+                data-testid="input-tts-search"
+              />
+              {ttsSearchQuery.length >= 2 && (() => {
+                const escaped = ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const totalMatches = (previewText.toLowerCase().match(new RegExp(escaped.toLowerCase(), 'g')) || []).length;
+                return (
+                  <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                    {totalMatches > 0 ? `${ttsSearchMatchIndex + 1}/${totalMatches}` : '0/0'}
+                  </span>
+                );
+              })()}
+              <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
+                const escaped = ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const totalMatches = ttsSearchQuery.length >= 2 ? (previewText.toLowerCase().match(new RegExp(escaped.toLowerCase(), 'g')) || []).length : 0;
+                setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
+              }} data-testid="button-search-prev">
+                <ChevronUp className="h-3 w-3" />
+              </Button>
+              <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
+                const escaped = ttsSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const totalMatches = ttsSearchQuery.length >= 2 ? (previewText.toLowerCase().match(new RegExp(escaped.toLowerCase(), 'g')) || []).length : 0;
+                setTtsSearchMatchIndex(prev => prev < totalMatches - 1 ? prev + 1 : 0);
+              }} data-testid="button-search-next">
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+              <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => { setTtsSearchOpen(false); setTtsSearchQuery(""); setTtsSearchMatchIndex(0); }} data-testid="button-search-close">
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
           
           {/* Split View: PDF on left, Highlighted Text on right */}
           <div className="flex-1 flex min-h-0 mx-6 mb-2 mt-1 overflow-hidden">
@@ -7726,6 +7804,9 @@ export default function Dashboard() {
                     ];
                     
                     let globalWordIndex = 0;
+                    let searchMatchCounter = 0;
+                    const searchLower = ttsSearchQuery.toLowerCase();
+                    const hasSearch = ttsSearchQuery.length >= 2;
                     
                     return chunks.map((chunk, chunkIdx) => {
                       const chunkColor = chunkColors[chunkIdx % chunkColors.length];
@@ -7805,6 +7886,19 @@ export default function Dashboard() {
                                       {words.map((word, wIdx) => {
                                         const wordGlobalIdx = lineStartIdx + wIdx;
                                         const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
+                                        
+                                        const wordLower = word.toLowerCase();
+                                        const searchIdx = hasSearch ? wordLower.indexOf(searchLower) : -1;
+                                        let isActiveMatch = false;
+                                        let thisMatchIdx = -1;
+                                        if (searchIdx >= 0) {
+                                          thisMatchIdx = searchMatchCounter;
+                                          if (searchMatchCounter === ttsSearchMatchIndex) {
+                                            isActiveMatch = true;
+                                          }
+                                          searchMatchCounter++;
+                                        }
+                                        
                                         return (
                                           <span
                                             key={wordGlobalIdx}
@@ -7813,8 +7907,10 @@ export default function Dashboard() {
                                                 activeWordRef.current = el;
                                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                               }
+                                            } : isActiveMatch ? (el) => {
+                                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                             } : undefined}
-                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : isActiveMatch ? "bg-orange-400 dark:bg-orange-500 text-white px-0.5 rounded ring-2 ring-orange-500" : searchIdx >= 0 ? "bg-orange-200 dark:bg-orange-800/60 px-0.5 rounded" : ""}
                                           >
                                             {word}{' '}
                                           </span>
