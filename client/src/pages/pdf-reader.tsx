@@ -772,14 +772,37 @@ export default function PDFReaderPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Speed: {playbackSpeed}x</label>
-                  <Slider
-                    value={[playbackSpeed]}
-                    onValueChange={([v]) => setPlaybackSpeed(v)}
-                    min={0.5}
-                    max={2}
-                    step={0.25}
-                  />
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Speed</label>
+                  <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
+                    <button
+                      data-testid="button-speed-down"
+                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
+                      onClick={() => setPlaybackSpeed(s => Math.max(0.5, Math.round((s - 0.25) * 100) / 100))}
+                    >
+                      &ndash;
+                    </button>
+                    <div className="flex-1">
+                      <Slider
+                        data-testid="slider-speed"
+                        value={[playbackSpeed]}
+                        onValueChange={([v]) => setPlaybackSpeed(v)}
+                        min={0.5}
+                        max={2}
+                        step={0.25}
+                        className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_[data-orientation=horizontal]>.bg-primary]:bg-blue-500"
+                      />
+                    </div>
+                    <button
+                      data-testid="button-speed-up"
+                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
+                      onClick={() => setPlaybackSpeed(s => Math.min(2, Math.round((s + 0.25) * 100) / 100))}
+                    >
+                      +
+                    </button>
+                    <span className="text-white text-sm font-medium min-w-[4ch] text-right tabular-nums">
+                      {playbackSpeed}x
+                    </span>
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">Volume</label>
