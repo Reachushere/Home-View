@@ -3192,6 +3192,14 @@ export default function Dashboard() {
     }
     return count;
   }, [ttsSearchQuery, ttsChunks]);
+  useEffect(() => {
+    if (ttsSearchQuery.trim().length < 2 || ttsSearchMatchCount === 0) return;
+    const timer = setTimeout(() => {
+      const el = document.querySelector('[data-active-search-match="true"]');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [ttsSearchMatchIndex, ttsSearchQuery, ttsSearchMatchCount]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
@@ -8258,13 +8266,12 @@ export default function Dashboard() {
                                           <span
                                             key={wordGlobalIdx}
                                             data-word-idx={wordGlobalIdx}
+                                            data-active-search-match={isActiveMatch ? 'true' : undefined}
                                             ref={isCurrentWord ? (el) => {
                                               if (el && el !== activeWordRef.current) {
                                                 activeWordRef.current = el;
                                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                               }
-                                            } : isActiveMatch ? (el) => {
-                                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                             } : undefined}
                                             className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : isActiveMatch ? "bg-orange-400 dark:bg-orange-500 text-white px-0.5 rounded ring-2 ring-orange-500" : isSearchHighlight ? "bg-orange-200 dark:bg-orange-800/60 px-0.5 rounded" : ""}
                                           >
