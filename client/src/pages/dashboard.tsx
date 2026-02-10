@@ -11628,6 +11628,7 @@ export default function Dashboard() {
               </div>
               <div className="p-4">
                 <ProfileForm 
+                  key={isProfileDialogOpen ? 'open' : 'closed'}
                   profileData={profileData} 
                   timezones={timezones} 
                   onSave={saveProfile}
@@ -11687,6 +11688,7 @@ export default function Dashboard() {
                   New Course
                 </Button>
                 <SchoolForm 
+                  key={isSchoolDialogOpen ? 'open' : 'closed'}
                   schoolData={schoolData}
                   semesterSettings={semesterSettings}
                   onSave={saveSchool}
