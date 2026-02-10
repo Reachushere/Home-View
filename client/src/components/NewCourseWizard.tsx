@@ -246,18 +246,24 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
       </div>
       <div>
         <Label className="text-[10px] text-white/70 mb-1.5 block">Course Color</Label>
-        <div className="flex gap-2 flex-wrap">
-          {COLORS.map(c => (
-            <button
-              key={c}
-              onClick={() => updateField("color", c)}
-              className={`w-7 h-7 rounded-full border-2 transition-all ${
-                data.color === c ? "border-white scale-110" : "border-transparent opacity-70 hover:opacity-100"
-              }`}
-              style={{ backgroundColor: c }}
-              data-testid={`wizard-color-${c}`}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div
+              className="w-9 h-9 rounded-full border-2 border-white cursor-pointer"
+              style={{ backgroundColor: data.color }}
+              onClick={() => document.getElementById("wizard-color-input")?.click()}
+              data-testid="wizard-color-preview"
             />
-          ))}
+            <input
+              id="wizard-color-input"
+              type="color"
+              value={data.color}
+              onChange={(e) => updateField("color", e.target.value)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              data-testid="wizard-color-picker"
+            />
+          </div>
+          <span className="text-[10px] text-white/50">{data.color}</span>
         </div>
       </div>
     </div>
