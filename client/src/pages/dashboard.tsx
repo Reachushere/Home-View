@@ -9351,7 +9351,7 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
                   <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black [&_option]:!text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
@@ -17728,7 +17728,7 @@ function ProfileForm({
           data-testid="select-profile-timezone"
         >
           {timezones.map(tz => (
-            <option key={tz.value} value={tz.value}>{tz.label}</option>
+            <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
           ))}
         </select>
       </div>
@@ -17753,9 +17753,9 @@ function ProfileForm({
               className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
               data-testid="select-travel-timezone"
             >
-              <option value="">Pick a city</option>
+              <option value="" className="text-black bg-white">Pick a city</option>
               {TRAVEL_CITIES.map(c => (
-                <option key={c.value} value={c.value}>{c.label}</option>
+                <option key={c.value} value={c.value} className="text-black bg-white">{c.label}</option>
               ))}
             </select>
           </div>
@@ -18080,11 +18080,11 @@ function SchoolForm({
             <select
               value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'}
               onChange={(e) => { const v = e.target.value; setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400 [&_option]:!text-black"
               data-testid="select-school-name"
             >
               {NORTH_AMERICAN_SCHOOLS.map(s => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s} className="text-black bg-white">{s}</option>
               ))}
             </select>
             {(schoolName === 'Other' || !NORTH_AMERICAN_SCHOOLS.includes(schoolName)) && (
@@ -18107,7 +18107,7 @@ function SchoolForm({
               data-testid="select-first-day-of-week"
             >
               {daysOfWeek.map(day => (
-                <option key={day.value} value={day.value}>{day.label}</option>
+                <option key={day.value} value={day.value} className="text-black bg-white">{day.label}</option>
               ))}
             </select>
           </div>
@@ -18120,7 +18120,7 @@ function SchoolForm({
               data-testid="select-last-day-of-school-week"
             >
               {daysOfWeek.map(day => (
-                <option key={day.value} value={day.value}>{day.label}</option>
+                <option key={day.value} value={day.value} className="text-black bg-white">{day.label}</option>
               ))}
             </select>
           </div>
@@ -18159,9 +18159,9 @@ function SchoolForm({
                   className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
                   data-testid="select-semester-type"
                 >
-                  <option value="fall">Fall</option>
-                  <option value="winter">Winter</option>
-                  <option value="spring_summer">Spring/Summer</option>
+                  <option value="fall" className="text-black bg-white">Fall</option>
+                  <option value="winter" className="text-black bg-white">Winter</option>
+                  <option value="spring_summer" className="text-black bg-white">Spring/Summer</option>
                 </select>
               </div>
             </div>
@@ -18175,7 +18175,7 @@ function SchoolForm({
                   data-testid="select-number-of-weeks"
                 >
                   {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                    <option key={w} value={String(w)}>{w} weeks</option>
+                    <option key={w} value={String(w)} className="text-black bg-white">{w} weeks</option>
                   ))}
                 </select>
               </div>
@@ -18209,7 +18209,7 @@ function SchoolForm({
                     { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
                     { value: 'UTC', label: 'UTC' },
                   ].map(tz => (
-                    <option key={tz.value} value={tz.value}>{tz.label}</option>
+                    <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
                   ))}
                 </select>
               </div>
@@ -18237,9 +18237,9 @@ function SchoolForm({
                     className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
                     data-testid="select-travel-timezone"
                   >
-                    <option value="">Pick a city</option>
+                    <option value="" className="text-black bg-white">Pick a city</option>
                     {TRAVEL_CITIES.map(c => (
-                      <option key={c.value} value={c.value}>{c.label}</option>
+                      <option key={c.value} value={c.value} className="text-black bg-white">{c.label}</option>
                     ))}
                   </select>
                   <p className="text-[8px] text-orange-300/70">Due times will show in both your school and travel time zones.</p>
