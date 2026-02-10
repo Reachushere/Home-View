@@ -17747,16 +17747,17 @@ function ProfileForm({
           <div className="space-y-2">
             <Label htmlFor="travelTimezone" className="text-[10px]">Where are you travelling to?</Label>
             <p className="text-[9px] text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
-            <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
-              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-travel-timezone">
-                <SelectValue placeholder="Pick a city" />
-              </SelectTrigger>
-              <SelectContent className="bg-white !text-[10px] max-h-[200px]">
-                {TRAVEL_CITIES.map(c => (
-                  <SelectItem key={c.value} value={c.value} className="text-black !text-[10px]">{c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={travelTimezone || timezone}
+              onChange={(e) => setTravelTimezone(e.target.value)}
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+              data-testid="select-travel-timezone"
+            >
+              <option value="">Pick a city</option>
+              {TRAVEL_CITIES.map(c => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
           </div>
         )}
       </div>
@@ -18230,16 +18231,17 @@ function SchoolForm({
               {isTravelling && (
                 <div className="space-y-1 ml-5">
                   <Label htmlFor="travelTimezone" className="text-[10px] text-white/70">Where are you travelling to?</Label>
-                  <Select value={travelTimezone} onValueChange={setTravelTimezone}>
-                    <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-travel-timezone">
-                      <SelectValue placeholder="Pick a city" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
-                      {TRAVEL_CITIES.map(c => (
-                        <SelectItem key={c.value} value={c.value} className="!text-black !text-[10px]">{c.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    value={travelTimezone}
+                    onChange={(e) => setTravelTimezone(e.target.value)}
+                    className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    data-testid="select-travel-timezone"
+                  >
+                    <option value="">Pick a city</option>
+                    {TRAVEL_CITIES.map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
                   <p className="text-[8px] text-orange-300/70">Due times will show in both your school and travel time zones.</p>
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     <TravelDateTimePicker
