@@ -1527,13 +1527,19 @@ export async function registerRoutes(
           await parser.load();
           const pdfText = await parser.getText();
           
-          // Use a special marker to indicate page breaks for sync with PDF viewer
           const PAGE_BREAK_MARKER = '\n\n---PAGE---\n\n';
+          
+          console.log(`[PDF Parse] getText type: ${typeof pdfText}, isArray: ${Array.isArray(pdfText)}, keys: ${pdfText && typeof pdfText === 'object' ? Object.keys(pdfText).join(',') : 'N/A'}`);
+          if (pdfText && typeof pdfText === 'object' && (pdfText as any).pages) {
+            console.log(`[PDF Parse] pages count: ${(pdfText as any).pages.length}`);
+          }
           
           if (pdfText && typeof pdfText === 'object') {
             if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              console.log(`[PDF Parse] Extracting from ${pdfText.pages.length} pages`);
               textContent = pdfText.pages.map((page: any) => page.text || '').join(PAGE_BREAK_MARKER);
             } else if (Array.isArray(pdfText)) {
+              console.log(`[PDF Parse] Array with ${pdfText.length} items`);
               textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(PAGE_BREAK_MARKER);
             } else if (pdfText.text) {
               textContent = pdfText.text;
@@ -1545,6 +1551,7 @@ export async function registerRoutes(
           } else {
             textContent = String(pdfText || '');
           }
+          console.log(`[PDF Parse] Raw extracted text length: ${textContent.length}`);
           await parser.destroy();
         } catch (error) {
           console.error("Error parsing PDF:", error);
@@ -1557,62 +1564,7 @@ export async function registerRoutes(
       // Filter out boxed content (sidebars, callout boxes, etc.)
       // Heuristics: detect blocks that appear to be in boxes based on formatting patterns
       const filterBoxedContent = (text: string): string => {
-        const lines = text.split('\n');
-        const filteredLines: string[] = [];
-        let inBox = false;
-        let boxStartPatterns = [
-          /^[\[\{]\s*$/,           // Opening bracket on its own line
-          /^[-=_]{5,}$/,            // Horizontal line separators
-          /^\*{3,}$/,               // Asterisk separators
-          /^BOX\s*\d*:?/i,          // "BOX 1:" or similar
-          /^SIDEBAR:?/i,            // "SIDEBAR:" markers
-          /^NOTE:?\s*$/i,           // Empty "NOTE:" headers
-          /^TIP:?\s*$/i,            // Empty "TIP:" headers
-          /^CALLOUT:?/i,            // Callout markers
-          /^FIGURE\s+\d+/i,         // Figure references
-          /^TABLE\s+\d+/i,          // Table references
-        ];
-        let boxEndPatterns = [
-          /^[\]\}]\s*$/,            // Closing bracket on its own line
-          /^[-=_]{5,}$/,            // Horizontal line separators (can also end boxes)
-        ];
-        
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim();
-          
-          // Check if entering a box
-          if (!inBox && boxStartPatterns.some(p => p.test(line))) {
-            inBox = true;
-            continue;
-          }
-          
-          // Check if exiting a box
-          if (inBox && boxEndPatterns.some(p => p.test(line))) {
-            inBox = false;
-            continue;
-          }
-          
-          // Skip lines while in a box, unless it's main content
-          if (inBox) {
-            continue;
-          }
-          
-          // Also skip lines that look like they're isolated callout boxes
-          // (short lines surrounded by blank lines that aren't headers)
-          const prevEmpty = i === 0 || lines[i-1].trim() === '';
-          const nextEmpty = i === lines.length - 1 || lines[i+1].trim() === '';
-          const isShort = line.length < 60 && line.length > 0;
-          const hasBoxKeywords = /\b(see|refer|note|tip|example|figure|table|box)\b/i.test(line);
-          
-          // Skip isolated short lines with box keywords
-          if (prevEmpty && nextEmpty && isShort && hasBoxKeywords && !line.endsWith('.')) {
-            continue;
-          }
-          
-          filteredLines.push(lines[i]);
-        }
-        
-        return filteredLines.join('\n');
+        return text;
       };
       
       // Apply boxed content filter
