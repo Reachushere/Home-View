@@ -17936,6 +17936,7 @@ const NORTH_AMERICAN_SCHOOLS = [
 
 function TravelDateTimePicker({ label, value, onChange, testId }: { label: string; value: string; onChange: (val: string) => void; testId: string }) {
   const [open, setOpen] = useState(false);
+  console.log('[TravelDatePicker] Component rendered, label:', label, 'open:', open, 'value:', value);
   const [tempDate, setTempDate] = useState<Date | undefined>(() => {
     if (value) { const d = new Date(value); return isNaN(d.getTime()) ? undefined : d; }
     return undefined;
@@ -17990,7 +17991,7 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
   return (
     <div className="space-y-1">
       <Label className="text-[10px] text-white/70">{label}</Label>
-      <Popover open={open} onOpenChange={setOpen} modal={false}>
+      <Popover open={open} onOpenChange={(v) => { console.log('[TravelDatePicker] onOpenChange:', v); setOpen(v); }} modal={false}>
         <PopoverTrigger asChild>
           <button
             type="button"
@@ -18004,7 +18005,7 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
           <CalendarPicker
             mode="single"
             selected={tempDate}
-            onSelect={setTempDate}
+            onSelect={(d: Date | undefined) => { console.log('[TravelDatePicker] date selected:', d); setTempDate(d); }}
             className="rounded-md border"
           />
           <div className="flex items-center gap-1 mt-2">
