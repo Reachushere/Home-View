@@ -13176,7 +13176,14 @@ export default function Dashboard() {
                 const course = { 
                   name: courseName, 
                   bg: courseName === 'CASL101' ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.24)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
-                  label: courseData.color, 
+                  label: (() => {
+                    if (courseName === 'CPPA122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
+                    if (courseName === 'CFNF400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
+                    if (courseName === 'CASL101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                    const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
+                    const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
+                    return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
+                  })(),
                   colors: dynamicCourseColors[courseName] 
                 };
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
@@ -13240,7 +13247,7 @@ export default function Dashboard() {
                             }}
                           >
                             {/* Course name column */}
-                            <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: course.label }}>
+                            <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ background: course.label }}>
                               {taskIdx === 0 ? course.name : ''}
                             </div>
                             
@@ -13402,7 +13409,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px`, borderBottom: `1px solid ${courseData.color}` }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ backgroundColor: course.label }}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
