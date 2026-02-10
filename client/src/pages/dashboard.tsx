@@ -7988,9 +7988,7 @@ export default function Dashboard() {
                           </div>
                           <div className="flex-1">
                           <div 
-                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-r-lg p-3 cursor-pointer hover:opacity-90 transition-opacity relative`}
-                            onClick={() => playFromChunk(chunkIdx)}
-                            title={`Click to play from Section ${chunkIdx + 1}`}
+                            className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} ${checkedChunks.has(chunkIdx) ? 'line-through opacity-60' : ''} rounded-r-lg p-3 transition-opacity relative`}
                           >
                           {/* Chunk header */}
                           <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-gray-300 dark:border-gray-600">
