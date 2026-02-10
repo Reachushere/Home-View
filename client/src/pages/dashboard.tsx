@@ -1709,7 +1709,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('profileData');
     return saved ? { postalCode: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '' };
   });
-  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string }>(() => {
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -1809,7 +1809,7 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => {
+  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string; semesterType?: string }) => {
     const { semesterType: semType, ...schoolOnly } = data;
     setSchoolData(schoolOnly);
     localStorage.setItem('schoolData', JSON.stringify(schoolOnly));
@@ -17773,9 +17773,9 @@ function SchoolForm({
   onSave,
   onCancel 
 }: { 
-  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string };
+  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => void;
+  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string; semesterType?: string }) => void;
   onCancel: () => void;
 }) {
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -17787,6 +17787,8 @@ function SchoolForm({
   const [timezone, setTimezone] = useState(schoolData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto');
   const [isTravelling, setIsTravelling] = useState(schoolData.isTravelling || false);
   const [travelTimezone, setTravelTimezone] = useState(schoolData.travelTimezone || '');
+  const [travelStartDate, setTravelStartDate] = useState(schoolData.travelStartDate || '');
+  const [travelEndDate, setTravelEndDate] = useState(schoolData.travelEndDate || '');
   const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
   const [logoPreview, setLogoPreview] = useState<string | null>(schoolData.schoolLogo);
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -17817,7 +17819,7 @@ function SchoolForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: logoPreview, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, semesterType });
+    onSave({ schoolLogo: logoPreview, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, travelStartDate: isTravelling ? travelStartDate : undefined, travelEndDate: isTravelling ? travelEndDate : undefined, semesterType });
   };
 
   const semesterEnd = week1StartDate 
@@ -18036,6 +18038,28 @@ function SchoolForm({
                     </SelectContent>
                   </Select>
                   <p className="text-[8px] text-orange-300/70">Due times will show in both your school and travel time zones.</p>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/70">Start Date & Time</Label>
+                      <input
+                        type="datetime-local"
+                        value={travelStartDate}
+                        onChange={(e) => setTravelStartDate(e.target.value)}
+                        className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        data-testid="input-travel-start-date"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/70">End Date & Time</Label>
+                      <input
+                        type="datetime-local"
+                        value={travelEndDate}
+                        onChange={(e) => setTravelEndDate(e.target.value)}
+                        className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        data-testid="input-travel-end-date"
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
