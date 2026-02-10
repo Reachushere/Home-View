@@ -7446,96 +7446,70 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-7px' }}>
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-6 w-6 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+          <div className="flex items-center justify-center gap-3 p-2 px-3 sm:px-5 mx-2 sm:mx-6 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-7px' }}>
+            <button
+              className="media-btn media-btn-sm"
               onClick={handleSkipBack}
               data-testid="button-preview-rewind"
               title="Rewind 20 words"
             >
-              <SkipBack className="h-4 w-4 text-white stroke-white" />
-            </Button>
+              <SkipBack className="h-3.5 w-3.5 text-white" />
+            </button>
             
-            <Button
-              size="icon"
-              variant="outline"
-              className={`h-6 w-6 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent transition-all duration-200 ${
-                isPlaying 
-                  ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent shadow-[0_0_16px_rgba(59,130,246,0.8),0_0_24px_rgba(59,130,246,0.6)]' 
-                  : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
-              }`}
+            <button
+              className={`media-btn media-btn-play ${isPlaying ? 'media-btn-active' : ''}`}
               onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
               data-testid="button-preview-play"
               title="Play from start"
             >
-              <Play className="h-4 w-4 text-white fill-white" />
-            </Button>
+              <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+            </button>
             
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-6 w-6 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] focus:ring-2 focus:ring-green-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+            <button
+              className="media-btn media-btn-sm media-btn-resume"
               onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
               data-testid="button-preview-resume"
               title={`Resume from section ${(previewFile?.id ? getTtsProgress(previewFile.id)?.chunkIndex || 0 : 0) + 1}`}
             >
-              <RotateCcw className="h-4 w-4 text-white stroke-white" />
-            </Button>
+              <RotateCcw className="h-3.5 w-3.5 text-white" />
+            </button>
             
-            <Button
-              size="icon"
-              variant="destructive"
-              className="h-6 w-6 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)] focus:ring-2 focus:ring-red-400 focus:ring-offset-1 focus:ring-offset-transparent"
+            <button
+              className="media-btn media-btn-sm media-btn-stop"
               onClick={handleStopMedia}
               data-testid="button-preview-stop"
             >
-              <Square className="h-4 w-4 fill-white" />
-            </Button>
+              <Square className="h-3.5 w-3.5 text-white fill-white" />
+            </button>
             
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-6 w-6 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+            <button
+              className="media-btn media-btn-sm"
               onClick={handleSkipForward}
               data-testid="button-preview-forward"
               title="Skip forward 20 words"
             >
-              <SkipForward className="h-4 w-4 text-white stroke-white" />
-            </Button>
+              <SkipForward className="h-3.5 w-3.5 text-white" />
+            </button>
             
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-7 bg-white/20" />
             
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-6 px-2 text-[9px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+            <button
+              className="media-btn media-btn-xs"
               onClick={handleRestartFromBeginning}
               data-testid="button-preview-restart-beginning"
               title="Restart from beginning"
             >
-              <RotateCcw className="h-4 w-4 mr-1 text-white stroke-white" />
-              <div className="flex flex-col leading-tight">
-                <span>Restart</span>
-                <span>Beginning</span>
-              </div>
-            </Button>
+              <RotateCcw className="h-3 w-3 text-white" />
+            </button>
             
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-6 px-2 text-[9px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+            <button
+              className="media-btn media-btn-xs"
               onClick={handleRestartCurrentChunk}
               data-testid="button-preview-restart-current"
               title="Restart current section"
             >
-              <RefreshCw className="h-4 w-4 mr-1 text-white stroke-white" />
-              <div className="flex flex-col leading-tight">
-                <span>Restart</span>
-                <span>Current</span>
-              </div>
-            </Button>
+              <RefreshCw className="h-3 w-3 text-white" />
+            </button>
             
             <div className="w-px h-6 bg-white/30" />
             
@@ -8015,16 +7989,14 @@ export default function Dashboard() {
                             <span className={`text-[11px] font-semibold ${checkedChunks.has(chunkIdx) ? 'text-green-600 dark:text-green-400 line-through' : 'text-gray-600 dark:text-gray-400'}`}>
                               Section {chunkIdx + 1} of {chunks.length}
                             </span>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 px-3 text-[10px] text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900"
+                            <button
+                              className="media-btn media-btn-xs inline-flex items-center justify-center"
                               onClick={(e) => { e.stopPropagation(); playFromChunk(chunkIdx); }}
                               data-testid={`button-play-chunk-${chunkIdx}`}
+                              title={`Play section ${chunkIdx + 1}`}
                             >
-                              <Play className="h-3 w-3 mr-1" />
-                              Play
-                            </Button>
+                              <Play className="h-2.5 w-2.5 text-white fill-white ml-0.5" />
+                            </button>
                           </div>
                           
                           {paragraphs.map((paragraph, pIdx) => {

@@ -757,84 +757,73 @@ export default function PDFReaderPage() {
               </div>
 
               <div className="flex items-center justify-center gap-4 mb-6">
-                <Button
-                  variant="outline"
-                  size="icon"
+                <button
+                  className="media-btn media-btn-lg"
                   onClick={skipBack}
                   disabled={!isPlaying || currentChunk === 0}
-                  className="h-12 w-12 rounded-full"
                 >
-                  <SkipBack className="h-5 w-5" />
-                </Button>
+                  <SkipBack className="h-5 w-5 text-white" />
+                </button>
 
                 {!isPlaying ? (
-                  <div className="flex items-center gap-2">
-                    {/* Resume from Last button - only show for stored files with saved progress */}
+                  <div className="flex items-center gap-3">
                     {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
-                      <Button
-                        size="icon"
+                      <button
+                        className="media-btn media-btn-lg media-btn-resume"
                         onClick={resumeFromLast}
                         disabled={isLoading || numPages === 0}
-                        className="h-14 w-14 rounded-full bg-blue-500 hover:bg-blue-600"
                         title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
                       >
                         {isLoading ? (
-                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <Loader2 className="h-5 w-5 text-white animate-spin" />
                         ) : (
-                          <RotateCcw className="h-6 w-6" />
+                          <RotateCcw className="h-5 w-5 text-white" />
                         )}
-                      </Button>
+                      </button>
                     )}
-                    <Button
-                      size="icon"
+                    <button
+                      className="media-btn media-btn-play"
                       onClick={startReading}
                       disabled={isLoading || numPages === 0}
-                      className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
                     >
                       {isLoading ? (
-                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <Loader2 className="h-7 w-7 text-white animate-spin" />
                       ) : (
-                        <Play className="h-8 w-8 ml-1" />
+                        <Play className="h-7 w-7 text-white fill-white ml-0.5" />
                       )}
-                    </Button>
+                    </button>
                   </div>
                 ) : isPaused ? (
-                  <Button
-                    size="icon"
+                  <button
+                    className="media-btn media-btn-play"
                     onClick={resumeReading}
-                    className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
                   >
-                    <Play className="h-8 w-8 ml-1" />
-                  </Button>
+                    <Play className="h-7 w-7 text-white fill-white ml-0.5" />
+                  </button>
                 ) : (
-                  <Button
-                    size="icon"
+                  <button
+                    className="media-btn media-btn-play media-btn-active"
                     onClick={pauseReading}
-                    className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
                   >
-                    <Pause className="h-8 w-8" />
-                  </Button>
+                    <Pause className="h-7 w-7 text-white" />
+                  </button>
                 )}
 
-                <Button
-                  variant="outline"
-                  size="icon"
+                <button
+                  className="media-btn media-btn-lg media-btn-stop"
                   onClick={stopReading}
                   disabled={!isPlaying}
-                  className="h-12 w-12 rounded-full"
                 >
-                  <Square className="h-5 w-5 text-red-500" />
-                </Button>
+                  <Square className="h-5 w-5 text-white fill-white" />
+                </button>
 
-                <Button
-                  variant="outline"
-                  size="icon"
+                <button
+                  className="media-btn media-btn-lg"
                   onClick={skipForward}
                   disabled={!isPlaying || currentChunk >= totalChunks - 1}
-                  className="h-12 w-12 rounded-full"
                 >
-                  <SkipForward className="h-5 w-5" />
-                </Button>
+                  <SkipForward className="h-5 w-5 text-white" />
+                </button>
               </div>
 
               {chunksList.length > 0 && (
