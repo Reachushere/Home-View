@@ -7969,7 +7969,7 @@ export default function Dashboard() {
                     value={editableTtsText}
                     onChange={(e) => setEditableTtsText(e.target.value)}
                     className="flex-1 w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
-                    style={{ backgroundColor: '#ffffff', color: '#444444', fontFamily: 'Calibri, Candara, Segoe, Optima, Arial, sans-serif', fontSize: '14px', lineHeight: '1.6' }}
+                    style={{ backgroundColor: '#ffffff', color: '#444444', fontFamily: 'Calibri, Candara, Segoe, Optima, Arial, sans-serif', fontSize: '12px', lineHeight: '1.6' }}
                     placeholder="Edit the text here..."
                   />
                   <p className="text-xs text-gray-400 mt-2">{editableTtsText.length} characters</p>
