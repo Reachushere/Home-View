@@ -82,6 +82,9 @@ export default function PDFReaderPage() {
   const pdfDocRef = useRef<any>(null);
   const isExtractingRef = useRef(false);
   const audioDurationRef = useRef<number>(0);
+  const currentChunkRef = useRef<number>(0);
+  const isPlayingRef = useRef<boolean>(false);
+  const isPausedRef = useRef<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -308,11 +311,11 @@ export default function PDFReaderPage() {
 
   const playTTS = async (text: string) => {
     try {
-      // Split text into words for highlighting
       const words = text.split(/\s+/).filter(w => w.length > 0);
       setChunkWords(words);
       setCurrentWordIndex(0);
       
+      console.log(`[TTS] Fetching audio for ${words.length} words, voice=${voice}`);
       const response = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -320,10 +323,13 @@ export default function PDFReaderPage() {
       });
 
       if (!response.ok) {
-        throw new Error("TTS request failed");
+        const errText = await response.text();
+        console.error(`[TTS] Request failed: ${response.status} ${errText}`);
+        throw new Error(`TTS request failed: ${response.status}`);
       }
 
       const audioBlob = await response.blob();
+      console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
       const audioUrl = URL.createObjectURL(audioBlob);
       
       if (audioRef.current) {
@@ -331,22 +337,29 @@ export default function PDFReaderPage() {
         audioRef.current.playbackRate = playbackSpeed;
         audioRef.current.volume = volume;
         
-        // Wait for metadata to get duration
         audioRef.current.onloadedmetadata = () => {
           if (audioRef.current) {
             audioDurationRef.current = audioRef.current.duration;
+            console.log(`[TTS] Audio duration: ${audioRef.current.duration}s, speed: ${playbackSpeed}x, volume: ${volume}`);
           }
         };
         
+        audioRef.current.onerror = (e) => {
+          console.error('[TTS] Audio element error:', e, audioRef.current?.error);
+        };
+        
         await audioRef.current.play();
+        console.log('[TTS] Playback started');
       }
     } catch (error) {
-      console.error("TTS error:", error);
+      console.error("[TTS] Error:", error);
       toast({
         title: "Error",
         description: "Failed to generate speech",
         variant: "destructive",
       });
+      setIsPlaying(false);
+      isPlayingRef.current = false;
     }
   };
   
@@ -392,7 +405,9 @@ export default function PDFReaderPage() {
     setTotalChunks(newChunks.length);
     setCurrentChunk(0);
     setIsPlaying(true);
+    isPlayingRef.current = true;
     setIsPaused(false);
+    isPausedRef.current = false;
     const key = getFileKey();
     setCheckedChunks(loadCheckedChunks(key));
     
@@ -400,9 +415,13 @@ export default function PDFReaderPage() {
   };
 
   const playNextChunk = async (index: number) => {
+    console.log(`[TTS] playNextChunk called: index=${index}, totalChunks=${chunksRef.current.length}`);
     if (index >= chunksRef.current.length) {
+      console.log('[TTS] All chunks finished');
       setIsPlaying(false);
+      isPlayingRef.current = false;
       setCurrentChunk(0);
+      currentChunkRef.current = 0;
       toast({
         title: "Finished",
         description: "Finished reading the document",
@@ -411,30 +430,41 @@ export default function PDFReaderPage() {
     }
 
     setCurrentChunk(index);
+    currentChunkRef.current = index;
+    console.log(`[TTS] Playing chunk ${index + 1}/${chunksRef.current.length}`);
     await playTTS(chunksRef.current[index]);
   };
 
   const handleAudioEnded = () => {
-    if (isPlaying && !isPaused) {
-      playNextChunk(currentChunk + 1);
+    const playing = isPlayingRef.current;
+    const paused = isPausedRef.current;
+    const chunk = currentChunkRef.current;
+    console.log(`[TTS] Audio ended: isPlaying=${playing}, isPaused=${paused}, currentChunk=${chunk}`);
+    if (playing && !paused) {
+      playNextChunk(chunk + 1);
     }
   };
 
   const pauseReading = () => {
+    console.log('[TTS] Pausing');
     if (audioRef.current) {
       audioRef.current.pause();
     }
     setIsPaused(true);
+    isPausedRef.current = true;
   };
 
   const resumeReading = () => {
+    console.log('[TTS] Resuming');
     if (audioRef.current) {
       audioRef.current.play();
     }
     setIsPaused(false);
+    isPausedRef.current = false;
   };
 
   const stopReading = async () => {
+    console.log('[TTS] Stopping');
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -457,8 +487,11 @@ export default function PDFReaderPage() {
     }
     
     setIsPlaying(false);
+    isPlayingRef.current = false;
     setIsPaused(false);
+    isPausedRef.current = false;
     setCurrentChunk(0);
+    currentChunkRef.current = 0;
   };
   
   const resumeFromLast = async () => {
@@ -469,7 +502,9 @@ export default function PDFReaderPage() {
     
     setIsLoading(true);
     setIsPlaying(true);
+    isPlayingRef.current = true;
     setIsPaused(false);
+    isPausedRef.current = false;
     
     // Extract text if not already done - use startReading which handles extraction
     if (chunksRef.current.length === 0) {
@@ -501,19 +536,28 @@ export default function PDFReaderPage() {
   };
 
   const skipBack = () => {
-    if (currentChunk > 0) {
-      stopReading();
+    if (currentChunkRef.current > 0) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      const prevChunk = currentChunkRef.current - 1;
+      console.log(`[TTS] Skip back to chunk ${prevChunk}`);
       setIsPlaying(true);
-      playNextChunk(currentChunk - 1);
+      isPlayingRef.current = true;
+      setIsPaused(false);
+      isPausedRef.current = false;
+      playNextChunk(prevChunk);
     }
   };
 
   const skipForward = () => {
-    if (currentChunk < totalChunks - 1) {
+    if (currentChunkRef.current < totalChunks - 1) {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-      playNextChunk(currentChunk + 1);
+      const nextChunk = currentChunkRef.current + 1;
+      console.log(`[TTS] Skip forward to chunk ${nextChunk}`);
+      playNextChunk(nextChunk);
     }
   };
 
@@ -775,27 +819,46 @@ export default function PDFReaderPage() {
                   <label className="text-sm font-medium text-gray-700 mb-2 block">Speed</label>
                   <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
                     <button
+                      type="button"
                       data-testid="button-speed-down"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
-                      onClick={() => setPlaybackSpeed(s => Math.max(0.5, Math.round((s - 0.25) * 100) / 100))}
+                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        setPlaybackSpeed(s => {
+                          const newVal = Math.max(0.5, Math.round((s - 0.25) * 100) / 100);
+                          console.log(`[TTS] Speed down: ${s} -> ${newVal}`);
+                          return newVal;
+                        });
+                      }}
                     >
                       &ndash;
                     </button>
-                    <div className="flex-1">
+                    <div className="flex-1 touch-auto">
                       <Slider
                         data-testid="slider-speed"
                         value={[playbackSpeed]}
-                        onValueChange={([v]) => setPlaybackSpeed(v)}
+                        onValueChange={([v]) => {
+                          console.log(`[TTS] Speed slider: ${v}`);
+                          setPlaybackSpeed(v);
+                        }}
                         min={0.5}
                         max={2}
                         step={0.25}
-                        className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_[data-orientation=horizontal]>.bg-primary]:bg-blue-500"
+                        className="touch-auto [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
                       />
                     </div>
                     <button
+                      type="button"
                       data-testid="button-speed-up"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
-                      onClick={() => setPlaybackSpeed(s => Math.min(2, Math.round((s + 0.25) * 100) / 100))}
+                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        setPlaybackSpeed(s => {
+                          const newVal = Math.min(2, Math.round((s + 0.25) * 100) / 100);
+                          console.log(`[TTS] Speed up: ${s} -> ${newVal}`);
+                          return newVal;
+                        });
+                      }}
                     >
                       +
                     </button>
@@ -808,27 +871,46 @@ export default function PDFReaderPage() {
                   <label className="text-sm font-medium text-gray-700 mb-2 block">Volume</label>
                   <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
                     <button
+                      type="button"
                       data-testid="button-volume-down"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
-                      onClick={() => setVolume(v => Math.max(0, Math.round((v - 0.05) * 100) / 100))}
+                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        setVolume(v => {
+                          const newVal = Math.max(0, Math.round((v - 0.05) * 100) / 100);
+                          console.log(`[TTS] Volume down: ${v} -> ${newVal}`);
+                          return newVal;
+                        });
+                      }}
                     >
                       &ndash;
                     </button>
-                    <div className="flex-1">
+                    <div className="flex-1 touch-auto">
                       <Slider
                         data-testid="slider-volume"
                         value={[volume]}
-                        onValueChange={([v]) => setVolume(v)}
+                        onValueChange={([v]) => {
+                          console.log(`[TTS] Volume slider: ${v}`);
+                          setVolume(v);
+                        }}
                         min={0}
                         max={1}
                         step={0.01}
-                        className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_[data-orientation=horizontal]>.bg-primary]:bg-blue-500"
+                        className="touch-auto [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
                       />
                     </div>
                     <button
+                      type="button"
                       data-testid="button-volume-up"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-xl leading-none select-none"
-                      onClick={() => setVolume(v => Math.min(1, Math.round((v + 0.05) * 100) / 100))}
+                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        setVolume(v => {
+                          const newVal = Math.min(1, Math.round((v + 0.05) * 100) / 100);
+                          console.log(`[TTS] Volume up: ${v} -> ${newVal}`);
+                          return newVal;
+                        });
+                      }}
                     >
                       +
                     </button>
