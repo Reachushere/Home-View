@@ -7883,7 +7883,7 @@ export default function Dashboard() {
                     </div>
                   )}
                   <div className="flex-1 p-4">
-                <div className="text-xs leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                <div className="text-xs leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Calibri, "Segoe UI", sans-serif' }}>
                   {(() => {
                     const chunks = ttsChunks.length > 0 ? ttsChunks : [];
                     if (chunks.length === 0) {
