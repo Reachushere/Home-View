@@ -10587,7 +10587,7 @@ export default function Dashboard() {
               <div 
                 className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
                 style={{
-                  width: '380px',
+                  width: '480px',
                   boxShadow: '0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                 }}
