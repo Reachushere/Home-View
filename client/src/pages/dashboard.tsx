@@ -13664,8 +13664,8 @@ export default function Dashboard() {
                                 key={task.id}
                                 className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                  borderColor: 'rgba(255, 255, 255, 0.25)',
+                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
+                                  borderColor: 'rgba(107, 114, 128, 0.5)',
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={task.title}
@@ -13717,8 +13717,8 @@ export default function Dashboard() {
                                 key={task.id}
                                 className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                  borderColor: 'rgba(255, 255, 255, 0.25)',
+                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
+                                  borderColor: 'rgba(107, 114, 128, 0.5)',
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={task.title}
