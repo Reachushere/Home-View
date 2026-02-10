@@ -11654,18 +11654,12 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 overflow-hidden px-4 pb-4 pt-0">
               <div className="grid grid-cols-2 gap-4">
-                {/* Left Column - School & Semester Settings */}
+                {/* Left Column - New Course + School & Semester Settings */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px' }}>
-                <SchoolForm 
-                  schoolData={schoolData}
-                  semesterSettings={semesterSettings}
-                  onSave={saveSchool}
-                  onCancel={() => setIsSchoolDialogOpen(false)} 
-                />
                 <Button
                   type="button"
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6 self-start"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6 self-start mt-2"
                   style={{
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px'
@@ -11676,6 +11670,12 @@ export default function Dashboard() {
                   <Plus className="h-3.5 w-3.5 mr-1" />
                   New Course
                 </Button>
+                <SchoolForm 
+                  schoolData={schoolData}
+                  semesterSettings={semesterSettings}
+                  onSave={saveSchool}
+                  onCancel={() => setIsSchoolDialogOpen(false)} 
+                />
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
