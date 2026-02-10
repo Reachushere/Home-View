@@ -13674,11 +13674,11 @@ export default function Dashboard() {
                                 <Checkbox
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
                                 <span
-                                  className={`truncate font-bold text-white/80 ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`truncate font-bold text-black ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
@@ -13727,11 +13727,11 @@ export default function Dashboard() {
                                 <Checkbox
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-other-sat-${task.id}`}
                                 />
                                 <span
-                                  className={`truncate font-bold text-white/80 ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`truncate font-bold text-black ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
