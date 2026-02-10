@@ -10631,6 +10631,14 @@ export default function Dashboard() {
                             {type.charAt(0).toUpperCase() + type.slice(1)}
                           </button>
                         ))}
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white flex items-center gap-1.5"
+                          onClick={() => { setIsQuickAddOpen(false); setIsNewCourseWizardOpen(true); }}
+                          data-testid="quick-add-type-course"
+                        >
+                          <GraduationCap className="h-3.5 w-3.5" />
+                          Course
+                        </button>
                       </div>
                     </div>
                   )}
