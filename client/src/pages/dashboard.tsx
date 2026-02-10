@@ -3495,40 +3495,34 @@ export default function Dashboard() {
     });
     cleanedText = filteredParagraphs.join('\n\n');
     
-    // Common French words/patterns to detect French sentences
-    const frenchPatterns = [
-      /\b(le|la|les|un|une|des|du|de la|au|aux)\b/gi,
-      /\b(et|ou|mais|donc|car|ni|que|qui|dont|où)\b/gi,
-      /\b(je|tu|il|elle|nous|vous|ils|elles|on)\b/gi,
-      /\b(mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs)\b/gi,
-      /\b(ce|cet|cette|ces|ceci|cela|ça)\b/gi,
+    const frenchOnlyPatterns = [
       /\b(être|avoir|faire|aller|pouvoir|vouloir|devoir|savoir)\b/gi,
-      /\b(est|sont|était|étaient|sera|seront|été|suis|sommes|êtes)\b/gi,
-      /\b(a|ai|as|avons|avez|ont|avait|avaient|aura|auront|eu)\b/gi,
-      /\b(fait|fais|font|faisait|fera|feront)\b/gi,
-      /\b(dans|sur|sous|avec|pour|par|sans|chez|entre|vers)\b/gi,
-      /\b(très|plus|moins|aussi|bien|mal|peu|beaucoup|trop)\b/gi,
-      /\b(français|française|france|paris)\b/gi,
-      /[àâäéèêëïîôùûüÿç]/gi,
+      /\b(était|étaient|sera|seront|été|suis|sommes|êtes)\b/gi,
+      /\b(avons|avez|avait|avaient|aura|auront)\b/gi,
+      /\b(fais|faisait|fera|feront)\b/gi,
+      /\b(je|tu|nous|vous|ils|elles)\b/gi,
+      /\b(mon|mes|ton|tes|ses|notre|nos|votre|vos|leur|leurs)\b/gi,
+      /\b(cet|cette|ceci|cela|ça)\b/gi,
+      /\b(très|moins|aussi|beaucoup|trop|peu)\b/gi,
+      /\b(dans|sous|avec|sans|chez|vers)\b/gi,
+      /\b(mais|donc|ni|dont|où)\b/gi,
+      /[àâéèêëïîôùûüÿç]/gi,
     ];
     
-    // Split into sentences
     const sentences = cleanedText.split(/(?<=[.!?])\s+/);
     
-    // Filter out sentences that appear to be French (contain multiple French patterns)
     const englishSentences = sentences.filter(sentence => {
       const words = sentence.split(/\s+/).length;
-      if (words < 3) return true; // Keep very short sentences
+      if (words < 5) return true;
       
       let frenchScore = 0;
-      for (const pattern of frenchPatterns) {
+      for (const pattern of frenchOnlyPatterns) {
         const matches = sentence.match(pattern);
         if (matches) frenchScore += matches.length;
       }
       
-      // If more than 15% of words match French patterns, consider it French
       const frenchRatio = frenchScore / words;
-      return frenchRatio < 0.15;
+      return frenchRatio < 0.25;
     });
     
     return englishSentences.join(' ');
@@ -3537,15 +3531,14 @@ export default function Dashboard() {
   // Fetch text when file is selected for preview
   useEffect(() => {
     if (previewFile) {
+      console.log(`[TextFetch] previewFile changed: id=${previewFile.id}, name=${previewFile.originalName}, objectPath=${previewFile.objectPath?.substring(0,60)}`);
       setIsLoadingText(true);
       setPreviewText("");
       setCurrentWordIndex(0);
       setIsPlaying(false);
       isPlayingRef.current = false;
-      // Reset speaker to Bluetooth (browser_tts) when opening a new file
       setPreviewSpeaker("browser_tts");
       previewSpeakerRef.current = "browser_tts";
-      // CRITICAL: Stop any existing audio to prevent double voices
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
@@ -3553,8 +3546,6 @@ export default function Dashboard() {
         openaiAudioRef.current.pause();
         openaiAudioRef.current = null;
       }
-      // CRITICAL: Clear TTS chunks when file changes to prevent "Invalid chunk" errors
-      // and wrong file content being played
       ttsChunksRef.current = [];
       setTtsChunks([]);
       setTotalChunks(0);
@@ -3562,11 +3553,11 @@ export default function Dashboard() {
       currentChunkIndexRef.current = 0;
       shouldContinueRef.current = false;
       
-      // Check if objectPath is a direct URL (OneDrive) or needs API fetch
       const isDirectUrl = previewFile.objectPath?.startsWith('http');
+      const fileId = previewFile.id;
+      console.log(`[TextFetch] isDirectUrl=${isDirectUrl}, fetching text for file ${fileId}`);
       
       if (isDirectUrl) {
-        // Use the URL-based text extraction endpoint for OneDrive files
         fetch('/api/extract-text-from-url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3574,6 +3565,7 @@ export default function Dashboard() {
         })
           .then(res => res.json())
           .then(data => {
+            console.log(`[TextFetch] URL response for ${fileId}: hasText=${!!data.text}, length=${data.text?.length || 0}`);
             if (data.text) {
               const filteredText = removeFrenchText(data.text);
               setPreviewText(filteredText);
@@ -3582,16 +3574,20 @@ export default function Dashboard() {
           .catch(err => console.error("Error fetching text from URL:", err))
           .finally(() => setIsLoadingText(false));
       } else {
-        // Use the standard file ID endpoint for local files
-        fetch(`/api/files/${previewFile.id}/text`)
-          .then(res => res.json())
+        fetch(`/api/files/${fileId}/text`)
+          .then(res => {
+            console.log(`[TextFetch] API response status for file ${fileId}: ${res.status}`);
+            return res.json();
+          })
           .then(data => {
+            console.log(`[TextFetch] API response for file ${fileId}: hasText=${!!data.text}, length=${data.text?.length || 0}, error=${data.error || 'none'}`);
             if (data.text) {
               const filteredText = removeFrenchText(data.text);
+              console.log(`[TextFetch] Setting previewText for file ${fileId}: filteredLength=${filteredText.length}`);
               setPreviewText(filteredText);
             }
           })
-          .catch(err => console.error("Error fetching text:", err))
+          .catch(err => console.error(`[TextFetch] Error fetching text for file ${fileId}:`, err))
           .finally(() => setIsLoadingText(false));
       }
     } else {
