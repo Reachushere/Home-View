@@ -10608,9 +10608,44 @@ export default function Dashboard() {
                 </div>
 
                 {/* Step indicator */}
-                <div className="flex gap-1 px-5 pt-3">
-                  {Array.from({ length: 12 }, (_, s) => (
-                    <div key={s} className="flex-1 h-[2px] rounded-full transition-colors duration-300" style={{ background: s <= quickAddStep ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.1)' }} />
+                <div className="flex items-center gap-0.5 px-4 py-2 bg-black/20 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+                  {[
+                    { id: 0, label: "Type" },
+                    { id: 1, label: "Name" },
+                    { id: 2, label: "Course" },
+                    { id: 3, label: "Date" },
+                    { id: 4, label: "Prep" },
+                    { id: 5, label: "Priority" },
+                    { id: 6, label: "Reminders" },
+                    { id: 7, label: "Files" },
+                    { id: 8, label: "Notes" },
+                    { id: 9, label: "Subtasks" },
+                    { id: 10, label: "Repeat" },
+                    { id: 11, label: "Review" },
+                  ].map((s, i, arr) => (
+                    <div key={s.id} className="flex items-center flex-shrink-0">
+                      <button
+                        onClick={() => { if (s.id < quickAddStep) setQuickAddStep(s.id); }}
+                        className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full text-[8px] transition-all ${
+                          s.id === quickAddStep
+                            ? "bg-white/20 text-white font-medium"
+                            : s.id < quickAddStep
+                            ? "text-white/60 cursor-pointer hover:text-white/80"
+                            : "text-white/30 cursor-default"
+                        }`}
+                        data-testid={`quick-add-step-${s.id}`}
+                      >
+                        <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold ${
+                          s.id === quickAddStep ? "bg-white text-black" : s.id < quickAddStep ? "bg-white/40 text-white" : "bg-white/10 text-white/40"
+                        }`}>
+                          {s.id + 1}
+                        </span>
+                        <span>{s.label}</span>
+                      </button>
+                      {i < arr.length - 1 && (
+                        <div className={`w-2 h-px mx-0.5 ${s.id < quickAddStep ? "bg-white/40" : "bg-white/10"}`} />
+                      )}
+                    </div>
                   ))}
                 </div>
 
