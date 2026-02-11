@@ -2883,6 +2883,140 @@ export async function registerRoutes(
     }
   });
 
+  // === Server-side Pomodoro Timer ===
+  let pomodoroState: {
+    mode: "work" | "shortBreak" | "longBreak";
+    duration: number;
+    startedAt: number | null;
+    pausedRemaining: number | null;
+    running: boolean;
+    count: number;
+  } = {
+    mode: "work",
+    duration: 25 * 60,
+    startedAt: null,
+    pausedRemaining: null,
+    running: false,
+    count: 0,
+  };
+  let pomodoroTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  function clearPomodoroTimeout() {
+    if (pomodoroTimeout) {
+      clearTimeout(pomodoroTimeout);
+      pomodoroTimeout = null;
+    }
+  }
+
+  function schedulePomodoroEnd(remainingSeconds: number) {
+    clearPomodoroTimeout();
+    pomodoroTimeout = setTimeout(async () => {
+      pomodoroState.running = false;
+      pomodoroState.startedAt = null;
+      pomodoroState.pausedRemaining = null;
+
+      if (pomodoroState.mode === "work") {
+        pomodoroState.count += 1;
+        const breakMsg = pomodoroState.count % 4 === 0 ? "Time for a long break!" : "Time for a short break!";
+        try {
+          await sendEchoVoiceAnnouncement("Pomodoro complete! " + breakMsg);
+        } catch (e) { console.error("Pomodoro announcement error:", e); }
+        if (pomodoroState.count % 4 === 0) {
+          pomodoroState.mode = "longBreak";
+          pomodoroState.duration = 15 * 60;
+        } else {
+          pomodoroState.mode = "shortBreak";
+          pomodoroState.duration = 5 * 60;
+        }
+      } else {
+        try {
+          await sendEchoVoiceAnnouncement("Break is over! Time to focus!");
+        } catch (e) { console.error("Pomodoro announcement error:", e); }
+        pomodoroState.mode = "work";
+        pomodoroState.duration = 25 * 60;
+      }
+      pomodoroState.pausedRemaining = pomodoroState.duration;
+      console.log("Pomodoro timer expired, mode now:", pomodoroState.mode);
+    }, remainingSeconds * 1000);
+  }
+
+  // GET /api/pomodoro/status
+  app.get("/api/pomodoro/status", (_req, res) => {
+    let remaining = pomodoroState.pausedRemaining ?? pomodoroState.duration;
+    if (pomodoroState.running && pomodoroState.startedAt) {
+      const elapsed = Math.floor((Date.now() - pomodoroState.startedAt) / 1000);
+      remaining = Math.max(0, pomodoroState.duration - elapsed);
+    }
+    res.json({
+      mode: pomodoroState.mode,
+      running: pomodoroState.running,
+      remaining,
+      count: pomodoroState.count,
+    });
+  });
+
+  // POST /api/pomodoro/start
+  app.post("/api/pomodoro/start", (req, res) => {
+    const { mode, duration, count } = req.body;
+    if (mode) pomodoroState.mode = mode;
+    if (typeof count === "number") pomodoroState.count = count;
+    const remaining = pomodoroState.pausedRemaining ?? duration ?? pomodoroState.duration;
+    pomodoroState.duration = remaining;
+    pomodoroState.startedAt = Date.now();
+    pomodoroState.pausedRemaining = null;
+    pomodoroState.running = true;
+    schedulePomodoroEnd(remaining);
+    res.json({ message: "Pomodoro started", remaining });
+  });
+
+  // POST /api/pomodoro/pause
+  app.post("/api/pomodoro/pause", (_req, res) => {
+    if (pomodoroState.running && pomodoroState.startedAt) {
+      const elapsed = Math.floor((Date.now() - pomodoroState.startedAt) / 1000);
+      pomodoroState.pausedRemaining = Math.max(0, pomodoroState.duration - elapsed);
+    }
+    pomodoroState.running = false;
+    pomodoroState.startedAt = null;
+    clearPomodoroTimeout();
+    res.json({ message: "Pomodoro paused", remaining: pomodoroState.pausedRemaining });
+  });
+
+  // POST /api/pomodoro/reset
+  app.post("/api/pomodoro/reset", (req, res) => {
+    clearPomodoroTimeout();
+    const { mode } = req.body || {};
+    pomodoroState.mode = mode || pomodoroState.mode;
+    if (pomodoroState.mode === "work") pomodoroState.duration = 25 * 60;
+    else if (pomodoroState.mode === "shortBreak") pomodoroState.duration = 5 * 60;
+    else pomodoroState.duration = 15 * 60;
+    pomodoroState.startedAt = null;
+    pomodoroState.pausedRemaining = pomodoroState.duration;
+    pomodoroState.running = false;
+    res.json({ message: "Pomodoro reset", remaining: pomodoroState.duration });
+  });
+
+  // POST /api/pomodoro/skip
+  app.post("/api/pomodoro/skip", (_req, res) => {
+    clearPomodoroTimeout();
+    pomodoroState.running = false;
+    pomodoroState.startedAt = null;
+    if (pomodoroState.mode === "work") {
+      pomodoroState.count += 1;
+      if (pomodoroState.count % 4 === 0) {
+        pomodoroState.mode = "longBreak";
+        pomodoroState.duration = 15 * 60;
+      } else {
+        pomodoroState.mode = "shortBreak";
+        pomodoroState.duration = 5 * 60;
+      }
+    } else {
+      pomodoroState.mode = "work";
+      pomodoroState.duration = 25 * 60;
+    }
+    pomodoroState.pausedRemaining = pomodoroState.duration;
+    res.json({ message: "Pomodoro skipped", mode: pomodoroState.mode, remaining: pomodoroState.duration, count: pomodoroState.count });
+  });
+
   // POST /api/ha-announce - Send a voice announcement to Echo speakers
   app.post("/api/ha-announce", async (req, res) => {
     try {

@@ -2102,7 +2102,20 @@ export default function Dashboard() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTaskId]);
 
-  // Pomodoro Timer Effect
+  // Restore pomodoro state from server on mount
+  useEffect(() => {
+    fetch("/api/pomodoro/status").then(r => r.json()).then((data: { mode: string; running: boolean; remaining: number; count: number }) => {
+      setPomodoroMode(data.mode as "work" | "shortBreak" | "longBreak");
+      setPomodoroTime(data.remaining);
+      setPomodoroCount(data.count);
+      if (data.running) {
+        setPomodoroRunning(true);
+        setPomodoroStarted(true);
+      }
+    }).catch(() => {});
+  }, []);
+
+  // Pomodoro Timer Effect - local countdown display + server sync
   useEffect(() => {
     if (pomodoroRunning && pomodoroTime > 0) {
       pomodoroIntervalRef.current = setInterval(() => {
@@ -2110,44 +2123,52 @@ export default function Dashboard() {
       }, 1000);
     } else if (pomodoroTime === 0 && pomodoroRunning) {
       setPomodoroRunning(false);
-      // Play notification sound
+      // Play notification sound locally
       const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2telehs');
       audio.play().catch(() => {});
-      
-      if (pomodoroMode === "work") {
-        const newCount = pomodoroCount + 1;
-        setPomodoroCount(newCount);
-        const breakMsg = newCount % 4 === 0 ? "Time for a long break!" : "Time for a short break!";
-        toast({ title: "Pomodoro Complete!", description: breakMsg });
-        // Announce on speakers via Home Assistant
-        fetch("/api/ha-announce", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "Pomodoro complete! " + breakMsg })
-        }).catch(() => {});
-        if (newCount % 4 === 0) {
-          setPomodoroMode("longBreak");
-          setPomodoroTime(15 * 60);
+      // Fetch latest state from server (server handles announcement + mode transition)
+      fetch("/api/pomodoro/status").then(r => r.json()).then((data: { mode: string; running: boolean; remaining: number; count: number }) => {
+        setPomodoroMode(data.mode as "work" | "shortBreak" | "longBreak");
+        setPomodoroTime(data.remaining);
+        setPomodoroCount(data.count);
+        setPomodoroRunning(data.running);
+        if (data.mode === "work") {
+          toast({ title: "Break Over!", description: "Time to focus!" });
         } else {
-          setPomodoroMode("shortBreak");
-          setPomodoroTime(5 * 60);
+          toast({ title: "Pomodoro Complete!", description: data.mode === "longBreak" ? "Time for a long break!" : "Time for a short break!" });
         }
-      } else {
-        toast({ title: "Break Over!", description: "Time to focus!" });
-        // Announce break over on speakers
-        fetch("/api/ha-announce", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "Break is over! Time to focus!" })
-        }).catch(() => {});
-        setPomodoroMode("work");
-        setPomodoroTime(25 * 60);
-      }
+      }).catch(() => {});
     }
     return () => {
       if (pomodoroIntervalRef.current) clearInterval(pomodoroIntervalRef.current);
     };
-  }, [pomodoroRunning, pomodoroTime, pomodoroMode, pomodoroCount, toast]);
+  }, [pomodoroRunning, pomodoroTime, toast]);
+
+  // Periodically sync with server to recover from app sleep/background
+  useEffect(() => {
+    if (!pomodoroRunning) return;
+    const syncInterval = setInterval(() => {
+      fetch("/api/pomodoro/status").then(r => r.json()).then((data: { mode: string; running: boolean; remaining: number; count: number }) => {
+        if (!data.running && pomodoroRunning) {
+          // Timer finished while app was backgrounded
+          setPomodoroRunning(false);
+          setPomodoroMode(data.mode as "work" | "shortBreak" | "longBreak");
+          setPomodoroTime(data.remaining);
+          setPomodoroCount(data.count);
+          const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2telehs');
+          audio.play().catch(() => {});
+          if (data.mode === "work") {
+            toast({ title: "Break Over!", description: "Time to focus!" });
+          } else {
+            toast({ title: "Pomodoro Complete!", description: data.mode === "longBreak" ? "Time for a long break!" : "Time for a short break!" });
+          }
+        } else if (data.running) {
+          setPomodoroTime(data.remaining);
+        }
+      }).catch(() => {});
+    }, 5000);
+    return () => clearInterval(syncInterval);
+  }, [pomodoroRunning, toast]);
 
   const formatPomodoroTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -2158,8 +2179,16 @@ export default function Dashboard() {
   const togglePomodoro = () => {
     if (!pomodoroRunning) {
       setPomodoroStarted(true);
+      setPomodoroRunning(true);
+      fetch("/api/pomodoro/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: pomodoroMode, duration: pomodoroTime, count: pomodoroCount })
+      }).catch(() => {});
+    } else {
+      setPomodoroRunning(false);
+      fetch("/api/pomodoro/pause", { method: "POST" }).catch(() => {});
     }
-    setPomodoroRunning(!pomodoroRunning);
   };
 
   const toggleFileComplete = (fileKey: string) => {
@@ -2181,10 +2210,20 @@ export default function Dashboard() {
     if (pomodoroMode === "work") setPomodoroTime(25 * 60);
     else if (pomodoroMode === "shortBreak") setPomodoroTime(5 * 60);
     else setPomodoroTime(15 * 60);
+    fetch("/api/pomodoro/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: pomodoroMode })
+    }).catch(() => {});
   };
 
   const skipPomodoro = () => {
     setPomodoroRunning(false);
+    fetch("/api/pomodoro/skip", { method: "POST" }).then(r => r.json()).then((data: { mode: string; remaining: number; count: number }) => {
+      setPomodoroMode(data.mode as "work" | "shortBreak" | "longBreak");
+      setPomodoroTime(data.remaining);
+      setPomodoroCount(data.count);
+    }).catch(() => {});
     if (pomodoroMode === "work") {
       const newCount = pomodoroCount + 1;
       setPomodoroCount(newCount);
