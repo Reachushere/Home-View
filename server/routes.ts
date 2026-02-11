@@ -2883,6 +2883,25 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/ha-announce - Send a voice announcement to Echo speakers
+  app.post("/api/ha-announce", async (req, res) => {
+    try {
+      const { message } = req.body;
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+      const result = await sendEchoVoiceAnnouncement(message);
+      if (result.success) {
+        res.json({ message: "Announcement sent" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send announcement" });
+      }
+    } catch (err) {
+      console.error("Error sending announcement:", err);
+      res.status(500).json({ message: "Failed to send announcement" });
+    }
+  });
+
   // POST /api/ha-push/test - Send a test push notification via Home Assistant
   app.post("/api/ha-push/test", async (_req, res) => {
     try {

@@ -2117,7 +2117,14 @@ export default function Dashboard() {
       if (pomodoroMode === "work") {
         const newCount = pomodoroCount + 1;
         setPomodoroCount(newCount);
-        toast({ title: "Pomodoro Complete!", description: newCount % 4 === 0 ? "Time for a long break!" : "Time for a short break!" });
+        const breakMsg = newCount % 4 === 0 ? "Time for a long break!" : "Time for a short break!";
+        toast({ title: "Pomodoro Complete!", description: breakMsg });
+        // Announce on speakers via Home Assistant
+        fetch("/api/ha-announce", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Pomodoro complete! " + breakMsg })
+        }).catch(() => {});
         if (newCount % 4 === 0) {
           setPomodoroMode("longBreak");
           setPomodoroTime(15 * 60);
@@ -2127,6 +2134,12 @@ export default function Dashboard() {
         }
       } else {
         toast({ title: "Break Over!", description: "Time to focus!" });
+        // Announce break over on speakers
+        fetch("/api/ha-announce", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Break is over! Time to focus!" })
+        }).catch(() => {});
         setPomodoroMode("work");
         setPomodoroTime(25 * 60);
       }
@@ -2143,6 +2156,9 @@ export default function Dashboard() {
   };
 
   const togglePomodoro = () => {
+    if (!pomodoroRunning) {
+      setPomodoroStarted(true);
+    }
     setPomodoroRunning(!pomodoroRunning);
   };
 
