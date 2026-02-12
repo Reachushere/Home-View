@@ -122,6 +122,7 @@ import {
   Plane,
   List,
   Search,
+  Replace,
   Maximize,
   Minimize2,
 } from "lucide-react";
@@ -3231,6 +3232,8 @@ export default function Dashboard() {
   const [ttsSearchQuery, setTtsSearchQuery] = useState("");
   const [ttsSearchMatchIndex, setTtsSearchMatchIndex] = useState(0);
   const ttsSearchInputRef = useRef<HTMLInputElement>(null);
+  const [ttsReplaceText, setTtsReplaceText] = useState("");
+  const [ttsShowReplace, setTtsShowReplace] = useState(false);
   const [deletedWordIndices, setDeletedWordIndices] = useState<Set<number>>(new Set());
   const [deletedWordHistory, setDeletedWordHistory] = useState<Set<number>[]>([]);
   const [showRemoveButton, setShowRemoveButton] = useState(false);
@@ -7976,49 +7979,176 @@ export default function Dashboard() {
           </div>
           
           {ttsSearchOpen && (
-            <div className="flex items-center gap-2 mx-6 mt-1 px-3 py-1.5 bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-600">
-              <Search className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-              <input
-                ref={ttsSearchInputRef}
-                type="text"
-                value={ttsSearchQuery}
-                onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    if (e.shiftKey) {
-                      setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
-                    } else {
-                      setTtsSearchMatchIndex(prev => prev < ttsSearchMatchCount - 1 ? prev + 1 : 0);
+            <div className="flex flex-col gap-1 mx-6 mt-1 px-3 py-1.5 bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-600">
+              <div className="flex items-center gap-2">
+                <button
+                  className="flex-shrink-0"
+                  onPointerDown={(e) => { e.preventDefault(); setTtsShowReplace(prev => !prev); }}
+                  data-testid="button-toggle-replace"
+                  title={ttsShowReplace ? "Hide replace" : "Show replace"}
+                >
+                  {ttsShowReplace ? <ChevronDown className="h-3.5 w-3.5 text-gray-400" /> : <ChevronRight className="h-3.5 w-3.5 text-gray-400" />}
+                </button>
+                <Search className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                <input
+                  ref={ttsSearchInputRef}
+                  type="text"
+                  value={ttsSearchQuery}
+                  onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); }}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (e.shiftKey) {
+                        setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
+                      } else {
+                        setTtsSearchMatchIndex(prev => prev < ttsSearchMatchCount - 1 ? prev + 1 : 0);
+                      }
                     }
-                  }
-                  if (e.key === 'Escape') {
-                    setTtsSearchOpen(false);
-                    setTtsSearchQuery("");
-                    setTtsSearchMatchIndex(0);
-                  }
-                }}
-                placeholder="Search text..."
-                className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-gray-500"
-                data-testid="input-tts-search"
-              />
-              {ttsSearchQuery.trim().length >= 2 && (
-                <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                  {ttsSearchMatchCount > 0 ? `${Math.min(ttsSearchMatchIndex + 1, ttsSearchMatchCount)}/${ttsSearchMatchCount}` : '0/0'}
-                </span>
+                    if (e.key === 'Escape') {
+                      setTtsSearchOpen(false);
+                      setTtsSearchQuery("");
+                      setTtsSearchMatchIndex(0);
+                      setTtsShowReplace(false);
+                      setTtsReplaceText("");
+                    }
+                  }}
+                  placeholder="Find..."
+                  className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-gray-500"
+                  style={{ touchAction: 'auto', WebkitUserSelect: 'text', userSelect: 'text' }}
+                  data-testid="input-tts-search"
+                />
+                {ttsSearchQuery.trim().length >= 2 && (
+                  <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                    {ttsSearchMatchCount > 0 ? `${Math.min(ttsSearchMatchIndex + 1, ttsSearchMatchCount)}/${ttsSearchMatchCount}` : '0/0'}
+                  </span>
+                )}
+                <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
+                  setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
+                }} data-testid="button-search-prev">
+                  <ChevronUp className="h-3 w-3" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
+                  setTtsSearchMatchIndex(prev => prev < ttsSearchMatchCount - 1 ? prev + 1 : 0);
+                }} data-testid="button-search-next">
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => { setTtsSearchOpen(false); setTtsSearchQuery(""); setTtsSearchMatchIndex(0); setTtsShowReplace(false); setTtsReplaceText(""); }} data-testid="button-search-close">
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              {ttsShowReplace && (
+                <div className="flex items-center gap-2 pl-[22px]">
+                  <Replace className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                  <input
+                    type="text"
+                    value={ttsReplaceText}
+                    onChange={(e) => setTtsReplaceText(e.target.value)}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setTtsShowReplace(false);
+                        setTtsReplaceText("");
+                      }
+                    }}
+                    placeholder="Replace with..."
+                    className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-gray-500"
+                    style={{ touchAction: 'auto', WebkitUserSelect: 'text', userSelect: 'text' }}
+                    data-testid="input-tts-replace"
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-5 px-2 text-[10px] text-amber-400 hover:text-amber-300"
+                    data-testid="button-replace-one"
+                    disabled={ttsSearchMatchCount === 0 || ttsSearchQuery.trim().length < 2}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      if (ttsSearchQuery.trim().length < 2 || ttsSearchMatchCount === 0) return;
+                      const query = ttsSearchQuery.trim();
+                      const queryLower = query.toLowerCase();
+                      if (isEditingTtsText) {
+                        const textLower = editableTtsText.toLowerCase();
+                        let pos = -1;
+                        let matchIdx = 0;
+                        let startFrom = 0;
+                        while (matchIdx <= ttsSearchMatchIndex) {
+                          pos = textLower.indexOf(queryLower, startFrom);
+                          if (pos === -1) break;
+                          if (matchIdx === ttsSearchMatchIndex) break;
+                          startFrom = pos + 1;
+                          matchIdx++;
+                        }
+                        if (pos !== -1) {
+                          const before = editableTtsText.slice(0, pos);
+                          const after = editableTtsText.slice(pos + query.length);
+                          setEditableTtsText(before + ttsReplaceText + after);
+                          if (ttsSearchMatchIndex >= ttsSearchMatchCount - 1) {
+                            setTtsSearchMatchIndex(Math.max(0, ttsSearchMatchCount - 2));
+                          }
+                        }
+                      } else if (previewText) {
+                        const textLower = previewText.toLowerCase();
+                        let pos = -1;
+                        let matchIdx = 0;
+                        let startFrom = 0;
+                        while (matchIdx <= ttsSearchMatchIndex) {
+                          pos = textLower.indexOf(queryLower, startFrom);
+                          if (pos === -1) break;
+                          if (matchIdx === ttsSearchMatchIndex) break;
+                          startFrom = pos + 1;
+                          matchIdx++;
+                        }
+                        if (pos !== -1) {
+                          const before = previewText.slice(0, pos);
+                          const after = previewText.slice(pos + query.length);
+                          setPreviewText(before + ttsReplaceText + after);
+                          if (ttsSearchMatchIndex >= ttsSearchMatchCount - 1) {
+                            setTtsSearchMatchIndex(Math.max(0, ttsSearchMatchCount - 2));
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    Replace
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-5 px-2 text-[10px] text-amber-400 hover:text-amber-300"
+                    data-testid="button-replace-all"
+                    disabled={ttsSearchMatchCount === 0 || ttsSearchQuery.trim().length < 2}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      if (ttsSearchQuery.trim().length < 2 || ttsSearchMatchCount === 0) return;
+                      const query = ttsSearchQuery.trim();
+                      const replaceAll = (text: string) => {
+                        let result = '';
+                        let searchLower = query.toLowerCase();
+                        let textLower = text.toLowerCase();
+                        let lastIdx = 0;
+                        let pos = textLower.indexOf(searchLower, lastIdx);
+                        while (pos !== -1) {
+                          result += text.slice(lastIdx, pos) + ttsReplaceText;
+                          lastIdx = pos + query.length;
+                          pos = textLower.indexOf(searchLower, lastIdx);
+                        }
+                        result += text.slice(lastIdx);
+                        return result;
+                      };
+                      if (isEditingTtsText) {
+                        setEditableTtsText(replaceAll(editableTtsText));
+                      } else if (previewText) {
+                        setPreviewText(replaceAll(previewText));
+                      }
+                      setTtsSearchMatchIndex(0);
+                    }}
+                  >
+                    All
+                  </Button>
+                </div>
               )}
-              <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
-                setTtsSearchMatchIndex(prev => Math.max(0, prev - 1));
-              }} data-testid="button-search-prev">
-                <ChevronUp className="h-3 w-3" />
-              </Button>
-              <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => {
-                setTtsSearchMatchIndex(prev => prev < ttsSearchMatchCount - 1 ? prev + 1 : 0);
-              }} data-testid="button-search-next">
-                <ChevronDown className="h-3 w-3" />
-              </Button>
-              <Button size="icon" variant="ghost" className="h-5 w-5 text-gray-400" onClick={() => { setTtsSearchOpen(false); setTtsSearchQuery(""); setTtsSearchMatchIndex(0); }} data-testid="button-search-close">
-                <X className="h-3 w-3" />
-              </Button>
             </div>
           )}
           
