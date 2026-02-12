@@ -122,6 +122,8 @@ import {
   Plane,
   List,
   Search,
+  Maximize,
+  Minimize2,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2071,6 +2073,28 @@ export default function Dashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
   // Pomodoro Timer State
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onChange);
+    document.addEventListener('webkitfullscreenchange', onChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onChange);
+      document.removeEventListener('webkitfullscreenchange', onChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      const el = document.documentElement as any;
+      (el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen)?.call(el);
+    } else {
+      const doc = document as any;
+      (doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen)?.call(doc);
+    }
+  };
+
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
   const [pomodoroRunning, setPomodoroRunning] = useState(false);
   const [pomodoroStarted, setPomodoroStarted] = useState(false);
@@ -9012,6 +9036,20 @@ export default function Dashboard() {
             >
               <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
             </div>
+          </div>
+
+          {/* Fullscreen toggle */}
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              data-testid="button-fullscreen"
+              onClick={toggleFullscreen}
+            >
+              {isFullscreen ? <Minimize2 className="text-white" style={{ height: '18px', width: '18px' }} /> : <Maximize className="text-white" style={{ height: '18px', width: '18px' }} />}
+            </Button>
           </div>
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
