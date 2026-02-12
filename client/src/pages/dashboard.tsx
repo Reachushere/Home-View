@@ -8120,7 +8120,7 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden relative" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }} ref={ttsTextContainerRef} onMouseDown={handleTtsTextMouseDown} onMouseUp={handleTtsTextSelection} onTouchEnd={handleTtsTextSelection as any}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden relative" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }} ref={ttsTextContainerRef} onMouseDown={isEditingTtsText ? undefined : handleTtsTextMouseDown} onMouseUp={isEditingTtsText ? undefined : handleTtsTextSelection} onTouchEnd={isEditingTtsText ? undefined : handleTtsTextSelection as any}>
               {showRemoveButton && (
                 <div
                   className="absolute z-50 flex items-center gap-1 bg-red-600 text-white rounded-lg shadow-lg px-2 py-1 cursor-pointer select-none"
@@ -8185,8 +8185,11 @@ export default function Dashboard() {
                     data-testid="textarea-edit-tts-text"
                     value={editableTtsText}
                     onChange={(e) => setEditableTtsText(e.target.value)}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                     className="flex-1 w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
-                    style={{ backgroundColor: '#ffffff', color: '#444444', fontFamily: 'Calibri, Candara, Segoe, Optima, Arial, sans-serif', fontSize: '12px', lineHeight: '1.6' }}
+                    style={{ backgroundColor: '#ffffff', color: '#444444', fontFamily: 'Calibri, Candara, Segoe, Optima, Arial, sans-serif', fontSize: '12px', lineHeight: '1.6', touchAction: 'auto', WebkitUserSelect: 'text', userSelect: 'text' }}
                     placeholder="Edit the text here..."
                   />
                   <p className="text-xs text-gray-400 mt-2">{editableTtsText.length} characters</p>
