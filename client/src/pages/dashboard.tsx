@@ -8390,7 +8390,16 @@ export default function Dashboard() {
                                             ref={isCurrentWord ? (el) => {
                                               if (el && el !== activeWordRef.current) {
                                                 activeWordRef.current = el;
-                                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                const container = ttsTextContainerRef.current;
+                                                if (container) {
+                                                  const elRect = el.getBoundingClientRect();
+                                                  const containerRect = container.getBoundingClientRect();
+                                                  const relativeTop = elRect.top - containerRect.top + container.scrollTop;
+                                                  const targetScroll = relativeTop - containerRect.height / 2;
+                                                  container.scrollTop = Math.max(0, targetScroll);
+                                                } else {
+                                                  el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                                                }
                                               }
                                             } : undefined}
                                             className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : isActiveMatch ? "bg-orange-400 dark:bg-orange-500 text-white px-0.5 rounded ring-2 ring-orange-500" : isSearchHighlight ? "bg-orange-200 dark:bg-orange-800/60 px-0.5 rounded" : ""}
