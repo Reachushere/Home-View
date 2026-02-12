@@ -2940,6 +2940,15 @@ export async function registerRoutes(
     }, remainingSeconds * 1000);
   }
 
+  app.get("/api/ha-url", (_req, res) => {
+    const url = process.env.HOME_ASSISTANT_URL;
+    if (url) {
+      res.json({ url });
+    } else {
+      res.status(404).json({ error: "Home Assistant URL not configured" });
+    }
+  });
+
   // GET /api/pomodoro/status
   app.get("/api/pomodoro/status", (_req, res) => {
     let remaining = pomodoroState.pausedRemaining ?? pomodoroState.duration;

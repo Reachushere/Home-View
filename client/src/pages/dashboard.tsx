@@ -10318,7 +10318,7 @@ export default function Dashboard() {
       {/* Tall Pill Panel - Slides in from right edge */}
       {(() => {
         const pillW = 52;
-        const pillH = (7 * 52) + 5;
+        const pillH = (8 * 52) + 5;
         const arrowW = 15;
         const arrowH = 30;
         const totalW = pillW + arrowW;
@@ -10523,6 +10523,27 @@ export default function Dashboard() {
             >
               <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)} title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}>
                 {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
+              </div>
+            </div>
+
+            {/* Home Assistant - Slot 7 */}
+            <div 
+              style={btnStyle(7, 'linear-gradient(0deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)')}
+              data-testid="button-home-assistant"
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/ha-url');
+                  if (res.ok) {
+                    const data = await res.json();
+                    window.open(data.url, '_blank');
+                  }
+                } catch (e) { console.error('HA link error', e); }
+              }}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)', 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)')} title="Open Home Assistant">
+                <svg viewBox="0 0 24 24" fill="white" style={{ height: '20px', width: '20px' }}>
+                  <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
+                </svg>
               </div>
             </div>
           </div>
