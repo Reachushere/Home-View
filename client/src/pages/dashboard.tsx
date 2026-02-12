@@ -10801,6 +10801,8 @@ export default function Dashboard() {
                     toggleStickyNoteBullets(note.id, textarea);
                   }}
                   onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
                   title="Toggle bullet list"
                   data-testid={`sticky-note-bullets-${note.id}`}
                 >
@@ -10810,6 +10812,9 @@ export default function Dashboard() {
                 <button
                   className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
                   onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { isMinimized: !note.isMinimized } })}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
                 >
                   {note.isMinimized ? <Plus className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
                 </button>
@@ -10818,6 +10823,8 @@ export default function Dashboard() {
                   className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-red-600"
                   onClick={() => deleteStickyNoteMutation.mutate(note.id)}
                   onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
                   title="Delete note"
                   data-testid={`sticky-note-delete-${note.id}`}
                 >
