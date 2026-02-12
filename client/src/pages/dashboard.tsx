@@ -9038,20 +9038,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Fullscreen toggle */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-              data-testid="button-fullscreen"
-              onClick={toggleFullscreen}
-            >
-              {isFullscreen ? <Minimize2 className="text-white" style={{ height: '18px', width: '18px' }} /> : <Maximize className="text-white" style={{ height: '18px', width: '18px' }} />}
-            </Button>
-          </div>
-
           {/* Graduation Hat - Swapped with Completed Tasks */}
           <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
             <Button 
@@ -10332,7 +10318,7 @@ export default function Dashboard() {
       {/* Tall Pill Panel - Slides in from right edge */}
       {(() => {
         const pillW = 52;
-        const pillH = (6 * 52) + 5;
+        const pillH = (7 * 52) + 5;
         const arrowW = 15;
         const arrowH = 30;
         const totalW = pillW + arrowW;
@@ -10526,6 +10512,17 @@ export default function Dashboard() {
             >
               <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Radio Controls">
                 <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
+              </div>
+            </div>
+
+            {/* Fullscreen Toggle - Slot 6 */}
+            <div 
+              style={btnStyle(6, isFullscreen ? 'linear-gradient(0deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="button-fullscreen"
+              onClick={toggleFullscreen}
+            >
+              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)} title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}>
+                {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
               </div>
             </div>
           </div>
