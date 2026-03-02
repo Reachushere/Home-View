@@ -14002,7 +14002,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="truncate font-bold text-gray-700">Prep Day - {task.title}</span>
+                                <span className="truncate font-bold text-gray-700 flex items-center gap-0"><span className="bg-black text-white px-0.5 rounded-sm whitespace-nowrap -ml-0.5">PREP DAY</span> {task.title}</span>
                               </div>
                             );
                           }
@@ -14305,7 +14305,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="truncate font-bold text-gray-700">Prep Day - {task.title}</span>
+                                <span className="truncate font-bold text-gray-700 flex items-center gap-0"><span className="bg-black text-white px-0.5 rounded-sm whitespace-nowrap -ml-0.5">PREP DAY</span> {task.title}</span>
                               </div>
                             );
                           }
