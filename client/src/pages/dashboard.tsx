@@ -13542,11 +13542,11 @@ export default function Dashboard() {
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
                     <div className={`absolute left-px right-px flex items-center justify-between overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
                     </div>
                   )}
                 </div>
@@ -13559,11 +13559,11 @@ export default function Dashboard() {
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
                     <div className={`absolute left-px right-px flex items-center justify-between overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ccc' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase animate-today-text">TODAY</span>
                     </div>
                   )}
                 </div>
