@@ -16602,6 +16602,7 @@ export default function Dashboard() {
               }}
             >
               <img src={clockBg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, borderRadius: '12px 12px 0 0' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%)', zIndex: 0, borderRadius: '12px 12px 0 0' }} />
               <h4 
                 className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', zIndex: 1 }}
@@ -16728,6 +16729,7 @@ export default function Dashboard() {
               }}
             >
               <img src={clockBg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, borderRadius: '12px 12px 0 0' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%)', zIndex: 0, borderRadius: '12px 12px 0 0' }} />
               <h4 
                 className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', zIndex: 1 }}
@@ -16848,6 +16850,7 @@ export default function Dashboard() {
               }}
             >
               <img src={clockBg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, borderRadius: '12px 12px 0 0' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%)', zIndex: 0, borderRadius: '12px 12px 0 0' }} />
               <h4 
                 className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', zIndex: 1 }}
