@@ -15258,13 +15258,17 @@ export default function Dashboard() {
                 
                 {/* Dynamic lines from current time to next task (solid) and next prep task (dotted) */}
                 {(() => {
+                  /* NOTE: This SVG must remain INSIDE calendarScrollRef so it scrolls with the time grid */
                   const now = new Date();
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
                   const calStartHour = calStart;
                   const calEndHour = isTravelMode ? 23 : 21;
                   
-                  if (currentHour < calStartHour || currentHour > calEndHour) return null;
+                  if (currentHour < calStartHour) return null;
+                  
+                  const clampedHour = Math.min(currentHour, calEndHour);
+                  const clampedMinutes = currentHour > calEndHour ? 59 : currentMinutes;
                   
                   const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
                   if (todayDayIdx < 0) return null;
@@ -15341,7 +15345,7 @@ export default function Dashboard() {
                   };
                   
                   const startX = getDayColumnCenter(todayDayIdx);
-                  const startY = getTopPx(currentHour, currentMinutes);
+                  const startY = getTopPx(clampedHour, clampedMinutes);
                   
                   const taskBoxHeight = 20;
                   
