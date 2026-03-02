@@ -14032,13 +14032,13 @@ export default function Dashboard() {
                                 className="relative"
                               >
                                 {!isFirstPrepDay && (
-                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor }} />
                                 )}
                                 {!isLastPrepDay && (
-                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '1px', backgroundColor: course.darkColor }} />
                                 )}
                                 <div
-                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
+                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden relative z-[1]"
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
@@ -14046,7 +14046,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
+                                  <span className="text-black px-1 flex items-center whitespace-nowrap font-[680] text-[8px]" style={{ backgroundColor: '#E8E656' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                                 </div>
                               </div>
@@ -14365,7 +14365,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
+                                  <span className="text-black px-1 flex items-center whitespace-nowrap font-[680] text-[8px]" style={{ backgroundColor: '#E8E656' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                                 </div>
                               </div>
