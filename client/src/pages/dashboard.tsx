@@ -13994,7 +13994,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
+                                className="flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
                                 style={{ 
                                   backgroundColor: 'white',
                                   borderColor: course.darkColor,
@@ -14010,7 +14010,7 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={task.id}
-                              className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -14297,7 +14297,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
+                                className="flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
                                 style={{ 
                                   backgroundColor: 'white',
                                   borderColor: course.darkColor,
@@ -14310,7 +14310,7 @@ export default function Dashboard() {
                             );
                           }
                           return (
-                            <div key={task.id} className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
                               onClick={() => setEditingTask(task)}
                             >
@@ -14383,7 +14383,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -14437,7 +14437,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
