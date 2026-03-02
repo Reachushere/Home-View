@@ -15256,7 +15256,6 @@ export default function Dashboard() {
                   );
                 })()}
                 
-            </div>
                 {/* Dynamic lines from current time to next task (solid) and next prep task (dotted) */}
                 {(() => {
                   const now = new Date();
@@ -15273,9 +15272,6 @@ export default function Dashboard() {
                   const containerEl = calendarScrollRef.current;
                   if (!containerEl) return null;
                   const containerWidth = containerEl.scrollWidth;
-                  const scrollTop = containerEl.scrollTop;
-                  
-                  const yOffset = containerEl.offsetTop;
                   
                   const nowTimestamp = now.getTime();
                   let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
@@ -15341,7 +15337,7 @@ export default function Dashboard() {
                       px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
                     }
                     px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-                    return yOffset + px;
+                    return px;
                   };
                   
                   const startX = getDayColumnCenter(todayDayIdx);
@@ -15356,7 +15352,6 @@ export default function Dashboard() {
                     const midY = topY + taskBoxHeight / 2;
                     
                     const yDiff = Math.abs(topY - startY);
-                    const xDiff = Math.abs(centerX - startX);
                     
                     if (taskInfo.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
                       return { x: leftX, y: midY, side: 'left' as const };
@@ -15388,7 +15383,7 @@ export default function Dashboard() {
                   
                   return (
                     <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[52]"
+                      className="absolute top-0 left-0 pointer-events-none z-[40]"
                       style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
                       {lines.map(line => {
@@ -15443,6 +15438,7 @@ export default function Dashboard() {
                     </svg>
                   );
                 })()}
+            </div>
                       </div>
           {/* Calendar Height Resize Handle */}
           <div
