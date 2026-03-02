@@ -15342,7 +15342,7 @@ export default function Dashboard() {
                   
                   return (
                     <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[4]"
+                      className="absolute top-0 left-0 pointer-events-none z-[40]"
                       style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
                       <defs>
