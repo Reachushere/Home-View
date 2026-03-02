@@ -18,7 +18,7 @@ import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
-import pdfLogo from "@assets/image_1772476179568.png";
+import pdfLogo from "@assets/Adobe_1772477203415.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14285,10 +14285,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <svg width="22" height="16" viewBox="0 0 34 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 16C3 16 1.5 14.5 2.5 12.5C3.5 10.5 6 11 6.5 11L5.5 13C4.5 15 6 16 7.5 14.5C9 13 9.5 10 9 7C8.5 4 7 2 5.5 2C4 2 3.5 4 4.5 7C5.5 10 7 14 7 16" stroke="white" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <text x="23" y="14" textAnchor="middle" fill="white" fontSize="9" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
-                                  </svg>
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '20px', height: '10px', objectFit: 'contain' }} />
                                 </div>
                                 {moduleUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14325,10 +14322,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <svg width="22" height="16" viewBox="0 0 34 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 16C3 16 1.5 14.5 2.5 12.5C3.5 10.5 6 11 6.5 11L5.5 13C4.5 15 6 16 7.5 14.5C9 13 9.5 10 9 7C8.5 4 7 2 5.5 2C4 2 3.5 4 4.5 7C5.5 10 7 14 7 16" stroke="white" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <text x="23" y="14" textAnchor="middle" fill="white" fontSize="9" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
-                                  </svg>
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '20px', height: '10px', objectFit: 'contain' }} />
                                 </div>
                                 {readingUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
