@@ -9616,9 +9616,9 @@ export default function Dashboard() {
           style={{
             width: '37px',
             height: '37px',
-            backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
-            backgroundSize: 'cover, cover',
-            backgroundPosition: 'center, center',
+            backgroundImage: `url(${clockBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
             marginRight: '10px',
             marginTop: '-1px',
             flexShrink: 0,
@@ -9667,7 +9667,7 @@ export default function Dashboard() {
       {/* Clock - Fixed on screen, never slides */}
       <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100 }}>
         <div style={{ overflow: 'hidden', borderRadius: '9999px', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
-          <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
+          <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00' }}>
