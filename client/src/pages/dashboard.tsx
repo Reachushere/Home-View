@@ -16596,7 +16596,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#0a0a0a'
+                backgroundColor: '#ff0000'
               }}
             >
               <h4 
