@@ -13907,7 +13907,11 @@ export default function Dashboard() {
                                         marginTop: '2px', 
                                         marginBottom: '2px',
                                         backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
-                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`
+                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`,
+                                        transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
+                                        boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                        zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
+                                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                                       }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
@@ -14091,6 +14095,10 @@ export default function Dashboard() {
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
+                                    transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
+                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                    zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
+                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
@@ -14109,6 +14117,10 @@ export default function Dashboard() {
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
+                                transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
+                                boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
+                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                               }}
                               title={task.title}
                             >
