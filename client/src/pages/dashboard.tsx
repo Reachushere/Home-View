@@ -15185,7 +15185,6 @@ export default function Dashboard() {
                   const calStartHour = calStart;
                   const calEndHour = isTravelMode ? 23 : 21;
                   
-                  // Only show if current time is within calendar range
                   if (currentHour < calStartHour || currentHour > calEndHour) return null;
                   
                   let topPosition = 0;
@@ -15216,6 +15215,117 @@ export default function Dashboard() {
                         style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
                       />
                     </div>
+                  );
+                })()}
+                
+                {/* Dynamic line from current time to next task */}
+                {(() => {
+                  const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinutes = now.getMinutes();
+                  const calStartHour = calStart;
+                  const calEndHour = isTravelMode ? 23 : 21;
+                  
+                  if (currentHour < calStartHour || currentHour > calEndHour) return null;
+                  
+                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
+                  if (todayDayIdx < 0) return null;
+                  
+                  const nowTimestamp = now.getTime();
+                  let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
+                  let earliestTime = Infinity;
+                  
+                  allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
+                    const dueDate = new Date(t.dueDate);
+                    const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+                    if (dIdx < 0) return;
+                    
+                    let taskHour: number, taskMin: number;
+                    if (t.eventStartTime) {
+                      [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
+                    } else {
+                      taskHour = dueDate.getHours();
+                      taskMin = dueDate.getMinutes();
+                    }
+                    
+                    const taskDate = new Date(dueDate);
+                    taskDate.setHours(taskHour, taskMin, 0, 0);
+                    const taskTimestamp = taskDate.getTime();
+                    
+                    if (taskTimestamp > nowTimestamp && taskTimestamp < earliestTime) {
+                      earliestTime = taskTimestamp;
+                      nextTask = { task: t, dayIdx: dIdx, taskHour, taskMin };
+                    }
+                  });
+                  
+                  if (!nextTask) return null;
+                  const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
+                  
+                  let nowTopPx = 0;
+                  for (let h = calStartHour; h < currentHour; h++) {
+                    nowTopPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  nowTopPx += (currentMinutes / 60) * (gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight);
+                  
+                  let taskTopPx = 0;
+                  for (let h = calStartHour; h < nt.taskHour; h++) {
+                    taskTopPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  taskTopPx += (nt.taskMin / 60) * (gridSizes.timeSlotHeights[nt.taskHour] || gridSizes.timeSlotHeight);
+                  
+                  const containerEl = calendarScrollRef.current;
+                  if (!containerEl) return null;
+                  const containerWidth = containerEl.scrollWidth;
+                  
+                  const fixedLeftWidth = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+                  const flexWidth = containerWidth - fixedLeftWidth;
+                  const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
+                  
+                  const getDayColumnCenter = (dIdx: number) => {
+                    let leftFr = 0;
+                    for (let i = 0; i < dIdx && i < 6; i++) {
+                      leftFr += gridSizes.dayColumnWidths[i];
+                    }
+                    const colFr = gridSizes.dayColumnWidths[dIdx] || gridSizes.dayColumnWidths[0];
+                    const centerFr = leftFr + colFr / 2;
+                    return fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
+                  };
+                  
+                  const startX = getDayColumnCenter(todayDayIdx);
+                  const startY = nowTopPx;
+                  const endX = getDayColumnCenter(nt.dayIdx);
+                  const endY = taskTopPx;
+                  
+                  const totalHeight = Math.max(startY, endY) + 20;
+                  
+                  const midY = startY + (endY - startY) * 0.5;
+                  const cp1x = startX;
+                  const cp1y = midY;
+                  const cp2x = endX;
+                  const cp2y = midY;
+                  
+                  return (
+                    <svg
+                      className="absolute top-0 left-0 pointer-events-none z-[4]"
+                      style={{ width: `${containerWidth}px`, height: `${totalHeight}px`, overflow: 'visible' }}
+                    >
+                      <defs>
+                        <linearGradient id="timeToTaskGradient" x1={startX} y1={startY} x2={endX} y2={endY} gradientUnits="userSpaceOnUse">
+                          <stop offset="0%" stopColor="rgba(255, 50, 50, 0.7)" />
+                          <stop offset="100%" stopColor="rgba(50, 120, 255, 0.7)" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d={`M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`}
+                        fill="none"
+                        stroke="url(#timeToTaskGradient)"
+                        strokeWidth="2"
+                        strokeDasharray="6 3"
+                        opacity="0.8"
+                      />
+                      <circle cx={startX} cy={startY} r="4" fill="rgba(255, 50, 50, 0.9)" />
+                      <circle cx={endX} cy={endY} r="4" fill="rgba(50, 120, 255, 0.9)" />
+                    </svg>
                   );
                 })()}
             </div>
