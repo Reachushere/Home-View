@@ -13541,7 +13541,7 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-0 right-0 flex items-center justify-center ${blinkSettings.todayColumnBlink ? 'animate-today-yellow' : ''}`} style={{ backgroundColor: '#E8E656', height: '14px', bottom: '1px' }}>
+                    <div className={`absolute left-0 right-0 flex items-center justify-center ${blinkSettings.todayColumnBlink ? 'animate-today-yellow' : ''}`} style={{ backgroundColor: blinkSettings.todayColumnBlink ? undefined : '#E8E656', height: '14px', bottom: '1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -13554,7 +13554,7 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-0 right-0 flex items-center justify-center ${blinkSettings.todayColumnBlink ? 'animate-today-yellow' : ''}`} style={{ backgroundColor: '#E8E656', height: '14px', bottom: '1px' }}>
+                    <div className={`absolute left-0 right-0 flex items-center justify-center ${blinkSettings.todayColumnBlink ? 'animate-today-yellow' : ''}`} style={{ backgroundColor: blinkSettings.todayColumnBlink ? undefined : '#E8E656', height: '14px', bottom: '1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
