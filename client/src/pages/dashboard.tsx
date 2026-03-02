@@ -13532,6 +13532,36 @@ export default function Dashboard() {
               );
             })()}
           </div>
+          {/* TODAY label above today column */}
+          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '12px' }}>
+            <div style={{ minWidth: 0 }} />
+            {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
+            {weekDays.slice(0, 6).map((day, idx) => {
+              const isToday = isSameDay(day, new Date());
+              return (
+                <div key={idx} style={{ minWidth: 0 }}>
+                  {isToday && (
+                    <div className="h-full flex items-center justify-center rounded-t-md" style={{ backgroundColor: '#E8E656' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            <div style={{ minWidth: 0, gridColumn: progressGridCol }} />
+            {weekDays[6] && (() => {
+              const isSatToday = isSameDay(weekDays[6], new Date());
+              return (
+                <div style={{ minWidth: 0, gridColumn: afterProgressGridCol }}>
+                  {isSatToday && (
+                    <div className="h-full flex items-center justify-center rounded-t-md" style={{ backgroundColor: '#E8E656' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
           <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '16px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
