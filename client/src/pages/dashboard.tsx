@@ -13994,7 +13994,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
+                                className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
                                 style={{ 
                                   backgroundColor: 'white',
                                   borderColor: course.darkColor,
@@ -14002,7 +14002,8 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="truncate font-bold text-gray-700 flex items-center gap-0"><span className="bg-black text-white px-0.5 rounded-sm whitespace-nowrap -ml-0.5">PREP DAY</span> {task.title}</span>
+                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-bold text-[8px]">PREP DAY</span>
+                                <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                               </div>
                             );
                           }
@@ -14297,7 +14298,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="flex items-center gap-0.5 text-[9px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
+                                className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
                                 style={{ 
                                   backgroundColor: 'white',
                                   borderColor: course.darkColor,
@@ -14305,7 +14306,8 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="truncate font-bold text-gray-700 flex items-center gap-0"><span className="bg-black text-white px-0.5 rounded-sm whitespace-nowrap -ml-0.5">PREP DAY</span> {task.title}</span>
+                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-bold text-[8px]">PREP DAY</span>
+                                <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                               </div>
                             );
                           }
