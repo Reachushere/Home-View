@@ -13999,7 +13999,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #999' : `1.5px dotted ${courseData.color}dd` }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #777' : `1.5px dotted ${courseData.color}dd` }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -14316,7 +14316,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #999' : `1.5px dotted ${courseData.color}dd` }}
+                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #777' : `1.5px dotted ${courseData.color}dd` }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
