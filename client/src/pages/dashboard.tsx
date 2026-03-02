@@ -14285,10 +14285,10 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <svg width="14" height="12" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8 18C8 18 6 14 6 10C6 6 8 2 10 2C12 2 12 6 11 10C10 14 7 18 4 18C1 18 2 14 4 12C6 10 8 10 8 10" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-                                    <rect x="13" y="5" width="14" height="10" rx="1.5" fill="white"/>
-                                    <text x="20" y="13" textAnchor="middle" fill="currentColor" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
+                                  <svg width="16" height="12" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 17C4 17 2.5 14 4 12C5.5 10 8 10.5 8.5 10.5C8.5 10.5 5.5 16 10 16C12 16 12.5 12 11.5 8C10.5 4 9 2 7 2C5 2 4 5 5 9C6 13 8 17 8 17" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <rect x="15" y="6" width="16" height="9" rx="1.5" fill="white"/>
+                                    <text x="23" y="13" textAnchor="middle" fill="currentColor" fontSize="7" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
                                   </svg>
                                 </div>
                                 {moduleUnread > 0 && (
@@ -14326,10 +14326,10 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <svg width="14" height="12" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8 18C8 18 6 14 6 10C6 6 8 2 10 2C12 2 12 6 11 10C10 14 7 18 4 18C1 18 2 14 4 12C6 10 8 10 8 10" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-                                    <rect x="13" y="5" width="14" height="10" rx="1.5" fill="white"/>
-                                    <text x="20" y="13" textAnchor="middle" fill="currentColor" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
+                                  <svg width="16" height="12" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 17C4 17 2.5 14 4 12C5.5 10 8 10.5 8.5 10.5C8.5 10.5 5.5 16 10 16C12 16 12.5 12 11.5 8C10.5 4 9 2 7 2C5 2 4 5 5 9C6 13 8 17 8 17" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <rect x="15" y="6" width="16" height="9" rx="1.5" fill="white"/>
+                                    <text x="23" y="13" textAnchor="middle" fill="currentColor" fontSize="7" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
                                   </svg>
                                 </div>
                                 {readingUnread > 0 && (
