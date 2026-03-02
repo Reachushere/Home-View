@@ -14350,6 +14350,7 @@ export default function Dashboard() {
                     )}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const cellDate = startOfDay(day);
+                      const isOtherToday = isSameDay(day, new Date());
                       const dayOtherTasks = otherTasks.filter(task => {
                         const taskDueDate = startOfDay(new Date(task.dueDate));
                         if (isSameDay(taskDueDate, cellDate)) return true;
@@ -14363,7 +14364,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px', borderBottom: '1px solid #6b7280' }}
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px', borderBottom: '1px solid #6b7280' }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -14404,6 +14405,7 @@ export default function Dashboard() {
                     {weekDays[6] && (() => {
                       const day = weekDays[6];
                       const cellDate = startOfDay(day);
+                      const isSatOtherToday = isSameDay(day, new Date());
                       const dayOtherTasks = otherTasks.filter(task => {
                         const taskDueDate = startOfDay(new Date(task.dueDate));
                         if (isSameDay(taskDueDate, cellDate)) return true;
@@ -14416,7 +14418,7 @@ export default function Dashboard() {
                       return (
                         <div
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px', borderBottom: '1px solid #6b7280', gridColumn: afterProgressGridCol }}
+                          style={{ backgroundColor: isSatOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px', borderBottom: '1px solid #6b7280', gridColumn: afterProgressGridCol }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
