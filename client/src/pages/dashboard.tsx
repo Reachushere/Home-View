@@ -14046,7 +14046,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.3) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.15) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 py-0.5">{task.title}</span>
                                 </div>
                               </div>
@@ -14365,7 +14365,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.3) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.15) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 py-0.5">{task.title}</span>
                                 </div>
                               </div>
