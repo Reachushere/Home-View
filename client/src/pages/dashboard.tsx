@@ -13541,12 +13541,12 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center overflow-hidden whitespace-nowrap`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', gap: '1px' }}>
-                      <span className="text-[8px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
-                      <span className="text-[9px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                    <div className={`absolute left-px right-px flex items-center justify-between overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[9px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
-                      <span className="text-[8px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
                     </div>
                   )}
                 </div>
@@ -13558,12 +13558,12 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center overflow-hidden whitespace-nowrap`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', gap: '1px' }}>
-                      <span className="text-[8px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
-                      <span className="text-[9px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                    <div className={`absolute left-px right-px flex items-center justify-between overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[9px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
-                      <span className="text-[8px] font-bold uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#bbb' }}>TODAY</span>
                     </div>
                   )}
                 </div>
