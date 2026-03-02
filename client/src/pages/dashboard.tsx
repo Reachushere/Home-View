@@ -15323,7 +15323,7 @@ export default function Dashboard() {
                           orient="auto"
                           markerUnits="userSpaceOnUse"
                         >
-                          <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(160,160,160,0.9)" />
+                          <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(0,0,0,0.9)" />
                         </marker>
                       </defs>
                       <path
@@ -15334,7 +15334,7 @@ export default function Dashboard() {
                         strokeDasharray="6 3"
                         markerEnd="url(#nextTaskArrow)"
                       />
-                      <circle cx={startX} cy={startY} r="3" fill="rgba(170,170,170,0.8)" />
+                      <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
                     </svg>
                   );
                 })()}
