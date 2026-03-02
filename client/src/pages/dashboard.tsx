@@ -14275,7 +14275,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '42px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '50px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
@@ -14285,7 +14285,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '30px', height: '14px', objectFit: 'contain', marginLeft: '-4px' }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '36px', height: '16px', objectFit: 'contain', marginLeft: '-2px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14312,7 +14312,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '42px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '50px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
                                 onClick={() => handlePlayFiles('reading')}
@@ -14322,7 +14322,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '30px', height: '14px', objectFit: 'contain', marginLeft: '-4px' }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '36px', height: '16px', objectFit: 'contain', marginLeft: '-2px' }} />
                                 </div>
                                 {readingUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
