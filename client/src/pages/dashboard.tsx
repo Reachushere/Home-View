@@ -16596,15 +16596,12 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                position: 'relative' as const,
-                overflow: 'hidden' as const
+                backgroundColor: '#0a0a0a'
               }}
             >
-              <img src={clockBg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 0 }} />
               <h4 
                 className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', zIndex: 1 }}
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('this-week')}
                 onDragEnd={handleBoxDragEnd}
@@ -16722,15 +16719,12 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                position: 'relative' as const,
-                overflow: 'hidden' as const
+                backgroundColor: '#0a0a0a'
               }}
             >
-              <img src={clockBg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 0 }} />
               <h4 
                 className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', zIndex: 1 }}
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('today')}
                 onDragEnd={handleBoxDragEnd}
@@ -16842,15 +16836,12 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                position: 'relative' as const,
-                overflow: 'hidden' as const
+                backgroundColor: '#0a0a0a'
               }}
             >
-              <img src={clockBg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 0 }} />
               <h4 
                 className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', zIndex: 1 }}
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('tomorrow')}
                 onDragEnd={handleBoxDragEnd}
