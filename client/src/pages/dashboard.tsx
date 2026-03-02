@@ -14032,7 +14032,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-semibold text-[8px]">PREP DAY</span>
+                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
                                 <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                               </div>
                             );
@@ -14336,7 +14336,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-semibold text-[8px]">PREP DAY</span>
+                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
                                 <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                               </div>
                             );
@@ -16111,6 +16111,8 @@ export default function Dashboard() {
             const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
             const isModuleTask = task.startDate && task.startDate !== task.dueDate;
             const shouldBlinkInTodayBox = isModuleTask && isWednesdayOrLater && !task.isCompleted;
+            const isAssignment = task.type && !['discussion', 'poll'].includes(task.type);
+            const shouldBlinkAssignment = isAssignment && daysUntil === 2 && !task.isCompleted;
             
             // Calculate progress using the helper function (subtasks or time-based)
             const progressBarWidth = getProgressBarWidth(task);
@@ -16125,7 +16127,7 @@ export default function Dashboard() {
             return (
               <div 
                 key={task.id} 
-                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${shouldBlinkInTodayBox ? 'animate-blink' : ''}`} 
+                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink' : ''}`} 
                 data-box-task-id={task.id} 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
