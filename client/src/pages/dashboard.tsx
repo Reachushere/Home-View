@@ -8976,7 +8976,12 @@ export default function Dashboard() {
                 <span style={{ color: diffDays >= 3 ? 'rgb(0, 200, 0)' : diffDays === 2 ? '#eab308' : '#ef4444', fontSize: '28px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
                 <span style={{ color: diffDays >= 3 ? 'rgb(0, 200, 0)' : diffDays === 2 ? '#eab308' : '#ef4444', fontSize: '10px', fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{diffDays === 1 ? 'day' : 'days'}</span>
               </div>
-              <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '-3px' }}>
+              <span
+                style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '-3px', pointerEvents: 'auto', cursor: 'pointer' }}
+                onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
+                onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                data-testid="countdown-next-task-name"
+              >
                 {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || 'rgba(255,255,255,0.85)' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
               </span>
               {prepDaysText && nextPrep && (
