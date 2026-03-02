@@ -14054,7 +14054,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '9px', WebkitTextStroke: '0.15px #FFFF00' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '9px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                 </div>
                               </div>
@@ -14373,7 +14373,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '9px', WebkitTextStroke: '0.15px #FFFF00' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '9px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                 </div>
                               </div>
