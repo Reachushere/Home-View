@@ -18,7 +18,7 @@ import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
-import pdfLogo from "@assets/Adobe8_1772478471745.png";
+import pdfLogo from "@assets/Adobe9_1772478732065.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14285,7 +14285,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '32px', height: '14px', objectFit: 'contain', marginLeft: '-7px' }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '32px', height: '14px', objectFit: 'contain', marginLeft: '-8px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14322,7 +14322,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '32px', height: '14px', objectFit: 'contain', marginLeft: '-7px' }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '32px', height: '14px', objectFit: 'contain', marginLeft: '-8px' }} />
                                 </div>
                                 {readingUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
