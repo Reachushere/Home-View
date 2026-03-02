@@ -13664,6 +13664,13 @@ export default function Dashboard() {
                     const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
                     return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
                   })(),
+                  darkColor: (() => {
+                    if (courseName === 'CPPA122') return '#0F5004';
+                    if (courseName === 'CFNF400') return '#DE1864';
+                    if (courseName === 'CASL101') return '#500442';
+                    const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
+                    return `rgb(${dR}, ${dG}, ${dB})`;
+                  })(),
                   colors: dynamicCourseColors[courseName] 
                 };
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
@@ -13737,8 +13744,8 @@ export default function Dashboard() {
                               <div 
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                                 style={{
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (course.colors?.bg || '#e5e7eb'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (course.colors?.border || '#9ca3af')
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
+                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
@@ -13820,7 +13827,8 @@ export default function Dashboard() {
                                         height: 'calc(100% - 4px)', 
                                         marginTop: '2px', 
                                         marginBottom: '2px',
-                                        backgroundColor: task.isCompleted ? '#e5e7eb' : (course.colors?.bg || '#e5e7eb')
+                                        backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
+                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`
                                       }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
@@ -13988,8 +13996,8 @@ export default function Dashboard() {
                                 key={`prep-${task.id}`}
                                 className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
                                 style={{ 
-                                  backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
-                                  borderColor: borderColor,
+                                  backgroundColor: 'white',
+                                  borderColor: course.darkColor,
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
@@ -14004,8 +14012,8 @@ export default function Dashboard() {
                               key={task.id}
                               className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
-                                borderColor: borderColor,
+                                backgroundColor: 'white',
+                                borderColor: course.darkColor,
                               }}
                               title={task.title}
                             >
@@ -14291,8 +14299,8 @@ export default function Dashboard() {
                                 key={`prep-${task.id}`}
                                 className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
                                 style={{ 
-                                  backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
-                                  borderColor: borderColor,
+                                  backgroundColor: 'white',
+                                  borderColor: course.darkColor,
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
@@ -14303,7 +14311,7 @@ export default function Dashboard() {
                           }
                           return (
                             <div key={task.id} className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`, borderColor: task.isCompleted ? '#d1d5db' : borderColor }}
+                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
                               onClick={() => setEditingTask(task)}
                             >
                               <span className="truncate font-bold">{task.title}</span>
