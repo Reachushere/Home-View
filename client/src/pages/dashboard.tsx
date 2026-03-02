@@ -15244,6 +15244,7 @@ export default function Dashboard() {
                   );
                 })()}
                 
+            </div>
                 {/* Dynamic lines from current time to next task (solid) and next prep task (dotted) */}
                 {(() => {
                   const now = new Date();
@@ -15256,6 +15257,13 @@ export default function Dashboard() {
                   
                   const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
                   if (todayDayIdx < 0) return null;
+                  
+                  const containerEl = calendarScrollRef.current;
+                  if (!containerEl) return null;
+                  const containerWidth = containerEl.scrollWidth;
+                  const scrollTop = containerEl.scrollTop;
+                  
+                  const yOffset = containerEl.offsetTop;
                   
                   const nowTimestamp = now.getTime();
                   let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
@@ -15293,10 +15301,6 @@ export default function Dashboard() {
                   
                   if (!nextTask && !nextPrepTask) return null;
                   
-                  const containerEl = calendarScrollRef.current;
-                  if (!containerEl) return null;
-                  const containerWidth = containerEl.scrollWidth;
-                  
                   const fixedLeftWidth = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
                   const flexWidth = containerWidth - fixedLeftWidth;
                   const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
@@ -15311,23 +15315,17 @@ export default function Dashboard() {
                     return fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
                   };
                   
-                  let nowTopPx = 0;
-                  for (let h = calStartHour; h < currentHour; h++) {
-                    nowTopPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                  }
-                  nowTopPx += (currentMinutes / 60) * (gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight);
-                  
-                  const startX = getDayColumnCenter(todayDayIdx);
-                  const startY = nowTopPx;
-                  
                   const getTopPx = (hour: number, min: number) => {
                     let px = 0;
                     for (let h = calStartHour; h < hour; h++) {
                       px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
                     }
                     px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-                    return px;
+                    return yOffset + px;
                   };
+                  
+                  const startX = getDayColumnCenter(todayDayIdx);
+                  const startY = getTopPx(currentHour, currentMinutes);
                   
                   const lines: Array<{ endX: number; endY: number; dashed: boolean; id: string }> = [];
                   
@@ -15349,7 +15347,7 @@ export default function Dashboard() {
                   
                   return (
                     <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[40]"
+                      className="absolute top-0 left-0 pointer-events-none z-[52]"
                       style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
                       {lines.map(line => {
@@ -15388,7 +15386,6 @@ export default function Dashboard() {
                     </svg>
                   );
                 })()}
-            </div>
                       </div>
           {/* Calendar Height Resize Handle */}
           <div
