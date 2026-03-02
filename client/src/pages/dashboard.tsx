@@ -13988,8 +13988,8 @@ export default function Dashboard() {
                                 key={`prep-${task.id}`}
                                 className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
                                 style={{ 
-                                  backgroundColor: 'rgba(156, 163, 175, 0.15)',
-                                  borderColor: 'rgba(156, 163, 175, 0.5)',
+                                  backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
+                                  borderColor: borderColor,
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
@@ -14291,8 +14291,8 @@ export default function Dashboard() {
                                 key={`prep-${task.id}`}
                                 className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
                                 style={{ 
-                                  backgroundColor: 'rgba(156, 163, 175, 0.15)',
-                                  borderColor: 'rgba(156, 163, 175, 0.5)',
+                                  backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
+                                  borderColor: borderColor,
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
@@ -14720,11 +14720,11 @@ export default function Dashboard() {
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
-                          {/* Hour boundary dotted line */}
-                          <div 
+                          {/* Hour boundary dotted line - skip for 12pm since it has AM/PM separator */}
+                          {hour !== 12 && <div 
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isToday ? 'border-black' : 'border-gray-400 dark:border-gray-500'}`}
                             style={{ top: '0' }}
-                          />
+                          />}
                           {/* Half-hour dotted line */}
                           <div 
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isToday ? 'border-gray-400' : 'border-gray-300 dark:border-gray-400'}`}
