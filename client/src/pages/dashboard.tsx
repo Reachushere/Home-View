@@ -15315,6 +15315,14 @@ export default function Dashboard() {
                     return fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
                   };
                   
+                  const getDayColumnLeft = (dIdx: number) => {
+                    let leftFr = 0;
+                    for (let i = 0; i < dIdx && i < 6; i++) {
+                      leftFr += gridSizes.dayColumnWidths[i];
+                    }
+                    return fixedLeftWidth + (leftFr / totalFrUnits) * flexWidth + 3;
+                  };
+                  
                   const getTopPx = (hour: number, min: number) => {
                     let px = 0;
                     for (let h = calStartHour; h < hour; h++) {
@@ -15327,19 +15335,40 @@ export default function Dashboard() {
                   const startX = getDayColumnCenter(todayDayIdx);
                   const startY = getTopPx(currentHour, currentMinutes);
                   
-                  const lines: Array<{ endX: number; endY: number; dashed: boolean; id: string }> = [];
+                  const taskBoxHeight = 20;
+                  
+                  const getEndpoint = (taskInfo: { dayIdx: number; taskHour: number; taskMin: number }) => {
+                    const topY = getTopPx(taskInfo.taskHour, taskInfo.taskMin);
+                    const centerX = getDayColumnCenter(taskInfo.dayIdx);
+                    const leftX = getDayColumnLeft(taskInfo.dayIdx);
+                    const midY = topY + taskBoxHeight / 2;
+                    
+                    const yDiff = Math.abs(topY - startY);
+                    const xDiff = Math.abs(centerX - startX);
+                    
+                    if (taskInfo.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
+                      return { x: leftX, y: midY, side: 'left' as const };
+                    }
+                    if (taskInfo.dayIdx > todayDayIdx && yDiff < 60) {
+                      return { x: leftX, y: midY, side: 'left' as const };
+                    }
+                    
+                    return { x: centerX, y: topY, side: 'top' as const };
+                  };
+                  
+                  const lines: Array<{ endX: number; endY: number; dashed: boolean; id: string; side: 'top' | 'left' }> = [];
                   
                   if (nextTask) {
                     const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
-                    lines.push({ endX: getDayColumnCenter(nt.dayIdx), endY: getTopPx(nt.taskHour, nt.taskMin), dashed: false, id: 'task' });
+                    const ep = getEndpoint(nt);
+                    lines.push({ endX: ep.x, endY: ep.y, dashed: false, id: 'task', side: ep.side });
                   }
                   
                   if (nextPrepTask) {
                     const np = nextPrepTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
-                    const prepEndX = getDayColumnCenter(np.dayIdx);
-                    const prepEndY = getTopPx(np.taskHour, np.taskMin);
-                    if (!nextTask || prepEndX !== lines[0]?.endX || prepEndY !== lines[0]?.endY) {
-                      lines.push({ endX: prepEndX, endY: prepEndY, dashed: true, id: 'prep' });
+                    const ep = getEndpoint(np);
+                    if (!nextTask || ep.x !== lines[0]?.endX || ep.y !== lines[0]?.endY) {
+                      lines.push({ endX: ep.x, endY: ep.y, dashed: true, id: 'prep', side: ep.side });
                     }
                   }
                   
@@ -15351,11 +15380,27 @@ export default function Dashboard() {
                       style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
                       {lines.map(line => {
-                        const midY = startY + (line.endY - startY) * 0.5;
+                        let pathD: string;
+                        if (line.side === 'left') {
+                          const midX = startX + (line.endX - startX) * 0.5;
+                          pathD = `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${line.endY}, ${line.endX} ${line.endY}`;
+                        } else {
+                          const midY = startY + (line.endY - startY) * 0.5;
+                          pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${line.endX} ${midY}, ${line.endX} ${line.endY}`;
+                        }
+                        
                         const t = 0.95;
                         const mt = 1 - t;
-                        const nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*line.endX + t*t*t*line.endX;
-                        const nearEndY = mt*mt*mt*startY + 3*mt*mt*t*midY + 3*mt*t*t*midY + t*t*t*line.endY;
+                        let nearEndX: number, nearEndY: number;
+                        if (line.side === 'left') {
+                          const midX = startX + (line.endX - startX) * 0.5;
+                          nearEndX = mt*mt*mt*startX + 3*mt*mt*t*midX + 3*mt*t*t*midX + t*t*t*line.endX;
+                          nearEndY = mt*mt*mt*startY + 3*mt*mt*t*startY + 3*mt*t*t*line.endY + t*t*t*line.endY;
+                        } else {
+                          const midY = startY + (line.endY - startY) * 0.5;
+                          nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*line.endX + t*t*t*line.endX;
+                          nearEndY = mt*mt*mt*startY + 3*mt*mt*t*midY + 3*mt*t*t*midY + t*t*t*line.endY;
+                        }
                         const dx = line.endX - nearEndX;
                         const dy = line.endY - nearEndY;
                         const angle = Math.atan2(dy, dx);
@@ -15369,7 +15414,7 @@ export default function Dashboard() {
                           <g key={line.id}>
                             <path
                               className="animate-next-task-line"
-                              d={`M ${startX} ${startY} C ${startX} ${midY}, ${line.endX} ${midY}, ${line.endX} ${line.endY}`}
+                              d={pathD}
                               fill="none"
                               stroke="rgba(170,170,170,0.7)"
                               strokeWidth="1.5"
