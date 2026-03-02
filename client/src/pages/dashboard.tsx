@@ -1724,6 +1724,26 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (schoolData.isTravelling) {
+      if (schoolData.travelEndDate) {
+        const endDate = new Date(schoolData.travelEndDate + 'T23:59:59');
+        if (new Date() > endDate) {
+          const updated = { ...schoolData, isTravelling: false, travelTimezone: undefined, travelStartDate: undefined, travelEndDate: undefined };
+          setSchoolData(updated);
+          localStorage.setItem('schoolData', JSON.stringify(updated));
+          setProfileData(prev => {
+            const updatedProfile = { ...prev, travelTimezone: null };
+            localStorage.setItem('profileData', JSON.stringify(updatedProfile));
+            return updatedProfile;
+          });
+          fetch('/api/travelling', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isTravelling: false, startDate: null, endDate: null }),
+          }).catch(err => console.error('Failed to sync travel expiry:', err));
+          toast({ title: "Travel mode ended", description: "Your travel period has ended. Times are back to Eastern Time." });
+          return;
+        }
+      }
       fetch('/api/travelling', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
