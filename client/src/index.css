@@ -506,6 +506,19 @@ button[role="combobox"] > span {
   animation: today-date-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+@keyframes today-yellow-pulse {
+  0%, 100% { 
+    background-color: #E8E656;
+  }
+  50% { 
+    background-color: #d4d24e;
+  }
+}
+
+.animate-today-yellow {
+  animation: today-yellow-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 @keyframes today-time-cell-pulse {
   0%, 100% { 
     background-color: #1e3f5e;

@@ -13515,7 +13515,7 @@ export default function Dashboard() {
                 <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", position: 'relative' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
                   {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
                   {isToday && (
-                    <div className="absolute left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', height: '12px', bottom: '-3px', zIndex: 60 }}>
+                    <div className={`absolute left-0 right-0 flex items-center justify-center ${blinkSettings.todayColumnBlink ? 'animate-today-yellow' : ''}`} style={{ backgroundColor: '#E8E656', height: '12px', bottom: '-3px', zIndex: 60 }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -13534,7 +13534,7 @@ export default function Dashboard() {
                 <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: afterProgressGridCol, position: 'relative' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
                   {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
                   {isSatToday && (
-                    <div className="absolute left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', height: '12px', bottom: '-3px', zIndex: 60 }}>
+                    <div className={`absolute left-0 right-0 flex items-center justify-center ${blinkSettings.todayColumnBlink ? 'animate-today-yellow' : ''}`} style={{ backgroundColor: '#E8E656', height: '12px', bottom: '-3px', zIndex: 60 }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
