@@ -13963,7 +13963,7 @@ export default function Dashboard() {
                     const allItems: { task: typeof dueTasks[0], isPrep: boolean }[] = [
                       ...dueTasks.map(t => ({ task: t, isPrep: false })),
                       ...prepTasks.map(t => ({ task: t, isPrep: true })),
-                    ];
+                    ].sort((a, b) => a.task.id - b.task.id);
                     
                     return (
                       <div 
@@ -14282,7 +14282,7 @@ export default function Dashboard() {
                     const allItems: { task: typeof dueTasks[0], isPrep: boolean }[] = [
                       ...dueTasks.map(t => ({ task: t, isPrep: false })),
                       ...prepTasks.map(t => ({ task: t, isPrep: true })),
-                    ];
+                    ].sort((a, b) => a.task.id - b.task.id);
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
