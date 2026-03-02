@@ -13709,7 +13709,7 @@ export default function Dashboard() {
                 // If there are full-week tasks, render them using grid column spanning
                 if (hasFullWeekTasks) {
                   return (
-                    <div key={course.name} className="w-full flex-shrink-0" style={{ borderBottom: `1.5px dotted ${courseData.color}bb` }}>
+                    <div key={course.name} className="w-full flex-shrink-0" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
                       {fullWeekTasks.map((task, taskIdx) => {
                         const today = startOfDay(new Date());
                         const tomorrow = addDays(today, 1);
@@ -13897,7 +13897,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}bb` }}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd` }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
@@ -13935,7 +13935,7 @@ export default function Dashboard() {
                       );
                     })()}
                   </div>
-                  {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}bb` }} />}
+                  {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
                     const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
@@ -13969,7 +13969,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #999' : `1.5px dotted ${courseData.color}bb` }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #999' : `1.5px dotted ${courseData.color}dd` }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -14286,7 +14286,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #999' : `1.5px dotted ${courseData.color}bb` }}
+                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #999' : `1.5px dotted ${courseData.color}dd` }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
