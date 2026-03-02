@@ -8955,7 +8955,7 @@ export default function Dashboard() {
               left: '50%',
               transform: 'translateX(-50%) translateY(-50%)',
               top: '37px',
-              zIndex: 5,
+              zIndex: 10,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
               pointerEvents: 'none',
@@ -8991,7 +8991,7 @@ export default function Dashboard() {
                   onMouseLeave={() => setHoveredCountdownTaskId(null)}
                   data-testid="countdown-prep-task-number"
                 >
-                  {prepDaysText === 'today' ? (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor }}>{prepTaskName}</span> : prepTaskName} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {prepCourseColor ? <span style={{ color: prepCourseColor }}>{prepTaskName}</span> : prepTaskName} is in progress</>) : (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor }}>{prepTaskName}</span> : prepTaskName} in <span style={{ fontSize: '15px', fontWeight: 400, color: Number(prepDaysText) >= 3 ? 'rgb(0, 200, 0)' : Number(prepDaysText) === 2 ? '#eab308' : '#ef4444' }}>{prepDaysText}</span> <span style={{ color: Number(prepDaysText) >= 3 ? 'rgb(0, 200, 0)' : Number(prepDaysText) === 2 ? '#eab308' : '#ef4444' }}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
+                  {prepDaysText === 'today' ? (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} is in progress</>) : (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} in <span style={{ fontSize: '15px', fontWeight: 400, color: Number(prepDaysText) >= 3 ? 'rgb(0, 200, 0)' : Number(prepDaysText) === 2 ? '#eab308' : '#ef4444', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepDaysText}</span> <span style={{ color: Number(prepDaysText) >= 3 ? 'rgb(0, 200, 0)' : Number(prepDaysText) === 2 ? '#eab308' : '#ef4444', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
                 </span>
               )}
             </div>
@@ -14088,10 +14088,10 @@ export default function Dashboard() {
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
-                                    transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
-                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                    transformOrigin: 'center center',
+                                    outline: hoveredCountdownTaskId === task.id ? '3px solid #facc15' : undefined,
+                                    outlineOffset: hoveredCountdownTaskId === task.id ? '-1px' : undefined,
+                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 0 12px 2px rgba(250,204,21,0.5)' : undefined,
+                                    transition: 'outline 0.2s ease, box-shadow 0.2s ease',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
@@ -14111,10 +14111,10 @@ export default function Dashboard() {
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
                                 zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
-                                transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
-                                boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                transformOrigin: 'center center',
+                                outline: hoveredCountdownTaskId === task.id ? '3px solid #facc15' : undefined,
+                                outlineOffset: hoveredCountdownTaskId === task.id ? '-1px' : undefined,
+                                boxShadow: hoveredCountdownTaskId === task.id ? '0 0 12px 2px rgba(250,204,21,0.5)' : undefined,
+                                transition: 'outline 0.2s ease, box-shadow 0.2s ease',
                               }}
                               title={task.title}
                             >
