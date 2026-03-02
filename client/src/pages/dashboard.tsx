@@ -14288,7 +14288,7 @@ export default function Dashboard() {
                                   <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-4px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {moduleUnread}
                                   </div>
                                 )}
@@ -14325,7 +14325,7 @@ export default function Dashboard() {
                                   <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-4px' }} />
                                 </div>
                                 {readingUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {readingUnread}
                                   </div>
                                 )}
