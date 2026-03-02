@@ -16595,7 +16595,9 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                backgroundColor: '#000000',
+                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
+                backgroundSize: 'cover, cover',
+                backgroundPosition: 'center, center',
                 padding: '6px 12px',
                 borderRadius: '12px 12px 0 0'
               }}
@@ -16719,7 +16721,9 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                backgroundColor: '#000000',
+                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
+                backgroundSize: 'cover, cover',
+                backgroundPosition: 'center, center',
                 padding: '6px 12px',
                 borderRadius: '12px 12px 0 0'
               }}
@@ -16837,7 +16841,9 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                backgroundColor: '#000000',
+                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
+                backgroundSize: 'cover, cover',
+                backgroundPosition: 'center, center',
                 padding: '6px 12px',
                 borderRadius: '12px 12px 0 0'
               }}
