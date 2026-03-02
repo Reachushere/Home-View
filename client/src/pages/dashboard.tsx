@@ -1740,7 +1740,7 @@ export default function Dashboard() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isTravelling: false, startDate: null, endDate: null }),
           }).catch(err => console.error('Failed to sync travel expiry:', err));
-          toast({ title: "Travel mode ended", description: "Your travel period has ended. Times are back to Eastern Time." });
+          console.log('Travel mode auto-ended: travel end date has passed');
           return;
         }
       }
