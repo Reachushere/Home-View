@@ -14595,10 +14595,10 @@ export default function Dashboard() {
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             {showAllDayRow && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative border-b border-border/50" style={{ backgroundColor: colorSettings.headerBar }}>
+              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative border-b border-border/50" style={{ backgroundColor: '#0a0a0a' }}>
                 ALL DAY
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: '#0a0a0a' }} />}
               {/* Day cells - Sun-Fri */}
               {weekDays.slice(0, 6).map((day, dayIdx) => {
                 const allDayTasks = getAllDayTasks(day);
