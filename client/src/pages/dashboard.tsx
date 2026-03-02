@@ -1725,7 +1725,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (schoolData.isTravelling) {
       if (schoolData.travelEndDate) {
-        const endDate = new Date(schoolData.travelEndDate + 'T23:59:59');
+        const rawEnd = schoolData.travelEndDate;
+        const endDate = rawEnd.includes('T') ? new Date(rawEnd) : new Date(rawEnd + 'T23:59:59');
         if (new Date() > endDate) {
           const updated = { ...schoolData, isTravelling: false, travelTimezone: undefined, travelStartDate: undefined, travelEndDate: undefined };
           setSchoolData(updated);
