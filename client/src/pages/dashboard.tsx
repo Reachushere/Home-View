@@ -14275,7 +14275,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '42px', height: '26px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '42px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
@@ -14312,7 +14312,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '42px', height: '26px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '42px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
                                 onClick={() => handlePlayFiles('reading')}
