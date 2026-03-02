@@ -8942,7 +8942,7 @@ export default function Dashboard() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ color: '#ffffff', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>Your next task is in:</span>
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', marginTop: '-6px', marginBottom: '0px', width: '100%' }}>
-                <span style={{ color: diffDays >= 3 ? 'rgb(0, 200, 0)' : diffDays === 2 ? '#eab308' : '#ef4444', fontSize: '28px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
+                <span style={{ color: diffDays >= 3 ? 'rgb(0, 200, 0)' : diffDays === 2 ? '#eab308' : '#ef4444', fontSize: '28px', fontWeight: 400, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
                 <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{diffDays === 1 ? 'day' : 'days'}</span>
               </div>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '-3px' }}>
