@@ -14285,7 +14285,11 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '12px', height: '12px', objectFit: 'contain' }} />
+                                  <svg width="14" height="12" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 18C8 18 6 14 6 10C6 6 8 2 10 2C12 2 12 6 11 10C10 14 7 18 4 18C1 18 2 14 4 12C6 10 8 10 8 10" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+                                    <rect x="13" y="5" width="14" height="10" rx="1.5" fill="white"/>
+                                    <text x="20" y="13" textAnchor="middle" fill="currentColor" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
+                                  </svg>
                                 </div>
                                 {moduleUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14322,7 +14326,11 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '12px', height: '12px', objectFit: 'contain' }} />
+                                  <svg width="14" height="12" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 18C8 18 6 14 6 10C6 6 8 2 10 2C12 2 12 6 11 10C10 14 7 18 4 18C1 18 2 14 4 12C6 10 8 10 8 10" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+                                    <rect x="13" y="5" width="14" height="10" rx="1.5" fill="white"/>
+                                    <text x="20" y="13" textAnchor="middle" fill="currentColor" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif">PDF</text>
+                                  </svg>
                                 </div>
                                 {readingUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
