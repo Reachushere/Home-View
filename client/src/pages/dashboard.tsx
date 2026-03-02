@@ -14249,7 +14249,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 flex flex-col"
-                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '4px' }}
+                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '4px', overflow: 'visible' }}
                       >
                         {hasNoData ? (
                           <div className="flex-1 flex items-center justify-center">
@@ -14257,7 +14257,7 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <>
-                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)' }}>
+                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible' }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0" style={{ marginRight: '4px' }}>
                                 <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module{moduleFolderCount?.total ? ` (${moduleFolderCount.total})` : ''}</span>
                                 {moduleP.hasFiles ? (
