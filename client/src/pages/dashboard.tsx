@@ -15310,7 +15310,7 @@ export default function Dashboard() {
                   
                   return (
                     <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[4] animate-next-task-line"
+                      className="absolute top-0 left-0 pointer-events-none z-[4]"
                       style={{ width: `${containerWidth}px`, height: `${totalHeight}px`, overflow: 'visible' }}
                     >
                       <defs>
@@ -15327,6 +15327,7 @@ export default function Dashboard() {
                         </marker>
                       </defs>
                       <path
+                        className="animate-next-task-line"
                         d={`M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`}
                         fill="none"
                         stroke="rgba(170,170,170,0.7)"
