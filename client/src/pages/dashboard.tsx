@@ -13765,7 +13765,7 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = course.bg;
+                              const cellBg = isActualToday ? colorSettings.todayCellBackground : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -14277,7 +14277,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
+                        style={{ backgroundColor: isSatToday ? colorSettings.todayCellBackground : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
