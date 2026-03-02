@@ -13582,11 +13582,7 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-between overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                    <div className={`absolute left-px right-px flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -13599,11 +13595,7 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-between overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                    <div className={`absolute left-px right-px flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -16596,7 +16588,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#ff0000'
+                backgroundColor: '#0a0a0a'
               }}
             >
               <h4 
