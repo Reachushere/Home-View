@@ -14275,7 +14275,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '50px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '52px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px', marginTop: '2px', marginLeft: '-2px' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
@@ -14288,7 +14288,7 @@ export default function Dashboard() {
                                   <img src={pdfLogo} alt="PDF" style={{ width: '32px', height: '14px', objectFit: 'contain', marginLeft: '-7px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
                                     {moduleUnread}
                                   </div>
                                 )}
@@ -14312,7 +14312,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '50px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '52px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px', marginTop: '2px', marginLeft: '-2px' }}
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
                                 onClick={() => handlePlayFiles('reading')}
@@ -14325,7 +14325,7 @@ export default function Dashboard() {
                                   <img src={pdfLogo} alt="PDF" style={{ width: '32px', height: '14px', objectFit: 'contain', marginLeft: '-7px' }} />
                                 </div>
                                 {readingUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
                                     {readingUnread}
                                   </div>
                                 )}
