@@ -8945,7 +8945,7 @@ export default function Dashboard() {
                 <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{diffDays === 1 ? 'day' : 'days'}</span>
               </div>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '-3px' }}>
-                {next.title}{courseForNext ? ` \u2014 ${courseForNext.name.split(' - ')[0]}` : ''}
+                {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.color || 'rgba(255,255,255,0.85)' }}>{courseForNext.name.split(' - ')[0]}</span></> : ''}
               </span>
               {prepDaysText && (
                 <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.8)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-3px' }}>
