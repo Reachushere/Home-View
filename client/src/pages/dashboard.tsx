@@ -13571,7 +13571,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? colorSettings.todayCellBackground : "black" }}
+                    style={{ backgroundColor: isToday ? '#e4ecf5' : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -13611,7 +13611,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isTodaySaturday ? colorSettings.todayCellBackground : "black", gridColumn: afterProgressGridCol }}
+                    style={{ backgroundColor: isTodaySaturday ? '#e4ecf5' : "black", gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
@@ -13765,7 +13765,7 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = isActualToday ? colorSettings.todayCellBackground : course.bg;
+                              const cellBg = isActualToday ? '#e4ecf5' : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -13930,7 +13930,7 @@ export default function Dashboard() {
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
-                    const cellBgColor = isDayToday ? colorSettings.todayCellBackground : course.bg;
+                    const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
                     const cellDate = startOfDay(day);
                     
                     const dueTasks = tasks?.filter(task => {
@@ -14277,7 +14277,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? colorSettings.todayCellBackground : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
+                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
