@@ -14002,7 +14002,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-extrabold text-[8px]">PREP DAY</span>
+                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-semibold text-[8px]">PREP DAY</span>
                                 <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                               </div>
                             );
@@ -14306,7 +14306,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 title={`Prep Day - ${task.title}`}
                               >
-                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-extrabold text-[8px]">PREP DAY</span>
+                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-semibold text-[8px]">PREP DAY</span>
                                 <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                               </div>
                             );
