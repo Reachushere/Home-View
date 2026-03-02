@@ -14040,10 +14040,10 @@ export default function Dashboard() {
                                 className="relative"
                               >
                                 {!isFirstPrepDay && (
-                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor }} />
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', borderTop: `1px solid ${course.darkColor}` }} />
                                 )}
                                 {!isLastPrepDay && (
-                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '1px', backgroundColor: course.darkColor }} />
+                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', borderTop: `1px solid ${course.darkColor}` }} />
                                 )}
                                 <div
                                   className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden relative z-[1]"
