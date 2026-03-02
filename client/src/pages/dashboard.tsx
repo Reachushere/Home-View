@@ -13532,16 +13532,16 @@ export default function Dashboard() {
               );
             })()}
           </div>
-          {/* TODAY label above today column */}
-          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '12px' }}>
+          {/* TODAY label above today column - positioned above calendar card */}
+          <div className="grid w-full pointer-events-none" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '0px', position: 'relative', zIndex: 60 }}>
             <div style={{ minWidth: 0 }} />
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
             {weekDays.slice(0, 6).map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               return (
-                <div key={idx} style={{ minWidth: 0 }}>
+                <div key={idx} style={{ minWidth: 0, position: 'relative' }}>
                   {isToday && (
-                    <div className="h-full flex items-center justify-center rounded-t-md" style={{ backgroundColor: '#E8E656' }}>
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', borderTopLeftRadius: '4px', borderTopRightRadius: '4px', height: '12px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -13552,9 +13552,9 @@ export default function Dashboard() {
             {weekDays[6] && (() => {
               const isSatToday = isSameDay(weekDays[6], new Date());
               return (
-                <div style={{ minWidth: 0, gridColumn: afterProgressGridCol }}>
+                <div style={{ minWidth: 0, gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className="h-full flex items-center justify-center rounded-t-md" style={{ backgroundColor: '#E8E656' }}>
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', borderTopLeftRadius: '4px', borderTopRightRadius: '4px', height: '12px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
