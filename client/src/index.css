@@ -495,10 +495,10 @@ button[role="combobox"] > span {
 /* Prominent pulse for today date header - dark to light */
 @keyframes today-date-pulse {
   0%, 100% { 
-    background-color: #b8cce2;
+    background-color: #7a9dc4;
   }
   50% { 
-    background-color: #9bb5d4;
+    background-color: #5c86b0;
   }
 }
 
