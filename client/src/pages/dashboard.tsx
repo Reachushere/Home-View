@@ -14188,7 +14188,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '36px', height: '30px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                style={{ width: '36px', height: '26px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
