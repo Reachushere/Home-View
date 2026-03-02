@@ -14380,7 +14380,7 @@ export default function Dashboard() {
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
                               onClick={() => setEditingTask(task)}
                             >
-                              <span className="truncate font-bold pl-[2px]">{task.title}</span>
+                              <span className="truncate font-bold pl-px">{task.title}</span>
                             </div>
                           );
                         })}
