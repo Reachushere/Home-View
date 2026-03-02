@@ -13620,7 +13620,7 @@ export default function Dashboard() {
             <div className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-              <div className="flex items-center justify-center relative" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center' }}>
+              <div className="flex items-center justify-center relative" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
@@ -13637,7 +13637,7 @@ export default function Dashboard() {
                   data-testid="time-column-resize-handle"
                 />
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center' }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />}
               {/* Sun-Fri day headers (indices 0-5) */}
               {weekDays.slice(0, 6).map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
@@ -13650,7 +13650,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isToday ? { backgroundColor: '#e4ecf5' } : { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center' }}
+                    style={isToday ? { backgroundColor: '#e4ecf5' } : { backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -13672,7 +13672,7 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', gridColumn: progressGridCol }}
+                style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', gridColumn: progressGridCol }}
               >
                 <div className="flex items-center justify-center gap-1">
                   <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
@@ -13690,7 +13690,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { backgroundColor: '#e4ecf5', gridColumn: afterProgressGridCol } : { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { backgroundColor: '#e4ecf5', gridColumn: afterProgressGridCol } : { backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
