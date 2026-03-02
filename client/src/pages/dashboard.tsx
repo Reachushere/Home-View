@@ -14258,7 +14258,7 @@ export default function Dashboard() {
                         ) : (
                           <>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)' }}>
-                              <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                              <div className="flex-1 flex flex-col gap-[2px] min-w-0" style={{ marginRight: '4px' }}>
                                 <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module{moduleFolderCount?.total ? ` (${moduleFolderCount.total})` : ''}</span>
                                 {moduleP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]">
@@ -14295,7 +14295,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px' }}>
-                              <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                              <div className="flex-1 flex flex-col gap-[2px] min-w-0" style={{ marginRight: '4px' }}>
                                 <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading{readingFolderCount?.total ? ` (${readingFolderCount.total})` : ''}</span>
                                 {readingP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]">
