@@ -503,7 +503,20 @@ button[role="combobox"] > span {
 }
 
 .animate-today-date {
-  animation: today-date-pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-date-pulse 7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes today-day-text-pulse {
+  0%, 100% {
+    color: rgba(255,255,255,0.8);
+  }
+  50% {
+    color: #000;
+  }
+}
+
+.animate-today-day-text {
+  animation: today-day-text-pulse 7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes today-text-pulse {
@@ -516,7 +529,7 @@ button[role="combobox"] > span {
 }
 
 .animate-today-text {
-  animation: today-text-pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-text-pulse 7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes today-yellow-pulse {

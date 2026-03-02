@@ -6466,7 +6466,10 @@ export default function Dashboard() {
           animation: file-blink ${blinkSettings.allDayFilesBlinkSpeed}s ease-in-out infinite !important;
         }
         .animate-today-date {
-          animation: today-date-pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+          animation: today-date-pulse 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+        }
+        .animate-today-day-text {
+          animation: today-day-text-pulse 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
         }
       `}</style>
       {/* New Semester Banner - Shows when past Week 13 */}
@@ -13633,7 +13636,7 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className={`text-[10px] font-medium tracking-wide ${isToday && blinkSettings.todayColumnBlink ? 'animate-today-day-text' : ''}`} style={{ color: isToday && blinkSettings.todayColumnBlink ? undefined : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 5 && (
@@ -13676,7 +13679,7 @@ export default function Dashboard() {
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#FFFF00' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className={`text-[10px] font-medium tracking-wide ${isTodaySaturday && blinkSettings.todayColumnBlink ? 'animate-today-day-text' : ''}`} style={{ color: isTodaySaturday && blinkSettings.todayColumnBlink ? undefined : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                   </div>
