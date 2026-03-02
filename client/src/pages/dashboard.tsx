@@ -14170,7 +14170,7 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <>
-                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)' }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
                                 <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                                 {moduleP.hasFiles ? (
@@ -14201,7 +14201,7 @@ export default function Dashboard() {
                                   <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg ${courseCode === 'CFNF400' ? 'border border-white' : 'border border-white/30'}`} style={{ top: '-3px', right: '-2px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg ${courseCode === 'CFNF400' ? 'border border-white' : 'border border-white/30'}`} style={{ top: '-3px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
                                     {moduleUnread}
                                   </div>
                                 )}
@@ -14238,7 +14238,7 @@ export default function Dashboard() {
                                   <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
                                 </div>
                                 {readingUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg ${courseCode === 'CFNF400' ? 'border border-white' : 'border border-white/30'}`} style={{ top: '-3px', right: '-2px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg ${courseCode === 'CFNF400' ? 'border border-white' : 'border border-white/30'}`} style={{ top: '-3px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
                                     {readingUnread}
                                   </div>
                                 )}
