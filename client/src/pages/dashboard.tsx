@@ -16595,8 +16595,9 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%)',
-                padding: '6px 12px'
+                backgroundColor: '#000000',
+                padding: '6px 12px',
+                borderRadius: '12px 12px 0 0'
               }}
             >
               <h4 
@@ -16718,8 +16719,9 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%)',
-                padding: '6px 12px'
+                backgroundColor: '#000000',
+                padding: '6px 12px',
+                borderRadius: '12px 12px 0 0'
               }}
             >
               <h4 
@@ -16835,8 +16837,9 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%)',
-                padding: '6px 12px'
+                backgroundColor: '#000000',
+                padding: '6px 12px',
+                borderRadius: '12px 12px 0 0'
               }}
             >
               <h4 
