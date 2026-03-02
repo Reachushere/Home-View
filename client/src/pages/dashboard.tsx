@@ -2094,6 +2094,7 @@ export default function Dashboard() {
   const [todoItems, setTodoItems] = useState<string[]>([]);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [hoveredCountdownTaskId, setHoveredCountdownTaskId] = useState<number | null>(null);
   
   // Pomodoro Timer State
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -8966,15 +8967,25 @@ export default function Dashboard() {
           >
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ color: '#ffffff', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>Your next task is in:</span>
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', marginTop: '-6px', marginBottom: '0px', width: '100%' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', marginTop: '-6px', marginBottom: '0px', width: '100%', pointerEvents: 'auto', cursor: 'pointer' }}
+                onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
+                onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                data-testid="countdown-next-task-number"
+              >
                 <span style={{ color: diffDays >= 3 ? 'rgb(0, 200, 0)' : diffDays === 2 ? '#eab308' : '#ef4444', fontSize: '28px', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{diffDays}</span>
                 <span style={{ color: diffDays >= 3 ? 'rgb(0, 200, 0)' : diffDays === 2 ? '#eab308' : '#ef4444', fontSize: '10px', fontWeight: 400, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{diffDays === 1 ? 'day' : 'days'}</span>
               </div>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '-3px' }}>
                 {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || 'rgba(255,255,255,0.85)' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
               </span>
-              {prepDaysText && (
-                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.8)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-3px' }}>
+              {prepDaysText && nextPrep && (
+                <span
+                  style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'rgba(255,255,255,0.8)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px', textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-3px', pointerEvents: 'auto', cursor: 'pointer' }}
+                  onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
+                  onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                  data-testid="countdown-prep-task-number"
+                >
                   {prepDaysText === 'today' ? (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor }}>{prepTaskName}</span> : prepTaskName} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {prepCourseColor ? <span style={{ color: prepCourseColor }}>{prepTaskName}</span> : prepTaskName} is in progress</>) : (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor }}>{prepTaskName}</span> : prepTaskName} in <span style={{ fontSize: '15px', fontWeight: 400, color: Number(prepDaysText) >= 3 ? 'rgb(0, 200, 0)' : Number(prepDaysText) === 2 ? '#eab308' : '#ef4444' }}>{prepDaysText}</span> <span style={{ color: Number(prepDaysText) >= 3 ? 'rgb(0, 200, 0)' : Number(prepDaysText) === 2 ? '#eab308' : '#ef4444' }}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
                 </span>
               )}
@@ -14919,9 +14930,13 @@ export default function Dashboard() {
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
+                                  zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
                                   border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                  transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
+                                  boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                  transformOrigin: 'center center',
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -15139,9 +15154,13 @@ export default function Dashboard() {
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? (gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth) : gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
                         width: `calc((${gridSizes.dayColumnWidths[dayIdx >= 6 ? 6 : dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
                         height: `${heightPx}px`,
-                        zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
+                        zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af'),
+                        transform: hoveredCountdownTaskId === task.id ? 'scale(1.08)' : undefined,
+                        boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        transformOrigin: 'center center',
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
