@@ -14275,7 +14275,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '52px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: (moduleP.percent === 100 || courseName === 'CPPA122') ? 'linear-gradient(180deg, #888 0%, #555 100%)' : getBorderGradient(courseHexColor), padding: '1px', marginTop: '2px', marginLeft: '-2px' }}
+                                style={{ width: '52px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: moduleP.percent === 100 ? 'linear-gradient(180deg, #888 0%, #555 100%)' : getBorderGradient(courseHexColor), padding: '1px', marginTop: '2px', marginLeft: '-2px' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
@@ -14283,11 +14283,11 @@ export default function Dashboard() {
                               >
                                 <div
                                   className="hover:opacity-80 transition-all duration-200"
-                                  style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: (moduleP.percent === 100 || courseName === 'CPPA122') ? 'linear-gradient(180deg, #777 0%, #444 100%)' : getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                  style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: moduleP.percent === 100 ? 'linear-gradient(180deg, #777 0%, #444 100%)' : getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-4px', opacity: (moduleP.percent === 100 || courseName === 'CPPA122') ? 0.5 : 1 }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-4px', opacity: moduleP.percent === 100 ? 0.5 : 1 }} />
                                 </div>
-                                {moduleUnread > 0 && (
+                                {moduleUnread > 0 && moduleP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {moduleUnread}
                                   </div>
@@ -14324,7 +14324,7 @@ export default function Dashboard() {
                                 >
                                   <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-4px', opacity: readingP.percent === 100 ? 0.5 : 1 }} />
                                 </div>
-                                {readingUnread > 0 && (
+                                {readingUnread > 0 && readingP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {readingUnread}
                                   </div>
