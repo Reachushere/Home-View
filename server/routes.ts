@@ -3835,6 +3835,322 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/webhook/play-urgent-pdf - Home Assistant webhook to play most urgent unlistened PDF
+  // Priority: 1) CPPA modules, 2) Other course modules, 3) CPPA readings
+  // Resumes from last position if partially listened
+  app.post("/api/webhook/play-urgent-pdf", async (req, res) => {
+    try {
+      console.log("[Webhook] play-urgent-pdf triggered");
+      
+      // Authenticate webhook using SITE_PASSWORD as shared secret
+      const webhookSecret = process.env.SITE_PASSWORD;
+      const authHeader = req.headers['x-webhook-secret'] || req.headers['authorization']?.replace('Bearer ', '');
+      if (webhookSecret && authHeader !== webhookSecret) {
+        console.warn("[Webhook] Unauthorized play-urgent-pdf attempt");
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Validate entity_id against known Echo devices
+      const allowedEntities = [
+        BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY,
+        "media_player.echo_cat_left_am", "media_player.echo_cat_right_am",
+        "media_player.echo_cat_washroom_middle", "media_player.echo_closet_am",
+        "media_player.echo_lr_couch_r_am", "media_player.echo_hallway_entrance_am",
+        "media_player.echo_king_l_am", "media_player.echo_king_r_am",
+        "media_player.echo_king_tv_am", "media_player.echo_kitchen_cupboards_left_am",
+        "media_player.echo_kitchen_cupboards_r_am", "media_player.echo_kitchen_fridge_am",
+        "media_player.echo_kitchen_hutch_am", "media_player.echo_kitchen_island_corner_am",
+        "media_player.echo_kitchen_studio_black_am", "media_player.echo_lr_hub_am"
+      ];
+      const requestedEntity = req.body?.entity_id || BATHROOM_ECHO_ENTITY;
+      const targetEntity = allowedEntities.includes(requestedEntity) ? requestedEntity : BATHROOM_ECHO_ENTITY;
+      
+      // Get current week number
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const today = new Date();
+        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
+      
+      // Get all files
+      const allFiles = await storage.getFiles();
+      
+      // Filter for unlistened files in current week
+      const unlistenedFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+      });
+      
+      // Priority buckets
+      const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa');
+      const isModule = (f: any) => f.folder?.toLowerCase().includes('module');
+      
+      const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModule(f));
+      const otherModules = unlistenedFiles.filter((f: any) => !isCPPA(f) && isModule(f));
+      const cppaReadings = unlistenedFiles.filter((f: any) => isCPPA(f) && !isModule(f));
+      const otherReadings = unlistenedFiles.filter((f: any) => !isCPPA(f) && !isModule(f));
+      
+      const orderedFiles = [...cppaModules, ...otherModules, ...cppaReadings, ...otherReadings];
+      
+      if (orderedFiles.length === 0) {
+        // Announce that all readings are complete
+        console.log("[Webhook] No urgent PDFs found, announcing completion");
+        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: `All week ${currentWeekNumber} readings are complete. Great job!`,
+            target: targetEntity,
+            data: { type: "tts" }
+          }),
+        });
+        return res.json({ action: "complete", message: `All week ${currentWeekNumber} readings done` });
+      }
+      
+      const nextFile = orderedFiles[0];
+      const fileName = nextFile.displayName || nextFile.originalName;
+      const courseMatch = nextFile.folder?.match(/(cppa|cfnf|csoc|cphl|casl)\d*/i);
+      const courseName = courseMatch ? courseMatch[0].toUpperCase() : '';
+      const fileType = isModule(nextFile) ? 'module' : 'reading';
+      
+      console.log(`[Webhook] Selected: ${courseName} ${fileType} - ${fileName}`);
+      
+      // Stop any existing TTS session
+      if (currentTTSSession) {
+        stopTTSSession("New webhook playback requested");
+      }
+      
+      // Extract text from the PDF
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      
+      let textContent = "";
+      try {
+        const objectFile = await objectStorage.getObjectEntityFile(nextFile.objectPath);
+        const [content] = await objectFile.download();
+        
+        const isPDF = content.slice(0, 4).toString() === '%PDF';
+        if (isPDF) {
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(content) });
+          await parser.load();
+          const pdfText = await parser.getText();
+          
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            } else {
+              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join(' ');
+            }
+          } else {
+            textContent = String(pdfText || '');
+          }
+          await parser.destroy();
+        } else {
+          textContent = content.toString('utf-8');
+        }
+      } catch (error) {
+        console.error("[Webhook] Error extracting text:", error);
+        return res.status(500).json({ error: "Failed to extract text from file" });
+      }
+      
+      if (!textContent.trim()) {
+        return res.status(400).json({ error: "File is empty or not readable" });
+      }
+      
+      // Clean text for TTS
+      const fullCleanedText = cleanTextForTTS(textContent);
+      
+      // Determine resume position from database progress or in-memory progress
+      let resumePosition = 0;
+      const progressKey = `file-${nextFile.id}`;
+      const memProgress = playbackProgress[progressKey];
+      
+      if (nextFile.lastChunkIndex && nextFile.lastChunkIndex > 0 && nextFile.totalChunks && nextFile.totalChunks > 0) {
+        // Estimate character position from chunk progress
+        const chunkRatio = nextFile.lastChunkIndex / nextFile.totalChunks;
+        resumePosition = Math.floor(chunkRatio * fullCleanedText.length);
+        console.log(`[Webhook] Resuming from DB progress: chunk ${nextFile.lastChunkIndex}/${nextFile.totalChunks} (~char ${resumePosition})`);
+      } else if (memProgress) {
+        const chunkRatio = memProgress.chunkIndex / memProgress.totalChunks;
+        resumePosition = Math.floor(chunkRatio * fullCleanedText.length);
+        console.log(`[Webhook] Resuming from memory progress: chunk ${memProgress.chunkIndex}/${memProgress.totalChunks} (~char ${resumePosition})`);
+      }
+      
+      // Build announcement
+      const isResuming = resumePosition > 0;
+      const progressPct = resumePosition > 0 ? Math.round((resumePosition / fullCleanedText.length) * 100) : 0;
+      const announcement = isResuming
+        ? `Resuming ${courseName} ${fileType}, ${fileName.replace('.pdf', '')}, at ${progressPct} percent.`
+        : `Now reading ${courseName} ${fileType}, ${fileName.replace('.pdf', '')}. ${orderedFiles.length} file${orderedFiles.length > 1 ? 's' : ''} remaining this week.`;
+      
+      // Get the text from resume position
+      const remainingText = fullCleanedText.substring(resumePosition);
+      
+      // Create TTS session
+      currentTTSSession = {
+        fullText: remainingText.length > 100000 ? remainingText.substring(0, 100000) : remainingText,
+        currentPosition: 0,
+        startTime: Date.now(),
+        isPlaying: true,
+        autoTimer: null,
+        consecutiveErrors: 0,
+        sessionCreatedAt: Date.now(),
+        targetEntity
+      };
+      
+      // Restore volume
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+          volume_level: 0.5
+        }),
+      });
+      
+      // Build first chunk with announcement
+      let firstChunk = cleanTextForTTS(remainingText.substring(0, 3000));
+      firstChunk = getChunkWithSentenceBoundary(firstChunk, CHUNK_SIZE);
+      const fullFirstMessage = `${announcement} ... ${firstChunk}`;
+      const ssmlContent = `<speak><prosody rate="90%">${fullFirstMessage}</prosody></speak>`;
+      
+      console.log(`[Webhook] Sending first chunk (${firstChunk.length} chars) to ${targetEntity}`);
+      
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: ssmlContent,
+          target: targetEntity,
+          data: { type: "tts" }
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[Webhook] HA TTS error:", errorText);
+        currentTTSSession = null;
+        return res.status(response.status).json({ error: "Failed to start playback" });
+      }
+      
+      // Update position after first chunk
+      currentTTSSession.currentPosition = firstChunk.length;
+      
+      // Save progress with correct resume chunk index
+      const totalChunksForFile = Math.ceil(fullCleanedText.length / CHUNK_SIZE);
+      const resumeChunkIndex = resumePosition > 0 ? Math.floor(resumePosition / CHUNK_SIZE) : 0;
+      playbackProgress[progressKey] = {
+        chunkIndex: resumeChunkIndex,
+        totalChunks: totalChunksForFile,
+        lastPlayed: new Date(),
+        fileId: nextFile.id
+      };
+      
+      // Schedule auto-continuation
+      scheduleNextChunk();
+      
+      console.log(`[Webhook] Playback started: ${courseName} ${fileType} - ${fileName}`);
+      
+      res.json({
+        action: "playing",
+        file: { id: nextFile.id, name: fileName, folder: nextFile.folder },
+        course: courseName,
+        type: fileType,
+        resuming: isResuming,
+        progressPercent: progressPct,
+        remainingFiles: orderedFiles.length,
+        currentWeek: currentWeekNumber
+      });
+      
+    } catch (error: any) {
+      console.error("[Webhook] play-urgent-pdf error:", error);
+      res.status(500).json({ error: "Failed to play urgent PDF", details: error.message });
+    }
+  });
+
+  // POST /api/ha/register-play-urgent-script - Register a Home Assistant script for Alexa routines
+  app.post("/api/ha/register-play-urgent-script", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const appUrl = req.body?.appUrl || `https://${req.headers.host}`;
+      
+      // Create a HA script that calls our webhook endpoint
+      const scriptConfig = {
+        alias: "Play Urgent School Reading",
+        description: "Plays the most urgent unlistened PDF from school courses on Echo speakers",
+        icon: "mdi:book-open-page-variant",
+        mode: "single",
+        sequence: [
+          {
+            service: "rest_command.play_urgent_pdf",
+            data: {}
+          }
+        ]
+      };
+      
+      // First register the REST command
+      // We need to create a rest_command via HA config - notify user of manual step
+      const webhookUrl = `${appUrl}/api/webhook/play-urgent-pdf`;
+      
+      res.json({
+        success: true,
+        webhookUrl,
+        haSetupInstructions: {
+          step1: "Add this to your Home Assistant configuration.yaml under rest_command:",
+          restCommand: {
+            play_urgent_pdf: {
+              url: webhookUrl,
+              method: "POST",
+              content_type: "application/json",
+              headers: {
+                "x-webhook-secret": "YOUR_SITE_PASSWORD_HERE"
+              },
+              payload: '{"entity_id": "media_player.cat_wr"}'
+            }
+          },
+          step2: "Add this script to your configuration.yaml under script:",
+          script: {
+            play_urgent_school_reading: scriptConfig
+          },
+          step3: "Restart Home Assistant, then expose 'Play Urgent School Reading' to Alexa via Nabu Casa",
+          step4: "The script will appear as an action in Alexa routines"
+        }
+      });
+      
+    } catch (error: any) {
+      console.error("Register HA script error:", error);
+      res.status(500).json({ error: "Failed to generate HA config", details: error.message });
+    }
+  });
+
   // POST /api/files/generate-all-tts - Pre-generate TTS audio for all module files
   app.post("/api/files/generate-all-tts", async (req, res) => {
     try {

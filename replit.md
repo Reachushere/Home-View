@@ -71,7 +71,7 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Drizzle Kit**: Database migration tool.
 - **Replit Plugins**: Runtime error overlay, cartographer, and dev banner.
 - **OpenAI TTS**: For server-side text-to-speech.
-- **Home Assistant**: For push notifications and voice integration.
+- **Home Assistant**: For push notifications, voice integration, and smart trigger webhooks (e.g., play urgent PDF via Alexa routines).
 
 ## Upcoming Semesters
 
