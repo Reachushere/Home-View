@@ -13933,13 +13933,13 @@ export default function Dashboard() {
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
                       // CPPA122: show all on one line, centered
                       if (code === 'CPPA122') {
-                        return <span className="text-center"><span className="font-bold">CPPA122</span> Local Politics and Government</span>;
+                        return <span className="text-center"><span className="font-extrabold">CPPA122</span> Local Politics and Government</span>;
                       }
                       // CFNF400: show CFNF400, then Human, then Sexuality on separate lines
                       if (code === 'CFNF400') {
                         return (
                           <>
-                            <span className="font-bold">CFNF400</span>
+                            <span className="font-extrabold">CFNF400</span>
                             <span>Human</span>
                             <span>Sexuality</span>
                           </>
@@ -13949,7 +13949,7 @@ export default function Dashboard() {
                       if (code === 'CASL101') {
                         return (
                           <>
-                            <span className="text-center font-bold">CASL101</span>
+                            <span className="text-center font-extrabold">CASL101</span>
                             <span className="text-center">American Sign</span>
                             <span className="text-center">Language</span>
                           </>
@@ -13959,7 +13959,7 @@ export default function Dashboard() {
                       const words = fullName.split(' ');
                       return (
                         <>
-                          <span className="font-bold">{code}</span>
+                          <span className="font-extrabold">{code}</span>
                           {words.map((word, i) => <span key={i}>{word}</span>)}
                         </>
                       );
@@ -14382,7 +14382,7 @@ export default function Dashboard() {
                 const otherRowHeight = otherTasks.length === 0 ? 24 : Math.max(24, otherTasks.length * 20 + 4);
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px` }}>
-                    <div className="px-1 py-0.5 text-[8px] font-bold tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
+                    <div className="px-1 py-0.5 text-[8px] font-extrabold tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
                       OTHER
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && (
