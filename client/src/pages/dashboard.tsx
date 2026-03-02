@@ -14046,7 +14046,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="text-black px-1 flex items-center whitespace-nowrap font-[680] text-[8px]" style={{ backgroundColor: '#E8E656' }}>PREPARE</span>
+                                  <span className="px-1 flex items-center whitespace-nowrap font-[680] text-[8px]" style={{ color: '#E8E656' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                                 </div>
                               </div>
@@ -14365,7 +14365,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="text-black px-1 flex items-center whitespace-nowrap font-[680] text-[8px]" style={{ backgroundColor: '#E8E656' }}>PREPARE</span>
+                                  <span className="px-1 flex items-center whitespace-nowrap font-[680] text-[8px]" style={{ color: '#E8E656' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                                 </div>
                               </div>
