@@ -14201,7 +14201,7 @@ export default function Dashboard() {
                                   <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg ${courseCode === 'CFNF400' ? 'border border-white' : 'border border-white/30'}`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
                                     {moduleUnread}
                                   </div>
                                 )}
@@ -14238,7 +14238,7 @@ export default function Dashboard() {
                                   <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
                                 </div>
                                 {readingUnread > 0 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg ${courseCode === 'CFNF400' ? 'border border-white' : 'border border-white/30'}`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
+                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
                                     {readingUnread}
                                   </div>
                                 )}
