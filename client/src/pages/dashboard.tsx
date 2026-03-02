@@ -13541,8 +13541,10 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center `} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
+                    <div className={`absolute left-px right-px flex items-center justify-center gap-1`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFA0' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFA0' }}>TODAY</span>
                     </div>
                   )}
                 </div>
@@ -13554,8 +13556,10 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center `} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
+                    <div className={`absolute left-px right-px flex items-center justify-center gap-1`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFA0' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFA0' }}>TODAY</span>
                     </div>
                   )}
                 </div>
