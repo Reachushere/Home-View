@@ -13542,11 +13542,11 @@ export default function Dashboard() {
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
                     <div className={`absolute left-px right-px flex items-center justify-center gap-0.5 overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
                     </div>
                   )}
                 </div>
@@ -13559,11 +13559,11 @@ export default function Dashboard() {
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
                     <div className={`absolute left-px right-px flex items-center justify-center gap-0.5 overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFFCC' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#ddd' }}>TODAY</span>
                     </div>
                   )}
                 </div>
@@ -14040,10 +14040,10 @@ export default function Dashboard() {
                                 className="relative"
                               >
                                 {!isFirstPrepDay && (
-                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', width: '5px', height: '1px', background: `linear-gradient(to bottom, transparent 30%, ${course.darkColor} 50%, transparent 70%)`, transform: 'translateY(-50%)' }} />
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor }} />
                                 )}
                                 {!isLastPrepDay && (
-                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', width: '3px', height: '1px', backgroundColor: course.darkColor, transform: 'translateY(-50%) scaleY(0.4)' }} />
+                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '1px', backgroundColor: course.darkColor }} />
                                 )}
                                 <div
                                   className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden relative z-[1]"
