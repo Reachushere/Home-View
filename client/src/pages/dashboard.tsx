@@ -14056,7 +14056,7 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={task.id}
-                              className={`flex items-center gap-0.5 text-[9px] pl-px pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -14445,7 +14445,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-px pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -14499,7 +14499,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-px pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
