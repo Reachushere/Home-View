@@ -14285,7 +14285,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '35px', height: '17px', objectFit: 'contain', marginLeft: '-8px' }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-8px' }} />
                                 </div>
                                 {moduleUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14322,7 +14322,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '35px', height: '17px', objectFit: 'contain', marginLeft: '-8px' }} />
+                                  <img src={pdfLogo} alt="PDF" style={{ width: '38px', height: '20px', objectFit: 'contain', marginLeft: '-8px' }} />
                                 </div>
                                 {readingUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-5px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
