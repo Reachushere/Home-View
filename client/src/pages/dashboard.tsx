@@ -14960,7 +14960,7 @@ export default function Dashboard() {
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
-                                <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
+                                <div className={`flex items-center gap-1.5 px-0.5 pt-0.5 pb-0 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
                                     <Checkbox
                                       checked={task.isCompleted || false}
@@ -14979,7 +14979,7 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                 <div 
-                                  className={`text-[9px] font-semibold mt-0.5 mb-3 ml-[18px] px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
+                                  className={`text-[9px] font-semibold mt-0 mb-3 ml-[18px] px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
                                   style={{ animation: 'none' }}
                                 >
                                   {format(new Date(task.dueDate), "h:mm a")}
