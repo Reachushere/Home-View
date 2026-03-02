@@ -14078,7 +14078,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '9px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                 </div>
                               </div>
@@ -14284,7 +14284,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
+                                  <FileText className="h-2.5 w-2.5 text-white" />
                                 </div>
                                 {moduleUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14321,7 +14321,7 @@ export default function Dashboard() {
                                   className="hover:opacity-80 transition-all duration-200"
                                   style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
+                                  <FileText className="h-2.5 w-2.5 text-white" />
                                 </div>
                                 {readingUnread > 0 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-2px', right: '-3px', zIndex: 1, paddingRight: '3px' }}>
@@ -14397,7 +14397,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '9px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                 </div>
                               </div>
