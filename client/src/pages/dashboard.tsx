@@ -13541,10 +13541,12 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center gap-1`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#E8E000' }}>TODAY</span>
+                    <div className={`absolute left-px right-px flex items-center justify-center gap-0.5 overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#E8E000' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
                     </div>
                   )}
                 </div>
@@ -13556,10 +13558,12 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center gap-1`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#E8E000' }}>TODAY</span>
+                    <div className={`absolute left-px right-px flex items-center justify-center gap-0.5 overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#E8E000' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
+                      <span className="text-[10px] font-bold tracking-wide uppercase" style={{ color: '#FFFF99' }}>TODAY</span>
                     </div>
                   )}
                 </div>
