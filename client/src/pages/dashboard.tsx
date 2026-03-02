@@ -14040,7 +14040,7 @@ export default function Dashboard() {
                                 className="relative"
                               >
                                 {!isFirstPrepDay && (
-                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', width: '5px', height: '1px', backgroundColor: course.darkColor, transform: 'translateY(-50%) scaleY(0.4)' }} />
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', width: '5px', height: '1px', background: `linear-gradient(to bottom, transparent 30%, ${course.darkColor} 50%, transparent 70%)`, transform: 'translateY(-50%)' }} />
                                 )}
                                 {!isLastPrepDay && (
                                   <div style={{ position: 'absolute', right: '-3px', top: '50%', width: '3px', height: '1px', backgroundColor: course.darkColor, transform: 'translateY(-50%) scaleY(0.4)' }} />
