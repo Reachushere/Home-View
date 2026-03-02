@@ -15304,27 +15304,37 @@ export default function Dashboard() {
                   const cp2x = endX;
                   const cp2y = midY;
                   
+                  const dx = endX - cp2x;
+                  const dy = endY - cp2y;
+                  const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                  
                   return (
                     <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[4]"
+                      className="absolute top-0 left-0 pointer-events-none z-[4] animate-next-task-line"
                       style={{ width: `${containerWidth}px`, height: `${totalHeight}px`, overflow: 'visible' }}
                     >
                       <defs>
-                        <linearGradient id="timeToTaskGradient" x1={startX} y1={startY} x2={endX} y2={endY} gradientUnits="userSpaceOnUse">
-                          <stop offset="0%" stopColor="rgba(255, 50, 50, 0.7)" />
-                          <stop offset="100%" stopColor="rgba(50, 120, 255, 0.7)" />
-                        </linearGradient>
+                        <marker
+                          id="nextTaskArrow"
+                          markerWidth="10"
+                          markerHeight="8"
+                          refX="9"
+                          refY="4"
+                          orient="auto"
+                          markerUnits="userSpaceOnUse"
+                        >
+                          <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(160,160,160,0.9)" />
+                        </marker>
                       </defs>
                       <path
                         d={`M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`}
                         fill="none"
-                        stroke="url(#timeToTaskGradient)"
-                        strokeWidth="2"
+                        stroke="rgba(170,170,170,0.7)"
+                        strokeWidth="1.5"
                         strokeDasharray="6 3"
-                        opacity="0.8"
+                        markerEnd="url(#nextTaskArrow)"
                       />
-                      <circle cx={startX} cy={startY} r="4" fill="rgba(255, 50, 50, 0.9)" />
-                      <circle cx={endX} cy={endY} r="4" fill="rgba(50, 120, 255, 0.9)" />
+                      <circle cx={startX} cy={startY} r="3" fill="rgba(170,170,170,0.8)" />
                     </svg>
                   );
                 })()}
