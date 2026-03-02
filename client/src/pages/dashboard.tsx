@@ -15345,43 +15345,36 @@ export default function Dashboard() {
                       className="absolute top-0 left-0 pointer-events-none z-[40]"
                       style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
-                      <defs>
-                        <marker
-                          id="nextTaskArrowSolid"
-                          markerWidth="10"
-                          markerHeight="8"
-                          refX="9"
-                          refY="4"
-                          orient="auto"
-                          markerUnits="userSpaceOnUse"
-                        >
-                          <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(0,0,0,0.9)" />
-                        </marker>
-                        <marker
-                          id="nextTaskArrowDotted"
-                          markerWidth="10"
-                          markerHeight="8"
-                          refX="9"
-                          refY="4"
-                          orient="auto"
-                          markerUnits="userSpaceOnUse"
-                        >
-                          <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(0,0,0,0.9)" />
-                        </marker>
-                      </defs>
                       {lines.map(line => {
                         const midY = startY + (line.endY - startY) * 0.5;
+                        const t = 0.95;
+                        const mt = 1 - t;
+                        const nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*line.endX + t*t*t*line.endX;
+                        const nearEndY = mt*mt*mt*startY + 3*mt*mt*t*midY + 3*mt*t*t*midY + t*t*t*line.endY;
+                        const dx = line.endX - nearEndX;
+                        const dy = line.endY - nearEndY;
+                        const angle = Math.atan2(dy, dx);
+                        const ax = line.endX;
+                        const ay = line.endY;
+                        const p1x = ax - 10 * Math.cos(angle) + 4 * Math.sin(angle);
+                        const p1y = ay - 10 * Math.sin(angle) - 4 * Math.cos(angle);
+                        const p2x = ax - 10 * Math.cos(angle) - 4 * Math.sin(angle);
+                        const p2y = ay - 10 * Math.sin(angle) + 4 * Math.cos(angle);
                         return (
-                          <path
-                            key={line.id}
-                            className="animate-next-task-line"
-                            d={`M ${startX} ${startY} C ${startX} ${midY}, ${line.endX} ${midY}, ${line.endX} ${line.endY}`}
-                            fill="none"
-                            stroke="rgba(170,170,170,0.7)"
-                            strokeWidth="1.5"
-                            strokeDasharray={line.dashed ? "6 3" : "none"}
-                            markerEnd={line.dashed ? "url(#nextTaskArrowDotted)" : "url(#nextTaskArrowSolid)"}
-                          />
+                          <g key={line.id}>
+                            <path
+                              className="animate-next-task-line"
+                              d={`M ${startX} ${startY} C ${startX} ${midY}, ${line.endX} ${midY}, ${line.endX} ${line.endY}`}
+                              fill="none"
+                              stroke="rgba(170,170,170,0.7)"
+                              strokeWidth="1.5"
+                              strokeDasharray={line.dashed ? "6 3" : "none"}
+                            />
+                            <polygon
+                              points={`${ax},${ay} ${p1x},${p1y} ${p2x},${p2y}`}
+                              fill="rgba(0,0,0,0.9)"
+                            />
+                          </g>
                         );
                       })}
                       <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
