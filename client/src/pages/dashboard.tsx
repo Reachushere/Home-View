@@ -14052,7 +14052,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd` }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'visible' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -14091,14 +14091,15 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '0px', boxShadow: `0 0 0 0.3px ${course.darkColor}` }} />
                                 )}
                                 <div
-                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden relative z-[1]"
+                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden relative"
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
-                                    transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
-                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
+                                    transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
+                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                    transformOrigin: 'center center',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
@@ -14117,10 +14118,11 @@ export default function Dashboard() {
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
-                                transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
-                                boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                 zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
+                                transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
+                                boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                transformOrigin: 'center center',
                               }}
                               title={task.title}
                             >
