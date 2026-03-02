@@ -7767,7 +7767,7 @@ export default function Dashboard() {
               data-testid="button-preview-play"
               title="Play from start"
             >
-              <Play className="h-3.5 w-3.5 text-white fill-white ml-0.5" />
+              <FileText className="h-3.5 w-3.5 text-white fill-white/20" />
             </button>
             
             <button
@@ -8513,7 +8513,7 @@ export default function Dashboard() {
                               data-testid={`button-play-chunk-${chunkIdx}`}
                               title={`Play section ${chunkIdx + 1}`}
                             >
-                              <Play className="h-2.5 w-2.5 text-white fill-white ml-0.5" />
+                              <FileText className="h-2.5 w-2.5 text-white fill-white/20" />
                             </button>
                           </div>
                           
