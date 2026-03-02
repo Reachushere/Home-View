@@ -14727,7 +14727,7 @@ export default function Dashboard() {
                           />
                           {/* Half-hour dotted line */}
                           <div 
-                            className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isToday ? 'border-black' : 'border-gray-400 dark:border-gray-500'}`}
+                            className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isToday ? 'border-gray-400' : 'border-gray-300 dark:border-gray-400'}`}
                             style={{ top: '50%' }}
                           />
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
@@ -14913,7 +14913,7 @@ export default function Dashboard() {
                           {/* Hour boundary dotted line */}
                           <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-600' : 'border-gray-400'}`} style={{ top: '0' }} />
                           {/* Half-hour dotted line */}
-                          <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-600' : 'border-gray-400'}`} style={{ top: '50%' }} />
+                          <div className={`absolute left-0 right-0 border-t border-dotted z-[1] ${isSatToday ? 'border-gray-400' : 'border-gray-300'}`} style={{ top: '50%' }} />
                           {/* Render tasks for this hour */}
                           {hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
