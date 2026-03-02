@@ -13512,8 +13512,13 @@ export default function Dashboard() {
                 t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
+                <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", position: 'relative' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
                   {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
+                  {isToday && (
+                    <div className="absolute left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', borderTopLeftRadius: '4px', borderTopRightRadius: '4px', height: '12px', bottom: '-3px', zIndex: 60 }}>
+                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -13526,35 +13531,10 @@ export default function Dashboard() {
                 t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), satDay)
               );
               return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: afterProgressGridCol }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: afterProgressGridCol, position: 'relative' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
                   {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
-                </div>
-              );
-            })()}
-          </div>
-          {/* TODAY label above today column - positioned above calendar card */}
-          <div className="grid w-full pointer-events-none" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '0px', position: 'relative', zIndex: 60 }}>
-            <div style={{ minWidth: 0 }} />
-            {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
-            {weekDays.slice(0, 6).map((day, idx) => {
-              const isToday = isSameDay(day, new Date());
-              return (
-                <div key={idx} style={{ minWidth: 0, position: 'relative' }}>
-                  {isToday && (
-                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', borderTopLeftRadius: '4px', borderTopRightRadius: '4px', height: '12px' }}>
-                      <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            <div style={{ minWidth: 0, gridColumn: progressGridCol }} />
-            {weekDays[6] && (() => {
-              const isSatToday = isSameDay(weekDays[6], new Date());
-              return (
-                <div style={{ minWidth: 0, gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', borderTopLeftRadius: '4px', borderTopRightRadius: '4px', height: '12px' }}>
+                    <div className="absolute left-0 right-0 flex items-center justify-center" style={{ backgroundColor: '#E8E656', borderTopLeftRadius: '4px', borderTopRightRadius: '4px', height: '12px', bottom: '-3px', zIndex: 60 }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
