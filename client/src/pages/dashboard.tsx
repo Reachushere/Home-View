@@ -14047,7 +14047,7 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 3px 0 2px', transform: 'scaleY(1.15)', transformOrigin: 'left center', fontSize: '9px' }}>PREPARE</span>
-                                  <span className="truncate font-bold text-gray-700 self-end pl-[3px]" style={{ lineHeight: '1', paddingBottom: '2px' }}>{task.title}</span>
+                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-end" style={{ lineHeight: '1.1' }}>{task.title}</span>
                                 </div>
                               </div>
                             );
@@ -14366,7 +14366,7 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 3px 0 2px', transform: 'scaleY(1.15)', transformOrigin: 'left center', fontSize: '9px' }}>PREPARE</span>
-                                  <span className="truncate font-bold text-gray-700 self-end pl-[3px]" style={{ lineHeight: '1', paddingBottom: '2px' }}>{task.title}</span>
+                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-end" style={{ lineHeight: '1.1' }}>{task.title}</span>
                                 </div>
                               </div>
                             );
