@@ -9136,7 +9136,7 @@ export default function Dashboard() {
             style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
             data-testid="honeycomb-sticky-note"
           >
-            {/* Back circle - solid #E8E656 */}
+            {/* Back circle - solid #FFFF00 */}
             <div
               style={{
                 position: 'absolute',
@@ -9145,7 +9145,7 @@ export default function Dashboard() {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                background: '#E8E656',
+                background: '#FFFF00',
                 boxShadow: 'none',
               }}
             />
@@ -9629,7 +9629,7 @@ export default function Dashboard() {
           <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
-              <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#E8E656' }}>
+              <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00' }}>
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
               <div className="w-[1px] h-4 bg-white/50 mx-1" />
@@ -13541,7 +13541,7 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center `} style={{ backgroundColor: '#E8E656', height: '14px', bottom: '1px' }}>
+                    <div className={`absolute left-px right-px flex items-center justify-center `} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -13554,7 +13554,7 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center `} style={{ backgroundColor: '#E8E656', height: '14px', bottom: '1px' }}>
+                    <div className={`absolute left-px right-px flex items-center justify-center `} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -13606,7 +13606,7 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
-                      <div className="text-2xl font-bold" style={{ color: isToday ? '#E8E656' : '#fff' }}>{dayNum}</div>
+                      <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 5 && (
                       <div
@@ -13645,11 +13645,11 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
-                      <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#E8E656' }}>NEW SCHOOL WEEK</div>
+                      <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#FFFF00' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
-                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#E8E656' : '#fff' }}>{dayNum}</div>
+                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                   </div>
                 );
@@ -14046,7 +14046,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#E8E656', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.3) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.3) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                                 </div>
                               </div>
@@ -14365,7 +14365,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#E8E656', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.3) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-[900] text-[10px]" style={{ color: '#FFFF00', letterSpacing: '0.1px', padding: '0 4px 0 2px', transform: 'scaleY(1.3) scaleX(0.85)', transformOrigin: 'left center' }}>PREPARE</span>
                                   <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
                                 </div>
                               </div>
