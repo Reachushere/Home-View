@@ -13764,7 +13764,7 @@ export default function Dashboard() {
                             }}
                           >
                             {/* Course name column */}
-                            <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ background: course.label }}>
+                            <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white" style={{ background: course.label }}>
                               {taskIdx === 0 ? course.name : ''}
                             </div>
                             
