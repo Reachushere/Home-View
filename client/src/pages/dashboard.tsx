@@ -13637,7 +13637,7 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className={`text-[10px] font-medium tracking-wide ${isToday && blinkSettings.todayColumnBlink ? 'animate-today-day-text' : ''}`} style={{ color: isToday && blinkSettings.todayColumnBlink ? undefined : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 5 && (
