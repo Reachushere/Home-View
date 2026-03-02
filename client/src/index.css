@@ -508,15 +508,15 @@ button[role="combobox"] > span {
 
 @keyframes today-time-cell-pulse {
   0%, 100% { 
-    background-color: #1a1512;
+    background-color: #5c86b0;
   }
   50% { 
-    background-color: #3B302C;
+    background-color: #7a9dc4;
   }
 }
 
 .animate-today-time-cell {
-  animation: today-time-cell-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-time-cell-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Reversed pulse for time cells to sync with header */
