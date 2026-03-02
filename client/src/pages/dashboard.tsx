@@ -14096,150 +14096,152 @@ export default function Dashboard() {
                       const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
                       return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
                     })();
+                    const handlePlayFiles = async (fileType: 'module' | 'reading') => {
+                      setIsLoadingOneDriveFiles(true);
+                      const courseId = courseCode.toLowerCase();
+                      const basePath = `/School/1. TMU/Courses/2026/Winter`;
+                      try {
+                        const baseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(basePath)}`);
+                        const baseFolders = await baseResponse.json();
+                        if (!Array.isArray(baseFolders)) throw new Error('Failed to list course folders');
+                        const matchedFolder = baseFolders.find((f: any) => 
+                          f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
+                        );
+                        if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
+                        const coursePath = matchedFolder.path;
+                        const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                        const courseFolders = await courseResponse.json();
+                        const weekFolder = courseFolders.find((f: any) => 
+                          f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                        );
+                        if (weekFolder) {
+                          const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                          const weekContents = await weekResponse.json();
+                          const targetFolder = weekContents.find((f: any) => 
+                            f.type === 'folder' && f.name.toLowerCase().includes(fileType)
+                          );
+                          if (targetFolder) {
+                            const filesResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(targetFolder.path)}`);
+                            const filesData = await filesResponse.json();
+                            const pdfFiles = filesData.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                            if (pdfFiles.length > 0) {
+                              const folder = `week-${selectedWeek}-${courseId}-${fileType}`;
+                              const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
+                                const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
+                                try {
+                                  const resp = await fetch('/api/files/ensure', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ objectPath: stablePath, originalName: pdf.name, displayName: pdf.name, folder }),
+                                  });
+                                  if (resp.ok) {
+                                    const dbFile = await resp.json();
+                                    return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false, checkedChunks: dbFile.checkedChunks || undefined, totalChunks: dbFile.totalChunks || undefined, lastChunkIndex: dbFile.lastChunkIndex || undefined } as FileItem;
+                                  }
+                                } catch {}
+                                return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
+                              }));
+                              setOneDrivePreviewFiles(ensuredFiles);
+                              setPreviewFile(ensuredFiles[0]);
+                              queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                              refreshFileCounts();
+                            }
+                          }
+                        }
+                      } catch (error) {
+                        console.error(`Error fetching ${fileType} files:`, error);
+                        try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton ${fileType} error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
+                      } finally {
+                        setIsLoadingOneDriveFiles(false);
+                      }
+                    };
                     return (
                       <div 
-                        className="border-l border-border/50 flex items-center gap-[3px]"
-                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '6px' }}
+                        className="border-l border-border/50 flex flex-col"
+                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '4px' }}
                       >
-                        <div className="flex-1 flex flex-col justify-center min-w-0 relative" style={{ gap: '14px', paddingLeft: '4px' }}>
                         {hasNoData ? (
-                          <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
+                          <div className="flex-1 flex items-center justify-center">
+                            <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
+                          </div>
                         ) : (
                           <>
-                            <div className="flex flex-col gap-[2px]">
-                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
-                              {moduleP.hasFiles ? (
-                                <div className="flex items-center gap-[3px]">
-                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                                    {moduleP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
-                                    )}
+                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+                              <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                                <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
+                                {moduleP.hasFiles ? (
+                                  <div className="flex items-center gap-[3px]">
+                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                                      {moduleP.percent > 0 && (
+                                        <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
+                                      )}
+                                    </div>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
                                   </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
+                                ) : (
+                                  <span className="text-[8px] text-white leading-none">N/A</span>
+                                )}
+                              </div>
+                              <div
+                                className="flex-shrink-0 relative cursor-pointer"
+                                style={{ width: '44px', height: '22px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                data-testid={`play-module-${courseCode.toLowerCase()}`}
+                                title={`Play ${courseCode} module`}
+                                onClick={() => handlePlayFiles('module')}
+                                onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
+                              >
+                                <div
+                                  className="hover:opacity-80 transition-all duration-200"
+                                  style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                  <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
                                 </div>
-                              ) : (
-                                <span className="text-[8px] text-white leading-none">N/A</span>
-                              )}
+                                {moduleUnread > 0 && (
+                                  <div className="absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', right: '-4px', zIndex: 1 }}>
+                                    {moduleUnread}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex flex-col gap-[2px]">
-                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading(s)</span>
-                              {readingP.hasFiles ? (
-                                <div className="flex items-center gap-[3px]">
-                                  <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                                    {readingP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
-                                    )}
+                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px' }}>
+                              <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                                <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
+                                {readingP.hasFiles ? (
+                                  <div className="flex items-center gap-[3px]">
+                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                                      {readingP.percent > 0 && (
+                                        <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
+                                      )}
+                                    </div>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
                                   </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
+                                ) : (
+                                  <span className="text-[8px] text-white leading-none">N/A</span>
+                                )}
+                              </div>
+                              <div
+                                className="flex-shrink-0 relative cursor-pointer"
+                                style={{ width: '44px', height: '22px', borderRadius: '6px', background: getBorderGradient(courseHexColor), padding: '1px' }}
+                                data-testid={`play-reading-${courseCode.toLowerCase()}`}
+                                title={`Play ${courseCode} reading`}
+                                onClick={() => handlePlayFiles('reading')}
+                                onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
+                              >
+                                <div
+                                  className="hover:opacity-80 transition-all duration-200"
+                                  style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                  <Play className="h-2.5 w-2.5 text-white" style={{ marginLeft: '1px' }} />
                                 </div>
-                              ) : (
-                                <span className="text-[8px] text-white leading-none">N/A</span>
-                              )}
+                                {readingUnread > 0 && (
+                                  <div className="absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-6px', right: '-4px', zIndex: 1 }}>
+                                    {readingUnread}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </>
                         )}
-                        </div>
-                        <div
-                          className="flex-shrink-0 relative cursor-pointer"
-                          style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '50%',
-                            background: getBorderGradient(courseHexColor),
-                            padding: '1px',
-                            marginLeft: '1px',
-                          }}
-                          data-testid={`progress-pill-${courseCode.toLowerCase()}`}
-                          title={`${courseCode} progress`}
-                          onClick={async () => {
-                            setIsLoadingOneDriveFiles(true);
-                            const courseId = courseCode.toLowerCase();
-                            const basePath = `/School/1. TMU/Courses/2026/Winter`;
-                            try {
-                              const baseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(basePath)}`);
-                              const baseFolders = await baseResponse.json();
-                              if (!Array.isArray(baseFolders)) throw new Error('Failed to list course folders');
-                              const matchedFolder = baseFolders.find((f: any) => 
-                                f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
-                              );
-                              if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
-                              const coursePath = matchedFolder.path;
-                              const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                              const courseFolders = await courseResponse.json();
-                              const weekFolder = courseFolders.find((f: any) => 
-                                f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                              );
-                              if (weekFolder) {
-                                const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                                const weekContents = await weekResponse.json();
-                                const moduleFolder = weekContents.find((f: any) => 
-                                  f.type === 'folder' && f.name.toLowerCase().includes('module')
-                                );
-                                if (moduleFolder) {
-                                  const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
-                                  const moduleFilesData = await moduleResponse.json();
-                                  const pdfFiles = moduleFilesData.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                                  if (pdfFiles.length > 0) {
-                                    const folder = `week-${selectedWeek}-${courseId}-module`;
-                                    const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
-                                      const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
-                                      try {
-                                        const resp = await fetch('/api/files/ensure', {
-                                          method: 'POST',
-                                          headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({ objectPath: stablePath, originalName: pdf.name, displayName: pdf.name, folder }),
-                                        });
-                                        if (resp.ok) {
-                                          const dbFile = await resp.json();
-                                          return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false, checkedChunks: dbFile.checkedChunks || undefined, totalChunks: dbFile.totalChunks || undefined, lastChunkIndex: dbFile.lastChunkIndex || undefined } as FileItem;
-                                        }
-                                      } catch {}
-                                      return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
-                                    }));
-                                    setOneDrivePreviewFiles(ensuredFiles);
-                                    setPreviewFile(ensuredFiles[0]);
-                                    queryClient.invalidateQueries({ queryKey: ["/api/files"] });
-                                    refreshFileCounts();
-                                  }
-                                }
-                              }
-                            } catch (error) {
-                              console.error('Error fetching module files:', error);
-                              try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
-                            } finally {
-                              setIsLoadingOneDriveFiles(false);
-                            }
-                          }}
-                        >
-                          <div
-                            className="hover:opacity-80 transition-all duration-200"
-                            style={{
-                              position: 'absolute',
-                              top: '1px',
-                              left: '2px',
-                              width: '42px',
-                              height: '42px',
-                              borderRadius: '50%',
-                              background: getButtonGradient(courseHexColor),
-                              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            <Play className="h-3 w-3 text-white" style={{ marginLeft: '2px' }} />
-                          </div>
-                          {moduleUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '-5px', right: '-2px', zIndex: 1 }}>
-                              {moduleUnread}
-                            </div>
-                          )}
-                          {readingUnread > 0 && (
-                            <div className="absolute bg-[#FF0000] text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '28px', right: '-2px', zIndex: 1 }}>
-                              {readingUnread}
-                            </div>
-                          )}
-                        </div>
                       </div>
                     );
                   })()}
@@ -16344,11 +16346,11 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task), opacity: 0.9 }} />
                 </div>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: 'white' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 9}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '11px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course + 4}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 9}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '50%', transform: 'translateY(-50%)', fontSize: '11px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '50%', transform: 'translateY(-50%)', fontSize: '11px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               ))}
               {dueThisWeekTasks.length > 5 && (
@@ -16462,11 +16464,11 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'today'), opacity: 0.9 }} />
                 </div>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '10px', lineHeight: '1', color: getProgressColor(task, 'today'), textAlign: 'right' }}>{task.dueDate ? `${differenceInCalendarDays(new Date(task.dueDate), new Date())}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '11px', lineHeight: '1', color: getProgressColor(task, 'today'), textAlign: 'right' }}>{task.dueDate ? `${differenceInCalendarDays(new Date(task.dueDate), new Date())}d` : ''}</span>
               </div>
               ))}
                 </>
@@ -16578,11 +16580,11 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'tomorrow'), opacity: 0.9 }} />
                 </div>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '1px', fontSize: '10px', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', textAlign: 'right' }}>{getTomorrowDaysDisplay(task)}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '1px', fontSize: '11px', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '11px', textAlign: 'right' }}>{getTomorrowDaysDisplay(task)}</span>
               </div>
               ))}
                 </>
