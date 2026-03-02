@@ -13998,7 +13998,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
+                        className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
                         style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd` }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -14021,19 +14021,34 @@ export default function Dashboard() {
                           const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                           
                           if (item.isPrep) {
+                            const prepStartDate = startOfDay(new Date(task.startDate!));
+                            const prepDueDate = startOfDay(new Date(task.dueDate));
+                            const cellDate = startOfDay(day);
+                            const isFirstPrepDay = isSameDay(cellDate, prepStartDate);
+                            const isLastPrepDay = isSameDay(addDays(cellDate, 1), prepDueDate);
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
-                                style={{ 
-                                  backgroundColor: 'white',
-                                  borderColor: course.darkColor,
-                                }}
-                                onClick={() => setEditingTask(task)}
-                                title={`Prep Day - ${task.title}`}
+                                className="relative"
                               >
-                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
-                                <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
+                                {!isFirstPrepDay && (
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '4px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                                )}
+                                {!isLastPrepDay && (
+                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '4px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                                )}
+                                <div
+                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
+                                  style={{ 
+                                    backgroundColor: 'white',
+                                    borderColor: course.darkColor,
+                                  }}
+                                  onClick={() => setEditingTask(task)}
+                                  title={`Prep Day - ${task.title}`}
+                                >
+                                  <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
+                                  <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
+                                </div>
                               </div>
                             );
                           }
@@ -14325,19 +14340,34 @@ export default function Dashboard() {
                           const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                           const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                           if (item.isPrep) {
+                            const prepStartDate = startOfDay(new Date(task.startDate!));
+                            const prepDueDate = startOfDay(new Date(task.dueDate));
+                            const satCellDate = startOfDay(day);
+                            const isFirstPrepDay = isSameDay(satCellDate, prepStartDate);
+                            const isLastPrepDay = isSameDay(addDays(satCellDate, 1), prepDueDate);
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
-                                style={{ 
-                                  backgroundColor: 'white',
-                                  borderColor: course.darkColor,
-                                }}
-                                onClick={() => setEditingTask(task)}
-                                title={`Prep Day - ${task.title}`}
+                                className="relative"
                               >
-                                <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
-                                <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
+                                {!isFirstPrepDay && (
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '4px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                                )}
+                                {!isLastPrepDay && (
+                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '4px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                                )}
+                                <div
+                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
+                                  style={{ 
+                                    backgroundColor: 'white',
+                                    borderColor: course.darkColor,
+                                  }}
+                                  onClick={() => setEditingTask(task)}
+                                  title={`Prep Day - ${task.title}`}
+                                >
+                                  <span className="bg-black text-white px-1 flex items-center whitespace-nowrap font-[680] text-[8px]">PREPARE</span>
+                                  <span className="truncate font-bold text-gray-700 pl-1.5 py-0.5">{task.title}</span>
+                                </div>
                               </div>
                             );
                           }
