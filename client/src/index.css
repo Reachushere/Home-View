@@ -503,7 +503,7 @@ button[role="combobox"] > span {
 }
 
 .animate-today-date {
-  animation: today-date-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-date-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes today-text-pulse {
@@ -516,7 +516,7 @@ button[role="combobox"] > span {
 }
 
 .animate-today-text {
-  animation: today-text-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-text-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes today-yellow-pulse {
