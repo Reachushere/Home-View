@@ -521,7 +521,7 @@ button[role="combobox"] > span {
 
 @keyframes today-text-pulse {
   0%, 100% {
-    color: #c8c8c8;
+    color: #d0d0d0;
   }
   50% {
     color: #d8d8d8;
