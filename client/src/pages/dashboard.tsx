@@ -15218,7 +15218,7 @@ export default function Dashboard() {
                   );
                 })()}
                 
-                {/* Dynamic line from current time to next task */}
+                {/* Dynamic lines from current time to next task (solid) and next prep task (dotted) */}
                 {(() => {
                   const now = new Date();
                   const currentHour = now.getHours();
@@ -15233,7 +15233,9 @@ export default function Dashboard() {
                   
                   const nowTimestamp = now.getTime();
                   let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
-                  let earliestTime = Infinity;
+                  let nextPrepTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
+                  let earliestTaskTime = Infinity;
+                  let earliestPrepTime = Infinity;
                   
                   allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
                     const dueDate = new Date(t.dueDate);
@@ -15252,26 +15254,18 @@ export default function Dashboard() {
                     taskDate.setHours(taskHour, taskMin, 0, 0);
                     const taskTimestamp = taskDate.getTime();
                     
-                    if (taskTimestamp > nowTimestamp && taskTimestamp < earliestTime) {
-                      earliestTime = taskTimestamp;
+                    if (taskTimestamp > nowTimestamp && taskTimestamp < earliestTaskTime) {
+                      earliestTaskTime = taskTimestamp;
                       nextTask = { task: t, dayIdx: dIdx, taskHour, taskMin };
+                    }
+                    
+                    if (t.startDate && taskTimestamp > nowTimestamp && taskTimestamp < earliestPrepTime) {
+                      earliestPrepTime = taskTimestamp;
+                      nextPrepTask = { task: t, dayIdx: dIdx, taskHour, taskMin };
                     }
                   });
                   
-                  if (!nextTask) return null;
-                  const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
-                  
-                  let nowTopPx = 0;
-                  for (let h = calStartHour; h < currentHour; h++) {
-                    nowTopPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                  }
-                  nowTopPx += (currentMinutes / 60) * (gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight);
-                  
-                  let taskTopPx = 0;
-                  for (let h = calStartHour; h < nt.taskHour; h++) {
-                    taskTopPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                  }
-                  taskTopPx += (nt.taskMin / 60) * (gridSizes.timeSlotHeights[nt.taskHour] || gridSizes.timeSlotHeight);
+                  if (!nextTask && !nextPrepTask) return null;
                   
                   const containerEl = calendarScrollRef.current;
                   if (!containerEl) return null;
@@ -15291,31 +15285,61 @@ export default function Dashboard() {
                     return fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
                   };
                   
+                  let nowTopPx = 0;
+                  for (let h = calStartHour; h < currentHour; h++) {
+                    nowTopPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  nowTopPx += (currentMinutes / 60) * (gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight);
+                  
                   const startX = getDayColumnCenter(todayDayIdx);
                   const startY = nowTopPx;
-                  const endX = getDayColumnCenter(nt.dayIdx);
-                  const endY = taskTopPx;
                   
-                  const totalHeight = Math.max(startY, endY) + 20;
+                  const getTopPx = (hour: number, min: number) => {
+                    let px = 0;
+                    for (let h = calStartHour; h < hour; h++) {
+                      px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    }
+                    px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
+                    return px;
+                  };
                   
-                  const midY = startY + (endY - startY) * 0.5;
-                  const cp1x = startX;
-                  const cp1y = midY;
-                  const cp2x = endX;
-                  const cp2y = midY;
+                  const lines: Array<{ endX: number; endY: number; dashed: boolean; id: string }> = [];
                   
-                  const dx = endX - cp2x;
-                  const dy = endY - cp2y;
-                  const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                  if (nextTask) {
+                    const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
+                    lines.push({ endX: getDayColumnCenter(nt.dayIdx), endY: getTopPx(nt.taskHour, nt.taskMin), dashed: false, id: 'task' });
+                  }
+                  
+                  if (nextPrepTask) {
+                    const np = nextPrepTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
+                    const prepEndX = getDayColumnCenter(np.dayIdx);
+                    const prepEndY = getTopPx(np.taskHour, np.taskMin);
+                    if (!nextTask || prepEndX !== lines[0]?.endX || prepEndY !== lines[0]?.endY) {
+                      lines.push({ endX: prepEndX, endY: prepEndY, dashed: true, id: 'prep' });
+                    }
+                  }
+                  
+                  const maxY = Math.max(startY, ...lines.map(l => l.endY)) + 20;
                   
                   return (
                     <svg
                       className="absolute top-0 left-0 pointer-events-none z-[4]"
-                      style={{ width: `${containerWidth}px`, height: `${totalHeight}px`, overflow: 'visible' }}
+                      style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
                       <defs>
                         <marker
-                          id="nextTaskArrow"
+                          id="nextTaskArrowSolid"
+                          markerWidth="10"
+                          markerHeight="8"
+                          refX="9"
+                          refY="4"
+                          orient="auto"
+                          markerUnits="userSpaceOnUse"
+                        >
+                          <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(0,0,0,0.9)" />
+                        </marker>
+                        <marker
+                          id="nextTaskArrowDotted"
                           markerWidth="10"
                           markerHeight="8"
                           refX="9"
@@ -15326,15 +15350,21 @@ export default function Dashboard() {
                           <path d="M 0 0 L 10 4 L 0 8 Z" fill="rgba(0,0,0,0.9)" />
                         </marker>
                       </defs>
-                      <path
-                        className="animate-next-task-line"
-                        d={`M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`}
-                        fill="none"
-                        stroke="rgba(170,170,170,0.7)"
-                        strokeWidth="1.5"
-                        strokeDasharray="6 3"
-                        markerEnd="url(#nextTaskArrow)"
-                      />
+                      {lines.map(line => {
+                        const midY = startY + (line.endY - startY) * 0.5;
+                        return (
+                          <path
+                            key={line.id}
+                            className="animate-next-task-line"
+                            d={`M ${startX} ${startY} C ${startX} ${midY}, ${line.endX} ${midY}, ${line.endX} ${line.endY}`}
+                            fill="none"
+                            stroke="rgba(170,170,170,0.7)"
+                            strokeWidth="1.5"
+                            strokeDasharray={line.dashed ? "6 3" : "none"}
+                            markerEnd={line.dashed ? "url(#nextTaskArrowDotted)" : "url(#nextTaskArrowSolid)"}
+                          />
+                        );
+                      })}
                       <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
                     </svg>
                   );
