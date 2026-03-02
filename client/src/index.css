@@ -495,28 +495,28 @@ button[role="combobox"] > span {
 /* Prominent pulse for today date header - dark to light */
 @keyframes today-date-pulse {
   0%, 100% { 
-    background-color: #2a5278;
+    background-color: #1e3f5e;
   }
   50% { 
-    background-color: #3d6a96;
+    background-color: #2a5278;
   }
 }
 
 .animate-today-date {
-  animation: today-date-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-date-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes today-time-cell-pulse {
   0%, 100% { 
-    background-color: #2a5278;
+    background-color: #1e3f5e;
   }
   50% { 
-    background-color: #3d6a96;
+    background-color: #2a5278;
   }
 }
 
 .animate-today-time-cell {
-  animation: today-time-cell-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: today-time-cell-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Reversed pulse for time cells to sync with header */
