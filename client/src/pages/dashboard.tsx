@@ -13930,7 +13930,7 @@ export default function Dashboard() {
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
-                    const cellBgColor = course.bg;
+                    const cellBgColor = isDayToday ? colorSettings.todayCellBackground : course.bg;
                     const cellDate = startOfDay(day);
                     
                     const dueTasks = tasks?.filter(task => {
