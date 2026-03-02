@@ -18708,11 +18708,12 @@ function SchoolForm({
             <select
               value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'}
               onChange={(e) => { const v = e.target.value; setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-400 [&_option]:!text-black"
+              style={{ color: '#000000', backgroundColor: '#ffffff' }}
+              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400"
               data-testid="select-school-name"
             >
               {NORTH_AMERICAN_SCHOOLS.map(s => (
-                <option key={s} value={s} className="text-black bg-white">{s}</option>
+                <option key={s} value={s} style={{ color: '#000000', backgroundColor: '#ffffff' }}>{s}</option>
               ))}
             </select>
             {(schoolName === 'Other' || !NORTH_AMERICAN_SCHOOLS.includes(schoolName)) && (
