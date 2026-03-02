@@ -14862,7 +14862,7 @@ export default function Dashboard() {
                             const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                             
                             // Calculate height based on duration for events with start/end times
-                            let taskHeight = 40; // Same height for all tasks
+                            let taskHeight = Math.min(40, rowHeight - 4); // Same height for all tasks, clamped to row
                             let topOffset = 2; // Default top offset
                             
                             if (task.eventStartTime && task.eventEndTime) {
@@ -14876,9 +14876,9 @@ export default function Dashboard() {
                               const durationMinutes = endMinutes - startMinutes;
                               taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               topOffset = (startMin / 60) * 44;
-                              const slotHeight = 44;
+                              const slotHeight = rowHeight;
                               const maxTaskHeight = slotHeight - topOffset - 2;
-                              if (taskHeight > maxTaskHeight && startHour >= 23) {
+                              if (taskHeight > maxTaskHeight) {
                                 taskHeight = Math.max(20, maxTaskHeight);
                               }
                             }
@@ -15038,11 +15038,13 @@ export default function Dashboard() {
                             const colors = dynamicCourseColors[courseCode];
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), new Date());
                             const columnWidth = 100 / Math.max(1, hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).length);
-                            let taskHeight = 40;
+                            let taskHeight = Math.min(40, rowHeight - 4);
                             let topOffset = 2;
                             if (task.eventStartTime) {
                               const [, startMin] = task.eventStartTime.split(':').map(Number);
-                              topOffset = (startMin / 60) * 44;
+                              topOffset = (startMin / 60) * rowHeight;
+                              taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
+                              taskHeight = Math.max(20, taskHeight);
                             }
                             return (
                               <div
