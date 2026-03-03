@@ -14089,10 +14089,9 @@ export default function Dashboard() {
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
-                                    outline: hoveredCountdownTaskId === task.id ? '3px solid #facc15' : undefined,
-                                    outlineOffset: hoveredCountdownTaskId === task.id ? '-1px' : undefined,
-                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 0 12px 2px rgba(250,204,21,0.5)' : undefined,
-                                    transition: 'outline 0.2s ease, box-shadow 0.2s ease',
+                                    transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
+                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
@@ -14112,10 +14111,9 @@ export default function Dashboard() {
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
                                 zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
-                                outline: hoveredCountdownTaskId === task.id ? '3px solid #facc15' : undefined,
-                                outlineOffset: hoveredCountdownTaskId === task.id ? '-1px' : undefined,
-                                boxShadow: hoveredCountdownTaskId === task.id ? '0 0 12px 2px rgba(250,204,21,0.5)' : undefined,
-                                transition: 'outline 0.2s ease, box-shadow 0.2s ease',
+                                transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
+                                boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                               }}
                               title={task.title}
                             >
