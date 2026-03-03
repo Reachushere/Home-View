@@ -19,6 +19,7 @@ import clockBg from "@assets/Clock_BG_1769697834310.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import pdfLogo from "@assets/Adobe51_1772514760872.png";
+import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe60_1772578202193.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -9154,35 +9155,38 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '8px', padding: '3px 10px 3px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', gap: '0px', lineHeight: 1.15 }}>
-              <div
-                style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px', width: '100%', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}
-                onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
-                onMouseLeave={() => setHoveredCountdownTaskId(null)}
-                data-testid="countdown-next-task-number"
-              >
-                <span style={{ color: '#000000', fontSize: '9.5px', fontWeight: 700, letterSpacing: '0.3px' }}>Your next task is due in:</span>
-                <span style={{ color: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#ca8a04' : '#dc2626', fontSize: '12px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays}</span>
-                <span style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day' : 'days'}</span>
-              </div>
-              <span
-                style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: '#000000', fontSize: '11px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px', marginBottom: '0px', pointerEvents: 'auto', cursor: 'pointer' }}
-                onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
-                onMouseLeave={() => setHoveredCountdownTaskId(null)}
-                data-testid="countdown-next-task-name"
-              >
-                {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || '#000000' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
-              </span>
-              {prepDaysText && nextPrep && (
-                <span
-                  style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: '#000000', fontSize: '10px', fontWeight: 400, letterSpacing: '0.2px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px', pointerEvents: 'auto', cursor: 'pointer' }}
-                  onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '25px', padding: '6px 14px 6px 6px', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', gap: '10px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+              <img src={profilePhoto} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'baseline', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                   onMouseLeave={() => setHoveredCountdownTaskId(null)}
-                  data-testid="countdown-prep-task-number"
+                  data-testid="countdown-next-task-number"
                 >
-                  {prepDaysText === 'today' ? (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} is in progress</>) : (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} in <span style={{ fontSize: '12px', fontWeight: 400, color: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#ca8a04' : '#dc2626', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepDaysText}</span> <span style={{ color: '#000000', fontSize: '10px', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
+                  <span style={{ color: '#000000', fontSize: '9.5px', fontWeight: 700, letterSpacing: '0.3px' }}>Your next task is due in:</span>
+                  <span style={{ color: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#ca8a04' : '#dc2626', fontSize: '12px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays}</span>
+                  <span style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day' : 'days'}</span>
+                </div>
+                <span
+                  style={{ color: '#000000', fontSize: '10px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
+                  onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
+                  onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                  data-testid="countdown-next-task-name"
+                >
+                  {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || '#000000' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
                 </span>
-              )}
+                {prepDaysText && nextPrep && (
+                  <span
+                    style={{ color: '#000000', fontSize: '9px', fontWeight: 400, letterSpacing: '0.2px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
+                    onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
+                    onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                    data-testid="countdown-prep-task-number"
+                  >
+                    {prepDaysText === 'today' ? (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} is in progress</>) : (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} in <span style={{ fontSize: '11px', fontWeight: 400, color: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#ca8a04' : '#dc2626', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepDaysText}</span> <span style={{ color: '#000000', fontSize: '9px', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         );
