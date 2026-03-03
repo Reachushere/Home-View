@@ -14484,13 +14484,13 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ marginTop: '2px', marginLeft: '4px' }}
+                                style={{ width: '52px', height: '24px', marginLeft: '4px', overflow: 'visible' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '52px', height: '34px', objectFit: 'contain', opacity: moduleP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '52px', height: '34px', objectFit: 'contain', position: 'absolute', top: '-5px', left: 0, opacity: moduleP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
                                 {moduleUnread > 0 && moduleP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {moduleUnread}
@@ -14516,13 +14516,13 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ marginTop: '2px', marginLeft: '4px' }}
+                                style={{ width: '52px', height: '24px', marginLeft: '4px', overflow: 'visible' }}
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
                                 onClick={() => handlePlayFiles('reading')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '52px', height: '34px', objectFit: 'contain', opacity: readingP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '52px', height: '34px', objectFit: 'contain', position: 'absolute', top: '-5px', left: 0, opacity: readingP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
                                 {readingUnread > 0 && readingP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {readingUnread}
