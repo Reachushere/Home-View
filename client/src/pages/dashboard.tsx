@@ -68,6 +68,7 @@ import {
   Link,
   Paperclip,
   Upload,
+  Camera,
   Loader2,
   Play,
   Square,
@@ -1023,6 +1024,9 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
+    return localStorage.getItem('profilePhotoUrl');
+  });
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
   const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
@@ -9156,7 +9160,7 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '25px', padding: '6px 19px 6px 0px', minWidth: '320px', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
-              <img src={profilePhoto} alt="Profile" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-6px' }} />
+              <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-6px' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                 <div
                   style={{ display: 'flex', alignItems: 'baseline', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
@@ -12278,7 +12282,16 @@ export default function Dashboard() {
                   profileData={profileData} 
                   timezones={timezones} 
                   onSave={saveProfile}
-                  onCancel={() => setIsProfileDialogOpen(false)} 
+                  onCancel={() => setIsProfileDialogOpen(false)}
+                  profilePhotoUrl={profilePhotoUrl}
+                  onProfilePhotoChange={(url: string | null) => {
+                    setProfilePhotoUrl(url);
+                    if (url) {
+                      localStorage.setItem('profilePhotoUrl', url);
+                    } else {
+                      localStorage.removeItem('profilePhotoUrl');
+                    }
+                  }}
                 />
               </div>
             </DialogContent>
@@ -18702,18 +18715,24 @@ function ProfileForm({
   profileData, 
   timezones, 
   onSave,
-  onCancel 
+  onCancel,
+  profilePhotoUrl,
+  onProfilePhotoChange
 }: { 
   profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string };
   timezones: { value: string; label: string }[];
   onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }) => void;
   onCancel: () => void;
+  profilePhotoUrl: string | null;
+  onProfilePhotoChange: (url: string | null) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
   const [birthdate, setBirthdate] = useState(profileData.birthdate);
   const [timezone, setTimezone] = useState(profileData.timezone);
   const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
   const [postalCode, setPostalCode] = useState(profileData.postalCode || '');
   const [location, setLocation] = useState(profileData.location || '');
@@ -18722,9 +18741,56 @@ function ProfileForm({
     e.preventDefault();
     onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location });
   };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    setIsUploadingPhoto(true);
+    try {
+      const resp = await fetch('/api/profile-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: file.name, contentType: file.type }) });
+      const { uploadURL, objectPath } = await resp.json();
+      await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+      const servedUrl = `/objects/${objectPath.split('/').slice(1).join('/')}`;
+      onProfilePhotoChange(servedUrl);
+    } catch (err) {
+      console.error('Photo upload failed:', err);
+    } finally {
+      setIsUploadingPhoto(false);
+      if (photoInputRef.current) photoInputRef.current.value = '';
+    }
+  };
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
+      <div className="flex items-center gap-3 pb-2 border-b border-white/20">
+        <div 
+          className="relative cursor-pointer group"
+          onClick={() => photoInputRef.current?.click()}
+          data-testid="button-upload-profile-photo"
+        >
+          <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/30 group-hover:border-white/60 transition-colors">
+            {profilePhotoUrl ? (
+              <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white/50" />
+              </div>
+            )}
+          </div>
+          <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+            {isUploadingPhoto ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
+          </div>
+          <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} data-testid="input-profile-photo" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] text-white/70">Profile Photo</span>
+          <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
+          {profilePhotoUrl && (
+            <button type="button" className="text-[9px] text-red-400 hover:text-red-300 text-left" onClick={(e) => { e.stopPropagation(); onProfilePhotoChange(null); }} data-testid="button-remove-profile-photo">Remove photo</button>
+          )}
+        </div>
+      </div>
       <div className="space-y-2">
         <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
         <Input 
