@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { Document, Page, pdfjs } from 'react-pdf';
 
@@ -18732,6 +18733,10 @@ function ProfileForm({
   const [timezone, setTimezone] = useState(profileData.timezone);
   const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
   const [postalCode, setPostalCode] = useState(profileData.postalCode || '');
@@ -18742,27 +18747,81 @@ function ProfileForm({
     onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location });
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) return;
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+    };
+    reader.readAsDataURL(file);
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  };
+
+  const getCroppedBlob = async (): Promise<Blob> => {
+    const image = new Image();
+    image.src = cropImageSrc!;
+    await new Promise((resolve) => { image.onload = resolve; });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+    const area = croppedAreaPixels!;
+    canvas.width = area.width;
+    canvas.height = area.height;
+    ctx.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, area.width, area.height);
+    return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.9));
+  };
+
+  const handleCropConfirm = async () => {
+    if (!croppedAreaPixels) return;
     setIsUploadingPhoto(true);
     try {
-      const resp = await fetch('/api/profile-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: file.name, contentType: file.type }) });
+      const blob = await getCroppedBlob();
+      const resp = await fetch('/api/profile-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'profile.jpg', contentType: 'image/jpeg' }) });
       const { uploadURL, objectPath } = await resp.json();
-      await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+      await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: blob });
       const servedUrl = `/objects/${objectPath.split('/').slice(1).join('/')}`;
       onProfilePhotoChange(servedUrl);
+      setCropImageSrc(null);
     } catch (err) {
       console.error('Photo upload failed:', err);
     } finally {
       setIsUploadingPhoto(false);
-      if (photoInputRef.current) photoInputRef.current.value = '';
     }
   };
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
+      {cropImageSrc && (
+        <div className="rounded-lg overflow-hidden border border-white/20 bg-black/50 p-3 space-y-3">
+          <span className="text-[10px] text-white/70">Move and zoom to crop your photo</span>
+          <div className="relative w-full" style={{ height: '220px' }}>
+            <Cropper
+              image={cropImageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="round"
+              showGrid={false}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={(_: any, croppedPixels: { x: number; y: number; width: number; height: number }) => setCroppedAreaPixels(croppedPixels)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] text-white/50">Zoom</span>
+            <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="flex-1 h-1 accent-white" data-testid="input-crop-zoom" />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button type="button" className="text-[10px] px-3 py-1.5 rounded border border-white/30 text-white/70 hover:text-white hover:border-white/50 transition-colors" onClick={() => setCropImageSrc(null)} data-testid="button-cancel-crop">Cancel</button>
+            <button type="button" className="text-[10px] px-3 py-1.5 rounded bg-white/20 text-white hover:bg-white/30 transition-colors" onClick={handleCropConfirm} disabled={isUploadingPhoto} data-testid="button-confirm-crop">
+              {isUploadingPhoto ? <Loader2 className="w-3 h-3 animate-spin inline mr-1" /> : null}
+              {isUploadingPhoto ? 'Saving...' : 'Save Photo'}
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex items-center gap-3 pb-2 border-b border-white/20">
         <div 
           className="relative cursor-pointer group"
@@ -18781,7 +18840,7 @@ function ProfileForm({
           <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
             {isUploadingPhoto ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
           </div>
-          <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} data-testid="input-profile-photo" />
+          <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} data-testid="input-profile-photo" />
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-[10px] text-white/70">Profile Photo</span>
