@@ -15450,7 +15450,7 @@ export default function Dashboard() {
                   
                   return (
                     <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[40]"
+                      className="absolute top-0 left-0 pointer-events-none z-[56]"
                       style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
                     >
                       <path
