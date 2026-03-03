@@ -3595,6 +3595,142 @@ export async function registerRoutes(
     }
   });
   
+  app.post("/api/webhook/cat-wash", async (req, res) => {
+    try {
+      console.log("[Cat Wash] Triggered - finding next file and opening tablet");
+
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const speakerEntity = req.body?.speaker || "media_player.cat_wash_2";
+      const tabletEntity = req.body?.tablet || "media_player.tablet_cat";
+      const appUrl = "https://home-view--bkh416.replit.app";
+
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const today = new Date();
+        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
+
+      const allFiles = await storage.getFiles();
+
+      const unlistenedFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+      });
+
+      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
+      const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa');
+
+      const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModuleFile(f));
+      const otherModules = unlistenedFiles.filter((f: any) => !isCPPA(f) && isModuleFile(f));
+      const cppaReadings = unlistenedFiles.filter((f: any) => isCPPA(f) && !isModuleFile(f));
+      const otherReadings = unlistenedFiles.filter((f: any) => !isCPPA(f) && !isModuleFile(f));
+
+      let orderedFiles = [...cppaModules, ...otherModules, ...cppaReadings, ...otherReadings];
+
+      const partialFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        if (!f.lastChunkIndex || f.lastChunkIndex <= 0) return false;
+        if (f.totalChunks && f.lastChunkIndex >= f.totalChunks) return false;
+        return true;
+      });
+
+      if (partialFiles.length > 0) {
+        const alreadyInList = orderedFiles.some((f: any) => partialFiles.some((p: any) => p.id === f.id));
+        if (!alreadyInList) {
+          orderedFiles = [...partialFiles, ...orderedFiles];
+        } else {
+          const partialId = partialFiles[0].id;
+          orderedFiles = [
+            ...orderedFiles.filter((f: any) => f.id === partialId),
+            ...orderedFiles.filter((f: any) => f.id !== partialId)
+          ];
+        }
+      }
+
+      if (orderedFiles.length === 0) {
+        console.log("[Cat Wash] All files complete, playing radio");
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: speakerEntity,
+            media_content_type: "custom",
+            media_content_id: "play 104.5 chumfm"
+          }),
+        });
+        return res.json({ action: "radio", message: `All week ${currentWeekNumber} readings complete` });
+      }
+
+      const nextFile = orderedFiles[0];
+      const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
+      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?autoplay=true&speaker=${encodeURIComponent(speakerEntity)}`;
+
+      console.log(`[Cat Wash] Opening: ${nextFile.displayName || nextFile.originalName} (${fileType})`);
+      console.log(`[Cat Wash] Tablet URL: ${readerUrl}`);
+
+      try {
+        await fetch(`${haUrl}/api/services/fully_kiosk/load_url`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: tabletEntity,
+            url: readerUrl
+          }),
+        });
+        console.log("[Cat Wash] Tablet navigated via Fully Kiosk");
+      } catch (tabletErr) {
+        console.log("[Cat Wash] Fully Kiosk failed, trying browser_mod...");
+        try {
+          await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              browser_id: tabletEntity,
+              path: readerUrl
+            }),
+          });
+        } catch (browserErr) {
+          console.error("[Cat Wash] Could not navigate tablet:", browserErr);
+        }
+      }
+
+      res.json({
+        action: "playing",
+        file: {
+          id: nextFile.id,
+          name: nextFile.displayName || nextFile.originalName,
+          type: fileType,
+          folder: nextFile.folder
+        },
+        readerUrl,
+        speaker: speakerEntity,
+        tablet: tabletEntity,
+        currentWeek: currentWeekNumber
+      });
+
+    } catch (error: any) {
+      console.error("[Cat Wash] Error:", error);
+      res.status(500).json({ error: "Failed to trigger cat wash reading", details: error.message });
+    }
+  });
+
   // POST /api/shower/trigger - Trigger automatic reading from Home Assistant
   // This is the endpoint Home Assistant should call when motion is detected
   app.post("/api/shower/trigger", async (req, res) => {
