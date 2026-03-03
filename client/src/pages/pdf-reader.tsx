@@ -41,6 +41,9 @@ export default function PDFReaderPage() {
   const oneDriveName = urlParams.get("name");
   const filesParam = urlParams.get("files");
   const courseParam = urlParams.get("course");
+  const autoplayParam = urlParams.get("autoplay") === "true";
+  const speakerParam = urlParams.get("speaker");
+  const [autoplayTriggered, setAutoplayTriggered] = useState(false);
   
   // Parse files list for dropdown
   const [allFiles, setAllFiles] = useState<Array<{name: string; downloadUrl: string; path: string}>>([]);
@@ -151,6 +154,20 @@ export default function PDFReaderPage() {
     const url = currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '');
     return `onedrive_${btoa(url).slice(0, 40)}`;
   };
+
+  useEffect(() => {
+    if (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0) {
+      setAutoplayTriggered(true);
+      const delay = setTimeout(() => {
+        if (file?.lastChunkIndex && file.lastChunkIndex > 0) {
+          resumeFromLast();
+        } else {
+          startReading();
+        }
+      }, 2000);
+      return () => clearTimeout(delay);
+    }
+  }, [autoplayParam, autoplayTriggered, pdfUrl, numPages]);
 
   const loadCheckedChunks = (key: string): Set<number> => {
     const saved = localStorage.getItem(`checkedChunks_${key}`);
@@ -322,6 +339,23 @@ export default function PDFReaderPage() {
       const words = text.split(/\s+/).filter(w => w.length > 0);
       setChunkWords(words);
       setCurrentWordIndex(0);
+
+      if (speakerParam) {
+        console.log(`[TTS] Playing on external speaker: ${speakerParam}`);
+        const response = await fetch("/api/tts/speaker", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, voice, entityId: speakerParam }),
+        });
+        if (!response.ok) throw new Error(`Speaker TTS failed: ${response.status}`);
+        const estimatedDuration = Math.max(10, (words.length / 2.5));
+        setTimeout(() => {
+          if (audioRef.current) {
+            audioRef.current.dispatchEvent(new Event('ended'));
+          }
+        }, estimatedDuration * 1000);
+        return;
+      }
       
       console.log(`[TTS] Fetching audio for ${words.length} words, voice=${voice}`);
       const response = await fetch("/api/tts", {

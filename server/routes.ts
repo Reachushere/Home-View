@@ -2761,6 +2761,46 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/tts/speaker", async (req, res) => {
+    try {
+      const { text, voice = "nova", entityId } = req.body;
+
+      if (!text || typeof text !== "string") {
+        return res.status(400).json({ error: "Text is required" });
+      }
+      if (!entityId) {
+        return res.status(400).json({ error: "entityId is required" });
+      }
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
+      const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
+
+      const audioUrl = await generateAndSaveTTSAudio(text, `speaker-${Date.now()}`);
+
+      await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: entityId,
+          media_content_type: "music",
+          media_content_id: audioUrl,
+        }),
+      });
+
+      res.json({ success: true, audioUrl, entityId });
+    } catch (err) {
+      console.error("Error playing TTS on speaker:", err);
+      res.status(500).json({ error: "Failed to play TTS on speaker" });
+    }
+  });
+
   // ============================================
   // EMAIL REMINDER ROUTES
   // ============================================
@@ -3531,13 +3571,20 @@ export async function registerRoutes(
       const progressKey = `file-${nextFile.id}`;
       const progress = playbackProgress[progressKey];
       
+      const checkModule = (f: any) => 
+        f.folder?.toLowerCase().includes('module') || 
+        f.originalName?.toLowerCase().includes('module');
+      const fileType = checkModule(nextFile) ? 'module' : 'reading';
+
       res.json({
         file: {
           id: nextFile.id,
           name: nextFile.displayName || nextFile.originalName,
           folder: nextFile.folder,
-          objectPath: nextFile.objectPath
+          objectPath: nextFile.objectPath,
+          type: fileType
         },
+        readerUrl: `/pdf-reader/${nextFile.id}`,
         currentWeek: currentWeekNumber,
         progress: progress || { chunkIndex: 0, totalChunks: 0 },
         resuming: !!progress
@@ -3869,6 +3916,7 @@ export async function registerRoutes(
       // Validate entity_id against known Echo devices
       const allowedEntities = [
         BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY,
+        "media_player.cat_wash_2",
         "media_player.echo_cat_left_am", "media_player.echo_cat_right_am",
         "media_player.echo_cat_washroom_middle", "media_player.echo_closet_am",
         "media_player.echo_lr_couch_r_am", "media_player.echo_hallway_entrance_am",
