@@ -14987,13 +14987,13 @@ export default function Dashboard() {
                               href={event.htmlLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500 cursor-pointer"
+                              className="absolute rounded pt-0.5 px-0.5 pb-0 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500 cursor-pointer"
                               style={{
                                 top: '2px',
                                 left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
                                 width: `calc(${columnWidth}% - 4px)`,
-                                height: '40px',
-                                maxHeight: '40px',
+                                height: `${Math.min(40, rowHeight - 4)}px`,
+                                maxHeight: `${Math.min(40, rowHeight - 4)}px`,
                                 zIndex: 1
                               }}
                               data-testid={`gcal-event-${event.id}`}
