@@ -3845,6 +3845,7 @@ export default function Dashboard() {
 
   // Fetch text when file is selected for preview
   useEffect(() => {
+    let cancelled = false;
     if (previewFile) {
       console.log(`[TextFetch] previewFile changed: id=${previewFile.id}, name=${previewFile.originalName}, objectPath=${previewFile.objectPath?.substring(0,60)}`);
       setIsLoadingText(true);
@@ -3883,6 +3884,7 @@ export default function Dashboard() {
         })
           .then(res => res.json())
           .then(data => {
+            if (cancelled) return;
             console.log(`[TextFetch] URL response for ${fileId}: hasText=${!!data.text}, length=${data.text?.length || 0}`);
             if (data.text) {
               const filteredText = joinHyphenatedWords(removeFrenchText(data.text));
@@ -3890,7 +3892,7 @@ export default function Dashboard() {
             }
           })
           .catch(err => console.error("Error fetching text from URL:", err))
-          .finally(() => setIsLoadingText(false));
+          .finally(() => { if (!cancelled) setIsLoadingText(false); });
       } else {
         fetch(`/api/files/${fileId}/text`)
           .then(res => {
@@ -3898,6 +3900,7 @@ export default function Dashboard() {
             return res.json();
           })
           .then(data => {
+            if (cancelled) return;
             console.log(`[TextFetch] API response for file ${fileId}: hasText=${!!data.text}, length=${data.text?.length || 0}, error=${data.error || 'none'}`);
             if (data.text) {
               const filteredText = joinHyphenatedWords(removeFrenchText(data.text));
@@ -3906,7 +3909,7 @@ export default function Dashboard() {
             }
           })
           .catch(err => console.error(`[TextFetch] Error fetching text for file ${fileId}:`, err))
-          .finally(() => setIsLoadingText(false));
+          .finally(() => { if (!cancelled) setIsLoadingText(false); });
       }
     } else {
       // Save progress BEFORE clearing anything — capture current state
@@ -3951,6 +3954,7 @@ export default function Dashboard() {
         highlightIntervalRef.current = null;
       }
     }
+    return () => { cancelled = true; };
   }, [previewFile]);
 
   // Initialize TTS chunks when previewText changes - ensures display and playback use same chunks
