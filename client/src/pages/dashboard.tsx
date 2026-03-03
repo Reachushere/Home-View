@@ -6134,7 +6134,7 @@ export default function Dashboard() {
             toY = calCheckboxRect.top + calCheckboxRect.height / 2;
           } else {
             toX = calRect.left - 2;
-            toY = calRect.top + calRect.height / 2;
+            toY = calRect.height > 50 ? calRect.top + 12 : calRect.top + calRect.height / 2;
           }
           
           // For green arrows (Tomorrow box), keep them visible even when calendar task is above viewport
