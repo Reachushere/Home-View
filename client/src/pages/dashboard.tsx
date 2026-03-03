@@ -15408,13 +15408,14 @@ export default function Dashboard() {
                   const midY = topY + taskBoxHeight / 2;
                   const yDiff = Math.abs(topY - startY);
                   
+                  const arrowGap = 8;
                   let endX: number, endY: number, side: 'top' | 'left';
                   if (nt.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
-                    endX = leftX; endY = midY; side = 'left';
+                    endX = leftX - arrowGap; endY = midY; side = 'left';
                   } else if (nt.dayIdx > todayDayIdx && yDiff < 60) {
-                    endX = leftX; endY = midY; side = 'left';
+                    endX = leftX - arrowGap; endY = midY; side = 'left';
                   } else {
-                    endX = centerX; endY = topY; side = 'top';
+                    endX = centerX; endY = topY - arrowGap; side = 'top';
                   }
                   
                   let pathD: string;
