@@ -15411,7 +15411,14 @@ export default function Dashboard() {
                   const topY = getTopPx(nt.taskHour, nt.taskMin);
                   const centerX = getDayColumnCenter(nt.dayIdx);
                   const leftX = getDayColumnLeft(nt.dayIdx);
-                  const midY = topY + taskBoxHeight / 2;
+                  
+                  let actualTaskHeight = taskBoxHeight;
+                  if (nt.task.eventStartTime && nt.task.eventEndTime) {
+                    const [eH, eM] = nt.task.eventEndTime.split(':').map(Number);
+                    const endTaskY = getTopPx(eH, eM);
+                    actualTaskHeight = Math.max(taskBoxHeight, endTaskY - topY);
+                  }
+                  const midY = topY + actualTaskHeight / 2;
                   const yDiff = Math.abs(topY - startY);
                   
                   const arrowGap = 8;
