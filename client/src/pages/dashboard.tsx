@@ -14489,7 +14489,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('module')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '49px', height: '27px', display: 'block', marginLeft: '-5px', opacity: moduleP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '47px', height: '25px', display: 'block', marginLeft: '-5px', opacity: moduleP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
                                 {moduleUnread > 0 && moduleP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {moduleUnread}
@@ -14520,7 +14520,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('reading')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '49px', height: '27px', display: 'block', marginLeft: '-5px', opacity: readingP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '47px', height: '25px', display: 'block', marginLeft: '-5px', opacity: readingP.percent === 100 ? 0.4 : 1, imageRendering: '-webkit-optimize-contrast' as any }} />
                                 {readingUnread > 0 && readingP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {readingUnread}
