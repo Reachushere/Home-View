@@ -19,6 +19,7 @@ import clockBg from "@assets/Clock_BG_1769697834310.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import pdfLogo from "@assets/Adobe51_1772514760872.png";
+import pdfSearchLogo from "@assets/Adobe53_1772576141865.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14480,18 +14481,13 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '52px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: moduleP.percent === 100 ? 'linear-gradient(180deg, #888 0%, #555 100%)' : getBorderGradient(courseHexColor), padding: '1px', marginTop: '2px', marginLeft: '-2px' }}
+                                style={{ marginTop: '2px', marginLeft: '-2px' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
                               >
-                                <div
-                                  className="hover:opacity-80 transition-all duration-200"
-                                  style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: moduleP.percent === 100 ? 'linear-gradient(180deg, #777 0%, #444 100%)' : getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '36px', height: '18px', objectFit: 'contain', marginLeft: '-4px', marginTop: '-2px', opacity: moduleP.percent === 100 ? 0.5 : 1 }} />
-                                </div>
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '30px', height: '24px', objectFit: 'contain', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                                 {moduleUnread > 0 && moduleP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {moduleUnread}
@@ -14517,18 +14513,13 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '52px', height: '24px', minHeight: '24px', maxHeight: '24px', borderRadius: '6px', background: readingP.percent === 100 ? 'linear-gradient(180deg, #888 0%, #555 100%)' : getBorderGradient(courseHexColor), padding: '1px', marginTop: '2px', marginLeft: '-2px' }}
+                                style={{ marginTop: '2px', marginLeft: '-2px' }}
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
                                 onClick={() => handlePlayFiles('reading')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
                               >
-                                <div
-                                  className="hover:opacity-80 transition-all duration-200"
-                                  style={{ position: 'absolute', top: '1px', left: '1px', right: '1px', bottom: '1px', borderRadius: '5px', background: readingP.percent === 100 ? 'linear-gradient(180deg, #777 0%, #444 100%)' : getButtonGradient(courseHexColor), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                  <img src={pdfLogo} alt="PDF" style={{ width: '36px', height: '18px', objectFit: 'contain', marginLeft: '-4px', marginTop: '-2px', opacity: readingP.percent === 100 ? 0.5 : 1 }} />
-                                </div>
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '30px', height: '24px', objectFit: 'contain', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                                 {readingUnread > 0 && readingP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {readingUnread}
