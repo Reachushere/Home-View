@@ -4010,6 +4010,8 @@ export default function Dashboard() {
     cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
     cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
     cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
+    cleanTextForTts = cleanTextForTts.replace(/(\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gi, '$1');
+    cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/i, '');
     
     // Use 2000 char chunks for display consistency
     const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
@@ -4359,8 +4361,8 @@ export default function Dashboard() {
     }
     
     let chunk = chunks[chunkIndex];
-    chunk = chunk.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*/gi, '');
-    chunk = chunk.replace(/(?:^|\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gi, '. ').trim();
+    chunk = chunk.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s*/gi, '');
+    chunk = chunk.replace(/(\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gi, '$1').trim();
     const utterance = new SpeechSynthesisUtterance(chunk);
     utterance.rate = browserTtsRateRef.current;
     utterance.volume = browserTtsVolumeRef.current;
@@ -4567,7 +4569,8 @@ export default function Dashboard() {
       cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
       cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
       cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
-      // Use larger chunks for OpenAI TTS (4000 chars) vs browser TTS (2000 chars)
+      cleanTextForTts = cleanTextForTts.replace(/(\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gi, '$1');
+      cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/i, '');
       const chunkSize = useBrowserTts ? 2000 : 4000;
       const chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
       ttsChunksRef.current = chunks;
@@ -4693,6 +4696,8 @@ export default function Dashboard() {
           cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
           cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
           cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
+          cleanTextForTts = cleanTextForTts.replace(/(\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gi, '$1');
+          cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/i, '');
           const chunkSize = 2000;
           chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
           
