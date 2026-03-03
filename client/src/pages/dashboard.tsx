@@ -19,7 +19,7 @@ import clockBg from "@assets/Clock_BG_1769697834310.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import pdfLogo from "@assets/Adobe51_1772514760872.png";
-import pdfSearchLogo from "@assets/Adobe54_1772576429885.png";
+import pdfSearchLogo from "@assets/Adobe56_1772576761142.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14490,7 +14490,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('module')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '30px', height: '24px', objectFit: 'contain', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '26px', height: '20px', objectFit: 'contain', opacity: moduleP.percent === 100 ? 0.4 : 1, marginLeft: '-12px' }} />
                                 {moduleUnread > 0 && moduleP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {moduleUnread}
@@ -14522,7 +14522,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('reading')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '30px', height: '24px', objectFit: 'contain', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '26px', height: '20px', objectFit: 'contain', opacity: readingP.percent === 100 ? 0.4 : 1, marginLeft: '-12px' }} />
                                 {readingUnread > 0 && readingP.percent < 100 && (
                                   <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
                                     {readingUnread}
