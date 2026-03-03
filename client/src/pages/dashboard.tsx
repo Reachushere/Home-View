@@ -8119,32 +8119,32 @@ export default function Dashboard() {
                     )}
                   </Button>
                   {showFlickMenu && (
-                    <div className="absolute bottom-full right-0 mb-2 w-64 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
-                      <div className="px-3 py-2 border-b border-gray-700 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-white">Flick to...</span>
+                    <div className="absolute top-full right-0 mt-1 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                      <div className="px-2 py-1 border-b border-gray-700 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-white">Flick to...</span>
                         <button
                           onClick={() => setShowFlickMenu(false)}
                           className="text-gray-400 hover:text-white"
                           data-testid="button-close-flick-menu"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-3 w-3" />
                         </button>
                       </div>
-                      <div className="max-h-[320px] overflow-y-auto">
+                      <div className="max-h-[240px] overflow-y-auto">
                         {flickRooms.map((room) => (
                           <button
                             key={room.id}
                             data-testid={`button-flick-${room.id}`}
-                            className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-800 transition-colors text-left"
+                            className="w-full px-2 py-1.5 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
                             onClick={() => handleFlick(room.id)}
                             disabled={isFlicking}
                           >
-                            <span className="text-xl">{room.icon}</span>
+                            <span className="text-sm">{room.icon}</span>
                             <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium text-white">{room.name}</div>
-                              <div className="text-xs text-gray-400 flex items-center gap-1">
-                                {room.hasDisplay && <Monitor className="h-3 w-3 inline" />}
-                                <Speaker className="h-3 w-3 inline" />
+                              <div className="text-[11px] font-medium text-white">{room.name}</div>
+                              <div className="text-[9px] text-gray-400 flex items-center gap-0.5">
+                                {room.hasDisplay && <Monitor className="h-2.5 w-2.5 inline" />}
+                                <Speaker className="h-2.5 w-2.5 inline" />
                                 <span className="truncate">{room.speakerName}</span>
                               </div>
                             </div>
