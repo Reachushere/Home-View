@@ -4015,6 +4015,9 @@ export default function Dashboard() {
     ttsChunksRef.current = chunks;
     setTtsChunks(chunks);
     setTotalChunks(chunks.length);
+    console.log("[TTS-CHUNKS] Created", chunks.length, "chunks. Chunk 0 first 300 chars:", chunks[0]?.substring(0, 300));
+    console.log("[TTS-CHUNKS] cleanTextForTts first 500 chars:", cleanTextForTts.substring(0, 500));
+    console.log("[TTS-CHUNKS] textForTts first 500 chars:", textForTts.substring(0, 500));
 
     // Pre-fetch the first chunk's audio for OpenAI TTS so playback starts instantly
     if (chunks.length > 0 && (previewSpeaker === "openai_tts" || !window.speechSynthesis)) {
@@ -4354,7 +4357,8 @@ export default function Dashboard() {
       return;
     }
     
-    const chunk = chunks[chunkIndex];
+    let chunk = chunks[chunkIndex];
+    chunk = chunk.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*/gi, '').trim();
     const utterance = new SpeechSynthesisUtterance(chunk);
     utterance.rate = browserTtsRateRef.current;
     utterance.volume = browserTtsVolumeRef.current;
