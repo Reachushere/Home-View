@@ -4192,7 +4192,8 @@ export default function Dashboard() {
   };
 
   const startHighlighting = () => {
-    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const chunkText = ttsChunksRef.current.length > 0 ? ttsChunksRef.current.join(' ') : previewText;
+    const words = chunkText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     if (words.length === 0) return;
     
     setPlayStartTime(Date.now());
@@ -4648,21 +4649,22 @@ export default function Dashboard() {
         let chunks = ttsChunksRef.current;
         if (chunks.length === 0) {
           // Fallback: create chunks if not yet initialized
+          // Use identical logic to the display useEffect to ensure TTS reads exactly what's shown
           let textForTts = previewText;
-          const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+|supplementary|appendix|supporting information|online resource|electronic supplementary|table of contents|references\s*\n|bibliography|citation/i;
+          const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+/i;
           
           const firstPageEnd = textForTts.indexOf('---PAGE---');
           if (firstPageEnd !== -1) {
             const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
             const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
-            if (wordCount < 500 && titlePageKeywords.test(firstPageContent)) {
+            if (wordCount < 300 && titlePageKeywords.test(firstPageContent)) {
               textForTts = textForTts.substring(firstPageEnd + 10);
             }
           } else {
             const first500Words = textForTts.split(/\s+/).slice(0, 500).join(' ').toLowerCase();
             if (titlePageKeywords.test(first500Words)) {
               const skipTo = textForTts.search(/\n\n[A-Z]/);
-              if (skipTo > 100 && skipTo < 3000) {
+              if (skipTo > 100 && skipTo < 2000) {
                 textForTts = textForTts.substring(skipTo + 2);
               }
             }
@@ -4673,10 +4675,18 @@ export default function Dashboard() {
           cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
           cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
           cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
+          cleanTextForTts = cleanTextForTts.replace(/\([^)]*?(?:\d{4}[a-z]?|pp?\.\s*\d|[A-Z][a-z]+,?\s+\d{4}|§\s*\d|[ivxlcdm]+(?:,\s*[ivxlcdm]+)*)[^)]*?\)/g, '');
+          cleanTextForTts = cleanTextForTts.replace(/\(([0-9a-zA-Z.,;\s]+)\)/g, (match, inner) => {
+            if (/^[\d.,;\s]+$/.test(inner.trim())) return '';
+            if (/^[a-zA-Z]([.,;\s]+[a-zA-Z])*[.,;\s]*$/.test(inner.trim())) return '';
+            if (/^[\d.,;\sa-zA-Z]+$/.test(inner.trim()) && inner.trim().length < 20) return '';
+            return match;
+          });
+          cleanTextForTts = cleanTextForTts.replace(/\s{2,}/g, ' ');
           cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
           cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
           cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
-          const chunkSize = useBrowserTts ? 2000 : 4000;
+          const chunkSize = 2000;
           chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
           
           ttsChunksRef.current = chunks;
@@ -4923,7 +4933,8 @@ export default function Dashboard() {
     }
     if (!previewText || !window.speechSynthesis) return;
     
-    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const chunkText = ttsChunksRef.current.length > 0 ? ttsChunksRef.current.join(' ') : previewText;
+    const words = chunkText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words forward
     const newIndex = Math.min(currentWordIndex + skipAmount, words.length - 1);
     
@@ -4984,7 +4995,8 @@ export default function Dashboard() {
     setCurrentPdfPage(1);
     
     // Start playing from beginning
-    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const chunkText = ttsChunksRef.current.length > 0 ? ttsChunksRef.current.join(' ') : previewText;
+    const words = chunkText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const utterance = new SpeechSynthesisUtterance(words.join(' '));
     utterance.rate = browserTtsRateRef.current;
     utterance.volume = browserTtsVolumeRef.current;
@@ -5026,7 +5038,8 @@ export default function Dashboard() {
     window.speechSynthesis.cancel();
     
     // Start playing from current word index
-    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const chunkText = ttsChunksRef.current.length > 0 ? ttsChunksRef.current.join(' ') : previewText;
+    const words = chunkText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const remainingText = words.slice(currentWordIndex).join(' ');
     const utterance = new SpeechSynthesisUtterance(remainingText);
     utterance.rate = browserTtsRateRef.current;
@@ -5102,7 +5115,8 @@ export default function Dashboard() {
     }
     if (!previewText || !window.speechSynthesis) return;
     
-    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const chunkText = ttsChunksRef.current.length > 0 ? ttsChunksRef.current.join(' ') : previewText;
+    const words = chunkText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words back
     const newIndex = Math.max(currentWordIndex - skipAmount, 0);
     
