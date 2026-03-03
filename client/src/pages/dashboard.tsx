@@ -8952,11 +8952,11 @@ export default function Dashboard() {
           <div
             className="font-raleway"
             style={{
-              position: 'absolute',
+              position: 'fixed',
               left: '50%',
               transform: 'translateX(-50%) translateY(-50%)',
               top: '37px',
-              zIndex: 10,
+              zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
               pointerEvents: 'none',
