@@ -88,7 +88,7 @@ export default function PDFReaderPage() {
   const [isEditingText, setIsEditingText] = useState(false);
   const [editableText, setEditableText] = useState("");
   const [showFlickMenu, setShowFlickMenu] = useState(false);
-  const [flickRooms, setFlickRooms] = useState<Array<{id: string; name: string; icon: string; hasDisplay: boolean; speakerName: string}>>([]);
+  const [flickDeviceGroups, setFlickDeviceGroups] = useState<Array<{room: string; icon: string; devices: Array<{id: string; name: string; entityId: string; type: string; canDisplay: boolean; room: string}>}>>([]);
   const [isFlicking, setIsFlicking] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -113,11 +113,11 @@ export default function PDFReaderPage() {
   useEffect(() => {
     fetch("/api/flick/rooms")
       .then(r => r.json())
-      .then(setFlickRooms)
+      .then(setFlickDeviceGroups)
       .catch(() => {});
   }, []);
 
-  const handleFlick = async (roomId: string) => {
+  const handleFlick = async (deviceId: string) => {
     if (!fileId) {
       toast({ title: "Can't flick", description: "Flick only works with stored files, not OneDrive links." });
       return;
@@ -146,7 +146,7 @@ export default function PDFReaderPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          roomId,
+          deviceId,
           fileId,
           currentChunkIndex: currentChunkRef.current,
           totalChunks
@@ -154,12 +154,11 @@ export default function PDFReaderPage() {
       });
       const data = await resp.json();
       if (data.success) {
-        const room = flickRooms.find(r => r.id === roomId);
         toast({
-          title: `Flicked to ${room?.name || roomId}`,
-          description: data.hasDisplay
-            ? `Opening on display & playing on ${room?.speakerName}`
-            : `Playing on ${room?.speakerName} (speaker only)`
+          title: `Flicked to ${data.device}`,
+          description: data.canDisplay
+            ? `Opening on ${data.device} in ${data.room}`
+            : `Playing on ${data.device} in ${data.room}`
         });
       } else {
         toast({ title: "Flick failed", description: data.error || "Unknown error" });
@@ -1155,7 +1154,7 @@ export default function PDFReaderPage() {
                   <SkipForward className="h-5 w-5 text-white" />
                 </button>
 
-                {fileId && flickRooms.length > 0 && (
+                {fileId && flickDeviceGroups.length > 0 && (
                   <div className="relative">
                     <button
                       className={`media-btn media-btn-lg ${showFlickMenu ? 'ring-2 ring-blue-400' : ''}`}
@@ -1171,36 +1170,40 @@ export default function PDFReaderPage() {
                       )}
                     </button>
                     {showFlickMenu && (
-                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
-                        <div className="px-3 py-2 border-b border-gray-700 flex items-center justify-between">
-                          <span className="text-sm font-semibold text-white">Flick to...</span>
+                      <div className="absolute bottom-full right-0 mb-2 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                        <div className="px-3 py-1.5 border-b border-gray-700 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white">Flick to...</span>
                           <button
                             onClick={() => setShowFlickMenu(false)}
                             className="text-gray-400 hover:text-white"
                             data-testid="button-close-flick-menu"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <div className="max-h-[320px] overflow-y-auto">
-                          {flickRooms.map((room) => (
-                            <button
-                              key={room.id}
-                              data-testid={`button-flick-${room.id}`}
-                              className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-800 transition-colors text-left"
-                              onClick={() => handleFlick(room.id)}
-                              disabled={isFlicking}
-                            >
-                              <span className="text-xl">{room.icon}</span>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-white">{room.name}</div>
-                                <div className="text-xs text-gray-400 flex items-center gap-1">
-                                  {room.hasDisplay && <Monitor className="h-3 w-3 inline" />}
-                                  <Speaker className="h-3 w-3 inline" />
-                                  <span className="truncate">{room.speakerName}</span>
-                                </div>
+                        <div className="max-h-[350px] overflow-y-auto">
+                          {flickDeviceGroups.map((group) => (
+                            <div key={group.room}>
+                              <div className="px-2 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
+                                <span className="text-xs">{group.icon}</span>
+                                <span className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
                               </div>
-                            </button>
+                              {group.devices.map((device) => (
+                                <button
+                                  key={device.id}
+                                  data-testid={`button-flick-${device.id}`}
+                                  className="w-full px-2 py-1.5 pl-6 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
+                                  onClick={() => handleFlick(device.id)}
+                                  disabled={isFlicking}
+                                >
+                                  {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
+                                   device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
+                                   device.type === "group" ? <Speaker className="h-3 w-3 text-amber-400 flex-shrink-0" /> :
+                                   <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
+                                  <span className={`text-xs truncate ${device.type === "group" ? "text-amber-300 font-medium" : "text-white"}`}>{device.name}</span>
+                                </button>
+                              ))}
+                            </div>
                           ))}
                         </div>
                       </div>

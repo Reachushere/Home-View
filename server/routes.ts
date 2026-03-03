@@ -87,88 +87,111 @@ const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
-interface FlickRoom {
+interface FlickDevice {
   id: string;
   name: string;
-  icon: string;
-  display?: { entityId: string; type: "fully_kiosk" | "browser" | "samsung_tv" };
-  speaker: string;
-  speakerName: string;
+  entityId: string;
+  type: "tablet" | "echo" | "echo_show" | "tv" | "speaker" | "group";
+  canDisplay: boolean;
+  room: string;
 }
 
-const FLICK_ROOMS: FlickRoom[] = [
+interface FlickRoomGroup {
+  room: string;
+  icon: string;
+  devices: FlickDevice[];
+}
+
+const FLICK_DEVICES: FlickRoomGroup[] = [
   {
-    id: "hallway",
-    name: "Hallway",
-    icon: "🚪",
-    display: { entityId: "media_player.tablet_hallway_entrance", type: "browser" },
-    speaker: "media_player.hallway",
-    speakerName: "Hallway Group"
+    room: "Hallway", icon: "🚪",
+    devices: [
+      { id: "hallway_tablet_entrance", name: "Tablet (Entrance)", entityId: "media_player.tablet_hallway_entrance", type: "tablet", canDisplay: true, room: "Hallway" },
+      { id: "hallway_tablet", name: "Tablet (Main)", entityId: "media_player.tablet_hallway", type: "tablet", canDisplay: true, room: "Hallway" },
+      { id: "hallway_echo_entrance", name: "Echo (Entrance)", entityId: "media_player.echo_hallway_entrance_am", type: "echo", canDisplay: false, room: "Hallway" },
+      { id: "hallway_echo_corner", name: "Echo (Corner)", entityId: "media_player.echo_lr_couch_r_am", type: "echo", canDisplay: false, room: "Hallway" },
+      { id: "hallway_echo_fish", name: "Echo (Fish)", entityId: "media_player.echo_hallway_fish_am", type: "echo", canDisplay: false, room: "Hallway" },
+      { id: "hallway_group", name: "All Hallway", entityId: "media_player.hallway_media_group", type: "group", canDisplay: false, room: "Hallway" },
+    ]
   },
   {
-    id: "pug_washroom",
-    name: "Pug Washroom",
-    icon: "🐶",
-    display: { entityId: "media_player.echo_show_pug_am", type: "browser" },
-    speaker: "media_player.pug_media_group",
-    speakerName: "Pug Media Group"
+    room: "Living Room", icon: "🛋️",
+    devices: [
+      { id: "lr_tablet", name: "Fire Tablet (11)", entityId: "media_player.tablet_11", type: "tablet", canDisplay: true, room: "Living Room" },
+      { id: "lr_echo_couch_l", name: "Echo (Couch L)", entityId: "media_player.echo_lr_couch_l_am", type: "echo", canDisplay: false, room: "Living Room" },
+      { id: "lr_echo_hub", name: "Echo (Hub)", entityId: "media_player.echo_lr_hub_am", type: "echo", canDisplay: false, room: "Living Room" },
+      { id: "lr_echo_studio", name: "Echo Studio (White)", entityId: "media_player.echo_lr_studio_white_am", type: "echo", canDisplay: false, room: "Living Room" },
+      { id: "lr_echo_tv_shelf", name: "Echo (TV Shelf)", entityId: "media_player.echo_lr_tv_shelf_am", type: "echo", canDisplay: false, room: "Living Room" },
+      { id: "lr_tv", name: "TV (70\")", entityId: "media_player.tv_living_room_70", type: "tv", canDisplay: true, room: "Living Room" },
+      { id: "lr_group", name: "All Living Room", entityId: "media_player.living_room_media_group", type: "group", canDisplay: false, room: "Living Room" },
+    ]
   },
   {
-    id: "queen_bedroom",
-    name: "Queen Bedroom",
-    icon: "👑",
-    display: { entityId: "media_player.tablet_queen", type: "browser" },
-    speaker: "media_player.queen_bedroom",
-    speakerName: "Queen Bedroom Group"
+    room: "King Bedroom", icon: "🛏️",
+    devices: [
+      { id: "king_tablet", name: "Tablet", entityId: "media_player.bd24bb29_04a116d8_king", type: "tablet", canDisplay: true, room: "King Bedroom" },
+      { id: "king_echo_l", name: "Echo (Left)", entityId: "media_player.echo_king_l_am", type: "echo", canDisplay: false, room: "King Bedroom" },
+      { id: "king_echo_r", name: "Echo (Right)", entityId: "media_player.echo_king_r_am", type: "echo", canDisplay: false, room: "King Bedroom" },
+      { id: "king_echo_tv", name: "Echo (TV)", entityId: "media_player.echo_king_tv_am", type: "echo", canDisplay: false, room: "King Bedroom" },
+      { id: "king_homepod", name: "HomePod", entityId: "media_player.homepod_king", type: "speaker", canDisplay: false, room: "King Bedroom" },
+      { id: "king_tv", name: "TV", entityId: "media_player.tv_king", type: "tv", canDisplay: true, room: "King Bedroom" },
+      { id: "king_group", name: "All King Bedroom", entityId: "media_player.king_bedroom_media_group", type: "group", canDisplay: false, room: "King Bedroom" },
+    ]
   },
   {
-    id: "kitchen",
-    name: "Kitchen",
-    icon: "🍳",
-    display: undefined,
-    speaker: "media_player.kitchen_media_group",
-    speakerName: "Kitchen Group"
+    room: "Queen Bedroom", icon: "👑",
+    devices: [
+      { id: "queen_tablet", name: "Tablet", entityId: "media_player.tablet_queen", type: "tablet", canDisplay: true, room: "Queen Bedroom" },
+      { id: "queen_echo_balcony", name: "Echo (Balcony)", entityId: "media_player.echo_queen_balcony_am", type: "echo", canDisplay: false, room: "Queen Bedroom" },
+      { id: "queen_echo_bed_l", name: "Echo (Bed L)", entityId: "media_player.echo_queen_bed_l_am", type: "echo", canDisplay: false, room: "Queen Bedroom" },
+      { id: "queen_echo_bed_r", name: "Echo (Bed R)", entityId: "media_player.echo_queen_bed_r_am", type: "echo", canDisplay: false, room: "Queen Bedroom" },
+      { id: "queen_group", name: "All Queen Bedroom", entityId: "media_player.queen_bedroom_media_group", type: "group", canDisplay: false, room: "Queen Bedroom" },
+    ]
   },
   {
-    id: "living_room",
-    name: "Living Room",
-    icon: "🛋️",
-    display: { entityId: "media_player.tablet_11", type: "browser" },
-    speaker: "media_player.living_room_media_group",
-    speakerName: "Living Room Group"
+    room: "Kitchen", icon: "🍳",
+    devices: [
+      { id: "kitchen_echo_cupboards_l", name: "Echo (Cupboards L)", entityId: "media_player.echo_kitchen_cupboards_left_am", type: "echo", canDisplay: false, room: "Kitchen" },
+      { id: "kitchen_echo_cupboards_r", name: "Echo (Cupboards R)", entityId: "media_player.echo_kitchen_cupboards_r_am", type: "echo", canDisplay: false, room: "Kitchen" },
+      { id: "kitchen_echo_fridge", name: "Echo (Fridge)", entityId: "media_player.echo_kitchen_fridge_am", type: "echo", canDisplay: false, room: "Kitchen" },
+      { id: "kitchen_echo_hutch", name: "Echo (Hutch)", entityId: "media_player.echo_kitchen_hutch_am", type: "echo", canDisplay: false, room: "Kitchen" },
+      { id: "kitchen_echo_island", name: "Echo (Island Corner)", entityId: "media_player.echo_kitchen_island_corner_am", type: "echo", canDisplay: false, room: "Kitchen" },
+      { id: "kitchen_echo_studio", name: "Echo Studio (Black)", entityId: "media_player.echo_kitchen_studio_black_am", type: "echo", canDisplay: false, room: "Kitchen" },
+      { id: "kitchen_tv", name: "TV", entityId: "media_player.tv_kitchen", type: "tv", canDisplay: true, room: "Kitchen" },
+      { id: "kitchen_group", name: "All Kitchen", entityId: "media_player.kitchen_media_group", type: "group", canDisplay: false, room: "Kitchen" },
+    ]
   },
   {
-    id: "king_bedroom",
-    name: "King Bedroom",
-    icon: "🛏️",
-    display: { entityId: "media_player.bd24bb29_04a116d8_king", type: "browser" },
-    speaker: "media_player.king_bedroom",
-    speakerName: "King Bedroom Group"
+    room: "Cat Washroom", icon: "🐱",
+    devices: [
+      { id: "cat_tablet", name: "Tablet", entityId: "media_player.tablet_cat", type: "tablet", canDisplay: true, room: "Cat Washroom" },
+      { id: "cat_echo_middle", name: "Echo (Middle)", entityId: "media_player.echo_cat_washroom_middle", type: "echo", canDisplay: false, room: "Cat Washroom" },
+      { id: "cat_echo_left", name: "Echo (Left)", entityId: "media_player.echo_cat_left_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
+      { id: "cat_echo_right", name: "Echo (Right)", entityId: "media_player.echo_cat_right_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
+      { id: "cat_tv", name: "TV", entityId: "media_player.tv_cat_wr", type: "tv", canDisplay: true, room: "Cat Washroom" },
+      { id: "cat_group", name: "All Cat Washroom", entityId: "media_player.cat_washroom_media_group", type: "group", canDisplay: false, room: "Cat Washroom" },
+    ]
   },
   {
-    id: "cat_washroom",
-    name: "Cat Washroom",
-    icon: "🐱",
-    display: { entityId: "media_player.tablet_cat", type: "browser" },
-    speaker: "media_player.cat_washroom_media_group",
-    speakerName: "Cat Washroom Group"
+    room: "Pug Washroom", icon: "🐶",
+    devices: [
+      { id: "pug_echo_show", name: "Echo Show", entityId: "media_player.echo_show_pug_am", type: "echo_show", canDisplay: true, room: "Pug Washroom" },
+      { id: "pug_group", name: "All Pug Washroom", entityId: "media_player.pug_media_group", type: "group", canDisplay: false, room: "Pug Washroom" },
+    ]
   },
   {
-    id: "closet",
-    name: "Closet",
-    icon: "👔",
-    display: undefined,
-    speaker: "media_player.closet_media_group",
-    speakerName: "Closet Group"
+    room: "Closet", icon: "👔",
+    devices: [
+      { id: "closet_echo", name: "Echo", entityId: "media_player.echo_closet_am", type: "echo", canDisplay: false, room: "Closet" },
+      { id: "closet_group", name: "All Closet", entityId: "media_player.closet_media_group", type: "group", canDisplay: false, room: "Closet" },
+    ]
   },
   {
-    id: "everywhere",
-    name: "Everywhere",
-    icon: "🏠",
-    display: undefined,
-    speaker: "media_player.byhome",
-    speakerName: "BYhome (All)"
-  }
+    room: "Everywhere", icon: "🏠",
+    devices: [
+      { id: "everywhere", name: "All Speakers", entityId: "media_player.byhome", type: "group", canDisplay: false, room: "Everywhere" },
+    ]
+  },
 ];
 
 // Track travelling state (synced from client) to suppress Echo announcements
@@ -3824,26 +3847,24 @@ export async function registerRoutes(
   });
 
   app.get("/api/flick/rooms", (_req, res) => {
-    res.json(FLICK_ROOMS.map(r => ({
-      id: r.id,
-      name: r.name,
-      icon: r.icon,
-      hasDisplay: !!r.display,
-      speakerName: r.speakerName
-    })));
+    res.json(FLICK_DEVICES);
   });
 
   app.post("/api/flick", async (req, res) => {
     try {
-      const { roomId, fileId, currentChunkIndex, totalChunks: totalChunksCount } = req.body;
-      if (!roomId) return res.status(400).json({ error: "roomId is required" });
+      const { deviceId, fileId, currentChunkIndex, totalChunks: totalChunksCount } = req.body;
+      if (!deviceId) return res.status(400).json({ error: "deviceId is required" });
       if (!fileId) return res.status(400).json({ error: "fileId is required" });
 
-      const room = FLICK_ROOMS.find(r => r.id === roomId);
-      if (!room) return res.status(404).json({ error: "Room not found" });
+      let device: FlickDevice | undefined;
+      for (const group of FLICK_DEVICES) {
+        device = group.devices.find(d => d.id === deviceId);
+        if (device) break;
+      }
+      if (!device) return res.status(404).json({ error: "Device not found" });
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      console.log(`[Flick] Sending file ${fileId} to ${room.name} (chunk ${currentChunkIndex}/${totalChunksCount})`);
+      console.log(`[Flick] Sending file ${fileId} to ${device.name} (${device.room}) (chunk ${currentChunkIndex}/${totalChunksCount})`);
 
       if (typeof currentChunkIndex === 'number' && currentChunkIndex > 0) {
         try {
@@ -3858,9 +3879,9 @@ export async function registerRoutes(
       }
 
       const appUrl = `https://${req.get('host') || 'home-view--bkh416.replit.app'}`;
-      const readerUrl = `${appUrl}/pdf-reader/${fileId}?autoplay=true&speaker=${encodeURIComponent(room.speaker)}`;
+      const readerUrl = `${appUrl}/pdf-reader/${fileId}?autoplay=true&speaker=${encodeURIComponent(device.entityId)}`;
 
-      if (room.display) {
+      if (device.canDisplay && (device.type === "tablet" || device.type === "echo_show")) {
         try {
           const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
             method: 'POST',
@@ -3869,11 +3890,11 @@ export async function registerRoutes(
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              browser_id: room.display.entityId,
+              browser_id: device.entityId,
               path: readerUrl
             }),
           });
-          console.log(`[Flick] Navigated ${room.display.entityId} via browser_mod: ${navResp.status}`);
+          console.log(`[Flick] Navigated ${device.entityId} via browser_mod: ${navResp.status}`);
         } catch (navErr) {
           console.error("[Flick] Browser Mod navigation failed:", navErr);
         }
@@ -3881,10 +3902,11 @@ export async function registerRoutes(
 
       res.json({
         success: true,
-        room: room.name,
+        device: device.name,
+        room: device.room,
         readerUrl,
-        speaker: room.speaker,
-        hasDisplay: !!room.display,
+        entityId: device.entityId,
+        canDisplay: device.canDisplay,
         resumeChunk: currentChunkIndex || 0
       });
     } catch (error: any) {
