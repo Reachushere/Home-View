@@ -23,7 +23,10 @@ import {
   RotateCcw,
   Pencil,
   Check,
-  X
+  X,
+  Cast,
+  Monitor,
+  Speaker
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -84,6 +87,9 @@ export default function PDFReaderPage() {
   const [chunksList, setChunksList] = useState<string[]>([]);
   const [isEditingText, setIsEditingText] = useState(false);
   const [editableText, setEditableText] = useState("");
+  const [showFlickMenu, setShowFlickMenu] = useState(false);
+  const [flickRooms, setFlickRooms] = useState<Array<{id: string; name: string; icon: string; hasDisplay: boolean; speakerName: string}>>([]);
+  const [isFlicking, setIsFlicking] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -103,6 +109,68 @@ export default function PDFReaderPage() {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    fetch("/api/flick/rooms")
+      .then(r => r.json())
+      .then(setFlickRooms)
+      .catch(() => {});
+  }, []);
+
+  const handleFlick = async (roomId: string) => {
+    if (!fileId) {
+      toast({ title: "Can't flick", description: "Flick only works with stored files, not OneDrive links." });
+      return;
+    }
+    setIsFlicking(true);
+    try {
+      if (isPlaying && currentChunkRef.current > 0) {
+        await fetch(`/api/files/${fileId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lastChunkIndex: currentChunkRef.current,
+            totalChunks
+          })
+        });
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      setIsPlaying(false);
+      isPlayingRef.current = false;
+      setIsPaused(false);
+      isPausedRef.current = false;
+
+      const resp = await fetch("/api/flick", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomId,
+          fileId,
+          currentChunkIndex: currentChunkRef.current,
+          totalChunks
+        })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        const room = flickRooms.find(r => r.id === roomId);
+        toast({
+          title: `Flicked to ${room?.name || roomId}`,
+          description: data.hasDisplay
+            ? `Opening on display & playing on ${room?.speakerName}`
+            : `Playing on ${room?.speakerName} (speaker only)`
+        });
+      } else {
+        toast({ title: "Flick failed", description: data.error || "Unknown error" });
+      }
+    } catch (e: any) {
+      toast({ title: "Flick failed", description: e.message });
+    } finally {
+      setIsFlicking(false);
+      setShowFlickMenu(false);
+    }
+  };
 
   const { data: file, isLoading: fileLoading } = useQuery<FileRecord>({
     queryKey: ["/api/files", fileId],
@@ -1110,6 +1178,59 @@ export default function PDFReaderPage() {
                 >
                   <Pencil className="h-5 w-5 text-white" />
                 </button>
+
+                {fileId && flickRooms.length > 0 && (
+                  <div className="relative">
+                    <button
+                      className={`media-btn media-btn-lg ${showFlickMenu ? 'ring-2 ring-blue-400' : ''}`}
+                      data-testid="button-flick-cast"
+                      onClick={() => setShowFlickMenu(!showFlickMenu)}
+                      disabled={isFlicking}
+                      title="Flick to another device"
+                    >
+                      {isFlicking ? (
+                        <Loader2 className="h-5 w-5 text-white animate-spin" />
+                      ) : (
+                        <Cast className="h-5 w-5 text-white" />
+                      )}
+                    </button>
+                    {showFlickMenu && (
+                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                        <div className="px-3 py-2 border-b border-gray-700 flex items-center justify-between">
+                          <span className="text-sm font-semibold text-white">Flick to...</span>
+                          <button
+                            onClick={() => setShowFlickMenu(false)}
+                            className="text-gray-400 hover:text-white"
+                            data-testid="button-close-flick-menu"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="max-h-[320px] overflow-y-auto">
+                          {flickRooms.map((room) => (
+                            <button
+                              key={room.id}
+                              data-testid={`button-flick-${room.id}`}
+                              className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-800 transition-colors text-left"
+                              onClick={() => handleFlick(room.id)}
+                              disabled={isFlicking}
+                            >
+                              <span className="text-xl">{room.icon}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium text-white">{room.name}</div>
+                                <div className="text-xs text-gray-400 flex items-center gap-1">
+                                  {room.hasDisplay && <Monitor className="h-3 w-3 inline" />}
+                                  <Speaker className="h-3 w-3 inline" />
+                                  <span className="truncate">{room.speakerName}</span>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {chunksList.length > 0 && (

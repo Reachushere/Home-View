@@ -87,6 +87,90 @@ const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
+interface FlickRoom {
+  id: string;
+  name: string;
+  icon: string;
+  display?: { entityId: string; type: "fully_kiosk" | "browser" | "samsung_tv" };
+  speaker: string;
+  speakerName: string;
+}
+
+const FLICK_ROOMS: FlickRoom[] = [
+  {
+    id: "hallway",
+    name: "Hallway",
+    icon: "🚪",
+    display: { entityId: "media_player.tablet_hallway_entrance", type: "fully_kiosk" },
+    speaker: "media_player.echo_hallway_entrance_am",
+    speakerName: "Hallway Echo"
+  },
+  {
+    id: "pug_washroom",
+    name: "Pug Washroom",
+    icon: "🐶",
+    display: { entityId: "media_player.echo_show_pug_am", type: "browser" },
+    speaker: "media_player.echo_show_pug_am",
+    speakerName: "Echo Show Pug"
+  },
+  {
+    id: "queen_bedroom",
+    name: "Queen Bedroom",
+    icon: "👑",
+    display: { entityId: "media_player.tablet_queen", type: "fully_kiosk" },
+    speaker: "media_player.queen_bedroom",
+    speakerName: "Queen Bedroom Group"
+  },
+  {
+    id: "kitchen",
+    name: "Kitchen",
+    icon: "🍳",
+    display: undefined,
+    speaker: "media_player.echo_kitchen_studio_black_am",
+    speakerName: "Kitchen Studio"
+  },
+  {
+    id: "living_room",
+    name: "Living Room",
+    icon: "🛋️",
+    display: { entityId: "media_player.tablet_living_room", type: "fully_kiosk" },
+    speaker: "media_player.echo_lr_studio_white_am",
+    speakerName: "LR Studio"
+  },
+  {
+    id: "king_bedroom",
+    name: "King Bedroom",
+    icon: "🛏️",
+    display: undefined,
+    speaker: "media_player.king_bedroom",
+    speakerName: "King Bedroom Group"
+  },
+  {
+    id: "cat_washroom",
+    name: "Cat Washroom",
+    icon: "🐱",
+    display: { entityId: "media_player.tablet_cat", type: "fully_kiosk" },
+    speaker: "media_player.cat_wash_2",
+    speakerName: "Cat Wash Echo"
+  },
+  {
+    id: "closet",
+    name: "Closet",
+    icon: "👔",
+    display: undefined,
+    speaker: "media_player.echo_closet_am",
+    speakerName: "Closet Echo"
+  },
+  {
+    id: "everywhere",
+    name: "Everywhere",
+    icon: "🏠",
+    display: undefined,
+    speaker: "media_player.everywhere_2",
+    speakerName: "All Speakers"
+  }
+];
+
 // Track travelling state (synced from client) to suppress Echo announcements
 let isTravellingMode = false;
 let travelStartDate: string | null = null;
@@ -3728,6 +3812,93 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("[Cat Wash] Error:", error);
       res.status(500).json({ error: "Failed to trigger cat wash reading", details: error.message });
+    }
+  });
+
+  app.get("/api/flick/rooms", (_req, res) => {
+    res.json(FLICK_ROOMS.map(r => ({
+      id: r.id,
+      name: r.name,
+      icon: r.icon,
+      hasDisplay: !!r.display,
+      speakerName: r.speakerName
+    })));
+  });
+
+  app.post("/api/flick", async (req, res) => {
+    try {
+      const { roomId, fileId, currentChunkIndex, totalChunks: totalChunksCount } = req.body;
+      if (!roomId) return res.status(400).json({ error: "roomId is required" });
+      if (!fileId) return res.status(400).json({ error: "fileId is required" });
+
+      const room = FLICK_ROOMS.find(r => r.id === roomId);
+      if (!room) return res.status(404).json({ error: "Room not found" });
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      console.log(`[Flick] Sending file ${fileId} to ${room.name} (chunk ${currentChunkIndex}/${totalChunksCount})`);
+
+      if (typeof currentChunkIndex === 'number' && currentChunkIndex > 0) {
+        try {
+          await storage.updateFile(fileId, {
+            lastChunkIndex: currentChunkIndex,
+            totalChunks: totalChunksCount || 0
+          });
+          console.log(`[Flick] Progress saved: chunk ${currentChunkIndex}`);
+        } catch (e) {
+          console.error("[Flick] Failed to save progress:", e);
+        }
+      }
+
+      const appUrl = `https://${req.get('host') || 'home-view--bkh416.replit.app'}`;
+      const readerUrl = `${appUrl}/pdf-reader/${fileId}?autoplay=true&speaker=${encodeURIComponent(room.speaker)}`;
+
+      if (room.display) {
+        try {
+          if (room.display.type === "fully_kiosk") {
+            await fetch(`${haUrl}/api/services/fully_kiosk/load_url`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                entity_id: room.display.entityId,
+                url: readerUrl
+              }),
+            });
+            console.log(`[Flick] Navigated tablet ${room.display.entityId} via Fully Kiosk`);
+          }
+        } catch (tabletErr) {
+          console.log("[Flick] Fully Kiosk failed, trying browser_mod...");
+          try {
+            await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                browser_id: room.display.entityId,
+                path: readerUrl
+              }),
+            });
+          } catch (browserErr) {
+            console.error("[Flick] Could not navigate display:", browserErr);
+          }
+        }
+      }
+
+      res.json({
+        success: true,
+        room: room.name,
+        readerUrl,
+        speaker: room.speaker,
+        hasDisplay: !!room.display,
+        resumeChunk: currentChunkIndex || 0
+      });
+    } catch (error: any) {
+      console.error("[Flick] Error:", error);
+      res.status(500).json({ error: "Failed to flick", details: error.message });
     }
   });
 
