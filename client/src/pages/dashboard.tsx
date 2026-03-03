@@ -9169,7 +9169,7 @@ export default function Dashboard() {
                   <span style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day' : 'days'}</span>
                 </div>
                 <span
-                  style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
+                  style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer', lineHeight: 1.2 }}
                   onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                   onMouseLeave={() => setHoveredCountdownTaskId(null)}
                   data-testid="countdown-next-task-name"
@@ -9178,7 +9178,7 @@ export default function Dashboard() {
                 </span>
                 {prepDaysText && nextPrep && (
                   <span
-                    style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
+                    style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer', lineHeight: 1.2 }}
                     onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                     data-testid="countdown-prep-task-number"
