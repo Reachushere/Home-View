@@ -15474,14 +15474,14 @@ export default function Dashboard() {
                         className="animate-next-task-line"
                         d={pathD}
                         fill="none"
-                        stroke="rgba(170,170,170,0.7)"
-                        strokeWidth="1.5"
+                        stroke="red"
+                        strokeWidth="3"
                       />
                       <polygon
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                        fill="rgba(0,0,0,0.9)"
+                        fill="red"
                       />
-                      <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
+                      <circle cx={startX} cy={startY} r="5" fill="red" />
                     </svg>
                   );
                 })()}
