@@ -9166,16 +9166,16 @@ export default function Dashboard() {
                 <span style={{ color: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#ca8a04' : '#dc2626', fontSize: '9.5px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day' : 'days'}</span>
               </div>
               <span
-                style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: 'rgba(0,0,0,0.75)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-2px', marginBottom: '0px', pointerEvents: 'auto', cursor: 'pointer' }}
+                style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: '#000000', fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-2px', marginBottom: '0px', pointerEvents: 'auto', cursor: 'pointer' }}
                 onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                 onMouseLeave={() => setHoveredCountdownTaskId(null)}
                 data-testid="countdown-next-task-name"
               >
-                {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || 'rgba(0,0,0,0.75)' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
+                {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || '#000000' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
               </span>
               {prepDaysText && nextPrep && (
                 <span
-                  style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: 'rgba(0,0,0,0.7)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-2px', pointerEvents: 'auto', cursor: 'pointer' }}
+                  style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: '#000000', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '-2px', pointerEvents: 'auto', cursor: 'pointer' }}
                   onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                   onMouseLeave={() => setHoveredCountdownTaskId(null)}
                   data-testid="countdown-prep-task-number"
