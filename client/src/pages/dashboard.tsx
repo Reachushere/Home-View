@@ -15438,6 +15438,9 @@ export default function Dashboard() {
                   if (side === 'left') {
                     const mx = startX + (endX - startX) * 0.5;
                     pathD = `M ${startX} ${startY} C ${mx} ${startY}, ${mx} ${endY}, ${endX} ${endY}`;
+                  } else if (isTallCard) {
+                    const clearY = topY - 30;
+                    pathD = `M ${startX} ${startY} C ${startX} ${clearY}, ${endX} ${clearY}, ${endX} ${endY}`;
                   } else {
                     const my = startY + (endY - startY) * 0.5;
                     pathD = `M ${startX} ${startY} C ${startX} ${my}, ${endX} ${my}, ${endX} ${endY}`;
@@ -15450,6 +15453,10 @@ export default function Dashboard() {
                     const mx = startX + (endX - startX) * 0.5;
                     nearEndX = mt*mt*mt*startX + 3*mt*mt*t*mx + 3*mt*t*t*mx + t*t*t*endX;
                     nearEndY = mt*mt*mt*startY + 3*mt*mt*t*startY + 3*mt*t*t*endY + t*t*t*endY;
+                  } else if (isTallCard) {
+                    const clearY = topY - 30;
+                    nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
+                    nearEndY = mt*mt*mt*startY + 3*mt*mt*t*clearY + 3*mt*t*t*clearY + t*t*t*endY;
                   } else {
                     const my = startY + (endY - startY) * 0.5;
                     nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
