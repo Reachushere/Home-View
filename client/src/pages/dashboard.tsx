@@ -9169,7 +9169,7 @@ export default function Dashboard() {
                   onMouseLeave={() => setHoveredCountdownTaskId(null)}
                   data-testid="countdown-next-task-number"
                 >
-                  {courseForNext && <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span>}
+                  {courseForNext && <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]} is coming up in</span>}
                   <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 4px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '16px' }}>{diffDays}</span>
                   <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day' : 'days'}</span>
                 </div>
