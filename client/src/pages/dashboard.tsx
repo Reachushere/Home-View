@@ -14476,7 +14476,7 @@ export default function Dashboard() {
                                         <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '-4px' }}>{moduleP.percent}%</span>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
