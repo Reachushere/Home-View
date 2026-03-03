@@ -9155,8 +9155,8 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '25px', padding: '6px 14px 6px 6px', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
-              <img src={profilePhoto} alt="Profile" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '25px', padding: '6px 19px 6px 0px', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+              <img src={profilePhoto} alt="Profile" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-6px' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                 <div
                   style={{ display: 'flex', alignItems: 'baseline', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
@@ -9169,21 +9169,21 @@ export default function Dashboard() {
                   <span style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day' : 'days'}</span>
                 </div>
                 <span
-                  style={{ color: '#000000', fontSize: '10px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
+                  style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
                   onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                   onMouseLeave={() => setHoveredCountdownTaskId(null)}
                   data-testid="countdown-next-task-name"
                 >
-                  {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: courseForNext.name.startsWith('CASL101') ? '#B045A2' : courseForNext.name.split(' - ')[0].toUpperCase() === 'CPPA122' ? '#47B045' : courseForNext.color || '#000000' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
+                  {next.title}{courseForNext ? <>{' \u2014 '}<span style={{ color: '#000000' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</span></> : ''}
                 </span>
                 {prepDaysText && nextPrep && (
                   <span
-                    style={{ color: '#000000', fontSize: '9px', fontWeight: 400, letterSpacing: '0.2px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
+                    style={{ color: '#000000', fontSize: '9.5px', fontWeight: 400, letterSpacing: '0.3px', maxWidth: '90vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pointerEvents: 'auto', cursor: 'pointer' }}
                     onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                     data-testid="countdown-prep-task-number"
                   >
-                    {prepDaysText === 'today' ? (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} is in progress</>) : (<>Also, start preparing for {prepCourseColor ? <span style={{ color: prepCourseColor, pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span> : prepTaskName} in <span style={{ fontSize: '11px', fontWeight: 700, color: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#ca8a04' : '#dc2626', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepDaysText}</span> <span style={{ color: '#000000', fontSize: '9px', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
+                    {prepDaysText === 'today' ? (<>Also, start preparing for {<span style={{ color: '#000000', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span>} today</>) : prepDaysText === 'now' ? (<>Also, preparation for {<span style={{ color: '#000000', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span>} is in progress</>) : (<>Also, start preparing for {<span style={{ color: '#000000', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepTaskName}</span>} in <span style={{ fontSize: '12px', fontWeight: 700, color: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#ca8a04' : '#dc2626', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{prepDaysText}</span> <span style={{ color: '#000000', fontSize: '9.5px', letterSpacing: '0.3px', pointerEvents: 'auto', cursor: 'pointer' }} onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)}>{Number(prepDaysText) === 1 ? 'day' : 'days'}</span></>)}
                   </span>
                 )}
               </div>
