@@ -101,7 +101,7 @@ const FLICK_ROOMS: FlickRoom[] = [
     id: "hallway",
     name: "Hallway",
     icon: "🚪",
-    display: { entityId: "media_player.tablet_hallway_entrance", type: "fully_kiosk" },
+    display: { entityId: "media_player.tablet_hallway_entrance", type: "browser" },
     speaker: "media_player.hallway",
     speakerName: "Hallway Group"
   },
@@ -117,7 +117,7 @@ const FLICK_ROOMS: FlickRoom[] = [
     id: "queen_bedroom",
     name: "Queen Bedroom",
     icon: "👑",
-    display: { entityId: "media_player.tablet_queen", type: "fully_kiosk" },
+    display: { entityId: "media_player.tablet_queen", type: "browser" },
     speaker: "media_player.queen_bedroom",
     speakerName: "Queen Bedroom Group"
   },
@@ -133,7 +133,7 @@ const FLICK_ROOMS: FlickRoom[] = [
     id: "living_room",
     name: "Living Room",
     icon: "🛋️",
-    display: { entityId: "media_player.tablet_11", type: "fully_kiosk" },
+    display: { entityId: "media_player.tablet_11", type: "browser" },
     speaker: "media_player.living_room_media_group",
     speakerName: "Living Room Group"
   },
@@ -141,7 +141,7 @@ const FLICK_ROOMS: FlickRoom[] = [
     id: "king_bedroom",
     name: "King Bedroom",
     icon: "🛏️",
-    display: undefined,
+    display: { entityId: "media_player.bd24bb29_04a116d8_king", type: "browser" },
     speaker: "media_player.king_bedroom",
     speakerName: "King Bedroom Group"
   },
@@ -149,7 +149,7 @@ const FLICK_ROOMS: FlickRoom[] = [
     id: "cat_washroom",
     name: "Cat Washroom",
     icon: "🐱",
-    display: { entityId: "media_player.tablet_cat", type: "fully_kiosk" },
+    display: { entityId: "media_player.tablet_cat", type: "browser" },
     speaker: "media_player.cat_washroom_media_group",
     speakerName: "Cat Washroom Group"
   },
@@ -3764,35 +3764,20 @@ export async function registerRoutes(
       console.log(`[Cat Wash] Tablet URL: ${readerUrl}`);
 
       try {
-        await fetch(`${haUrl}/api/services/fully_kiosk/load_url`, {
+        const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            entity_id: tabletEntity,
-            url: readerUrl
+            browser_id: tabletEntity,
+            path: readerUrl
           }),
         });
-        console.log("[Cat Wash] Tablet navigated via Fully Kiosk");
-      } catch (tabletErr) {
-        console.log("[Cat Wash] Fully Kiosk failed, trying browser_mod...");
-        try {
-          await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              browser_id: tabletEntity,
-              path: readerUrl
-            }),
-          });
-        } catch (browserErr) {
-          console.error("[Cat Wash] Could not navigate tablet:", browserErr);
-        }
+        console.log(`[Cat Wash] Tablet navigated via browser_mod: ${navResp.status}`);
+      } catch (navErr) {
+        console.error("[Cat Wash] Could not navigate tablet:", navErr);
       }
 
       res.json({
@@ -3877,37 +3862,20 @@ export async function registerRoutes(
 
       if (room.display) {
         try {
-          if (room.display.type === "fully_kiosk") {
-            await fetch(`${haUrl}/api/services/fully_kiosk/load_url`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                entity_id: room.display.entityId,
-                url: readerUrl
-              }),
-            });
-            console.log(`[Flick] Navigated tablet ${room.display.entityId} via Fully Kiosk`);
-          }
-        } catch (tabletErr) {
-          console.log("[Flick] Fully Kiosk failed, trying browser_mod...");
-          try {
-            await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                browser_id: room.display.entityId,
-                path: readerUrl
-              }),
-            });
-          } catch (browserErr) {
-            console.error("[Flick] Could not navigate display:", browserErr);
-          }
+          const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              browser_id: room.display.entityId,
+              path: readerUrl
+            }),
+          });
+          console.log(`[Flick] Navigated ${room.display.entityId} via browser_mod: ${navResp.status}`);
+        } catch (navErr) {
+          console.error("[Flick] Browser Mod navigation failed:", navErr);
         }
       }
 
