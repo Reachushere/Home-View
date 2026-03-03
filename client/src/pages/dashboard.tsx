@@ -15422,8 +15422,11 @@ export default function Dashboard() {
                   const yDiff = Math.abs(topY - startY);
                   
                   const arrowGap = 8;
+                  const isTallCard = actualTaskHeight > 40;
                   let endX: number, endY: number, side: 'top' | 'left';
-                  if (nt.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
+                  if (isTallCard) {
+                    endX = centerX; endY = topY - arrowGap; side = 'top';
+                  } else if (nt.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
                     endX = leftX - arrowGap; endY = midY; side = 'left';
                   } else if (nt.dayIdx > todayDayIdx && yDiff < 60) {
                     endX = leftX - arrowGap; endY = midY; side = 'left';
