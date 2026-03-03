@@ -16694,8 +16694,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#000000',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
@@ -16818,8 +16817,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#000000',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
@@ -16936,8 +16934,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#000000',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
