@@ -3994,11 +3994,10 @@ export default function Dashboard() {
     let cleanTextForTts = textForTts.replace(/---PAGE---/g, '');
     cleanTextForTts = removeFrenchText(cleanTextForTts);
     cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
-    cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
-    cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
     cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
     cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*$/gim, '');
-    cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gim, '');
+    cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+    cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
     cleanTextForTts = cleanTextForTts.replace(/\([^)]*?(?:\d{4}[a-z]?|pp?\.\s*\d|[A-Z][a-z]+,?\s+\d{4}|§\s*\d|[ivxlcdm]+(?:,\s*[ivxlcdm]+)*)[^)]*?\)/g, '');
     cleanTextForTts = cleanTextForTts.replace(/\(([0-9a-zA-Z.,;\s]+)\)/g, (match, inner) => {
       if (/^[\d.,;\s]+$/.test(inner.trim())) return '';
@@ -4554,12 +4553,10 @@ export default function Dashboard() {
       cleanTextForTts = removeFrenchText(cleanTextForTts);
       // Normalize whitespace and line breaks
       cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
-      cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
-      cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
-      // Remove bullet point characters so TTS doesn't say "bullet"
       cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
       cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*$/gim, '');
-      cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gim, '');
+      cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+      cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
       // Add slight pauses after lines that were bullet points (add period if line doesn't end with punctuation)
       cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
       // Add longer pause after paragraph breaks (double newline becomes period + pause)
@@ -4676,11 +4673,10 @@ export default function Dashboard() {
           let cleanTextForTts = textForTts.replace(/---PAGE---/g, '');
           cleanTextForTts = removeFrenchText(cleanTextForTts);
           cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
-          cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
-          cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
           cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
           cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*$/gim, '');
-          cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gim, '');
+          cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+          cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
           cleanTextForTts = cleanTextForTts.replace(/\([^)]*?(?:\d{4}[a-z]?|pp?\.\s*\d|[A-Z][a-z]+,?\s+\d{4}|§\s*\d|[ivxlcdm]+(?:,\s*[ivxlcdm]+)*)[^)]*?\)/g, '');
           cleanTextForTts = cleanTextForTts.replace(/\(([0-9a-zA-Z.,;\s]+)\)/g, (match, inner) => {
             if (/^[\d.,;\s]+$/.test(inner.trim())) return '';
