@@ -13613,7 +13613,7 @@ export default function Dashboard() {
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-              <div className="flex items-center justify-center relative" style={{ backgroundColor: '#faf8f5' }}>
+              <div className="flex items-center justify-center relative" style={{ backgroundColor: '#000000' }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
@@ -13630,7 +13630,7 @@ export default function Dashboard() {
                   data-testid="time-column-resize-handle"
                 />
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: '#faf8f5' }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: '#000000' }} />}
               {/* Sun-Fri day headers (indices 0-5) */}
               {weekDays.slice(0, 6).map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
@@ -13643,16 +13643,16 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? '#e4ecf5' : '#faf8f5' }}
+                    style={{ backgroundColor: isToday ? '#e4ecf5' : '#000000' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(0,0,0,0.55)' }}>{dayName}</div>
-                      <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#000' }}>{dayNum}</div>
+                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 5 && (
                       <div
-                        className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-black/20 hover:bg-black/50"
+                        className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/20 hover:bg-white/50"
                         style={{ zIndex: 9999 }}
                         onMouseDown={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
                         onTouchStart={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
@@ -13665,11 +13665,11 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: '#faf8f5', gridColumn: progressGridCol }}
+                style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
               >
                 <div className="flex items-center justify-center gap-1">
-                  <span className="text-[10px] font-medium tracking-wide text-black/60 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
-                  <Paperclip className="h-4 w-4 text-black/40 flex-shrink-0" />
+                  <span className="text-[10px] font-medium tracking-wide text-white/60 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
+                  <Paperclip className="h-4 w-4 text-white/40 flex-shrink-0" />
                 </div>
               </div>
               {/* Saturday header */}
@@ -13683,15 +13683,15 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { backgroundColor: '#e4ecf5', gridColumn: afterProgressGridCol } : { backgroundColor: '#faf8f5', gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { backgroundColor: '#e4ecf5', gridColumn: afterProgressGridCol } : { backgroundColor: '#000000', gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#d97706' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <div className={`text-[10px] font-medium tracking-wide ${isTodaySaturday && blinkSettings.todayColumnBlink ? 'animate-today-day-text' : ''}`} style={{ color: isTodaySaturday && blinkSettings.todayColumnBlink ? undefined : 'rgba(0,0,0,0.55)' }}>{dayName}</div>
-                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#FFFF00' : '#000' }}>{dayNum}</div>
+                      <div className={`text-[10px] font-medium tracking-wide ${isTodaySaturday && blinkSettings.todayColumnBlink ? 'animate-today-day-text' : ''}`} style={{ color: isTodaySaturday && blinkSettings.todayColumnBlink ? undefined : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                   </div>
                 );
@@ -14586,10 +14586,10 @@ export default function Dashboard() {
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             {showAllDayRow && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-black/60 relative border-b border-border/50" style={{ backgroundColor: '#faf8f5' }}>
+              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/60 relative border-b border-border/50" style={{ backgroundColor: '#000000' }}>
                 ALL DAY
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: '#faf8f5' }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: '#000000' }} />}
               {/* Day cells - Sun-Fri */}
               {weekDays.slice(0, 6).map((day, dayIdx) => {
                 const allDayTasks = getAllDayTasks(day);
@@ -14790,10 +14790,10 @@ export default function Dashboard() {
                     className={`grid relative group/row flex-shrink-0`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: '#faf8f5' }}
                   >
-                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : '#faf8f5', color: isCurrentHour ? 'white' : 'rgba(0,0,0,0.55)', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined }}>
+                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : '#000000', color: isCurrentHour ? 'white' : 'rgba(255,255,255,0.6)', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : '#faf8f5' }} data-testid="module-column-cell" />}
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : '#000000' }} data-testid="module-column-cell" />}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
@@ -16694,7 +16694,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#0a0a0a'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
@@ -16817,7 +16817,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#0a0a0a'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
@@ -16934,7 +16934,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#0a0a0a'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
