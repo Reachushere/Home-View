@@ -3996,6 +3996,7 @@ export default function Dashboard() {
     cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
     cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
     cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*$/gim, '');
+    cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gim, '');
     cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
     cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
     cleanTextForTts = cleanTextForTts.replace(/\([^)]*?(?:\d{4}[a-z]?|pp?\.\s*\d|[A-Z][a-z]+,?\s+\d{4}|§\s*\d|[ivxlcdm]+(?:,\s*[ivxlcdm]+)*)[^)]*?\)/g, '');
@@ -4358,7 +4359,8 @@ export default function Dashboard() {
     }
     
     let chunk = chunks[chunkIndex];
-    chunk = chunk.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*/gi, '').trim();
+    chunk = chunk.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*/gi, '');
+    chunk = chunk.replace(/(?:^|\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gi, '. ').trim();
     const utterance = new SpeechSynthesisUtterance(chunk);
     utterance.rate = browserTtsRateRef.current;
     utterance.volume = browserTtsVolumeRef.current;
@@ -4559,13 +4561,11 @@ export default function Dashboard() {
       cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
       cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
       cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*$/gim, '');
+      cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gim, '');
       cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
       cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
-      // Add slight pauses after lines that were bullet points (add period if line doesn't end with punctuation)
       cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
-      // Add longer pause after paragraph breaks (double newline becomes period + pause)
       cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
-      // Clean up duplicate periods
       cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
       // Use larger chunks for OpenAI TTS (4000 chars) vs browser TTS (2000 chars)
       const chunkSize = useBrowserTts ? 2000 : 4000;
@@ -4679,6 +4679,7 @@ export default function Dashboard() {
           cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
           cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
           cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s*$/gim, '');
+          cleanTextForTts = cleanTextForTts.replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents)\s+/gim, '');
           cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
           cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
           cleanTextForTts = cleanTextForTts.replace(/\([^)]*?(?:\d{4}[a-z]?|pp?\.\s*\d|[A-Z][a-z]+,?\s+\d{4}|§\s*\d|[ivxlcdm]+(?:,\s*[ivxlcdm]+)*)[^)]*?\)/g, '');
