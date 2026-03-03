@@ -102,16 +102,16 @@ const FLICK_ROOMS: FlickRoom[] = [
     name: "Hallway",
     icon: "🚪",
     display: { entityId: "media_player.tablet_hallway_entrance", type: "fully_kiosk" },
-    speaker: "media_player.echo_hallway_entrance_am",
-    speakerName: "Hallway Echo"
+    speaker: "media_player.hallway",
+    speakerName: "Hallway Group"
   },
   {
     id: "pug_washroom",
     name: "Pug Washroom",
     icon: "🐶",
     display: { entityId: "media_player.echo_show_pug_am", type: "browser" },
-    speaker: "media_player.echo_show_pug_am",
-    speakerName: "Echo Show Pug"
+    speaker: "media_player.pug_media_group",
+    speakerName: "Pug Media Group"
   },
   {
     id: "queen_bedroom",
@@ -126,16 +126,16 @@ const FLICK_ROOMS: FlickRoom[] = [
     name: "Kitchen",
     icon: "🍳",
     display: undefined,
-    speaker: "media_player.echo_kitchen_studio_black_am",
-    speakerName: "Kitchen Studio"
+    speaker: "media_player.kitchen_media_group",
+    speakerName: "Kitchen Group"
   },
   {
     id: "living_room",
     name: "Living Room",
     icon: "🛋️",
-    display: { entityId: "media_player.tablet_living_room", type: "fully_kiosk" },
-    speaker: "media_player.echo_lr_studio_white_am",
-    speakerName: "LR Studio"
+    display: { entityId: "media_player.tablet_11", type: "fully_kiosk" },
+    speaker: "media_player.living_room_media_group",
+    speakerName: "Living Room Group"
   },
   {
     id: "king_bedroom",
@@ -150,24 +150,24 @@ const FLICK_ROOMS: FlickRoom[] = [
     name: "Cat Washroom",
     icon: "🐱",
     display: { entityId: "media_player.tablet_cat", type: "fully_kiosk" },
-    speaker: "media_player.cat_wash_2",
-    speakerName: "Cat Wash Echo"
+    speaker: "media_player.cat_washroom_media_group",
+    speakerName: "Cat Washroom Group"
   },
   {
     id: "closet",
     name: "Closet",
     icon: "👔",
     display: undefined,
-    speaker: "media_player.echo_closet_am",
-    speakerName: "Closet Echo"
+    speaker: "media_player.closet_media_group",
+    speakerName: "Closet Group"
   },
   {
     id: "everywhere",
     name: "Everywhere",
     icon: "🏠",
     display: undefined,
-    speaker: "media_player.everywhere_2",
-    speakerName: "All Speakers"
+    speaker: "media_player.byhome",
+    speakerName: "BYhome (All)"
   }
 ];
 
@@ -3812,6 +3812,29 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("[Cat Wash] Error:", error);
       res.status(500).json({ error: "Failed to trigger cat wash reading", details: error.message });
+    }
+  });
+
+  app.get("/api/ha/entities", async (_req, res) => {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const response = await fetch(`${haUrl}/api/states`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) return res.status(response.status).json({ error: "HA request failed" });
+      const states: any[] = await response.json();
+      const mediaPlayers = states
+        .filter((s: any) => s.entity_id.startsWith("media_player."))
+        .map((s: any) => ({
+          entity_id: s.entity_id,
+          friendly_name: s.attributes?.friendly_name || s.entity_id,
+          state: s.state,
+          device_class: s.attributes?.device_class,
+          supported_features: s.attributes?.supported_features,
+        }));
+      res.json(mediaPlayers);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   });
 
