@@ -10485,7 +10485,7 @@ export default function Dashboard() {
         <Share 
           className="absolute z-50 h-4 w-4 text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ right: '28px', top: `${calendarTop - 24}px` }}
+          style={{ right: '35px', top: `${calendarTop - 24}px` }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
