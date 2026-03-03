@@ -252,14 +252,24 @@ function cleanTextForTTS(text: string): string {
   
   console.log("After French filter:", cleanedText.length);
   
+  // Remove section headings (standalone or at start of lines followed by content)
+  cleanedText = cleanedText
+    .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder|Tab Panels?.*|Tab:.*)\s*$/gim, '')
+    .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gim, '');
+
   // Final cleanup
-  const result = cleanedText
+  let result = cleanedText
     .replace(/&amp;/g, 'and')
     .replace(/&/g, 'and')
     .replace(/[<>]/g, '')
     .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+
+  // Post-cleanup: remove heading words that ended up inline after whitespace collapse
+  result = result
+    .replace(/(\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder)\s+/gi, '$1')
+    .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder)\s+/i, '');
   
   console.log("Final cleaned length:", result.length);
   return result;
@@ -5194,6 +5204,27 @@ export async function registerRoutes(
       
       if (!textContent || textContent.trim().length === 0) {
         return res.status(400).json({ error: "File is empty or not readable" });
+      }
+
+      // Skip first page if it's a title/cover page (< 300 words with academic keywords)
+      const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|pp\.\s*\d+|pages?\s+\d+/i;
+      const firstPageBreak = textContent.indexOf('---PAGE---');
+      if (firstPageBreak > 0) {
+        const firstPageContent = textContent.substring(0, firstPageBreak);
+        const firstPageWordCount = firstPageContent.split(/\s+/).length;
+        if (firstPageWordCount < 300 && titlePageKeywords.test(firstPageContent.toLowerCase())) {
+          textContent = textContent.substring(firstPageBreak + 10);
+          console.log("Skipped first page (title page detected)");
+        }
+      }
+      // Also skip learning objectives section at the beginning
+      const learningObjMatch = textContent.match(/^[\s\S]*?(?:Learning Objectives?|By the end of this (?:module|chapter|unit|lesson),[\s\S]*?)\n\n/i);
+      if (learningObjMatch && learningObjMatch[0].length < 2000) {
+        const afterObjectives = textContent.substring(learningObjMatch[0].length);
+        if (afterObjectives.trim().length > 500) {
+          textContent = afterObjectives;
+          console.log("Skipped learning objectives section");
+        }
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
