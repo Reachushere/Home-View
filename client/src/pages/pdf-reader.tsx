@@ -1155,30 +1155,6 @@ export default function PDFReaderPage() {
                   <SkipForward className="h-5 w-5 text-white" />
                 </button>
 
-                <button
-                  className={`media-btn media-btn-lg ${isEditingText ? 'ring-2 ring-amber-400' : ''}`}
-                  data-testid="button-edit-tts-text"
-                  onClick={() => {
-                    if (isEditingText) {
-                      setIsEditingText(false);
-                      setEditableText(extractedText);
-                    } else {
-                      if (isPlaying) {
-                        stopReading();
-                      }
-                      if (extractedText) {
-                        setEditableText(extractedText);
-                        setIsEditingText(true);
-                      } else {
-                        toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
-                      }
-                    }
-                  }}
-                  disabled={isPreloading}
-                >
-                  <Pencil className="h-5 w-5 text-white" />
-                </button>
-
                 {fileId && flickRooms.length > 0 && (
                   <div className="relative">
                     <button
@@ -1231,6 +1207,30 @@ export default function PDFReaderPage() {
                     )}
                   </div>
                 )}
+
+                <button
+                  className={`p-2 rounded-md hover:bg-white/20 transition-colors ${isEditingText ? 'ring-2 ring-amber-400' : ''}`}
+                  data-testid="button-edit-tts-text"
+                  onClick={() => {
+                    if (isEditingText) {
+                      setIsEditingText(false);
+                      setEditableText(extractedText);
+                    } else {
+                      if (isPlaying) {
+                        stopReading();
+                      }
+                      if (extractedText) {
+                        setEditableText(extractedText);
+                        setIsEditingText(true);
+                      } else {
+                        toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
+                      }
+                    }
+                  }}
+                  disabled={isPreloading}
+                >
+                  <Pencil className="h-5 w-5 text-white" />
+                </button>
               </div>
 
               {chunksList.length > 0 && (

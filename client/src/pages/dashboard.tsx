@@ -126,6 +126,9 @@ import {
   Replace,
   Maximize,
   Minimize2,
+  Cast,
+  Monitor,
+  Speaker,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -3265,6 +3268,9 @@ export default function Dashboard() {
   const [removeButtonPos, setRemoveButtonPos] = useState({ x: 0, y: 0 });
   const [isEditingTtsText, setIsEditingTtsText] = useState(false);
   const [editableTtsText, setEditableTtsText] = useState("");
+  const [showFlickMenu, setShowFlickMenu] = useState(false);
+  const [flickRooms, setFlickRooms] = useState<Array<{id: string; name: string; icon: string; hasDisplay: boolean; speakerName: string}>>([]);
+  const [isFlicking, setIsFlicking] = useState(false);
   const ttsTextContainerRef = useRef<HTMLDivElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -4311,6 +4317,53 @@ export default function Dashboard() {
     });
   };
   
+  useEffect(() => {
+    fetch("/api/flick/rooms").then(r => r.json()).then(setFlickRooms).catch(() => {});
+  }, []);
+
+  const handleFlick = async (roomId: string) => {
+    if (!previewFile) return;
+    setIsFlicking(true);
+    try {
+      if (isPlaying && currentChunkRef.current > 0) {
+        await fetch(`/api/files/${previewFile.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lastChunkIndex: currentChunkRef.current, totalChunks: ttsChunksRef.current.length })
+        });
+      }
+      handleStopMedia();
+
+      const resp = await fetch("/api/flick", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomId,
+          fileId: previewFile.id,
+          currentChunkIndex: currentChunkRef.current,
+          totalChunks: ttsChunksRef.current.length
+        })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        const room = flickRooms.find(r => r.id === roomId);
+        toast({
+          title: `Flicked to ${room?.name || roomId}`,
+          description: data.hasDisplay
+            ? `Opening on display & playing on ${room?.speakerName}`
+            : `Playing on ${room?.speakerName} (speaker only)`
+        });
+      } else {
+        toast({ title: "Flick failed", description: data.error || "Unknown error" });
+      }
+    } catch (e: any) {
+      toast({ title: "Flick failed", description: e.message });
+    } finally {
+      setIsFlicking(false);
+      setShowFlickMenu(false);
+    }
+  };
+
   // Split text into chunks at sentence boundaries for reliable TTS
   const splitTextIntoChunks = (text: string, maxChunkSize: number = 2000): string[] => {
     const chunks: string[] = [];
@@ -7993,39 +8046,6 @@ export default function Dashboard() {
             </Button>
             
             <div className="w-px h-6 bg-white/30" />
-
-            <div className="flex flex-col items-center gap-0.5">
-              <button
-                className={`media-btn media-btn-sm ${isEditingTtsText ? 'ring-2 ring-amber-400' : ''}`}
-                data-testid="button-edit-tts-text"
-                title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
-                onPointerDown={(e) => { e.preventDefault();
-                  if (isEditingTtsText) {
-                    setIsEditingTtsText(false);
-                  } else {
-                    if (isPlaying) {
-                      handleStopMedia();
-                    }
-                    if (previewText) {
-                      const container = ttsTextContainerRef.current;
-                      const scrollRatio = (container && container.scrollHeight > 0) ? container.scrollTop / container.scrollHeight : 0;
-                      setEditableTtsText(previewText);
-                      setIsEditingTtsText(true);
-                      setTimeout(() => {
-                        if (editTextareaRef.current) {
-                          editTextareaRef.current.scrollTop = scrollRatio * editTextareaRef.current.scrollHeight;
-                        }
-                      }, 50);
-                    }
-                  }
-                }}
-              >
-                <Pencil className="h-3.5 w-3.5 text-white" />
-              </button>
-              <span className="text-[9px] text-white/60 leading-none">Edit</span>
-            </div>
-
-            <div className="w-px h-6 bg-white/30" />
             
             <div className="flex items-center gap-1">
               <Checkbox
@@ -8076,6 +8096,96 @@ export default function Dashboard() {
               data-testid="button-tts-search"
             >
               <Search className="h-3.5 w-3.5" />
+            </Button>
+
+            {previewFile && flickRooms.length > 0 && (
+              <>
+                <div className="w-px h-6 bg-white/30" />
+                <div className="relative">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className={`h-7 w-7 text-white ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
+                    data-testid="button-flick-cast"
+                    onClick={() => setShowFlickMenu(!showFlickMenu)}
+                    disabled={isFlicking}
+                    title="Flick to another device"
+                  >
+                    {isFlicking ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Cast className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                  {showFlickMenu && (
+                    <div className="absolute bottom-full right-0 mb-2 w-64 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                      <div className="px-3 py-2 border-b border-gray-700 flex items-center justify-between">
+                        <span className="text-sm font-semibold text-white">Flick to...</span>
+                        <button
+                          onClick={() => setShowFlickMenu(false)}
+                          className="text-gray-400 hover:text-white"
+                          data-testid="button-close-flick-menu"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <div className="max-h-[320px] overflow-y-auto">
+                        {flickRooms.map((room) => (
+                          <button
+                            key={room.id}
+                            data-testid={`button-flick-${room.id}`}
+                            className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-800 transition-colors text-left"
+                            onClick={() => handleFlick(room.id)}
+                            disabled={isFlicking}
+                          >
+                            <span className="text-xl">{room.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium text-white">{room.name}</div>
+                              <div className="text-xs text-gray-400 flex items-center gap-1">
+                                {room.hasDisplay && <Monitor className="h-3 w-3 inline" />}
+                                <Speaker className="h-3 w-3 inline" />
+                                <span className="truncate">{room.speakerName}</span>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            <div className="w-px h-6 bg-white/30" />
+
+            <Button
+              size="icon"
+              variant="ghost"
+              className={`h-7 w-7 text-white ${isEditingTtsText ? 'ring-2 ring-amber-400 rounded-md' : ''}`}
+              data-testid="button-edit-tts-text"
+              title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
+              onClick={(e) => { e.preventDefault();
+                if (isEditingTtsText) {
+                  setIsEditingTtsText(false);
+                } else {
+                  if (isPlaying) {
+                    handleStopMedia();
+                  }
+                  if (previewText) {
+                    const container = ttsTextContainerRef.current;
+                    const scrollRatio = (container && container.scrollHeight > 0) ? container.scrollTop / container.scrollHeight : 0;
+                    setEditableTtsText(previewText);
+                    setIsEditingTtsText(true);
+                    setTimeout(() => {
+                      if (editTextareaRef.current) {
+                        editTextareaRef.current.scrollTop = scrollRatio * editTextareaRef.current.scrollHeight;
+                      }
+                    }, 50);
+                  }
+                }
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5" />
             </Button>
           </div>
           
