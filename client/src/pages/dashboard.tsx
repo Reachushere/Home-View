@@ -3225,6 +3225,8 @@ export default function Dashboard() {
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const previewFileRef = useRef<FileItem | null>(null);
   const [oneDrivePreviewFiles, setOneDrivePreviewFiles] = useState<FileItem[]>([]);
+  const [dialogPos, setDialogPos] = useState<{ x: number; y: number } | null>(null);
+  const dialogDragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
   const [isLoadingOneDriveFiles, setIsLoadingOneDriveFiles] = useState(false);
   // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
   const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number; partialProgress?: number }>>({});
@@ -7536,8 +7538,11 @@ export default function Dashboard() {
       </Dialog>
 
       {/* File Preview Dialog with Media Controls */}
-      <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
-        <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
+      <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); setDialogPos(null); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
+        <DialogContent 
+          className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white"
+          style={dialogPos ? { transform: `translate(calc(-50% + ${dialogPos.x}px), calc(-50% + ${dialogPos.y}px))` } : undefined}
+        >
           {(() => {
             const folderParts = previewFile?.folder?.split('-') || [];
             const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
@@ -7556,10 +7561,49 @@ export default function Dashboard() {
               return 'linear-gradient(to br, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))';
             })();
             
+            const onHeaderMouseDown = (e: React.MouseEvent) => {
+              if ((e.target as HTMLElement).closest('button')) return;
+              e.preventDefault();
+              const startX = e.clientX;
+              const startY = e.clientY;
+              const origX = dialogPos?.x || 0;
+              const origY = dialogPos?.y || 0;
+              const onMouseMove = (ev: MouseEvent) => {
+                setDialogPos({ x: origX + (ev.clientX - startX), y: origY + (ev.clientY - startY) });
+              };
+              const onMouseUp = () => {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+              };
+              window.addEventListener('mousemove', onMouseMove);
+              window.addEventListener('mouseup', onMouseUp);
+            };
+            
+            const onHeaderTouchStart = (e: React.TouchEvent) => {
+              if ((e.target as HTMLElement).closest('button')) return;
+              const touch = e.touches[0];
+              const startX = touch.clientX;
+              const startY = touch.clientY;
+              const origX = dialogPos?.x || 0;
+              const origY = dialogPos?.y || 0;
+              const onTouchMove = (ev: TouchEvent) => {
+                const t = ev.touches[0];
+                setDialogPos({ x: origX + (t.clientX - startX), y: origY + (t.clientY - startY) });
+              };
+              const onTouchEnd = () => {
+                window.removeEventListener('touchmove', onTouchMove);
+                window.removeEventListener('touchend', onTouchEnd);
+              };
+              window.addEventListener('touchmove', onTouchMove);
+              window.addEventListener('touchend', onTouchEnd);
+            };
+            
             return (
               <DialogHeader 
-                className="px-6 py-4 border-b border-white/20"
+                className="px-6 py-4 border-b border-white/20 cursor-grab active:cursor-grabbing select-none"
                 style={{ background: playerHeaderGradient }}
+                onMouseDown={onHeaderMouseDown}
+                onTouchStart={onHeaderTouchStart}
               >
                 <DialogTitle 
                   className="flex items-center gap-2 text-sm text-white"
