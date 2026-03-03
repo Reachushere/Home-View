@@ -14484,7 +14484,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '42px', height: '24px', marginLeft: '0px', overflow: 'visible' }}
+                                style={{ width: '42px', height: '24px', marginLeft: '-5px', overflow: 'visible' }}
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
                                 onClick={() => handlePlayFiles('module')}
@@ -14516,7 +14516,7 @@ export default function Dashboard() {
                               </div>
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
-                                style={{ width: '42px', height: '24px', marginLeft: '0px', overflow: 'visible' }}
+                                style={{ width: '42px', height: '24px', marginLeft: '-5px', overflow: 'visible' }}
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
                                 onClick={() => handlePlayFiles('reading')}
