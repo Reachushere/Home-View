@@ -9151,7 +9151,8 @@ export default function Dashboard() {
             className="font-raleway"
             style={{
               position: 'fixed',
-              left: 'calc(50% - 35px)',
+              left: '50%',
+              marginLeft: '-35px',
               transform: 'translateX(-50%)',
               top: '21px',
               zIndex: 101,
@@ -9227,7 +9228,8 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: 'calc(50% - 35px)',
+          left: '50%',
+          marginLeft: '-35px',
           transform: `translateX(-50%) translateY(${isTopPillOpen ? '5px' : '-56px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
