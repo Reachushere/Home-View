@@ -9314,18 +9314,19 @@ export default function Dashboard() {
                   width: '44px',
                   height: '44px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-                  padding: '1px',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  border: '1.5px solid rgba(255,255,255,0.35)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   cursor: 'pointer'
                 }}
                 data-testid="button-hamburger-menu"
               >
-                <Button variant="ghost" size="icon" className={`!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`} style={{ 
-                    background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
-                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)'
-                  }}>
-                  <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
-                </Button>
+                <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -9350,101 +9351,71 @@ export default function Dashboard() {
 
           {/* Undo Complete - top gradient #BD0000 */}
           {completedTaskHistory.length > 0 ? (
-            <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
-              {/* Bottom circle: 44px, gradient opposite of front */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #500404 0%, #B04545 100%)'
-              }} />
-              {/* Top circle: 38px, gradient bottom to #BD0000 top */}
-              <div 
-                style={{
-                  position: 'absolute',
-                  top: '3px',
-                  left: '3px',
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(0deg, #B04545 0%, #500404 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-                className="hover:opacity-80 transition-all duration-200"
-                onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
-                data-testid="button-undo-complete"
-                title={`Undo last completion (${completedTaskHistory.length} available)`}
-              >
-                <Undo2 className="h-[18px] w-[18px] text-white" />
-              </div>
+            <div 
+              style={{ 
+                width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+                backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+              className="hover:opacity-80 transition-all duration-200"
+              onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
+              data-testid="button-undo-complete"
+              title={`Undo last completion (${completedTaskHistory.length} available)`}
+            >
+              <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
           ) : (
-            <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #888 0%, #ccc 100%)', padding: '1px', zIndex: 100 }}>
-              <div 
-                className="!h-[42px] !w-[42px] rounded-full flex items-center justify-center"
-                style={{ background: 'linear-gradient(0deg, #ccc 0%, #888 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.25)' }}
-                data-testid="button-undo-complete"
-                title="No task to undo"
-              >
-                <Undo2 className="h-[18px] w-[18px] text-white" />
-              </div>
+            <div 
+              style={{ 
+                marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', zIndex: 100,
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)',
+                backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+                border: '1.5px solid rgba(255,255,255,0.2)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5
+              }}
+              data-testid="button-undo-complete"
+              title="No task to undo"
+            >
+              <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
           )}
 
           {/* Sticky Note Button - Swapped with completed tasks */}
           <div 
-            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="hover:opacity-80 transition-all duration-200"
+            onClick={handleAddStickyNote}
+            title="Add Sticky Note"
             data-testid="honeycomb-sticky-note"
           >
-            {/* Back circle - solid #FFFF00 */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: '#FFFF00',
-                boxShadow: 'none',
-              }}
-            />
-            {/* Front circle with gradient - 38px */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FDFFCC 0%, #F2D338 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-              className="hover:opacity-80 transition-all duration-200"
-              onClick={handleAddStickyNote}
-              title="Add Sticky Note"
-            >
-              <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
-            </div>
+            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
           </div>
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+          <div style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
             <Button 
               size="icon"
               variant="ghost"
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              style={{ background: 'transparent' }}
               data-testid="button-settings-panel"
               onClick={() => {
                 triggerButtonGlow('settings');
@@ -9732,12 +9703,19 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+          <div style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
             <Button 
               size="icon"
               variant="ghost"
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              style={{ background: 'transparent' }}
               data-testid="button-completed-tasks"
               onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
             >
@@ -9747,73 +9725,40 @@ export default function Dashboard() {
 
           {/* Todo Button (swapped from tall pill) */}
           <div 
-            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="hover:opacity-80 transition-all duration-200"
+            onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
             data-testid="honeycomb-todo-header"
           >
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #F2530E 0%, #FF9E75 100%)',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                inset: '3px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FF9E75 0%, #F2530E 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-              className="hover:opacity-80 transition-all duration-200"
-              onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
-            >
-              <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-            </div>
+            <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
           </div>
 
           {/* Files Button (swapped from tall pill) */}
           <div 
-            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative', touchAction: 'manipulation' }}
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              touchAction: 'manipulation'
+            }}
+            className="hover:opacity-80 transition-all duration-200"
             onMouseEnter={() => setDecorativeHoneycombHover('middle')}
             onMouseLeave={() => setDecorativeHoneycombHover(null)}
+            onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
+            onTouchEnd={(e) => { e.preventDefault(); if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
             data-testid="honeycomb-files-header"
           >
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #F2530E 0%, #FF9E75 100%)',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                inset: '3px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FF9E75 0%, #F2530E 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                touchAction: 'manipulation',
-              }}
-              onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
-              onTouchEnd={(e) => { e.preventDefault(); if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
-            >
-              <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-            </div>
+            <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
           </div>
 
           {/* Projects Button */}
@@ -9821,7 +9766,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="sm" 
             className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} 
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
             data-testid="button-projects"
             onClick={() => { bringFlyoutToFront('projects'); setIsProjectsFlyoutOpen(true); }}
           >
@@ -9829,7 +9774,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); bringFlyoutToFront('addTask'); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); bringFlyoutToFront('addTask'); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
         </div>
       </div>
