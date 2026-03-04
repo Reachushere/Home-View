@@ -14588,8 +14588,8 @@ export default function Dashboard() {
                                 className="flex-shrink-0 relative cursor-pointer"
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} module`}
-                                onClick={() => handlePlayFiles('module')}
-                                onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
+                                onClick={(e) => { e.stopPropagation(); handlePlayFiles('module'); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('module'); }}
                               >
                                 <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
@@ -14621,8 +14621,8 @@ export default function Dashboard() {
                                 className="flex-shrink-0 relative cursor-pointer"
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
                                 title={`Play ${courseCode} reading`}
-                                onClick={() => handlePlayFiles('reading')}
-                                onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
+                                onClick={(e) => { e.stopPropagation(); handlePlayFiles('reading'); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('reading'); }}
                               >
                                 <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
