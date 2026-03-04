@@ -18944,6 +18944,9 @@ function ProfileForm({
           <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} data-testid="input-profile-photo" />
         </div>
         <div className="flex flex-col gap-1">
+          {(firstName || lastName) && (
+            <span className="text-[14px] font-semibold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
+          )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
           {profilePhotoUrl && (
