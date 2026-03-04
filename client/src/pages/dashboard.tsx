@@ -7908,7 +7908,7 @@ export default function Dashboard() {
                       <SelectTrigger 
                         className={`h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 ${
                           isReading 
-                            ? 'border !border-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
+                            ? 'border !border-white' 
                             : 'border-white/20 hover:border-white/50'
                         }`}
                         style={{ color: 'white', maxWidth: 'fit-content' }}
