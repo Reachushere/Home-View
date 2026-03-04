@@ -9776,7 +9776,7 @@ export default function Dashboard() {
       </div>
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
-      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ right: `${calendarRight - 15}px`, top: '-4px', zIndex: 100, padding: '0 0 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ right: `${calendarRight - 35}px`, top: '-4px', zIndex: 100, padding: '0 0 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         {/* Share Button */}
         {isAdmin && (
           <Share 
@@ -9803,7 +9803,7 @@ export default function Dashboard() {
             </svg>
           </span>
         </div>
-        <div className="flex items-center gap-[17px]" style={{ marginLeft: '10px', flexShrink: 0, paddingRight: '35px' }}>
+        <div className="flex items-center gap-[17px]" style={{ marginLeft: '10px', flexShrink: 0 }}>
           <span className="text-[10px] text-white/60 font-medium" style={{ fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
           <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
             {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
