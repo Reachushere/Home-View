@@ -8150,27 +8150,6 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            <div className="flex items-center gap-1">
-              <Checkbox
-                id="mark-completed"
-                checked={false}
-                onCheckedChange={(checked) => {
-                  if (checked && previewFile) {
-                    markFileCompletedMutation.mutate({
-                      fileId: previewFile.id,
-                    });
-                  }
-                }}
-                className="h-4 w-4 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 data-[state=checked]:text-white"
-                data-testid="checkbox-mark-completed"
-              />
-              <Label htmlFor="mark-completed" className="text-white text-[11px] cursor-pointer whitespace-nowrap">
-                Complete
-              </Label>
-            </div>
-            
-            <div className="w-px h-6 bg-white/30" />
-            
             <Button
               size="icon"
               variant="ghost"
