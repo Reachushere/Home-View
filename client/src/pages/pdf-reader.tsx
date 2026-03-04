@@ -905,7 +905,7 @@ export default function PDFReaderPage() {
           </div>
           
           {/* Right side: TTS Controls */}
-          <div className="lg:w-1/2 bg-white border-l border-gray-200 p-6 overflow-auto">
+          <div className="lg:w-1/2 bg-white border-l border-gray-200 p-6 overflow-auto rounded-lg">
             <div className="max-w-md mx-auto">
               <div className="flex items-center gap-2 mb-4">
                 <Volume2 className="h-6 w-6 text-amber-600" />
