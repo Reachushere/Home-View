@@ -1344,7 +1344,7 @@ export default function Dashboard() {
     const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, mainBackground: '#3a8bbf', mainBackgroundGradient: true, mainBackgroundGradientEnd: '#164a72', mainBackgroundOverlay: true, boxBackground: existing.boxBackground || '#ffffff', boxTransparency: existing.boxTransparency || 28 };
+      const migrated = { ...defaults, ...existing, mainBackground: existing.mainBackground || '#3a8bbf', mainBackgroundGradient: existing.mainBackgroundGradient ?? true, mainBackgroundGradientEnd: existing.mainBackgroundGradientEnd || '#164a72', mainBackgroundOverlay: existing.mainBackgroundOverlay ?? true, boxBackground: existing.boxBackground || '#ffffff', boxTransparency: existing.boxTransparency || 28 };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
       localStorage.setItem('colorSettingsMigrationV17', 'done');
       return migrated;
