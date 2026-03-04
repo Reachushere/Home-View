@@ -8201,7 +8201,7 @@ export default function Dashboard() {
                           <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <div className="max-h-[340px] overflow-y-auto">
+                      <div className="max-h-[480px] overflow-y-auto">
                         {flickDeviceGroups.map((group) => (
                           <div key={group.room}>
                             <div className="px-2.5 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
