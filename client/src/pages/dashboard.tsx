@@ -14613,6 +14613,7 @@ export default function Dashboard() {
                                   <span className="text-[8px] text-white leading-none">N/A</span>
                                 )}
                               </div>
+                              {moduleP.hasFiles && (
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
                                 data-testid={`play-module-${courseCode.toLowerCase()}`}
@@ -14622,6 +14623,7 @@ export default function Dashboard() {
                               >
                                 <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
+                              )}
                             </div>
                             <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }} onClick={() => handlePlayFiles('reading')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
@@ -14646,6 +14648,7 @@ export default function Dashboard() {
                                   <span className="text-[8px] text-white leading-none">N/A</span>
                                 )}
                               </div>
+                              {readingP.hasFiles && (
                               <div
                                 className="flex-shrink-0 relative cursor-pointer"
                                 data-testid={`play-reading-${courseCode.toLowerCase()}`}
@@ -14655,6 +14658,7 @@ export default function Dashboard() {
                               >
                                 <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
+                              )}
                             </div>
                           </>
                         )}
