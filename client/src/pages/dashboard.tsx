@@ -7795,7 +7795,7 @@ export default function Dashboard() {
                     size="icon"
                     variant="ghost"
                     className="h-7 w-7 text-white hover:bg-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
-                    style={{ marginRight: '54px' }}
+                    style={{ marginRight: '44px' }}
                     data-testid="button-edit-tts-text"
                     title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
                     onClick={(e) => { e.preventDefault(); e.stopPropagation();
