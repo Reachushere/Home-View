@@ -7859,7 +7859,7 @@ export default function Dashboard() {
                     >
                       <SelectTrigger 
                         className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
-                        style={{ color: 'white', maxWidth: 'fit-content' }}
+                        style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.3px' }}
                         data-testid="select-module-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>
                           {(() => {
@@ -7888,7 +7888,7 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Reading Files Dropdown */}
-                  <div className="flex items-center gap-1 min-w-0 shrink" style={{ marginLeft: '20px' }}>
+                  <div className="flex items-center gap-1 min-w-0 shrink" style={{ marginLeft: '40px' }}>
                     <span className="text-[11px] font-bold text-white hidden sm:inline shrink-0">Reading:</span>
                     <Select 
                       value={(() => {
@@ -7903,7 +7903,7 @@ export default function Dashboard() {
                     >
                       <SelectTrigger 
                         className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
-                        style={{ color: 'white', maxWidth: 'fit-content' }}
+                        style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.3px' }}
                         data-testid="select-reading-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>{readingFiles.length === 0 ? 'No readings' : (() => { const f = isReading && previewFile ? previewFile : readingFiles[0]; return f ? (f.displayName || f.originalName || 'No readings').replace(/\.pdf$/i, '') : 'No readings'; })()}</span>
                       </SelectTrigger>
@@ -7924,7 +7924,7 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Navigation Arrows */}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1" style={{ marginLeft: '15px' }}>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -7956,7 +7956,7 @@ export default function Dashboard() {
             })()}
 
             {/* Speaker Selector + Flick Button */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto" style={{ marginRight: '10px' }}>
               <span className="text-[11px] font-bold text-white">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
                 <SelectTrigger className="flex-1 sm:w-[180px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-preview-speaker">
@@ -7984,7 +7984,7 @@ export default function Dashboard() {
                     {isFlicking ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
-                      <Cast className="h-3.5 w-3.5" />
+                      <Cast className="h-[16.5px] w-[16.5px]" />
                     )}
                   </Button>
                   {showFlickMenu && (
@@ -8033,7 +8033,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-0 mx-6" style={{ marginTop: '-7px' }}>
+          <div className="flex items-center justify-between gap-2 p-1.5 px-0 mx-6" style={{ marginTop: '-17px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
@@ -8370,9 +8370,9 @@ export default function Dashboard() {
           )}
           
           {/* Split View: PDF on left, Highlighted Text on right */}
-          <div className="flex-1 flex min-h-0 mx-6 mb-2 mt-1 overflow-hidden">
+          <div className="flex-1 flex min-h-0 mx-6 mb-2 mt-1 overflow-hidden" style={{ marginTop: '-14px', marginBottom: '-13px' }}>
             {/* PDF Viewer */}
-            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col border border-black" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(42% - 30px)' }}>
+            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col border border-black" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(42% + 20px)' }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
@@ -8491,7 +8491,11 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden relative border border-black" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }} ref={ttsTextContainerRef} onMouseDown={isEditingTtsText ? undefined : handleTtsTextMouseDown} onMouseUp={isEditingTtsText ? undefined : handleTtsTextSelection} onTouchEnd={isEditingTtsText ? undefined : handleTtsTextSelection as any}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex flex-col border border-black" style={{ flex: '1 1 0', minWidth: `${ttsWidth - 50}px` }}>
+              <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
+                <span className="text-xs text-muted-foreground">Highlighted Text</span>
+              </div>
+              <div className="flex-1 overflow-y-auto overflow-x-hidden relative" ref={ttsTextContainerRef} onMouseDown={isEditingTtsText ? undefined : handleTtsTextMouseDown} onMouseUp={isEditingTtsText ? undefined : handleTtsTextSelection} onTouchEnd={isEditingTtsText ? undefined : handleTtsTextSelection as any}>
               {showRemoveButton && (
                 <div
                   className="absolute z-50 flex items-center gap-1 bg-red-600 text-white rounded-lg shadow-lg px-2 py-1 cursor-pointer select-none"
@@ -8802,6 +8806,7 @@ export default function Dashboard() {
                   No text content available
                 </div>
               )}
+              </div>
             </div>
           </div>
           
@@ -8892,7 +8897,7 @@ export default function Dashboard() {
               )}
               {/* Speed control with slider - browser TTS */}
               {previewSpeaker === "browser_tts" && (
-                <div className="flex items-center gap-2" style={{ marginLeft: '12px' }}>
+                <div className="flex items-center gap-2" style={{ marginLeft: '22px' }}>
                   <span className="text-[11px] font-bold text-white">Speed</span>
                   <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
                     setBrowserTtsRate(r => {
@@ -9038,7 +9043,8 @@ export default function Dashboard() {
                 className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
                 style={{
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  marginTop: '-5px'
                 }}
                 onClick={async () => {
                   const fileToSave = previewFile;
