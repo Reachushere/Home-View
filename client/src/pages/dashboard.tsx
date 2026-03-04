@@ -9827,7 +9827,7 @@ export default function Dashboard() {
       </div>
 
       {/* Unified Header Bar - Add + Pomodoro + Clock in one glass pill */}
-      <div ref={clockContainerRef} className="fixed flex items-center h-[35px] rounded-full" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100, background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', padding: '0 19px 0 11px', gap: '0px' }}>
+      <div ref={clockContainerRef} className="fixed flex items-center h-[35px] rounded-full" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100, background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', padding: '0 19px 0 12px', gap: '0px' }}>
         {/* Add Button */}
         <div
           className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
@@ -9843,7 +9843,7 @@ export default function Dashboard() {
         </div>
 
         {/* Separator 1: Add + | Pomodoro */}
-        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '11px', marginRight: '13px' }} />
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '12px', marginRight: '13px' }} />
 
         {/* Pomodoro Timer */}
         <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
