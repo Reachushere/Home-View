@@ -14561,7 +14561,7 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <>
-                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', height: '28px' }}>
+                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', height: '28px' }} onClick={() => handlePlayFiles('module')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
                                 <div className="flex items-center gap-[3px]">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Module</span>
@@ -14594,7 +14594,7 @@ export default function Dashboard() {
                                 <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
-                            <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }}>
+                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }} onClick={() => handlePlayFiles('reading')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
                                 <div className="flex items-center gap-[3px]">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Reading</span>
