@@ -9783,8 +9783,6 @@ export default function Dashboard() {
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
       <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '4px', zIndex: 100, padding: '0 17px 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.3s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
-        {/* Glass backing element (duplicate of countdown box styling) - behind all content */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', pointerEvents: 'none' }} />
         {/* Add Button */}
         <div
           className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
