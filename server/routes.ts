@@ -148,6 +148,7 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
   {
     room: "Kitchen", icon: "🍳",
     devices: [
+      { id: "kitchen_tablet", name: "Tablet (Kitchen Island)", entityId: "media_player.tablet_kitchen_island", type: "tablet", canDisplay: true, room: "Kitchen" },
       { id: "kitchen_echo_cupboards_l", name: "Echo (Cupboards L)", entityId: "media_player.echo_kitchen_cupboards_left_am", type: "echo", canDisplay: false, room: "Kitchen" },
       { id: "kitchen_echo_cupboards_r", name: "Echo (Cupboards R)", entityId: "media_player.echo_kitchen_cupboards_r_am", type: "echo", canDisplay: false, room: "Kitchen" },
       { id: "kitchen_echo_fridge", name: "Echo (Fridge)", entityId: "media_player.echo_kitchen_fridge_am", type: "echo", canDisplay: false, room: "Kitchen" },
