@@ -3925,39 +3925,29 @@ export async function registerRoutes(
       const tvEntity = 'media_player.tv_cat_wr';
       const tvMac = 'D8:A3:5C:EB:48:59';
       try {
-        const stateResp = await fetch(`${haUrl}/api/states/${tvEntity}`, {
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-        });
-        const tvState = await stateResp.json() as any;
-        console.log(`[Cat Wash] TV state: ${tvState.state}`);
+        const turnOnMethods = [
+          { service: 'wake_on_lan/send_magic_packet', body: { mac: tvMac } },
+          { service: 'media_player/turn_on', body: { entity_id: tvEntity } },
+          { service: 'remote/turn_on', body: { entity_id: 'remote.tv_cat_wr' } },
+        ];
 
-        const tvIsOff = tvState.state === 'off' || tvState.state === 'unavailable' || tvState.state === 'standby';
-
-        if (tvIsOff) {
-          const turnOnMethods = [
-            { service: 'wake_on_lan/send_magic_packet', body: { mac: tvMac } },
-            { service: 'media_player/turn_on', body: { entity_id: tvEntity } },
-            { service: 'remote/turn_on', body: { entity_id: 'remote.tv_cat_wr' } },
-          ];
-
-          for (const method of turnOnMethods) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/${method.service}`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(method.body),
-              });
-              console.log(`[Cat Wash] TV ${method.service}: ${resp.status}`);
-            } catch (e) {
-              console.log(`[Cat Wash] TV ${method.service} failed: ${e}`);
-            }
+        for (const method of turnOnMethods) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/${method.service}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(method.body),
+            });
+            console.log(`[Cat Wash] TV ${method.service}: ${resp.status}`);
+          } catch (e) {
+            console.log(`[Cat Wash] TV ${method.service} failed: ${e}`);
           }
-
-          await new Promise(resolve => setTimeout(resolve, 10000));
         }
+
+        await new Promise(resolve => setTimeout(resolve, 10000));
 
         const browseResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
