@@ -7985,7 +7985,7 @@ export default function Dashboard() {
                     {isFlicking ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Cast className="h-[26.5px] w-[26.5px]" />
+                      <Cast className="h-[31.5px] w-[31.5px]" />
                     )}
                   </Button>
                   {showFlickMenu && (
