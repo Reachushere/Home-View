@@ -9346,6 +9346,7 @@ export default function Dashboard() {
           <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
               <div 
+                className="pill-button-hover"
                 style={{ 
                   marginTop: '4px',
                   width: '44px',
@@ -9397,7 +9398,7 @@ export default function Dashboard() {
                 boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
               }}
-              className="hover:opacity-80 transition-all duration-200"
+              className="pill-button-hover"
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
               data-testid="button-undo-complete"
               title={`Undo last completion (${completedTaskHistory.length} available)`}
@@ -9431,7 +9432,7 @@ export default function Dashboard() {
               boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
-            className="hover:opacity-80 transition-all duration-200"
+            className="pill-button-hover"
             onClick={handleAddStickyNote}
             title="Add Sticky Note"
             data-testid="honeycomb-sticky-note"
@@ -9440,7 +9441,7 @@ export default function Dashboard() {
           </div>
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
-          <div style={{ 
+          <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
             backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
@@ -9740,7 +9741,7 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
-          <div style={{ 
+          <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
             backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
@@ -9770,7 +9771,7 @@ export default function Dashboard() {
               boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
-            className="hover:opacity-80 transition-all duration-200"
+            className="pill-button-hover"
             onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
             data-testid="honeycomb-todo-header"
           >
@@ -9788,7 +9789,7 @@ export default function Dashboard() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               touchAction: 'manipulation'
             }}
-            className="hover:opacity-80 transition-all duration-200"
+            className="pill-button-hover"
             onMouseEnter={() => setDecorativeHoneycombHover('middle')}
             onMouseLeave={() => setDecorativeHoneycombHover(null)}
             onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
@@ -9802,7 +9803,7 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} 
+            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
             style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
             data-testid="button-projects"
             onClick={() => { bringFlyoutToFront('projects'); setIsProjectsFlyoutOpen(true); }}
@@ -9811,7 +9812,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); bringFlyoutToFront('addTask'); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); bringFlyoutToFront('addTask'); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
         </div>
       </div>
@@ -9819,55 +9820,55 @@ export default function Dashboard() {
       {/* Share Button - fixed position */}
       {isAdmin && (
         <Share 
-          className="h-3.5 w-3.5 text-white/80 cursor-pointer hover:text-white"
+          className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ position: 'fixed', right: `${calendarRight + 329}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '18px', width: '18px', position: 'fixed', right: `${calendarRight + 329}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
       )}
 
       {/* Separator between share and timer numbers */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 318}px`, top: '7px', zIndex: 100, width: '1.5px', height: '14px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 318}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Pomodoro Timer Numbers - fixed position */}
       <div ref={clockContainerRef} className={`flex items-center ${
         pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
         pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-      }`} style={{ position: 'fixed', right: `${calendarRight + 253}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-        <span className="text-[10px] text-white" style={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
+      }`} style={{ position: 'fixed', right: `${calendarRight + 253}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+        <span className="text-[14px] text-white" style={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
       </div>
 
       {/* Pomodoro Controls - fixed position */}
-      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 193}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 193}px`, top: '4px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-          {pomodoroRunning ? <Pause className="h-[10px] w-[10px] text-white" strokeWidth={2.5} /> : <Play className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />}
+          {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
         </button>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-          <RotateCcw className="h-[11px] w-[11px] text-white" strokeWidth={2.5} />
+          <RotateCcw className="h-[15px] w-[15px] text-white" strokeWidth={2.5} />
         </button>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-          <SkipForward className="h-[11px] w-[11px] text-white" strokeWidth={2.5} />
+          <SkipForward className="h-[15px] w-[15px] text-white" strokeWidth={2.5} />
         </button>
       </div>
 
       {/* Separator between controls and date */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 183}px`, top: '7px', zIndex: 100, width: '1.5px', height: '14px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 183}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Date - fixed position */}
-      <span className="text-[10px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 51}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+      <span className="text-[14px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 51}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
 
       {/* Time - fixed position */}
-      <div style={{ position: 'fixed', right: `${calendarRight - 11}px`, top: '8px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <span className="text-white" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+      <div style={{ position: 'fixed', right: `${calendarRight - 11}px`, top: '5px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
-        <span className="text-white" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
-        <span className="text-white" style={{ fontSize: '8px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
         </span>
         {profileData.travelTimezone && (
@@ -10791,7 +10792,7 @@ export default function Dashboard() {
               onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)}>
+              <div className="pill-button-hover" style={innerStyle(isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)}>
                 {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
               </div>
             </div>
@@ -10802,7 +10803,7 @@ export default function Dashboard() {
               data-testid="honeycomb-push"
               onClick={() => { toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" }); syncAllCalendarMutation.mutate(); }}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Push tasks to Google Calendar">
+              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Push tasks to Google Calendar">
                 <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
               </div>
             </div>
@@ -10819,7 +10820,7 @@ export default function Dashboard() {
                 } catch (error) { toast({ title: "Pull failed", variant: "destructive" }); }
               }}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Pull events from Google Calendar">
+              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Pull events from Google Calendar">
                 <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
               </div>
             </div>
@@ -10830,7 +10831,7 @@ export default function Dashboard() {
               data-testid="button-sync-calendar"
               onClick={() => { if (!syncAllCalendarMutation.isPending) { if (window.confirm('Are you sure you want to sync?')) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } } }}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}>
+              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}>
                 {syncAllCalendarMutation.isPending ? <Loader2 className="h-[18px] w-[18px] text-white animate-spin" /> : <RefreshCw className="h-[18px] w-[18px] text-white" />}
               </div>
             </div>
@@ -10841,7 +10842,7 @@ export default function Dashboard() {
               data-testid="button-kitchen-stop"
               onClick={handleKitchenStop}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : undefined)} title="Stop Kitchen Reading">
+              <div className="pill-button-hover" style={innerStyle(isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : undefined)} title="Stop Kitchen Reading">
                 <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
               </div>
             </div>
@@ -10852,7 +10853,7 @@ export default function Dashboard() {
               data-testid="button-radio-dialog"
               onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Radio Controls">
+              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Radio Controls">
                 <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
               </div>
             </div>
@@ -10863,7 +10864,7 @@ export default function Dashboard() {
               data-testid="button-fullscreen"
               onClick={toggleFullscreen}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle(isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)} title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}>
+              <div className="pill-button-hover" style={innerStyle(isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : undefined)} title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}>
                 {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
               </div>
             </div>
@@ -10882,7 +10883,7 @@ export default function Dashboard() {
                 } catch (e) { console.error('HA link error', e); }
               }}
             >
-              <div className="hover:opacity-80 transition-all duration-200" style={innerStyle('linear-gradient(180deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)', 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)')} title="Open Home Assistant">
+              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)', 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)')} title="Open Home Assistant">
                 <svg viewBox="0 0 24 24" fill="white" style={{ height: '20px', width: '20px' }}>
                   <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
                 </svg>
