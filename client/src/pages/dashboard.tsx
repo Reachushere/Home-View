@@ -7715,9 +7715,9 @@ export default function Dashboard() {
             const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
             const cId = courseCodeFromFolder?.toLowerCase() || '';
             const playerHeaderGradient = (() => {
-              if (cId === 'cppa122') return 'linear-gradient(0deg, rgba(71, 176, 69, 0.75) 0%, rgba(15, 80, 4, 0.75) 100%)';
-              if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.7) 0%, rgba(250, 103, 179, 0.6) 100%)';
-              if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.7) 0%, rgba(176, 69, 162, 0.6) 100%)';
+              if (cId === 'cppa122') return 'linear-gradient(0deg, rgba(71, 176, 69, 0.65) 0%, rgba(15, 80, 4, 0.65) 100%)';
+              if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.6) 0%, rgba(250, 103, 179, 0.5) 100%)';
+              if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.6) 0%, rgba(176, 69, 162, 0.5) 100%)';
               if (courseCodeFromFolder) {
                 const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCodeFromFolder)?.color || '#6b7280';
                 const rgb = hexToRgb(courseHex);
