@@ -16992,7 +16992,7 @@ export default function Dashboard() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-white truncate">{task.title}</div>
-                        <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
+                        <div className="text-xs text-white">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
                       <div className="text-xs text-green-400 flex-shrink-0">
                         {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
@@ -17113,7 +17113,7 @@ export default function Dashboard() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-white truncate">{task.title}</div>
-                        <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
+                        <div className="text-xs text-white">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
                       <div className="text-xs text-green-400 flex-shrink-0">
                         {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
@@ -17146,8 +17146,8 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'today'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '11px', lineHeight: '1', color: getProgressColor(task, 'today'), textAlign: 'right' }}>{task.dueDate ? `${differenceInCalendarDays(new Date(task.dueDate), new Date())}d` : ''}</span>
               </div>
@@ -17231,7 +17231,7 @@ export default function Dashboard() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-white truncate">{task.title}</div>
-                        <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
+                        <div className="text-xs text-white">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
                       <div className="text-xs flex-shrink-0">
                         {getTomorrowDaysDisplay(task)}
@@ -17264,8 +17264,8 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '1px', fontSize: '11px', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '11px', textAlign: 'right' }}>{getTomorrowDaysDisplay(task)}</span>
               </div>
