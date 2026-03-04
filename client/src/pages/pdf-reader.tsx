@@ -292,7 +292,14 @@ export default function PDFReaderPage() {
     setNumPages(pages);
     setCurrentPage(1);
     
-    // Pre-extract text in background for faster playback start
+    const key = getFileKey();
+    const savedText = localStorage.getItem(`tts_edited_${key}`);
+    if (savedText) {
+      setExtractedText(savedText);
+      console.log("Loaded saved TTS text for", key, savedText.length, "chars");
+      return;
+    }
+    
     if (pdfUrl && pages > 0 && !extractedText && !isExtractingRef.current) {
       isExtractingRef.current = true;
       extractTextInBackground(pdfUrl, pages);
@@ -897,6 +904,8 @@ export default function PDFReaderPage() {
                           setCurrentChunk(0);
                           currentChunkRef.current = 0;
                           setIsEditingText(false);
+                          const key = getFileKey();
+                          localStorage.setItem(`tts_edited_${key}`, editableText);
                           toast({ title: "Text updated", description: "Your edits have been saved. Press play to read the updated text." });
                         }}
                       >

@@ -15545,25 +15545,25 @@ export default function Dashboard() {
                   );
                 })()}
                 
-                {/* Dynamic lines - solid line from first countdown bullet to next task */}
+                {/* Dynamic lines - solid line to next task (stays in scroll container) */}
                 {(() => {
                   const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinutes = now.getMinutes();
                   const calStartHour = calStart;
                   const calEndHour = isTravelMode ? 23 : 21;
+                  
+                  if (currentHour < calStartHour) return null;
+                  
+                  const clampedHour = Math.min(currentHour, calEndHour);
+                  const clampedMinutes = currentHour > calEndHour ? 59 : currentMinutes;
+                  
+                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
+                  if (todayDayIdx < 0) return null;
                   
                   const containerEl = calendarScrollRef.current;
                   if (!containerEl) return null;
                   const containerWidth = containerEl.scrollWidth;
-                  
-                  const firstBullet = document.querySelector('[data-countdown-bullet]');
-                  if (!firstBullet) return null;
-                  
-                  const bulletRect = firstBullet.getBoundingClientRect();
-                  const containerRect = containerEl.getBoundingClientRect();
-                  const startX = bulletRect.left + bulletRect.width / 2 - containerRect.left;
-                  const parentRow = firstBullet.parentElement;
-                  const parentRect = parentRow ? parentRow.getBoundingClientRect() : bulletRect;
-                  const startY = parentRect.top + parentRect.height / 2 - containerRect.top + containerEl.scrollTop;
                   
                   const nowTimestamp = now.getTime();
                   let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
@@ -15625,6 +15625,8 @@ export default function Dashboard() {
                     return px;
                   };
                   
+                  const startX = getDayColumnCenter(todayDayIdx);
+                  const startY = getTopPx(clampedHour, clampedMinutes);
                   const taskBoxHeight = 20;
                   
                   const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
@@ -15646,12 +15648,19 @@ export default function Dashboard() {
                   let endX: number, endY: number, side: 'top' | 'left';
                   if (isTallCard) {
                     endX = centerX; endY = topY - arrowGap; side = 'top';
+                  } else if (nt.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
+                    endX = leftX - arrowGap; endY = midY; side = 'left';
+                  } else if (nt.dayIdx > todayDayIdx && yDiff < 60) {
+                    endX = leftX - arrowGap; endY = midY; side = 'left';
                   } else {
                     endX = centerX; endY = topY - arrowGap; side = 'top';
                   }
                   
                   let pathD: string;
-                  if (isTallCard) {
+                  if (side === 'left') {
+                    const mx = startX + (endX - startX) * 0.5;
+                    pathD = `M ${startX} ${startY} C ${mx} ${startY}, ${mx} ${endY}, ${endX} ${endY}`;
+                  } else if (isTallCard) {
                     const clearY = topY - 30;
                     pathD = `M ${startX} ${startY} C ${startX} ${clearY}, ${endX} ${clearY}, ${endX} ${endY}`;
                   } else {
@@ -15662,7 +15671,11 @@ export default function Dashboard() {
                   const t = 0.95;
                   const mt = 1 - t;
                   let nearEndX: number, nearEndY: number;
-                  if (isTallCard) {
+                  if (side === 'left') {
+                    const mx = startX + (endX - startX) * 0.5;
+                    nearEndX = mt*mt*mt*startX + 3*mt*mt*t*mx + 3*mt*t*t*mx + t*t*t*endX;
+                    nearEndY = mt*mt*mt*startY + 3*mt*mt*t*startY + 3*mt*t*t*endY + t*t*t*endY;
+                  } else if (isTallCard) {
                     const clearY = topY - 30;
                     nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
                     nearEndY = mt*mt*mt*startY + 3*mt*mt*t*clearY + 3*mt*t*t*clearY + t*t*t*endY;
@@ -15697,31 +15710,29 @@ export default function Dashboard() {
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
                         fill="rgba(0,0,0,0.9)"
                       />
+                      <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
                     </svg>
                   );
                 })()}
             </div>
           </div>
-          {/* Dotted line from current time to next prep task in course rows */}
+          {/* Dotted line from first countdown bullet to next prep task in course rows */}
           {(() => {
             const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinutes = now.getMinutes();
             const calStartHour = calStart;
-            const calEndHour = isTravelMode ? 23 : 21;
             
-            if (currentHour < calStartHour) return null;
-            
-            const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
-            if (todayDayIdx < 0) return null;
+            const firstBullet = document.querySelector('[data-countdown-bullet]');
+            if (!firstBullet) return null;
             
             const scrollEl = calendarScrollRef.current;
             const contentEl = calendarContentRef.current;
             if (!scrollEl || !contentEl) return null;
             
-            const containerWidth = contentEl.clientWidth;
-            const scrollTop = scrollEl.scrollTop;
-            const scrollOffsetTop = scrollEl.offsetTop;
+            const bulletRect = firstBullet.getBoundingClientRect();
+            const parentRow = firstBullet.parentElement;
+            const parentRect = parentRow ? parentRow.getBoundingClientRect() : bulletRect;
+            const startX = bulletRect.left + bulletRect.width / 2;
+            const startY = parentRect.top + parentRect.height / 2;
             
             const nowTimestamp = now.getTime();
             let nextPrepTask: { task: any; startDayIdx: number; courseName: string } | null = null;
@@ -15758,6 +15769,8 @@ export default function Dashboard() {
             if (!nextPrepTask) return null;
             const np = nextPrepTask as { task: any; startDayIdx: number; courseName: string };
             
+            const containerWidth = contentEl.clientWidth;
+            const contentRect = contentEl.getBoundingClientRect();
             const fixedLeftWidth = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
             const flexWidth = containerWidth - fixedLeftWidth;
             const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
@@ -15769,23 +15782,8 @@ export default function Dashboard() {
               }
               const colFr = gridSizes.dayColumnWidths[dIdx] || gridSizes.dayColumnWidths[0];
               const centerFr = leftFr + colFr / 2;
-              return fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
+              return contentRect.left + fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
             };
-            
-            const getTopPx = (hour: number, min: number) => {
-              let px = 0;
-              for (let h = calStartHour; h < hour; h++) {
-                px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-              }
-              px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-              return px;
-            };
-            
-            const clampedHour = Math.min(currentHour, calEndHour);
-            const clampedMinutes = currentHour > calEndHour ? 59 : currentMinutes;
-            
-            const startX = getDayColumnCenter(todayDayIdx);
-            const startY = scrollOffsetTop + getTopPx(clampedHour, clampedMinutes) - scrollTop;
             
             let endY = 0;
             const courseName = np.courseName.split(' - ')[0].toUpperCase();
@@ -15794,15 +15792,13 @@ export default function Dashboard() {
             
             const courseRowsEl = courseRowsRef.current;
             if (courseRowsEl) {
-              const courseRowsTop = courseRowsEl.offsetTop;
-              const totalCourseRowsHeight = courseRowsEl.offsetHeight;
+              const courseRowsRect = courseRowsEl.getBoundingClientRect();
+              const totalCourseRowsHeight = courseRowsRect.height;
               const numCourses = filteredCourses.length || 1;
               const singleRowHeight = totalCourseRowsHeight / numCourses;
-              endY = courseRowsTop + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight + singleRowHeight / 2;
+              endY = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight + singleRowHeight / 2;
             } else {
-              const headerHeight = 41;
-              const rowHeight = gridSizes.courseRowHeight || 48;
-              endY = headerHeight + (courseIdx >= 0 ? courseIdx : 0) * rowHeight + rowHeight / 2;
+              return null;
             }
             
             const endX = getDayColumnCenter(np.startDayIdx);
@@ -15822,12 +15818,10 @@ export default function Dashboard() {
             const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
             const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
             
-            const svgHeight = contentEl.clientHeight;
-            
             return (
               <svg
-                className="absolute top-0 left-0 pointer-events-none z-[45]"
-                style={{ width: `${containerWidth}px`, height: `${svgHeight}px`, overflow: 'visible' }}
+                className="pointer-events-none"
+                style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'visible', zIndex: 45 }}
               >
                 <path
                   className="animate-next-task-line"
