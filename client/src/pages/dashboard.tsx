@@ -9160,8 +9160,8 @@ export default function Dashboard() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              left: `${calendarLeft - 15}px`,
-              right: `${calendarRight - 15}px`,
+              left: `${calendarLeft - 15 - 35}px`,
+              right: `${calendarRight - 15 + 35}px`,
             }}
             data-testid="next-task-countdown"
           >
