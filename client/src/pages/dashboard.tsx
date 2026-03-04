@@ -13019,7 +13019,19 @@ export default function Dashboard() {
                     {/* Box Background Colour */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Task Boxes Background</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.boxBackground}</span>
+                      <input
+                        type="text"
+                        className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                        value={colorSettings.boxBackground}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val;
+                          if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                            setColorSettings(prev => ({ ...prev, boxBackground: val }));
+                          }
+                        }}
+                        data-testid="input-box-background-hex"
+                      />
                       <div className="w-14 flex justify-end">
                         <div className="relative">
                           <div 
@@ -13075,7 +13087,19 @@ export default function Dashboard() {
                     {/* Header Bar Colour */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Summary Box Headers</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.headerBar}</span>
+                      <input
+                        type="text"
+                        className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                        value={colorSettings.headerBar}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val;
+                          if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                            setColorSettings(prev => ({ ...prev, headerBar: val }));
+                          }
+                        }}
+                        data-testid="input-header-bar-hex"
+                      />
                       <div className="w-14 flex justify-end">
                         <div className="relative">
                           <div 
@@ -13098,7 +13122,19 @@ export default function Dashboard() {
                     {/* Today Column Cell Background */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Today Column</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.todayCellBackground}</span>
+                      <input
+                        type="text"
+                        className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                        value={colorSettings.todayCellBackground}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val;
+                          if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                            setColorSettings(prev => ({ ...prev, todayCellBackground: val }));
+                          }
+                        }}
+                        data-testid="input-today-cell-hex"
+                      />
                       <div className="w-14 flex justify-end">
                         <input
                           type="color"
@@ -13114,7 +13150,19 @@ export default function Dashboard() {
                     {/* Current Time Row Background */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Current Time Row</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.currentHourRowBackground}</span>
+                      <input
+                        type="text"
+                        className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                        value={colorSettings.currentHourRowBackground}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val;
+                          if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                            setColorSettings(prev => ({ ...prev, currentHourRowBackground: val }));
+                          }
+                        }}
+                        data-testid="input-current-hour-row-hex"
+                      />
                       <div className="w-14 flex justify-end">
                         <input
                           type="color"
@@ -13130,7 +13178,19 @@ export default function Dashboard() {
                     {/* Today Date & Current Hour Cell Background */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Today Date & Current Hour</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.todayCurrentHourCellBackground}</span>
+                      <input
+                        type="text"
+                        className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                        value={colorSettings.todayCurrentHourCellBackground}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val;
+                          if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                            setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: val }));
+                          }
+                        }}
+                        data-testid="input-today-current-hour-hex"
+                      />
                       <div className="w-14 flex justify-end">
                         <input
                           type="color"
