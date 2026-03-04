@@ -18925,6 +18925,7 @@ function ProfileForm({
       <div className="flex items-center gap-3 pb-2 border-b border-white/20">
         <div 
           className="relative cursor-pointer group"
+          style={{ marginTop: '-12px' }}
           onClick={() => photoInputRef.current?.click()}
           data-testid="button-upload-profile-photo"
         >
