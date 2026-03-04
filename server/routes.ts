@@ -4033,17 +4033,51 @@ export async function registerRoutes(
         deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
       }));
 
-      // Samsung TV - open URL in browser
+      // Samsung TV via Fire Stick - turn on TV, then open Silk browser to PDF reader
       try {
-        const tvResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        // Step 1: Turn on the TV
+        const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', media_content_id: readerUrl, media_content_type: 'url' }),
+          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
         });
-        console.log(`[Cat Wash] Samsung TV play_media: ${tvResp.status}`);
-        deviceResults['samsung_tv'] = tvResp.ok ? 'play_media' : `failed:${tvResp.status}`;
+        console.log(`[Cat Wash] Samsung TV turn_on: ${turnOnResp.status}`);
+
+        // Brief delay for TV to wake up
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // Step 2: Open URL via Fire Stick command_webview (opens in Silk browser)
+        const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
+        let fireStickSuccess = false;
+        for (const app of fireStickApps) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
+            });
+            console.log(`[Cat Wash] Fire Stick ${app} command_webview: ${resp.status}`);
+            if (resp.ok) {
+              fireStickSuccess = true;
+              deviceResults['samsung_tv'] = `firestick:${app}`;
+              break;
+            }
+          } catch (e: any) {
+            console.log(`[Cat Wash] Fire Stick ${app} failed: ${e.message}`);
+          }
+        }
+        if (!fireStickSuccess) {
+          // Fallback: try play_media on TV directly
+          const tvResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', media_content_id: readerUrl, media_content_type: 'url' }),
+          });
+          console.log(`[Cat Wash] Samsung TV play_media fallback: ${tvResp.status}`);
+          deviceResults['samsung_tv'] = tvResp.ok ? 'play_media_fallback' : `failed:${tvResp.status}`;
+        }
       } catch (e: any) {
-        console.log(`[Cat Wash] Samsung TV error: ${e.message}`);
+        console.log(`[Cat Wash] Samsung TV/Fire Stick error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
       }
 
