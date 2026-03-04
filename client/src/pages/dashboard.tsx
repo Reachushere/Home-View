@@ -9831,7 +9831,7 @@ export default function Dashboard() {
         {/* Add Button */}
         <div
           className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-          style={{ flexShrink: 0 }}
+          style={{ width: '28px', height: '28px', flexShrink: 0 }}
           data-testid="button-pomodoro-add"
           onClick={() => {
             setQuickAddStep(0);
