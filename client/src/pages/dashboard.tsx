@@ -7790,6 +7790,36 @@ export default function Dashboard() {
                 >
                   <img src={pdfIconPath} alt="PDF" className="h-4 w-4" />
                   {previewFile?.displayName || previewFile?.originalName}
+                  <div className="flex-1" />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className={`h-7 w-7 text-white hover:bg-white/20 ${isEditingTtsText ? 'ring-2 ring-amber-400 rounded-md' : ''}`}
+                    data-testid="button-edit-tts-text"
+                    title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation();
+                      if (isEditingTtsText) {
+                        setIsEditingTtsText(false);
+                      } else {
+                        if (isPlaying) {
+                          handleStopMedia();
+                        }
+                        if (previewText) {
+                          const container = ttsTextContainerRef.current;
+                          const scrollRatio = (container && container.scrollHeight > 0) ? container.scrollTop / container.scrollHeight : 0;
+                          setEditableTtsText(previewText);
+                          setIsEditingTtsText(true);
+                          setTimeout(() => {
+                            if (editTextareaRef.current) {
+                              editTextareaRef.current.scrollTop = scrollRatio * editTextareaRef.current.scrollHeight;
+                            }
+                          }, 50);
+                        }
+                      }
+                    }}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
                 </DialogTitle>
               </DialogHeader>
             );
@@ -8107,35 +8137,6 @@ export default function Dashboard() {
               </Label>
             </div>
 
-            <Button
-              size="icon"
-              variant="ghost"
-              className={`h-7 w-7 text-white ${isEditingTtsText ? 'ring-2 ring-amber-400 rounded-md' : ''}`}
-              data-testid="button-edit-tts-text"
-              title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
-              onClick={(e) => { e.preventDefault();
-                if (isEditingTtsText) {
-                  setIsEditingTtsText(false);
-                } else {
-                  if (isPlaying) {
-                    handleStopMedia();
-                  }
-                  if (previewText) {
-                    const container = ttsTextContainerRef.current;
-                    const scrollRatio = (container && container.scrollHeight > 0) ? container.scrollTop / container.scrollHeight : 0;
-                    setEditableTtsText(previewText);
-                    setIsEditingTtsText(true);
-                    setTimeout(() => {
-                      if (editTextareaRef.current) {
-                        editTextareaRef.current.scrollTop = scrollRatio * editTextareaRef.current.scrollHeight;
-                      }
-                    }, 50);
-                  }
-                }
-              }}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-            </Button>
           </div>
           
           {ttsSearchOpen && (
