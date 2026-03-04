@@ -15579,7 +15579,8 @@ export default function Dashboard() {
               return contentRect.left + fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
             };
             
-            const whiteBoxEl = document.querySelector('[data-testid="next-task-countdown"]');
+            const whiteBoxOuter = document.querySelector('[data-testid="next-task-countdown"]');
+            const whiteBoxEl = whiteBoxOuter?.firstElementChild as HTMLElement | null;
             const whiteBoxBottom = whiteBoxEl ? whiteBoxEl.getBoundingClientRect().bottom : 60;
             const calendarTop = contentRect.top;
             
