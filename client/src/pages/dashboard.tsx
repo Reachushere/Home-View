@@ -9843,7 +9843,7 @@ export default function Dashboard() {
         </div>
 
         {/* Separator 1: Add + | Pomodoro */}
-        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '12px', marginRight: '12px' }} />
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '12px', marginRight: '16px' }} />
 
         {/* Pomodoro Timer */}
         <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
@@ -9851,7 +9851,7 @@ export default function Dashboard() {
           pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
         }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '0px', gap: '5px', flexShrink: 0, ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
           <span style={{ lineHeight: 1, flexShrink: 0 }}>
-            <svg width="19" height="19" viewBox="5 0 90 100" xmlns="http://www.w3.org/2000/svg">
+            <svg width="19" height="19" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
               <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#ff3333" />
               <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#cc0000" />
