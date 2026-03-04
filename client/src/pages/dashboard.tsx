@@ -1320,6 +1320,8 @@ export default function Dashboard() {
     boxGlassEffect: boolean;
     boxTransparency: number;
     mainBackgroundOverlay: boolean;
+    mainBackgroundGradient: boolean;
+    mainBackgroundGradientEnd: string;
     todayCellBackground: string;
     currentHourRowBackground: string;
     todayCurrentHourCellBackground: string;
@@ -1328,21 +1330,23 @@ export default function Dashboard() {
     const defaults = {
       boxBackground: '#ffffff',
       headerBar: '#160502',
-      mainBackground: '#22223a',
+      mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
-      mainBackgroundOverlay: false,
+      mainBackgroundOverlay: true,
+      mainBackgroundGradient: true,
+      mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
       todayCurrentHourCellBackground: '#160502'
     };
     // Force migration V16: slightly less frosted than original 35
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV16');
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, mainBackground: '#22223a', boxBackground: '#ffffff', boxTransparency: 28 };
+      const migrated = { ...defaults, ...existing, mainBackground: '#3a8bbf', mainBackgroundGradient: true, mainBackgroundGradientEnd: '#164a72', mainBackgroundOverlay: true, boxBackground: existing.boxBackground || '#ffffff', boxTransparency: existing.boxTransparency || 28 };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV16', 'done');
+      localStorage.setItem('colorSettingsMigrationV17', 'done');
       return migrated;
     }
     if (saved) {
@@ -6608,7 +6612,7 @@ export default function Dashboard() {
       <div 
         className="absolute inset-0"
         style={{ 
-          /* backgroundImage: `url(${dashboardBg})`, */
+          backgroundImage: `url(${dashboardBg})`,
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -6617,13 +6621,17 @@ export default function Dashboard() {
         }}
       />
       {/* Main Background Color Overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{ 
-          background: 'linear-gradient(180deg, #3a8bbf 0%, #2a6a9e 30%, #1d5a8a 60%, #164a72 100%)',
-          zIndex: 1
-        }}
-      />
+      {colorSettings.mainBackgroundOverlay && (
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{ 
+            background: colorSettings.mainBackgroundGradient 
+              ? `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`
+              : colorSettings.mainBackground,
+            zIndex: 1
+          }}
+        />
+      )}
       {/* Loading overlay for OneDrive file fetching */}
       {isLoadingOneDriveFiles && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
@@ -13167,7 +13175,7 @@ export default function Dashboard() {
                     
                     {/* Main Background Colour - always visible */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-xs whitespace-nowrap flex-1">Main Background Colour <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
+                      <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Start' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
                       <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackground}</span>
                       <div className="w-14 flex justify-end flex-shrink-0">
                         <div className="relative w-5 h-5">
@@ -13177,7 +13185,6 @@ export default function Dashboard() {
                             onClick={() => colorSettings.mainBackgroundOverlay && document.getElementById('color-main-background-input')?.click()}
                             data-testid="color-main-background"
                           />
-                          {/* Red X when disabled */}
                           {!colorSettings.mainBackgroundOverlay && (
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                               <X className="w-4 h-4" strokeWidth={1.5} style={{ stroke: '#dc2626', color: '#dc2626' }} />
@@ -13193,6 +13200,57 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Gradient Toggle */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Gradient Background</Label>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors flex items-center ${colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
+                          onClick={() => colorSettings.mainBackgroundOverlay && setColorSettings(prev => ({ ...prev, mainBackgroundGradient: !prev.mainBackgroundGradient }))}
+                          data-testid="toggle-background-gradient"
+                        >
+                          <div className={`w-1.5 h-1.5 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay ? 'translate-x-3' : 'translate-x-0.5'}`} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Gradient End Colour - only visible when gradient is on */}
+                    {colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay && (
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs whitespace-nowrap flex-1">Gradient End</Label>
+                        <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackgroundGradientEnd}</span>
+                        <div className="w-14 flex justify-end flex-shrink-0">
+                          <div className="relative w-5 h-5">
+                            <div 
+                              className="w-5 h-5 rounded border border-white/30 cursor-pointer"
+                              style={{ backgroundColor: colorSettings.mainBackgroundGradientEnd }}
+                              onClick={() => document.getElementById('color-main-background-gradient-end-input')?.click()}
+                              data-testid="color-main-background-gradient-end"
+                            />
+                            <input
+                              id="color-main-background-gradient-end-input"
+                              type="color"
+                              value={colorSettings.mainBackgroundGradientEnd}
+                              onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackgroundGradientEnd: e.target.value }))}
+                              className="absolute opacity-0 w-0 h-0"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Gradient Preview */}
+                    {colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay && (
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs whitespace-nowrap flex-1">Preview</Label>
+                        <div 
+                          className="w-full h-4 rounded border border-white/20"
+                          style={{ background: `linear-gradient(90deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)` }}
+                          data-testid="gradient-preview"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 
