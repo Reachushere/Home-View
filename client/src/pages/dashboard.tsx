@@ -13456,7 +13456,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* TTS Highlighting Settings */}
-                <div className="border rounded-lg p-3 space-y-3">
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-3px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Fine-tune word highlighting</span>
