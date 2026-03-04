@@ -12721,7 +12721,7 @@ export default function Dashboard() {
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px'
                   }}
-                  onClick={() => setIsNewCourseWizardOpen(true)}
+                  onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
                   data-testid="button-new-course-school"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
