@@ -9826,23 +9826,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pomodoro Timer - Fixed on screen, never slides */}
-      <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 10}px`, top: '5px', zIndex: 100 }}>
+      {/* Unified Header Bar - Add + Pomodoro + Clock in one glass pill */}
+      <div ref={clockContainerRef} className="fixed flex items-center h-[35px] rounded-full" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100, background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', padding: '0 12px', gap: '0px' }}>
+        {/* Add Button */}
         <div
-          className="flex items-center justify-center rounded-full cursor-pointer hover:opacity-80 transition-opacity"
-          style={{
-            width: '37px',
-            height: '37px',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            marginRight: '10px',
-            marginTop: '-1px',
-            flexShrink: 0,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            borderTop: '1.5px solid rgba(255,255,255,0.55)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-          }}
+          className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+          style={{ width: '28px', height: '28px', flexShrink: 0 }}
           data-testid="button-pomodoro-add"
           onClick={() => {
             setQuickAddStep(0);
@@ -9852,7 +9841,12 @@ export default function Dashboard() {
         >
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
-        <div className="flex items-center gap-4 rounded-full px-3 h-[35px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+
+        {/* Separator 1: Add + | Pomodoro */}
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', margin: '0 8px', flexShrink: 0 }} />
+
+        {/* Pomodoro Timer */}
+        <div className="flex items-center gap-4">
           <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
             pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -9881,35 +9875,30 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Clock - Fixed on screen, never slides */}
-      <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100 }}>
-        <div style={{ overflow: 'hidden', borderRadius: '9999px', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
-          <div className="h-[35px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
-            <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
-            <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
-              <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00' }}>
-                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-              </span>
-              <div className="w-[1px] h-4 bg-white/50 mx-1" />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', width: '95px' }}>
-              <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '44px', textAlign: 'right', flexShrink: 0 }}>
-                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-              </span>
-              <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '10px', fontWeight: 'bold', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0 }}>
-                :{String(currentTime.getSeconds()).padStart(2, '0')}
-              </span>
-              <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '8px', fontWeight: 'bold', color: 'white', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
-                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-              </span>
-            </div>
-            {profileData.travelTimezone && (
-              <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
-            )}
-            </div>
+        {/* Separator 2: Pomodoro | Clock */}
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', margin: '0 8px', flexShrink: 0 }} />
+
+        {/* Clock / Date */}
+        <div className="flex items-center gap-1" data-testid="digital-clock">
+          <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00' }}>
+            {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+          </span>
+          <div className="w-[1px] h-4 bg-white/50 mx-1" />
+          <div style={{ display: 'flex', alignItems: 'baseline', width: '95px' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '44px', textAlign: 'right', flexShrink: 0 }}>
+              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+            </span>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '10px', fontWeight: 'bold', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0 }}>
+              :{String(currentTime.getSeconds()).padStart(2, '0')}
+            </span>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '8px', fontWeight: 'bold', color: 'white', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
+              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+            </span>
           </div>
+          {profileData.travelTimezone && (
+            <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
+          )}
         </div>
       </div>
 
