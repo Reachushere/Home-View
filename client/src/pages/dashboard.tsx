@@ -8005,8 +8005,6 @@ export default function Dashboard() {
               <SkipForward className="h-4 w-4 text-white" />
             </button>
             
-            <div className="w-px h-7 bg-white/30" />
-            
             <button
               className="media-btn media-btn-sm"
               onClick={handleRestartFromBeginning}
@@ -8015,8 +8013,6 @@ export default function Dashboard() {
             >
               <RotateCcw className="h-4 w-4 text-white" />
             </button>
-            
-            <div className="w-px h-7 bg-white/30" />
             
             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <Button
