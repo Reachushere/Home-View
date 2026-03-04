@@ -7829,7 +7829,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-nowrap min-w-0 overflow-hidden">
                   {/* Module Files Dropdown */}
                   <div className="flex items-center gap-1 min-w-0 shrink">
-                    <span className="text-[9px] text-white hidden sm:inline shrink-0">Module:</span>
+                    <span className="text-[11px] font-bold text-white hidden sm:inline shrink-0">Module:</span>
                     <Select 
                       value={(() => {
                         if (isModule && previewFile) return previewFile.id.toString();
@@ -7880,7 +7880,7 @@ export default function Dashboard() {
                   
                   {/* Reading Files Dropdown */}
                   <div className="flex items-center gap-1 min-w-0 shrink">
-                    <span className="text-[9px] text-white hidden sm:inline shrink-0">Reading:</span>
+                    <span className="text-[11px] font-bold text-white hidden sm:inline shrink-0">Reading:</span>
                     <Select 
                       value={(() => {
                         if (isReading && previewFile) return previewFile.id.toString();
@@ -7952,7 +7952,7 @@ export default function Dashboard() {
             
             {/* Speaker Selector */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-[9px] text-white">Speaker:</span>
+              <span className="text-[11px] font-bold text-white">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
                 <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
@@ -8877,7 +8877,7 @@ export default function Dashboard() {
               {/* Voice selector - browser TTS */}
               {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] text-white">Voice:</span>
+                  <span className="text-[11px] font-bold text-white">Voice:</span>
                   <Select value={selectedVoice} onValueChange={setSelectedVoice}>
                     <SelectTrigger className="w-[200px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-voice">
                       <SelectValue placeholder="Select Voice" />
@@ -8914,7 +8914,7 @@ export default function Dashboard() {
               {/* OpenAI Voice selector */}
               {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] text-white">Voice:</span>
+                  <span className="text-[11px] font-bold text-white">Voice:</span>
                   <Select value={openaiVoice} onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}>
                     <SelectTrigger className="w-[110px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-openai-voice">
                       <SelectValue />
@@ -8960,7 +8960,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <div className="w-px h-5 bg-white/20" />
                   <Gauge className="h-3 w-3 text-gray-400" />
-                  <span className="text-[9px] text-white">Speed</span>
+                  <span className="text-[11px] font-bold text-white">Speed</span>
                   <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
                     setBrowserTtsRate(r => {
                       const newRate = Math.max(0.5, r - 0.05);
