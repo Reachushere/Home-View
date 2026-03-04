@@ -10704,7 +10704,7 @@ export default function Dashboard() {
             className={`absolute z-[60] ${sidePillIdle ? 'side-pill-container-idle' : ''}`}
             style={{ 
               top: `${pillTop}px`, 
-              right: '0px', 
+              right: '-5px', 
               width: `${totalW + 4}px`, 
               height: `${pillH}px`,
               transform: `translateX(${isPillMenuOpen ? '0px' : `${slideOffset}px`})`,
