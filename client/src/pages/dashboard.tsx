@@ -9780,7 +9780,7 @@ export default function Dashboard() {
         <Share 
           className="h-4 w-4 text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ position: 'fixed', right: `${calendarRight + 195}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ position: 'fixed', right: `${calendarRight + 345}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -9790,7 +9790,7 @@ export default function Dashboard() {
       <div ref={clockContainerRef} className={`flex items-center ${
         pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
         pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-      }`} style={{ position: 'fixed', right: `${calendarRight + 130}px`, top: '6px', zIndex: 100, gap: '5px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+      }`} style={{ position: 'fixed', right: `${calendarRight + 280}px`, top: '6px', zIndex: 100, gap: '5px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
         <span style={{ lineHeight: 1 }}>
           <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
@@ -9805,7 +9805,7 @@ export default function Dashboard() {
       </div>
 
       {/* Pomodoro Controls - fixed position */}
-      <div className="flex items-center gap-3" style={{ position: 'fixed', right: `${calendarRight + 210}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="flex items-center gap-3" style={{ position: 'fixed', right: `${calendarRight + 360}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
           {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
         </button>
