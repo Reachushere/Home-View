@@ -7796,7 +7796,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-0 mx-6 gap-2 border-b border-white/10" style={{ marginTop: '-4px' }}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-0 mx-6 gap-2" style={{ marginTop: '-4px' }}>
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -8041,7 +8041,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-0 mx-6 border-b border-white/10" style={{ marginTop: '-7px' }}>
+          <div className="flex items-center justify-between gap-2 p-1.5 px-0 mx-6" style={{ marginTop: '-7px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
