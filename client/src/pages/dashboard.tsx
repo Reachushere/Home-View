@@ -8122,7 +8122,7 @@ export default function Dashboard() {
               }}
               data-testid="button-tts-search"
             >
-              <Search className="h-3.5 w-3.5" />
+              <Search style={{ height: '20px', width: '20px' }} />
             </Button>
 
             <div className="flex items-center gap-1">
