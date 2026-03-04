@@ -8016,7 +8016,7 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <button
                 className="media-btn media-btn-sm"
                 onClick={handleRestartFromBeginning}
@@ -8025,10 +8025,10 @@ export default function Dashboard() {
               >
                 <RotateCcw className="h-3.5 w-3.5 text-white" />
               </button>
-              <span className="text-[9px] text-white/60 leading-none">Restart</span>
+              <span className="text-[11px] text-white leading-none">Restart</span>
             </div>
             
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <button
                 className="media-btn media-btn-sm"
                 onClick={handleRestartCurrentChunk}
@@ -8037,7 +8037,7 @@ export default function Dashboard() {
               >
                 <RefreshCw className="h-3.5 w-3.5 text-white" />
               </button>
-              <span className="text-[9px] text-white/60 leading-none">Re-read</span>
+              <span className="text-[11px] text-white leading-none">Re-read</span>
             </div>
             
             <div className="w-px h-6 bg-white/30" />
