@@ -7967,7 +7967,7 @@ export default function Dashboard() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-[9px] text-white min-w-[40px] text-center">
+                    <span className="text-[9px] text-white min-w-[40px] text-center" style={{ marginLeft: '5px' }}>
                       {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
                     </span>
                     <Button
