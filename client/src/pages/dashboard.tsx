@@ -9098,7 +9098,7 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <div className="fixed flex items-center" style={{ left: '16px', top: '5px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.3s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed flex items-center" style={{ left: '16px', top: '5px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '35px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
@@ -9782,7 +9782,7 @@ export default function Dashboard() {
       </div>
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
-      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '4px', zIndex: 100, padding: '0 17px 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.3s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '4px', zIndex: 100, padding: '0 17px 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         {/* Add Button */}
         <div
           className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
@@ -10602,7 +10602,7 @@ export default function Dashboard() {
       )}
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
-      <div className="absolute z-50 flex items-end justify-between gap-2" style={{ top: `${calendarTop - 28}px`, left: '0px', right: `${calendarRight}px`, opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.3s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="absolute z-50 flex items-end justify-between gap-2" style={{ top: `${calendarTop - 28}px`, left: '0px', right: `${calendarRight}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1" style={{ marginLeft: '21px' }}>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
@@ -10644,7 +10644,7 @@ export default function Dashboard() {
         <Share 
           className="absolute z-50 h-4 w-4 text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ right: '35px', top: `${calendarTop - 24}px`, opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.3s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ right: '35px', top: `${calendarTop - 24}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -13846,7 +13846,7 @@ export default function Dashboard() {
           />
           
           {/* BRYN reminder - positioned above today column outside the card */}
-          <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.3s ease-in-out' }}>
+          <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
             {weekDays.slice(0, 6).map((day, idx) => {
