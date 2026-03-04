@@ -9093,9 +9093,9 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} className="fixed" style={{ left: '16px', top: '5px', height: '35px', objectFit: 'contain', zIndex: 100 }} />
-      <div className="fixed" style={{ left: '162px', top: '22.5px', transform: 'translateY(-50%)', width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', zIndex: 100 }} />
-      <div className="flex items-center gap-2 fixed" style={{ left: '172px', top: '22.5px', transform: 'translateY(-50%)', zIndex: 100 }}>
+      <div className="fixed flex items-center" style={{ left: '16px', top: '5px', height: '35px', zIndex: 100 }}>
+        <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '35px', objectFit: 'contain' }} />
+        <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
           <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
