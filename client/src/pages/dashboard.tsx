@@ -9843,7 +9843,7 @@ export default function Dashboard() {
         </div>
 
         {/* Separator 1: Add + | Pomodoro */}
-        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '10px', marginRight: '17px' }} />
 
         {/* Pomodoro Timer */}
         <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
