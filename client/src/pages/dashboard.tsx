@@ -12627,10 +12627,7 @@ export default function Dashboard() {
                 
                 {/* Current Grades */}
                 <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-3px' }}>
-                  <Label className="text-[10px] font-medium flex items-center gap-1.5">
-                    <GraduationCap className="h-3.5 w-3.5 text-amber-400" />
-                    Current Grades
-                  </Label>
+                  <Label className="text-[10px] font-medium">Current Grades</Label>
                   {coursesData.courses.filter(c => c.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
                     const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
