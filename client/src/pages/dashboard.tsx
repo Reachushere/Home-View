@@ -13920,7 +13920,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? '#164a72' : '#000000' }}
+                    style={{ backgroundColor: isToday ? '#e4ecf5' : '#000000' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -13960,7 +13960,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { backgroundColor: '#164a72', gridColumn: afterProgressGridCol } : { backgroundColor: '#000000', gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { backgroundColor: '#e4ecf5', gridColumn: afterProgressGridCol } : { backgroundColor: '#000000', gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
@@ -15079,7 +15079,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday || isCurrentHour ? '#164a72' : '#faf8f5',
+                            backgroundColor: isToday || isCurrentHour ? '#e4ecf5' : '#faf8f5',
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
