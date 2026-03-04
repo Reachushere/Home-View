@@ -10658,7 +10658,7 @@ export default function Dashboard() {
           }}
           data-testid="button-month-view"
         >
-          {calendarView === "month" ? "Week" : "Month View"}
+          {calendarView === "month" ? "Week" : <span style={{ textDecoration: 'underline' }}>Month View</span>}
         </Button>
       </div>
       
