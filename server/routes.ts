@@ -3922,7 +3922,7 @@ export async function registerRoutes(
 
       console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
 
-      const fireTvEntity = 'media_player.fire_tv_172_24_2_91';
+      const fireTvEntity = 'media_player.bryn_s_3rd_fire';
       try {
         const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST',
