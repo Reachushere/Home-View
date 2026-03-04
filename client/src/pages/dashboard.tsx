@@ -9149,7 +9149,7 @@ export default function Dashboard() {
               position: 'fixed',
               left: '50%',
               transform: 'translateX(-50%)',
-              top: '8px',
+              top: '7px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
