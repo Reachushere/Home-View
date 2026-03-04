@@ -9022,7 +9022,7 @@ export default function Dashboard() {
                 }
                 return (
               <div className="flex items-center gap-2 px-2 py-1 rounded-md" data-testid="chunk-completion-bar" style={{ marginLeft: '15px' }}>
-                <div className="w-24 h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'transparent', minHeight: '12px', border: '2px solid rgba(255,255,255,0.5)', marginLeft: '10px' }}>
+                <div className="w-24 h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'transparent', minHeight: '12px', border: '2px solid rgba(255,255,255,0.5)', marginLeft: '17px' }}>
                   <div 
                     className="h-full transition-all duration-300 rounded-full"
                     style={{ background: barColor, width: `${totalChunks > 0 
@@ -9032,7 +9032,7 @@ export default function Dashboard() {
                         : 0}%` }}
                   />
                 </div>
-                <span className="text-[11px] font-medium min-w-[60px] text-white" style={{ marginLeft: '19px', paddingLeft: '0px', position: 'relative', left: '5px' }}>
+                <span className="text-[11px] font-medium min-w-[60px] text-white" style={{ marginLeft: '12px', paddingLeft: '0px', position: 'relative', left: '5px' }}>
                   {totalChunks > 0 
                     ? `${checkedChunks.size}/${totalChunks} (${Math.round((checkedChunks.size / totalChunks) * 100)}%)` 
                     : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
