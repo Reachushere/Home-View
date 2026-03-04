@@ -8016,29 +8016,14 @@ export default function Dashboard() {
             
             <div className="w-px h-7 bg-white/30" />
             
-            <div className="flex items-center gap-1">
-              <button
-                className="media-btn media-btn-sm"
-                onClick={handleRestartFromBeginning}
-                data-testid="button-preview-restart-beginning"
-                title="Restart from beginning"
-              >
-                <RotateCcw className="h-4 w-4 text-white" />
-              </button>
-              <span className="text-[11px] font-bold text-white leading-none">Restart</span>
-            </div>
-            
-            <div className="flex items-center gap-1">
-              <button
-                className="media-btn media-btn-sm"
-                onClick={handleRestartCurrentChunk}
-                data-testid="button-preview-restart-current"
-                title="Restart current section"
-              >
-                <RefreshCw className="h-4 w-4 text-white" />
-              </button>
-              <span className="text-[11px] font-bold text-white leading-none">Re-read</span>
-            </div>
+            <button
+              className="media-btn media-btn-sm"
+              onClick={handleRestartFromBeginning}
+              data-testid="button-preview-restart-beginning"
+              title="Restart from beginning"
+            >
+              <RotateCcw className="h-4 w-4 text-white" />
+            </button>
             
             <div className="w-px h-7 bg-white/30" />
             
