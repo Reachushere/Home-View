@@ -9153,7 +9153,7 @@ export default function Dashboard() {
               position: 'fixed',
               left: '50%',
               transform: 'translateX(-50%)',
-              top: '15px',
+              top: '17px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               marginLeft: '-35px',
