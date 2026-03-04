@@ -12255,7 +12255,7 @@ export default function Dashboard() {
                   timezones={timezones} 
                   onSave={saveProfile}
                   onCancel={() => setIsProfileDialogOpen(false)}
-                  profilePhotoUrl={profilePhotoUrl}
+                  profilePhotoUrl={profilePhotoUrl || profilePhoto}
                   onProfilePhotoChange={(url: string | null) => {
                     setProfilePhotoUrl(url);
                     if (url) {
