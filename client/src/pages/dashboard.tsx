@@ -15643,7 +15643,7 @@ export default function Dashboard() {
                       for (let i = 0; i < dIdx && i < 6; i++) {
                         leftFr += gridSizes.dayColumnWidths[i];
                       }
-                      return contentRect.left + fixedLeftWidth + (leftFr / totalFrUnits) * flexWidth + 8;
+                      return contentRect.left + fixedLeftWidth + (leftFr / totalFrUnits) * flexWidth + 38;
                     };
                     const endX = getDayColumnLeft(np.startDayIdx);
                     const startX = pos.x;
