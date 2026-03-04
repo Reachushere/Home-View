@@ -9788,7 +9788,7 @@ export default function Dashboard() {
           />
         )}
         {/* Pomodoro Timer */}
-        <div className={`text-[9px] font-bold py-0.5 rounded flex items-center ${
+        <div className={`text-[10px] font-bold py-0.5 rounded flex items-center ${
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
         }`} style={{ minWidth: '52px', paddingLeft: '0px', paddingRight: '0px', gap: '5px', flexShrink: 0, ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
@@ -9818,14 +9818,14 @@ export default function Dashboard() {
 
         {/* Clock / Date */}
         <div className="flex items-center" style={{ gap: '6px', flexShrink: 0, marginLeft: '26px' }} data-testid="digital-clock">
-          <span className="text-[9px] font-bold" style={{ letterSpacing: '0.3px', color: '#FFFF00', flexShrink: 0 }}>
+          <span className="text-[10px] font-bold" style={{ letterSpacing: '0.3px', color: '#FFFF00', flexShrink: 0 }}>
             {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
           </span>
           <div style={{ display: 'flex', alignItems: 'baseline', flexShrink: 0 }}>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'white', width: '34px', textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'white', width: '36px', textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
             </span>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'white', width: '20px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
               :{String(currentTime.getSeconds()).padStart(2, '0')}
             </span>
             <span style={{ fontSize: '8px', fontWeight: 'bold', color: 'white', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
