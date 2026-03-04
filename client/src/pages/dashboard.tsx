@@ -13160,7 +13160,19 @@ export default function Dashboard() {
                     {/* Main Background Colour - always visible */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Top (Lightest)' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
-                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackground}</span>
+                      <input
+                        type="text"
+                        className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                        value={colorSettings.mainBackground}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val;
+                          if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                            setColorSettings(prev => ({ ...prev, mainBackground: val }));
+                          }
+                        }}
+                        data-testid="input-gradient-top-hex"
+                      />
                       <div className="w-14 flex justify-end flex-shrink-0">
                         <div className="relative w-5 h-5">
                           <div 
@@ -13203,7 +13215,19 @@ export default function Dashboard() {
                     {colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay && (
                       <div className="flex items-center gap-3">
                         <Label className="text-xs whitespace-nowrap flex-1">Gradient Bottom (Darkest)</Label>
-                        <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackgroundGradientEnd}</span>
+                        <input
+                          type="text"
+                          className="text-xs text-muted-foreground font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6]"
+                          value={colorSettings.mainBackgroundGradientEnd}
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (!val.startsWith('#')) val = '#' + val;
+                            if (/^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                              setColorSettings(prev => ({ ...prev, mainBackgroundGradientEnd: val }));
+                            }
+                          }}
+                          data-testid="input-gradient-bottom-hex"
+                        />
                         <div className="w-14 flex justify-end flex-shrink-0">
                           <div className="relative w-5 h-5">
                             <div 
