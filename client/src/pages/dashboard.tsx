@@ -8140,7 +8140,7 @@ export default function Dashboard() {
                 id="sync-highlight"
                 checked={syncHighlight}
                 onCheckedChange={(checked) => setSyncHighlight(!!checked)}
-                className="h-4 w-4 border-blue-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                className="h-4 w-4 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 data-[state=checked]:text-white"
                 data-testid="checkbox-sync-highlight"
               />
               <Label htmlFor="sync-highlight" className="text-white text-[11px] cursor-pointer">
@@ -8161,7 +8161,7 @@ export default function Dashboard() {
                     });
                   }
                 }}
-                className="h-4 w-4 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                className="h-4 w-4 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 data-[state=checked]:text-white"
                 data-testid="checkbox-mark-completed"
               />
               <Label htmlFor="mark-completed" className="text-white text-[11px] cursor-pointer whitespace-nowrap">
