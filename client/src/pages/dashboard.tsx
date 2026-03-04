@@ -9830,13 +9830,15 @@ export default function Dashboard() {
           style={{
             width: '37px',
             height: '37px',
-            backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`,
-            backgroundSize: 'cover, cover',
-            backgroundPosition: 'center, center',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
             marginRight: '10px',
             marginTop: '-1px',
             flexShrink: 0,
-            border: '1.5px solid rgba(255, 255, 255, 0.45)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            borderTop: '1.5px solid rgba(255,255,255,0.55)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
           }}
           data-testid="button-pomodoro-add"
           onClick={() => {
@@ -9847,7 +9849,7 @@ export default function Dashboard() {
         >
           <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
-        <div className="flex items-center gap-4 rounded-full px-3 h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
+        <div className="flex items-center gap-4 rounded-full px-3 h-[35px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
           <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
             pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -9880,8 +9882,8 @@ export default function Dashboard() {
 
       {/* Clock - Fixed on screen, never slides */}
       <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100 }}>
-        <div style={{ overflow: 'hidden', borderRadius: '9999px', border: '1.5px solid rgba(255, 255, 255, 0.45)' }}>
-          <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%), url(${clockBg})`, backgroundSize: 'cover, cover', backgroundPosition: 'center, center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
+        <div style={{ overflow: 'hidden', borderRadius: '9999px', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="h-[35px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00' }}>
