@@ -8129,37 +8129,37 @@ export default function Dashboard() {
                     )}
                   </Button>
                   {showFlickMenu && (
-                    <div className="absolute top-full right-0 mt-1 w-52 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50">
-                      <div className="px-2 py-1 border-b border-gray-700 flex items-center justify-between">
-                        <span className="text-[11px] font-semibold text-white">Flick to...</span>
+                    <div className="absolute top-full right-0 mt-1 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                      <div className="px-2.5 py-1.5 border-b border-gray-700 flex items-center justify-between">
+                        <span className="text-[13px] font-semibold text-white">Flick to...</span>
                         <button
                           onClick={() => setShowFlickMenu(false)}
                           className="text-gray-400 hover:text-white"
                           data-testid="button-close-flick-menu"
                         >
-                          <X className="h-3 w-3" />
+                          <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <div className="max-h-[300px] overflow-y-auto">
+                      <div className="max-h-[340px] overflow-y-auto">
                         {flickDeviceGroups.map((group) => (
                           <div key={group.room}>
-                            <div className="px-2 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
-                              <span className="text-[10px]">{group.icon}</span>
-                              <span className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
+                            <div className="px-2.5 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
+                              <span className="text-[12px]">{group.icon}</span>
+                              <span className="text-[12px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
                             </div>
                             {group.devices.map((device) => (
                               <button
                                 key={device.id}
                                 data-testid={`button-flick-${device.id}`}
-                                className="w-full px-2 py-1 pl-5 flex items-center gap-1.5 hover:bg-gray-800 transition-colors text-left"
+                                className="w-full px-2.5 py-1.5 pl-6 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
                                 onClick={() => handleFlick(device.id)}
                                 disabled={isFlicking}
                               >
-                                {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-2.5 w-2.5 text-blue-400 flex-shrink-0" /> :
-                                 device.type === "tv" ? <Monitor className="h-2.5 w-2.5 text-purple-400 flex-shrink-0" /> :
-                                 device.type === "group" ? <Speaker className="h-2.5 w-2.5 text-amber-400 flex-shrink-0" /> :
-                                 <Speaker className="h-2.5 w-2.5 text-gray-400 flex-shrink-0" />}
-                                <span className={`text-[11px] truncate ${device.type === "group" ? "text-amber-300 font-medium" : "text-white"}`}>{device.name}</span>
+                                {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
+                                 device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
+                                 device.type === "group" ? <Speaker className="h-3 w-3 text-amber-400 flex-shrink-0" /> :
+                                 <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
+                                <span className={`text-[13px] truncate ${device.type === "group" ? "text-amber-300 font-medium" : "text-white"}`}>{device.name}</span>
                               </button>
                             ))}
                           </div>
