@@ -19305,7 +19305,7 @@ function SchoolForm({
         <Label className="text-[10px] font-medium">School</Label>
         <div className="space-y-3">
           <div className="space-y-1">
-            <Label className="text-[10px]">School Logo</Label>
+            <Label className="text-[10px]">Logo</Label>
             <div className="flex items-center gap-3">
               <div className="h-10 w-auto flex items-center justify-center rounded overflow-hidden bg-white/10 px-2">
                 {logoPreview ? (
