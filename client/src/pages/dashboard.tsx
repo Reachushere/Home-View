@@ -9154,7 +9154,7 @@ export default function Dashboard() {
               left: '50%',
               marginLeft: '-35px',
               transform: 'translateX(-50%)',
-              top: '21px',
+              top: '22px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
