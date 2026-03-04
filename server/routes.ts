@@ -3769,6 +3769,346 @@ export async function registerRoutes(
     }
   });
   
+  async function findNextCatWashFile(storageRef: any, weekNumber: number, excludeFileId?: number) {
+    const allFiles = await storageRef.getFiles();
+    const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
+    const getCourseCode = (f: any) => {
+      const match = f.folder?.match(/week-\d+-([a-z]+\d+)/i);
+      return match ? match[1].toLowerCase() : '';
+    };
+
+    const partialFiles = allFiles.filter((f: any) => {
+      if (f.listened || f.id === excludeFileId) return false;
+      const hasCheckedChunks = (() => {
+        if (!f.checkedChunks) return false;
+        try { const arr = JSON.parse(f.checkedChunks); return Array.isArray(arr) && arr.length > 0; } catch { return false; }
+      })();
+      const hasLastChunk = f.lastChunkIndex != null && f.lastChunkIndex > 0;
+      if (!hasCheckedChunks && !hasLastChunk) return false;
+      if (f.totalChunks && f.totalChunks > 0) {
+        if (hasCheckedChunks) {
+          try { const arr = JSON.parse(f.checkedChunks); if (arr.length >= f.totalChunks) return false; } catch {}
+        }
+        if (hasLastChunk && f.lastChunkIndex >= f.totalChunks) return false;
+      }
+      return true;
+    });
+
+    const unlistenedFiles = allFiles.filter((f: any) => {
+      if (f.listened || f.id === excludeFileId) return false;
+      if (partialFiles.some((p: any) => p.id === f.id)) return false;
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      return weekMatch && parseInt(weekMatch[1], 10) === weekNumber;
+    });
+
+    const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean);
+    let orderedUnlistened: any[] = [];
+    for (const course of courses) {
+      const courseFiles = unlistenedFiles.filter((f: any) => getCourseCode(f) === course);
+      const modules = courseFiles.filter(isModuleFile);
+      const readings = courseFiles.filter((f: any) => !isModuleFile(f));
+      orderedUnlistened.push(...modules, ...readings);
+    }
+
+    const orderedFiles = [...partialFiles, ...orderedUnlistened];
+    return orderedFiles.length > 0 ? orderedFiles[0] : null;
+  }
+
+  async function extractAndChunkPdf(file: any): Promise<{ textContent: string; chunks: string[] } | null> {
+    let textContent = "";
+    try {
+      let content: Buffer;
+      const mediaUrl = file.objectPath || '';
+
+      if (mediaUrl.startsWith("/objects/")) {
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const objectStorage = new ObjectStorageService();
+        const objectFile = await objectStorage.getObjectEntityFile(mediaUrl);
+        const [downloaded] = await objectFile.download();
+        content = downloaded;
+      } else if (mediaUrl.startsWith("/School/")) {
+        const { getOneDriveClient } = await import("./onedrive");
+        const client = await getOneDriveClient();
+        const encodedPath = encodeURIComponent(mediaUrl).replace(/%2F/g, '/');
+        const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+        const downloadUrl = item['@microsoft.graph.downloadUrl'];
+        if (!downloadUrl) throw new Error("Could not get OneDrive download URL");
+        const pdfResponse = await fetch(downloadUrl);
+        if (!pdfResponse.ok) throw new Error(`OneDrive download failed: ${pdfResponse.status}`);
+        content = Buffer.from(await pdfResponse.arrayBuffer());
+      } else if (mediaUrl.startsWith("onedrive://")) {
+        const folderPart = mediaUrl.replace('onedrive://', '').split('/')[0] || '';
+        const fileNamePart = mediaUrl.split('/').pop() || '';
+        const parts = folderPart.split('-');
+        const weekNum = parts[1];
+        const courseCode = parts[2]?.toUpperCase();
+        const basePath = `/School/1. TMU/Courses/2026/Winter`;
+        const baseFolders = await listOneDriveItems(basePath);
+        const matchedFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode));
+        if (!matchedFolder) throw new Error("Course folder not found in OneDrive");
+        const courseFolders = await listOneDriveItems(matchedFolder.path);
+        const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
+        if (!weekFolder) throw new Error("Week folder not found in OneDrive");
+        const weekContents = await listOneDriveItems(weekFolder.path);
+        const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module'));
+        if (!typeFolder) throw new Error("Type folder not found in OneDrive");
+        const files = await listOneDriveItems(typeFolder.path);
+        const matchedFile = files.find((f: any) => f.name === fileNamePart);
+        if (!matchedFile?.downloadUrl) throw new Error("File not found in OneDrive");
+        const pdfResponse = await fetch(matchedFile.downloadUrl);
+        content = Buffer.from(await pdfResponse.arrayBuffer());
+      } else if (mediaUrl.startsWith("http")) {
+        const pdfResponse = await fetch(mediaUrl);
+        content = Buffer.from(await pdfResponse.arrayBuffer());
+      } else {
+        throw new Error(`Unsupported path format: ${mediaUrl.substring(0, 50)}`);
+      }
+
+      const isPDF = content.slice(0, 4).toString() === '%PDF';
+      if (isPDF) {
+        const PdfParser = await getPdfParser();
+        const parser = new PdfParser({ data: new Uint8Array(content) });
+        await parser.load();
+        const pdfText = await parser.getText();
+        if (pdfText && typeof pdfText === 'object') {
+          if (pdfText.pages && Array.isArray(pdfText.pages)) {
+            textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+          } else if (Array.isArray(pdfText)) {
+            textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+          } else if (pdfText.text) {
+            textContent = pdfText.text;
+          }
+        } else {
+          textContent = String(pdfText || '');
+        }
+        await parser.destroy();
+      } else {
+        textContent = content.toString('utf-8');
+      }
+    } catch (error: any) {
+      console.error(`[Cat Wash] Text extraction error for ${file.id}:`, error.message);
+      return null;
+    }
+
+    let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+    if (cleanedContent.length < 10) return null;
+
+    const chunks: string[] = [];
+    let remaining = cleanedContent;
+    while (remaining.length > 0) {
+      if (remaining.length <= 3500) { chunks.push(remaining); break; }
+      let splitAt = remaining.lastIndexOf('. ', 3500);
+      if (splitAt < 1000) splitAt = remaining.lastIndexOf('? ', 3500);
+      if (splitAt < 1000) splitAt = remaining.lastIndexOf('! ', 3500);
+      if (splitAt < 1000) splitAt = remaining.lastIndexOf(' ', 3500);
+      if (splitAt < 500) splitAt = 3500;
+      chunks.push(remaining.slice(0, splitAt + 1).trim());
+      remaining = remaining.slice(splitAt + 1).trim();
+    }
+
+    return { textContent: cleanedContent, chunks };
+  }
+
+  async function playCatWashFile(
+    file: any, storageRef: any, haUrl: string, speakerEntity: string,
+    appUrl: string, authParam: string, currentWeekNumber: number
+  ) {
+    const fileName = file.displayName || file.originalName || 'Unknown file';
+    const isModuleFile = file.folder?.toLowerCase().includes('module');
+    const fileType = isModuleFile ? 'module' : 'reading';
+    console.log(`[Cat Wash Auto] Playing: ${fileName} (${fileType}, id=${file.id})`);
+
+    const result = await extractAndChunkPdf(file);
+    if (!result || result.chunks.length === 0) {
+      console.error(`[Cat Wash Auto] Could not extract text from ${fileName}, skipping`);
+      await storageRef.updateFile(file.id, { listened: true });
+      const nextFile = await findNextCatWashFile(storageRef, currentWeekNumber, file.id);
+      if (nextFile && catWashPlaybackActive) {
+        const nextName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+        const skipText = `Could not read ${fileName}. Moving on to ${nextName}.`;
+        const skipAudioPath = await generateAndSaveTTSAudio(skipText, `catwash-skip-${Date.now()}`);
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: `${appUrl}${skipAudioPath}` }),
+        });
+        await new Promise(resolve => setTimeout(resolve, 6000));
+        await playCatWashFile(nextFile, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
+      }
+      return;
+    }
+
+    const { chunks } = result;
+
+    let resumeFromChunk = 0;
+    if (file.checkedChunks) {
+      try {
+        const checked = JSON.parse(file.checkedChunks) as number[];
+        if (checked.length > 0) {
+          resumeFromChunk = Math.max(...checked) + 1;
+          if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
+        }
+      } catch {}
+    }
+    if (resumeFromChunk === 0 && file.lastChunkIndex > 0) {
+      resumeFromChunk = file.lastChunkIndex;
+      if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
+    }
+
+    const progressKey = `file-${file.id}`;
+    const existingServerProgress = playbackProgress[progressKey];
+    if (existingServerProgress?.lastCompletedChunk != null && existingServerProgress.lastCompletedChunk > resumeFromChunk) {
+      resumeFromChunk = existingServerProgress.lastCompletedChunk;
+    }
+
+    // Update reader URL on display devices
+    const readerUrl = `${appUrl}/pdf-reader/${file.id}?catWashFollow=true&auth=${authParam}`;
+    const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
+    const fireTablets = [
+      { mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'] },
+      { mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'] },
+    ];
+
+    // Update all display devices to new PDF
+    await Promise.all([
+      ...fireTablets.map(async (device) => {
+        for (const app of device.mobileApps) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
+            });
+            if (resp.ok) break;
+          } catch {}
+        }
+      }),
+      (async () => {
+        for (const app of fireStickApps) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
+            });
+            if (resp.ok) break;
+          } catch {}
+        }
+      })(),
+    ]);
+
+    // Update playback state
+    catWashPlaybackState = {
+      fileId: file.id,
+      fileName,
+      chunkIndex: resumeFromChunk,
+      totalChunks: chunks.length,
+      chunks,
+      currentWords: [],
+      wordIndex: 0,
+      startedAt: new Date(),
+      chunkStartedAt: new Date(),
+      estimatedChunkDuration: 0,
+    };
+
+    // Play chunks
+    for (let i = resumeFromChunk; i < chunks.length; i++) {
+      if (!catWashPlaybackActive) {
+        console.log(`[Cat Wash Auto] Stopped at chunk ${i}`);
+        return;
+      }
+
+      const chunk = chunks[i];
+      const words = chunk.split(/\s+/);
+      console.log(`[Cat Wash Auto] Chunk ${i + 1}/${chunks.length} (${words.length} words)`);
+
+      if (catWashPlaybackState) {
+        catWashPlaybackState.chunkIndex = i;
+        catWashPlaybackState.currentWords = words;
+        catWashPlaybackState.wordIndex = 0;
+        catWashPlaybackState.chunkStartedAt = new Date();
+      }
+
+      try {
+        const audioPath = await generateAndSaveTTSAudio(chunk, `catwash-${file.id}-chunk-${i}`);
+        const fullAudioUrl = `${appUrl}${audioPath}`;
+
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullAudioUrl }),
+        });
+
+        const estimatedDuration = Math.max(8000, (words.length / 150) * 60 * 1000 + 3000);
+        if (catWashPlaybackState) {
+          catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
+        }
+
+        playbackProgress[progressKey] = {
+          chunkIndex: i,
+          lastCompletedChunk: i,
+          totalChunks: chunks.length,
+          lastPlayed: new Date(),
+          fileId: file.id,
+        };
+
+        await storageRef.updateFile(file.id, { lastChunkIndex: i, totalChunks: chunks.length });
+        await new Promise(resolve => setTimeout(resolve, estimatedDuration));
+      } catch (ttsError: any) {
+        console.error(`[Cat Wash Auto] Error on chunk ${i}:`, ttsError.message);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
+
+    // File complete - mark listened and auto-continue
+    if (catWashPlaybackActive) {
+      console.log(`[Cat Wash Auto] ${fileName} complete - marking listened`);
+      await storageRef.updateFile(file.id, { listened: true });
+
+      const nextFileToPlay = await findNextCatWashFile(storageRef, currentWeekNumber, file.id);
+      if (nextFileToPlay) {
+        const nextFileName = nextFileToPlay.displayName || nextFileToPlay.originalName || 'Unknown file';
+        const nextIsModule = nextFileToPlay.folder?.toLowerCase().includes('module');
+        const folderType = nextIsModule ? 'module' : 'reading';
+        const courseMatch = nextFileToPlay.folder?.match(/week-\d+-([a-z]+\d+)/i);
+        const courseName = courseMatch ? courseMatch[1].toUpperCase() : 'your course';
+
+        const transitionText = `The reading of ${fileName} has concluded. We will now begin playing ${nextFileName}, from ${courseName}, from the ${folderType} folder.`;
+        console.log(`[Cat Wash Auto] Transition: ${transitionText}`);
+
+        const announceAudioPath = await generateAndSaveTTSAudio(transitionText, `catwash-transition-${Date.now()}`);
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: `${appUrl}${announceAudioPath}` }),
+        });
+
+        const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
+        await new Promise(resolve => setTimeout(resolve, announceDuration));
+
+        if (!catWashPlaybackActive) return;
+        await playCatWashFile(nextFileToPlay, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
+      } else {
+        const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
+        const completionAudioPath = await generateAndSaveTTSAudio(completionText, `catwash-complete-${Date.now()}`);
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: `${appUrl}${completionAudioPath}` }),
+        });
+        await new Promise(resolve => setTimeout(resolve, 8000));
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
+        });
+        console.log("[Cat Wash Auto] All files complete - switched to radio");
+        catWashPlaybackActive = false;
+        catWashPlaybackState = null;
+      }
+    }
+  }
+
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
       console.log("[Cat Wash] Webhook triggered - finding next PDF file");
@@ -3857,102 +4197,11 @@ export async function registerRoutes(
       const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&auth=${authParam}`;
 
       // === STEP 1: Extract text from PDF for server-side TTS ===
-      let textContent = "";
-      try {
-        let content: Buffer;
-        const mediaUrl = nextFile.objectPath || '';
-
-        if (mediaUrl.startsWith("/objects/")) {
-          const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-          const objectStorage = new ObjectStorageService();
-          const objectFile = await objectStorage.getObjectEntityFile(mediaUrl);
-          const [downloaded] = await objectFile.download();
-          content = downloaded;
-        } else if (mediaUrl.startsWith("/School/")) {
-          const { getOneDriveClient } = await import("./onedrive");
-          const client = await getOneDriveClient();
-          const encodedPath = encodeURIComponent(mediaUrl).replace(/%2F/g, '/');
-          const item = await client.api(`/me/drive/root:${encodedPath}`).get();
-          const downloadUrl = item['@microsoft.graph.downloadUrl'];
-          if (!downloadUrl) throw new Error("Could not get OneDrive download URL");
-          const pdfResponse = await fetch(downloadUrl);
-          if (!pdfResponse.ok) throw new Error(`OneDrive download failed: ${pdfResponse.status}`);
-          content = Buffer.from(await pdfResponse.arrayBuffer());
-          console.log(`[Cat Wash] Downloaded ${content.length} bytes from OneDrive`);
-        } else if (mediaUrl.startsWith("onedrive://")) {
-          const folderPart = mediaUrl.replace('onedrive://', '').split('/')[0] || '';
-          const fileNamePart = mediaUrl.split('/').pop() || '';
-          const parts = folderPart.split('-');
-          const weekNum = parts[1];
-          const courseCode = parts[2]?.toUpperCase();
-          const basePath = `/School/1. TMU/Courses/2026/Winter`;
-          const baseFolders = await listOneDriveItems(basePath);
-          const matchedFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode));
-          if (!matchedFolder) throw new Error("Course folder not found in OneDrive");
-          const courseFolders = await listOneDriveItems(matchedFolder.path);
-          const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
-          if (!weekFolder) throw new Error("Week folder not found in OneDrive");
-          const weekContents = await listOneDriveItems(weekFolder.path);
-          const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module'));
-          if (!typeFolder) throw new Error("Type folder not found in OneDrive");
-          const files = await listOneDriveItems(typeFolder.path);
-          const matchedFile = files.find((f: any) => f.name === fileNamePart);
-          if (!matchedFile?.downloadUrl) throw new Error("File not found in OneDrive");
-          const pdfResponse = await fetch(matchedFile.downloadUrl);
-          content = Buffer.from(await pdfResponse.arrayBuffer());
-        } else if (mediaUrl.startsWith("http")) {
-          const pdfResponse = await fetch(mediaUrl);
-          content = Buffer.from(await pdfResponse.arrayBuffer());
-        } else {
-          throw new Error(`Unsupported path format: ${mediaUrl.substring(0, 50)}`);
-        }
-
-        const isPDF = content.slice(0, 4).toString() === '%PDF';
-        if (isPDF) {
-          const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(content) });
-          await parser.load();
-          const pdfText = await parser.getText();
-          if (pdfText && typeof pdfText === 'object') {
-            if (pdfText.pages && Array.isArray(pdfText.pages)) {
-              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
-            } else if (Array.isArray(pdfText)) {
-              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
-            } else if (pdfText.text) {
-              textContent = pdfText.text;
-            }
-          } else {
-            textContent = String(pdfText || '');
-          }
-          await parser.destroy();
-        } else {
-          textContent = content.toString('utf-8');
-        }
-        console.log(`[Cat Wash] Extracted ${textContent.length} chars of text`);
-      } catch (error: any) {
-        console.error("[Cat Wash] Text extraction error:", error);
-        return res.status(500).json({ error: "Failed to extract text from PDF", details: error.message });
-      }
-
-      // Clean and chunk the text
-      let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
-      if (cleanedContent.length < 10) {
+      const extractResult = await extractAndChunkPdf(nextFile);
+      if (!extractResult || extractResult.chunks.length === 0) {
         return res.status(400).json({ error: "PDF has no readable text content" });
       }
-
-      // Chunk at ~3500 chars, splitting at sentence boundaries
-      const chunks: string[] = [];
-      let remaining = cleanedContent;
-      while (remaining.length > 0) {
-        if (remaining.length <= 3500) { chunks.push(remaining); break; }
-        let splitAt = remaining.lastIndexOf('. ', 3500);
-        if (splitAt < 1000) splitAt = remaining.lastIndexOf('? ', 3500);
-        if (splitAt < 1000) splitAt = remaining.lastIndexOf('! ', 3500);
-        if (splitAt < 1000) splitAt = remaining.lastIndexOf(' ', 3500);
-        if (splitAt < 500) splitAt = 3500;
-        chunks.push(remaining.slice(0, splitAt + 1).trim());
-        remaining = remaining.slice(splitAt + 1).trim();
-      }
+      const { chunks } = extractResult;
 
       // Determine resume point from checked chunks or lastChunkIndex
       let resumeFromChunk = 0;
@@ -4177,12 +4426,68 @@ export async function registerRoutes(
             }
           }
 
-          // All chunks complete
+          // All chunks complete - mark listened and auto-continue to next file
           if (catWashPlaybackActive) {
             console.log(`[Cat Wash TTS] All ${chunks.length} chunks complete - marking file as listened`);
             await storage.updateFile(nextFile.id, { listened: true });
-            catWashPlaybackActive = false;
-            catWashPlaybackState = null;
+
+            // Find the next unlistened file in the priority list
+            const nextFileToPlay = await findNextCatWashFile(storage, currentWeekNumber, nextFile.id);
+
+            if (nextFileToPlay) {
+              const nextFileName = nextFileToPlay.displayName || nextFileToPlay.originalName || 'Unknown file';
+              const isModule = nextFileToPlay.folder?.toLowerCase().includes('module');
+              const folderType = isModule ? 'module' : 'reading';
+              const courseMatch = nextFileToPlay.folder?.match(/week-\d+-([a-z]+\d+)/i);
+              const courseName = courseMatch ? courseMatch[1].toUpperCase() : 'your course';
+
+              // Announce completion and next file
+              const transitionText = `The reading of ${fileName} has concluded. We will now begin playing ${nextFileName}, from ${courseName}, from the ${folderType} folder.`;
+              console.log(`[Cat Wash TTS] Transition announcement: ${transitionText}`);
+
+              const announceAudioPath = await generateAndSaveTTSAudio(transitionText, `catwash-transition-${Date.now()}`);
+              const fullAnnounceUrl = `${appUrl}${announceAudioPath}`;
+              await fetch(`${haUrl}/api/services/media_player/play_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullAnnounceUrl }),
+              });
+
+              // Wait for announcement to finish (~5 seconds per sentence)
+              const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
+              await new Promise(resolve => setTimeout(resolve, announceDuration));
+
+              if (!catWashPlaybackActive) {
+                console.log("[Cat Wash TTS] Stopped during transition announcement");
+                catWashPlaybackState = null;
+                return;
+              }
+
+              // Auto-play the next file
+              console.log(`[Cat Wash TTS] Auto-continuing to: ${nextFileName}`);
+              await playCatWashFile(nextFileToPlay, storage, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
+            } else {
+              // No more files - announce completion and play radio
+              const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
+              const completionAudioPath = await generateAndSaveTTSAudio(completionText, `catwash-complete-${Date.now()}`);
+              const fullCompletionUrl = `${appUrl}${completionAudioPath}`;
+              await fetch(`${haUrl}/api/services/media_player/play_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullCompletionUrl }),
+              });
+              await new Promise(resolve => setTimeout(resolve, 8000));
+              
+              // Switch to radio
+              await fetch(`${haUrl}/api/services/media_player/play_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
+              });
+              console.log("[Cat Wash TTS] All files complete - switched to radio");
+              catWashPlaybackActive = false;
+              catWashPlaybackState = null;
+            }
           }
 
         } catch (bgError: any) {
