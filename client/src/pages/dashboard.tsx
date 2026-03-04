@@ -10684,31 +10684,33 @@ export default function Dashboard() {
           startAutoHide();
         };
 
-        const btnStyle = (slot: number, bg: string, extraStyle?: React.CSSProperties): React.CSSProperties => ({
+        const btnStyle = (slot: number, _bg: string, extraStyle?: React.CSSProperties): React.CSSProperties => ({
           position: 'absolute',
           width: '44px',
           height: '44px',
           top: `${4 + (slot * 52)}px`,
           right: '8px',
           borderRadius: '50%',
-          background: bg,
-          padding: '1px',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1.5px solid rgba(255,255,255,0.35)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
           cursor: 'pointer',
           pointerEvents: 'auto',
-          ...extraStyle,
-        });
-        const innerStyle = (bg: string, shadow?: string): React.CSSProperties => ({
-          position: 'absolute',
-          top: '1px',
-          left: '1px',
-          width: '42px',
-          height: '42px',
-          borderRadius: '50%',
-          background: bg,
-          boxShadow: shadow || 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          ...extraStyle,
+        });
+        const innerStyle = (_bg: string, _shadow?: string): React.CSSProperties => ({
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          borderRadius: '50%',
+          background: 'transparent',
         });
 
         return (
