@@ -382,6 +382,16 @@ button[role="combobox"] > span {
 .pill-button-hover:active {
   transform: scale(1.05);
 }
+.pill-button-hover[data-state="open"] {
+  transform: scale(1);
+  filter: brightness(1);
+}
+
+[data-radix-menu-content] [role="menuitem"]:hover,
+[data-radix-menu-content] [role="menuitem"][data-highlighted] {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
 
 .calendar-icon-shimmer {
   position: relative;
