@@ -13847,7 +13847,7 @@ export default function Dashboard() {
               right: '-15px', 
               bottom: '-27px', 
               background: 'rgba(255, 255, 255, 0.35)',
-              borderRadius: '12px',
+              borderRadius: '20px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
@@ -16502,7 +16502,7 @@ export default function Dashboard() {
               right: '-15px', 
               bottom: '-27px', 
               background: 'rgba(255, 255, 255, 0.35)',
-              borderRadius: '12px',
+              borderRadius: '20px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
