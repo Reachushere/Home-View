@@ -7969,7 +7969,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-2 px-0 mx-6 border-b border-white/10" style={{ marginTop: '-7px' }}>
+          <div className="flex items-center justify-between gap-2 p-1.5 px-0 mx-6 border-b border-white/10" style={{ marginTop: '-7px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
