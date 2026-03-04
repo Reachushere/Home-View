@@ -3812,26 +3812,26 @@ export async function registerRoutes(
       console.log(`[Cat Wash] Opening: ${nextFile.displayName || nextFile.originalName} (${fileType})`);
       console.log(`[Cat Wash] Tablet URL: ${readerUrl}`);
 
-      const tabletResults: Record<string, string> = {};
+      const deviceResults: Record<string, string> = {};
 
-      const catWashTablets = [
+      const catWashDevices = [
         {
           name: 'tablet_cat_wall',
+          mediaPlayerEntity: 'media_player.tablet_cat',
           mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'],
-          alexaNotify: 'alexa_media_tablet_cat_wall',
         },
         {
           name: 'tablet_catn',
+          mediaPlayerEntity: null,
           mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'],
-          alexaNotify: 'alexa_media_tablet_cat',
         },
       ];
 
-      await Promise.all(catWashTablets.map(async (tablet) => {
-        let success = false;
+      await Promise.all(catWashDevices.map(async (device) => {
+        const methods: string[] = [];
 
-        // Method 1: HA Companion App command_webview (works if app is awake)
-        for (const app of tablet.mobileApps) {
+        // Method 1: HA Companion App command_webview (best if app is connected)
+        for (const app of device.mobileApps) {
           try {
             const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
               method: 'POST',
@@ -3844,62 +3844,83 @@ export async function registerRoutes(
                 data: { url: readerUrl }
               }),
             });
-            console.log(`[Cat Wash] ${tablet.name} → ${app} command_webview: ${resp.status}`);
-            if (resp.ok) { success = true; break; }
+            console.log(`[Cat Wash] ${device.name} → ${app} command_webview: ${resp.status}`);
+            if (resp.ok) { methods.push(`${app}:webview`); break; }
           } catch (e) {
-            console.log(`[Cat Wash] ${tablet.name} → ${app} failed: ${e}`);
+            console.log(`[Cat Wash] ${device.name} → ${app} failed: ${e}`);
           }
         }
 
-        // Method 2: Alexa Media Player notification
-        if (!success && tablet.alexaNotify) {
+        // Method 2: HA Companion App with clickable notification (fallback - shows notification user can tap)
+        for (const app of device.mobileApps) {
           try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${tablet.alexaNotify}`, {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                message: "command_launch_app",
+                title: "PDF Reader Ready",
+                message: "Tap to open your reading",
                 data: {
-                  package_name: "com.amazon.cloud9",
-                  intent_uri: readerUrl
+                  clickAction: readerUrl,
+                  url: readerUrl,
+                  tag: "cat-wash-reader",
+                  importance: "high",
+                  channel: "cat-wash",
+                  sticky: true,
                 }
               }),
             });
-            console.log(`[Cat Wash] ${tablet.name} → ${tablet.alexaNotify} launch_app: ${resp.status}`);
-            if (resp.ok) success = true;
-          } catch (e) {
-            console.log(`[Cat Wash] ${tablet.name} → ${tablet.alexaNotify} failed: ${e}`);
-          }
+            console.log(`[Cat Wash] ${device.name} → ${app} notification: ${resp.status}`);
+            if (resp.ok) { methods.push(`${app}:notification`); break; }
+          } catch (e) {}
         }
 
-        // Method 3: browser_mod navigate
-        if (!success) {
+        // Method 3: media_player.play_media on tablet entity (opens URL in browser)
+        if (device.mediaPlayerEntity) {
           try {
-            const resp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                browser_id: tablet.name,
-                path: readerUrl
+                entity_id: device.mediaPlayerEntity,
+                media_content_id: readerUrl,
+                media_content_type: 'url',
               }),
             });
-            console.log(`[Cat Wash] ${tablet.name} → browser_mod navigate: ${resp.status}`);
-            if (resp.ok) success = true;
+            console.log(`[Cat Wash] ${device.name} → play_media: ${resp.status}`);
+            if (resp.ok) methods.push('play_media');
           } catch (e) {
-            console.log(`[Cat Wash] ${tablet.name} → browser_mod failed: ${e}`);
+            console.log(`[Cat Wash] ${device.name} → play_media failed: ${e}`);
           }
         }
 
-        tabletResults[tablet.name] = success ? 'OK' : 'FAILED';
+        // Method 4: browser_mod navigate
+        try {
+          const resp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              browser_id: device.name,
+              path: readerUrl
+            }),
+          });
+          console.log(`[Cat Wash] ${device.name} → browser_mod: ${resp.status}`);
+          if (resp.ok) methods.push('browser_mod');
+        } catch (e) {}
+
+        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'FAILED';
       }));
 
-      console.log(`[Cat Wash] Navigation results: ${JSON.stringify(tabletResults)}`);
+      console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
 
       const tvEntity = 'media_player.tv_cat_wr';
       try {
