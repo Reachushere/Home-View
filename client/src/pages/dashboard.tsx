@@ -9020,7 +9020,7 @@ export default function Dashboard() {
                     min={0.5}
                     max={2}
                     step={0.05}
-                    className="w-20 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0"
+                    className="w-20 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&>span>span]:bg-green-500"
                     data-testid="slider-speed"
                   />
                   <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
