@@ -13794,9 +13794,13 @@ export default function Dashboard() {
               left: '-15px', 
               right: '-15px', 
               bottom: '-27px', 
-              background: 'rgba(255, 255, 255, 0.35)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
               borderRadius: '20px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
             }}
           />
           
