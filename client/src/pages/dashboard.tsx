@@ -15670,33 +15670,16 @@ export default function Dashboard() {
                     
                     lines.push(
                       <g key="dotted-line">
-                        <defs>
-                          <clipPath id="dotted-clip-white-box">
-                            <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
-                          </clipPath>
-                          <clipPath id="dotted-clip-outside">
-                            <rect x="0" y={whiteBoxBottom} width="9999" height={endY - whiteBoxBottom + 20} />
-                          </clipPath>
-                        </defs>
                         <path
                           d={pathD}
                           fill="none"
-                          stroke="rgba(0,0,0,0.85)"
-                          strokeWidth="1.5"
+                          stroke="#000000"
+                          strokeWidth="2"
                           strokeDasharray="6 3"
-                          clipPath="url(#dotted-clip-white-box)"
-                        />
-                        <path
-                          d={pathD}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="1.5"
-                          strokeDasharray="6 3"
-                          clipPath="url(#dotted-clip-outside)"
                         />
                         <polygon
                           points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                          fill={isDarkEnd ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)"}
+                          fill="#000000"
                         />
                       </g>
                     );
@@ -15775,43 +15758,15 @@ export default function Dashboard() {
                   
                   lines.push(
                     <g key="solid-line">
-                      <defs>
-                        <clipPath id="solid-clip-white-box">
-                          <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
-                        </clipPath>
-                        <clipPath id="solid-clip-gap">
-                          <rect x="0" y={whiteBoxBottom} width="9999" height={calendarTop - whiteBoxBottom} />
-                        </clipPath>
-                        <clipPath id="solid-clip-calendar">
-                          <rect x="0" y={calendarTop} width="9999" height={endY - calendarTop + 20} />
-                        </clipPath>
-                      </defs>
                       <path
                         d={pathD}
                         fill="none"
-                        stroke="rgba(0,0,0,0.85)"
-                        strokeWidth="1.5"
-                        clipPath="url(#solid-clip-white-box)"
-                      />
-                      {hasGap && (
-                        <path
-                          d={pathD}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="1.5"
-                          clipPath="url(#solid-clip-gap)"
-                        />
-                      )}
-                      <path
-                        d={pathD}
-                        fill="none"
-                        stroke="rgba(0,0,0,0.7)"
-                        strokeWidth="1.5"
-                        clipPath="url(#solid-clip-calendar)"
+                        stroke="#000000"
+                        strokeWidth="2"
                       />
                       <polygon
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                        fill="rgba(0,0,0,0.9)"
+                        fill="#000000"
                       />
                     </g>
                   );
