@@ -3926,9 +3926,9 @@ export async function registerRoutes(
       const tvMac = 'D8:A3:5C:EB:48:59';
       try {
         const turnOnMethods = [
+          { service: 'remote/send_command', body: { entity_id: 'remote.tv_cat_wr', command: 'KEY_POWER' } },
           { service: 'wake_on_lan/send_magic_packet', body: { mac: tvMac } },
           { service: 'media_player/turn_on', body: { entity_id: tvEntity } },
-          { service: 'remote/turn_on', body: { entity_id: 'remote.tv_cat_wr' } },
         ];
 
         for (const method of turnOnMethods) {
