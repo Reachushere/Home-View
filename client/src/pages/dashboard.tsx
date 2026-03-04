@@ -14499,7 +14499,7 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-[3px]">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                                   {moduleUnread > 0 && moduleP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
+                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px', marginLeft: '7px' }}>
                                       {moduleUnread}
                                     </div>
                                   )}
