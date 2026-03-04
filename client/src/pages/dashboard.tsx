@@ -14524,7 +14524,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('module')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
                               >
-                                <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '33px', height: 'auto', display: 'block', marginLeft: '-1px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '31px', height: 'auto', display: 'block', marginLeft: '-1px', marginTop: '1px', marginBottom: '1px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }}>
@@ -14557,7 +14557,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('reading')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
                               >
-                                <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '33px', height: 'auto', display: 'block', marginLeft: '-1px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '31px', height: 'auto', display: 'block', marginLeft: '-1px', marginTop: '1px', marginBottom: '1px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                           </>
