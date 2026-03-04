@@ -1727,9 +1727,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', location: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '' };
+    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1861,7 +1861,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -18821,9 +18821,9 @@ function ProfileForm({
   profilePhotoUrl,
   onProfilePhotoChange
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string }) => void;
   onCancel: () => void;
   profilePhotoUrl: string | null;
   onProfilePhotoChange: (url: string | null) => void;
@@ -18842,10 +18842,12 @@ function ProfileForm({
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
   const [postalCode, setPostalCode] = useState(profileData.postalCode || '');
   const [location, setLocation] = useState(profileData.location || '');
+  const [phoneNumber, setPhoneNumber] = useState(profileData.phoneNumber || '');
+  const [email, setEmail] = useState(profileData.email || '');
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email });
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19013,6 +19015,32 @@ function ProfileForm({
           data-testid="input-profile-postalcode"
         />
         <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
+        <Input 
+          id="phoneNumber" 
+          type="tel"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          placeholder="e.g. +1 (416) 555-0123"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
+          data-testid="input-profile-phone"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-[10px]">Email</Label>
+        <Input 
+          id="email" 
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="e.g. name@example.com"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
+          data-testid="input-profile-email"
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
