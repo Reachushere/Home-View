@@ -16924,7 +16924,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#204160'
+                backgroundColor: '#152f4a'
               }}
             >
               <h4 
@@ -17048,7 +17048,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#204160'
+                backgroundColor: '#152f4a'
               }}
             >
               <h4 
@@ -17166,7 +17166,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#204160'
+                backgroundColor: '#152f4a'
               }}
             >
               <h4 
