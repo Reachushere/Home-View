@@ -15668,7 +15668,6 @@ export default function Dashboard() {
                     const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
                     const isDarkEnd = endY >= courseRowsRect.top - 10;
                     
-                    const courseRowsTop = courseRowsRect.top;
                     lines.push(
                       <g key="dotted-line">
                         <defs>
@@ -15676,13 +15675,9 @@ export default function Dashboard() {
                             <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
                           </clipPath>
                           <clipPath id="dotted-clip-below-whitebox">
-                            <rect x="0" y={whiteBoxBottom} width="9999" height={courseRowsTop - whiteBoxBottom} />
-                          </clipPath>
-                          <clipPath id="dotted-clip-course-rows">
-                            <rect x="0" y={courseRowsTop} width="9999" height={endY - courseRowsTop + 20} />
+                            <rect x="0" y={whiteBoxBottom} width="9999" height={endY - whiteBoxBottom + 20} />
                           </clipPath>
                         </defs>
-                        {}
                         <path
                           d={pathD}
                           fill="none"
@@ -15691,14 +15686,13 @@ export default function Dashboard() {
                           strokeDasharray="6 3"
                           clipPath="url(#dotted-clip-over-whitebox)"
                         />
-                        {}
                         <path
                           d={pathD}
                           fill="none"
                           stroke="rgba(255,255,255,0.9)"
                           strokeWidth="2"
                           strokeDasharray="6 3"
-                          clipPath="url(#dotted-clip-course-rows)"
+                          clipPath="url(#dotted-clip-below-whitebox)"
                         />
                         <polygon
                           points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
