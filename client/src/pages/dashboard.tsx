@@ -10676,12 +10676,12 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white font-bold tracking-wide uppercase whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
+          <span className="text-[10px] text-white font-normal tracking-wide whitespace-nowrap" style={{ marginLeft: '4px', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white border-0 tracking-wide uppercase underline relative -top-[4px]"
-          style={{ marginRight: '21px' }}
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-normal text-white border-0 tracking-wide relative -top-[4px]"
+          style={{ marginRight: '21px', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}
           onClick={() => {
             if (calendarView === "week") {
               setCurrentMonth(new Date());
