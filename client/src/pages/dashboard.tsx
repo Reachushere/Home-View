@@ -524,7 +524,7 @@ export default function Dashboard() {
       el.style.transform = current;
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateY(5px)';
+      el.style.transform = 'translateY(4px)';
     }
     setIsTopPillOpen(true);
   }, [isTopPillOpen]);
@@ -9230,7 +9230,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: '0px',
           right: '70px',
-          transform: `translateY(${isTopPillOpen ? '5px' : '-56px'})`,
+          transform: `translateY(${isTopPillOpen ? '4px' : '-56px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
@@ -9782,7 +9782,7 @@ export default function Dashboard() {
       </div>
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
-      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '5px', zIndex: 100, padding: '0 17px 0 17px', gap: '0px', position: 'fixed' }}>
+      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '4px', zIndex: 100, padding: '0 17px 0 17px', gap: '0px', position: 'fixed' }}>
         {/* Glass backing element (duplicate of countdown box styling) - behind all content */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', borderTop: '1.5px solid rgba(255,255,255,0.55)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', pointerEvents: 'none' }} />
         {/* Add Button */}
