@@ -9780,25 +9780,25 @@ export default function Dashboard() {
         <Share 
           className="h-3.5 w-3.5 text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ position: 'fixed', right: `${calendarRight + 332}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ position: 'fixed', right: `${calendarRight + 330}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
       )}
 
       {/* Separator between share and timer numbers */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 322}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 320}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Pomodoro Timer Numbers - fixed position */}
       <div ref={clockContainerRef} className={`flex items-center ${
         pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
         pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-      }`} style={{ position: 'fixed', right: `${calendarRight + 257}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+      }`} style={{ position: 'fixed', right: `${calendarRight + 255}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
         <span className="text-[10px] text-white" style={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
       </div>
 
       {/* Pomodoro Controls - fixed position */}
-      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 197}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 195}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
           {pomodoroRunning ? <Pause className="h-[10px] w-[10px] text-white" strokeWidth={2.5} /> : <Play className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />}
         </button>
@@ -9811,10 +9811,10 @@ export default function Dashboard() {
       </div>
 
       {/* Separator between controls and date */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 187}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 185}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Date - fixed position */}
-      <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 55}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+      <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 53}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
 
