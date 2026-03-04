@@ -9801,7 +9801,7 @@ export default function Dashboard() {
             <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
           </svg>
         </span>
-        <span className="text-[10px] text-white/60" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
+        <span className="text-[10px] text-white" style={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
       </div>
 
       {/* Pomodoro Controls - fixed position */}
