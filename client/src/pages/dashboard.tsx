@@ -15668,18 +15668,41 @@ export default function Dashboard() {
                     const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
                     const isDarkEnd = endY >= courseRowsRect.top - 10;
                     
+                    const courseRowsTop = courseRowsRect.top;
                     lines.push(
                       <g key="dotted-line">
+                        <defs>
+                          <clipPath id="dotted-clip-over-whitebox">
+                            <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
+                          </clipPath>
+                          <clipPath id="dotted-clip-below-whitebox">
+                            <rect x="0" y={whiteBoxBottom} width="9999" height={courseRowsTop - whiteBoxBottom} />
+                          </clipPath>
+                          <clipPath id="dotted-clip-course-rows">
+                            <rect x="0" y={courseRowsTop} width="9999" height={endY - courseRowsTop + 20} />
+                          </clipPath>
+                        </defs>
+                        {}
                         <path
                           d={pathD}
                           fill="none"
                           stroke="#000000"
                           strokeWidth="2"
                           strokeDasharray="6 3"
+                          clipPath="url(#dotted-clip-over-whitebox)"
+                        />
+                        {}
+                        <path
+                          d={pathD}
+                          fill="none"
+                          stroke="rgba(255,255,255,0.9)"
+                          strokeWidth="2"
+                          strokeDasharray="6 3"
+                          clipPath="url(#dotted-clip-course-rows)"
                         />
                         <polygon
                           points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                          fill="#000000"
+                          fill={isDarkEnd ? "rgba(255,255,255,0.9)" : "#000000"}
                         />
                       </g>
                     );
@@ -15758,11 +15781,42 @@ export default function Dashboard() {
                   
                   lines.push(
                     <g key="solid-line">
+                      <defs>
+                        <clipPath id="solid-clip-over-whitebox">
+                          <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
+                        </clipPath>
+                        <clipPath id="solid-clip-gap">
+                          <rect x="0" y={whiteBoxBottom} width="9999" height={calendarTop - whiteBoxBottom} />
+                        </clipPath>
+                        <clipPath id="solid-clip-on-calendar">
+                          <rect x="0" y={calendarTop} width="9999" height={endY - calendarTop + 20} />
+                        </clipPath>
+                      </defs>
+                      {}
                       <path
                         d={pathD}
                         fill="none"
                         stroke="#000000"
                         strokeWidth="2"
+                        clipPath="url(#solid-clip-over-whitebox)"
+                      />
+                      {}
+                      {hasGap && (
+                        <path
+                          d={pathD}
+                          fill="none"
+                          stroke="rgba(255,255,255,0.9)"
+                          strokeWidth="2"
+                          clipPath="url(#solid-clip-gap)"
+                        />
+                      )}
+                      {}
+                      <path
+                        d={pathD}
+                        fill="none"
+                        stroke="#000000"
+                        strokeWidth="2"
+                        clipPath="url(#solid-clip-on-calendar)"
                       />
                       <polygon
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
