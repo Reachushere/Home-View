@@ -9814,19 +9814,19 @@ export default function Dashboard() {
       <div style={{ position: 'fixed', right: `${calendarRight + 183}px`, top: '7px', zIndex: 100, width: '1.5px', height: '14px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Date - fixed position */}
-      <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 51}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+      <span className="text-[10px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 51}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
 
       {/* Time - fixed position */}
       <div style={{ position: 'fixed', right: `${calendarRight - 11}px`, top: '8px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <span className="text-white/60" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
-        <span className="text-white/60" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
-        <span className="text-white/60" style={{ fontSize: '8px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '8px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
         </span>
         {profileData.travelTimezone && (
@@ -10592,7 +10592,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white/60 whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
+          <span className="text-[10px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
@@ -10603,11 +10603,11 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white/60 font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
+          <span className="text-[10px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight relative -top-[4px]"
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight relative -top-[4px]"
           style={{ marginRight: '0px' }}
           onClick={() => {
             if (calendarView === "week") {
