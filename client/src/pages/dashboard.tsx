@@ -10611,7 +10611,7 @@ export default function Dashboard() {
           }}
           data-testid="button-month-view"
         >
-          {calendarView === "month" ? "Week" : "Month"}
+          {calendarView === "month" ? "Week" : "Month View"}
         </Button>
       </div>
       {isAdmin && (
