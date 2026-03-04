@@ -8097,7 +8097,7 @@ export default function Dashboard() {
               >
                 <Plus className="h-3.5 w-3.5 text-white" />
               </Button>
-              <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
+              <span className="text-[11px] text-white w-7">{radioVolume}%</span>
             </div>
             
             <div className="w-px h-6 bg-white/30" />
