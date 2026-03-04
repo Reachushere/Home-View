@@ -9100,8 +9100,8 @@ export default function Dashboard() {
                   }
                 }
                 return (
-              <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10" data-testid="chunk-completion-bar">
-                <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
+              <div className="flex items-center gap-2 px-2 py-1 rounded-md" data-testid="chunk-completion-bar">
+                <div className="w-24 h-2.5 bg-white/40 rounded-full overflow-hidden">
                   <div 
                     className="h-full transition-all duration-300 rounded-full"
                     style={{ background: barColor, width: `${totalChunks > 0 
