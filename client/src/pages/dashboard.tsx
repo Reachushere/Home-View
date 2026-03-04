@@ -9238,6 +9238,7 @@ export default function Dashboard() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          pointerEvents: 'none',
         }}
         onMouseEnter={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
