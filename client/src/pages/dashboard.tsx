@@ -6609,18 +6609,20 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? colorSettings.mainBackground : '#000000'
       }}
     >
-      {/* Background image layer with brightness */}
-      <div 
-        className="absolute inset-0"
-        style={{ 
-          backgroundImage: `url(${dashboardBg})`,
-          backgroundSize: '100% 100%',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          filter: 'brightness(1.8)',
-          zIndex: 0
-        }}
-      />
+      {/* Background image layer with brightness - hidden when overlay is active since overlay is fully opaque */}
+      {!colorSettings.mainBackgroundOverlay && (
+        <div 
+          className="absolute inset-0"
+          style={{ 
+            backgroundImage: `url(${dashboardBg})`,
+            backgroundSize: '100% 100%',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'brightness(1.8)',
+            zIndex: 0
+          }}
+        />
+      )}
       {/* Main Background Color Overlay */}
       {colorSettings.mainBackgroundOverlay && (
         <div 
