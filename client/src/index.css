@@ -262,14 +262,14 @@ button[role="combobox"] > span {
 }
 
 @keyframes top-pill-container-nudge {
-  0%, 70% { transform: translateY(-61px); }
-  74% { transform: translateY(-55px); }
-  78% { transform: translateY(-61px); }
-  82% { transform: translateY(-56px); }
-  86% { transform: translateY(-61px); }
-  90% { transform: translateY(-57px); }
-  94% { transform: translateY(-61px); }
-  100% { transform: translateY(-61px); }
+  0%, 70% { transform: translateY(-63px); }
+  74% { transform: translateY(-57px); }
+  78% { transform: translateY(-63px); }
+  82% { transform: translateY(-58px); }
+  86% { transform: translateY(-63px); }
+  90% { transform: translateY(-59px); }
+  94% { transform: translateY(-63px); }
+  100% { transform: translateY(-63px); }
 }
 
 .top-pill-container-idle {

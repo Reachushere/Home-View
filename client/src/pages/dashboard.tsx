@@ -524,7 +524,7 @@ export default function Dashboard() {
       el.style.transform = current;
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateY(7px)';
+      el.style.transform = 'translateY(9px)';
     }
     setIsTopPillOpen(true);
   }, [isTopPillOpen]);
@@ -534,7 +534,7 @@ export default function Dashboard() {
       el.style.animation = 'none';
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateY(-61px)';
+      el.style.transform = 'translateY(-63px)';
       setTimeout(() => {
         if (el) {
           el.style.animation = '';
@@ -9151,7 +9151,7 @@ export default function Dashboard() {
             className="font-raleway"
             style={{
               position: 'fixed',
-              top: '22px',
+              top: '18px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
@@ -9230,7 +9230,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: `${calendarLeft - 15}px`,
           right: `${calendarRight - 15}px`,
-          transform: `translateY(${isTopPillOpen ? '7px' : '-61px'})`,
+          transform: `translateY(${isTopPillOpen ? '9px' : '-63px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
