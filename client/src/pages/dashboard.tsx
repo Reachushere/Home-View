@@ -8034,7 +8034,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-0 mx-6" style={{ marginTop: '-24px' }}>
+          <div className="flex items-center justify-evenly p-1.5 mx-6" style={{ marginTop: '-20px', paddingLeft: '15px', paddingRight: '15px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
