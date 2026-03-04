@@ -9162,7 +9162,7 @@ export default function Dashboard() {
           >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '16px', padding: '2px 16px 2px 68px', minWidth: '395px', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-56px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '2px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                 <div
                   style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                   onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
