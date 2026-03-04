@@ -9172,7 +9172,7 @@ export default function Dashboard() {
                   <span style={{ color: '#000000', fontSize: '15px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                   <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                   <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                  <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}><b style={{ textTransform: 'uppercase' }}>{next.title}</b>{courseForNext ? <>{' — '}<b style={{ textTransform: 'uppercase' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</b></> : ''} is coming up.</span>
+                  <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have <b style={{ textTransform: 'uppercase' }}>{next.title}</b>{courseForNext ? <>{' — '}<b style={{ textTransform: 'uppercase' }}>{courseForNext.name.split(' - ')[1] || courseForNext.name.split(' - ')[0]}</b></> : ''}.</span>
                 </div>
                 {prepDaysText && nextPrep && (
                   <div
