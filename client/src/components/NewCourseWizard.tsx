@@ -269,7 +269,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
                 />
               </div>
             </div>
-            <div className="w-10 h-6 rounded-md" style={{ background: `linear-gradient(to right, ${data.color}, ${data.colorEnd})` }} />
+            <div className="rounded-full" style={{ width: '10px', height: '5px', background: `linear-gradient(to right, ${data.color}, ${data.colorEnd})` }} />
             <div className="flex flex-col items-center gap-1">
               <span className="text-[8px] text-white/40 uppercase tracking-wider">End</span>
               <div className="relative">
