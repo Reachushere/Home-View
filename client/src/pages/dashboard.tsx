@@ -1776,10 +1776,11 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Map lastDayOfSchoolWeek to the display column index (0=Sun, 1=Mon, ... 6=Sat)
+  // Derive last school day from firstDayOfWeek (separator goes between last day and first day)
   const lastSchoolDayIndex = (() => {
     const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
-    return dayMap[schoolData.lastDayOfSchoolWeek] ?? 5;
+    const firstDayIdx = dayMap[schoolData.firstDayOfWeek] ?? 6;
+    return firstDayIdx === 0 ? 6 : firstDayIdx - 1;
   })();
 
   // Progress column grid position (1-based, accounting for time column and optional module column)
