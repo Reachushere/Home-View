@@ -3922,23 +3922,22 @@ export async function registerRoutes(
 
       console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
 
-      const tvEntity = 'media_player.tv_cat_wr';
+      const fireTvEntity = 'media_player.fire_tv_172_24_2_91';
       try {
-        const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            entity_id: tvEntity,
-            media_content_id: readerUrl,
-            media_content_type: 'url',
+            entity_id: fireTvEntity,
+            command: `am start -a android.intent.action.VIEW -d ${readerUrl}`,
           }),
         });
-        console.log(`[Cat Wash] TV play_media: ${playResp.status}`);
+        console.log(`[Cat Wash] Fire TV ADB open URL: ${adbResp.status}`);
       } catch (e) {
-        console.log(`[Cat Wash] TV error (WiFi TV - cannot wake remotely): ${e}`);
+        console.log(`[Cat Wash] Fire TV error: ${e}`);
       }
 
       res.json({
