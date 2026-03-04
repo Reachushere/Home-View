@@ -215,6 +215,7 @@ const SPEAKERS = [
   { id: "media_player.echo_cat_right_am", name: "Cat Washroom Right" },
   { id: "media_player.echo_cat_washroom_middle", name: "Cat Washroom Middle" },
   { id: "media_player.echo_closet_am", name: "Closet" },
+  { id: "media_player.echo_lr_couch_r_am", name: "Echo Corner" },
   { id: "media_player.echo_hallway_entrance_am", name: "Hallway Entrance" },
   { id: "media_player.echo_king_l_am", name: "King Left" },
   { id: "media_player.echo_king_r_am", name: "King Right" },
@@ -9495,6 +9496,7 @@ export default function Dashboard() {
                       <SelectItem value="media_player.echo_cat_right_am">Cat Washroom Right</SelectItem>
                       <SelectItem value="media_player.echo_cat_washroom_middle">Cat Washroom Middle</SelectItem>
                       <SelectItem value="media_player.echo_closet_am">Closet</SelectItem>
+                      <SelectItem value="media_player.echo_lr_couch_r_am">Echo Corner</SelectItem>
                       <SelectItem value="media_player.echo_hallway_entrance_am">Hallway Entrance</SelectItem>
                       <SelectItem value="media_player.echo_king_l_am">King Left</SelectItem>
                       <SelectItem value="media_player.echo_king_r_am">King Right</SelectItem>
