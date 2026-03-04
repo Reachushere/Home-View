@@ -190,7 +190,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
   const totalGradeWeight = data.tasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
 
   const renderStepIndicator = () => (
-    <div className="flex items-center gap-1 px-4 py-2 bg-black/20 border-b border-white/10">
+    <div className="flex items-center gap-1 px-4 py-2 bg-white/10 border-b border-white/20">
       {WIZARD_STEPS.map((s, i) => (
         <div key={s.id} className="flex items-center">
           <button
@@ -707,10 +707,10 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
+        className="border border-white/30 backdrop-blur-[3px] bg-white/[0.4] rounded-lg w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: 'linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.1) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3.5 w-3.5 text-white" />
             <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
@@ -737,7 +737,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
           {step === 6 && renderStep6()}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-white/20 bg-white/10 flex-shrink-0">
           <Button
             variant="outline"
             onClick={step === 1 ? onClose : handleBack}
