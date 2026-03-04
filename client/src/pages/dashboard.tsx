@@ -13450,9 +13450,6 @@ export default function Dashboard() {
                           data-testid="toggle-show-arrows"
                         />
                       </div>
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        Lines connecting task boxes to calendar entries
-                      </p>
                     </div>
                     
                     </div>
