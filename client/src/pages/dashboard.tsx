@@ -13368,7 +13368,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column */}
-                <div className="flex flex-col gap-4 justify-between">
+                <div className="flex flex-col gap-4 justify-between" style={{ marginTop: '-2px' }}>
                 <div className="flex flex-col gap-4">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
