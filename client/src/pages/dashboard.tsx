@@ -7890,7 +7890,7 @@ export default function Dashboard() {
                     >
                       <SelectTrigger 
                         className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
-                        style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.3px' }}
+                        style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }}
                         data-testid="select-module-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>
                           {(() => {
@@ -7934,7 +7934,7 @@ export default function Dashboard() {
                     >
                       <SelectTrigger 
                         className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
-                        style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.3px' }}
+                        style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }}
                         data-testid="select-reading-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>{readingFiles.length === 0 ? 'No readings' : (() => { const f = isReading && previewFile ? previewFile : readingFiles[0]; return f ? (f.displayName || f.originalName || 'No readings').replace(/\.pdf$/i, '') : 'No readings'; })()}</span>
                       </SelectTrigger>
