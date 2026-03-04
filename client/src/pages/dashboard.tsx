@@ -22,7 +22,7 @@ import taskButtonBg from "@assets/Task_1769694788992.png";
 import pdfLogo from "@assets/Adobe51_1772514760872.png";
 import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
-import pdfIconPath from "@assets/Adobe66_1772600493806.png";
+import pdfIconPath from "@assets/Adobe67_1772600670300.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
