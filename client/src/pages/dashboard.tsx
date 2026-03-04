@@ -12484,7 +12484,7 @@ export default function Dashboard() {
                           </label>
                         </div>
                         {semCourse && (semCourse.delivery || semCourse.day || semCourse.time) && (
-                          <div className="flex items-center gap-2 pl-4 text-[9px] text-white/50">
+                          <div className="flex items-center gap-2 pl-4 text-[10px] text-white/50">
                             {semCourse.delivery && <span>{semCourse.delivery}</span>}
                             {semCourse.day && <span>{semCourse.day}{semCourse.day2 ? `/${semCourse.day2}` : ''}</span>}
                             {semCourse.time && <span>{semCourse.time}{semCourse.endTime ? `-${semCourse.endTime}` : ''}</span>}
@@ -12502,7 +12502,7 @@ export default function Dashboard() {
                           const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
                           if (courseTasks.length === 0) return null;
                           return (
-                            <div className="flex items-center gap-2 pl-4 text-[9px]" data-testid={`grade-display-${courseCode}`}>
+                            <div className="flex items-center gap-2 pl-4 text-[10px]" data-testid={`grade-display-${courseCode}`}>
                               <span className="text-white/40">Grade:</span>
                               {currentGrade !== null ? (
                                 <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
