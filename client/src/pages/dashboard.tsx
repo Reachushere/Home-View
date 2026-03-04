@@ -12322,9 +12322,9 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-11px' }}>
+                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-8px' }}>
                 {/* Course Legend */}
-                <div className="border rounded-lg p-3 space-y-3 mt-2">
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '11px' }}>
                   <Label className="text-[10px] font-medium">Courses</Label>
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
@@ -12640,7 +12640,7 @@ export default function Dashboard() {
                 )}
                 
                 {/* Current Grades */}
-                <div className="border rounded-lg p-3 space-y-2">
+                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-3px' }}>
                   <Label className="text-[10px] font-medium flex items-center gap-1.5">
                     <GraduationCap className="h-3.5 w-3.5 text-amber-400" />
                     Current Grades
@@ -12679,7 +12679,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Weeks */}
-                <div className="border rounded-lg p-3 flex flex-col flex-1 !-mt-[1px]">
+                <div className="border rounded-lg p-3 flex flex-col flex-1" style={{ marginTop: '-4px' }}>
                   <Label className="text-[10px] font-medium mb-1 block">Weeks</Label>
                   <div className="flex flex-col flex-1 justify-evenly">
                   {[...weeks].sort((a, b) => {
@@ -19401,7 +19401,7 @@ function SchoolForm({
       </div>
       
       {semesterSettings && (
-        <div className="border rounded-lg p-3 space-y-3 -mt-px">
+        <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-4px' }}>
           <Label className="text-[10px] font-medium">Semester Settings</Label>
           <div className="space-y-2 text-[10px]">
             <div className="flex items-center justify-between">
