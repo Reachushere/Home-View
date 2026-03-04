@@ -8016,7 +8016,7 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            <div className="flex flex-col items-center gap-0.5">
+            <div className="flex items-center gap-0.5">
               <button
                 className="media-btn media-btn-sm"
                 onClick={handleRestartFromBeginning}
@@ -8028,7 +8028,7 @@ export default function Dashboard() {
               <span className="text-[9px] text-white/60 leading-none">Restart</span>
             </div>
             
-            <div className="flex flex-col items-center gap-0.5">
+            <div className="flex items-center gap-0.5">
               <button
                 className="media-btn media-btn-sm"
                 onClick={handleRestartCurrentChunk}
