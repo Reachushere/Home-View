@@ -14414,7 +14414,7 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={task.id}
-                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -14722,7 +14722,7 @@ export default function Dashboard() {
                             );
                           }
                           return (
-                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
                               onClick={() => setEditingTask(task)}
                             >
@@ -14795,7 +14795,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -14849,7 +14849,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -14916,7 +14916,7 @@ export default function Dashboard() {
                         >
                           <div
                             className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
-                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                              isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
                               backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
@@ -15034,7 +15034,7 @@ export default function Dashboard() {
                       return (
                         <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
                           <div
-                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
                             onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
                           >
@@ -15229,7 +15229,7 @@ export default function Dashboard() {
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
-                                  isDueToday ? "task-blink-border" : ""
+                                  isDueToday ? "animate-balloon-pulse" : ""
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -15358,7 +15358,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task.id); }}
                                 onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                                 onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "task-blink-border" : ""}`}
+                                className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "animate-balloon-pulse" : ""}`}
                                 style={{
                                   top: `${topOffset}px`,
                                   left: `calc(${taskIdx * columnWidth}% + 1px)`,
@@ -15455,7 +15455,7 @@ export default function Dashboard() {
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                       } ${
-                        isDueToday ? "task-blink-border" : ""
+                        isDueToday ? "animate-balloon-pulse" : ""
                       }`}
                       style={{
                         top: `${topPx}px`,
