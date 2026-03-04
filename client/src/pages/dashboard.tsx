@@ -9822,7 +9822,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '18px', width: '18px', position: 'fixed', right: `${calendarRight + 329}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '18px', width: '18px', position: 'fixed', right: `${calendarRight + 338}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -9835,7 +9835,7 @@ export default function Dashboard() {
       <div ref={clockContainerRef} className={`flex items-center ${
         pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
         pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-      }`} style={{ position: 'fixed', right: `${calendarRight + 293}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+      }`} style={{ position: 'fixed', right: `${calendarRight + 297}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
         <span className="text-[12px] text-white" style={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
       </div>
 
