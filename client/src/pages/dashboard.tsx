@@ -15682,7 +15682,7 @@ export default function Dashboard() {
                           d={pathD}
                           fill="none"
                           stroke="#000000"
-                          strokeWidth="1.5"
+                          strokeWidth="1"
                           strokeDasharray="6 3"
                           clipPath="url(#dotted-clip-over-whitebox)"
                         />
@@ -15690,7 +15690,7 @@ export default function Dashboard() {
                           d={pathD}
                           fill="none"
                           stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="1.5"
+                          strokeWidth="1"
                           strokeDasharray="6 3"
                           clipPath="url(#dotted-clip-below-whitebox)"
                         />
@@ -15790,7 +15790,7 @@ export default function Dashboard() {
                         d={pathD}
                         fill="none"
                         stroke="#000000"
-                        strokeWidth="1.5"
+                        strokeWidth="1"
                       />
                       <polygon
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
