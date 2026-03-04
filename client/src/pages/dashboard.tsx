@@ -7819,7 +7819,7 @@ export default function Dashboard() {
                       }
                     }}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Pencil style={{ height: '19px', width: '19px' }} />
                   </Button>
                 </DialogTitle>
               </DialogHeader>
