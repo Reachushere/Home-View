@@ -1313,6 +1313,9 @@ export default function Dashboard() {
   }, []);
   
   // Color settings
+  const isValidHex = (v: string) => /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(v);
+  const safeHex = (v: string, fallback: string) => isValidHex(v) ? v : fallback;
+
   const [colorSettings, setColorSettings] = useState<{
     boxBackground: string;
     headerBar: string;
@@ -6606,7 +6609,7 @@ export default function Dashboard() {
       className="flex h-screen flex-col overflow-hidden relative"
       style={{ 
         minWidth: '1024px',
-        backgroundColor: colorSettings.mainBackgroundOverlay ? colorSettings.mainBackground : '#000000'
+        backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000'
       }}
     >
       {/* Background image layer with brightness - hidden when overlay is active since overlay is fully opaque */}
@@ -6629,8 +6632,8 @@ export default function Dashboard() {
           className="absolute inset-0 pointer-events-none"
           style={{ 
             background: colorSettings.mainBackgroundGradient 
-              ? `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`
-              : colorSettings.mainBackground,
+              ? `linear-gradient(180deg, ${safeHex(colorSettings.mainBackground, '#3a8bbf')} 0%, ${safeHex(colorSettings.mainBackgroundGradientEnd, '#164a72')} 100%)`
+              : safeHex(colorSettings.mainBackground, '#3a8bbf'),
             zIndex: 1
           }}
         />
