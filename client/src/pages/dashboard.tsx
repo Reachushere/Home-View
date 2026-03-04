@@ -18951,7 +18951,7 @@ function ProfileForm({
           )}
         </div>
         {(firstName || lastName) && (
-          <span className="ml-auto text-[14px] font-semibold text-black self-center" data-testid="text-profile-fullname">{firstName} {lastName}</span>
+          <span className="ml-auto text-[16px] font-semibold text-black self-center" style={{ marginRight: '60px' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
         )}
       </div>
       <div className="space-y-2">
