@@ -109,8 +109,6 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
       { id: "hallway_tablet_entrance", name: "Tablet (Entrance)", entityId: "media_player.tablet_hallway_entrance", type: "tablet", canDisplay: true, room: "Hallway" },
       { id: "hallway_tablet", name: "Tablet (Main)", entityId: "media_player.tablet_hallway", type: "tablet", canDisplay: true, room: "Hallway" },
       { id: "hallway_echo_entrance", name: "Echo (Entrance)", entityId: "media_player.echo_hallway_entrance_am", type: "echo", canDisplay: false, room: "Hallway" },
-      { id: "hallway_echo_corner", name: "Echo (Corner)", entityId: "media_player.echo_lr_couch_r_am", type: "echo", canDisplay: false, room: "Hallway" },
-      { id: "hallway_echo_fish", name: "Echo (Fish)", entityId: "media_player.echo_hallway_fish_am", type: "echo", canDisplay: false, room: "Hallway" },
       { id: "hallway_group", name: "All Hallway", entityId: "media_player.hallway_media_group", type: "group", canDisplay: false, room: "Hallway" },
     ]
   },
@@ -133,7 +131,6 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
       { id: "king_echo_l", name: "Echo (Left)", entityId: "media_player.echo_king_l_am", type: "echo", canDisplay: false, room: "King Bedroom" },
       { id: "king_echo_r", name: "Echo (Right)", entityId: "media_player.echo_king_r_am", type: "echo", canDisplay: false, room: "King Bedroom" },
       { id: "king_echo_tv", name: "Echo (TV)", entityId: "media_player.echo_king_tv_am", type: "echo", canDisplay: false, room: "King Bedroom" },
-      { id: "king_homepod", name: "HomePod", entityId: "media_player.homepod_king", type: "speaker", canDisplay: false, room: "King Bedroom" },
       { id: "king_tv", name: "TV", entityId: "media_player.tv_king", type: "tv", canDisplay: true, room: "King Bedroom" },
       { id: "king_group", name: "All King Bedroom", entityId: "media_player.king_bedroom_media_group", type: "group", canDisplay: false, room: "King Bedroom" },
     ]
