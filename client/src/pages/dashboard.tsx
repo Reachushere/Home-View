@@ -9080,11 +9080,13 @@ export default function Dashboard() {
           className="absolute inset-0 pointer-events-none"
           style={{ background: 'transparent', zIndex: 0 }}
         />
-        {/* Night overlay - dims background based on Toronto sunrise/sunset */}
-        <div 
-          className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNighttime ? 'opacity-100' : 'opacity-0'}`}
-          style={{ background: 'linear-gradient(to bottom, rgba(10, 15, 30, 0.6) 0%, rgba(5, 10, 25, 0.7) 100%)', zIndex: 0 }}
-        />
+        {/* Night overlay - dims background based on Toronto sunrise/sunset - disabled when color overlay is active */}
+        {!colorSettings.mainBackgroundOverlay && (
+          <div 
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNighttime ? 'opacity-100' : 'opacity-0'}`}
+            style={{ background: 'linear-gradient(to bottom, rgba(10, 15, 30, 0.6) 0%, rgba(5, 10, 25, 0.7) 100%)', zIndex: 0 }}
+          />
+        )}
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
