@@ -16904,16 +16904,12 @@ export default function Dashboard() {
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: colorSettings.boxGlassEffect 
-                ? `linear-gradient(180deg, rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${Math.min((colorSettings.boxTransparency / 100) + 0.12, 0.95)}) 0%, rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100}) 100%)`
-                : colorSettings.boxBackground,
-              backdropFilter: colorSettings.boxGlassEffect ? 'blur(24px)' : undefined,
-              WebkitBackdropFilter: colorSettings.boxGlassEffect ? 'blur(24px)' : undefined,
-              boxShadow: colorSettings.boxGlassEffect 
-                ? '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
-                : 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: colorSettings.boxGlassEffect ? '1.5px solid rgba(255,255,255,0.55)' : '1.5px solid rgba(255, 255, 255, 0.45)',
+              borderTop: '1.5px solid rgba(255,255,255,0.55)',
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -16926,7 +16922,8 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#000000'
+                background: 'rgba(0,0,0,0.35)',
+                borderBottom: '1px solid rgba(255,255,255,0.1)'
               }}
             >
               <h4 
@@ -17033,16 +17030,12 @@ export default function Dashboard() {
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: colorSettings.boxGlassEffect 
-                ? `linear-gradient(180deg, rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${Math.min((colorSettings.boxTransparency / 100) + 0.12, 0.95)}) 0%, rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100}) 100%)`
-                : colorSettings.boxBackground,
-              backdropFilter: colorSettings.boxGlassEffect ? 'blur(24px)' : undefined,
-              WebkitBackdropFilter: colorSettings.boxGlassEffect ? 'blur(24px)' : undefined,
-              boxShadow: colorSettings.boxGlassEffect 
-                ? '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
-                : 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: colorSettings.boxGlassEffect ? '1.5px solid rgba(255,255,255,0.55)' : '1.5px solid rgba(255, 255, 255, 0.45)',
+              borderTop: '1.5px solid rgba(255,255,255,0.55)',
               order: boxOrder.indexOf('today') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -17054,7 +17047,8 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#000000'
+                background: 'rgba(0,0,0,0.35)',
+                borderBottom: '1px solid rgba(255,255,255,0.1)'
               }}
             >
               <h4 
@@ -17155,16 +17149,12 @@ export default function Dashboard() {
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: colorSettings.boxGlassEffect 
-                ? `linear-gradient(180deg, rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${Math.min((colorSettings.boxTransparency / 100) + 0.12, 0.95)}) 0%, rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100}) 100%)`
-                : colorSettings.boxBackground,
-              backdropFilter: colorSettings.boxGlassEffect ? 'blur(24px)' : undefined,
-              WebkitBackdropFilter: colorSettings.boxGlassEffect ? 'blur(24px)' : undefined,
-              boxShadow: colorSettings.boxGlassEffect 
-                ? '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
-                : 'inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: colorSettings.boxGlassEffect ? '1.5px solid rgba(255,255,255,0.55)' : '1.5px solid rgba(255, 255, 255, 0.45)',
+              borderTop: '1.5px solid rgba(255,255,255,0.55)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -17176,7 +17166,8 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                backgroundColor: '#000000'
+                background: 'rgba(0,0,0,0.35)',
+                borderBottom: '1px solid rgba(255,255,255,0.1)'
               }}
             >
               <h4 
