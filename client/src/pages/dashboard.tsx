@@ -8005,7 +8005,7 @@ export default function Dashboard() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className={`h-10 w-10 text-white overflow-visible ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
+                    className={`h-12 w-12 text-white overflow-visible ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
                     data-testid="button-flick-cast"
                     onClick={() => setShowFlickMenu(!showFlickMenu)}
                     disabled={isFlicking}
@@ -8015,7 +8015,7 @@ export default function Dashboard() {
                     {isFlicking ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                      <Cast className="h-[36px] w-[36px]" />
+                      <Cast className="h-[41px] w-[41px]" />
                     )}
                   </Button>
                   {showFlickMenu && (
