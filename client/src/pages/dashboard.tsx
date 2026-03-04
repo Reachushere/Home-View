@@ -9780,14 +9780,14 @@ export default function Dashboard() {
         <Share 
           className="h-3.5 w-3.5 text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ position: 'fixed', right: `${calendarRight + 330}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ position: 'fixed', right: `${calendarRight + 329}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
       )}
 
       {/* Separator between share and timer numbers */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 318}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 318}px`, top: '6px', zIndex: 100, width: '1.5px', height: '14px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Pomodoro Timer Numbers - fixed position */}
       <div ref={clockContainerRef} className={`flex items-center ${
@@ -9811,7 +9811,7 @@ export default function Dashboard() {
       </div>
 
       {/* Separator between controls and date */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 183}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 183}px`, top: '6px', zIndex: 100, width: '1.5px', height: '14px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Date - fixed position */}
       <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 51}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
