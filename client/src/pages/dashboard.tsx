@@ -7955,7 +7955,7 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Navigation Arrows */}
-                  <div className="flex items-center gap-1" style={{ marginLeft: '15px' }}>
+                  <div className="flex items-center gap-1" style={{ marginLeft: '15px', position: 'relative', left: '20px' }}>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -7967,7 +7967,7 @@ export default function Dashboard() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-[9px] text-white min-w-[40px] text-center" style={{ position: 'relative', left: '20px' }}>
+                    <span className="text-[9px] text-white min-w-[40px] text-center">
                       {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
                     </span>
                     <Button
