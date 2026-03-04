@@ -9775,47 +9775,46 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
-      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ right: `${calendarRight + 80}px`, top: '-4px', zIndex: 100, padding: '0 0 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
-        {/* Share Button */}
-        {isAdmin && (
-          <Share 
-            className="h-4 w-4 text-white/80 cursor-pointer hover:text-white"
-            strokeWidth={2.5}
-            style={{ flexShrink: 0, marginRight: '8px' }}
-            onClick={generateShareLink}
-            data-testid="button-share-main"
-          />
-        )}
-        {/* Pomodoro Timer */}
-        <div className={`text-[10px] font-bold py-0.5 rounded flex items-center ${
-          pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
-          pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-        }`} style={{ minWidth: '52px', paddingLeft: '0px', paddingRight: '0px', gap: '5px', flexShrink: 0, ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-          <span style={{ lineHeight: 1, flexShrink: 0 }}>
-            <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
-              <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#ff3333" />
-              <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#cc0000" />
-              <path d="M24 34 C20 22, 32 8, 44 14 C47 16, 48 22, 48 30 C40 24, 30 26, 24 34Z" fill="#4ade80" />
-              <path d="M76 34 C80 22, 68 8, 56 14 C53 16, 52 22, 52 30 C60 24, 70 26, 76 34Z" fill="#22c55e" />
-              <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
-            </svg>
-          </span>
-          <span className="text-[10px] text-white/60" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
-        </div>
-        <div className="flex items-center gap-3" style={{ marginLeft: '10px', flexShrink: 0 }}>
-          <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-            {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
-          </button>
-          <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-            <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-          </button>
-          <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-            <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-          </button>
-        </div>
+      {/* Share Button - fixed position */}
+      {isAdmin && (
+        <Share 
+          className="h-4 w-4 text-white/80 cursor-pointer hover:text-white"
+          strokeWidth={2.5}
+          style={{ position: 'fixed', right: `${calendarRight + 195}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          onClick={generateShareLink}
+          data-testid="button-share-main"
+        />
+      )}
 
+      {/* Pomodoro Tomato + Timer - fixed position */}
+      <div ref={clockContainerRef} className={`flex items-center ${
+        pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
+        pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
+      }`} style={{ position: 'fixed', right: `${calendarRight + 130}px`, top: '6px', zIndex: 100, gap: '5px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+        <span style={{ lineHeight: 1 }}>
+          <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
+            <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#ff3333" />
+            <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#cc0000" />
+            <path d="M24 34 C20 22, 32 8, 44 14 C47 16, 48 22, 48 30 C40 24, 30 26, 24 34Z" fill="#4ade80" />
+            <path d="M76 34 C80 22, 68 8, 56 14 C53 16, 52 22, 52 30 C60 24, 70 26, 76 34Z" fill="#22c55e" />
+            <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
+          </svg>
+        </span>
+        <span className="text-[10px] text-white/60" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
+      </div>
+
+      {/* Pomodoro Controls - fixed position */}
+      <div className="flex items-center gap-3" style={{ position: 'fixed', right: `${calendarRight + 210}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+        <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+          {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+        </button>
+        <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+          <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+        </button>
+        <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+          <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+        </button>
       </div>
 
       {/* Date - fixed position */}
