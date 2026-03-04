@@ -1505,6 +1505,15 @@ button[role="combobox"] > span {
   color: black !important;
 }
 
+[data-settings-dialog] .border.rounded-lg {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-settings-dialog] .border-b.border-primary {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
 /* Blue checkboxes matching hamburger menu - only in settings dialog */
 [data-settings-dialog] input[type="checkbox"] {
   -webkit-appearance: none;

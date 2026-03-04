@@ -12957,9 +12957,9 @@ export default function Dashboard() {
 
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent data-settings-dialog className="max-w-4xl max-h-[85vh] text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
+            <DialogContent data-settings-dialog className="max-w-4xl max-h-[85vh] text-[9px] border border-white/30 backdrop-blur-[3px] bg-white/[0.4] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
               {/* Header bar matching flyouts */}
-              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
+              <div className="flex items-center justify-between px-4 py-3 bg-white/20 border-b border-white/30 flex-shrink-0 backdrop-blur-sm">
                 <div className="flex items-center gap-2">
                   <Settings className="h-3 w-3 text-white" />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
