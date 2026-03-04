@@ -7870,7 +7870,7 @@ export default function Dashboard() {
               };
               
               return (
-                <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-nowrap min-w-0 overflow-hidden">
+                <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-nowrap min-w-0 overflow-visible">
                   {/* Module Files Dropdown */}
                   <div className="flex items-center gap-1 min-w-0 shrink">
                     <span className="text-[11px] font-bold text-white hidden sm:inline shrink-0">Module:</span>
@@ -7955,7 +7955,7 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Navigation Arrows */}
-                  <div className="flex items-center gap-1" style={{ marginLeft: '15px', position: 'relative', left: '20px' }}>
+                  <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
                     <Button
                       size="icon"
                       variant="ghost"
