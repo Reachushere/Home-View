@@ -268,13 +268,10 @@ async function generateAndSaveTTSAudio(text: string, fileId: string): Promise<st
     },
   });
   
-  // Make file publicly accessible
-  await file.makePublic();
-  
-  // Return the public URL
-  const publicUrl = `https://storage.googleapis.com/${bucketName}/${objectName}`;
-  console.log(`TTS audio saved to: ${publicUrl}`);
-  return publicUrl;
+  // Return a proxy URL through the app (object storage public access is blocked)
+  const proxyUrl = `/api/tts-audio/${encodeURIComponent(audioFileName)}`;
+  console.log(`TTS audio saved, proxy path: ${proxyUrl}`);
+  return proxyUrl;
 }
 
 // Parse public object path to bucket/object name
@@ -2824,6 +2821,33 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/tts-audio/:filename - Proxy TTS audio from object storage
+  app.get("/api/tts-audio/:filename", async (req, res) => {
+    try {
+      const audioPath = decodeURIComponent(req.params.filename);
+      const publicPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0]?.trim();
+      if (!publicPath) {
+        return res.status(500).json({ error: "Storage not configured" });
+      }
+      const { bucketName, objectName } = parsePublicObjectPath(`${publicPath}/${audioPath}`);
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      
+      const [exists] = await file.exists();
+      if (!exists) {
+        return res.status(404).json({ error: "Audio file not found" });
+      }
+      
+      res.set('Content-Type', 'audio/mpeg');
+      res.set('Cache-Control', 'public, max-age=3600');
+      const stream = file.createReadStream();
+      stream.pipe(res);
+    } catch (error: any) {
+      console.error("Error serving TTS audio:", error.message);
+      res.status(500).json({ error: "Failed to serve audio" });
+    }
+  });
+
   // POST /api/tts - Generate speech from text using OpenAI
   app.post("/api/tts", async (req, res) => {
     try {
@@ -2899,7 +2923,8 @@ export async function registerRoutes(
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
       const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
 
-      const audioUrl = await generateAndSaveTTSAudio(text, `speaker-${Date.now()}`);
+      const audioPath = await generateAndSaveTTSAudio(text, `speaker-${Date.now()}`);
+      const fullAudioUrl = `https://home-view--bkh416.replit.app${audioPath}`;
 
       await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
@@ -2910,11 +2935,11 @@ export async function registerRoutes(
         body: JSON.stringify({
           entity_id: entityId,
           media_content_type: "music",
-          media_content_id: audioUrl,
+          media_content_id: fullAudioUrl,
         }),
       });
 
-      res.json({ success: true, audioUrl, entityId });
+      res.json({ success: true, audioUrl: fullAudioUrl, entityId });
     } catch (err) {
       console.error("Error playing TTS on speaker:", err);
       res.status(500).json({ error: "Failed to play TTS on speaker" });
@@ -4081,13 +4106,14 @@ export async function registerRoutes(
             }
 
             try {
-              const audioUrl = await generateAndSaveTTSAudio(chunk, `catwash-${nextFile.id}-chunk-${i}`);
-              console.log(`[Cat Wash TTS] Audio generated: ${audioUrl}`);
+              const audioPath = await generateAndSaveTTSAudio(chunk, `catwash-${nextFile.id}-chunk-${i}`);
+              const fullAudioUrl = `${appUrl}${audioPath}`;
+              console.log(`[Cat Wash TTS] Audio generated: ${fullAudioUrl}`);
 
               await fetch(`${haUrl}/api/services/media_player/play_media`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: audioUrl }),
+                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullAudioUrl }),
               });
 
               // Estimate duration: ~150 words per minute for TTS at normal speed
@@ -4553,7 +4579,8 @@ export async function registerRoutes(
       console.log(`Shower trigger: Generating OpenAI TTS for chunk ${resumeFromChunk + 1}/${chunks.length}`);
       
       // Generate OpenAI TTS audio and save to object storage
-      const audioUrl = await generateAndSaveTTSAudio(fullTextForTTS, `shower-${nextFile.id}-chunk-${resumeFromChunk}`);
+      const audioPath = await generateAndSaveTTSAudio(fullTextForTTS, `shower-${nextFile.id}-chunk-${resumeFromChunk}`);
+      const audioUrl = `https://home-view--bkh416.replit.app${audioPath}`;
       
       console.log(`Shower trigger: Playing audio on Echo: ${audioUrl}`);
       
@@ -4970,7 +4997,8 @@ export async function registerRoutes(
           }
           
           // Generate OpenAI TTS audio and save to object storage
-          const audioUrl = await generateAndSaveTTSAudio(textContent, `module-${file.id}`);
+          const audioPath = await generateAndSaveTTSAudio(textContent, `module-${file.id}`);
+          const audioUrl = `https://home-view--bkh416.replit.app${audioPath}`;
           
           // Update file record with audio URL
           await storage.updateFile(file.id, { 
