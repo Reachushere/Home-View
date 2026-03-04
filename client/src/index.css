@@ -357,6 +357,20 @@ button[role="combobox"] > span {
   transform-origin: center center;
 }
 
+@keyframes zero-day-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.animate-zero-day-blink {
+  animation: zero-day-blink 0.8s ease-in-out infinite;
+  color: #dc2626 !important;
+}
+
+.animate-zero-day-blink * {
+  color: #dc2626 !important;
+}
+
 .calendar-icon-shimmer {
   position: relative;
   overflow: hidden;

@@ -9118,15 +9118,21 @@ export default function Dashboard() {
       {/* Next Task Countdown - center, where Chang School logo used to be */}
       {(() => {
         const now = new Date();
+        const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const upcoming = allTasks
-          .filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > now)
+          .filter(t => {
+            if (!t.dueDate || t.isCompleted) return false;
+            const dd = new Date(t.dueDate);
+            const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
+            return ddOnly.getTime() >= nowDate.getTime();
+          })
           .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
         const next = upcoming[0];
         if (!next) return null;
-        const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const dueDate = new Date(next.dueDate!);
         const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
         const diffDays = Math.round((dueDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
+        const isZeroDays = diffDays === 0;
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
         const nextPrep = upcoming
           .filter(t => t.startDate)
@@ -9172,7 +9178,7 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 2px 68px', minWidth: '395px', border: '1px solid rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.45)', boxShadow: '0 4px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.03)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+            <div className={isZeroDays ? 'animate-zero-day-blink' : ''} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 2px 68px', minWidth: '395px', border: isZeroDays ? '1px solid rgba(220,38,38,0.6)' : '1px solid rgba(255,255,255,0.25)', borderTop: isZeroDays ? '1px solid rgba(220,38,38,0.8)' : '1px solid rgba(255,255,255,0.45)', boxShadow: '0 4px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.03)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                 {(() => {
@@ -9186,10 +9192,20 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
-                      <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
-                      <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                      <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
+                      <span data-countdown-bullet={next.id} style={{ color: isZeroDays ? '#dc2626' : '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {isZeroDays ? (
+                        <>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                          <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
+                        </>
+                      )}
                     </div>
                   );
 
@@ -9216,10 +9232,20 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number-after"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
-                      <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
-                      <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                      <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
+                      <span data-countdown-bullet={next.id} style={{ color: isZeroDays ? '#dc2626' : '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {isZeroDays ? (
+                        <>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                          <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
+                        </>
+                      )}
                     </div>
                   );
                 })()}
@@ -14393,7 +14419,7 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={task.id}
-                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -14705,7 +14731,7 @@ export default function Dashboard() {
                             );
                           }
                           return (
-                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
                               onClick={() => setEditingTask(task)}
                             >
@@ -14778,7 +14804,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -14832,7 +14858,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -14899,7 +14925,7 @@ export default function Dashboard() {
                         >
                           <div
                             className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
-                              isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""
+                              isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
                               backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
@@ -15017,7 +15043,7 @@ export default function Dashboard() {
                       return (
                         <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
                           <div
-                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-balloon-pulse" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
                             onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
                           >
@@ -15212,7 +15238,7 @@ export default function Dashboard() {
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
-                                  isDueToday ? "animate-balloon-pulse" : ""
+                                  isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -15341,7 +15367,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task.id); }}
                                 onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                                 onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "animate-balloon-pulse" : ""}`}
+                                className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""}`}
                                 style={{
                                   top: `${topOffset}px`,
                                   left: `calc(${taskIdx * columnWidth}% + 1px)`,
@@ -15438,7 +15464,7 @@ export default function Dashboard() {
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                       } ${
-                        isDueToday ? "animate-balloon-pulse" : ""
+                        isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""
                       }`}
                       style={{
                         top: `${topPx}px`,
@@ -16757,6 +16783,7 @@ export default function Dashboard() {
             const shouldBlinkInTodayBox = isModuleTask && isWednesdayOrLater && !task.isCompleted;
             const isAssignment = task.type && !['discussion', 'poll'].includes(task.type);
             const shouldBlinkAssignment = isAssignment && daysUntil === 2 && !task.isCompleted;
+            const isZeroDaysTask = daysUntil === 0 && !task.isCompleted;
             
             // Calculate progress using the helper function (subtasks or time-based)
             const progressBarWidth = getProgressBarWidth(task);
@@ -16771,7 +16798,7 @@ export default function Dashboard() {
             return (
               <div 
                 key={task.id} 
-                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink' : ''}`} 
+                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${isZeroDaysTask ? 'animate-zero-day-blink' : shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink' : ''}`} 
                 data-box-task-id={task.id} 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
