@@ -15786,29 +15786,11 @@ export default function Dashboard() {
                           <rect x="0" y={calendarTop} width="9999" height={endY - calendarTop + 20} />
                         </clipPath>
                       </defs>
-                      {}
                       <path
                         d={pathD}
                         fill="none"
                         stroke="#000000"
                         strokeWidth="1.5"
-                        clipPath="url(#solid-clip-over-whitebox)"
-                      />
-                      {hasGap && (
-                        <path
-                          d={pathD}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="1.5"
-                          clipPath="url(#solid-clip-gap)"
-                        />
-                      )}
-                      <path
-                        d={pathD}
-                        fill="none"
-                        stroke="#000000"
-                        strokeWidth="1.5"
-                        clipPath="url(#solid-clip-on-calendar)"
                       />
                       <polygon
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
