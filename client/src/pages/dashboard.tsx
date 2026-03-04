@@ -10704,10 +10704,10 @@ export default function Dashboard() {
             className={`absolute z-[60] ${sidePillIdle ? 'side-pill-container-idle' : ''}`}
             style={{ 
               top: `${pillTop}px`, 
-              right: '-5px', 
+              right: '-8px', 
               width: `${totalW + 4}px`, 
               height: `${pillH}px`,
-              transform: `translateX(${isPillMenuOpen ? '0px' : `${slideOffset}px`})`,
+              transform: `translateX(${isPillMenuOpen ? '-5px' : `${slideOffset}px`})`,
               transition: sidePillMounted ? 'transform 0.3s ease-in-out' : 'none',
             }}
             onMouseEnter={handleEnter}
