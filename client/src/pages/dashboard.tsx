@@ -353,7 +353,7 @@ export default function Dashboard() {
   const [clockWidth, setClockWidth] = useState(0);
   const courseRowsRef = useRef<HTMLDivElement>(null);
   const allDayRowRef = useRef<HTMLDivElement>(null);
-  const [calendarTop, setCalendarTop] = useState(247); // Default offset
+  const [calendarTop, setCalendarTop] = useState(252); // Default offset
   const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
   const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
@@ -13796,7 +13796,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 10px)', marginTop: '-1px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 10px)', marginTop: '4px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
