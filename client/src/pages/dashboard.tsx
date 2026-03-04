@@ -9843,41 +9843,39 @@ export default function Dashboard() {
         </div>
 
         {/* Separator 1: Add + | Pomodoro */}
-        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', margin: '0 8px', flexShrink: 0 }} />
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '8px', marginRight: '8px' }} />
 
         {/* Pomodoro Timer */}
-        <div className="flex items-center" style={{ gap: '8px' }}>
-          <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
-            pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
-            pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-          }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '6px', gap: '5px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-            <span style={{ lineHeight: 1, flexShrink: 0, marginLeft: '-2px' }}>
-              <svg width="19" height="19" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
-                <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#ff3333" />
-                <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#cc0000" />
-                <path d="M24 34 C20 22, 32 8, 44 14 C47 16, 48 22, 48 30 C40 24, 30 26, 24 34Z" fill="#4ade80" />
-                <path d="M76 34 C80 22, 68 8, 56 14 C53 16, 52 22, 52 30 C60 24, 70 26, 76 34Z" fill="#22c55e" />
-                <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
-              </svg>
-            </span>
-            {formatPomodoroTime(pomodoroTime)}
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-              {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
-            </button>
-            <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-              <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-            </button>
-            <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-              <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-            </button>
-          </div>
+        <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
+          pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
+          pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+        }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px', paddingLeft: '0px', paddingRight: '0px', gap: '5px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+          <span style={{ lineHeight: 1, flexShrink: 0 }}>
+            <svg width="19" height="19" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 30 C25 30, 10 48, 10 65 C10 82, 25 95, 50 95 C75 95, 90 82, 90 65 C90 48, 75 30, 50 30Z" fill="rgb(255, 0, 0)" />
+              <path d="M50 30 C30 30, 15 45, 15 63 C15 75, 25 85, 40 88 C30 80, 22 68, 22 58 C22 45, 32 34, 50 30Z" fill="#ff3333" />
+              <path d="M50 30 C70 30, 85 45, 85 63 C85 75, 78 85, 68 90 C78 82, 82 70, 82 60 C82 45, 72 34, 50 30Z" fill="#cc0000" />
+              <path d="M24 34 C20 22, 32 8, 44 14 C47 16, 48 22, 48 30 C40 24, 30 26, 24 34Z" fill="#4ade80" />
+              <path d="M76 34 C80 22, 68 8, 56 14 C53 16, 52 22, 52 30 C60 24, 70 26, 76 34Z" fill="#22c55e" />
+              <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
+            </svg>
+          </span>
+          {formatPomodoroTime(pomodoroTime)}
+        </div>
+        <div className="flex items-center gap-3" style={{ marginLeft: '8px' }}>
+          <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+            {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+          </button>
+          <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+            <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+          </button>
+          <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+            <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+          </button>
         </div>
 
         {/* Separator 2: Pomodoro | Clock */}
-        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', margin: '0 8px', flexShrink: 0 }} />
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '8px', marginRight: '8px' }} />
 
         {/* Clock / Date */}
         <div className="flex items-center" style={{ gap: '8px' }} data-testid="digital-clock">
@@ -16922,8 +16920,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                background: 'rgba(0,0,0,0.35)',
-                borderBottom: '1px solid rgba(255,255,255,0.1)'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
@@ -17047,8 +17044,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                background: 'rgba(0,0,0,0.35)',
-                borderBottom: '1px solid rgba(255,255,255,0.1)'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
@@ -17166,8 +17162,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 padding: '6px 12px',
-                background: 'rgba(0,0,0,0.35)',
-                borderBottom: '1px solid rgba(255,255,255,0.1)'
+                backgroundColor: '#000000'
               }}
             >
               <h4 
