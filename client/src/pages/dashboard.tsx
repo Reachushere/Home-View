@@ -9817,7 +9817,7 @@ export default function Dashboard() {
         {/* Clock / Date */}
         <div className="flex items-center" style={{ gap: '6px', flexShrink: 0, marginLeft: '26px' }} data-testid="digital-clock">
           <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00', flexShrink: 0 }}>
-            {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+            {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
           </span>
           <div style={{ display: 'flex', alignItems: 'baseline', flexShrink: 0 }}>
             <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '46px', textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
