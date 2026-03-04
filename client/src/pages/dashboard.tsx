@@ -8897,7 +8897,6 @@ export default function Dashboard() {
               {/* Speed control with slider - browser TTS */}
               {previewSpeaker === "browser_tts" && (
                 <div className="flex items-center gap-2">
-                  <div className="w-px h-5 bg-white/20" />
                   <Gauge className="h-3 w-3 text-gray-400" />
                   <span className="text-[11px] font-bold text-white">Speed</span>
                   <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
