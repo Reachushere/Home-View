@@ -3947,21 +3947,24 @@ export async function registerRoutes(
           }
         }
 
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 18000));
 
-        const browseResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: tvEntity,
-            media_content_id: readerUrl,
-            media_content_type: 'url',
-          }),
-        });
-        console.log(`[Cat Wash] TV play_media: ${browseResp.status}`);
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          const browseResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity_id: tvEntity,
+              media_content_id: readerUrl,
+              media_content_type: 'url',
+            }),
+          });
+          console.log(`[Cat Wash] TV play_media attempt ${attempt}: ${browseResp.status}`);
+          if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 5000));
+        }
       } catch (e) {
         console.log(`[Cat Wash] TV error: ${e}`);
       }
