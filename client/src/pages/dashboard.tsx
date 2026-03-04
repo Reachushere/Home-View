@@ -6286,7 +6286,7 @@ export default function Dashboard() {
     };
     
     // Calculate after DOM updates (give time for prep-today elements to render)
-    const timer = setTimeout(calculateArrows, 200);
+    const timer = setTimeout(calculateArrows, 300);
     
     // Recalculate on scroll and resize
     const handleUpdate = () => setTimeout(calculateArrows, 50);
@@ -6298,7 +6298,7 @@ export default function Dashboard() {
       window.removeEventListener('scroll', handleUpdate, true);
       window.removeEventListener('resize', handleUpdate);
     };
-  }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks]);
+  }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks, allTasks]);
 
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
