@@ -16946,12 +16946,12 @@ export default function Dashboard() {
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.18) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              border: '1.5px solid rgba(255,255,255,0.25)',
+              borderTop: '1.5px solid rgba(255,255,255,0.35)',
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -17071,12 +17071,12 @@ export default function Dashboard() {
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.18) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              border: '1.5px solid rgba(255,255,255,0.25)',
+              borderTop: '1.5px solid rgba(255,255,255,0.35)',
               order: boxOrder.indexOf('today') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
@@ -17189,12 +17189,12 @@ export default function Dashboard() {
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.18) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              border: '1.5px solid rgba(255,255,255,0.25)',
+              borderTop: '1.5px solid rgba(255,255,255,0.35)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: '0px', 
               marginRight: '0px',
