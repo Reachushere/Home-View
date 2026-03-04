@@ -524,7 +524,7 @@ export default function Dashboard() {
       el.style.transform = current;
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateX(-50%) translateY(5px)';
+      el.style.transform = 'translateY(5px)';
     }
     setIsTopPillOpen(true);
   }, [isTopPillOpen]);
@@ -534,7 +534,7 @@ export default function Dashboard() {
       el.style.animation = 'none';
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateX(-50%) translateY(-56px)';
+      el.style.transform = 'translateY(-56px)';
       setTimeout(() => {
         if (el) {
           el.style.animation = '';
@@ -9151,9 +9151,6 @@ export default function Dashboard() {
             className="font-raleway"
             style={{
               position: 'fixed',
-              left: '50%',
-              marginLeft: '-35px',
-              transform: 'translateX(-50%)',
               top: '22px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
@@ -9161,7 +9158,10 @@ export default function Dashboard() {
               pointerEvents: 'none',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
+              left: '0px',
+              right: '70px',
             }}
             data-testid="next-task-countdown"
           >
@@ -9228,9 +9228,9 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: '50%',
-          marginLeft: '-35px',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '5px' : '-56px'})`,
+          left: '0px',
+          right: '70px',
+          transform: `translateY(${isTopPillOpen ? '5px' : '-56px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
