@@ -7990,15 +7990,6 @@ export default function Dashboard() {
             
             <button
               className="media-btn media-btn-sm"
-              onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
-              data-testid="button-preview-resume"
-              title={`Resume from section ${(previewFile?.id ? getTtsProgress(previewFile.id)?.chunkIndex || 0 : 0) + 1}`}
-            >
-              <RotateCcw className="h-4 w-4 text-white" />
-            </button>
-            
-            <button
-              className="media-btn media-btn-sm"
               onClick={handleStopMedia}
               data-testid="button-preview-stop"
             >
