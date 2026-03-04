@@ -9148,8 +9148,8 @@ export default function Dashboard() {
             style={{
               position: 'fixed',
               left: '50%',
-              transform: 'translateX(-50%) translateY(-50%)',
-              top: '51px',
+              transform: 'translateX(-50%)',
+              top: '26px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
