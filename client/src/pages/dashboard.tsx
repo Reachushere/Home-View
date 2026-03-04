@@ -13976,7 +13976,7 @@ export default function Dashboard() {
                 style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
               >
                 <div className="flex items-center justify-center gap-1">
-                  <span className="text-[10px] font-medium tracking-wide text-white/60 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
+                  <span className="text-[10px] font-medium tracking-wide text-white/60 uppercase leading-tight text-center">Homework<br/><span className="mt-1 block">Progress</span></span>
                   <Paperclip className="h-4 w-4 text-white/40 flex-shrink-0" />
                 </div>
               </div>
@@ -15545,232 +15545,26 @@ export default function Dashboard() {
                   );
                 })()}
                 
-                {/* Dynamic lines - solid line to next task (stays in scroll container) */}
-                {(() => {
-                  const now = new Date();
-                  const currentHour = now.getHours();
-                  const currentMinutes = now.getMinutes();
-                  const calStartHour = calStart;
-                  const calEndHour = isTravelMode ? 23 : 21;
-                  
-                  if (currentHour < calStartHour) return null;
-                  
-                  const clampedHour = Math.min(currentHour, calEndHour);
-                  const clampedMinutes = currentHour > calEndHour ? 59 : currentMinutes;
-                  
-                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
-                  if (todayDayIdx < 0) return null;
-                  
-                  const containerEl = calendarScrollRef.current;
-                  if (!containerEl) return null;
-                  const containerWidth = containerEl.scrollWidth;
-                  
-                  const nowTimestamp = now.getTime();
-                  let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
-                  let earliestTaskTime = Infinity;
-                  
-                  allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
-                    const dueDate = new Date(t.dueDate);
-                    const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
-                    if (dIdx < 0) return;
-                    
-                    let taskHour: number, taskMin: number;
-                    if (t.eventStartTime) {
-                      [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
-                    } else {
-                      taskHour = dueDate.getHours();
-                      taskMin = dueDate.getMinutes();
-                    }
-                    
-                    const taskDate = new Date(dueDate);
-                    taskDate.setHours(taskHour, taskMin, 0, 0);
-                    const taskTimestamp = taskDate.getTime();
-                    
-                    if (taskTimestamp > nowTimestamp && taskTimestamp < earliestTaskTime) {
-                      earliestTaskTime = taskTimestamp;
-                      nextTask = { task: t, dayIdx: dIdx, taskHour, taskMin };
-                    }
-                  });
-                  
-                  if (!nextTask) return null;
-                  
-                  const fixedLeftWidth = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
-                  const flexWidth = containerWidth - fixedLeftWidth;
-                  const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
-                  
-                  const getDayColumnCenter = (dIdx: number) => {
-                    let leftFr = 0;
-                    for (let i = 0; i < dIdx && i < 6; i++) {
-                      leftFr += gridSizes.dayColumnWidths[i];
-                    }
-                    const colFr = gridSizes.dayColumnWidths[dIdx] || gridSizes.dayColumnWidths[0];
-                    const centerFr = leftFr + colFr / 2;
-                    return fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
-                  };
-                  
-                  const getDayColumnLeft = (dIdx: number) => {
-                    let leftFr = 0;
-                    for (let i = 0; i < dIdx && i < 6; i++) {
-                      leftFr += gridSizes.dayColumnWidths[i];
-                    }
-                    return fixedLeftWidth + (leftFr / totalFrUnits) * flexWidth + 3;
-                  };
-                  
-                  const getTopPx = (hour: number, min: number) => {
-                    let px = 0;
-                    for (let h = calStartHour; h < hour; h++) {
-                      px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                    }
-                    px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-                    return px;
-                  };
-                  
-                  const startX = getDayColumnCenter(todayDayIdx);
-                  const startY = getTopPx(clampedHour, clampedMinutes);
-                  const taskBoxHeight = 20;
-                  
-                  const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
-                  const topY = getTopPx(nt.taskHour, nt.taskMin);
-                  const centerX = getDayColumnCenter(nt.dayIdx);
-                  const leftX = getDayColumnLeft(nt.dayIdx);
-                  
-                  let actualTaskHeight = taskBoxHeight;
-                  if (nt.task.eventStartTime && nt.task.eventEndTime) {
-                    const [eH, eM] = nt.task.eventEndTime.split(':').map(Number);
-                    const endTaskY = getTopPx(eH, eM);
-                    actualTaskHeight = Math.max(taskBoxHeight, endTaskY - topY);
-                  }
-                  const midY = topY + actualTaskHeight / 2;
-                  const yDiff = Math.abs(topY - startY);
-                  
-                  const arrowGap = 8;
-                  const isTallCard = actualTaskHeight > 40;
-                  let endX: number, endY: number, side: 'top' | 'left';
-                  if (isTallCard) {
-                    endX = centerX; endY = topY - arrowGap; side = 'top';
-                  } else if (nt.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
-                    endX = leftX - arrowGap; endY = midY; side = 'left';
-                  } else if (nt.dayIdx > todayDayIdx && yDiff < 60) {
-                    endX = leftX - arrowGap; endY = midY; side = 'left';
-                  } else {
-                    endX = centerX; endY = topY - arrowGap; side = 'top';
-                  }
-                  
-                  let pathD: string;
-                  if (side === 'left') {
-                    const mx = startX + (endX - startX) * 0.5;
-                    pathD = `M ${startX} ${startY} C ${mx} ${startY}, ${mx} ${endY}, ${endX} ${endY}`;
-                  } else if (isTallCard) {
-                    const clearY = topY - 30;
-                    pathD = `M ${startX} ${startY} C ${startX} ${clearY}, ${endX} ${clearY}, ${endX} ${endY}`;
-                  } else {
-                    const my = startY + (endY - startY) * 0.5;
-                    pathD = `M ${startX} ${startY} C ${startX} ${my}, ${endX} ${my}, ${endX} ${endY}`;
-                  }
-                  
-                  const t = 0.95;
-                  const mt = 1 - t;
-                  let nearEndX: number, nearEndY: number;
-                  if (side === 'left') {
-                    const mx = startX + (endX - startX) * 0.5;
-                    nearEndX = mt*mt*mt*startX + 3*mt*mt*t*mx + 3*mt*t*t*mx + t*t*t*endX;
-                    nearEndY = mt*mt*mt*startY + 3*mt*mt*t*startY + 3*mt*t*t*endY + t*t*t*endY;
-                  } else if (isTallCard) {
-                    const clearY = topY - 30;
-                    nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
-                    nearEndY = mt*mt*mt*startY + 3*mt*mt*t*clearY + 3*mt*t*t*clearY + t*t*t*endY;
-                  } else {
-                    const my = startY + (endY - startY) * 0.5;
-                    nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
-                    nearEndY = mt*mt*mt*startY + 3*mt*mt*t*my + 3*mt*t*t*my + t*t*t*endY;
-                  }
-                  const dx = endX - nearEndX;
-                  const dy = endY - nearEndY;
-                  const angle = Math.atan2(dy, dx);
-                  const p1x = endX - 10 * Math.cos(angle) + 4 * Math.sin(angle);
-                  const p1y = endY - 10 * Math.sin(angle) - 4 * Math.cos(angle);
-                  const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
-                  const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
-                  
-                  const maxY = Math.max(startY, endY) + 20;
-                  
-                  return (
-                    <svg
-                      className="absolute top-0 left-0 pointer-events-none z-[56]"
-                      style={{ width: `${containerWidth}px`, height: `${maxY}px`, overflow: 'visible' }}
-                    >
-                      <path
-                        className="animate-next-task-line"
-                        d={pathD}
-                        fill="none"
-                        stroke="rgba(170,170,170,0.7)"
-                        strokeWidth="1.5"
-                      />
-                      <polygon
-                        points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                        fill="rgba(0,0,0,0.9)"
-                      />
-                      <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
-                    </svg>
-                  );
-                })()}
+                {/* Dynamic lines - solid line from second bullet to next task */}
+                {null}
             </div>
           </div>
-          {/* Dotted line from first countdown bullet to next prep task in course rows */}
+          {/* Dotted line from first bullet to course rows + Solid line from second bullet to next task */}
           {(() => {
             const now = new Date();
             const calStartHour = calStart;
+            const calEndHour = isTravelMode ? 23 : 21;
             
-            const firstBullet = document.querySelector('[data-countdown-bullet]');
-            if (!firstBullet) return null;
+            const allBullets = document.querySelectorAll('[data-countdown-bullet]');
+            const firstBullet = allBullets[0] || null;
+            const secondBullet = allBullets[1] || null;
             
             const scrollEl = calendarScrollRef.current;
             const contentEl = calendarContentRef.current;
             if (!scrollEl || !contentEl) return null;
             
-            const bulletRect = firstBullet.getBoundingClientRect();
-            const parentRow = firstBullet.parentElement;
-            const parentRect = parentRow ? parentRow.getBoundingClientRect() : bulletRect;
-            const startX = bulletRect.left + bulletRect.width / 2;
-            const startY = parentRect.top + parentRect.height / 2;
-            
-            const nowTimestamp = now.getTime();
-            let nextPrepTask: { task: any; startDayIdx: number; courseName: string } | null = null;
-            let earliestPrepTime = Infinity;
-            
-            allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
-              if (!t.startDate) return;
-              const dueDate = new Date(t.dueDate);
-              const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
-              if (dIdx < 0) return;
-              
-              let taskHour: number, taskMin: number;
-              if (t.eventStartTime) {
-                [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
-              } else {
-                taskHour = dueDate.getHours();
-                taskMin = dueDate.getMinutes();
-              }
-              
-              const taskDate = new Date(dueDate);
-              taskDate.setHours(taskHour, taskMin, 0, 0);
-              const taskTimestamp = taskDate.getTime();
-              
-              if (taskTimestamp > nowTimestamp && taskTimestamp < earliestPrepTime) {
-                earliestPrepTime = taskTimestamp;
-                const prepStartDate = new Date(t.startDate!);
-                const prepDayIdx = weekDays.findIndex(day => isSameDay(day, prepStartDate));
-                if (prepDayIdx >= 0) {
-                  nextPrepTask = { task: t, startDayIdx: prepDayIdx, courseName: t.courseName || '' };
-                }
-              }
-            });
-            
-            if (!nextPrepTask) return null;
-            const np = nextPrepTask as { task: any; startDayIdx: number; courseName: string };
-            
-            const containerWidth = contentEl.clientWidth;
             const contentRect = contentEl.getBoundingClientRect();
+            const containerWidth = contentEl.clientWidth;
             const fixedLeftWidth = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
             const flexWidth = containerWidth - fixedLeftWidth;
             const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
@@ -15785,56 +15579,221 @@ export default function Dashboard() {
               return contentRect.left + fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
             };
             
-            let endY = 0;
-            const courseName = np.courseName.split(' - ')[0].toUpperCase();
-            const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
-            const courseIdx = filteredCourses.findIndex(c => c.name.split(' - ')[0].toUpperCase() === courseName);
+            const whiteBoxEl = document.querySelector('[data-testid="next-task-countdown"]');
+            const whiteBoxBottom = whiteBoxEl ? whiteBoxEl.getBoundingClientRect().bottom : 60;
+            const calendarTop = contentRect.top;
             
-            const courseRowsEl = courseRowsRef.current;
-            if (courseRowsEl) {
-              const courseRowsRect = courseRowsEl.getBoundingClientRect();
-              const totalCourseRowsHeight = courseRowsRect.height;
-              const numCourses = filteredCourses.length || 1;
-              const singleRowHeight = totalCourseRowsHeight / numCourses;
-              endY = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight + singleRowHeight / 2;
-            } else {
-              return null;
+            const getBulletPos = (bullet: Element | null) => {
+              if (!bullet) return null;
+              const bRect = bullet.getBoundingClientRect();
+              const pRow = bullet.parentElement;
+              const pRect = pRow ? pRow.getBoundingClientRect() : bRect;
+              return { x: bRect.left + bRect.width / 2, y: pRect.top + pRect.height / 2 };
+            };
+            
+            const nowTimestamp = now.getTime();
+            const lines: JSX.Element[] = [];
+            
+            if (firstBullet) {
+              const pos = getBulletPos(firstBullet);
+              if (pos) {
+                let nextPrepTask: { task: any; startDayIdx: number; courseName: string } | null = null;
+                let earliestPrepTime = Infinity;
+                
+                allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
+                  if (!t.startDate) return;
+                  const dueDate = new Date(t.dueDate);
+                  const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+                  if (dIdx < 0) return;
+                  let taskHour: number, taskMin: number;
+                  if (t.eventStartTime) {
+                    [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
+                  } else {
+                    taskHour = dueDate.getHours();
+                    taskMin = dueDate.getMinutes();
+                  }
+                  const taskDate = new Date(dueDate);
+                  taskDate.setHours(taskHour, taskMin, 0, 0);
+                  const taskTimestamp = taskDate.getTime();
+                  if (taskTimestamp > nowTimestamp && taskTimestamp < earliestPrepTime) {
+                    earliestPrepTime = taskTimestamp;
+                    const prepStartDate = new Date(t.startDate!);
+                    const prepDayIdx = weekDays.findIndex(day => isSameDay(day, prepStartDate));
+                    if (prepDayIdx >= 0) {
+                      nextPrepTask = { task: t, startDayIdx: prepDayIdx, courseName: t.courseName || '' };
+                    }
+                  }
+                });
+                
+                if (nextPrepTask) {
+                  const np = nextPrepTask as { task: any; startDayIdx: number; courseName: string };
+                  const courseName = np.courseName.split(' - ')[0].toUpperCase();
+                  const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
+                  const courseIdx = filteredCourses.findIndex(c => c.name.split(' - ')[0].toUpperCase() === courseName);
+                  
+                  const courseRowsEl = courseRowsRef.current;
+                  if (courseRowsEl) {
+                    const courseRowsRect = courseRowsEl.getBoundingClientRect();
+                    const numCourses = filteredCourses.length || 1;
+                    const singleRowHeight = courseRowsRect.height / numCourses;
+                    const endY = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight + singleRowHeight / 2;
+                    const endX = getDayColumnCenter(np.startDayIdx);
+                    const startX = pos.x;
+                    const startY = pos.y;
+                    
+                    const midY = startY + (endY - startY) * 0.5;
+                    const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                    
+                    const tt = 0.95;
+                    const mtt = 1 - tt;
+                    const nearEndX = mtt*mtt*mtt*startX + 3*mtt*mtt*tt*startX + 3*mtt*tt*tt*endX + tt*tt*tt*endX;
+                    const nearEndY = mtt*mtt*mtt*startY + 3*mtt*mtt*tt*midY + 3*mtt*tt*tt*midY + tt*tt*tt*endY;
+                    const dx = endX - nearEndX;
+                    const dy = endY - nearEndY;
+                    const angle = Math.atan2(dy, dx);
+                    const p1x = endX - 10 * Math.cos(angle) + 4 * Math.sin(angle);
+                    const p1y = endY - 10 * Math.sin(angle) - 4 * Math.cos(angle);
+                    const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
+                    const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
+                    
+                    const totalDist = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+                    const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
+                    const calFrac = Math.min(1, Math.max(0, (calendarTop - startY) / (endY - startY)));
+                    const isDarkEnd = endY >= courseRowsRect.top;
+                    
+                    lines.push(
+                      <g key="dotted-line">
+                        <defs>
+                          <linearGradient id="dotted-line-grad" x1={startX} y1={startY} x2={endX} y2={endY} gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stopColor="rgba(0,0,0,0.85)" />
+                            <stop offset={`${whiteBoxFrac * 100}%`} stopColor="rgba(0,0,0,0.85)" />
+                            <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 2)}%`} stopColor="rgba(255,255,255,0.9)" />
+                            <stop offset="100%" stopColor="rgba(255,255,255,0.9)" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          className="animate-next-task-line"
+                          d={pathD}
+                          fill="none"
+                          stroke="url(#dotted-line-grad)"
+                          strokeWidth="1.5"
+                          strokeDasharray="6 3"
+                        />
+                        <polygon
+                          points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
+                          fill={isDarkEnd ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)"}
+                        />
+                      </g>
+                    );
+                  }
+                }
+              }
             }
             
-            const endX = getDayColumnCenter(np.startDayIdx);
+            if (secondBullet) {
+              const pos = getBulletPos(secondBullet);
+              if (pos) {
+                let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
+                let earliestTaskTime = Infinity;
+                
+                allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
+                  const dueDate = new Date(t.dueDate);
+                  const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+                  if (dIdx < 0) return;
+                  let taskHour: number, taskMin: number;
+                  if (t.eventStartTime) {
+                    [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
+                  } else {
+                    taskHour = dueDate.getHours();
+                    taskMin = dueDate.getMinutes();
+                  }
+                  const taskDate = new Date(dueDate);
+                  taskDate.setHours(taskHour, taskMin, 0, 0);
+                  const taskTimestamp = taskDate.getTime();
+                  if (taskTimestamp > nowTimestamp && taskTimestamp < earliestTaskTime) {
+                    earliestTaskTime = taskTimestamp;
+                    nextTask = { task: t, dayIdx: dIdx, taskHour, taskMin };
+                  }
+                });
+                
+                if (nextTask) {
+                  const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
+                  
+                  const getTopPx = (hour: number, min: number) => {
+                    let px = 0;
+                    for (let h = calStartHour; h < hour; h++) {
+                      px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    }
+                    px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
+                    return px;
+                  };
+                  
+                  const topPxInScroll = getTopPx(nt.taskHour, nt.taskMin);
+                  const scrollTop = scrollEl.scrollTop;
+                  const scrollRect = scrollEl.getBoundingClientRect();
+                  const endYScreen = scrollRect.top + topPxInScroll - scrollTop - 8;
+                  const endXScreen = getDayColumnCenter(nt.dayIdx);
+                  
+                  const startX = pos.x;
+                  const startY = pos.y;
+                  const endX = endXScreen;
+                  const endY = endYScreen;
+                  
+                  const midY = startY + (endY - startY) * 0.5;
+                  const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                  
+                  const tt = 0.95;
+                  const mtt = 1 - tt;
+                  const nearEndX = mtt*mtt*mtt*startX + 3*mtt*mtt*tt*startX + 3*mtt*tt*tt*endX + tt*tt*tt*endX;
+                  const nearEndY = mtt*mtt*mtt*startY + 3*mtt*mtt*tt*midY + 3*mtt*tt*tt*midY + tt*tt*tt*endY;
+                  const dx = endX - nearEndX;
+                  const dy = endY - nearEndY;
+                  const angle = Math.atan2(dy, dx);
+                  const p1x = endX - 10 * Math.cos(angle) + 4 * Math.sin(angle);
+                  const p1y = endY - 10 * Math.sin(angle) - 4 * Math.cos(angle);
+                  const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
+                  const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
+                  
+                  const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
+                  const calFrac = Math.min(1, Math.max(0, (calendarTop - startY) / (endY - startY)));
+                  
+                  lines.push(
+                    <g key="solid-line">
+                      <defs>
+                        <linearGradient id="solid-line-grad" x1={startX} y1={startY} x2={endX} y2={endY} gradientUnits="userSpaceOnUse">
+                          <stop offset="0%" stopColor="rgba(0,0,0,0.85)" />
+                          <stop offset={`${whiteBoxFrac * 100}%`} stopColor="rgba(0,0,0,0.85)" />
+                          <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 2)}%`} stopColor="rgba(255,255,255,0.9)" />
+                          <stop offset={`${Math.max(0, calFrac * 100 - 2)}%`} stopColor="rgba(255,255,255,0.9)" />
+                          <stop offset={`${calFrac * 100}%`} stopColor="rgba(0,0,0,0.7)" />
+                          <stop offset="100%" stopColor="rgba(0,0,0,0.7)" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        className="animate-next-task-line"
+                        d={pathD}
+                        fill="none"
+                        stroke="url(#solid-line-grad)"
+                        strokeWidth="1.5"
+                      />
+                      <polygon
+                        points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
+                        fill="rgba(0,0,0,0.9)"
+                      />
+                    </g>
+                  );
+                }
+              }
+            }
             
-            const midY = startY + (endY - startY) * 0.5;
-            const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
-            
-            const t = 0.95;
-            const mt = 1 - t;
-            const nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
-            const nearEndY = mt*mt*mt*startY + 3*mt*mt*t*midY + 3*mt*t*t*midY + t*t*t*endY;
-            const dx = endX - nearEndX;
-            const dy = endY - nearEndY;
-            const angle = Math.atan2(dy, dx);
-            const p1x = endX - 10 * Math.cos(angle) + 4 * Math.sin(angle);
-            const p1y = endY - 10 * Math.sin(angle) - 4 * Math.cos(angle);
-            const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
-            const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
+            if (lines.length === 0) return null;
             
             return (
               <svg
                 className="pointer-events-none"
                 style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'visible', zIndex: 45 }}
               >
-                <path
-                  className="animate-next-task-line"
-                  d={pathD}
-                  fill="none"
-                  stroke="rgba(170,170,170,0.7)"
-                  strokeWidth="1.5"
-                  strokeDasharray="6 3"
-                />
-                <polygon
-                  points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                  fill="rgba(0,0,0,0.9)"
-                />
+                {lines}
               </svg>
             );
           })()}
