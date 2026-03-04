@@ -14496,7 +14496,7 @@ export default function Dashboard() {
                           <>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', height: '28px' }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
-                                <div className="flex items-center gap-[3px]">
+                                <div className="flex items-center justify-between">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                                   {moduleUnread > 0 && moduleP.percent < 100 && (
                                     <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
@@ -14529,7 +14529,7 @@ export default function Dashboard() {
                             </div>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
-                                <div className="flex items-center gap-[3px]">
+                                <div className="flex items-center justify-between">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                                   {readingUnread > 0 && readingP.percent < 100 && (
                                     <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
