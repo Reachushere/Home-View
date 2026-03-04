@@ -6617,15 +6617,13 @@ export default function Dashboard() {
         }}
       />
       {/* Main Background Color Overlay */}
-      {colorSettings.mainBackgroundOverlay && (
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{ 
-            backgroundColor: colorSettings.mainBackground,
-            zIndex: 1
-          }}
-        />
-      )}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{ 
+          background: 'linear-gradient(180deg, #3a8bbf 0%, #2a6a9e 30%, #1d5a8a 60%, #164a72 100%)',
+          zIndex: 1
+        }}
+      />
       {/* Loading overlay for OneDrive file fetching */}
       {isLoadingOneDriveFiles && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
