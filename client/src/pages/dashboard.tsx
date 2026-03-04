@@ -22,6 +22,7 @@ import taskButtonBg from "@assets/Task_1769694788992.png";
 import pdfLogo from "@assets/Adobe51_1772514760872.png";
 import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
+import pdfIconPath from "@assets/Adobe62_1772599126098.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6767,7 +6768,7 @@ export default function Dashboard() {
                     className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                     data-testid={`checkbox-reading-onedrive-${file.id}`}
                   />
-                  <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
+                  <img src={pdfIconPath} alt="PDF" className="h-3.5 w-3.5 shrink-0" />
                   <span 
                     className={`text-[11px] ${isListened ? 'text-white/40 line-through' : 'text-white'}`}
                   >
@@ -7775,7 +7776,7 @@ export default function Dashboard() {
                 <DialogTitle 
                   className="flex items-center gap-2 text-sm text-white"
                 >
-                  <FileText className="h-4 w-4 text-white" />
+                  <img src={pdfIconPath} alt="PDF" className="h-4 w-4" />
                   {previewFile?.displayName || previewFile?.originalName}
                 </DialogTitle>
               </DialogHeader>
