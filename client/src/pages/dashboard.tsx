@@ -9802,7 +9802,7 @@ export default function Dashboard() {
               <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
             </svg>
           </span>
-          <span style={{ fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
+          <span style={{ fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block', marginLeft: '25px' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
         <div className="flex items-center gap-3" style={{ marginLeft: '10px', flexShrink: 0 }}>
           <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
