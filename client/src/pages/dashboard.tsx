@@ -15682,7 +15682,7 @@ export default function Dashboard() {
                           d={pathD}
                           fill="none"
                           stroke="#000000"
-                          strokeWidth="2"
+                          strokeWidth="1.5"
                           strokeDasharray="6 3"
                           clipPath="url(#dotted-clip-over-whitebox)"
                         />
@@ -15690,7 +15690,7 @@ export default function Dashboard() {
                           d={pathD}
                           fill="none"
                           stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="2"
+                          strokeWidth="1.5"
                           strokeDasharray="6 3"
                           clipPath="url(#dotted-clip-below-whitebox)"
                         />
@@ -15791,25 +15791,23 @@ export default function Dashboard() {
                         d={pathD}
                         fill="none"
                         stroke="#000000"
-                        strokeWidth="2"
+                        strokeWidth="1.5"
                         clipPath="url(#solid-clip-over-whitebox)"
                       />
-                      {}
                       {hasGap && (
                         <path
                           d={pathD}
                           fill="none"
                           stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="2"
+                          strokeWidth="1.5"
                           clipPath="url(#solid-clip-gap)"
                         />
                       )}
-                      {}
                       <path
                         d={pathD}
                         fill="none"
                         stroke="#000000"
-                        strokeWidth="2"
+                        strokeWidth="1.5"
                         clipPath="url(#solid-clip-on-calendar)"
                       />
                       <polygon
@@ -15827,6 +15825,9 @@ export default function Dashboard() {
             return (
               <svg
                 className="pointer-events-none"
+                viewBox={`0 0 ${window.innerWidth} ${window.innerHeight}`}
+                width={window.innerWidth}
+                height={window.innerHeight}
                 style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'visible', zIndex: 102 }}
               >
                 {lines}
