@@ -9783,23 +9783,6 @@ export default function Dashboard() {
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
       <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '4px', zIndex: 100, padding: '0 17px 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
-        {/* Add Button */}
-        <div
-          className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-          style={{ width: '28px', height: '28px', flexShrink: 0 }}
-          data-testid="button-pomodoro-add"
-          onClick={() => {
-            setQuickAddStep(0);
-            setQuickAddData({ type: "", title: "", courseName: "", dueDate: "", dueDateHour: "18", dueDateMinute: "00", prepDays: 0, priority: "medium", description: "", eventStartTime: "", eventEndTime: "", reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: "", notes: "", referenceLink: "", subtasks: [], subtaskInput: "", projectId: null, repeatType: "none", repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: "" });
-            setIsQuickAddOpen(true);
-          }}
-        >
-          <Plus className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-        </div>
-
-        {/* Separator 1: Add + | Pomodoro */}
-        <div style={{ width: '1px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '17px', marginRight: '17px' }} />
-
         {/* Pomodoro Timer */}
         <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
