@@ -1798,18 +1798,18 @@ export default function Dashboard() {
     return `${gridSizes.timeColumnWidth}px ${beforeProgress} ${progress} ${afterProgress}`;
   };
 
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics and Government', color: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
-      { name: 'CFNF400 - Human Sexuality', color: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+      { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
+      { name: 'CASL101 - American Sign Language', color: '#500442', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
     ];
     // Always use defaults for professor emails to ensure they stay current
     const saved = localStorage.getItem('coursesData');
@@ -1817,10 +1817,11 @@ export default function Dashboard() {
       const parsed = JSON.parse(saved);
       const hasNamedCourses = parsed.courses?.some((c: { name: string }) => c.name.trim());
       if (hasNamedCourses) {
-        const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; professor?: string; professorEmail?: string }, i: number) => ({
+        const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; colorEnd?: string; professor?: string; professorEmail?: string }, i: number) => ({
           ...c,
           name: c.name?.trim() ? c.name : defaultCourses[i]?.name ?? '',
           color: c.color || defaultCourses[i]?.color || '#6b7280',
+          colorEnd: c.colorEnd || defaultCourses[i]?.colorEnd || '',
           professor: c.professor ?? defaultCourses[i]?.professor ?? '',
           professorEmail: defaultCourses[i]?.professorEmail ?? ''
         }));
@@ -1886,7 +1887,7 @@ export default function Dashboard() {
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
-  const saveCourses = (data: { courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }) => {
+  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }) => {
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
     setIsCoursesDialogOpen(false);
@@ -1982,22 +1983,30 @@ export default function Dashboard() {
     } : { r: 107, g: 114, b: 128 }; // gray fallback
   };
   
-  // Helper to generate button gradient from course hex color
-  const getButtonGradient = (hex: string): string => {
+  const getCourseGradientColors = (courseCode: string): { start: string; end: string } => {
+    const course = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
+    if (course?.colorEnd) return { start: course.color, end: course.colorEnd };
+    if (course) {
+      const rgb = hexToRgb(course.color);
+      return { start: course.color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
+    }
+    return { start: '#6b7280', end: '#9ca3af' };
+  };
+
+  const getButtonGradient = (hex: string, hexEnd?: string): string => {
+    if (hexEnd) return `linear-gradient(180deg, ${hex} 0%, ${hexEnd} 100%)`;
     const rgb = hexToRgb(hex);
-    // Create a darker version for gradient start (top)
     const darkerR = Math.max(0, rgb.r - 40);
     const darkerG = Math.max(0, rgb.g - 40);
     const darkerB = Math.max(0, rgb.b - 40);
-    // Create a much lighter version for the gradient end (bottom)
     const lighterR = Math.min(255, rgb.r + 100);
     const lighterG = Math.min(255, rgb.g + 100);
     const lighterB = Math.min(255, rgb.b + 100);
     return `linear-gradient(180deg, rgb(${darkerR}, ${darkerG}, ${darkerB}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`;
   };
   
-  // Helper to generate reversed border gradient (for wrapper) from course hex color
-  const getBorderGradient = (hex: string): string => {
+  const getBorderGradient = (hex: string, hexEnd?: string): string => {
+    if (hexEnd) return `linear-gradient(0deg, ${hex} 0%, ${hexEnd} 100%)`;
     const rgb = hexToRgb(hex);
     const darkerR = Math.max(0, rgb.r - 40);
     const darkerG = Math.max(0, rgb.g - 40);
@@ -2010,25 +2019,27 @@ export default function Dashboard() {
   
   // Dynamic course colors based on coursesData
   const dynamicCourseColors = useMemo(() => {
-    const colors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string }> = {};
+    const colors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string; hexEnd?: string }> = {};
     
     coursesData.courses.forEach(course => {
       if (!course.name) return;
       const courseCode = course.name.split(' - ')[0].toUpperCase();
       const hex = course.color;
-      const rgb = hexToRgb(hex);
+      const hexEnd = course.colorEnd;
+      const displayHex = hexEnd || hex;
+      const rgb = hexToRgb(displayHex);
       
-      // Calculate a light tint by mixing with white (for opaque task backgrounds)
       const tintR = Math.round(rgb.r + (255 - rgb.r) * 0.85);
       const tintG = Math.round(rgb.g + (255 - rgb.g) * 0.85);
       const tintB = Math.round(rgb.b + (255 - rgb.b) * 0.85);
       
       colors[courseCode] = {
         hex,
-        bg: `rgb(${tintR}, ${tintG}, ${tintB})`, // Opaque light tint of course color
-        border: hex,
-        text: hex,
-        dot: hex,
+        hexEnd,
+        bg: `rgb(${tintR}, ${tintG}, ${tintB})`,
+        border: displayHex,
+        text: displayHex,
+        dot: displayHex,
         prepBg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`,
         prepBorder: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
         prepText: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`
@@ -9006,19 +9017,11 @@ export default function Dashboard() {
                 const cc = fp.length >= 3 ? fp[2]?.toLowerCase() : '';
                 let barColor = 'linear-gradient(to right, #10b981, #34d399)';
                 let textColor = '#34d399';
-                if (cc === 'cppa122') { barColor = 'linear-gradient(to right, #0F5004, #47B045)'; textColor = '#47B045'; }
-                else if (cc === 'cfnf400') { barColor = 'linear-gradient(to right, rgba(222,24,100,0.88), rgba(250,103,179,0.78))'; textColor = '#FA67B3'; }
-                else if (cc === 'casl101') { barColor = 'linear-gradient(to right, rgba(80,4,66,0.88), rgba(176,69,162,0.78))'; textColor = '#B045A2'; }
-                else if (cc) {
+                if (cc) {
                   const uc = cc.toUpperCase();
-                  const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === uc)?.color;
-                  if (courseHex) {
-                    const rgb = hexToRgb(courseHex);
-                    const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
-                    const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
-                    barColor = `linear-gradient(to right, rgb(${dR},${dG},${dB}), rgb(${lR},${lG},${lB}))`;
-                    textColor = `rgb(${lR},${lG},${lB})`;
-                  }
+                  const gradColors = getCourseGradientColors(uc);
+                  barColor = `linear-gradient(to right, ${gradColors.start}, ${gradColors.end})`;
+                  textColor = gradColors.end;
                 }
                 return (
               <div className="flex items-center gap-2 px-2 py-1 rounded-md" data-testid="chunk-completion-bar" style={{ marginLeft: '15px' }}>
@@ -12205,7 +12208,7 @@ export default function Dashboard() {
                     const name = course.name.split(' - ').slice(1).join(' - ');
                     return (
                       <div key={idx} className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-md px-3 py-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: course.color }} />
+                        <div className="w-3 h-2 rounded-full" style={{ background: course.colorEnd ? `linear-gradient(to right, ${course.color}, ${course.colorEnd})` : course.color }} />
                         <span className="text-[11px] font-medium">{code}</span>
                         {name && <span className="text-[11px] text-white/70">- {name}</span>}
                         {course.professor && <span className="text-[10px] text-white/50 ml-auto">({course.professor})</span>}
@@ -12405,26 +12408,52 @@ export default function Dashboard() {
                               )}
                             </div>
                           </label>
-                          <div className="relative flex-shrink-0">
-                            <div 
-                              className={`w-3 h-3 rounded-full cursor-pointer ${hasDueTomorrow ? "animate-blink" : ""}`} 
-                              style={{ backgroundColor: course.color }}
-                              onClick={() => document.getElementById(`school-course-color-${index}`)?.click()}
-                            />
-                            <input
-                              id={`school-course-color-${index}`}
-                              type="color"
-                              value={course.color}
-                              onChange={(e) => {
-                                const updatedCourses = [...coursesData.courses];
-                                updatedCourses[index] = { ...updatedCourses[index], color: e.target.value };
-                                setCoursesData({ courses: updatedCourses });
-                                localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                                saveCourses({ courses: updatedCourses });
-                              }}
-                              className="absolute inset-0 w-0 h-0 opacity-0"
-                              data-testid={`input-school-course-color-${index}`}
-                            />
+                          <div className="relative flex-shrink-0 flex items-center gap-0.5">
+                            <div className="relative">
+                              <div 
+                                className={`w-3 h-3 rounded-sm cursor-pointer ${hasDueTomorrow ? "animate-blink" : ""}`} 
+                                style={{ backgroundColor: course.color }}
+                                onClick={() => document.getElementById(`school-course-color-${index}`)?.click()}
+                                title="Gradient start color"
+                              />
+                              <input
+                                id={`school-course-color-${index}`}
+                                type="color"
+                                value={course.color}
+                                onChange={(e) => {
+                                  const updatedCourses = [...coursesData.courses];
+                                  updatedCourses[index] = { ...updatedCourses[index], color: e.target.value };
+                                  setCoursesData({ courses: updatedCourses });
+                                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                                  saveCourses({ courses: updatedCourses });
+                                }}
+                                className="absolute inset-0 w-0 h-0 opacity-0"
+                                data-testid={`input-school-course-color-${index}`}
+                              />
+                            </div>
+                            <div className="w-4 h-2.5 rounded-sm" style={{ background: `linear-gradient(to right, ${course.color}, ${course.colorEnd || course.color})` }} />
+                            <div className="relative">
+                              <div 
+                                className="w-3 h-3 rounded-sm cursor-pointer"
+                                style={{ backgroundColor: course.colorEnd || course.color }}
+                                onClick={() => document.getElementById(`school-course-color-end-${index}`)?.click()}
+                                title="Gradient end color"
+                              />
+                              <input
+                                id={`school-course-color-end-${index}`}
+                                type="color"
+                                value={course.colorEnd || course.color}
+                                onChange={(e) => {
+                                  const updatedCourses = [...coursesData.courses];
+                                  updatedCourses[index] = { ...updatedCourses[index], colorEnd: e.target.value };
+                                  setCoursesData({ courses: updatedCourses });
+                                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                                  saveCourses({ courses: updatedCourses });
+                                }}
+                                className="absolute inset-0 w-0 h-0 opacity-0"
+                                data-testid={`input-school-course-color-end-${index}`}
+                              />
+                            </div>
                           </div>
                           <span className="text-[10px] text-white">
                             <span className="font-medium">{courseCode}</span>
@@ -12877,6 +12906,7 @@ export default function Dashboard() {
                   updatedCourses[emptyIdx] = {
                     name: fullName,
                     color: wizardData.color,
+                    colorEnd: wizardData.colorEnd,
                     professor: wizardData.professorName,
                     professorEmail: wizardData.professorEmail,
                   };
@@ -12884,6 +12914,7 @@ export default function Dashboard() {
                   updatedCourses.push({
                     name: fullName,
                     color: wizardData.color,
+                    colorEnd: wizardData.colorEnd,
                     professor: wizardData.professorName,
                     professorEmail: wizardData.professorEmail,
                   });

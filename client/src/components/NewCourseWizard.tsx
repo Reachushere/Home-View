@@ -70,6 +70,7 @@ interface WizardData {
   professorEmail: string;
   courseType: string;
   color: string;
+  colorEnd: string;
   semesterType: string;
   deliveryMode: string;
   classDay: string;
@@ -129,6 +130,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
     professorEmail: "",
     courseType: "core",
     color: "#6366F1",
+    colorEnd: "#EC4899",
     semesterType: existingSemesterType || "winter",
     deliveryMode: "",
     classDay: "",
@@ -245,25 +247,50 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
         />
       </div>
       <div>
-        <Label className="text-[10px] text-white/70 mb-1.5 block">Course Color</Label>
+        <Label className="text-[10px] text-white/70 mb-1.5 block">Course Gradient Colors</Label>
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <div
-              className="w-9 h-9 rounded-full border-2 border-white cursor-pointer"
-              style={{ backgroundColor: data.color }}
-              onClick={() => document.getElementById("wizard-color-input")?.click()}
-              data-testid="wizard-color-preview"
-            />
-            <input
-              id="wizard-color-input"
-              type="color"
-              value={data.color}
-              onChange={(e) => updateField("color", e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              data-testid="wizard-color-picker"
-            />
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[8px] text-white/40 uppercase tracking-wider">Start</span>
+              <div className="relative">
+                <div
+                  className="w-8 h-8 rounded-lg border-2 border-white/60 cursor-pointer"
+                  style={{ backgroundColor: data.color }}
+                  onClick={() => document.getElementById("wizard-color-input")?.click()}
+                  data-testid="wizard-color-preview"
+                />
+                <input
+                  id="wizard-color-input"
+                  type="color"
+                  value={data.color}
+                  onChange={(e) => updateField("color", e.target.value)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  data-testid="wizard-color-picker"
+                />
+              </div>
+            </div>
+            <div className="w-10 h-6 rounded-md" style={{ background: `linear-gradient(to right, ${data.color}, ${data.colorEnd})` }} />
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[8px] text-white/40 uppercase tracking-wider">End</span>
+              <div className="relative">
+                <div
+                  className="w-8 h-8 rounded-lg border-2 border-white/60 cursor-pointer"
+                  style={{ backgroundColor: data.colorEnd }}
+                  onClick={() => document.getElementById("wizard-color-end-input")?.click()}
+                  data-testid="wizard-color-end-preview"
+                />
+                <input
+                  id="wizard-color-end-input"
+                  type="color"
+                  value={data.colorEnd}
+                  onChange={(e) => updateField("colorEnd", e.target.value)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  data-testid="wizard-color-end-picker"
+                />
+              </div>
+            </div>
           </div>
-          <span className="text-[10px] text-white/50">{data.color}</span>
+          <span className="text-[10px] text-white/50">{data.color} → {data.colorEnd}</span>
         </div>
       </div>
     </div>
@@ -631,7 +658,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
       <div className="space-y-2">
         <div className="bg-white/5 border border-white/10 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.color }} />
+            <div className="w-5 h-3 rounded-full" style={{ background: `linear-gradient(to right, ${data.color}, ${data.colorEnd})` }} />
             <span className="text-[11px] font-medium text-white">{data.courseCode} - {data.courseName}</span>
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px]">
