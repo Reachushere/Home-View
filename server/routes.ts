@@ -3812,88 +3812,94 @@ export async function registerRoutes(
       console.log(`[Cat Wash] Opening: ${nextFile.displayName || nextFile.originalName} (${fileType})`);
       console.log(`[Cat Wash] Tablet URL: ${readerUrl}`);
 
-      let navigated = false;
+      const tabletResults: Record<string, string> = {};
 
-      try {
-        // Use Alexa Media Player to open the URL on the Fire Tablet via Silk browser
-        const alexaTabletEntities = [
-          'notify.alexa_media_tablet_cat',
-          'notify.alexa_media_tablet_cat_wall',
-        ];
+      const catWashTablets = [
+        {
+          name: 'tablet_cat_wall',
+          mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'],
+          alexaNotify: 'alexa_media_tablet_cat_wall',
+        },
+        {
+          name: 'tablet_catn',
+          mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'],
+          alexaNotify: 'alexa_media_tablet_cat',
+        },
+      ];
 
-        for (const notifyEntity of alexaTabletEntities) {
-          const serviceName = notifyEntity.replace('notify.', '');
+      await Promise.all(catWashTablets.map(async (tablet) => {
+        let success = false;
+
+        // Method 1: HA Companion App command_webview (works if app is awake)
+        for (const app of tablet.mobileApps) {
           try {
-            // Alexa Media Player: use "command_launch_app" with Silk browser to open URL
-            const notifyResp = await fetch(`${haUrl}/api/services/notify/${serviceName}`, {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                message: "open_url",
+                message: "command_webview",
+                data: { url: readerUrl }
+              }),
+            });
+            console.log(`[Cat Wash] ${tablet.name} → ${app} command_webview: ${resp.status}`);
+            if (resp.ok) { success = true; break; }
+          } catch (e) {
+            console.log(`[Cat Wash] ${tablet.name} → ${app} failed: ${e}`);
+          }
+        }
+
+        // Method 2: Alexa Media Player notification
+        if (!success && tablet.alexaNotify) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/notify/${tablet.alexaNotify}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                message: "command_launch_app",
                 data: {
-                  url: readerUrl
+                  package_name: "com.amazon.cloud9",
+                  intent_uri: readerUrl
                 }
               }),
             });
-            console.log(`[Cat Wash] Alexa open_url via ${serviceName}: ${notifyResp.status}`);
-            if (notifyResp.ok) {
-              navigated = true;
-              break;
-            }
+            console.log(`[Cat Wash] ${tablet.name} → ${tablet.alexaNotify} launch_app: ${resp.status}`);
+            if (resp.ok) success = true;
           } catch (e) {
-            console.log(`[Cat Wash] ${serviceName} failed: ${e}`);
+            console.log(`[Cat Wash] ${tablet.name} → ${tablet.alexaNotify} failed: ${e}`);
           }
         }
 
-        // Fallback: Try HA Companion App mobile_app notifications
-        if (!navigated) {
-          const mobileApps = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat2'];
-          for (const app of mobileApps) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  message: "command_webview",
-                  data: { url: readerUrl }
-                }),
-              });
-              console.log(`[Cat Wash] ${app} command_webview: ${resp.status}`);
-              if (resp.ok) { navigated = true; break; }
-            } catch (e) {}
-          }
-        }
-
-        // Final fallback: browser_mod navigate
-        if (!navigated) {
+        // Method 3: browser_mod navigate
+        if (!success) {
           try {
-            const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+            const resp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                browser_id: tabletEntity.replace('media_player.', ''),
+                browser_id: tablet.name,
                 path: readerUrl
               }),
             });
-            console.log(`[Cat Wash] browser_mod navigate: ${navResp.status}`);
+            console.log(`[Cat Wash] ${tablet.name} → browser_mod navigate: ${resp.status}`);
+            if (resp.ok) success = true;
           } catch (e) {
-            console.log(`[Cat Wash] browser_mod navigate failed: ${e}`);
+            console.log(`[Cat Wash] ${tablet.name} → browser_mod failed: ${e}`);
           }
         }
-      } catch (err) {
-        console.error("[Cat Wash] Navigation error:", err);
-      }
 
-      console.log(`[Cat Wash] Navigation result: ${navigated ? 'SUCCESS' : 'FALLBACK'}`);
+        tabletResults[tablet.name] = success ? 'OK' : 'FAILED';
+      }));
+
+      console.log(`[Cat Wash] Navigation results: ${JSON.stringify(tabletResults)}`);
 
       res.json({
         action: "playing",
