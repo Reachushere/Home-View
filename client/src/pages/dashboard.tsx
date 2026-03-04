@@ -19400,7 +19400,7 @@ function SchoolForm({
       </div>
       
       {semesterSettings && (
-        <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-4px' }}>
+        <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: 'auto' }}>
           <Label className="text-[10px] font-medium">Semester Settings</Label>
           <div className="space-y-2 text-[10px]">
             <div className="flex items-center justify-between">
