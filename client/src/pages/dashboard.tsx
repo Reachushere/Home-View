@@ -15671,20 +15671,28 @@ export default function Dashboard() {
                     lines.push(
                       <g key="dotted-line">
                         <defs>
-                          <linearGradient id="dotted-line-grad" x1="0" y1={startY} x2="0" y2={endY} gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stopColor="rgba(0,0,0,0.85)" />
-                            <stop offset={`${whiteBoxFrac * 100}%`} stopColor="rgba(0,0,0,0.85)" />
-                            <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 2)}%`} stopColor="rgba(255,255,255,0.9)" />
-                            <stop offset="100%" stopColor="rgba(255,255,255,0.9)" />
-                          </linearGradient>
+                          <clipPath id="dotted-clip-white-box">
+                            <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
+                          </clipPath>
+                          <clipPath id="dotted-clip-outside">
+                            <rect x="0" y={whiteBoxBottom} width="9999" height={endY - whiteBoxBottom + 20} />
+                          </clipPath>
                         </defs>
                         <path
-                          className="animate-next-task-line"
                           d={pathD}
                           fill="none"
-                          stroke="url(#dotted-line-grad)"
+                          stroke="rgba(0,0,0,0.85)"
                           strokeWidth="1.5"
                           strokeDasharray="6 3"
+                          clipPath="url(#dotted-clip-white-box)"
+                        />
+                        <path
+                          d={pathD}
+                          fill="none"
+                          stroke="rgba(255,255,255,0.9)"
+                          strokeWidth="1.5"
+                          strokeDasharray="6 3"
+                          clipPath="url(#dotted-clip-outside)"
                         />
                         <polygon
                           points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
@@ -15768,25 +15776,38 @@ export default function Dashboard() {
                   lines.push(
                     <g key="solid-line">
                       <defs>
-                        <linearGradient id="solid-line-grad" x1="0" y1={startY} x2="0" y2={endY} gradientUnits="userSpaceOnUse">
-                          <stop offset="0%" stopColor="rgba(0,0,0,0.85)" />
-                          <stop offset={`${whiteBoxFrac * 100}%`} stopColor="rgba(0,0,0,0.85)" />
-                          {hasGap ? (
-                            <>
-                              <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 1)}%`} stopColor="rgba(255,255,255,0.9)" />
-                              <stop offset={`${Math.max(0, calFrac * 100 - 1)}%`} stopColor="rgba(255,255,255,0.9)" />
-                            </>
-                          ) : null}
-                          <stop offset={`${calFrac * 100}%`} stopColor="rgba(0,0,0,0.7)" />
-                          <stop offset="100%" stopColor="rgba(0,0,0,0.7)" />
-                        </linearGradient>
+                        <clipPath id="solid-clip-white-box">
+                          <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
+                        </clipPath>
+                        <clipPath id="solid-clip-gap">
+                          <rect x="0" y={whiteBoxBottom} width="9999" height={calendarTop - whiteBoxBottom} />
+                        </clipPath>
+                        <clipPath id="solid-clip-calendar">
+                          <rect x="0" y={calendarTop} width="9999" height={endY - calendarTop + 20} />
+                        </clipPath>
                       </defs>
                       <path
-                        className="animate-next-task-line"
                         d={pathD}
                         fill="none"
-                        stroke="url(#solid-line-grad)"
+                        stroke="rgba(0,0,0,0.85)"
                         strokeWidth="1.5"
+                        clipPath="url(#solid-clip-white-box)"
+                      />
+                      {hasGap && (
+                        <path
+                          d={pathD}
+                          fill="none"
+                          stroke="rgba(255,255,255,0.9)"
+                          strokeWidth="1.5"
+                          clipPath="url(#solid-clip-gap)"
+                        />
+                      )}
+                      <path
+                        d={pathD}
+                        fill="none"
+                        stroke="rgba(0,0,0,0.7)"
+                        strokeWidth="1.5"
+                        clipPath="url(#solid-clip-calendar)"
                       />
                       <polygon
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
