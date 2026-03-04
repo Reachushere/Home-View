@@ -9776,7 +9776,7 @@ export default function Dashboard() {
       </div>
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
-      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ right: `${calendarRight - 15}px`, top: '-4px', zIndex: 100, padding: '0 0 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ right: `${calendarRight + 80}px`, top: '-4px', zIndex: 100, padding: '0 0 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         {/* Share Button */}
         {isAdmin && (
           <Share 
