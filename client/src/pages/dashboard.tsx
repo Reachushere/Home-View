@@ -9160,8 +9160,8 @@ export default function Dashboard() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              left: '0px',
-              right: '70px',
+              left: `${calendarLeft - 15}px`,
+              right: `${calendarRight - 15}px`,
             }}
             data-testid="next-task-countdown"
           >
@@ -9228,8 +9228,8 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: '0px',
-          right: '70px',
+          left: `${calendarLeft - 15}px`,
+          right: `${calendarRight - 15}px`,
           transform: `translateY(${isTopPillOpen ? '4px' : '-56px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
@@ -9238,7 +9238,6 @@ export default function Dashboard() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          pointerEvents: 'none',
         }}
         onMouseEnter={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
@@ -9257,7 +9256,7 @@ export default function Dashboard() {
           background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          borderRadius: '28px',
+          borderRadius: '12px',
           border: '1.5px solid rgba(255,255,255,0.35)',
           borderTop: '1.5px solid rgba(255,255,255,0.55)',
           boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
