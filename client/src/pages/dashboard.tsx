@@ -9163,17 +9163,26 @@ export default function Dashboard() {
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.75)', borderRadius: '16px', padding: '3px 16px 3px 68px', minWidth: '395px', border: '1px solid #000000', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-56px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                  onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
-                  onMouseLeave={() => setHoveredCountdownTaskId(null)}
-                  data-testid="countdown-next-task-number"
-                >
-                  <span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
-                  <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
-                  <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                  <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
-                </div>
+                {(() => {
+                  const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
+                  const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays;
+                  
+                  const dueLine = (
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
+                      onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                      data-testid="countdown-next-task-number"
+                    >
+                      <span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                      <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
+                      <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
+                      <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
+                    </div>
+                  );
+
+                  return showPrepFirst ? null : dueLine;
+                })()}
                 {prepDaysText && nextPrep && (
                   <div
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
@@ -9184,6 +9193,24 @@ export default function Dashboard() {
                     {prepDaysText === 'today' ? (<><span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>) : prepDaysText === 'now' ? (<><span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
                   </div>
                 )}
+                {(() => {
+                  const prepDaysNum2 = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
+                  const showPrepFirst2 = prepDaysText && nextPrep && prepDaysNum2 < diffDays;
+                  if (!showPrepFirst2) return null;
+                  return (
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
+                      onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                      data-testid="countdown-next-task-number-after"
+                    >
+                      <span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                      <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
+                      <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
+                      <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
