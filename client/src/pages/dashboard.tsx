@@ -15638,7 +15638,14 @@ export default function Dashboard() {
                     const singleRowHeight = courseRowsRect.height / numCourses;
                     const courseRowTop = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight;
                     const endY = courseRowTop - 6;
-                    const endX = getDayColumnCenter(np.startDayIdx);
+                    const getDayColumnLeft = (dIdx: number) => {
+                      let leftFr = 0;
+                      for (let i = 0; i < dIdx && i < 6; i++) {
+                        leftFr += gridSizes.dayColumnWidths[i];
+                      }
+                      return contentRect.left + fixedLeftWidth + (leftFr / totalFrUnits) * flexWidth + 8;
+                    };
+                    const endX = getDayColumnLeft(np.startDayIdx);
                     const startX = pos.x;
                     const startY = pos.y;
                     
