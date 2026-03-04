@@ -262,14 +262,14 @@ button[role="combobox"] > span {
 }
 
 @keyframes top-pill-container-nudge {
-  0%, 70% { transform: translateX(calc(-50% - 35px)) translateY(-56px); }
-  74% { transform: translateX(calc(-50% - 35px)) translateY(-50px); }
-  78% { transform: translateX(calc(-50% - 35px)) translateY(-56px); }
-  82% { transform: translateX(calc(-50% - 35px)) translateY(-51px); }
-  86% { transform: translateX(calc(-50% - 35px)) translateY(-56px); }
-  90% { transform: translateX(calc(-50% - 35px)) translateY(-52px); }
-  94% { transform: translateX(calc(-50% - 35px)) translateY(-56px); }
-  100% { transform: translateX(calc(-50% - 35px)) translateY(-56px); }
+  0%, 70% { transform: translateX(-50%) translateY(-56px); }
+  74% { transform: translateX(-50%) translateY(-50px); }
+  78% { transform: translateX(-50%) translateY(-56px); }
+  82% { transform: translateX(-50%) translateY(-51px); }
+  86% { transform: translateX(-50%) translateY(-56px); }
+  90% { transform: translateX(-50%) translateY(-52px); }
+  94% { transform: translateX(-50%) translateY(-56px); }
+  100% { transform: translateX(-50%) translateY(-56px); }
 }
 
 .top-pill-container-idle {
