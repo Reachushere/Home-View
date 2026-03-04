@@ -6605,7 +6605,8 @@ export default function Dashboard() {
     <div 
       className="flex h-screen flex-col overflow-hidden relative"
       style={{ 
-        minWidth: '1024px'
+        minWidth: '1024px',
+        backgroundColor: colorSettings.mainBackgroundOverlay ? colorSettings.mainBackground : '#000000'
       }}
     >
       {/* Background image layer with brightness */}
