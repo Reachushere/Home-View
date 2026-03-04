@@ -9162,7 +9162,6 @@ export default function Dashboard() {
           }
         }
         const isPrepZeroDays = nextPrep && (nextPrep.prepDaysLeft === 0 || nextPrep.prepDaysLeft < 0);
-        const isZeroDays = diffDays === 0 || isPrepZeroDays;
         return (
           <div
             className="font-raleway"
@@ -9182,22 +9181,24 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div className={isZeroDays ? 'animate-zero-day-blink' : ''} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 2px 68px', minWidth: '395px', border: isZeroDays ? '1px solid rgba(220,38,38,0.6)' : '1px solid rgba(255,255,255,0.25)', borderTop: isZeroDays ? '1px solid rgba(220,38,38,0.8)' : '1px solid rgba(255,255,255,0.45)', boxShadow: '0 4px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.03)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 2px 68px', minWidth: '395px', border: '1px solid rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.45)', boxShadow: '0 4px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.03)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                 {(() => {
                   const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays;
                   
+                  const isDueZero = diffDays === 0;
                   const dueLine = (
                     <div
+                      className={isDueZero ? 'animate-zero-day-blink' : ''}
                       style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                       onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isZeroDays ? '#dc2626' : '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
-                      {isZeroDays ? (
+                      <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {isDueZero ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}</span>
@@ -9217,6 +9218,7 @@ export default function Dashboard() {
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
+                    className={isPrepZeroDays ? 'animate-zero-day-blink' : ''}
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
@@ -9229,15 +9231,17 @@ export default function Dashboard() {
                   const prepDaysNum2 = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst2 = prepDaysText && nextPrep && prepDaysNum2 < diffDays;
                   if (!showPrepFirst2) return null;
+                  const isDueZero2 = diffDays === 0;
                   return (
                     <div
+                      className={isDueZero2 ? 'animate-zero-day-blink' : ''}
                       style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                       onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number-after"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isZeroDays ? '#dc2626' : '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
-                      {isZeroDays ? (
+                      <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {isDueZero2 ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}</span>
