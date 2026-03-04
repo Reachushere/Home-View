@@ -8045,7 +8045,7 @@ export default function Dashboard() {
               data-testid="button-preview-play"
               title="Play from start"
             >
-              <Play className="h-4 w-4 text-white fill-white ml-0.5" />
+              <Play className="h-5 w-5 text-white fill-white ml-0.5" />
             </button>
             
             <button
