@@ -14588,7 +14588,14 @@ export default function Dashboard() {
                           <>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', height: '28px' }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
-                                <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module{moduleFolderCount?.total ? ` (${moduleFolderCount.total})` : ''}</span>
+                                <div className="flex items-center gap-[3px]">
+                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
+                                  {moduleUnread > 0 && moduleP.percent < 100 && (
+                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
+                                      {moduleUnread}
+                                    </div>
+                                  )}
+                                </div>
                                 {moduleP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]">
                                     <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -14609,17 +14616,19 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('module')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '45px', height: 'auto', display: 'block', marginLeft: '-7px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
-                                {moduleUnread > 0 && moduleP.percent < 100 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
-                                    {moduleUnread}
-                                  </div>
-                                )}
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '45px', height: 'auto', display: 'block', marginLeft: '-3px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                             <div className="flex-1 flex items-center gap-[3px]" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
-                                <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading{readingFolderCount?.total ? ` (${readingFolderCount.total})` : ''}</span>
+                                <div className="flex items-center gap-[3px]">
+                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
+                                  {readingUnread > 0 && readingP.percent < 100 && (
+                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
+                                      {readingUnread}
+                                    </div>
+                                  )}
+                                </div>
                                 {readingP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]">
                                     <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -14640,12 +14649,7 @@ export default function Dashboard() {
                                 onClick={() => handlePlayFiles('reading')}
                                 onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}
                               >
-                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '45px', height: 'auto', display: 'block', marginLeft: '-7px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
-                                {readingUnread > 0 && readingP.percent < 100 && (
-                                  <div className={`absolute bg-[#FF0000] text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white`} style={{ top: '-3px', right: '-3px', zIndex: 10, paddingRight: '3px' }}>
-                                    {readingUnread}
-                                  </div>
-                                )}
+                                <img src={pdfSearchLogo} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '45px', height: 'auto', display: 'block', marginLeft: '-3px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                           </>
