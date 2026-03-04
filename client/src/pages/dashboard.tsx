@@ -7975,16 +7975,17 @@ export default function Dashboard() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className={`h-7 w-7 text-white ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
+                    className={`h-8 w-8 text-white ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
                     data-testid="button-flick-cast"
                     onClick={() => setShowFlickMenu(!showFlickMenu)}
                     disabled={isFlicking}
                     title="Flick to another device"
+                    style={{ marginRight: '-10px' }}
                   >
                     {isFlicking ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Cast className="h-[16.5px] w-[16.5px]" />
+                      <Cast className="h-[21.5px] w-[21.5px]" />
                     )}
                   </Button>
                   {showFlickMenu && (
