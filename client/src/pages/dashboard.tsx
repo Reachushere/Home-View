@@ -9090,7 +9090,7 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <div className="fixed flex items-center" style={{ left: '16px', top: '7px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed flex items-center" style={{ left: '16px', top: '5px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '35px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
@@ -10575,7 +10575,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '55px', right: '0px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+          style={{ bottom: '53px', right: '0px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
