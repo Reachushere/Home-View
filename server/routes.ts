@@ -3901,6 +3901,37 @@ export async function registerRoutes(
 
       console.log(`[Cat Wash] Navigation results: ${JSON.stringify(tabletResults)}`);
 
+      const tvEntity = 'media_player.tv_cat_wr';
+      try {
+        const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ entity_id: tvEntity }),
+        });
+        console.log(`[Cat Wash] TV turn_on: ${turnOnResp.status}`);
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const browseResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: tvEntity,
+            media_content_id: readerUrl,
+            media_content_type: 'url',
+          }),
+        });
+        console.log(`[Cat Wash] TV play_media (browser): ${browseResp.status}`);
+      } catch (e) {
+        console.log(`[Cat Wash] TV error: ${e}`);
+      }
+
       res.json({
         action: "playing",
         file: {
