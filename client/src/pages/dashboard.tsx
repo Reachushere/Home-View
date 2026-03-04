@@ -9814,9 +9814,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Separator 2: Pomodoro | Clock */}
-        <div style={{ width: '1px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '17px', marginRight: '17px' }} />
-
         {/* Clock / Date */}
         <div className="flex items-center" style={{ gap: '6px', flexShrink: 0 }} data-testid="digital-clock">
           <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00', flexShrink: 0 }}>
