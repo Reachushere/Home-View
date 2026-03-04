@@ -21,7 +21,7 @@ import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import pdfLogo from "@assets/Adobe51_1772514760872.png";
 import profilePhoto from "@assets/image_1772579486577.png";
-import pdfSearchLogo from "@assets/Adobe60_1772578202193.png";
+import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
