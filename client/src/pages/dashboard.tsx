@@ -9846,7 +9846,7 @@ export default function Dashboard() {
         <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', margin: '0 8px', flexShrink: 0 }} />
 
         {/* Pomodoro Timer */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center" style={{ gap: '8px' }}>
           <div className={`text-[15px] font-bold py-0.5 rounded flex items-center ${
             pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
             pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -9880,19 +9880,18 @@ export default function Dashboard() {
         <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', margin: '0 8px', flexShrink: 0 }} />
 
         {/* Clock / Date */}
-        <div className="flex items-center gap-1" data-testid="digital-clock">
+        <div className="flex items-center" style={{ gap: '8px' }} data-testid="digital-clock">
           <span className="text-[13px] font-bold" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', color: '#FFFF00' }}>
             {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
           </span>
-          <div className="w-[1px] h-4 bg-white/50 mx-1" />
-          <div style={{ display: 'flex', alignItems: 'baseline', width: '95px' }}>
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '44px', textAlign: 'right', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', flexShrink: 0 }}>
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
             </span>
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '10px', fontWeight: 'bold', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0 }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '10px', fontWeight: 'bold', color: 'white', flexShrink: 0 }}>
               :{String(currentTime.getSeconds()).padStart(2, '0')}
             </span>
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '8px', fontWeight: 'bold', color: 'white', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '8px', fontWeight: 'bold', color: 'white', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
             </span>
           </div>
