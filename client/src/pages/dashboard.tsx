@@ -9818,17 +9818,17 @@ export default function Dashboard() {
 
         {/* Clock / Date */}
         <div className="flex items-center" style={{ gap: '6px', flexShrink: 0, marginLeft: '26px' }} data-testid="digital-clock">
-          <span className="text-[10px] font-bold" style={{ letterSpacing: '0.3px', color: 'white', flexShrink: 0 }}>
+          <span className="text-[10px] font-medium" style={{ letterSpacing: '0.3px', color: 'white', flexShrink: 0 }}>
             {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
           </span>
           <div style={{ display: 'flex', alignItems: 'baseline', flexShrink: 0 }}>
-            <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'white', width: '36px', textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: '10px', fontWeight: '500', color: 'white', width: '36px', textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
             </span>
-            <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: '10px', fontWeight: '500', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
               :{String(currentTime.getSeconds()).padStart(2, '0')}
             </span>
-            <span style={{ fontSize: '8px', fontWeight: 'bold', color: 'white', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
+            <span style={{ fontSize: '8px', fontWeight: '500', color: 'white', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px' }}>
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
             </span>
           </div>
