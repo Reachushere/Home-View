@@ -8025,7 +8025,7 @@ export default function Dashboard() {
               >
                 <RotateCcw className="h-4 w-4 text-white" />
               </button>
-              <span className="text-[10px] text-white leading-none">Restart</span>
+              <span className="text-[9px] text-white leading-none">Restart</span>
             </div>
             
             <div className="flex items-center gap-1">
@@ -8037,7 +8037,7 @@ export default function Dashboard() {
               >
                 <RefreshCw className="h-4 w-4 text-white" />
               </button>
-              <span className="text-[10px] text-white leading-none">Re-read</span>
+              <span className="text-[9px] text-white leading-none">Re-read</span>
             </div>
             
             <div className="w-px h-7 bg-white/30" />
@@ -8097,7 +8097,7 @@ export default function Dashboard() {
               >
                 <Plus className="h-4 w-4 text-white" />
               </Button>
-              <span className="text-[10px] text-white w-8">{radioVolume}%</span>
+              <span className="text-[9px] text-white w-8">{radioVolume}%</span>
             </div>
             
             <div className="w-px h-7 bg-white/30" />
@@ -8143,7 +8143,7 @@ export default function Dashboard() {
                 className="h-4.5 w-4.5 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 data-[state=checked]:text-white"
                 data-testid="checkbox-sync-highlight"
               />
-              <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer">
+              <Label htmlFor="sync-highlight" className="text-white text-[9px] cursor-pointer">
                 Sync
               </Label>
             </div>
