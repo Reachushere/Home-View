@@ -9842,13 +9842,13 @@ export default function Dashboard() {
       {/* Pomodoro Controls - fixed position */}
       <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 228}px`, top: '4px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-          {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
+          {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
         </button>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-          <RotateCcw className="h-[15px] w-[15px] text-white" strokeWidth={2.5} />
+          <RotateCcw className="h-[13px] w-[13px] text-white" strokeWidth={2.5} />
         </button>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-          <SkipForward className="h-[15px] w-[15px] text-white" strokeWidth={2.5} />
+          <SkipForward className="h-[13px] w-[13px] text-white" strokeWidth={2.5} />
         </button>
       </div>
 
