@@ -13371,7 +13371,7 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4 justify-between" style={{ marginTop: '-2px' }}>
                 <div className="flex flex-col gap-4">
                 {/* Blinking & Spacing Settings */}
-                <div className="border rounded-lg p-3 space-y-3">
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '1px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Blinking & Spacing</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Control blinking animations and button spacing</span>
