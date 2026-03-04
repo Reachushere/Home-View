@@ -3942,6 +3942,43 @@ export async function registerRoutes(
         console.log(`[Cat Wash] Fire TV error: ${e}`);
       }
 
+      const samsungTvEntity = 'media_player.tv_cat_wr';
+      const samsungReaderUrl = `${readerUrl}&auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}`;
+      try {
+        const castResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: samsungTvEntity,
+            media_content_id: samsungReaderUrl,
+            media_content_type: 'url',
+          }),
+        });
+        console.log(`[Cat Wash] Samsung TV play_media: ${castResp.status}`);
+      } catch (e) {
+        console.log(`[Cat Wash] Samsung TV play_media error: ${e}`);
+      }
+
+      try {
+        const browseResp = await fetch(`${haUrl}/api/services/samsungtv/select_source`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: samsungTvEntity,
+            source: 'Browser',
+          }),
+        });
+        console.log(`[Cat Wash] Samsung TV select_source Browser: ${browseResp.status}`);
+      } catch (e) {
+        console.log(`[Cat Wash] Samsung TV select_source error: ${e}`);
+      }
+
       res.json({
         action: "playing",
         file: {
