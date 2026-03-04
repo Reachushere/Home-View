@@ -3892,22 +3892,53 @@ export async function registerRoutes(
       const appUrl = `https://${req.get('host') || 'home-view--bkh416.replit.app'}`;
       const readerUrl = `${appUrl}/pdf-reader/${fileId}?autoplay=true&speaker=${encodeURIComponent(device.entityId)}`;
 
-      if (device.canDisplay && (device.type === "tablet" || device.type === "echo_show")) {
+      const navigateToReader = async (targetDevice: FlickDevice) => {
+        if (!targetDevice.canDisplay) return;
+        const speakerEntity = device.entityId;
+        const deviceReaderUrl = `${appUrl}/pdf-reader/${fileId}?autoplay=true&speaker=${encodeURIComponent(speakerEntity)}`;
         try {
-          const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              browser_id: device.entityId,
-              path: readerUrl
-            }),
-          });
-          console.log(`[Flick] Navigated ${device.entityId} via browser_mod: ${navResp.status}`);
+          if (targetDevice.type === "tablet" || targetDevice.type === "echo_show") {
+            const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                browser_id: targetDevice.entityId,
+                path: deviceReaderUrl
+              }),
+            });
+            console.log(`[Flick] Navigated ${targetDevice.entityId} via browser_mod: ${navResp.status}`);
+          } else if (targetDevice.type === "tv") {
+            const castResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                entity_id: targetDevice.entityId,
+                media_content_id: deviceReaderUrl,
+                media_content_type: "url"
+              }),
+            });
+            console.log(`[Flick] Cast to TV ${targetDevice.entityId}: ${castResp.status}`);
+          }
         } catch (navErr) {
-          console.error("[Flick] Browser Mod navigation failed:", navErr);
+          console.error(`[Flick] Display navigation failed for ${targetDevice.name}:`, navErr);
+        }
+      };
+
+      if (device.canDisplay) {
+        await navigateToReader(device);
+      } else if (device.type === "group") {
+        const roomGroup = FLICK_DEVICES.find(g => g.devices.some(d => d.id === device.id));
+        if (roomGroup) {
+          const screenDevices = roomGroup.devices.filter(d => d.canDisplay && d.id !== device.id);
+          for (const screenDevice of screenDevices) {
+            await navigateToReader(screenDevice);
+          }
         }
       }
 
