@@ -9795,7 +9795,7 @@ export default function Dashboard() {
       </div>
 
       {/* Pomodoro Controls - fixed position */}
-      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 195}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 197}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
           {pomodoroRunning ? <Pause className="h-[10px] w-[10px] text-white" strokeWidth={2.5} /> : <Play className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />}
         </button>
