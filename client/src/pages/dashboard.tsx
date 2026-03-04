@@ -9818,7 +9818,7 @@ export default function Dashboard() {
       </div>
 
       {/* Date - fixed position */}
-      <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 75}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+      <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 55}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
 
