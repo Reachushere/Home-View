@@ -524,7 +524,7 @@ export default function Dashboard() {
       el.style.transform = current;
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateY(9px)';
+      el.style.transform = 'translateY(8px)';
     }
     setIsTopPillOpen(true);
   }, [isTopPillOpen]);
