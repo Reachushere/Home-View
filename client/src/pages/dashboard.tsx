@@ -7969,14 +7969,14 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 border-b border-white/10" style={{ marginTop: '-7px' }}>
+          <div className="flex items-center justify-between gap-2 p-2 px-2 sm:px-4 mx-2 sm:mx-6 border-b border-white/10" style={{ marginTop: '-7px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
               data-testid="button-preview-rewind"
               title="Rewind 20 words"
             >
-              <SkipBack className="h-3.5 w-3.5 text-white" />
+              <SkipBack className="h-4 w-4 text-white" />
             </button>
             
             <button
@@ -7985,7 +7985,7 @@ export default function Dashboard() {
               data-testid="button-preview-play"
               title="Play from start"
             >
-              <Play className="h-3.5 w-3.5 text-white fill-white ml-0.5" />
+              <Play className="h-4 w-4 text-white fill-white ml-0.5" />
             </button>
             
             <button
@@ -7994,7 +7994,7 @@ export default function Dashboard() {
               data-testid="button-preview-resume"
               title={`Resume from section ${(previewFile?.id ? getTtsProgress(previewFile.id)?.chunkIndex || 0 : 0) + 1}`}
             >
-              <RotateCcw className="h-3.5 w-3.5 text-white" />
+              <RotateCcw className="h-4 w-4 text-white" />
             </button>
             
             <button
@@ -8002,7 +8002,7 @@ export default function Dashboard() {
               onClick={handleStopMedia}
               data-testid="button-preview-stop"
             >
-              <Square className="h-3.5 w-3.5 text-white fill-white" />
+              <Square className="h-4 w-4 text-white fill-white" />
             </button>
             
             <button
@@ -8011,10 +8011,10 @@ export default function Dashboard() {
               data-testid="button-preview-forward"
               title="Skip forward 20 words"
             >
-              <SkipForward className="h-3.5 w-3.5 text-white" />
+              <SkipForward className="h-4 w-4 text-white" />
             </button>
             
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-7 bg-white/30" />
             
             <div className="flex items-center gap-1">
               <button
@@ -8023,9 +8023,9 @@ export default function Dashboard() {
                 data-testid="button-preview-restart-beginning"
                 title="Restart from beginning"
               >
-                <RotateCcw className="h-3.5 w-3.5 text-white" />
+                <RotateCcw className="h-4 w-4 text-white" />
               </button>
-              <span className="text-[11px] text-white leading-none">Restart</span>
+              <span className="text-[12px] text-white leading-none">Restart</span>
             </div>
             
             <div className="flex items-center gap-1">
@@ -8035,18 +8035,18 @@ export default function Dashboard() {
                 data-testid="button-preview-restart-current"
                 title="Restart current section"
               >
-                <RefreshCw className="h-3.5 w-3.5 text-white" />
+                <RefreshCw className="h-4 w-4 text-white" />
               </button>
-              <span className="text-[11px] text-white leading-none">Re-read</span>
+              <span className="text-[12px] text-white leading-none">Re-read</span>
             </div>
             
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-7 bg-white/30" />
             
             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 min-h-[28px] min-w-[28px] text-white hover:bg-white/20"
+                className="h-8 w-8 min-h-[32px] min-w-[32px] text-white hover:bg-white/20"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -8054,7 +8054,7 @@ export default function Dashboard() {
                 }}
                 data-testid="button-volume-down"
               >
-                <Minus className="h-3.5 w-3.5 text-white" />
+                <Minus className="h-4 w-4 text-white" />
               </Button>
               <Slider
                 value={[radioVolume]}
@@ -8081,13 +8081,13 @@ export default function Dashboard() {
                 min={0}
                 max={100}
                 step={5}
-                className="w-24 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2 [&_[role=slider]]:w-2 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-green-500 [&>span>span]:bg-green-500"
+                className="w-24 [&>span:first-child]:h-1 [&>span:first-child>span]:h-1 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-green-500 [&>span>span]:bg-green-500"
                 data-testid="slider-preview-volume"
               />
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 min-h-[28px] min-w-[28px] text-white hover:bg-white/20"
+                className="h-8 w-8 min-h-[32px] min-w-[32px] text-white hover:bg-white/20"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -8095,17 +8095,17 @@ export default function Dashboard() {
                 }}
                 data-testid="button-volume-up"
               >
-                <Plus className="h-3.5 w-3.5 text-white" />
+                <Plus className="h-4 w-4 text-white" />
               </Button>
-              <span className="text-[11px] text-white w-7">{radioVolume}%</span>
+              <span className="text-[12px] text-white w-8">{radioVolume}%</span>
             </div>
             
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-7 bg-white/30" />
             
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 text-white hover:bg-gray-700"
+              className="h-8 w-8 text-white hover:bg-white/20"
               data-testid="button-preview-download"
               title="Download PDF"
               onClick={async () => {
@@ -8130,30 +8130,30 @@ export default function Dashboard() {
                 }
               }}
             >
-              <Download className="h-3 w-3" />
+              <Download className="h-4 w-4" />
             </Button>
             
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-7 bg-white/30" />
             
             <div className="flex items-center gap-1">
               <Checkbox
                 id="sync-highlight"
                 checked={syncHighlight}
                 onCheckedChange={(checked) => setSyncHighlight(!!checked)}
-                className="h-4 w-4 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 data-[state=checked]:text-white"
+                className="h-4.5 w-4.5 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 data-[state=checked]:text-white"
                 data-testid="checkbox-sync-highlight"
               />
-              <Label htmlFor="sync-highlight" className="text-white text-[11px] cursor-pointer">
+              <Label htmlFor="sync-highlight" className="text-white text-[12px] cursor-pointer">
                 Sync
               </Label>
             </div>
             
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-7 bg-white/30" />
             
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 text-white"
+              className="h-8 w-8 text-white"
               onClick={() => {
                 setTtsSearchOpen(prev => !prev);
                 setTtsSearchQuery("");
