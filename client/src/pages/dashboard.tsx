@@ -8066,7 +8066,7 @@ export default function Dashboard() {
                 min={0}
                 max={100}
                 step={5}
-                className="w-24 [&>span:first-child]:h-1 [&>span:first-child>span]:h-1 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-green-500 [&>span>span]:bg-green-500"
+                className="w-24 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-green-500 [&>span>span]:bg-green-500"
                 data-testid="slider-preview-volume"
               />
               <Button
