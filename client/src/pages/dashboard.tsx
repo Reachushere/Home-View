@@ -10665,7 +10665,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white whitespace-nowrap font-normal tracking-wide" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="text-week-dates">
+          <span className="text-[10px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
@@ -10676,12 +10676,12 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white font-normal tracking-wide whitespace-nowrap" style={{ marginLeft: '4px', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Week {selectedWeek}</span>
+          <span className="text-[10px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-normal text-white border-0 tracking-wide relative -top-[4px]"
-          style={{ marginRight: '21px', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight relative -top-[4px]"
+          style={{ marginRight: '21px' }}
           onClick={() => {
             if (calendarView === "week") {
               setCurrentMonth(new Date());
