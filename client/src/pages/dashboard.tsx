@@ -7767,8 +7767,8 @@ export default function Dashboard() {
             
             return (
               <DialogHeader 
-                className="px-6 py-4 border-b border-white/20 cursor-grab active:cursor-grabbing select-none"
-                style={{ background: playerHeaderGradient }}
+                className="px-6 py-4 border-b border-white/10 cursor-grab active:cursor-grabbing select-none"
+                style={{ background: 'transparent' }}
                 onMouseDown={onHeaderMouseDown}
                 onTouchStart={onHeaderTouchStart}
               >
@@ -7783,7 +7783,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-4px' }}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 gap-2 border-b border-white/10" style={{ marginTop: '-4px' }}>
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -7969,7 +7969,7 @@ export default function Dashboard() {
           </div>
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ marginTop: '-7px' }}>
+          <div className="flex items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 border-b border-white/10" style={{ marginTop: '-7px' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
@@ -8894,7 +8894,7 @@ export default function Dashboard() {
           {/* Voice Controls + Done Button Row */}
           <div className="flex items-center justify-between mx-6 mt-2 mb-2">
             {/* Voice controls - compact */}
-            <div className="flex items-center gap-3 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+            <div className="flex items-center gap-3 px-4 py-1.5">
               {/* Voice selector - browser TTS */}
               {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
                 <div className="flex items-center gap-2">
