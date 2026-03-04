@@ -9243,10 +9243,13 @@ export default function Dashboard() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(255, 255, 255, 0.06)',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
           borderRadius: '28px',
-          border: '1.5px solid rgba(255, 255, 255, 0.35)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          border: '1.5px solid rgba(255,255,255,0.35)',
+          borderTop: '1.5px solid rgba(255,255,255,0.55)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
           pointerEvents: 'none',
         }} />
         
@@ -10789,32 +10792,22 @@ export default function Dashboard() {
               style={{ position: 'absolute', left: '-6px', top: '0', width: `${arrowW + 12}px`, height: `${pillH}px`, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }}
               onMouseEnter={handleOpen}
             />
-            {/* SVG pill body (no arrow) */}
-            <svg width={totalW + 2} height={pillH + 2} viewBox={`-1 -1 ${totalW + 2} ${pillH + 2}`} style={{ position: 'absolute', top: '-1px', left: '-1px', overflow: 'visible', pointerEvents: 'none' }}>
-              <defs>
-                <filter id="pillShadow" x="-10%" y="-5%" width="120%" height="110%">
-                  <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.15)" />
-                </filter>
-              </defs>
-              <path 
-                d={`
-                  M ${arrowW} ${r}
-                  Q ${arrowW} 0, ${arrowW + r} 0
-                  L ${totalW - r} 0
-                  Q ${totalW} 0, ${totalW} ${r}
-                  L ${totalW} ${pillH - r}
-                  Q ${totalW} ${pillH}, ${totalW - r} ${pillH}
-                  L ${arrowW + r} ${pillH}
-                  Q ${arrowW} ${pillH}, ${arrowW} ${pillH - r}
-                  Z
-                `}
-                fill="rgba(255, 255, 255, 0.06)"
-                stroke="rgba(255, 255, 255, 0.45)"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-                filter="url(#pillShadow)"
-              />
-            </svg>
+            {/* Glass pill body with backdrop blur */}
+            <div style={{
+              position: 'absolute',
+              top: '0px',
+              left: `${arrowW}px`,
+              width: `${totalW - arrowW}px`,
+              height: `${pillH}px`,
+              borderRadius: `${r}px`,
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              pointerEvents: 'none',
+            }} />
             {/* Rounded tab - only visible when pill is closed */}
             <div
               style={{
@@ -10824,9 +10817,12 @@ export default function Dashboard() {
                 width: '23px',
                 height: '46px',
                 borderRadius: '9999px 0 0 9999px',
-                background: 'rgba(255, 255, 255, 0.25)',
-                border: '1px solid rgba(255, 255, 255, 0.35)',
+                background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                border: '1.5px solid rgba(255,255,255,0.35)',
                 borderRight: 'none',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
                 pointerEvents: 'none',
                 opacity: isPillMenuOpen ? 0 : 0.9,
                 transition: 'opacity 0.3s ease-in-out',
