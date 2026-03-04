@@ -8840,6 +8840,65 @@ export default function Dashboard() {
                   </Button>
                 </div>
               )}
+              {/* Volume control */}
+              <div className="flex items-center gap-2" style={{ marginLeft: '27px' }} onClick={(e) => e.stopPropagation()}>
+                <span className="text-[11px] font-bold text-white">Vol</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleVolumeChange("down");
+                  }}
+                  data-testid="button-volume-down"
+                >
+                  <MinusCircle className="h-[18px] w-[18px]" />
+                </Button>
+                <Slider
+                  value={[radioVolume]}
+                  onValueChange={(val) => {
+                    setRadioVolume(val[0]);
+                    if (previewSpeaker === "browser_tts") {
+                      const newVol = val[0] / 100;
+                      setBrowserTtsVolume(newVol);
+                      if (speechUtteranceRef.current) {
+                        speechUtteranceRef.current.volume = newVol;
+                      }
+                    } else if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
+                      if (openaiAudioRef.current) {
+                        openaiAudioRef.current.volume = val[0] / 100;
+                      }
+                    } else {
+                      fetch("/api/media/volume", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ level: val[0], entityId: previewSpeaker }),
+                      }).catch(console.error);
+                    }
+                  }}
+                  min={0}
+                  max={100}
+                  step={5}
+                  className="w-20 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-green-500 [&>span>span]:bg-green-500"
+                  data-testid="slider-preview-volume"
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleVolumeChange("up");
+                  }}
+                  data-testid="button-volume-up"
+                >
+                  <PlusCircle className="h-[18px] w-[18px]" />
+                </Button>
+                <span className="text-[10px] text-white font-medium w-8 text-center">{radioVolume}%</span>
+              </div>
               {/* Speed control with slider - browser TTS */}
               {previewSpeaker === "browser_tts" && (
                 <div className="flex items-center gap-2" style={{ marginLeft: '27px' }}>
@@ -8938,65 +8997,6 @@ export default function Dashboard() {
                   <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 </div>
               )}
-              {/* Volume control */}
-              <div className="flex items-center gap-2" style={{ marginLeft: '27px' }} onClick={(e) => e.stopPropagation()}>
-                <span className="text-[11px] font-bold text-white">Vol</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleVolumeChange("down");
-                  }}
-                  data-testid="button-volume-down"
-                >
-                  <MinusCircle className="h-[18px] w-[18px]" />
-                </Button>
-                <Slider
-                  value={[radioVolume]}
-                  onValueChange={(val) => {
-                    setRadioVolume(val[0]);
-                    if (previewSpeaker === "browser_tts") {
-                      const newVol = val[0] / 100;
-                      setBrowserTtsVolume(newVol);
-                      if (speechUtteranceRef.current) {
-                        speechUtteranceRef.current.volume = newVol;
-                      }
-                    } else if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
-                      if (openaiAudioRef.current) {
-                        openaiAudioRef.current.volume = val[0] / 100;
-                      }
-                    } else {
-                      fetch("/api/media/volume", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ level: val[0], entityId: previewSpeaker }),
-                      }).catch(console.error);
-                    }
-                  }}
-                  min={0}
-                  max={100}
-                  step={5}
-                  className="w-20 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2.5 [&_[role=slider]]:w-2.5 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-green-500 [&>span>span]:bg-green-500"
-                  data-testid="slider-preview-volume"
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleVolumeChange("up");
-                  }}
-                  data-testid="button-volume-up"
-                >
-                  <PlusCircle className="h-[18px] w-[18px]" />
-                </Button>
-                <span className="text-[10px] text-white font-medium w-8 text-center">{radioVolume}%</span>
-              </div>
             </div>
 
             <div className="flex items-center gap-3">
