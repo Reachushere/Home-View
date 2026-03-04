@@ -7720,7 +7720,7 @@ export default function Dashboard() {
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); setDialogPos(null); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
         <DialogContent 
-          className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/30 backdrop-blur-[3px] bg-white/[0.4] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&>button]:text-white"
+          className="w-[1350px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/30 backdrop-blur-[3px] bg-white/[0.4] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&>button]:text-white"
           style={dialogPos ? { transform: `translate(calc(-50% + ${dialogPos.x}px), calc(-50% + ${dialogPos.y}px))` } : undefined}
         >
           {(() => {
@@ -8372,7 +8372,7 @@ export default function Dashboard() {
           {/* Split View: PDF on left, Highlighted Text on right */}
           <div className="flex-1 flex min-h-0 mx-6 mb-2 mt-1 overflow-hidden">
             {/* PDF Viewer */}
-            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(42% - 30px)' }}>
+            <div ref={pdfContainerRef} className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col border border-black" style={{ minWidth: '200px', flex: '0 0 auto', width: 'calc(42% - 30px)' }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
@@ -8491,7 +8491,7 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden relative" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }} ref={ttsTextContainerRef} onMouseDown={isEditingTtsText ? undefined : handleTtsTextMouseDown} onMouseUp={isEditingTtsText ? undefined : handleTtsTextSelection} onTouchEnd={isEditingTtsText ? undefined : handleTtsTextSelection as any}>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden relative border border-black" style={{ flex: '1 1 0', minWidth: `${ttsWidth}px` }} ref={ttsTextContainerRef} onMouseDown={isEditingTtsText ? undefined : handleTtsTextMouseDown} onMouseUp={isEditingTtsText ? undefined : handleTtsTextSelection} onTouchEnd={isEditingTtsText ? undefined : handleTtsTextSelection as any}>
               {showRemoveButton && (
                 <div
                   className="absolute z-50 flex items-center gap-1 bg-red-600 text-white rounded-lg shadow-lg px-2 py-1 cursor-pointer select-none"
