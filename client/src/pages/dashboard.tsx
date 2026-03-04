@@ -19302,10 +19302,9 @@ function SchoolForm({
   return (
     <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
       <div className="border rounded-lg p-3 space-y-3 !-mt-[1px]">
-        <Label className="text-[10px] font-medium">School</Label>
+        <Label className="text-[10px] font-medium">School Logo</Label>
         <div className="space-y-3">
           <div className="space-y-1">
-            <Label className="text-[10px]">Logo</Label>
             <div className="flex items-center gap-3">
               <div className="h-10 w-auto flex items-center justify-center rounded overflow-hidden bg-white/10 px-2">
                 {logoPreview ? (
@@ -19394,7 +19393,7 @@ function SchoolForm({
               ))}
             </select>
           </div>
-          <div className="text-[9px] text-muted-foreground pt-1">
+          <div className="text-[10px] text-muted-foreground pt-1">
             Current Semester Ends: {semesterEnd}
           </div>
         </div>
