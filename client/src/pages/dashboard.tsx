@@ -6608,7 +6608,7 @@ export default function Dashboard() {
       <div 
         className="absolute inset-0"
         style={{ 
-          backgroundImage: `url(${dashboardBg})`,
+          /* backgroundImage: `url(${dashboardBg})`, */
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
