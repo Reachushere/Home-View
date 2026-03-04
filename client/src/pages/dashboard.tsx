@@ -8025,7 +8025,7 @@ export default function Dashboard() {
               >
                 <RotateCcw className="h-4 w-4 text-white" />
               </button>
-              <span className="text-[9px] text-white leading-none">Restart</span>
+              <span className="text-[11px] font-bold text-white leading-none">Restart</span>
             </div>
             
             <div className="flex items-center gap-1">
@@ -8037,7 +8037,7 @@ export default function Dashboard() {
               >
                 <RefreshCw className="h-4 w-4 text-white" />
               </button>
-              <span className="text-[9px] text-white leading-none">Re-read</span>
+              <span className="text-[11px] font-bold text-white leading-none">Re-read</span>
             </div>
             
             <div className="w-px h-7 bg-white/30" />
