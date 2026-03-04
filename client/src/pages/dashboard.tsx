@@ -15670,7 +15670,7 @@ export default function Dashboard() {
                     lines.push(
                       <g key="dotted-line">
                         <defs>
-                          <linearGradient id="dotted-line-grad" x1={startX} y1={startY} x2={endX} y2={endY} gradientUnits="userSpaceOnUse">
+                          <linearGradient id="dotted-line-grad" x1="0" y1={startY} x2="0" y2={endY} gradientUnits="userSpaceOnUse">
                             <stop offset="0%" stopColor="rgba(0,0,0,0.85)" />
                             <stop offset={`${whiteBoxFrac * 100}%`} stopColor="rgba(0,0,0,0.85)" />
                             <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 2)}%`} stopColor="rgba(255,255,255,0.9)" />
