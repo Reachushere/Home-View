@@ -367,7 +367,7 @@ button[role="combobox"] > span {
   color: #dc2626 !important;
 }
 
-.animate-zero-day-blink * {
+.animate-zero-day-blink *:not([data-countdown-badge]) {
   color: #dc2626 !important;
 }
 
