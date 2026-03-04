@@ -8888,7 +8888,7 @@ export default function Dashboard() {
               )}
               {/* Speed control with slider - browser TTS */}
               {previewSpeaker === "browser_tts" && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" style={{ marginLeft: '15px' }}>
                   <span className="text-[11px] font-bold text-white">Speed</span>
                   <Button size="icon" variant="ghost" className="h-5 w-5 text-white hover:bg-gray-700" onClick={() => {
                     setBrowserTtsRate(r => {
