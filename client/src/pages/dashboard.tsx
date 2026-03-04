@@ -18928,7 +18928,7 @@ function ProfileForm({
           onClick={() => photoInputRef.current?.click()}
           data-testid="button-upload-profile-photo"
         >
-          <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/30 group-hover:border-white/60 transition-colors">
+          <div className="w-[84px] h-[84px] rounded-full overflow-hidden border-2 border-white/30 group-hover:border-white/60 transition-colors">
             {profilePhotoUrl ? (
               <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
             ) : (
