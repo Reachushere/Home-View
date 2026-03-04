@@ -9777,6 +9777,16 @@ export default function Dashboard() {
 
       {/* Unified Header Bar - Countdown-style glass backing + transparent content overlay */}
       <div ref={clockContainerRef} className="fixed flex items-center h-[35px]" style={{ right: `${calendarRight - 15}px`, top: '-4px', zIndex: 100, padding: '0 0 0 17px', gap: '0px', position: 'fixed', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+        {/* Share Button */}
+        {isAdmin && (
+          <Share 
+            className="h-4 w-4 text-white/80 cursor-pointer hover:text-white"
+            strokeWidth={2.5}
+            style={{ flexShrink: 0, marginRight: '8px' }}
+            onClick={generateShareLink}
+            data-testid="button-share-main"
+          />
+        )}
         {/* Pomodoro Timer */}
         <div className={`text-[9px] font-bold py-0.5 rounded flex items-center ${
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
@@ -10602,7 +10612,7 @@ export default function Dashboard() {
         <Button 
           variant="ghost"
           className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight relative -top-[4px]"
-          style={{ marginRight: '21px' }}
+          style={{ marginRight: '1px' }}
           onClick={() => {
             if (calendarView === "week") {
               setCurrentMonth(new Date());
@@ -10614,15 +10624,6 @@ export default function Dashboard() {
           {calendarView === "month" ? "Week" : "Month View"}
         </Button>
       </div>
-      {isAdmin && (
-        <Share 
-          className="absolute z-50 h-4 w-4 text-white/80 cursor-pointer hover:text-white"
-          strokeWidth={2.5}
-          style={{ right: '35px', top: `${calendarTop - 24}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-          onClick={generateShareLink}
-          data-testid="button-share-main"
-        />
-      )}
       
       {/* Tall Pill Panel - Slides in from right edge */}
       {(() => {
