@@ -7819,7 +7819,7 @@ export default function Dashboard() {
                       }
                     }}
                   >
-                    <Pencil style={{ height: '19px', width: '19px' }} />
+                    <Pencil style={{ height: '17px', width: '17px' }} />
                   </Button>
                 </DialogTitle>
               </DialogHeader>
@@ -9032,7 +9032,7 @@ export default function Dashboard() {
                         : 0}%` }}
                   />
                 </div>
-                <span className="text-[11px] font-medium min-w-[60px] text-white" style={{ marginLeft: '24px' }}>
+                <span className="text-[11px] font-medium min-w-[60px] text-white" style={{ marginLeft: '29px' }}>
                   {totalChunks > 0 
                     ? `${checkedChunks.size}/${totalChunks} (${Math.round((checkedChunks.size / totalChunks) * 100)}%)` 
                     : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
