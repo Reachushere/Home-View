@@ -3923,32 +3923,22 @@ export async function registerRoutes(
       console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
 
       const tvEntity = 'media_player.tv_cat_wr';
+      const tvMac = 'D8:A3:5C:EB:48:59';
       try {
         const stateResp = await fetch(`${haUrl}/api/states/${tvEntity}`, {
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
         });
         const tvState = await stateResp.json() as any;
-        console.log(`[Cat Wash] TV state: ${tvState.state}, attrs: ${JSON.stringify({
-          friendly_name: tvState.attributes?.friendly_name,
-          mac: tvState.attributes?.mac_address || tvState.attributes?.mac,
-          source: tvState.attributes?.source,
-          supported_features: tvState.attributes?.supported_features,
-        })}`);
+        console.log(`[Cat Wash] TV state: ${tvState.state}`);
 
         const tvIsOff = tvState.state === 'off' || tvState.state === 'unavailable' || tvState.state === 'standby';
 
         if (tvIsOff) {
           const turnOnMethods = [
+            { service: 'wake_on_lan/send_magic_packet', body: { mac: tvMac } },
             { service: 'media_player/turn_on', body: { entity_id: tvEntity } },
             { service: 'remote/turn_on', body: { entity_id: 'remote.tv_cat_wr' } },
-            { service: 'homeassistant/turn_on', body: { entity_id: tvEntity } },
-            { service: 'switch/turn_on', body: { entity_id: 'switch.tv_cat_wr' } },
           ];
-
-          if (tvState.attributes?.mac_address || tvState.attributes?.mac) {
-            const mac = tvState.attributes.mac_address || tvState.attributes.mac;
-            turnOnMethods.push({ service: 'wake_on_lan/send_magic_packet', body: { mac: mac } as any });
-          }
 
           for (const method of turnOnMethods) {
             try {
@@ -3966,7 +3956,7 @@ export async function registerRoutes(
             }
           }
 
-          await new Promise(resolve => setTimeout(resolve, 8000));
+          await new Promise(resolve => setTimeout(resolve, 10000));
         }
 
         const browseResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
