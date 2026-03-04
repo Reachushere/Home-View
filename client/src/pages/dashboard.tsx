@@ -8036,7 +8036,7 @@ export default function Dashboard() {
               data-testid="button-preview-rewind"
               title="Rewind 20 words"
             >
-              <SkipBack className="h-4 w-4 text-white" />
+              <SkipBack className="h-5 w-5 text-white" />
             </button>
             
             <button
@@ -8053,7 +8053,7 @@ export default function Dashboard() {
               onClick={handleStopMedia}
               data-testid="button-preview-stop"
             >
-              <Square className="h-4 w-4 text-white fill-white" />
+              <Square className="h-5 w-5 text-white fill-white" />
             </button>
             
             <button
@@ -8062,7 +8062,7 @@ export default function Dashboard() {
               data-testid="button-preview-forward"
               title="Skip forward 20 words"
             >
-              <SkipForward className="h-4 w-4 text-white" />
+              <SkipForward className="h-5 w-5 text-white" />
             </button>
             
             <button
@@ -8071,7 +8071,7 @@ export default function Dashboard() {
               data-testid="button-preview-restart-beginning"
               title="Restart from beginning"
             >
-              <RotateCcw className="h-4 w-4 text-white" />
+              <RotateCcw className="h-5 w-5 text-white" />
             </button>
             
             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
