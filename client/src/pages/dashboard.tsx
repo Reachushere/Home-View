@@ -7767,8 +7767,8 @@ export default function Dashboard() {
             
             return (
               <DialogHeader 
-                className="px-6 py-4 border-b border-white/10 cursor-grab active:cursor-grabbing select-none"
-                style={{ background: 'transparent' }}
+                className="px-6 py-4 border-b border-white/20 cursor-grab active:cursor-grabbing select-none"
+                style={{ background: playerHeaderGradient }}
                 onMouseDown={onHeaderMouseDown}
                 onTouchStart={onHeaderTouchStart}
               >
