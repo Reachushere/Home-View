@@ -9808,7 +9808,7 @@ export default function Dashboard() {
       </div>
 
       {/* Separator between controls and date */}
-      <span className="text-white/30" style={{ position: 'fixed', right: `${calendarRight + 185}px`, top: '6px', zIndex: 100, fontSize: '10px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }}>|</span>
+      <div style={{ position: 'fixed', right: `${calendarRight + 187}px`, top: '4px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Date - fixed position */}
       <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 55}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
