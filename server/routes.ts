@@ -3924,6 +3924,8 @@ export async function registerRoutes(
 
       const fireTvAdbEntity = 'media_player.fire_tv_172_24_0_88';
       try {
+        const fireTvUrl = `${readerUrl}&auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}`;
+        const escapedUrl = fireTvUrl.replace(/&/g, '\\&');
         const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST',
           headers: {
@@ -3932,7 +3934,7 @@ export async function registerRoutes(
           },
           body: JSON.stringify({
             entity_id: fireTvAdbEntity,
-            command: `am start -a android.intent.action.VIEW -d "${readerUrl.replace(/&/g, '\\&')}"`,
+            command: `am start -a android.intent.action.VIEW -d "${escapedUrl}"`,
           }),
         });
         console.log(`[Cat Wash] Fire TV ADB open reader URL: ${adbResp.status}`);

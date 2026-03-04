@@ -30,9 +30,21 @@ export function AccessGate({ children }: AccessGateProps) {
 
   const checkAccess = async () => {
     try {
-      const res = await fetch("/api/auth/check");
+      const urlParams = new URLSearchParams(window.location.search);
+      const authParam = urlParams.get('auth');
+      const checkUrl = authParam ? `/api/auth/check?auth=${encodeURIComponent(authParam)}` : "/api/auth/check";
+      const res = await fetch(checkUrl);
       const data = await res.json();
       if (data.authenticated) {
+        if (data.token) {
+          localStorage.setItem('uni_cal_token', data.token);
+        }
+        if (authParam) {
+          urlParams.delete('auth');
+          const newSearch = urlParams.toString();
+          const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+          window.history.replaceState({}, '', newUrl);
+        }
         setIsAuthorized(true);
         return;
       }

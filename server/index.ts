@@ -64,7 +64,14 @@ function getAuthToken(req: Request): string | undefined {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return authHeader.substring(7);
   }
+  const queryToken = req.query?.token as string | undefined;
+  if (queryToken) return queryToken;
   return undefined;
+}
+
+function isAutoAuthRequest(req: Request): boolean {
+  const autoAuth = req.query?.auth as string | undefined;
+  return autoAuth === SITE_PASSWORD;
 }
 
 app.post("/api/auth/login", (req: Request, res: Response) => {
@@ -88,6 +95,16 @@ app.post("/api/auth/login", (req: Request, res: Response) => {
 app.get("/api/auth/check", (req: Request, res: Response) => {
   if (!SITE_PASSWORD) {
     return res.json({ authenticated: true });
+  }
+  if (isAutoAuthRequest(req)) {
+    const token = createSessionToken();
+    res.cookie("uni_cal_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+    });
+    return res.json({ authenticated: true, token });
   }
   const token = getAuthToken(req);
   if (token) {
@@ -114,6 +131,17 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path === "/api/client-error") return next();
   if (req.path === "/login") return next();
   if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();
+
+  if (isAutoAuthRequest(req)) {
+    const newToken = createSessionToken();
+    res.cookie("uni_cal_session", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+    });
+    return next();
+  }
 
   const token = getAuthToken(req);
   if (token) {
