@@ -9100,6 +9100,11 @@ export default function Dashboard() {
       </div>
 
 
+      {/* Coming Up label - positioned above countdown box */}
+      {allTasks.filter(t => t.dueDate && !t.isCompleted && new Date(t.dueDate) > new Date()).length > 0 && (
+        <span className="font-raleway" style={{ position: 'fixed', top: '10px', left: `${calendarLeft - 30}px`, zIndex: 102, color: '#ffffff', fontSize: '9.25px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.4s ease-in-out', pointerEvents: 'none', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>Coming Up:</span>
+      )}
+
       {/* Next Task Countdown - center, where Chang School logo used to be */}
       {(() => {
         const now = new Date();
@@ -9139,8 +9144,6 @@ export default function Dashboard() {
           }
         }
         return (
-          <>
-          <span style={{ position: 'fixed', top: '10px', left: `${calendarLeft - 30}px`, zIndex: 102, color: '#ffffff', fontSize: '9.25px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.4s ease-in-out', pointerEvents: 'none', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>Coming Up:</span>
           <div
             className="font-raleway"
             style={{
@@ -9213,7 +9216,6 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          </>
         );
       })()}
 
