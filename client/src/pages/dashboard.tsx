@@ -7858,7 +7858,7 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white"
+                        className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
                         style={{ color: 'white', maxWidth: 'fit-content' }}
                         data-testid="select-module-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>
@@ -7902,7 +7902,7 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white"
+                        className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
                         style={{ color: 'white', maxWidth: 'fit-content' }}
                         data-testid="select-reading-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>{readingFiles.length === 0 ? 'No readings' : (() => { const f = isReading && previewFile ? previewFile : readingFiles[0]; return f ? (f.displayName || f.originalName || 'No readings').replace(/\.pdf$/i, '') : 'No readings'; })()}</span>
@@ -8814,7 +8814,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-white">Voice:</span>
                   <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                    <SelectTrigger className="w-[200px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white text-white" data-testid="select-voice">
+                    <SelectTrigger className="w-[200px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-voice">
                       <SelectValue placeholder="Select Voice" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -8851,7 +8851,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-white">Voice:</span>
                   <Select value={openaiVoice} onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}>
-                    <SelectTrigger className="w-[110px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white text-white" data-testid="select-openai-voice">
+                    <SelectTrigger className="w-[110px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-openai-voice">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
