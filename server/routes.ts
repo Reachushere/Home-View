@@ -3932,7 +3932,7 @@ export async function registerRoutes(
           },
           body: JSON.stringify({
             entity_id: fireTvAdbEntity,
-            command: `am start -a android.intent.action.VIEW -d ${readerUrl}`,
+            command: `am start -a android.intent.action.VIEW -d '${readerUrl}'`,
           }),
         });
         console.log(`[Cat Wash] Fire TV ADB open reader URL: ${adbResp.status}`);
