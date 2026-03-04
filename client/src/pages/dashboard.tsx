@@ -7860,7 +7860,7 @@ export default function Dashboard() {
                       <SelectTrigger 
                         className={`h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 ${
                           isModule 
-                            ? 'border !border-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
+                            ? 'border !border-white' 
                             : 'border-white/20 hover:border-white/50'
                         }`}
                         style={{ color: 'white', maxWidth: 'fit-content' }}
@@ -7892,7 +7892,7 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Reading Files Dropdown */}
-                  <div className="flex items-center gap-1 min-w-0 shrink">
+                  <div className="flex items-center gap-1 min-w-0 shrink" style={{ marginLeft: '20px' }}>
                     <span className="text-[11px] font-bold text-white hidden sm:inline shrink-0">Reading:</span>
                     <Select 
                       value={(() => {
