@@ -2809,6 +2809,20 @@ export async function registerRoutes(
   // TEXT-TO-SPEECH ROUTES (OpenAI TTS for Fire tablets)
   // ============================================
 
+  app.post("/api/tts/clean-text", async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text || typeof text !== "string") {
+        return res.status(400).json({ message: "Text is required" });
+      }
+      const cleaned = cleanTextForTTS(text);
+      res.json({ text: cleaned });
+    } catch (err) {
+      console.error("Error cleaning text:", err);
+      res.status(500).json({ message: "Failed to clean text" });
+    }
+  });
+
   // POST /api/tts - Generate speech from text using OpenAI
   app.post("/api/tts", async (req, res) => {
     try {
@@ -2822,10 +2836,11 @@ export async function registerRoutes(
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
       const selectedVoice = validVoices.includes(voice) ? voice : "alloy";
       
-      // Normalize text to prevent voice changes on citations/special content
-      let normalizedText = text
-        // Remove URLs
-        .replace(/https?:\/\/[^\s]+/gi, '')
+      // Apply full TTS text cleaning first
+      let normalizedText = cleanTextForTTS(text);
+      
+      // Additional normalization for voice quality
+      normalizedText = normalizedText
         // Remove DOIs
         .replace(/doi:[^\s]+/gi, '')
         // Remove citation brackets like [1], [2,3], (Smith, 2020)

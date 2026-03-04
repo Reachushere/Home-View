@@ -293,11 +293,17 @@ export default function PDFReaderPage() {
     setCurrentPage(1);
     
     const key = getFileKey();
-    const savedText = localStorage.getItem(`tts_edited_${key}`);
+    const TTS_CACHE_VERSION = "v2";
+    const savedText = localStorage.getItem(`tts_edited_${TTS_CACHE_VERSION}_${key}`);
     if (savedText) {
       setExtractedText(savedText);
       console.log("Loaded saved TTS text for", key, savedText.length, "chars");
       return;
+    }
+    const oldSaved = localStorage.getItem(`tts_edited_${key}`);
+    if (oldSaved) {
+      localStorage.removeItem(`tts_edited_${key}`);
+      console.log("Removed stale unfiltered TTS cache for", key);
     }
     
     if (pdfUrl && pages > 0 && !extractedText && !isExtractingRef.current) {
@@ -307,6 +313,24 @@ export default function PDFReaderPage() {
   };
   
   // Extract text in background without blocking UI
+  const cleanTextViaServer = async (rawText: string): Promise<string> => {
+    try {
+      const response = await fetch("/api/tts/clean-text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: rawText }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`[TTS] Server cleaned text: ${rawText.length} -> ${data.text.length} chars`);
+        return data.text;
+      }
+    } catch (err) {
+      console.error("[TTS] Server text cleaning failed, using raw:", err);
+    }
+    return rawText;
+  };
+
   const extractTextInBackground = async (url: string, pages: number) => {
     setIsPreloading(true);
     try {
@@ -324,8 +348,9 @@ export default function PDFReaderPage() {
         fullText += `Page ${i}. ${pageText} `;
       }
       
-      setExtractedText(fullText);
-      console.log("PDF text pre-extracted:", fullText.length, "chars");
+      const cleanedText = await cleanTextViaServer(fullText);
+      setExtractedText(cleanedText);
+      console.log("PDF text pre-extracted and cleaned:", cleanedText.length, "chars");
     } catch (error) {
       console.error("Background text extraction failed:", error);
     } finally {
@@ -376,8 +401,9 @@ export default function PDFReaderPage() {
         fullText += `Page ${i}. ${pageText} `;
       }
       
-      setExtractedText(fullText);
-      return fullText;
+      const cleanedText = await cleanTextViaServer(fullText);
+      setExtractedText(cleanedText);
+      return cleanedText;
     } catch (error) {
       console.error("Error extracting text:", error);
       toast({
@@ -905,7 +931,7 @@ export default function PDFReaderPage() {
                           currentChunkRef.current = 0;
                           setIsEditingText(false);
                           const key = getFileKey();
-                          localStorage.setItem(`tts_edited_${key}`, editableText);
+                          localStorage.setItem(`tts_edited_v2_${key}`, editableText);
                           toast({ title: "Text updated", description: "Your edits have been saved. Press play to read the updated text." });
                         }}
                       >
