@@ -7794,7 +7794,7 @@ export default function Dashboard() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-7 w-7 text-white hover:bg-white/20"
+                    className="h-7 w-7 text-white hover:bg-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
                     style={{ marginRight: '15px' }}
                     data-testid="button-edit-tts-text"
                     title={isEditingTtsText ? "Cancel editing" : "Edit TTS text"}
