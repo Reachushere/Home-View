@@ -8006,17 +8006,17 @@ export default function Dashboard() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className={`h-12 w-12 text-white overflow-visible ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
+                    className={`text-white overflow-visible p-0 ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
                     data-testid="button-flick-cast"
                     onClick={() => setShowFlickMenu(!showFlickMenu)}
                     disabled={isFlicking}
                     title="Flick to another device"
-                    style={{ marginRight: '-10px' }}
+                    style={{ marginRight: '-10px', height: '48px', width: '48px', minHeight: '48px', minWidth: '48px' }}
                   >
                     {isFlicking ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                      <Cast className="h-[41px] w-[41px]" />
+                      <Cast style={{ height: '41px', width: '41px' }} />
                     )}
                   </Button>
                   {showFlickMenu && (
