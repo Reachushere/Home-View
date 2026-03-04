@@ -8873,7 +8873,7 @@ export default function Dashboard() {
           {/* Voice Controls + Done Button Row */}
           <div className="flex items-center justify-between mx-6 mt-2 mb-2">
             {/* Voice controls - compact */}
-            <div className="flex items-center gap-3 px-4 py-1.5">
+            <div className="flex items-center gap-3 px-0 py-1.5">
               {/* Voice selector - browser TTS */}
               {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
                 <div className="flex items-center gap-2">
