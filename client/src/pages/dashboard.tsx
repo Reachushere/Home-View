@@ -524,7 +524,7 @@ export default function Dashboard() {
       el.style.transform = current;
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateX(-50%) translateY(5px)';
+      el.style.transform = 'translateX(calc(-50% - 35px)) translateY(5px)';
     }
     setIsTopPillOpen(true);
   }, [isTopPillOpen]);
@@ -534,7 +534,7 @@ export default function Dashboard() {
       el.style.animation = 'none';
       void el.offsetHeight;
       el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateX(-50%) translateY(-56px)';
+      el.style.transform = 'translateX(calc(-50% - 35px)) translateY(-56px)';
       setTimeout(() => {
         if (el) {
           el.style.animation = '';
@@ -9152,11 +9152,10 @@ export default function Dashboard() {
             style={{
               position: 'fixed',
               left: '50%',
-              transform: 'translateX(-50%)',
+              transform: 'translateX(calc(-50% - 35px))',
               top: '17px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
-              marginLeft: '-35px',
               transition: 'opacity 0.4s ease-in-out',
               pointerEvents: 'none',
               display: 'flex',
@@ -9229,8 +9228,7 @@ export default function Dashboard() {
           position: 'fixed',
           zIndex: 110,
           left: '50%',
-          marginLeft: '-35px',
-          transform: `translateX(-50%) translateY(${isTopPillOpen ? '5px' : '-56px'})`,
+          transform: `translateX(calc(-50% - 35px)) translateY(${isTopPillOpen ? '5px' : '-56px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
