@@ -9830,21 +9830,21 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '16px', width: '16px', position: 'fixed', right: `${calendarRight + 375}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '16px', width: '16px', position: 'fixed', right: `${calendarRight + 382}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
       )}
 
       {/* Separator between share and timer numbers */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 363}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', right: `${calendarRight + 370}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Pomodoro Timer Numbers - fixed position */}
-      <div ref={clockContainerRef} className={`flex items-center ${
+      <div ref={clockContainerRef} className={`flex ${
         pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
         pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-      }`} style={{ position: 'fixed', right: `${calendarRight + 297}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-        <span className="text-[12px] text-white" style={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
+      }`} style={{ position: 'fixed', right: `${calendarRight + 304}px`, bottom: 'auto', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'baseline', top: '7px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+        <span className="text-white" style={{ fontSize: '12px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block', lineHeight: '1.25' }}>{formatPomodoroTime(pomodoroTime)}</span>
       </div>
 
       {/* Pomodoro Controls - fixed position */}
