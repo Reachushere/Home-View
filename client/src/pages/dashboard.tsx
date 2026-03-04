@@ -13977,7 +13977,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center justify-center gap-1">
                   <span className="text-[10px] font-medium tracking-wide text-white/60 uppercase leading-tight text-center">Homework<br/><span className="mt-1 block">Progress</span></span>
-                  <Paperclip className="h-5 w-5 text-white/50 flex-shrink-0" strokeWidth={3} />
+                  <Paperclip className="h-4 w-4 text-white flex-shrink-0" strokeWidth={4} />
                 </div>
               </div>
               {/* Saturday header */}
