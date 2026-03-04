@@ -7949,6 +7949,23 @@ export default function Dashboard() {
                 </div>
               );
             })()}
+
+            {/* Speaker Selector */}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="text-[11px] font-bold text-white">Speaker:</span>
+              <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
+                <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-preview-speaker">
+                  <SelectValue placeholder="Select Speaker" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {SPEAKERS.map(speaker => (
+                    <SelectItem key={speaker.id} value={speaker.id} className="text-[10px]">
+                      {speaker.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             
           </div>
           
@@ -8908,23 +8925,6 @@ export default function Dashboard() {
                   <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 </div>
               )}
-              {/* Speaker Selector */}
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold text-white">Speaker:</span>
-                <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
-                  <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-preview-speaker">
-                    <SelectValue placeholder="Select Speaker" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {SPEAKERS.map(speaker => (
-                      <SelectItem key={speaker.id} value={speaker.id} className="text-[10px]">
-                        {speaker.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               {/* Flick Button */}
               {previewFile && flickDeviceGroups.length > 0 && (
                 <div className="relative">
