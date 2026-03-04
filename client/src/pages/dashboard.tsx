@@ -8086,7 +8086,7 @@ export default function Dashboard() {
                 }}
                 data-testid="button-volume-down"
               >
-                <MinusCircle className="h-3.5 w-3.5 text-white" />
+                <MinusCircle className="h-4 w-4 text-white" />
               </Button>
               <Slider
                 value={[radioVolume]}
@@ -8127,7 +8127,7 @@ export default function Dashboard() {
                 }}
                 data-testid="button-volume-up"
               >
-                <PlusCircle className="h-3.5 w-3.5 text-white" />
+                <PlusCircle className="h-4 w-4 text-white" />
               </Button>
               <span className="text-[11px] font-bold text-white w-8">{radioVolume}%</span>
             </div>
@@ -8917,7 +8917,7 @@ export default function Dashboard() {
                       return newRate;
                     });
                   }} data-testid="button-speed-down">
-                    <MinusCircle className="h-3.5 w-3.5" />
+                    <MinusCircle className="h-4 w-4" />
                   </Button>
                   <Slider
                     value={[browserTtsRate]}
@@ -8979,7 +8979,7 @@ export default function Dashboard() {
                       return newRate;
                     });
                   }} data-testid="button-speed-up">
-                    <PlusCircle className="h-3.5 w-3.5" />
+                    <PlusCircle className="h-4 w-4" />
                   </Button>
                   <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 </div>
