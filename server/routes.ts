@@ -3922,7 +3922,7 @@ export async function registerRoutes(
 
       console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
 
-      const fireTvEntity = 'media_player.bryn_s_3rd_fire';
+      const fireTvAdbEntity = 'media_player.fire_tv_172_24_0_88';
       try {
         const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST',
@@ -3931,11 +3931,11 @@ export async function registerRoutes(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            entity_id: fireTvEntity,
+            entity_id: fireTvAdbEntity,
             command: `am start -a android.intent.action.VIEW -d ${readerUrl}`,
           }),
         });
-        console.log(`[Cat Wash] Fire TV ADB open URL: ${adbResp.status}`);
+        console.log(`[Cat Wash] Fire TV ADB open reader URL: ${adbResp.status}`);
       } catch (e) {
         console.log(`[Cat Wash] Fire TV error: ${e}`);
       }
