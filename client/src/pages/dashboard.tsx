@@ -12234,12 +12234,12 @@ export default function Dashboard() {
 
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+            <DialogContent className="max-w-md text-[11px] border border-white/30 backdrop-blur-[3px] bg-white/[0.4] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
               {/* Header bar matching flyouts */}
-              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <User className="h-3 w-3 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     PROFILE
                   </h2>
                 </div>
@@ -12275,32 +12275,27 @@ export default function Dashboard() {
           {/* School Dialog */}
           <Dialog open={isSchoolDialogOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen && !newCourseDialogClosingRef.current) setIsSchoolDialogOpen(open); }}>
             <DialogContent 
-              className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
+              className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] border border-white/30 backdrop-blur-[3px] bg-white/[0.4] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
               onInteractOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
               onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
               onPointerDownOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
               onFocusOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
             >
               {/* Header bar matching flyouts */}
-              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
-                  <Settings className="h-4 w-4 text-white/70" />
+                  <GraduationCap className="h-3 w-3 text-white" />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    SCHOOL SETTINGS
+                  </h2>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="h-3 w-3 text-white" />
-                    <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                      SCHOOL SETTINGS
-                    </h2>
-                  </div>
-                  <button 
-                    onClick={() => setIsSchoolDialogOpen(false)}
-                    className="text-white hover:text-white/80 transition-colors p-1"
-                    data-testid="button-close-school"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
+                <button 
+                  onClick={() => setIsSchoolDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-school"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
               <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0">
               <div className="grid grid-cols-2 gap-4">
