@@ -9032,7 +9032,7 @@ export default function Dashboard() {
                         : 0}%` }}
                   />
                 </div>
-                <span className="text-[11px] font-medium min-w-[60px] text-white" style={{ marginLeft: '29px' }}>
+                <span className="text-[11px] font-medium min-w-[60px] text-white" style={{ marginLeft: '29px', paddingLeft: '0px', position: 'relative', left: '5px' }}>
                   {totalChunks > 0 
                     ? `${checkedChunks.size}/${totalChunks} (${Math.round((checkedChunks.size / totalChunks) * 100)}%)` 
                     : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
