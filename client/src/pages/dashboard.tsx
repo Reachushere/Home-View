@@ -8125,7 +8125,7 @@ export default function Dashboard() {
               <Search style={{ height: '22px', width: '22px' }} />
             </Button>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" style={{ marginTop: '2px' }}>
               <Checkbox
                 id="sync-highlight"
                 checked={syncHighlight}
