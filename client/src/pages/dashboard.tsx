@@ -13159,7 +13159,7 @@ export default function Dashboard() {
                     
                     {/* Main Background Colour - always visible */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Start' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
+                      <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Top (Lightest)' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
                       <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackground}</span>
                       <div className="w-14 flex justify-end flex-shrink-0">
                         <div className="relative w-5 h-5">
@@ -13202,7 +13202,7 @@ export default function Dashboard() {
                     {/* Gradient End Colour - only visible when gradient is on */}
                     {colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay && (
                       <div className="flex items-center gap-3">
-                        <Label className="text-xs whitespace-nowrap flex-1">Gradient End</Label>
+                        <Label className="text-xs whitespace-nowrap flex-1">Gradient Bottom (Darkest)</Label>
                         <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackgroundGradientEnd}</span>
                         <div className="w-14 flex justify-end flex-shrink-0">
                           <div className="relative w-5 h-5">
