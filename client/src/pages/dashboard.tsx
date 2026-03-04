@@ -8087,39 +8087,6 @@ export default function Dashboard() {
             
             <div className="w-px h-7 bg-white/30" />
             
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 text-white hover:bg-white/20"
-              data-testid="button-preview-download"
-              title="Download PDF"
-              onClick={async () => {
-                if (!previewFile) return;
-                try {
-                  // Use direct URL for OneDrive files, otherwise use API
-                  const isDirectUrl = previewFile.objectPath?.startsWith('http');
-                  const fetchUrl = isDirectUrl ? previewFile.objectPath : `/api/files/${previewFile.id}/download`;
-                  const response = await fetch(fetchUrl);
-                  if (!response.ok) throw new Error('Download failed');
-                  const blob = await response.blob();
-                  const url = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = previewFile.displayName || previewFile.originalName || 'file.pdf';
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-                } catch (err) {
-                  console.error('Download error:', err);
-                }
-              }}
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            
-            <div className="w-px h-7 bg-white/30" />
-            
             <div className="flex items-center gap-1">
               <Checkbox
                 id="sync-highlight"
