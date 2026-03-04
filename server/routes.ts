@@ -4971,6 +4971,23 @@ export async function registerRoutes(
   });
 
   // GET /api/partner-status - Check if partner's phone is away from home
+  app.post("/api/ha/service", async (req, res) => {
+    try {
+      const { domain, service, data } = req.body;
+      if (!domain || !service) return res.status(400).json({ error: "domain and service required" });
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const resp = await fetch(`${haUrl}/api/services/${domain}/${service}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(data || {}),
+      });
+      console.log(`[HA Service] ${domain}/${service}: ${resp.status}`);
+      res.json({ status: resp.status });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.get("/api/partner-status", async (req, res) => {
     try {
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
