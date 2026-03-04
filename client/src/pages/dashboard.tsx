@@ -10608,7 +10608,7 @@ export default function Dashboard() {
         <Button 
           variant="ghost"
           className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight relative -top-[4px]"
-          style={{ marginRight: '0px' }}
+          style={{ marginRight: `${(window.innerWidth - calendarLeft - (calendarRight - 15)) / 7}px` }}
           onClick={() => {
             if (calendarView === "week") {
               setCurrentMonth(new Date());
