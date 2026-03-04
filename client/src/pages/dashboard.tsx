@@ -15597,8 +15597,9 @@ export default function Dashboard() {
                 {null}
             </div>
           </div>
-          {/* Dotted line from first bullet to course rows + Solid line from second bullet to next task */}
+          {/* Countdown arrow lines removed */}
           {(() => {
+            return null;
             const now = new Date();
             const calStartHour = calStart;
             const calEndHour = isTravelMode ? 23 : 21;
