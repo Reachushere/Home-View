@@ -363,7 +363,7 @@ button[role="combobox"] > span {
 }
 
 .animate-zero-day-blink {
-  animation: zero-day-blink 0.8s ease-in-out infinite;
+  animation: zero-day-blink 1.4s ease-in-out infinite;
   color: #dc2626 !important;
 }
 
