@@ -6113,6 +6113,7 @@ export default function Dashboard() {
           checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]') || null;
         }
         
+        
         // Determine which date to target based on boxType
         let targetDateStr: string;
         if (boxType === 'today') {
@@ -6136,6 +6137,7 @@ export default function Dashboard() {
             break;
           }
         }
+        
         
         // Skip if no matching calendar task found for this date
         if (!calTaskEl) {
@@ -6172,6 +6174,7 @@ export default function Dashboard() {
           // Start arrow from countdown bullet if available, otherwise from checkbox/task box
           let fromX: number;
           let fromY: number;
+          let arrowSource = 'none';
           const countdownBullet = document.querySelector(`[data-countdown-bullet="${task.id}"]`);
           if (countdownBullet) {
             const bulletRect = countdownBullet.getBoundingClientRect();
@@ -6179,6 +6182,7 @@ export default function Dashboard() {
             const parentRect = parentRow ? parentRow.getBoundingClientRect() : bulletRect;
             fromX = bulletRect.left + bulletRect.width / 2;
             fromY = parentRect.top + parentRect.height / 2;
+            arrowSource = 'countdown-bullet';
           } else if (checkboxEl) {
             const checkboxRect = checkboxEl.getBoundingClientRect();
             fromX = checkboxRect.left;
@@ -6235,19 +6239,25 @@ export default function Dashboard() {
         const isPrep = bulletId.startsWith('prep-');
         const taskId = isPrep ? Number(bulletId.replace('prep-', '')) : Number(bulletId);
         if (isNaN(taskId)) return;
-        if (processedTaskIds.has(taskId)) return;
+        if (processedTaskIds.has(taskId)) {
+          return;
+        }
 
         const calTaskEls = Array.from(document.querySelectorAll(`[data-cal-task-id="${taskId}"]`));
         if (calTaskEls.length === 0) return;
 
         const calTaskEl = calTaskEls[0];
         const calRect = calTaskEl.getBoundingClientRect();
-        if (calRect.width === 0 || calRect.height === 0) return;
+        if (calRect.width === 0 || calRect.height === 0) {
+          return;
+        }
 
         const courseRowsContainer = document.querySelector('[data-testid="course-rows-container"]');
         if (courseRowsContainer) {
           const courseRowsRect = courseRowsContainer.getBoundingClientRect();
-          if (calRect.bottom < courseRowsRect.bottom) return;
+          if (calRect.bottom < courseRowsRect.bottom) {
+            return;
+          }
         }
 
         const bulletRect = (bulletEl as HTMLElement).getBoundingClientRect();
@@ -6268,7 +6278,9 @@ export default function Dashboard() {
           toY = calRect.height > 50 ? calRect.top + 12 : calRect.top + calRect.height / 2;
         }
 
-        if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) return;
+        if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) {
+          return;
+        }
 
         const task = allTasks?.find(t => t.id === taskId);
         const courseCode = task?.courseName?.split(" ")[0]?.toUpperCase() || "";
@@ -15533,25 +15545,25 @@ export default function Dashboard() {
                   );
                 })()}
                 
-                {/* Dynamic lines - solid line to next task (stays in scroll container) */}
+                {/* Dynamic lines - solid line from first countdown bullet to next task */}
                 {(() => {
                   const now = new Date();
-                  const currentHour = now.getHours();
-                  const currentMinutes = now.getMinutes();
                   const calStartHour = calStart;
                   const calEndHour = isTravelMode ? 23 : 21;
-                  
-                  if (currentHour < calStartHour) return null;
-                  
-                  const clampedHour = Math.min(currentHour, calEndHour);
-                  const clampedMinutes = currentHour > calEndHour ? 59 : currentMinutes;
-                  
-                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
-                  if (todayDayIdx < 0) return null;
                   
                   const containerEl = calendarScrollRef.current;
                   if (!containerEl) return null;
                   const containerWidth = containerEl.scrollWidth;
+                  
+                  const firstBullet = document.querySelector('[data-countdown-bullet]');
+                  if (!firstBullet) return null;
+                  
+                  const bulletRect = firstBullet.getBoundingClientRect();
+                  const containerRect = containerEl.getBoundingClientRect();
+                  const startX = bulletRect.left + bulletRect.width / 2 - containerRect.left;
+                  const parentRow = firstBullet.parentElement;
+                  const parentRect = parentRow ? parentRow.getBoundingClientRect() : bulletRect;
+                  const startY = parentRect.top + parentRect.height / 2 - containerRect.top + containerEl.scrollTop;
                   
                   const nowTimestamp = now.getTime();
                   let nextTask: { task: any; dayIdx: number; taskHour: number; taskMin: number } | null = null;
@@ -15613,8 +15625,6 @@ export default function Dashboard() {
                     return px;
                   };
                   
-                  const startX = getDayColumnCenter(todayDayIdx);
-                  const startY = getTopPx(clampedHour, clampedMinutes);
                   const taskBoxHeight = 20;
                   
                   const nt = nextTask as { task: any; dayIdx: number; taskHour: number; taskMin: number };
@@ -15636,19 +15646,12 @@ export default function Dashboard() {
                   let endX: number, endY: number, side: 'top' | 'left';
                   if (isTallCard) {
                     endX = centerX; endY = topY - arrowGap; side = 'top';
-                  } else if (nt.dayIdx === todayDayIdx && topY > startY && yDiff < 200) {
-                    endX = leftX - arrowGap; endY = midY; side = 'left';
-                  } else if (nt.dayIdx > todayDayIdx && yDiff < 60) {
-                    endX = leftX - arrowGap; endY = midY; side = 'left';
                   } else {
                     endX = centerX; endY = topY - arrowGap; side = 'top';
                   }
                   
                   let pathD: string;
-                  if (side === 'left') {
-                    const mx = startX + (endX - startX) * 0.5;
-                    pathD = `M ${startX} ${startY} C ${mx} ${startY}, ${mx} ${endY}, ${endX} ${endY}`;
-                  } else if (isTallCard) {
+                  if (isTallCard) {
                     const clearY = topY - 30;
                     pathD = `M ${startX} ${startY} C ${startX} ${clearY}, ${endX} ${clearY}, ${endX} ${endY}`;
                   } else {
@@ -15659,11 +15662,7 @@ export default function Dashboard() {
                   const t = 0.95;
                   const mt = 1 - t;
                   let nearEndX: number, nearEndY: number;
-                  if (side === 'left') {
-                    const mx = startX + (endX - startX) * 0.5;
-                    nearEndX = mt*mt*mt*startX + 3*mt*mt*t*mx + 3*mt*t*t*mx + t*t*t*endX;
-                    nearEndY = mt*mt*mt*startY + 3*mt*mt*t*startY + 3*mt*t*t*endY + t*t*t*endY;
-                  } else if (isTallCard) {
+                  if (isTallCard) {
                     const clearY = topY - 30;
                     nearEndX = mt*mt*mt*startX + 3*mt*mt*t*startX + 3*mt*t*t*endX + t*t*t*endX;
                     nearEndY = mt*mt*mt*startY + 3*mt*mt*t*clearY + 3*mt*t*t*clearY + t*t*t*endY;
@@ -15698,7 +15697,6 @@ export default function Dashboard() {
                         points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
                         fill="rgba(0,0,0,0.9)"
                       />
-                      <circle cx={startX} cy={startY} r="3" fill="rgba(0,0,0,0.85)" />
                     </svg>
                   );
                 })()}
@@ -17076,7 +17074,7 @@ export default function Dashboard() {
               </div>
               {/* Task rows - each row is position:relative with all content absolutely positioned at same baseline */}
               {dueThisWeekTasks.slice(0, 5).map((task, idx) => (
-              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+              <div key={task.id || idx} data-box-task-id={task.id} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '50%', transform: 'translateY(-50%)', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
@@ -17312,9 +17310,9 @@ export default function Dashboard() {
               </div>
               {/* Task rows - all use HEADER_POS */}
               {dueTomorrowTasks.slice(0, 3).map((task, idx) => (
-              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+              <div key={task.id || idx} data-box-task-id={task.id} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" data-tomorrow-checkbox={task.id} disabled />
                 </div>
                 <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
