@@ -10741,12 +10741,12 @@ export default function Dashboard() {
               width: `${totalW - arrowW}px`,
               height: `${pillH}px`,
               borderRadius: `${r}px`,
-              background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.25) 100%)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
-              border: '1.5px solid rgba(255,255,255,0.25)',
-              borderTop: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.1)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               pointerEvents: 'none',
             }} />
             {/* Rounded tab - only visible when pill is closed */}
