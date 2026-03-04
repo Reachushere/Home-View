@@ -1137,14 +1137,10 @@ button[role="combobox"] > span {
 @layer utilities {
   .media-btn {
     position: relative;
-    border: 2px solid #555 !important;
+    border: none !important;
     border-radius: 50% !important;
-    background: linear-gradient(to bottom, #4a4a4a 0%, #3a3a3a 45%, #1a1a1a 50%, #0d0d0d 100%) !important;
-    box-shadow:
-      inset 0 1px 2px rgba(255,255,255,0.25),
-      inset 0 -1px 2px rgba(0,0,0,0.5),
-      0 2px 6px rgba(0,0,0,0.6),
-      0 0 0 1px rgba(20,20,20,0.8) !important;
+    background: transparent !important;
+    box-shadow: none !important;
     color: white !important;
     transition: all 0.15s ease !important;
     overflow: visible !important;
@@ -1157,29 +1153,13 @@ button[role="combobox"] > span {
     -webkit-tap-highlight-color: transparent;
   }
   .media-btn::before {
-    content: '';
-    position: absolute;
-    top: 6%;
-    left: 12%;
-    right: 12%;
-    height: 40%;
-    border-radius: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.05) 100%);
-    pointer-events: none;
-    z-index: 1;
+    display: none;
   }
   .media-btn:hover {
-    border-color: #666 !important;
-    background: linear-gradient(to bottom, #555 0%, #454545 45%, #252525 50%, #151515 100%) !important;
+    background: rgba(255,255,255,0.15) !important;
   }
   .media-btn:active {
-    border-color: #444 !important;
-    background: linear-gradient(to bottom, #3a3a3a 0%, #2a2a2a 45%, #151515 50%, #0a0a0a 100%) !important;
-    box-shadow:
-      inset 0 2px 4px rgba(0,0,0,0.6),
-      inset 0 -1px 1px rgba(255,255,255,0.1),
-      0 1px 2px rgba(0,0,0,0.4),
-      0 0 0 1px rgba(20,20,20,0.8) !important;
+    background: rgba(255,255,255,0.1) !important;
     transform: scale(0.96);
   }
   .media-btn:disabled {
@@ -1205,13 +1185,6 @@ button[role="combobox"] > span {
     min-height: 24px !important;
   }
   .media-btn-play {
-    border: 3px solid #666 !important;
-    box-shadow:
-      inset 0 1px 3px rgba(255,255,255,0.3),
-      inset 0 -1px 3px rgba(0,0,0,0.5),
-      0 2px 8px rgba(0,0,0,0.6),
-      0 0 0 2px rgba(40,40,40,0.9),
-      0 0 0 4px rgba(80,80,80,0.5) !important;
     width: 48px !important;
     height: 48px !important;
     min-width: 48px !important;
@@ -1219,13 +1192,8 @@ button[role="combobox"] > span {
   }
   .media-btn-stop {}
   .media-btn-active {
-    box-shadow:
-      inset 0 2px 4px rgba(255,255,255,0.15),
-      inset 0 -2px 4px rgba(0,0,0,0.4),
-      0 2px 8px rgba(59,130,246,0.5),
-      0 0 12px rgba(59,130,246,0.3),
-      0 0 0 3px rgba(59,130,246,0.5),
-      0 0 0 5px rgba(50,50,50,0.4) !important;
+    background: rgba(59,130,246,0.25) !important;
+    box-shadow: 0 0 8px rgba(59,130,246,0.3) !important;
   }
   .media-btn-resume {}
 
