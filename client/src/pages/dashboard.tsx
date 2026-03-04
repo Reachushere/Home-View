@@ -10657,14 +10657,30 @@ export default function Dashboard() {
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       <div className="absolute z-50 flex items-end justify-between gap-2" style={{ top: `${calendarTop - 28}px`, left: '0px', right: `${calendarRight}px` }}>
         <div className="flex items-center gap-1" style={{ marginLeft: '21px' }}>
-          <span className="text-[10px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
+          <div 
+            className="cursor-pointer hover:bg-white/20 rounded p-0.5"
+            onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+            data-testid="button-pill-prev-week"
+            data-date-nav
+          >
+            <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-[10px] text-white/60 whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
-          <span className="text-[10px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
+          <div 
+            className="cursor-pointer hover:bg-white/20 rounded p-0.5"
+            onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+            data-testid="button-pill-next-week"
+            data-date-nav
+          >
+            <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-[10px] text-white/60 font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight relative -top-[4px]"
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight relative -top-[4px]"
           style={{ marginRight: '21px' }}
           onClick={() => {
             if (calendarView === "week") {
