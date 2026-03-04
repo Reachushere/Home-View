@@ -3737,7 +3737,7 @@ export async function registerRoutes(
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const speakerEntity = req.body?.speaker || "media_player.cat_wash_2";
+      const speakerEntity = req.body?.speaker || "media_player.echo_cat_right_am";
       const tabletEntity = req.body?.tablet || "media_player.tablet_cat";
       const appUrl = "https://home-view--bkh416.replit.app";
 
