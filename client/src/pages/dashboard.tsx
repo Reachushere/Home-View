@@ -13920,7 +13920,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? '#e4ecf5' : '#000000' }}
+                    style={{ backgroundColor: isToday ? undefined : '#000000' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -13960,7 +13960,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { backgroundColor: '#e4ecf5', gridColumn: afterProgressGridCol } : { backgroundColor: '#000000', gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: '#000000', gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
