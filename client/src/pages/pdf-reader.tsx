@@ -46,7 +46,18 @@ export default function PDFReaderPage() {
   const courseParam = urlParams.get("course");
   const autoplayParam = urlParams.get("autoplay") === "true";
   const speakerParam = urlParams.get("speaker");
+  const catWashFollow = urlParams.get("catWashFollow") === "true";
   const [autoplayTriggered, setAutoplayTriggered] = useState(false);
+  const [followState, setFollowState] = useState<{
+    active: boolean;
+    chunkIndex: number;
+    totalChunks: number;
+    chunkText: string;
+    words: string[];
+    estimatedWordIndex: number;
+    progress: number;
+    fileName: string;
+  } | null>(null);
   
   // Parse files list for dropdown
   const [allFiles, setAllFiles] = useState<Array<{name: string; downloadUrl: string; path: string}>>([]);
@@ -116,6 +127,33 @@ export default function PDFReaderPage() {
       .then(setFlickDeviceGroups)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!catWashFollow) return;
+    const poll = async () => {
+      try {
+        const resp = await fetch("/api/cat-wash/progress");
+        const data = await resp.json();
+        if (data.active) {
+          setFollowState({
+            active: true,
+            chunkIndex: data.chunkIndex,
+            totalChunks: data.totalChunks,
+            chunkText: data.chunkText,
+            words: data.words || [],
+            estimatedWordIndex: data.estimatedWordIndex || 0,
+            progress: data.progress || 0,
+            fileName: data.fileName || '',
+          });
+        } else {
+          setFollowState(null);
+        }
+      } catch {}
+    };
+    poll();
+    const interval = setInterval(poll, 500);
+    return () => clearInterval(interval);
+  }, [catWashFollow]);
 
   const handleFlick = async (deviceId: string) => {
     if (!fileId) {
@@ -961,6 +999,54 @@ export default function PDFReaderPage() {
                 </div>
               )}
 
+              {catWashFollow && followState?.active && (
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-blue-700">Following Cat Wash Playback</span>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                      Chunk {followState.chunkIndex + 1} of {followState.totalChunks} ({Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%)
+                    </span>
+                  </div>
+                  <div className="bg-blue-200 rounded-full h-2 overflow-hidden mb-3">
+                    <div
+                      className="bg-blue-500 h-full transition-all duration-300"
+                      style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }}
+                    />
+                  </div>
+                  {followState.words.length > 0 && (
+                    <div className="max-h-60 overflow-y-auto p-3 bg-white rounded border border-blue-100 text-sm leading-relaxed" data-testid="follow-text-display">
+                      {followState.words.map((word, idx) => (
+                        <span
+                          key={idx}
+                          className={`${
+                            idx === followState.estimatedWordIndex
+                              ? "bg-yellow-300 text-black font-semibold px-0.5 rounded"
+                              : idx < followState.estimatedWordIndex
+                              ? "text-gray-400"
+                              : "text-gray-700"
+                          } transition-colors duration-100`}
+                        >
+                          {word}{" "}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    className="mt-3 text-xs text-red-500 hover:text-red-700 underline"
+                    onClick={() => fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null))}
+                    data-testid="stop-catwash-playback"
+                  >
+                    Stop Playback
+                  </button>
+                </div>
+              )}
+
+              {catWashFollow && !followState?.active && (
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                  <span className="text-sm text-gray-500">Waiting for Cat Wash playback to start...</span>
+                </div>
+              )}
+
               {isPlaying && !isEditingText && (
                 <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center justify-between mb-2">
@@ -975,7 +1061,6 @@ export default function PDFReaderPage() {
                       style={{ width: `${chunkProgress}%` }}
                     />
                   </div>
-                  {/* Word-by-word highlighting display */}
                   {chunkWords.length > 0 && (
                     <div className="max-h-40 overflow-y-auto p-3 bg-white rounded border border-green-100 text-sm leading-relaxed">
                       {chunkWords.map((word, idx) => (

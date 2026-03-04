@@ -3636,6 +3636,21 @@ export async function registerRoutes(
   // Track active kitchen playback session (for stopping)
   let kitchenPlaybackActive = false;
   let kitchenPlaybackAbortController: AbortController | null = null;
+
+  // Track active cat-wash playback session
+  let catWashPlaybackActive = false;
+  let catWashPlaybackState: {
+    fileId: number;
+    fileName: string;
+    chunkIndex: number;
+    totalChunks: number;
+    chunks: string[];
+    currentWords: string[];
+    wordIndex: number;
+    startedAt: Date;
+    chunkStartedAt: Date;
+    estimatedChunkDuration: number;
+  } | null = null;
   
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
   app.get("/api/shower/next-reading", async (req, res) => {
@@ -3731,16 +3746,16 @@ export async function registerRoutes(
   
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
-      console.log("[Cat Wash] Triggered - finding next file and opening tablet");
+      console.log("[Cat Wash] Webhook triggered - finding next PDF file");
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const speakerEntity = req.body?.speaker || "media_player.echo_cat_right_am";
-      const tabletEntity = req.body?.tablet || "media_player.tablet_cat";
+      const speakerEntity = "media_player.echo_cat_left_am";
       const appUrl = "https://home-view--bkh416.replit.app";
+      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
@@ -3753,251 +3768,422 @@ export async function registerRoutes(
 
       const allFiles = await storage.getFiles();
 
+      // 1. Find partially-listened files first (has progress but not complete)
+      const partialFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        const hasCheckedChunks = (() => {
+          if (!f.checkedChunks) return false;
+          try { const arr = JSON.parse(f.checkedChunks); return Array.isArray(arr) && arr.length > 0; } catch { return false; }
+        })();
+        const hasLastChunk = f.lastChunkIndex != null && f.lastChunkIndex > 0;
+        if (!hasCheckedChunks && !hasLastChunk) return false;
+        if (f.totalChunks && f.totalChunks > 0) {
+          if (hasCheckedChunks) {
+            try { const arr = JSON.parse(f.checkedChunks); if (arr.length >= f.totalChunks) return false; } catch {}
+          }
+          if (hasLastChunk && f.lastChunkIndex >= f.totalChunks) return false;
+        }
+        return true;
+      });
+
+      // 2. Find unlistened files for current week (matching Homework Progress column order: modules first per course, then readings)
       const unlistenedFiles = allFiles.filter((f: any) => {
         if (f.listened) return false;
+        if (partialFiles.some((p: any) => p.id === f.id)) return false;
         const weekMatch = f.folder?.match(/week-(\d+)/i);
         return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
       });
 
       const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-      const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa');
+      const getCourseCode = (f: any) => {
+        const match = f.folder?.match(/week-\d+-([a-z]+\d+)/i);
+        return match ? match[1].toLowerCase() : '';
+      };
 
-      const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModuleFile(f));
-      const otherModules = unlistenedFiles.filter((f: any) => !isCPPA(f) && isModuleFile(f));
-      const cppaReadings = unlistenedFiles.filter((f: any) => isCPPA(f) && !isModuleFile(f));
-      const otherReadings = unlistenedFiles.filter((f: any) => !isCPPA(f) && !isModuleFile(f));
-
-      let orderedFiles = [...cppaModules, ...otherModules, ...cppaReadings, ...otherReadings];
-
-      const partialFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        if (!f.lastChunkIndex || f.lastChunkIndex <= 0) return false;
-        if (f.totalChunks && f.lastChunkIndex >= f.totalChunks) return false;
-        return true;
-      });
-
-      if (partialFiles.length > 0) {
-        const alreadyInList = orderedFiles.some((f: any) => partialFiles.some((p: any) => p.id === f.id));
-        if (!alreadyInList) {
-          orderedFiles = [...partialFiles, ...orderedFiles];
-        } else {
-          const partialId = partialFiles[0].id;
-          orderedFiles = [
-            ...orderedFiles.filter((f: any) => f.id === partialId),
-            ...orderedFiles.filter((f: any) => f.id !== partialId)
-          ];
-        }
+      // Group by course, modules before readings within each course
+      const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean);
+      let orderedUnlistened: any[] = [];
+      for (const course of courses) {
+        const courseFiles = unlistenedFiles.filter((f: any) => getCourseCode(f) === course);
+        const modules = courseFiles.filter(isModuleFile);
+        const readings = courseFiles.filter((f: any) => !isModuleFile(f));
+        orderedUnlistened.push(...modules, ...readings);
       }
 
+      // Partial files come first, then unlistened in order
+      let orderedFiles = [...partialFiles, ...orderedUnlistened];
+
       if (orderedFiles.length === 0) {
-        console.log("[Cat Wash] All files complete, playing radio");
+        console.log("[Cat Wash] No files to play - all complete or no files for week " + currentWeekNumber);
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: speakerEntity,
-            media_content_type: "custom",
-            media_content_id: "play 104.5 chumfm"
-          }),
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
         });
         return res.json({ action: "radio", message: `All week ${currentWeekNumber} readings complete` });
       }
 
       const nextFile = orderedFiles[0];
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
       const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
-      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?autoplay=true&speaker=${encodeURIComponent(speakerEntity)}`;
+      console.log(`[Cat Wash] Selected: ${fileName} (${fileType}, id=${nextFile.id}, folder=${nextFile.folder})`);
 
-      console.log(`[Cat Wash] Opening: ${nextFile.displayName || nextFile.originalName} (${fileType})`);
-      console.log(`[Cat Wash] Tablet URL: ${readerUrl}`);
+      // Build reader URL for display devices (no autoplay - server handles TTS directly)
+      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&auth=${authParam}`;
 
+      // === STEP 1: Extract text from PDF for server-side TTS ===
+      let textContent = "";
+      try {
+        let content: Buffer;
+        const mediaUrl = nextFile.objectPath || '';
+
+        if (mediaUrl.startsWith("/objects/")) {
+          const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+          const objectStorage = new ObjectStorageService();
+          const objectFile = await objectStorage.getObjectEntityFile(mediaUrl);
+          const [downloaded] = await objectFile.download();
+          content = downloaded;
+        } else if (mediaUrl.startsWith("/School/")) {
+          const { getOneDriveClient } = await import("./onedrive");
+          const client = await getOneDriveClient();
+          const encodedPath = encodeURIComponent(mediaUrl).replace(/%2F/g, '/');
+          const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+          const downloadUrl = item['@microsoft.graph.downloadUrl'];
+          if (!downloadUrl) throw new Error("Could not get OneDrive download URL");
+          const pdfResponse = await fetch(downloadUrl);
+          if (!pdfResponse.ok) throw new Error(`OneDrive download failed: ${pdfResponse.status}`);
+          content = Buffer.from(await pdfResponse.arrayBuffer());
+          console.log(`[Cat Wash] Downloaded ${content.length} bytes from OneDrive`);
+        } else if (mediaUrl.startsWith("onedrive://")) {
+          const folderPart = mediaUrl.replace('onedrive://', '').split('/')[0] || '';
+          const fileNamePart = mediaUrl.split('/').pop() || '';
+          const parts = folderPart.split('-');
+          const weekNum = parts[1];
+          const courseCode = parts[2]?.toUpperCase();
+          const basePath = `/School/1. TMU/Courses/2026/Winter`;
+          const baseFolders = await listOneDriveItems(basePath);
+          const matchedFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode));
+          if (!matchedFolder) throw new Error("Course folder not found in OneDrive");
+          const courseFolders = await listOneDriveItems(matchedFolder.path);
+          const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
+          if (!weekFolder) throw new Error("Week folder not found in OneDrive");
+          const weekContents = await listOneDriveItems(weekFolder.path);
+          const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module'));
+          if (!typeFolder) throw new Error("Type folder not found in OneDrive");
+          const files = await listOneDriveItems(typeFolder.path);
+          const matchedFile = files.find((f: any) => f.name === fileNamePart);
+          if (!matchedFile?.downloadUrl) throw new Error("File not found in OneDrive");
+          const pdfResponse = await fetch(matchedFile.downloadUrl);
+          content = Buffer.from(await pdfResponse.arrayBuffer());
+        } else if (mediaUrl.startsWith("http")) {
+          const pdfResponse = await fetch(mediaUrl);
+          content = Buffer.from(await pdfResponse.arrayBuffer());
+        } else {
+          throw new Error(`Unsupported path format: ${mediaUrl.substring(0, 50)}`);
+        }
+
+        const isPDF = content.slice(0, 4).toString() === '%PDF';
+        if (isPDF) {
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(content) });
+          await parser.load();
+          const pdfText = await parser.getText();
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            }
+          } else {
+            textContent = String(pdfText || '');
+          }
+          await parser.destroy();
+        } else {
+          textContent = content.toString('utf-8');
+        }
+        console.log(`[Cat Wash] Extracted ${textContent.length} chars of text`);
+      } catch (error: any) {
+        console.error("[Cat Wash] Text extraction error:", error);
+        return res.status(500).json({ error: "Failed to extract text from PDF", details: error.message });
+      }
+
+      // Clean and chunk the text
+      let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+      if (cleanedContent.length < 10) {
+        return res.status(400).json({ error: "PDF has no readable text content" });
+      }
+
+      // Chunk at ~3500 chars, splitting at sentence boundaries
+      const chunks: string[] = [];
+      let remaining = cleanedContent;
+      while (remaining.length > 0) {
+        if (remaining.length <= 3500) { chunks.push(remaining); break; }
+        let splitAt = remaining.lastIndexOf('. ', 3500);
+        if (splitAt < 1000) splitAt = remaining.lastIndexOf('? ', 3500);
+        if (splitAt < 1000) splitAt = remaining.lastIndexOf('! ', 3500);
+        if (splitAt < 1000) splitAt = remaining.lastIndexOf(' ', 3500);
+        if (splitAt < 500) splitAt = 3500;
+        chunks.push(remaining.slice(0, splitAt + 1).trim());
+        remaining = remaining.slice(splitAt + 1).trim();
+      }
+
+      // Determine resume point from checked chunks or lastChunkIndex
+      let resumeFromChunk = 0;
+      if (nextFile.checkedChunks) {
+        try {
+          const checked = JSON.parse(nextFile.checkedChunks) as number[];
+          if (checked.length > 0) {
+            resumeFromChunk = Math.max(...checked) + 1;
+            if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
+          }
+        } catch {}
+      }
+      if (resumeFromChunk === 0 && nextFile.lastChunkIndex > 0) {
+        resumeFromChunk = nextFile.lastChunkIndex;
+        if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
+      }
+
+      const progressKey = `file-${nextFile.id}`;
+      const existingServerProgress = playbackProgress[progressKey];
+      if (existingServerProgress?.lastCompletedChunk != null && existingServerProgress.lastCompletedChunk > resumeFromChunk) {
+        resumeFromChunk = existingServerProgress.lastCompletedChunk;
+      }
+
+      console.log(`[Cat Wash] ${chunks.length} chunks, resuming from chunk ${resumeFromChunk}`);
+
+      // === STEP 2: Open PDF reader on all display devices ===
       const deviceResults: Record<string, string> = {};
 
-      const catWashDevices = [
-        {
-          name: 'tablet_cat_wall',
-          mediaPlayerEntity: 'media_player.tablet_cat',
-          mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'],
-        },
-        {
-          name: 'tablet_catn',
-          mediaPlayerEntity: null,
-          mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'],
-        },
+      // Fire Tablets
+      const fireTablets = [
+        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: null as string | null },
       ];
 
-      await Promise.all(catWashDevices.map(async (device) => {
+      await Promise.all(fireTablets.map(async (device) => {
         const methods: string[] = [];
 
-        // Method 1: HA Companion App command_webview (best if app is connected)
         for (const app of device.mobileApps) {
           try {
             const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
               method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                message: "command_webview",
-                data: { url: readerUrl }
-              }),
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
             });
             console.log(`[Cat Wash] ${device.name} → ${app} command_webview: ${resp.status}`);
             if (resp.ok) { methods.push(`${app}:webview`); break; }
-          } catch (e) {
-            console.log(`[Cat Wash] ${device.name} → ${app} failed: ${e}`);
+          } catch (e: any) {
+            console.log(`[Cat Wash] ${device.name} → ${app} failed: ${e.message}`);
           }
         }
 
-        // Method 2: HA Companion App with clickable notification (fallback - shows notification user can tap)
         for (const app of device.mobileApps) {
           try {
             const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
               method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                title: "PDF Reader Ready",
-                message: "Tap to open your reading",
-                data: {
-                  clickAction: readerUrl,
-                  url: readerUrl,
-                  tag: "cat-wash-reader",
-                  importance: "high",
-                  channel: "cat-wash",
-                  sticky: true,
-                }
+                title: "📖 Cat Wash Reading",
+                message: `Now playing: ${fileName}`,
+                data: { clickAction: readerUrl, url: readerUrl, tag: "cat-wash-reader", importance: "high", channel: "cat-wash", sticky: true }
               }),
             });
-            console.log(`[Cat Wash] ${device.name} → ${app} notification: ${resp.status}`);
             if (resp.ok) { methods.push(`${app}:notification`); break; }
-          } catch (e) {}
+          } catch {}
         }
 
-        // Method 3: media_player.play_media on tablet entity (opens URL in browser)
-        if (device.mediaPlayerEntity) {
+        if (device.mediaPlayer) {
           try {
             const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                entity_id: device.mediaPlayerEntity,
-                media_content_id: readerUrl,
-                media_content_type: 'url',
-              }),
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: readerUrl, media_content_type: 'url' }),
             });
-            console.log(`[Cat Wash] ${device.name} → play_media: ${resp.status}`);
             if (resp.ok) methods.push('play_media');
-          } catch (e) {
-            console.log(`[Cat Wash] ${device.name} → play_media failed: ${e}`);
-          }
+          } catch {}
         }
 
-        // Method 4: browser_mod navigate
-        try {
-          const resp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              browser_id: device.name,
-              path: readerUrl
-            }),
-          });
-          console.log(`[Cat Wash] ${device.name} → browser_mod: ${resp.status}`);
-          if (resp.ok) methods.push('browser_mod');
-        } catch (e) {}
-
-        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'FAILED';
+        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
       }));
 
-      console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
-
-      const fireTvAdbEntity = 'media_player.fire_tv_172_24_0_88';
+      // Samsung TV - open URL in browser
       try {
-        const fireTvUrl = `${readerUrl}&auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}`;
-        const escapedUrl = fireTvUrl.replace(/&/g, '\\&');
-        const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        const tvResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: fireTvAdbEntity,
-            command: `am start -a android.intent.action.VIEW -d "${escapedUrl}"`,
-          }),
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', media_content_id: readerUrl, media_content_type: 'url' }),
         });
-        console.log(`[Cat Wash] Fire TV ADB open reader URL: ${adbResp.status}`);
-      } catch (e) {
-        console.log(`[Cat Wash] Fire TV error: ${e}`);
+        console.log(`[Cat Wash] Samsung TV play_media: ${tvResp.status}`);
+        deviceResults['samsung_tv'] = tvResp.ok ? 'play_media' : `failed:${tvResp.status}`;
+      } catch (e: any) {
+        console.log(`[Cat Wash] Samsung TV error: ${e.message}`);
+        deviceResults['samsung_tv'] = 'error';
       }
 
-      const samsungTvEntity = 'media_player.tv_cat_wr';
-      const samsungReaderUrl = `${readerUrl}&auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}`;
-      try {
-        const castResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: samsungTvEntity,
-            media_content_id: samsungReaderUrl,
-            media_content_type: 'url',
-          }),
-        });
-        console.log(`[Cat Wash] Samsung TV play_media: ${castResp.status}`);
-      } catch (e) {
-        console.log(`[Cat Wash] Samsung TV play_media error: ${e}`);
+      console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
+
+      // === STEP 3: Start server-side TTS playback on Echo Cat Left ===
+      if (catWashPlaybackActive) {
+        console.log("[Cat Wash] Stopping previous playback session");
+        catWashPlaybackActive = false;
+        catWashPlaybackState = null;
       }
 
-      try {
-        const browseResp = await fetch(`${haUrl}/api/services/samsungtv/select_source`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: samsungTvEntity,
-            source: 'Browser',
-          }),
-        });
-        console.log(`[Cat Wash] Samsung TV select_source Browser: ${browseResp.status}`);
-      } catch (e) {
-        console.log(`[Cat Wash] Samsung TV select_source error: ${e}`);
-      }
+      catWashPlaybackActive = true;
+      catWashPlaybackState = {
+        fileId: nextFile.id,
+        fileName,
+        chunkIndex: resumeFromChunk,
+        totalChunks: chunks.length,
+        chunks,
+        currentWords: [],
+        wordIndex: 0,
+        startedAt: new Date(),
+        chunkStartedAt: new Date(),
+        estimatedChunkDuration: 0,
+      };
 
+      // Respond immediately
       res.json({
         action: "playing",
-        file: {
-          id: nextFile.id,
-          name: nextFile.displayName || nextFile.originalName,
-          type: fileType,
-          folder: nextFile.folder
-        },
+        file: { id: nextFile.id, name: fileName, type: fileType, folder: nextFile.folder },
         readerUrl,
         speaker: speakerEntity,
-        tablet: tabletEntity,
-        currentWeek: currentWeekNumber
+        currentWeek: currentWeekNumber,
+        resumeFromChunk,
+        totalChunks: chunks.length,
+        devices: deviceResults,
       });
+
+      // Background: play chunks sequentially using OpenAI TTS → Object Storage → HA media_player
+      (async () => {
+        try {
+          // Small delay for devices to load
+          await new Promise(resolve => setTimeout(resolve, 2000));
+
+          for (let i = resumeFromChunk; i < chunks.length; i++) {
+            if (!catWashPlaybackActive) {
+              console.log(`[Cat Wash TTS] Stopped at chunk ${i}`);
+              break;
+            }
+
+            const chunk = chunks[i];
+            const words = chunk.split(/\s+/);
+            console.log(`[Cat Wash TTS] Playing chunk ${i + 1}/${chunks.length} (${chunk.length} chars, ${words.length} words)`);
+
+            if (catWashPlaybackState) {
+              catWashPlaybackState.chunkIndex = i;
+              catWashPlaybackState.currentWords = words;
+              catWashPlaybackState.wordIndex = 0;
+              catWashPlaybackState.chunkStartedAt = new Date();
+            }
+
+            try {
+              const audioUrl = await generateAndSaveTTSAudio(chunk, `catwash-${nextFile.id}-chunk-${i}`);
+              console.log(`[Cat Wash TTS] Audio generated: ${audioUrl}`);
+
+              await fetch(`${haUrl}/api/services/media_player/play_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: audioUrl }),
+              });
+
+              // Estimate duration: ~150 words per minute for TTS at normal speed
+              const estimatedDuration = Math.max(8000, (words.length / 150) * 60 * 1000 + 3000);
+              if (catWashPlaybackState) {
+                catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
+              }
+
+              // Save progress to DB
+              playbackProgress[progressKey] = {
+                chunkIndex: i,
+                lastCompletedChunk: i,
+                totalChunks: chunks.length,
+                lastPlayed: new Date(),
+                fileId: nextFile.id,
+              };
+
+              await storage.updateFile(nextFile.id, { lastChunkIndex: i, totalChunks: chunks.length });
+
+              // Wait for estimated playback duration before sending next chunk
+              console.log(`[Cat Wash TTS] Waiting ${Math.round(estimatedDuration / 1000)}s for chunk ${i + 1}`);
+              await new Promise(resolve => setTimeout(resolve, estimatedDuration));
+
+            } catch (ttsError: any) {
+              console.error(`[Cat Wash TTS] Error on chunk ${i}:`, ttsError.message);
+              await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+          }
+
+          // All chunks complete
+          if (catWashPlaybackActive) {
+            console.log(`[Cat Wash TTS] All ${chunks.length} chunks complete - marking file as listened`);
+            await storage.updateFile(nextFile.id, { listened: true });
+            catWashPlaybackActive = false;
+            catWashPlaybackState = null;
+          }
+
+        } catch (bgError: any) {
+          console.error("[Cat Wash TTS] Background playback error:", bgError.message);
+          catWashPlaybackActive = false;
+          catWashPlaybackState = null;
+        }
+      })();
 
     } catch (error: any) {
       console.error("[Cat Wash] Error:", error);
       res.status(500).json({ error: "Failed to trigger cat wash reading", details: error.message });
     }
+  });
+
+  // GET /api/cat-wash/progress - Display devices poll this to sync text highlighting
+  app.get("/api/cat-wash/progress", (_req, res) => {
+    if (!catWashPlaybackActive || !catWashPlaybackState) {
+      return res.json({ active: false });
+    }
+
+    const state = catWashPlaybackState;
+    const elapsed = Date.now() - state.chunkStartedAt.getTime();
+    const progress = state.estimatedChunkDuration > 0 ? Math.min(1, elapsed / state.estimatedChunkDuration) : 0;
+    const estimatedWordIndex = Math.floor(progress * state.currentWords.length);
+
+    res.json({
+      active: true,
+      fileId: state.fileId,
+      fileName: state.fileName,
+      chunkIndex: state.chunkIndex,
+      totalChunks: state.totalChunks,
+      chunkText: state.chunks[state.chunkIndex] || '',
+      words: state.currentWords,
+      estimatedWordIndex: Math.min(estimatedWordIndex, state.currentWords.length - 1),
+      progress,
+      elapsed,
+      estimatedDuration: state.estimatedChunkDuration,
+    });
+  });
+
+  // POST /api/cat-wash/stop - Stop cat wash playback
+  app.post("/api/cat-wash/stop", async (_req, res) => {
+    console.log("[Cat Wash] Playback stopped by user");
+    catWashPlaybackActive = false;
+    catWashPlaybackState = null;
+
+    if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      try {
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: "media_player.echo_cat_left_am" }),
+        });
+      } catch (e: any) {
+        console.log(`[Cat Wash] Stop HA media player error: ${e.message}`);
+      }
+    }
+
+    res.json({ stopped: true });
   });
 
   app.get("/api/ha/entities", async (_req, res) => {

@@ -72,6 +72,7 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Replit Plugins**: Runtime error overlay, cartographer, and dev banner.
 - **OpenAI TTS**: For server-side text-to-speech.
 - **Home Assistant**: For push notifications, voice integration, and smart trigger webhooks (e.g., play urgent PDF via Alexa routines).
+  - **Cat Wash Automation** (`/api/webhook/cat-wash`): Water leak detector triggers auto-play of next PDF reading. Server-side TTS via OpenAI plays on Echo Cat Left. Opens PDF reader on Fire Tablets and Samsung TV with `catWashFollow=true` mode for synced text highlighting. Progress endpoint at `/api/cat-wash/progress` allows display devices to poll for current chunk/word position. Stop endpoint at `/api/cat-wash/stop`.
 
 ## Upcoming Semesters
 
