@@ -9875,7 +9875,7 @@ export default function Dashboard() {
         </div>
 
         {/* Separator 2: Pomodoro | Clock */}
-        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '10px', marginRight: '4px' }} />
+        <div style={{ width: '1.5px', height: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
 
         {/* Clock / Date */}
         <div className="flex items-center" style={{ gap: '8px', flexShrink: 0 }} data-testid="digital-clock">
