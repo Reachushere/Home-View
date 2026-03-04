@@ -8011,7 +8011,7 @@ export default function Dashboard() {
                     onClick={() => setShowFlickMenu(!showFlickMenu)}
                     disabled={isFlicking}
                     title="Flick to another device"
-                    style={{ marginRight: '-10px', height: '30px', width: '30px', minHeight: '30px', minWidth: '30px' }}
+                    style={{ marginRight: '-10px', height: '30px', width: '30px', minHeight: '30px', minWidth: '30px', marginTop: '1px' }}
                   >
                     {isFlicking ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
