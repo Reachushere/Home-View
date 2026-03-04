@@ -9816,26 +9816,27 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Clock / Date */}
-        <div className="flex items-center" style={{ gap: '6px', flexShrink: 0, marginLeft: '26px' }} data-testid="digital-clock">
-          <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ flexShrink: 0 }}>
-            {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-          </span>
-          <div style={{ display: 'flex', alignItems: 'baseline', flexShrink: 0 }}>
-            <span className="text-white/60" style={{ fontSize: '10px', fontWeight: '500', width: '36px', textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
-              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-            </span>
-            <span className="text-white/60" style={{ fontSize: '10px', fontWeight: '500', width: '22px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
-              :{String(currentTime.getSeconds()).padStart(2, '0')}
-            </span>
-            <span className="text-white/60" style={{ fontSize: '8px', fontWeight: '500', width: '16px', textTransform: 'uppercase', flexShrink: 0, marginLeft: '2px', lineHeight: '1.25' }}>
-              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-            </span>
-          </div>
-          {profileData.travelTimezone && (
-            <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
-          )}
-        </div>
+      </div>
+
+      {/* Date - fixed position */}
+      <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 120}px`, top: '8px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+        {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+      </span>
+
+      {/* Time - fixed position */}
+      <div style={{ position: 'fixed', right: `${calendarRight + 30}px`, top: '8px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+        <span className="text-white/60" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+          {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+        </span>
+        <span className="text-white/60" style={{ fontSize: '10px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+          :{String(currentTime.getSeconds()).padStart(2, '0')}
+        </span>
+        <span className="text-white/60" style={{ fontSize: '8px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+          {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+        </span>
+        {profileData.travelTimezone && (
+          <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
+        )}
       </div>
 
       {/* Settings Panel Popup - Certificate Tracking Only */}
