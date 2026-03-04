@@ -15822,16 +15822,17 @@ export default function Dashboard() {
             
             if (lines.length === 0) return null;
             
-            return (
+            return createPortal(
               <svg
                 className="pointer-events-none"
                 viewBox={`0 0 ${window.innerWidth} ${window.innerHeight}`}
                 width={window.innerWidth}
                 height={window.innerHeight}
-                style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'visible', zIndex: 102 }}
+                style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'visible', zIndex: 9999 }}
               >
                 {lines}
-              </svg>
+              </svg>,
+              document.body
             );
           })()}
           {/* Calendar Height Resize Handle */}
