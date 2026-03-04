@@ -7959,7 +7959,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <span className="text-[11px] font-bold text-white">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
-                <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-preview-speaker">
+                <SelectTrigger className="flex-1 sm:w-[180px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
