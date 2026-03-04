@@ -6219,6 +6219,69 @@ export default function Dashboard() {
         }
       });
       
+      // Add arrows from countdown box bullets to calendar tasks
+      const countdownBullets = document.querySelectorAll('[data-countdown-bullet]');
+      countdownBullets.forEach(bulletEl => {
+        const bulletId = bulletEl.getAttribute('data-countdown-bullet');
+        if (!bulletId) return;
+        const isPrep = bulletId.startsWith('prep-');
+        const taskId = isPrep ? Number(bulletId.replace('prep-', '')) : Number(bulletId);
+        if (isNaN(taskId)) return;
+
+        // Find the calendar task
+        const calTaskEls = Array.from(document.querySelectorAll(`[data-cal-task-id="${taskId}"]`));
+        if (calTaskEls.length === 0) return;
+
+        const calTaskEl = calTaskEls[0];
+        const calRect = calTaskEl.getBoundingClientRect();
+        if (calRect.width === 0 || calRect.height === 0) return;
+
+        const courseRowsContainer = document.querySelector('[data-testid="course-rows-container"]');
+        if (courseRowsContainer) {
+          const courseRowsRect = courseRowsContainer.getBoundingClientRect();
+          if (calRect.bottom < courseRowsRect.bottom) return;
+        }
+
+        // Get bullet position (center of the bullet dot)
+        const bulletRect = bulletEl.getBoundingClientRect();
+        const fromX = bulletRect.left + bulletRect.width / 2;
+        const fromY = bulletRect.top + bulletRect.height / 2;
+
+        // Target: calendar task checkbox
+        let toX: number;
+        let toY: number;
+        const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+        if (calCheckboxEl) {
+          const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
+          toX = calCheckboxRect.left - 2;
+          toY = calCheckboxRect.top + calCheckboxRect.height / 2;
+        } else {
+          toX = calRect.left - 2;
+          toY = calRect.height > 50 ? calRect.top + 12 : calRect.top + calRect.height / 2;
+        }
+
+        if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) return;
+
+        // Get course color
+        const task = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks].find(t => t.id === taskId);
+        const courseCode = task?.courseName?.split(" ")[0]?.toUpperCase() || "";
+        let color = "#000000";
+        if (courseCode === "CPPA122") color = "#47B045";
+        else if (courseCode === "CFNF400") color = "#FA67B3";
+        else if (courseCode === "CASL101") color = "#6366f1";
+
+        connections.push({
+          taskId,
+          fromX,
+          fromY,
+          toX,
+          toY,
+          color,
+          isToday: false,
+          isTomorrow: false
+        });
+      });
+
       setArrowConnections(connections);
     };
     
@@ -9174,7 +9237,7 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number"
                     >
-                      <span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                      <span data-countdown-bullet={next.id} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                       <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                       <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
                       <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
@@ -9190,7 +9253,7 @@ export default function Dashboard() {
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                     data-testid="countdown-prep-task-number"
                   >
-                    {prepDaysText === 'today' ? (<><span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>) : prepDaysText === 'now' ? (<><span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
+                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
                   </div>
                 )}
                 {(() => {
@@ -9204,7 +9267,7 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number-after"
                     >
-                      <span style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                      <span data-countdown-bullet={next.id} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                       <span style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                       <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
                       <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have {courseForNext ? <><b style={{ textTransform: 'uppercase' }}>American Sign Language Online Class</b></> : <b style={{ textTransform: 'uppercase' }}>{next.title}</b>}.</span>
