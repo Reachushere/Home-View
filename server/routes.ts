@@ -3923,50 +3923,22 @@ export async function registerRoutes(
       console.log(`[Cat Wash] Navigation results: ${JSON.stringify(deviceResults)}`);
 
       const tvEntity = 'media_player.tv_cat_wr';
-      const tvMac = 'D8:A3:5C:EB:48:59';
       try {
-        const turnOnMethods = [
-          { service: 'remote/send_command', body: { entity_id: 'remote.tv_cat_wr', command: 'KEY_POWER' } },
-          { service: 'wake_on_lan/send_magic_packet', body: { mac: tvMac } },
-          { service: 'media_player/turn_on', body: { entity_id: tvEntity } },
-        ];
-
-        for (const method of turnOnMethods) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/${method.service}`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(method.body),
-            });
-            console.log(`[Cat Wash] TV ${method.service}: ${resp.status}`);
-          } catch (e) {
-            console.log(`[Cat Wash] TV ${method.service} failed: ${e}`);
-          }
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 18000));
-
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          const browseResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              entity_id: tvEntity,
-              media_content_id: readerUrl,
-              media_content_type: 'url',
-            }),
-          });
-          console.log(`[Cat Wash] TV play_media attempt ${attempt}: ${browseResp.status}`);
-          if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 5000));
-        }
+        const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: tvEntity,
+            media_content_id: readerUrl,
+            media_content_type: 'url',
+          }),
+        });
+        console.log(`[Cat Wash] TV play_media: ${playResp.status}`);
       } catch (e) {
-        console.log(`[Cat Wash] TV error: ${e}`);
+        console.log(`[Cat Wash] TV error (WiFi TV - cannot wake remotely): ${e}`);
       }
 
       res.json({
