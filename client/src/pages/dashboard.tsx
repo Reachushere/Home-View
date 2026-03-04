@@ -9786,6 +9786,9 @@ export default function Dashboard() {
         />
       )}
 
+      {/* Separator between share and timer numbers */}
+      <div style={{ position: 'fixed', right: `${calendarRight + 322}px`, top: '6px', zIndex: 100, width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+
       {/* Pomodoro Timer Numbers - fixed position */}
       <div ref={clockContainerRef} className={`flex items-center ${
         pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
