@@ -15636,7 +15636,8 @@ export default function Dashboard() {
                     const courseRowsRect = courseRowsEl.getBoundingClientRect();
                     const numCourses = filteredCourses.length || 1;
                     const singleRowHeight = courseRowsRect.height / numCourses;
-                    const endY = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight + singleRowHeight / 2;
+                    const courseRowTop = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight;
+                    const endY = courseRowTop - 6;
                     const endX = getDayColumnCenter(np.startDayIdx);
                     const startX = pos.x;
                     const startY = pos.y;
@@ -15656,10 +15657,8 @@ export default function Dashboard() {
                     const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
                     const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
                     
-                    const totalDist = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
                     const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
-                    const calFrac = Math.min(1, Math.max(0, (calendarTop - startY) / (endY - startY)));
-                    const isDarkEnd = endY >= courseRowsRect.top;
+                    const isDarkEnd = endY >= courseRowsRect.top - 10;
                     
                     lines.push(
                       <g key="dotted-line">
