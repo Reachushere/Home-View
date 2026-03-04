@@ -8011,12 +8011,12 @@ export default function Dashboard() {
                     onClick={() => setShowFlickMenu(!showFlickMenu)}
                     disabled={isFlicking}
                     title="Flick to another device"
-                    style={{ marginRight: '-10px', height: '48px', width: '48px', minHeight: '48px', minWidth: '48px' }}
+                    style={{ marginRight: '-10px', height: '38px', width: '38px', minHeight: '38px', minWidth: '38px' }}
                   >
                     {isFlicking ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                      <Cast style={{ height: '41px', width: '41px' }} />
+                      <Cast style={{ height: '31px', width: '31px' }} />
                     )}
                   </Button>
                   {showFlickMenu && (
