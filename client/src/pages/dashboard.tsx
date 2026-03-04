@@ -8908,6 +8908,82 @@ export default function Dashboard() {
                   <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 </div>
               )}
+              {/* Speaker Selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-white">Speaker:</span>
+                <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
+                  <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-white/10 border-white/20 text-white" data-testid="select-preview-speaker">
+                    <SelectValue placeholder="Select Speaker" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {SPEAKERS.map(speaker => (
+                      <SelectItem key={speaker.id} value={speaker.id} className="text-[10px]">
+                        {speaker.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Flick Button */}
+              {previewFile && flickDeviceGroups.length > 0 && (
+                <div className="relative">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className={`h-7 w-7 text-white ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`}
+                    data-testid="button-flick-cast"
+                    onClick={() => setShowFlickMenu(!showFlickMenu)}
+                    disabled={isFlicking}
+                    title="Flick to another device"
+                  >
+                    {isFlicking ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Cast className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                  {showFlickMenu && (
+                    <div className="absolute bottom-full left-0 mb-1 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                      <div className="px-2.5 py-1.5 border-b border-gray-700 flex items-center justify-between">
+                        <span className="text-[13px] font-semibold text-white">Flick to...</span>
+                        <button
+                          onClick={() => setShowFlickMenu(false)}
+                          className="text-gray-400 hover:text-white"
+                          data-testid="button-close-flick-menu"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <div className="max-h-[480px] overflow-y-auto">
+                        {flickDeviceGroups.map((group) => (
+                          <div key={group.room}>
+                            <div className="px-2.5 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
+                              <span className="text-[12px]">{group.icon}</span>
+                              <span className="text-[12px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
+                            </div>
+                            {group.devices.map((device) => (
+                              <button
+                                key={device.id}
+                                data-testid={`button-flick-${device.id}`}
+                                className="w-full px-2.5 py-1.5 pl-6 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
+                                onClick={() => handleFlick(device.id)}
+                                disabled={isFlicking}
+                              >
+                                {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
+                                 device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
+                                 device.type === "group" ? <Speaker className="h-3 w-3 text-amber-400 flex-shrink-0" /> :
+                                 <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
+                                <span className={`text-[13px] truncate ${device.type === "group" ? "text-amber-300 font-medium" : "text-white"}`}>{device.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
