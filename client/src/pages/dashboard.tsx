@@ -9802,9 +9802,9 @@ export default function Dashboard() {
               <rect x="46" y="0" width="8" height="30" rx="4" fill="#16a34a" />
             </svg>
           </span>
-        </div>
-        <div className="flex items-center gap-[17px]" style={{ marginLeft: '0px', flexShrink: 0 }}>
           <span className="text-[10px] text-white/60" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block' }}>{formatPomodoroTime(pomodoroTime)}</span>
+        </div>
+        <div className="flex items-center gap-3" style={{ marginLeft: '10px', flexShrink: 0 }}>
           <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
             {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
           </button>
@@ -9817,7 +9817,7 @@ export default function Dashboard() {
         </div>
 
         {/* Clock / Date */}
-        <div className="flex items-center" style={{ gap: '6px', flexShrink: 0, marginLeft: '56px' }} data-testid="digital-clock">
+        <div className="flex items-center" style={{ gap: '6px', flexShrink: 0, marginLeft: '26px' }} data-testid="digital-clock">
           <span className="text-[10px] text-white/60 font-medium leading-tight" style={{ flexShrink: 0 }}>
             {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
           </span>
