@@ -9135,7 +9135,6 @@ export default function Dashboard() {
         const dueDate = new Date(next.dueDate!);
         const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
         const diffDays = Math.round((dueDateOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
-        const isZeroDays = diffDays === 0;
         const courseForNext = next.courseName ? coursesData.courses.find(c => next.courseName!.includes(c.name.split(' - ')[0])) : null;
         const nextPrep = upcoming
           .filter(t => t.startDate)
@@ -9162,6 +9161,8 @@ export default function Dashboard() {
             prepDaysText = 'now';
           }
         }
+        const isPrepZeroDays = nextPrep && (nextPrep.prepDaysLeft === 0 || nextPrep.prepDaysLeft < 0);
+        const isZeroDays = diffDays === 0 || isPrepZeroDays;
         return (
           <div
             className="font-raleway"
