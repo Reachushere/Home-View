@@ -8437,7 +8437,7 @@ export default function Dashboard() {
             {/* Highlighted Text for TTS */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex flex-col border border-black" style={{ flex: '1 1 0', minWidth: `${ttsWidth - 50}px` }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
-                <span className="text-xs text-muted-foreground">Highlighted Text</span>
+                <span className="text-xs text-muted-foreground">Post-Filtered Text</span>
               </div>
               <div className="flex-1 overflow-y-auto overflow-x-hidden relative" ref={ttsTextContainerRef} onMouseDown={isEditingTtsText ? undefined : handleTtsTextMouseDown} onMouseUp={isEditingTtsText ? undefined : handleTtsTextSelection} onTouchEnd={isEditingTtsText ? undefined : handleTtsTextSelection as any}>
               {showRemoveButton && (
