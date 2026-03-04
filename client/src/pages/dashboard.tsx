@@ -13363,35 +13363,6 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                {/* Column Spacing */}
-                <div className="border rounded-lg p-3 space-y-2">
-                  <div className="border-b border-primary inline-block -mt-1 pb-0">
-                    <Label className="text-sm font-medium">Column Spacing</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Reset the column widths in the summary boxes</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 text-xs px-2"
-                    onClick={() => {
-                      const defaultWidths = {
-                        taskGap: 0,
-                        taskName: 48,
-                        courseCode: 100,
-                        courseName: 145,
-                        dueDate: 55
-                      };
-                      setTaskColumnWidths(defaultWidths);
-                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                      
-                      toast({ title: "Column widths reset", description: "All summary box columns have been reset to defaults." });
-                    }}
-                    data-testid="button-reset-column-widths"
-                  >
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    Reset Column Widths
-                  </Button>
-                </div>
                 </div>
                 
                 </div>
@@ -13664,6 +13635,36 @@ export default function Dashboard() {
                       Pull
                     </Button>
                   </div>
+                </div>
+                
+                {/* Column Spacing */}
+                <div className="border rounded-lg p-3 space-y-2">
+                  <div className="border-b border-primary inline-block -mt-1 pb-0">
+                    <Label className="text-sm font-medium">Column Spacing</Label>
+                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Reset the column widths in the summary boxes</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-xs px-2"
+                    onClick={() => {
+                      const defaultWidths = {
+                        taskGap: 0,
+                        taskName: 48,
+                        courseCode: 100,
+                        courseName: 145,
+                        dueDate: 55
+                      };
+                      setTaskColumnWidths(defaultWidths);
+                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
+                      
+                      toast({ title: "Column widths reset", description: "All summary box columns have been reset to defaults." });
+                    }}
+                    data-testid="button-reset-column-widths"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    Reset Column Widths
+                  </Button>
                 </div>
                 
                 {/* Save Settings Button */}
