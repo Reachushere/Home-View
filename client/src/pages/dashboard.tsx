@@ -7827,7 +7827,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-0 mx-6 gap-2" style={{ marginTop: '-21px' }}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-0 mx-6 gap-2" style={{ marginTop: '-25px' }}>
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
