@@ -15762,15 +15762,20 @@ export default function Dashboard() {
                   
                   const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
                   const calFrac = Math.min(1, Math.max(0, (calendarTop - startY) / (endY - startY)));
+                  const hasGap = calFrac - whiteBoxFrac > 0.03;
                   
                   lines.push(
                     <g key="solid-line">
                       <defs>
-                        <linearGradient id="solid-line-grad" x1={startX} y1={startY} x2={endX} y2={endY} gradientUnits="userSpaceOnUse">
+                        <linearGradient id="solid-line-grad" x1="0" y1={startY} x2="0" y2={endY} gradientUnits="userSpaceOnUse">
                           <stop offset="0%" stopColor="rgba(0,0,0,0.85)" />
                           <stop offset={`${whiteBoxFrac * 100}%`} stopColor="rgba(0,0,0,0.85)" />
-                          <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 2)}%`} stopColor="rgba(255,255,255,0.9)" />
-                          <stop offset={`${Math.max(0, calFrac * 100 - 2)}%`} stopColor="rgba(255,255,255,0.9)" />
+                          {hasGap ? (
+                            <>
+                              <stop offset={`${Math.min(100, whiteBoxFrac * 100 + 1)}%`} stopColor="rgba(255,255,255,0.9)" />
+                              <stop offset={`${Math.max(0, calFrac * 100 - 1)}%`} stopColor="rgba(255,255,255,0.9)" />
+                            </>
+                          ) : null}
                           <stop offset={`${calFrac * 100}%`} stopColor="rgba(0,0,0,0.7)" />
                           <stop offset="100%" stopColor="rgba(0,0,0,0.7)" />
                         </linearGradient>
