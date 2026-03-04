@@ -10593,7 +10593,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '50px', right: '0px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+          style={{ bottom: '53px', right: '0px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
