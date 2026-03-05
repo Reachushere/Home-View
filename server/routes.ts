@@ -2923,23 +2923,27 @@ export async function registerRoutes(
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
       const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
 
-      const audioPath = await generateAndSaveTTSAudio(text, `speaker-${Date.now()}`);
-      const fullAudioUrl = `https://home-view--bkh416.replit.app${audioPath}`;
-
-      await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      const ssmlText = `<speak><prosody rate="90%">${cleanTextForTTS(text)}</prosody></speak>`;
+      const ttsResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: entityId,
-          media_content_type: "music",
-          media_content_id: fullAudioUrl,
+          message: ssmlText,
+          target: entityId,
+          data: { type: "tts" },
         }),
       });
 
-      res.json({ success: true, audioUrl: fullAudioUrl, entityId });
+      if (!ttsResp.ok) {
+        const errText = await ttsResp.text();
+        console.error(`[Speak to Echo] Alexa Media TTS error: ${ttsResp.status} ${errText}`);
+        return res.status(500).json({ error: "Alexa Media TTS failed" });
+      }
+
+      res.json({ success: true, entityId, method: "alexa_media_tts" });
     } catch (err) {
       console.error("Error playing TTS on speaker:", err);
       res.status(500).json({ error: "Failed to play TTS on speaker" });
@@ -3909,6 +3913,62 @@ export async function registerRoutes(
     return { textContent: cleanedContent, chunks };
   }
 
+  // Helper to send TTS text to Echo via notify/alexa_media (avoids music streaming restriction)
+  async function sendCatWashTTSToEcho(text: string, haUrl: string, speakerEntity: string) {
+    const ssmlChunk = `<speak><prosody rate="90%">${text}</prosody></speak>`;
+    const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: ssmlChunk, target: speakerEntity, data: { type: "tts" } }),
+    });
+    if (!resp.ok) {
+      const errorText = await resp.text();
+      console.error(`[Cat Wash TTS] Alexa Media notify error: ${resp.status} ${errorText}`);
+    }
+    return resp.ok;
+  }
+
+  // Helper to open URL on Fire Tablets via command_launch_app for Silk browser
+  async function openUrlOnFireDevice(haUrl: string, mobileApps: string[], url: string, deviceName: string): Promise<boolean> {
+    for (const app of mobileApps) {
+      try {
+        // Use command_webview which opens URL in the HA companion app's webview
+        // If that triggers Browser Mod, try launching Silk browser directly with intent
+        const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: "command_launch_app",
+            data: {
+              package: "com.amazon.cloud9",
+              action: "android.intent.action.VIEW",
+              uri: url
+            }
+          }),
+        });
+        console.log(`[Cat Wash] ${deviceName} → ${app} command_launch_app Silk: ${resp.status}`);
+        if (resp.ok) return true;
+      } catch (e: any) {
+        console.log(`[Cat Wash] ${deviceName} → ${app} launch_app failed: ${e.message}`);
+      }
+    }
+    // Fallback: try command_webview
+    for (const app of mobileApps) {
+      try {
+        const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: "command_webview", data: { url } }),
+        });
+        console.log(`[Cat Wash] ${deviceName} → ${app} command_webview fallback: ${resp.status}`);
+        if (resp.ok) return true;
+      } catch (e: any) {
+        console.log(`[Cat Wash] ${deviceName} → ${app} webview fallback failed: ${e.message}`);
+      }
+    }
+    return false;
+  }
+
   async function playCatWashFile(
     file: any, storageRef: any, haUrl: string, speakerEntity: string,
     appUrl: string, authParam: string, currentWeekNumber: number
@@ -3926,13 +3986,9 @@ export async function registerRoutes(
       if (nextFile && catWashPlaybackActive) {
         const nextName = nextFile.displayName || nextFile.originalName || 'Unknown file';
         const skipText = `Could not read ${fileName}. Moving on to ${nextName}.`;
-        const skipAudioPath = await generateAndSaveTTSAudio(skipText, `catwash-skip-${Date.now()}`);
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: `${appUrl}${skipAudioPath}` }),
-        });
-        await new Promise(resolve => setTimeout(resolve, 6000));
+        await sendCatWashTTSToEcho(skipText, haUrl, speakerEntity);
+        const skipDuration = Math.max(6000, (skipText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
+        await new Promise(resolve => setTimeout(resolve, skipDuration));
         await playCatWashFile(nextFile, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
       }
       return;
@@ -3969,32 +4025,12 @@ export async function registerRoutes(
       { mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'] },
     ];
 
-    // Update all display devices to new PDF
+    // Update all display devices to new PDF using Silk browser launch
     await Promise.all([
-      ...fireTablets.map(async (device) => {
-        for (const app of device.mobileApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
-            });
-            if (resp.ok) break;
-          } catch {}
-        }
+      ...fireTablets.map(async (device, idx) => {
+        await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, `tablet_${idx}`);
       }),
-      (async () => {
-        for (const app of fireStickApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
-            });
-            if (resp.ok) break;
-          } catch {}
-        }
-      })(),
+      openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'fire_stick_auto'),
     ]);
 
     // Update playback state
@@ -4030,16 +4066,19 @@ export async function registerRoutes(
       }
 
       try {
-        const audioPath = await generateAndSaveTTSAudio(chunk, `catwash-${file.id}-chunk-${i}`);
-        const fullAudioUrl = `${appUrl}${audioPath}`;
+        // Clean chunk text for TTS
+        const cleanedChunk = cleanTextForTTS(chunk);
+        if (cleanedChunk.trim().length === 0) {
+          console.log(`[Cat Wash Auto] Chunk ${i} empty after cleaning, skipping`);
+          continue;
+        }
 
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullAudioUrl }),
-        });
+        // Send text directly to Echo via Alexa Media Player TTS (same approach as PDF reader)
+        await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
 
-        const estimatedDuration = Math.max(8000, (words.length / 150) * 60 * 1000 + 3000);
+        // Estimate duration based on chunk length at 90% speed
+        const charsPerSecond = 15;
+        const estimatedDuration = Math.max(8000, (cleanedChunk.length / charsPerSecond) * 1000 + 3000);
         if (catWashPlaybackState) {
           catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
         }
@@ -4053,6 +4092,7 @@ export async function registerRoutes(
         };
 
         await storageRef.updateFile(file.id, { lastChunkIndex: i, totalChunks: chunks.length });
+        console.log(`[Cat Wash Auto] Waiting ${Math.round(estimatedDuration / 1000)}s for chunk ${i + 1}`);
         await new Promise(resolve => setTimeout(resolve, estimatedDuration));
       } catch (ttsError: any) {
         console.error(`[Cat Wash Auto] Error on chunk ${i}:`, ttsError.message);
@@ -4076,13 +4116,7 @@ export async function registerRoutes(
         const transitionText = `The reading of ${fileName} has concluded. We will now begin playing ${nextFileName}, from ${courseName}, from the ${folderType} folder.`;
         console.log(`[Cat Wash Auto] Transition: ${transitionText}`);
 
-        const announceAudioPath = await generateAndSaveTTSAudio(transitionText, `catwash-transition-${Date.now()}`);
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: `${appUrl}${announceAudioPath}` }),
-        });
-
+        await sendCatWashTTSToEcho(transitionText, haUrl, speakerEntity);
         const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
         await new Promise(resolve => setTimeout(resolve, announceDuration));
 
@@ -4090,12 +4124,7 @@ export async function registerRoutes(
         await playCatWashFile(nextFileToPlay, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
       } else {
         const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
-        const completionAudioPath = await generateAndSaveTTSAudio(completionText, `catwash-complete-${Date.now()}`);
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: `${appUrl}${completionAudioPath}` }),
-        });
+        await sendCatWashTTSToEcho(completionText, haUrl, speakerEntity);
         await new Promise(resolve => setTimeout(resolve, 8000));
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
@@ -4239,19 +4268,9 @@ export async function registerRoutes(
       await Promise.all(fireTablets.map(async (device) => {
         const methods: string[] = [];
 
-        for (const app of device.mobileApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
-            });
-            console.log(`[Cat Wash] ${device.name} → ${app} command_webview: ${resp.status}`);
-            if (resp.ok) { methods.push(`${app}:webview`); break; }
-          } catch (e: any) {
-            console.log(`[Cat Wash] ${device.name} → ${app} failed: ${e.message}`);
-          }
-        }
+        // Use Silk browser launch to open PDF reader (avoids Browser Mod)
+        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
+        if (opened) methods.push('silk_launch');
 
         for (const app of device.mobileApps) {
           try {
@@ -4293,38 +4312,12 @@ export async function registerRoutes(
         console.log(`[Cat Wash] Samsung TV turn_on: ${turnOnResp.status}`);
 
         // Brief delay for TV to wake up
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
-        // Step 2: Open URL via Fire Stick command_webview (opens in Silk browser)
+        // Step 2: Open URL via Fire Stick using Silk browser launch (avoids cached pages)
         const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
-        let fireStickSuccess = false;
-        for (const app of fireStickApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
-            });
-            console.log(`[Cat Wash] Fire Stick ${app} command_webview: ${resp.status}`);
-            if (resp.ok) {
-              fireStickSuccess = true;
-              deviceResults['samsung_tv'] = `firestick:${app}`;
-              break;
-            }
-          } catch (e: any) {
-            console.log(`[Cat Wash] Fire Stick ${app} failed: ${e.message}`);
-          }
-        }
-        if (!fireStickSuccess) {
-          // Fallback: try play_media on TV directly
-          const tvResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', media_content_id: readerUrl, media_content_type: 'url' }),
-          });
-          console.log(`[Cat Wash] Samsung TV play_media fallback: ${tvResp.status}`);
-          deviceResults['samsung_tv'] = tvResp.ok ? 'play_media_fallback' : `failed:${tvResp.status}`;
-        }
+        const fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'samsung_tv_firestick');
+        deviceResults['samsung_tv'] = fireStickSuccess ? 'silk_launch' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Wash] Samsung TV/Fire Stick error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
@@ -4389,18 +4382,17 @@ export async function registerRoutes(
             }
 
             try {
-              const audioPath = await generateAndSaveTTSAudio(chunk, `catwash-${nextFile.id}-chunk-${i}`);
-              const fullAudioUrl = `${appUrl}${audioPath}`;
-              console.log(`[Cat Wash TTS] Audio generated: ${fullAudioUrl}`);
+              const cleanedChunk = cleanTextForTTS(chunk);
+              if (cleanedChunk.trim().length === 0) {
+                console.log(`[Cat Wash TTS] Chunk ${i} empty after cleaning, skipping`);
+                continue;
+              }
 
-              await fetch(`${haUrl}/api/services/media_player/play_media`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullAudioUrl }),
-              });
+              await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
+              console.log(`[Cat Wash TTS] Sent TTS chunk ${i + 1} to Echo`);
 
-              // Estimate duration: ~150 words per minute for TTS at normal speed
-              const estimatedDuration = Math.max(8000, (words.length / 150) * 60 * 1000 + 3000);
+              const charsPerSecond = 15;
+              const estimatedDuration = Math.max(8000, (cleanedChunk.length / charsPerSecond) * 1000 + 3000);
               if (catWashPlaybackState) {
                 catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
               }
@@ -4445,13 +4437,7 @@ export async function registerRoutes(
               const transitionText = `The reading of ${fileName} has concluded. We will now begin playing ${nextFileName}, from ${courseName}, from the ${folderType} folder.`;
               console.log(`[Cat Wash TTS] Transition announcement: ${transitionText}`);
 
-              const announceAudioPath = await generateAndSaveTTSAudio(transitionText, `catwash-transition-${Date.now()}`);
-              const fullAnnounceUrl = `${appUrl}${announceAudioPath}`;
-              await fetch(`${haUrl}/api/services/media_player/play_media`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullAnnounceUrl }),
-              });
+              await sendCatWashTTSToEcho(transitionText, haUrl, speakerEntity);
 
               // Wait for announcement to finish (~5 seconds per sentence)
               const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
@@ -4469,13 +4455,7 @@ export async function registerRoutes(
             } else {
               // No more files - announce completion and play radio
               const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
-              const completionAudioPath = await generateAndSaveTTSAudio(completionText, `catwash-complete-${Date.now()}`);
-              const fullCompletionUrl = `${appUrl}${completionAudioPath}`;
-              await fetch(`${haUrl}/api/services/media_player/play_media`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "music", media_content_id: fullCompletionUrl }),
-              });
+              await sendCatWashTTSToEcho(completionText, haUrl, speakerEntity);
               await new Promise(resolve => setTimeout(resolve, 8000));
               
               // Switch to radio
