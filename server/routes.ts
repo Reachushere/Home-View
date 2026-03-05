@@ -3653,8 +3653,9 @@ export async function registerRoutes(
   let kitchenPlaybackActive = false;
   let kitchenPlaybackAbortController: AbortController | null = null;
 
-  // Track active cat-wash playback session
+  // Track active cat-wash playback session with unique session ID to prevent concurrent loops
   let catWashPlaybackActive = false;
+  let catWashSessionId = 0;
   let catWashPlaybackState: {
     fileId: number;
     fileName: string;
@@ -3900,53 +3901,32 @@ export async function registerRoutes(
     return { textContent: cleanedContent, chunks };
   }
 
-  // Helper to send TTS text to Echo via notify/alexa_media
-  // Uses OpenAI-generated audio embedded as SSML <audio> tag for natural voice,
-  // with fallback to Alexa's built-in TTS if audio generation fails.
+  // Helper to send TTS text to Echo via notify/alexa_media using "announce" type.
+  // "announce" is more reliable than "tts" which uses Simon Says skill (often fails).
+  // Uses Alexa's built-in voice at 75% speed for academic documents.
   async function sendCatWashTTSToEcho(text: string, haUrl: string, speakerEntity: string): Promise<{ ok: boolean; durationMs: number }> {
-    const appUrl = "https://home-view--bkh416.replit.app";
-    const wordsPerMinute = 145;
     const wordCount = text.split(/\s+/).length;
-    const estimatedDurationMs = Math.max(5000, (wordCount / wordsPerMinute) * 60 * 1000 + 2000);
-
-    // Try OpenAI TTS first for natural-sounding voice
-    try {
-      const audioPath = await generateAndSaveTTSAudio(text, `catwash-tts-${Date.now()}`);
-      const fullAudioUrl = `${appUrl}${audioPath}`;
-
-      // Use SSML <audio> tag to play the generated MP3 on Echo
-      const ssmlMsg = `<speak><audio src="${fullAudioUrl}" /></speak>`;
-      const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: ssmlMsg, target: speakerEntity, data: { type: "tts" } }),
-      });
-      if (resp.ok) {
-        console.log(`[Cat Wash TTS] OpenAI audio sent via SSML <audio> (${wordCount} words, ~${Math.round(estimatedDurationMs/1000)}s)`);
-        return { ok: true, durationMs: estimatedDurationMs };
-      }
-      const errText = await resp.text();
-      console.log(`[Cat Wash TTS] SSML <audio> failed (${resp.status}): ${errText}, falling back to Alexa TTS`);
-    } catch (e: any) {
-      console.log(`[Cat Wash TTS] OpenAI audio generation failed: ${e.message}, falling back to Alexa TTS`);
-    }
-
-    // Fallback: Use Alexa's built-in TTS with slow prosody
-    const formattedText = text
-      .replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] || c));
-    const ssmlChunk = `<speak><prosody rate="75%">${formattedText}</prosody></speak>`;
+    // Escape XML special chars for SSML
+    const escaped = text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] || c));
+    const ssmlMsg = `<speak><prosody rate="75%">${escaped}</prosody></speak>`;
+    // Use "announce" type — does NOT rely on Simon Says skill
     const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: ssmlChunk, target: speakerEntity, data: { type: "tts" } }),
+      body: JSON.stringify({
+        message: ssmlMsg,
+        target: [speakerEntity],
+        data: { type: "announce", method: "speak" }
+      }),
     });
     if (!resp.ok) {
       const errorText = await resp.text();
-      console.error(`[Cat Wash TTS] Alexa TTS fallback error: ${resp.status} ${errorText}`);
+      console.error(`[Cat Wash TTS] Alexa announce error: ${resp.status} ${errorText}`);
     }
-    // Alexa TTS at 75% speed is slower
-    const alexaDuration = Math.max(5000, (wordCount / 120) * 60 * 1000 + 2000);
-    return { ok: resp.ok, durationMs: alexaDuration };
+    // At 75% speed, ~120 wpm
+    const durationMs = Math.max(5000, (wordCount / 120) * 60 * 1000 + 2000);
+    console.log(`[Cat Wash TTS] Announce sent (${wordCount} words, ~${Math.round(durationMs / 1000)}s)`);
+    return { ok: resp.ok, durationMs };
   }
 
   // Helper to open URL on Fire Tablets via command_activity (launches Silk browser with intent)
@@ -4043,8 +4023,9 @@ export async function registerRoutes(
 
   async function playCatWashFile(
     file: any, storageRef: any, haUrl: string, speakerEntity: string,
-    appUrl: string, authParam: string, currentWeekNumber: number
+    appUrl: string, authParam: string, currentWeekNumber: number, sessionId?: number
   ) {
+    const mySession = sessionId ?? catWashSessionId;
     const fileName = file.displayName || file.originalName || 'Unknown file';
     const isModuleFile = file.folder?.toLowerCase().includes('module');
     const fileType = isModuleFile ? 'module' : 'reading';
@@ -4055,7 +4036,7 @@ export async function registerRoutes(
       console.error(`[Cat Wash Auto] Could not extract text from ${fileName}, skipping`);
       await storageRef.updateFile(file.id, { listened: true });
       const nextFile = await findNextCatWashFile(storageRef, currentWeekNumber, file.id);
-      if (nextFile && catWashPlaybackActive) {
+      if (nextFile && catWashPlaybackActive && catWashSessionId === mySession) {
         const nextName = nextFile.displayName || nextFile.originalName || 'Unknown file';
         const skipText = `Could not read ${fileName}. Moving on to ${nextName}.`;
         await sendCatWashTTSToEcho(skipText, haUrl, speakerEntity);
@@ -4126,8 +4107,8 @@ export async function registerRoutes(
 
     // Play chunks
     for (let i = resumeFromChunk; i < chunks.length; i++) {
-      if (!catWashPlaybackActive) {
-        console.log(`[Cat Wash Auto] Stopped at chunk ${i}`);
+      if (!catWashPlaybackActive || catWashSessionId !== mySession) {
+        console.log(`[Cat Wash Auto] Stopped at chunk ${i} (session ${mySession} vs current ${catWashSessionId})`);
         return;
       }
 
@@ -4173,7 +4154,7 @@ export async function registerRoutes(
     }
 
     // File complete - mark listened and auto-continue
-    if (catWashPlaybackActive) {
+    if (catWashPlaybackActive && catWashSessionId === mySession) {
       console.log(`[Cat Wash Auto] ${fileName} complete - marking listened`);
       await storageRef.updateFile(file.id, { listened: true });
 
@@ -4192,8 +4173,8 @@ export async function registerRoutes(
         const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
         await new Promise(resolve => setTimeout(resolve, announceDuration));
 
-        if (!catWashPlaybackActive) return;
-        await playCatWashFile(nextFileToPlay, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
+        if (!catWashPlaybackActive || catWashSessionId !== mySession) return;
+        await playCatWashFile(nextFileToPlay, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber, mySession);
       } else {
         const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
         await sendCatWashTTSToEcho(completionText, haUrl, speakerEntity);
