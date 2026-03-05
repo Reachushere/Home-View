@@ -1407,6 +1407,8 @@ export default function Dashboard() {
   // Store original settings when dialog opens (for cancel functionality)
   const [originalColorSettings, setOriginalColorSettings] = useState(colorSettings);
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
+  const [previousSavedColorSettings, setPreviousSavedColorSettings] = useState<typeof colorSettings | null>(null);
+  const [previousSavedBlinkSettings, setPreviousSavedBlinkSettings] = useState<typeof blinkSettings | null>(null);
   
   // Generate a device-specific identifier based on screen dimensions
   const getDeviceId = useCallback(() => {
@@ -9444,8 +9446,8 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Undo Complete - top gradient #BD0000 */}
-          {completedTaskHistory.length > 0 ? (
+          {/* Undo Complete / Undo Settings */}
+          {completedTaskHistory.length > 0 || previousSavedColorSettings ? (
             <div 
               style={{ 
                 width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
@@ -9456,9 +9458,24 @@ export default function Dashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
               }}
               className="pill-button-hover"
-              onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
+              onClick={() => {
+                triggerButtonGlow('undo');
+                if (completedTaskHistory.length > 0) {
+                  handleUndoComplete();
+                } else if (previousSavedColorSettings) {
+                  setColorSettings(previousSavedColorSettings);
+                  if (previousSavedBlinkSettings) setBlinkSettings(previousSavedBlinkSettings);
+                  localStorage.setItem('colorSettings', JSON.stringify(previousSavedColorSettings));
+                  if (previousSavedBlinkSettings) localStorage.setItem('blinkSettings', JSON.stringify(previousSavedBlinkSettings));
+                  setOriginalColorSettings({...previousSavedColorSettings});
+                  if (previousSavedBlinkSettings) setOriginalBlinkSettings({...previousSavedBlinkSettings});
+                  setPreviousSavedColorSettings(null);
+                  setPreviousSavedBlinkSettings(null);
+                  toast({ title: "Settings reverted", description: "Your previous settings have been restored." });
+                }
+              }}
               data-testid="button-undo-complete"
-              title={`Undo last completion (${completedTaskHistory.length} available)`}
+              title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : 'Undo last settings save'}
             >
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
@@ -13889,6 +13906,8 @@ export default function Dashboard() {
                       fontSize: '12px'
                     }}
                     onClick={() => {
+                      setPreviousSavedColorSettings({...originalColorSettings});
+                      setPreviousSavedBlinkSettings({...originalBlinkSettings});
                       localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                       localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
                       setOriginalColorSettings({...colorSettings});
