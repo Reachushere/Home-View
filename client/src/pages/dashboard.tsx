@@ -19130,16 +19130,17 @@ function ProfileForm({
           />
         </div>
         <div className="space-y-0 w-1/2">
-          <Label htmlFor="allergies" className="text-[10px]">Allergies</Label>
-          <Input 
-            id="allergies" 
-            value={allergies}
-            onChange={(e) => setAllergies(e.target.value)}
-            placeholder="e.g. Peanuts, Penicillin"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
-            data-testid="input-profile-allergies"
-          />
+          <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
+          <select
+            value={timezone}
+            onChange={(e) => setTimezone(e.target.value)}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-timezone"
+          >
+            {timezones.map(tz => (
+              <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
+            ))}
+          </select>
         </div>
       </div>
       <div className="flex gap-[6px]">
@@ -19156,17 +19157,16 @@ function ProfileForm({
           />
         </div>
         <div className="space-y-0 w-1/2">
-          <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
-          <select
-            value={timezone}
-            onChange={(e) => setTimezone(e.target.value)}
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-            data-testid="select-profile-timezone"
-          >
-            {timezones.map(tz => (
-              <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
-            ))}
-          </select>
+          <Label htmlFor="allergies" className="text-[10px]">Allergies</Label>
+          <Input 
+            id="allergies" 
+            value={allergies}
+            onChange={(e) => setAllergies(e.target.value)}
+            placeholder="e.g. Peanuts, Penicillin"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-allergies"
+          />
         </div>
       </div>
       <div className="flex gap-[6px]">
