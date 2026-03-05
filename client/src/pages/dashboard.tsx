@@ -19075,23 +19075,22 @@ function ProfileForm({
         </div>
       </div>
       <div className="flex gap-[6px]">
-        <div className="flex gap-[6px] w-1/2">
-          <div className="space-y-0 flex-1">
-            <Label htmlFor="country" className="text-[10px]">Country</Label>
-            <select
-              value={country}
-              onChange={(e) => { setCountry(e.target.value); setProvinceState(''); }}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-              data-testid="select-profile-country"
-            >
-              <option value="">Select country</option>
-              {COUNTRIES.map(c => (
-                <option key={c.value} value={c.value}>{c.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-0" style={{ width: '40%', flexShrink: 0 }}>
-            <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
+        <div className="space-y-0" style={{ width: 'calc(30% - 6px)', flexShrink: 0 }}>
+          <Label htmlFor="country" className="text-[10px]">Country</Label>
+          <select
+            value={country}
+            onChange={(e) => { setCountry(e.target.value); setProvinceState(''); }}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-country"
+          >
+            <option value="">Select country</option>
+            {COUNTRIES.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-0" style={{ width: 'calc(20% - 3px)', flexShrink: 0 }}>
+          <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
           <Input 
             id="postalCode" 
             value={postalCode}
@@ -19101,7 +19100,6 @@ function ProfileForm({
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-postalcode"
           />
-          </div>
         </div>
         <div className="space-y-0 flex-1">
           <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
