@@ -4253,6 +4253,160 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/webhook/cat-lights - Triggered when light.cat_lights turns on/off
+  // If the current week's CPPA module hasn't been fully listened to and it's before Wednesday,
+  // turning the light ON starts/resumes playback, turning it OFF stops and saves progress.
+  app.post("/api/webhook/cat-lights", async (req, res) => {
+    try {
+      const { state } = req.body;
+      const lightState = state || req.body.new_state?.state || 'unknown';
+      console.log(`[Cat Lights] Webhook triggered - light state: ${lightState}`);
+
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+
+      // === LIGHT TURNED OFF → Stop playback and save progress ===
+      if (lightState === 'off') {
+        if (catWashPlaybackActive && catWashPlaybackState) {
+          const savedFileId = catWashPlaybackState.fileId;
+          const savedChunk = catWashPlaybackState.chunkIndex;
+          console.log(`[Cat Lights] Light off - stopping playback. File ${savedFileId}, chunk ${savedChunk}`);
+          catWashPlaybackActive = false;
+          catWashPlaybackState = null;
+        } else {
+          console.log("[Cat Lights] Light off - no active playback to stop");
+        }
+        return res.json({ action: "stopped" });
+      }
+
+      // === LIGHT TURNED ON → Check if CPPA module needs playing ===
+      if (lightState !== 'on') {
+        return res.json({ action: "ignored", reason: `Unknown state: ${lightState}` });
+      }
+
+      // Check day of week - only trigger before Wednesday (Sun=0, Mon=1, Tue=2, Wed=3)
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      if (dayOfWeek >= 3) {
+        console.log(`[Cat Lights] It's ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dayOfWeek]} - past Wednesday cutoff, skipping`);
+        return res.json({ action: "skipped", reason: "Past Wednesday cutoff" });
+      }
+
+      // Get current week number
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
+
+      // Find CPPA module for current week that hasn't been fully listened to
+      const allFiles = await storage.getFiles();
+      const cppaModule = allFiles.find((f: any) => {
+        if (f.listened) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNumber) return false;
+        const isCppa = f.folder?.toLowerCase().includes('cppa');
+        const isModule = f.folder?.toLowerCase().includes('module');
+        return isCppa && isModule;
+      });
+
+      if (!cppaModule) {
+        console.log(`[Cat Lights] No unlistened CPPA module for week ${currentWeekNumber}`);
+        return res.json({ action: "skipped", reason: `No unlistened CPPA module for week ${currentWeekNumber}` });
+      }
+
+      const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
+      console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
+
+      // Build reader URL with autoplay - tablet will handle TTS via Bluetooth → Echo
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
+
+      // Extract chunks to store in state
+      const extractResult = await extractAndChunkPdf(cppaModule);
+      if (!extractResult || extractResult.chunks.length === 0) {
+        return res.status(400).json({ error: "PDF has no readable text content" });
+      }
+      const { chunks } = extractResult;
+
+      // Resume from saved progress if available
+      let resumeFromChunk = cppaModule.lastChunkIndex || 0;
+      if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
+
+      console.log(`[Cat Lights] Starting playback from chunk ${resumeFromChunk}/${chunks.length}`);
+
+      // Update session state
+      catWashSessionId++;
+      if (catWashPlaybackActive) {
+        console.log("[Cat Lights] Stopping previous playback session");
+      }
+      catWashPlaybackActive = true;
+      catWashPlaybackState = {
+        fileId: cppaModule.id,
+        fileName,
+        chunkIndex: resumeFromChunk,
+        totalChunks: chunks.length,
+        chunks,
+        currentWords: [],
+        wordIndex: 0,
+        startedAt: new Date(),
+        chunkStartedAt: new Date(),
+        estimatedChunkDuration: 0,
+      };
+
+      // Open PDF reader on tablets
+      const fireTablets = [
+        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'] },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'] },
+      ];
+      const deviceResults: Record<string, string> = {};
+      await Promise.all(fireTablets.map(async (device) => {
+        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
+        deviceResults[device.name] = opened ? 'opened' : 'failed';
+      }));
+
+      // Also try Samsung TV via Fire Stick
+      try {
+        await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
+        });
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr'];
+        for (const entity of fireStickEntities) {
+          if (await openUrlOnFireStick(haUrl, entity, readerUrl)) {
+            deviceResults['samsung_tv'] = `adb:${entity}`;
+            break;
+          }
+        }
+      } catch (e: any) {
+        console.log(`[Cat Lights] Samsung TV error: ${e.message}`);
+      }
+
+      console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
+
+      res.json({
+        action: "playing",
+        file: { id: cppaModule.id, name: fileName },
+        resumeFromChunk,
+        totalChunks: chunks.length,
+        devices: deviceResults,
+        playbackMode: "tablet-bluetooth",
+      });
+
+    } catch (error: any) {
+      console.error("[Cat Lights] Error:", error);
+      res.status(500).json({ error: "Failed to handle cat lights webhook", details: error.message });
+    }
+  });
+
   // GET /api/cat-wash/progress - Returns current playback state for the active session
   app.get("/api/cat-wash/progress", (_req, res) => {
     if (!catWashPlaybackActive || !catWashPlaybackState) {
