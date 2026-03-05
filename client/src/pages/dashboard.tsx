@@ -19039,8 +19039,8 @@ function ProfileForm({
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="e.g. 123 Main Street, Apt 4"
-          className="bg-white !text-black !text-[10px] h-8"
-          style={{ fontSize: '10px', color: 'black' }}
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
           data-testid="input-profile-address"
         />
       </div>
