@@ -920,6 +920,14 @@ export default function Dashboard() {
     const saved = localStorage.getItem('completedTaskHistory');
     return saved ? JSON.parse(saved) : [];
   });
+
+  type UndoAction = {
+    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'sticky-delete' | 'sticky-edit';
+    description: string;
+    data: any;
+  };
+  const [undoStack, setUndoStack] = useState<UndoAction[]>([]);
+  const [redoStack, setRedoStack] = useState<UndoAction[]>([]);
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
   // Shared AudioContext ref - only created by user interaction, reused for alarms
   const sharedAudioContextRef = useRef<AudioContext | null>(null);
@@ -1408,11 +1416,6 @@ export default function Dashboard() {
   // Store original settings when dialog opens (for cancel functionality)
   const [originalColorSettings, setOriginalColorSettings] = useState(colorSettings);
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
-  const [previousSavedColorSettings, setPreviousSavedColorSettings] = useState<typeof colorSettings | null>(null);
-  const [previousSavedBlinkSettings, setPreviousSavedBlinkSettings] = useState<typeof blinkSettings | null>(null);
-  const [redoColorSettings, setRedoColorSettings] = useState<typeof colorSettings | null>(null);
-  const [redoBlinkSettings, setRedoBlinkSettings] = useState<typeof blinkSettings | null>(null);
-  const [redoTaskHistory, setRedoTaskHistory] = useState<number[]>([]);
   
   // Generate a device-specific identifier based on screen dimensions
   const getDeviceId = useCallback(() => {
@@ -2217,7 +2220,7 @@ export default function Dashboard() {
         }
         e.preventDefault();
         if (confirm('Delete this task?')) {
-          deleteMutation.mutate(selectedTaskId);
+          deleteTaskWithUndo(selectedTaskId);
           setSelectedTaskId(null);
         }
       }
@@ -5501,7 +5504,7 @@ export default function Dashboard() {
   const isPastSemester = week13EndDate ? new Date() > new Date(week13EndDate) : false;
 
   const completeMutation = useMutation({
-    mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
+    mutationFn: async ({ id, isCompleted, _skipUndo }: { id: number; isCompleted: boolean; _skipUndo?: boolean }) => {
       return apiRequest("PATCH", `/api/tasks/${id}/complete`, { isCompleted });
     },
     onSuccess: (_, variables) => {
@@ -5509,35 +5512,193 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
       if (variables.isCompleted) {
         setCompletedTaskHistory(prev => {
-          const newHistory = [variables.id, ...prev].slice(0, 10); // Keep max 10
+          const newHistory = [variables.id, ...prev].slice(0, 10);
           localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
           return newHistory;
         });
         setShowCelebration(true);
       }
+      if (!variables._skipUndo) {
+        const task = allTasks.find(t => t.id === variables.id);
+        const actionType = variables.isCompleted ? 'complete' : 'uncomplete';
+        pushUndo({
+          type: actionType,
+          description: `${variables.isCompleted ? 'Completed' : 'Uncompleted'} "${task?.title || 'task'}"`,
+          data: { taskId: variables.id, taskTitle: task?.title || 'task' }
+        });
+      }
     },
   });
 
-  const handleUndoComplete = () => {
-    if (completedTaskHistory.length > 0) {
-      const [taskToUndo, ...rest] = completedTaskHistory;
-      setRedoTaskHistory(prev => [taskToUndo, ...prev]);
-      completeMutation.mutate({ id: taskToUndo, isCompleted: false });
-      setCompletedTaskHistory(rest);
-      localStorage.setItem('completedTaskHistory', JSON.stringify(rest));
+  const pushUndo = (action: UndoAction) => {
+    setUndoStack(prev => [action, ...prev].slice(0, 20));
+    setRedoStack([]);
+  };
+
+  const handleUndo = () => {
+    if (undoStack.length === 0) return;
+    const [action, ...rest] = undoStack;
+    setUndoStack(rest);
+
+    switch (action.type) {
+      case 'complete': {
+        const reverseAction: UndoAction = { type: 'uncomplete', description: `Re-complete "${action.data.taskTitle || 'task'}"`, data: { taskId: action.data.taskId, taskTitle: action.data.taskTitle } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        completeMutation.mutate({ id: action.data.taskId, isCompleted: false, _skipUndo: true });
+        setCompletedTaskHistory(prev => {
+          const newHistory = prev.filter(id => id !== action.data.taskId);
+          localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
+          return newHistory;
+        });
+        toast({ title: "Undone", description: `Unmarked "${action.data.taskTitle || 'task'}" as complete` });
+        break;
+      }
+      case 'uncomplete': {
+        const reverseAction: UndoAction = { type: 'complete', description: `Uncomplete "${action.data.taskTitle || 'task'}"`, data: { taskId: action.data.taskId, taskTitle: action.data.taskTitle } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        completeMutation.mutate({ id: action.data.taskId, isCompleted: true, _skipUndo: true });
+        setCompletedTaskHistory(prev => {
+          const newHistory = [action.data.taskId, ...prev];
+          localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
+          return newHistory;
+        });
+        break;
+      }
+      case 'delete': {
+        const reverseAction: UndoAction = { type: 'delete', description: `Delete "${action.data.taskTitle || 'task'}" again`, data: { ...action.data } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        const { taskId, ...taskData } = action.data;
+        const createPayload = { ...taskData };
+        delete createPayload.taskTitle;
+        delete createPayload.id;
+        fetch('/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(createPayload),
+        }).then(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+        });
+        toast({ title: "Undone", description: `Restored "${action.data.taskTitle || 'task'}"` });
+        break;
+      }
+      case 'edit':
+      case 'move': {
+        const reverseAction: UndoAction = { type: action.type, description: `Redo edit on "${action.data.taskTitle || 'task'}"`, data: { taskId: action.data.taskId, taskTitle: action.data.taskTitle, oldFields: action.data.newFields, newFields: action.data.oldFields } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        updateTaskFieldsMutation.mutate({ id: action.data.taskId, ...action.data.oldFields });
+        toast({ title: "Undone", description: `Reverted changes to "${action.data.taskTitle || 'task'}"` });
+        break;
+      }
+      case 'settings': {
+        const reverseAction: UndoAction = { type: 'settings', description: 'Redo settings change', data: { oldColor: action.data.newColor, newColor: action.data.oldColor, oldBlink: action.data.newBlink, newBlink: action.data.oldBlink } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        setColorSettings(action.data.oldColor);
+        if (action.data.oldBlink) setBlinkSettings(action.data.oldBlink);
+        localStorage.setItem('colorSettings', JSON.stringify(action.data.oldColor));
+        if (action.data.oldBlink) localStorage.setItem('blinkSettings', JSON.stringify(action.data.oldBlink));
+        setOriginalColorSettings({...action.data.oldColor});
+        if (action.data.oldBlink) setOriginalBlinkSettings({...action.data.oldBlink});
+        toast({ title: "Settings reverted", description: "Your previous settings have been restored." });
+        break;
+      }
+      case 'sticky-delete': {
+        const reverseAction: UndoAction = { type: 'sticky-delete', description: `Delete sticky note again`, data: { ...action.data } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        const { noteId, ...noteData } = action.data;
+        delete noteData.taskTitle;
+        createStickyNoteMutation.mutate(noteData);
+        toast({ title: "Undone", description: "Sticky note restored" });
+        break;
+      }
+      case 'sticky-edit': {
+        const reverseAction: UndoAction = { type: 'sticky-edit', description: `Redo sticky note edit`, data: { noteId: action.data.noteId, oldFields: action.data.newFields, newFields: action.data.oldFields } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        updateStickyNoteMutation.mutate({ id: action.data.noteId, updates: action.data.oldFields });
+        toast({ title: "Undone", description: "Sticky note change reverted" });
+        break;
+      }
     }
   };
 
-  const handleRedoComplete = () => {
-    if (redoTaskHistory.length > 0) {
-      const [taskToRedo, ...rest] = redoTaskHistory;
-      completeMutation.mutate({ id: taskToRedo, isCompleted: true });
-      setCompletedTaskHistory(prev => {
-        const newHistory = [taskToRedo, ...prev];
-        localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
-        return newHistory;
-      });
-      setRedoTaskHistory(rest);
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const [action, ...rest] = redoStack;
+    setRedoStack(rest);
+
+    switch (action.type) {
+      case 'complete': {
+        const reverseAction: UndoAction = { type: 'complete', description: `Uncomplete "${action.data.taskTitle || 'task'}"`, data: { taskId: action.data.taskId, taskTitle: action.data.taskTitle } };
+        setUndoStack(prev => [reverseAction, ...prev]);
+        completeMutation.mutate({ id: action.data.taskId, isCompleted: false, _skipUndo: true });
+        setCompletedTaskHistory(prev => {
+          const newHistory = prev.filter(id => id !== action.data.taskId);
+          localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
+          return newHistory;
+        });
+        toast({ title: "Redone", description: `Unmarked "${action.data.taskTitle || 'task'}"` });
+        break;
+      }
+      case 'uncomplete': {
+        const reverseAction: UndoAction = { type: 'uncomplete', description: `Re-complete "${action.data.taskTitle || 'task'}"`, data: { taskId: action.data.taskId, taskTitle: action.data.taskTitle } };
+        setUndoStack(prev => [reverseAction, ...prev]);
+        completeMutation.mutate({ id: action.data.taskId, isCompleted: true, _skipUndo: true });
+        setCompletedTaskHistory(prev => {
+          const newHistory = [action.data.taskId, ...prev];
+          localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
+          return newHistory;
+        });
+        break;
+      }
+      case 'delete': {
+        const taskToDelete = allTasks.find(t => t.title === action.data.title && t.courseName === action.data.courseName);
+        if (taskToDelete) {
+          const reverseAction: UndoAction = { type: 'delete', description: `Restore "${action.data.taskTitle || 'task'}"`, data: { ...action.data, taskId: taskToDelete.id } };
+          setUndoStack(prev => [reverseAction, ...prev]);
+          deleteMutation.mutate(taskToDelete.id);
+          toast({ title: "Redone", description: `Deleted "${action.data.taskTitle || 'task'}" again` });
+        }
+        break;
+      }
+      case 'edit':
+      case 'move': {
+        const reverseAction: UndoAction = { type: action.type, description: `Undo edit on "${action.data.taskTitle || 'task'}"`, data: { taskId: action.data.taskId, taskTitle: action.data.taskTitle, oldFields: action.data.newFields, newFields: action.data.oldFields } };
+        setUndoStack(prev => [reverseAction, ...prev]);
+        updateTaskFieldsMutation.mutate({ id: action.data.taskId, ...action.data.oldFields });
+        toast({ title: "Redone", description: `Re-applied changes to "${action.data.taskTitle || 'task'}"` });
+        break;
+      }
+      case 'settings': {
+        const reverseAction: UndoAction = { type: 'settings', description: 'Undo settings change', data: { oldColor: action.data.newColor, newColor: action.data.oldColor, oldBlink: action.data.newBlink, newBlink: action.data.oldBlink } };
+        setUndoStack(prev => [reverseAction, ...prev]);
+        setColorSettings(action.data.oldColor);
+        if (action.data.oldBlink) setBlinkSettings(action.data.oldBlink);
+        localStorage.setItem('colorSettings', JSON.stringify(action.data.oldColor));
+        if (action.data.oldBlink) localStorage.setItem('blinkSettings', JSON.stringify(action.data.oldBlink));
+        setOriginalColorSettings({...action.data.oldColor});
+        if (action.data.oldBlink) setOriginalBlinkSettings({...action.data.oldBlink});
+        toast({ title: "Settings re-applied", description: "Your settings have been restored." });
+        break;
+      }
+      case 'sticky-delete': {
+        const stickyNotes = queryClient.getQueryData<any[]>(["/api/sticky-notes"]) || [];
+        const noteToDelete = stickyNotes.find((n: any) => n.content === action.data.content);
+        if (noteToDelete) {
+          const reverseAction: UndoAction = { type: 'sticky-delete', description: 'Restore sticky note', data: { ...action.data, noteId: noteToDelete.id } };
+          setUndoStack(prev => [reverseAction, ...prev]);
+          deleteStickyNoteMutation.mutate(noteToDelete.id);
+          toast({ title: "Redone", description: "Sticky note deleted again" });
+        }
+        break;
+      }
+      case 'sticky-edit': {
+        const reverseAction: UndoAction = { type: 'sticky-edit', description: 'Undo sticky note edit', data: { noteId: action.data.noteId, oldFields: action.data.newFields, newFields: action.data.oldFields } };
+        setUndoStack(prev => [reverseAction, ...prev]);
+        updateStickyNoteMutation.mutate({ id: action.data.noteId, updates: action.data.oldFields });
+        toast({ title: "Redone", description: "Sticky note change re-applied" });
+        break;
+      }
     }
   };
 
@@ -5550,6 +5711,42 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
     },
   });
+
+  const deleteTaskWithUndo = (taskId: number) => {
+    const task = allTasks.find(t => t.id === taskId);
+    if (task) {
+      pushUndo({
+        type: 'delete',
+        description: `Deleted "${task.title}"`,
+        data: {
+          taskId: task.id,
+          taskTitle: task.title,
+          title: task.title,
+          description: task.description,
+          type: task.type,
+          courseName: task.courseName,
+          dueDate: task.dueDate,
+          startDate: task.startDate,
+          weekNumber: task.weekNumber,
+          isCompleted: task.isCompleted,
+          eventStartTime: task.eventStartTime,
+          eventEndTime: task.eventEndTime,
+          priority: task.priority,
+          referenceLink: task.referenceLink,
+          attachments: task.attachments,
+          repeatType: task.repeatType,
+          repeatInterval: task.repeatInterval,
+          repeatIntervalUnit: task.repeatIntervalUnit,
+          repeatEndDate: task.repeatEndDate,
+          reminder1: task.reminder1,
+          reminder2: task.reminder2,
+          reminder3: task.reminder3,
+          reminder4: task.reminder4,
+        }
+      });
+    }
+    deleteMutation.mutate(taskId);
+  };
 
   const syncAllCalendarMutation = useMutation({
     mutationFn: async () => {
@@ -5802,7 +5999,18 @@ export default function Dashboard() {
         console.error('Failed to upload dropped file:', error);
       }
     } else if (draggedTask) {
-      // Moving an existing task - include minutes for half-hour precision
+      const oldDueDate = draggedTask.dueDate;
+      const oldStartTime = draggedTask.eventStartTime;
+      pushUndo({
+        type: 'move',
+        description: `Moved "${draggedTask.title}"`,
+        data: {
+          taskId: draggedTask.id,
+          taskTitle: draggedTask.title,
+          oldFields: { dueDate: oldDueDate, eventStartTime: oldStartTime },
+          newFields: { dueDate: day.toISOString(), eventStartTime: `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}` }
+        }
+      });
       updateTaskTimeMutation.mutate({ id: draggedTask.id, newDate: day, newHour: hour, newMinutes: minutes });
     }
     
@@ -5829,7 +6037,16 @@ export default function Dashboard() {
       const weekEndDay = new Date(weekDays[5]); // Friday is always index 5
       weekEndDay.setHours(23, 59, 59, 0);
       
-      // Update the task's courseName, startDate to beginning and dueDate to Friday
+      pushUndo({
+        type: 'move',
+        description: `Moved "${draggedTask.title}" to ${fullCourseName}`,
+        data: {
+          taskId: draggedTask.id,
+          taskTitle: draggedTask.title,
+          oldFields: { courseName: draggedTask.courseName, startDate: draggedTask.startDate, dueDate: draggedTask.dueDate },
+          newFields: { courseName: fullCourseName, startDate: weekStartDay.toISOString(), dueDate: weekEndDay.toISOString() }
+        }
+      });
       updateTaskFieldsMutation.mutate({
         id: draggedTask.id,
         courseName: fullCourseName,
@@ -9464,8 +9681,8 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Undo Complete / Undo Settings */}
-          {completedTaskHistory.length > 0 || previousSavedColorSettings ? (
+          {/* Undo Button */}
+          {undoStack.length > 0 ? (
             <div 
               style={{ 
                 width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
@@ -9476,26 +9693,9 @@ export default function Dashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
               }}
               className="pill-button-hover"
-              onClick={() => {
-                triggerButtonGlow('undo');
-                if (completedTaskHistory.length > 0) {
-                  handleUndoComplete();
-                } else if (previousSavedColorSettings) {
-                  setRedoColorSettings({...colorSettings});
-                  setRedoBlinkSettings({...blinkSettings});
-                  setColorSettings(previousSavedColorSettings);
-                  if (previousSavedBlinkSettings) setBlinkSettings(previousSavedBlinkSettings);
-                  localStorage.setItem('colorSettings', JSON.stringify(previousSavedColorSettings));
-                  if (previousSavedBlinkSettings) localStorage.setItem('blinkSettings', JSON.stringify(previousSavedBlinkSettings));
-                  setOriginalColorSettings({...previousSavedColorSettings});
-                  if (previousSavedBlinkSettings) setOriginalBlinkSettings({...previousSavedBlinkSettings});
-                  setPreviousSavedColorSettings(null);
-                  setPreviousSavedBlinkSettings(null);
-                  toast({ title: "Settings reverted", description: "Your previous settings have been restored." });
-                }
-              }}
-              data-testid="button-undo-complete"
-              title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : 'Undo last settings save'}
+              onClick={() => { triggerButtonGlow('undo'); handleUndo(); }}
+              data-testid="button-undo"
+              title={`Undo: ${undoStack[0]?.description || ''} (${undoStack.length} available)`}
             >
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
@@ -9510,14 +9710,14 @@ export default function Dashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5
               }}
               data-testid="button-undo-disabled"
-              title="No task to undo"
+              title="Nothing to undo"
             >
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
           )}
 
           {/* Redo Button */}
-          {redoTaskHistory.length > 0 || redoColorSettings ? (
+          {redoStack.length > 0 ? (
             <div 
               style={{ 
                 width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
@@ -9528,26 +9728,9 @@ export default function Dashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
               }}
               className="pill-button-hover"
-              onClick={() => {
-                triggerButtonGlow('redo');
-                if (redoTaskHistory.length > 0) {
-                  handleRedoComplete();
-                } else if (redoColorSettings) {
-                  setPreviousSavedColorSettings({...colorSettings});
-                  setPreviousSavedBlinkSettings({...blinkSettings});
-                  setColorSettings(redoColorSettings);
-                  if (redoBlinkSettings) setBlinkSettings(redoBlinkSettings);
-                  localStorage.setItem('colorSettings', JSON.stringify(redoColorSettings));
-                  if (redoBlinkSettings) localStorage.setItem('blinkSettings', JSON.stringify(redoBlinkSettings));
-                  setOriginalColorSettings({...redoColorSettings});
-                  if (redoBlinkSettings) setOriginalBlinkSettings({...redoBlinkSettings});
-                  setRedoColorSettings(null);
-                  setRedoBlinkSettings(null);
-                  toast({ title: "Settings re-applied", description: "Your settings have been restored." });
-                }
-              }}
+              onClick={() => { triggerButtonGlow('redo'); handleRedo(); }}
               data-testid="button-redo"
-              title={redoTaskHistory.length > 0 ? `Redo last completion (${redoTaskHistory.length} available)` : 'Redo last settings change'}
+              title={`Redo: ${redoStack[0]?.description || ''} (${redoStack.length} available)`}
             >
               <Redo2 className="h-[18px] w-[18px] text-white" />
             </div>
@@ -11442,7 +11625,14 @@ export default function Dashboard() {
                 {/* Delete button */}
                 <button
                   className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-red-600"
-                  onClick={() => deleteStickyNoteMutation.mutate(note.id)}
+                  onClick={() => {
+                    pushUndo({
+                      type: 'sticky-delete',
+                      description: `Deleted sticky note`,
+                      data: { noteId: note.id, content: note.content, title: note.title, color: note.color, customColor: note.customColor, posX: note.posX, posY: note.posY, width: note.width, height: note.height, isMinimized: note.isMinimized, zIndex: note.zIndex, taskId: note.taskId, projectId: note.projectId }
+                    });
+                    deleteStickyNoteMutation.mutate(note.id);
+                  }}
                   onMouseDown={(e) => e.stopPropagation()}
                   onTouchStart={(e) => e.stopPropagation()}
                   onPointerDown={(e) => e.stopPropagation()}
@@ -13978,8 +14168,11 @@ export default function Dashboard() {
                       fontSize: '12px'
                     }}
                     onClick={() => {
-                      setPreviousSavedColorSettings({...originalColorSettings});
-                      setPreviousSavedBlinkSettings({...originalBlinkSettings});
+                      pushUndo({
+                        type: 'settings',
+                        description: 'Changed settings',
+                        data: { oldColor: {...originalColorSettings}, newColor: {...colorSettings}, oldBlink: {...originalBlinkSettings}, newBlink: {...blinkSettings} }
+                      });
                       localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                       localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
                       setOriginalColorSettings({...colorSettings});
@@ -15274,7 +15467,7 @@ export default function Dashboard() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (confirm('Delete this task?')) {
-                                  deleteMutation.mutate(task.id);
+                                  deleteTaskWithUndo(task.id);
                                 }
                               }}
                               className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500"
@@ -15361,7 +15554,7 @@ export default function Dashboard() {
                               <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
                             )}
                             <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
-                            <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteMutation.mutate(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
+                            <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteTaskWithUndo(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
                           </div>
                         </div>
                       );
@@ -15526,7 +15719,7 @@ export default function Dashboard() {
                                 onKeyDown={(e) => {
                                   if (e.key === 'Delete' || e.key === 'Backspace') {
                                     e.preventDefault();
-                                    deleteMutation.mutate(task.id);
+                                    deleteTaskWithUndo(task.id);
                                     setSelectedTaskId(null);
                                   }
                                 }}
@@ -18208,7 +18401,7 @@ export default function Dashboard() {
             <button
               className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-red-500/20 flex items-center gap-2"
               onClick={() => {
-                deleteMutation.mutate(contextMenu.taskId);
+                deleteTaskWithUndo(contextMenu.taskId);
                 setContextMenu(null);
               }}
             >
@@ -18245,7 +18438,7 @@ export default function Dashboard() {
                   className="text-red-400 hover:text-red-300 hover:bg-red-500/20 mr-6"
                   onClick={() => {
                     if (confirm("Are you sure you want to delete this task?")) {
-                      deleteMutation.mutate(editingTask.id);
+                      deleteTaskWithUndo(editingTask.id);
                       setEditingTask(null);
                     }
                   }}
