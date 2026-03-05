@@ -19003,7 +19003,7 @@ function ProfileForm({
           <span className="ml-auto text-[16px] font-semibold text-black self-center" style={{ marginRight: '60px' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
         )}
       </div>
-      <div className="space-y-0">
+      <div className="space-y-0" style={{ marginTop: '-3px' }}>
         <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
         <Input 
           id="firstName" 
