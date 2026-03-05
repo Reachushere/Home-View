@@ -19095,31 +19095,32 @@ function ProfileForm({
           </select>
         </div>
       )}
-      <div className="space-y-0">
-        <Label htmlFor="postalCode" className="text-[10px]">Postal Code / Zip Code</Label>
-        <Input 
-          id="postalCode" 
-          value={postalCode}
-          onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
-          placeholder="e.g. M5V 2T6 or 90210"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-postalcode"
-        />
-        <p className="text-[9px] text-muted-foreground">Used to determine your home location.</p>
-      </div>
-      <div className="space-y-0">
-        <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
-        <Input 
-          id="phoneNumber" 
-          type="tel"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          placeholder="e.g. +1 (416) 555-0123"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-phone"
-        />
+      <div className="flex gap-2">
+        <div className="space-y-0" style={{ width: '12.5%', flexShrink: 0 }}>
+          <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
+          <Input 
+            id="postalCode" 
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
+            placeholder="M5V 2T6"
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-postalcode"
+          />
+        </div>
+        <div className="space-y-0 flex-1">
+          <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
+          <Input 
+            id="phoneNumber" 
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="e.g. +1 (416) 555-0123"
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-phone"
+          />
+        </div>
       </div>
       <div className="space-y-0">
         <Label htmlFor="email" className="text-[10px]">Email</Label>
