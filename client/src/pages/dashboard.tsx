@@ -19071,22 +19071,22 @@ function ProfileForm({
           </select>
         </div>
       </div>
-      <div className="space-y-0">
-        <Label htmlFor="country" className="text-[10px]">Country</Label>
-        <select
-          value={country}
-          onChange={(e) => { setCountry(e.target.value); setProvinceState(''); }}
-          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-          data-testid="select-profile-country"
-        >
-          <option value="">Select your country</option>
-          {COUNTRIES.map(c => (
-            <option key={c.value} value={c.value}>{c.label}</option>
-          ))}
-        </select>
-      </div>
       <div className="flex gap-[6px]">
-        <div className="space-y-0" style={{ width: '25%', flexShrink: 0 }}>
+        <div className="space-y-0 w-1/3">
+          <Label htmlFor="country" className="text-[10px]">Country</Label>
+          <select
+            value={country}
+            onChange={(e) => { setCountry(e.target.value); setProvinceState(''); }}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-country"
+          >
+            <option value="">Select country</option>
+            {COUNTRIES.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-0" style={{ width: '20%', flexShrink: 0 }}>
           <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
           <Input 
             id="postalCode" 
@@ -19105,7 +19105,7 @@ function ProfileForm({
             type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="e.g. +1 (416) 555-0123"
+            placeholder="+1 (416) 555-0123"
             className="!text-black !text-[10px] h-8"
             style={{ fontSize: '10px' }}
             data-testid="input-profile-phone"
