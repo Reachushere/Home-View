@@ -3931,11 +3931,8 @@ export async function registerRoutes(
       console.log(`[Cat Wash TTS] OpenAI audio generation failed: ${e.message}, falling back to Alexa TTS`);
     }
 
-    // Fallback: Use Alexa's built-in TTS with slow prosody and academic formatting
+    // Fallback: Use Alexa's built-in TTS with slow prosody
     const formattedText = text
-      .replace(/^(Chapter|Section|Part|Module|Unit|Lesson)\s+/gm, '<break time="500ms"/>$&')
-      .replace(/\n{2,}/g, ' <break time="400ms"/> ')
-      .replace(/\.\s+/g, '. <break time="200ms"/> ')
       .replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] || c));
     const ssmlChunk = `<speak><prosody rate="75%">${formattedText}</prosody></speak>`;
     const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
