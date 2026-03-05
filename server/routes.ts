@@ -3588,6 +3588,19 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/background-photo/upload", async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      res.json({ uploadURL, objectPath });
+    } catch (error) {
+      console.error("Error generating background photo upload URL:", error);
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+
   // Profile photo upload
   app.post("/api/profile-photo/upload", async (req, res) => {
     try {

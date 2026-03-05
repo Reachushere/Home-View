@@ -1371,6 +1371,7 @@ export default function Dashboard() {
     todayCellBackground: string;
     currentHourRowBackground: string;
     todayCurrentHourCellBackground: string;
+    backgroundPhoto: string | null;
   }>(() => {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
@@ -1384,7 +1385,8 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#160502'
+      todayCurrentHourCellBackground: '#160502',
+      backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
     const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
@@ -6664,11 +6666,11 @@ export default function Dashboard() {
         <div 
           className="absolute inset-0"
           style={{ 
-            backgroundImage: `url(${dashboardBg})`,
-            backgroundSize: '100% 100%',
+            backgroundImage: `url(${colorSettings.backgroundPhoto || dashboardBg})`,
+            backgroundSize: colorSettings.backgroundPhoto ? 'cover' : '100% 100%',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            filter: 'brightness(1.8)',
+            filter: colorSettings.backgroundPhoto ? 'none' : 'brightness(1.8)',
             zIndex: 0
           }}
         />
@@ -13311,6 +13313,55 @@ export default function Dashboard() {
                         >
                           <div className={`w-1.5 h-1.5 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundOverlay ? 'translate-x-3' : 'translate-x-0.5'}`} />
                         </div>
+                      </div>
+                    </div>
+                    
+                    {/* Background Photo Upload */}
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs flex-1">Background Photo</Label>
+                      <div className="flex items-center gap-2">
+                        {colorSettings.backgroundPhoto && (
+                          <div className="flex items-center gap-1.5">
+                            <div 
+                              className="w-8 h-5 rounded border border-white/30 bg-cover bg-center"
+                              style={{ backgroundImage: `url(${colorSettings.backgroundPhoto})` }}
+                            />
+                            <button
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                              onClick={() => setColorSettings(prev => ({ ...prev, backgroundPhoto: null }))}
+                              data-testid="button-remove-background-photo"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                        <label
+                          className="flex items-center gap-1 text-[10px] cursor-pointer bg-white/10 hover:bg-white/20 rounded px-2 py-1 transition-colors"
+                          data-testid="button-upload-background-photo"
+                        >
+                          <Upload className="w-3 h-3" />
+                          <span>{colorSettings.backgroundPhoto ? 'Change' : 'Upload'}</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const resp = await fetch('/api/background-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+                                const { uploadURL, objectPath } = await resp.json();
+                                await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                                const servedUrl = `/objects/${objectPath.split('/').slice(1).join('/')}`;
+                                setColorSettings(prev => ({ ...prev, backgroundPhoto: servedUrl }));
+                              } catch (err) {
+                                console.error('Background photo upload failed:', err);
+                              }
+                              e.target.value = '';
+                            }}
+                            data-testid="input-background-photo-file"
+                          />
+                        </label>
                       </div>
                     </div>
                     
