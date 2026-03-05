@@ -19003,41 +19003,31 @@ function ProfileForm({
           <span className="ml-auto text-[16px] font-semibold text-black self-center" style={{ marginRight: '60px' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
         )}
       </div>
-      <div className="space-y-0" style={{ marginTop: '-1px' }}>
-        <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
-        <Input 
-          id="firstName" 
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="Enter your first name"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-firstname"
-        />
-      </div>
-      <div className="space-y-0">
-        <Label htmlFor="lastName" className="text-[10px]">Last Name</Label>
-        <Input 
-          id="lastName" 
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="Enter your last name"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-lastname"
-        />
-      </div>
-      <div className="space-y-0">
-        <Label htmlFor="birthdate" className="text-[10px]">Birthdate</Label>
-        <Input 
-          id="birthdate" 
-          type="date"
-          value={birthdate}
-          onChange={(e) => setBirthdate(e.target.value)}
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-birthdate"
-        />
+      <div className="flex gap-[6px]" style={{ marginTop: '-1px' }}>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
+          <Input 
+            id="firstName" 
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="First name"
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-firstname"
+          />
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="lastName" className="text-[10px]">Last Name</Label>
+          <Input 
+            id="lastName" 
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Last name"
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-lastname"
+          />
+        </div>
       </div>
       <div className="space-y-0">
         <Label htmlFor="address" className="text-[10px]">Address</Label>
@@ -19135,18 +19125,32 @@ function ProfileForm({
           data-testid="input-profile-email"
         />
       </div>
-      <div className="space-y-0">
-        <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
-        <select
-          value={timezone}
-          onChange={(e) => setTimezone(e.target.value)}
-          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-          data-testid="select-profile-timezone"
-        >
-          {timezones.map(tz => (
-            <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
-          ))}
-        </select>
+      <div className="flex gap-[6px]">
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="birthdate" className="text-[10px]">Birthdate</Label>
+          <Input 
+            id="birthdate" 
+            type="date"
+            value={birthdate}
+            onChange={(e) => setBirthdate(e.target.value)}
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-birthdate"
+          />
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
+          <select
+            value={timezone}
+            onChange={(e) => setTimezone(e.target.value)}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-timezone"
+          >
+            {timezones.map(tz => (
+              <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="flex justify-end">
