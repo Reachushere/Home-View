@@ -19051,19 +19051,35 @@ function ProfileForm({
           data-testid="input-profile-address"
         />
       </div>
-      <div className="space-y-0">
-        <Label htmlFor="location" className="text-[10px]">City</Label>
-        <select
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-          data-testid="select-profile-location"
-        >
-          <option value="">Select your city</option>
-          {TRAVEL_CITIES.map(c => (
-            <option key={c.label} value={c.label}>{c.label}</option>
-          ))}
-        </select>
+      <div className="flex gap-[6px]">
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="location" className="text-[10px]">City</Label>
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-location"
+          >
+            <option value="">Select your city</option>
+            {TRAVEL_CITIES.map(c => (
+              <option key={c.label} value={c.label}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="provinceState" className="text-[10px]">{regionLabel}</Label>
+          <select
+            value={provinceState}
+            onChange={(e) => setProvinceState(e.target.value)}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-province-state"
+          >
+            <option value="">Select {regionLabel.toLowerCase()}</option>
+            {regionOptions.map(r => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="space-y-0">
         <Label htmlFor="country" className="text-[10px]">Country</Label>
@@ -19079,23 +19095,7 @@ function ProfileForm({
           ))}
         </select>
       </div>
-      {regionOptions.length > 0 && (
-        <div className="space-y-0">
-          <Label htmlFor="provinceState" className="text-[10px]">{regionLabel}</Label>
-          <select
-            value={provinceState}
-            onChange={(e) => setProvinceState(e.target.value)}
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-            data-testid="select-profile-province-state"
-          >
-            <option value="">Select {regionLabel.toLowerCase()}</option>
-            {regionOptions.map(r => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
-        </div>
-      )}
-      <div className="flex gap-2">
+      <div className="flex gap-[6px]">
         <div className="space-y-0" style={{ width: '12.5%', flexShrink: 0 }}>
           <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
           <Input 
