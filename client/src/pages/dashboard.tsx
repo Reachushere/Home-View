@@ -1727,9 +1727,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '' };
+    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1861,7 +1861,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -18818,9 +18818,9 @@ function ProfileForm({
   profilePhotoUrl,
   onProfilePhotoChange
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string }) => void;
   onCancel: () => void;
   profilePhotoUrl: string | null;
   onProfilePhotoChange: (url: string | null) => void;
