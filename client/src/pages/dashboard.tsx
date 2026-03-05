@@ -19003,7 +19003,7 @@ function ProfileForm({
           <span className="ml-auto text-[16px] font-semibold text-black self-center" style={{ marginRight: '60px' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
         )}
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
         <Input 
           id="firstName" 
@@ -19015,7 +19015,7 @@ function ProfileForm({
           data-testid="input-profile-firstname"
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="lastName" className="text-[10px]">Last Name</Label>
         <Input 
           id="lastName" 
@@ -19027,7 +19027,7 @@ function ProfileForm({
           data-testid="input-profile-lastname"
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="birthdate" className="text-[10px]">Birthdate</Label>
         <Input 
           id="birthdate" 
@@ -19039,7 +19039,7 @@ function ProfileForm({
           data-testid="input-profile-birthdate"
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="address" className="text-[10px]">Address</Label>
         <Input 
           id="address" 
@@ -19051,7 +19051,7 @@ function ProfileForm({
           data-testid="input-profile-address"
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="location" className="text-[10px]">City</Label>
         <select
           value={location}
@@ -19065,7 +19065,7 @@ function ProfileForm({
           ))}
         </select>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="country" className="text-[10px]">Country</Label>
         <select
           value={country}
@@ -19080,7 +19080,7 @@ function ProfileForm({
         </select>
       </div>
       {regionOptions.length > 0 && (
-        <div className="space-y-1">
+        <div className="space-y-0">
           <Label htmlFor="provinceState" className="text-[10px]">{regionLabel}</Label>
           <select
             value={provinceState}
@@ -19095,7 +19095,7 @@ function ProfileForm({
           </select>
         </div>
       )}
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="postalCode" className="text-[10px]">Postal Code / Zip Code</Label>
         <Input 
           id="postalCode" 
@@ -19108,7 +19108,7 @@ function ProfileForm({
         />
         <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
         <Input 
           id="phoneNumber" 
@@ -19121,7 +19121,7 @@ function ProfileForm({
           data-testid="input-profile-phone"
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="email" className="text-[10px]">Email</Label>
         <Input 
           id="email" 
@@ -19134,7 +19134,7 @@ function ProfileForm({
           data-testid="input-profile-email"
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
         <select
           value={timezone}
