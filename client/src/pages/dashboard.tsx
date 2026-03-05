@@ -19163,8 +19163,8 @@ function ProfileForm({
             value={allergies}
             onChange={(e) => setAllergies(e.target.value)}
             placeholder="e.g. Peanuts, Penicillin"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
             data-testid="input-profile-allergies"
           />
         </div>
@@ -19177,8 +19177,8 @@ function ProfileForm({
             value={emergencyContactName}
             onChange={(e) => setEmergencyContactName(e.target.value)}
             placeholder="Contact name"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
             data-testid="input-profile-emergency-name"
           />
         </div>
@@ -19190,8 +19190,8 @@ function ProfileForm({
             value={emergencyContactPhone}
             onChange={(e) => setEmergencyContactPhone(e.target.value)}
             placeholder="+1 (416) 555-0123"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
             data-testid="input-profile-emergency-phone"
           />
         </div>
