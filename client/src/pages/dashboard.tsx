@@ -19184,7 +19184,7 @@ function ProfileForm({
         </div>
       </div>
 
-      <div className="flex justify-end" style={{ marginTop: '8px' }}>
+      <div className="flex justify-end" style={{ marginTop: '16px' }}>
         <Button 
           type="submit" 
           variant="outline"
