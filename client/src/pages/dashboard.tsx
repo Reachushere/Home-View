@@ -19086,7 +19086,7 @@ function ProfileForm({
         </select>
       </div>
       <div className="flex gap-[6px]">
-        <div className="space-y-0" style={{ width: '12.5%', flexShrink: 0 }}>
+        <div className="space-y-0" style={{ width: '25%', flexShrink: 0 }}>
           <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
           <Input 
             id="postalCode" 
