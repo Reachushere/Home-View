@@ -100,6 +100,7 @@ import {
   VolumeX,
   CheckSquare,
   Undo2,
+  Redo2,
   Radio,
   Minus,
   ListChecks,
@@ -1409,6 +1410,9 @@ export default function Dashboard() {
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
   const [previousSavedColorSettings, setPreviousSavedColorSettings] = useState<typeof colorSettings | null>(null);
   const [previousSavedBlinkSettings, setPreviousSavedBlinkSettings] = useState<typeof blinkSettings | null>(null);
+  const [redoColorSettings, setRedoColorSettings] = useState<typeof colorSettings | null>(null);
+  const [redoBlinkSettings, setRedoBlinkSettings] = useState<typeof blinkSettings | null>(null);
+  const [redoTaskHistory, setRedoTaskHistory] = useState<number[]>([]);
   
   // Generate a device-specific identifier based on screen dimensions
   const getDeviceId = useCallback(() => {
@@ -5517,9 +5521,23 @@ export default function Dashboard() {
   const handleUndoComplete = () => {
     if (completedTaskHistory.length > 0) {
       const [taskToUndo, ...rest] = completedTaskHistory;
+      setRedoTaskHistory(prev => [taskToUndo, ...prev]);
       completeMutation.mutate({ id: taskToUndo, isCompleted: false });
       setCompletedTaskHistory(rest);
       localStorage.setItem('completedTaskHistory', JSON.stringify(rest));
+    }
+  };
+
+  const handleRedoComplete = () => {
+    if (redoTaskHistory.length > 0) {
+      const [taskToRedo, ...rest] = redoTaskHistory;
+      completeMutation.mutate({ id: taskToRedo, isCompleted: true });
+      setCompletedTaskHistory(prev => {
+        const newHistory = [taskToRedo, ...prev];
+        localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
+        return newHistory;
+      });
+      setRedoTaskHistory(rest);
     }
   };
 
@@ -9463,6 +9481,8 @@ export default function Dashboard() {
                 if (completedTaskHistory.length > 0) {
                   handleUndoComplete();
                 } else if (previousSavedColorSettings) {
+                  setRedoColorSettings({...colorSettings});
+                  setRedoBlinkSettings({...blinkSettings});
                   setColorSettings(previousSavedColorSettings);
                   if (previousSavedBlinkSettings) setBlinkSettings(previousSavedBlinkSettings);
                   localStorage.setItem('colorSettings', JSON.stringify(previousSavedColorSettings));
@@ -9489,10 +9509,62 @@ export default function Dashboard() {
                 boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.05)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5
               }}
-              data-testid="button-undo-complete"
+              data-testid="button-undo-disabled"
               title="No task to undo"
             >
               <Undo2 className="h-[18px] w-[18px] text-white" />
+            </div>
+          )}
+
+          {/* Redo Button */}
+          {redoTaskHistory.length > 0 || redoColorSettings ? (
+            <div 
+              style={{ 
+                width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+                backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+              className="pill-button-hover"
+              onClick={() => {
+                triggerButtonGlow('redo');
+                if (redoTaskHistory.length > 0) {
+                  handleRedoComplete();
+                } else if (redoColorSettings) {
+                  setPreviousSavedColorSettings({...colorSettings});
+                  setPreviousSavedBlinkSettings({...blinkSettings});
+                  setColorSettings(redoColorSettings);
+                  if (redoBlinkSettings) setBlinkSettings(redoBlinkSettings);
+                  localStorage.setItem('colorSettings', JSON.stringify(redoColorSettings));
+                  if (redoBlinkSettings) localStorage.setItem('blinkSettings', JSON.stringify(redoBlinkSettings));
+                  setOriginalColorSettings({...redoColorSettings});
+                  if (redoBlinkSettings) setOriginalBlinkSettings({...redoBlinkSettings});
+                  setRedoColorSettings(null);
+                  setRedoBlinkSettings(null);
+                  toast({ title: "Settings re-applied", description: "Your settings have been restored." });
+                }
+              }}
+              data-testid="button-redo"
+              title={redoTaskHistory.length > 0 ? `Redo last completion (${redoTaskHistory.length} available)` : 'Redo last settings change'}
+            >
+              <Redo2 className="h-[18px] w-[18px] text-white" />
+            </div>
+          ) : (
+            <div 
+              style={{ 
+                marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', zIndex: 100,
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)',
+                backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+                border: '1.5px solid rgba(255,255,255,0.2)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5
+              }}
+              data-testid="button-redo-disabled"
+              title="Nothing to redo"
+            >
+              <Redo2 className="h-[18px] w-[18px] text-white" />
             </div>
           )}
 
