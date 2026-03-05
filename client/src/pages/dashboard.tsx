@@ -19117,19 +19117,6 @@ function ProfileForm({
       </div>
       <div className="flex gap-[6px]">
         <div className="space-y-0 w-1/2">
-          <Label htmlFor="email" className="text-[10px]">Email</Label>
-          <Input 
-            id="email" 
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="e.g. name@example.com"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
-            data-testid="input-profile-email"
-          />
-        </div>
-        <div className="space-y-0 w-1/2">
           <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
           <Input 
             id="phoneNumber" 
@@ -19140,6 +19127,19 @@ function ProfileForm({
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-phone"
+          />
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="email" className="text-[10px]">Email</Label>
+          <Input 
+            id="email" 
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="e.g. name@example.com"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-email"
           />
         </div>
       </div>
