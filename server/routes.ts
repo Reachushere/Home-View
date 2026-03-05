@@ -4047,12 +4047,25 @@ export async function registerRoutes(
       }
 
       if (catWashPlaybackActive && catWashPlaybackState) {
-        console.log(`[Cat Wash] Already playing: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} - skipping`);
-        return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+        // Check for stale state: if playback started more than 5 minutes ago and chunk hasn't
+        // advanced, the tablet likely never loaded the PDF reader (devices failed to open).
+        // In that case, treat it as not playing and allow the new trigger.
+        const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
+        const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
+        const likelyStale = msSinceStart > 5 * 60 * 1000 && chunkStillAtStart;
+
+        if (likelyStale) {
+          console.log(`[Cat Wash] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
+          catWashPlaybackActive = false;
+          catWashPlaybackStartedAt = null;
+          catWashPlaybackState = null;
+        } else {
+          console.log(`[Cat Wash] Already playing: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} - skipping`);
+          return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+        }
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const speakerEntity = "media_player.echo_cat_left_am";
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
@@ -4114,12 +4127,7 @@ export async function registerRoutes(
 
       if (orderedFiles.length === 0) {
         console.log("[Cat Wash] No files to play - all complete or no files for week " + currentWeekNumber);
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
-        });
-        return res.json({ action: "radio", message: `All week ${currentWeekNumber} readings complete` });
+        return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
       }
 
       const nextFile = orderedFiles[0];
@@ -4313,8 +4321,19 @@ export async function registerRoutes(
       }
 
       if (catWashPlaybackActive && catWashPlaybackState) {
-        console.log(`[Cat Lights] Already playing: "${catWashPlaybackState.fileName}" - skipping`);
-        return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+        const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
+        const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
+        const likelyStale = msSinceStart > 5 * 60 * 1000 && chunkStillAtStart;
+
+        if (likelyStale) {
+          console.log(`[Cat Lights] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
+          catWashPlaybackActive = false;
+          catWashPlaybackStartedAt = null;
+          catWashPlaybackState = null;
+        } else {
+          console.log(`[Cat Lights] Already playing: "${catWashPlaybackState.fileName}" - skipping`);
+          return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+        }
       }
 
       const today = new Date();
@@ -4595,7 +4614,7 @@ export async function registerRoutes(
       // Re-open on tablets with the new speaker parameter
       const tabletDevices = [
         { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: null as string | null },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: 'media_player.tablet_catn' },
       ];
 
       const deviceResults: Record<string, string> = {};
@@ -4603,48 +4622,25 @@ export async function registerRoutes(
       await Promise.all(tabletDevices.map(async (device) => {
         const methods: string[] = [];
 
-        // Try command_activity first (most reliable)
-        for (const app of device.mobileApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: "command_activity",
-                data: { intent_action: "android.intent.action.VIEW", intent_uri: newReaderUrl }
-              }),
-            });
-            if (resp.ok) { methods.push(`${app}:command_activity`); break; }
-          } catch {}
-        }
-
-        // broadcast_intent fallback
-        if (methods.length === 0) {
-          for (const app of device.mobileApps) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  message: "command_broadcast_intent",
-                  data: { intent_action: "android.intent.action.VIEW", intent_uri: newReaderUrl, intent_package_name: "com.amazon.cloud9" }
-                }),
-              });
-              if (resp.ok) { methods.push(`${app}:broadcast_intent`); break; }
-            } catch {}
-          }
-        }
-
-        // play_media fallback
-        if (methods.length === 0 && device.mediaPlayer) {
+        // Method 1: play_media (most reliable - opens URL on tablet media player)
+        if (device.mediaPlayer) {
           try {
             const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: newReaderUrl, media_content_type: 'url' }),
             });
+            console.log(`[Cat Wash Dry] ${device.name} play_media (${device.mediaPlayer}): ${resp.status}`);
             if (resp.ok) methods.push('play_media');
-          } catch {}
+          } catch (e: any) {
+            console.log(`[Cat Wash Dry] ${device.name} play_media failed: ${e.message}`);
+          }
+        }
+
+        // Method 2: command_activity/broadcast_intent/webview via mobile app (fallback)
+        if (methods.length === 0) {
+          const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, newReaderUrl, device.name);
+          if (opened) methods.push('silk_launch');
         }
 
         deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
