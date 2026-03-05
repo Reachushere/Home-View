@@ -9661,7 +9661,7 @@ export default function Dashboard() {
                 <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="!animate-none">
+            <DropdownMenuContent align="start" noAnimation>
               <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => setIsProfileDialogOpen(true)}>
                 <User className="h-3.5 w-3.5 mr-2" />
                 Profile Settings
