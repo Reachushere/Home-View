@@ -3692,6 +3692,7 @@ export async function registerRoutes(
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
+  let catWashPlaybackStartedAt: Date | null = null;
   let catWashPlaybackState: {
     fileId: number;
     fileName: string;
@@ -4152,31 +4153,13 @@ export async function registerRoutes(
       // Fire Tablets
       const fireTablets = [
         { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: null as string | null },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: 'media_player.tablet_catn' },
       ];
 
       await Promise.all(fireTablets.map(async (device) => {
         const methods: string[] = [];
 
-        // Use Silk browser launch to open PDF reader (avoids Browser Mod)
-        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-        if (opened) methods.push('silk_launch');
-
-        for (const app of device.mobileApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                title: "📖 Cat Wash Reading",
-                message: `Now playing: ${fileName}`,
-                data: { clickAction: readerUrl, url: readerUrl, tag: "cat-wash-reader", importance: "high", channel: "cat-wash", sticky: true }
-              }),
-            });
-            if (resp.ok) { methods.push(`${app}:notification`); break; }
-          } catch {}
-        }
-
+        // Method 1: play_media (most reliable - opens URL on media player entity)
         if (device.mediaPlayer) {
           try {
             const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
@@ -4184,8 +4167,35 @@ export async function registerRoutes(
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: readerUrl, media_content_type: 'url' }),
             });
+            console.log(`[Cat Wash] ${device.name} play_media (${device.mediaPlayer}): ${resp.status}`);
             if (resp.ok) methods.push('play_media');
-          } catch {}
+          } catch (e: any) {
+            console.log(`[Cat Wash] ${device.name} play_media failed: ${e.message}`);
+          }
+        }
+
+        // Method 2: command_activity/broadcast_intent/webview via mobile app (fallback)
+        if (methods.length === 0) {
+          const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
+          if (opened) methods.push('silk_launch');
+        }
+
+        // Method 3: notification (last resort)
+        if (methods.length === 0) {
+          for (const app of device.mobileApps) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: "📖 Cat Wash Reading",
+                  message: `Now playing: ${fileName}`,
+                  data: { clickAction: readerUrl, url: readerUrl, tag: "cat-wash-reader", importance: "high", channel: "cat-wash", sticky: true }
+                }),
+              });
+              if (resp.ok) { methods.push(`${app}:notification`); break; }
+            } catch {}
+          }
         }
 
         deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
@@ -4237,6 +4247,7 @@ export async function registerRoutes(
         console.log("[Cat Wash] Stopping previous playback session");
       }
       catWashPlaybackActive = true;
+      catWashPlaybackStartedAt = new Date();
       catWashPlaybackState = {
         fileId: nextFile.id,
         fileName,
@@ -4359,6 +4370,7 @@ export async function registerRoutes(
         console.log("[Cat Lights] Stopping previous playback session");
       }
       catWashPlaybackActive = true;
+      catWashPlaybackStartedAt = new Date();
       catWashPlaybackState = {
         fileId: cppaModule.id,
         fileName,
@@ -4376,30 +4388,13 @@ export async function registerRoutes(
       const deviceResults: Record<string, string> = {};
       const fireTablets = [
         { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: null as string | null },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: 'media_player.tablet_catn' },
       ];
 
       await Promise.all(fireTablets.map(async (device) => {
         const methods: string[] = [];
 
-        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-        if (opened) methods.push('silk_launch');
-
-        for (const app of device.mobileApps) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                title: "📖 Cat Lights Reading",
-                message: `Now playing: ${fileName}`,
-                data: { clickAction: readerUrl, url: readerUrl, tag: "cat-lights-reader", importance: "high", channel: "cat-lights", sticky: true }
-              }),
-            });
-            if (resp.ok) { methods.push(`${app}:notification`); break; }
-          } catch {}
-        }
-
+        // Method 1: play_media (most reliable - opens URL on media player entity)
         if (device.mediaPlayer) {
           try {
             const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
@@ -4407,8 +4402,35 @@ export async function registerRoutes(
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: readerUrl, media_content_type: 'url' }),
             });
+            console.log(`[Cat Lights] ${device.name} play_media (${device.mediaPlayer}): ${resp.status}`);
             if (resp.ok) methods.push('play_media');
-          } catch {}
+          } catch (e: any) {
+            console.log(`[Cat Lights] ${device.name} play_media failed: ${e.message}`);
+          }
+        }
+
+        // Method 2: command_activity/broadcast_intent/webview via mobile app (fallback)
+        if (methods.length === 0) {
+          const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
+          if (opened) methods.push('silk_launch');
+        }
+
+        // Method 3: notification (last resort)
+        if (methods.length === 0) {
+          for (const app of device.mobileApps) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: "📖 Cat Lights Reading",
+                  message: `Now playing: ${fileName}`,
+                  data: { clickAction: readerUrl, url: readerUrl, tag: "cat-lights-reader", importance: "high", channel: "cat-lights", sticky: true }
+                }),
+              });
+              if (resp.ok) { methods.push(`${app}:notification`); break; }
+            } catch {}
+          }
         }
 
         deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
@@ -4473,6 +4495,15 @@ export async function registerRoutes(
         return res.json({ action: "ignored", reason: `Door state ${doorState} is not open` });
       }
 
+      // Race condition guard: if cat-lights/cat-wash just started within last 10 seconds, wait before stopping
+      if (catWashPlaybackActive && catWashPlaybackStartedAt) {
+        const msSinceStart = Date.now() - catWashPlaybackStartedAt.getTime();
+        if (msSinceStart < 10000) {
+          console.log(`[Cat Door] Playback started ${msSinceStart}ms ago (< 10s) - likely race condition with cat-lights/cat-wash, ignoring door trigger`);
+          return res.json({ action: "ignored", reason: `Playback just started ${msSinceStart}ms ago, likely race condition` });
+        }
+      }
+
       const stopped: string[] = [];
 
       if (catWashPlaybackActive && catWashPlaybackState) {
@@ -4481,6 +4512,7 @@ export async function registerRoutes(
         console.log(`[Cat Door] Stopping playback - file ${savedFileId} (${catWashPlaybackState.fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
         stopped.push(`playback:${catWashPlaybackState.fileName}`);
         catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
         catWashPlaybackState = null;
       }
 
@@ -4728,6 +4760,7 @@ export async function registerRoutes(
         return res.json({ nextFile: { id: nextFile.id, name: nextFileName, readerUrl: nextReaderUrl } });
       } else {
         catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
         catWashPlaybackState = null;
         console.log("[Cat Wash] All files complete");
         return res.json({ allComplete: true });
@@ -4748,6 +4781,7 @@ export async function registerRoutes(
       stopped.push("catWashPlayback");
     }
     catWashPlaybackActive = false;
+    catWashPlaybackStartedAt = null;
     catWashPlaybackState = null;
 
     if (currentTTSSession) {
