@@ -2924,13 +2924,31 @@ export async function registerRoutes(
       const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
 
       const cleanedText = cleanTextForTTS(text);
-      const ttsResult = await sendCatWashTTSToEcho(cleanedText, haUrl, entityId);
 
-      if (!ttsResult.ok) {
-        return res.status(500).json({ error: "TTS playback failed" });
+      const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const fullAudioUrl = `${appUrl}${audioPath}`;
+
+      const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entity_id: entityId,
+          media_content_id: fullAudioUrl,
+          media_content_type: "music",
+        }),
+      });
+
+      if (!playResp.ok) {
+        const errText = await playResp.text();
+        console.error(`[TTS Speaker] play_media failed: ${playResp.status} ${errText}`);
+        return res.status(500).json({ error: "Failed to play audio on speaker" });
       }
 
-      res.json({ success: true, entityId, method: "openai_audio_or_alexa_tts", estimatedDurationMs: ttsResult.durationMs });
+      const wordCount = cleanedText.split(/\s+/).length;
+      const estimatedDurationMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
+
+      res.json({ success: true, entityId, method: "openai_audio_play_media", estimatedDurationMs });
     } catch (err) {
       console.error("Error playing TTS on speaker:", err);
       res.status(500).json({ error: "Failed to play TTS on speaker" });
@@ -3899,34 +3917,6 @@ export async function registerRoutes(
     }
 
     return { textContent: cleanedContent, chunks };
-  }
-
-  // Helper to send TTS text to Echo via notify/alexa_media using "announce" type.
-  // "announce" is more reliable than "tts" which uses Simon Says skill (often fails).
-  // Uses Alexa's built-in voice at 75% speed for academic documents.
-  async function sendCatWashTTSToEcho(text: string, haUrl: string, speakerEntity: string): Promise<{ ok: boolean; durationMs: number }> {
-    const wordCount = text.split(/\s+/).length;
-    // Escape XML special chars for SSML
-    const escaped = text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] || c));
-    const ssmlMsg = `<speak><prosody rate="75%">${escaped}</prosody></speak>`;
-    // Use "announce" type — does NOT rely on Simon Says skill
-    const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: ssmlMsg,
-        target: [speakerEntity],
-        data: { type: "announce", method: "speak" }
-      }),
-    });
-    if (!resp.ok) {
-      const errorText = await resp.text();
-      console.error(`[Cat Wash TTS] Alexa announce error: ${resp.status} ${errorText}`);
-    }
-    // At 75% speed, ~120 wpm
-    const durationMs = Math.max(5000, (wordCount / 120) * 60 * 1000 + 2000);
-    console.log(`[Cat Wash TTS] Announce sent (${wordCount} words, ~${Math.round(durationMs / 1000)}s)`);
-    return { ok: resp.ok, durationMs };
   }
 
   // Helper to open URL on Fire Tablets via command_activity (launches Silk browser with intent)

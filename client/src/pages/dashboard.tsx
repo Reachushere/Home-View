@@ -9736,6 +9736,73 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
+          {/* Return-from-break reading prompt (dev mode only) */}
+          {import.meta.env.DEV && (
+            <Dialog open={showReturnReadingPrompt} onOpenChange={setShowReturnReadingPrompt}>
+              <DialogContent className="max-w-[340px] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%' }}>
+                <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-3.5 w-3.5 text-blue-400" />
+                    <h2 className="text-xs font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
+                      WELCOME BACK
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setShowReturnReadingPrompt(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-return-prompt"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="px-4 py-3 space-y-3">
+                  <p className="text-[10px] text-white/80">
+                    You have {returnReadingFiles.length} outstanding PDF{returnReadingFiles.length !== 1 ? 's' : ''} to listen to. Play one on the Kitchen Echo Studio?
+                  </p>
+                  <Select
+                    value={selectedReturnFile?.toString() || ''}
+                    onValueChange={(v) => setSelectedReturnFile(parseInt(v, 10))}
+                  >
+                    <SelectTrigger className="h-7 text-[10px] bg-black/30 border-white/20" data-testid="select-return-file">
+                      <SelectValue placeholder="Select a PDF..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-white/20 text-white max-h-[200px]">
+                      {returnReadingFiles.map((f) => (
+                        <SelectItem key={f.id} value={f.id.toString()} className="text-[10px] text-white">
+                          {f.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex gap-2 justify-end pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-[9px] border-white/20 hover:bg-white/10"
+                      onClick={() => setShowReturnReadingPrompt(false)}
+                      data-testid="button-return-no"
+                    >
+                      Not now
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
+                      onClick={() => {
+                        if (selectedReturnFile) {
+                          window.open(`/pdf-reader/${selectedReturnFile}?autoplay=true&speaker=${encodeURIComponent('media_player.echo_kitchen_studio_black_am')}`, '_blank');
+                        }
+                        setShowReturnReadingPrompt(false);
+                      }}
+                      data-testid="button-return-play"
+                    >
+                      Play on Kitchen Echo
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
           {/* Share Link Dialog */}
           <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
             <DialogContent className="max-w-[360px] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden">
