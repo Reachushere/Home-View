@@ -13337,55 +13337,55 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Background Photo Upload */}
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <Label className="text-xs flex-1">Background Photo</Label>
-                        <div className="flex items-center gap-2">
-                          {colorSettings.backgroundPhoto && (
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs flex-1">Background Photo</Label>
+                      <div className="flex items-center gap-2">
+                        {colorSettings.backgroundPhoto && (
+                          <>
+                            <div 
+                              className="w-10 h-6 rounded border border-white/30 bg-cover bg-center flex-shrink-0"
+                              style={{ backgroundImage: `url(${colorSettings.backgroundPhoto})` }}
+                              data-testid="preview-background-photo"
+                            />
                             <button
                               className="flex items-center gap-1 text-[10px] text-red-400 hover:text-red-300 transition-colors"
                               onClick={() => setColorSettings(prev => ({ ...prev, backgroundPhoto: null }))}
                               data-testid="button-remove-background-photo"
                             >
                               <X className="w-3 h-3" />
-                              <span>Remove</span>
                             </button>
-                          )}
-                          <label
-                            className="flex items-center gap-1 text-[10px] cursor-pointer bg-white/10 hover:bg-white/20 rounded px-2 py-1 transition-colors"
-                            data-testid="button-upload-background-photo"
-                          >
-                            <Upload className="w-3 h-3" />
-                            <span>{colorSettings.backgroundPhoto ? 'Change' : 'Upload'}</span>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                try {
-                                  const resp = await fetch('/api/background-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-                                  const { uploadURL, objectPath } = await resp.json();
-                                  await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
-                                  setColorSettings(prev => ({ ...prev, backgroundPhoto: objectPath }));
-                                } catch (err) {
-                                  console.error('Background photo upload failed:', err);
-                                }
-                                e.target.value = '';
-                              }}
-                              data-testid="input-background-photo-file"
-                            />
-                          </label>
-                        </div>
+                          </>
+                        )}
+                        <label
+                          className="flex items-center gap-1 text-[10px] cursor-pointer bg-white/10 hover:bg-white/20 rounded px-2 py-1 transition-colors"
+                          data-testid="button-upload-background-photo"
+                        >
+                          <Upload className="w-3 h-3" />
+                          <span>{colorSettings.backgroundPhoto ? 'Change' : 'Upload'}</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const resp = await fetch('/api/background-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+                                const { uploadURL, objectPath } = await resp.json();
+                                const putResp = await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                                if (!putResp.ok) throw new Error(`Upload failed: ${putResp.status}`);
+                                setColorSettings(prev => ({ ...prev, backgroundPhoto: objectPath }));
+                              } catch (err) {
+                                console.error('Background photo upload failed:', err);
+                                const localUrl = URL.createObjectURL(file);
+                                setColorSettings(prev => ({ ...prev, backgroundPhoto: localUrl }));
+                              }
+                              e.target.value = '';
+                            }}
+                            data-testid="input-background-photo-file"
+                          />
+                        </label>
                       </div>
-                      {colorSettings.backgroundPhoto && (
-                        <div 
-                          className="w-full h-16 rounded border border-white/20 bg-cover bg-center"
-                          style={{ backgroundImage: `url(${colorSettings.backgroundPhoto})` }}
-                          data-testid="preview-background-photo"
-                        />
-                      )}
                     </div>
                     
                     {/* Main Background Colour - always visible */}
