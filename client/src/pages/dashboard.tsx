@@ -13494,7 +13494,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Layout Settings - in left column */}
-                <div className="border rounded-lg p-3 space-y-3">
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-5px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Layout Settings</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Adjust spacing and reset column widths</span>
