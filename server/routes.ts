@@ -4272,18 +4272,10 @@ export async function registerRoutes(
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
-      // === LIGHT TURNED OFF → Stop playback and save progress ===
+      // === LIGHT TURNED OFF → Playback continues (door sensor handles stop) ===
       if (lightState === 'off') {
-        if (catWashPlaybackActive && catWashPlaybackState) {
-          const savedFileId = catWashPlaybackState.fileId;
-          const savedChunk = catWashPlaybackState.chunkIndex;
-          console.log(`[Cat Lights] Light off - stopping playback. File ${savedFileId}, chunk ${savedChunk}`);
-          catWashPlaybackActive = false;
-          catWashPlaybackState = null;
-        } else {
-          console.log("[Cat Lights] Light off - no active playback to stop");
-        }
-        return res.json({ action: "stopped" });
+        console.log("[Cat Lights] Light off - playback continues (stop is handled by door sensor)");
+        return res.json({ action: "ignored", reason: "Light off does not stop playback; door sensor does" });
       }
 
       // === LIGHT TURNED ON → Check if CPPA module needs playing ===
@@ -4441,6 +4433,72 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("[Cat Lights] Error:", error);
       res.status(500).json({ error: "Failed to handle cat lights webhook", details: error.message });
+    }
+  });
+
+  // POST /api/webhook/cat-door - Triggered when binary_sensor.door_sensor_cat opens
+  // Stops cat lights playback and saves progress when someone opens the cat washroom door.
+  app.post("/api/webhook/cat-door", async (req, res) => {
+    try {
+      const doorState = req.body?.state || req.body?.new_state?.state || 'unknown';
+      console.log(`[Cat Door] ====== WEBHOOK TRIGGERED ======`);
+      console.log(`[Cat Door] Timestamp: ${new Date().toISOString()}`);
+      console.log(`[Cat Door] Door state: ${doorState}`);
+
+      if (doorState !== 'on' && doorState !== 'open') {
+        console.log(`[Cat Door] Door not opened (state: ${doorState}), ignoring`);
+        return res.json({ action: "ignored", reason: `Door state ${doorState} is not open` });
+      }
+
+      const stopped: string[] = [];
+
+      if (catWashPlaybackActive && catWashPlaybackState) {
+        const savedFileId = catWashPlaybackState.fileId;
+        const savedChunk = catWashPlaybackState.chunkIndex;
+        console.log(`[Cat Door] Stopping playback - file ${savedFileId} (${catWashPlaybackState.fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
+        stopped.push(`playback:${catWashPlaybackState.fileName}`);
+        catWashPlaybackActive = false;
+        catWashPlaybackState = null;
+      }
+
+      if (currentTTSSession) {
+        console.log(`[Cat Door] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
+        stopTTSSession("Door sensor opened - stopping playback");
+        stopped.push("ttsSession");
+      }
+
+      if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const echoEntities = [
+          "media_player.echo_cat_left_am",
+          "media_player.echo_cat_right_am",
+          "media_player.echo_cat_washroom_middle",
+          "media_player.cat_wash_2",
+          "media_player.cat_washroom_media_group",
+        ];
+        for (const entity of echoEntities) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: entity }),
+            });
+            if (resp.ok) {
+              console.log(`[Cat Door] Stopped ${entity}`);
+              stopped.push(entity);
+            }
+          } catch (e: any) {
+            console.log(`[Cat Door] Error stopping ${entity}: ${e.message}`);
+          }
+        }
+      }
+
+      console.log(`[Cat Door] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
+      res.json({ action: "stopped", stoppedItems: stopped });
+
+    } catch (error: any) {
+      console.error("[Cat Door] Error:", error);
+      res.status(500).json({ error: "Failed to handle cat door webhook", details: error.message });
     }
   });
 
