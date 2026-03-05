@@ -1,0 +1,35 @@
+the home assistant automation still does not work. 
+
+The shell command YAML you gave me is:
+shell_command:
+  unical_cat_wash: 'curl -s -X POST https://home-view--bkh416.replit.app/api/webhook/cat-wash -H "Content-Type: application/json" -d "{}"'
+
+
+
+I changed the trigger device, so the new entity is binary_sensor.water_sensor_cat_shower and the name of the device is Water Sensor - Cat Shower
+
+and the updated YAML is:
+
+alias: "Uni-Cal: Auto-play reading when Cat shower on"
+description: >-
+  When the Cat washroom water sensor detects moisture, trigger the Uni-Cal app
+  to find the next unfinished PDF, open it on the Fire Tablet, and play audio on
+  the Cat Wash Echo.
+triggers:
+  - type: moist
+    device_id: 321c44b5ac4096f174b4f47b4015e433
+    entity_id: ef28120a8851feb316ead49a5b90c4e6
+    domain: binary_sensor
+    trigger: device
+conditions: []
+actions:
+  - action: shell_command.unical_cat_wash
+mode: single
+
+
+
+When triggered this is supposed to turn on my Samsung TV in the cat Washroom, open Silk Browser using the Fire Stick - Cat WR I think the name is, open the PDF player under the Homework Progress column of the calendar.  Simultaneously it should also open pdf player via the Home Assistant Companion App on both of my tablets in the cat washroom, the app is located at http://172.24.0.2:8123/lovelace/Unical as an address, but on the app there is a Unical page/tab on the left that I set up which the URL is http://172.24.0.2:8123/dashboard-unical/0 on a browser but you will need to figure that out with regards to the app, I don't know how you navigate to it, but the player for that PDF is supposed to open on both of the tablets there as well.  From one of the tablets, it is supposed to start playing where the PDF left off the last time it was listened to which is known by the checkmarks on the left side of the right PDF of the player which is the TTS filtered PDF meant for playing .  This should play on echo - cat left at volume level 3 and continue until the end or until manually stopped.  If it ends, it should start playing the next PDF in the order of importance, which start from the top of the column and go down, although all module files for that current week should be played before reading files are played, but once module files for that week are done, then the reading files starting with the ones in the CPPA row at the top should be next.  When a PDF is done, there is an announcement you created to state that it is over and then yo speak the name of the next one that will be played, so please find that information.
+
+Currently, the command is making my Echo say "Sorry, I'm having trouble accessing your Simon Says skill right now." and it won't stop saying this, it is saying it approximately every 30 seconds or minute and I can't stop it so something in your shell command is not working, on top of the fact that neither of the tablets had any sort of a popup when the trigger was triggered, and the TV did turn on but it didn't open the browser today, although previously it was opening the browser but was not opening the PDF player ,it was opening a different page of the app and you had not yet resolved that.
+
+I need you first to stop the echo cat wr from saying sorry I'm having trouble accessing your simon says skill right now, so please implement a stop top that first and foremost and then sort out the rest of the issues.  You have been working on this for two days and have incrementally made progress but this needs to be resolved now.
