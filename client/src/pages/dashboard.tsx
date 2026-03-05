@@ -19108,7 +19108,7 @@ function ProfileForm({
         />
         <p className="text-[9px] text-muted-foreground">Used to determine your home location.</p>
       </div>
-      <div className="space-y-0">
+      <div className="space-y-0" style={{ marginTop: '-2px' }}>
         <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
         <Input 
           id="phoneNumber" 
