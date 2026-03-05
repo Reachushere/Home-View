@@ -46,6 +46,7 @@ export default function PDFReaderPage() {
   const courseParam = urlParams.get("course");
   const autoplayParam = urlParams.get("autoplay") === "true";
   const speakerParam = urlParams.get("speaker");
+  const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
   const [autoplayTriggered, setAutoplayTriggered] = useState(false);
   const [followState, setFollowState] = useState<{
@@ -581,7 +582,11 @@ export default function PDFReaderPage() {
     chunksRef.current = newChunks;
     setChunksList(newChunks);
     setTotalChunks(newChunks.length);
-    setCurrentChunk(0);
+    const startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
+    if (startChunk > 0) {
+      console.log(`[TTS] Resuming from chunk ${startChunk} (via resumeChunk URL param)`);
+    }
+    setCurrentChunk(startChunk);
     setIsPlaying(true);
     isPlayingRef.current = true;
     setIsPaused(false);
@@ -589,7 +594,7 @@ export default function PDFReaderPage() {
     const key = getFileKey();
     setCheckedChunks(loadCheckedChunks(key));
     
-    playNextChunk(0);
+    playNextChunk(startChunk);
   };
 
   const playNextChunk = async (index: number) => {

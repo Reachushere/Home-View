@@ -4502,6 +4502,138 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/webhook/cat-wash-dry - Triggered when water_sensor_cat_shower changes to dry
+  // Switches cat wash TTS playback from tablet Bluetooth (Echo Cat Left) to Echo Cat Middle speaker
+  app.post("/api/webhook/cat-wash-dry", async (req, res) => {
+    try {
+      const sensorState = req.body?.state || req.body?.new_state?.state || 'unknown';
+      console.log(`[Cat Wash Dry] ====== WEBHOOK TRIGGERED ======`);
+      console.log(`[Cat Wash Dry] Timestamp: ${new Date().toISOString()}`);
+      console.log(`[Cat Wash Dry] Sensor state: ${sensorState}`);
+      console.log(`[Cat Wash Dry] Architecture: switching from tablet Bluetooth → Echo Cat Middle speaker`);
+
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      if (!catWashPlaybackActive || !catWashPlaybackState) {
+        console.log("[Cat Wash Dry] No active cat wash playback to switch - ignoring");
+        return res.json({ action: "ignored", reason: "No active cat wash playback" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+      const newSpeaker = "media_player.echo_cat_washroom_middle";
+
+      const currentFileId = catWashPlaybackState.fileId;
+      const currentFileName = catWashPlaybackState.fileName;
+      const currentChunk = catWashPlaybackState.chunkIndex;
+      const totalChunks = catWashPlaybackState.totalChunks;
+
+      console.log(`[Cat Wash Dry] Current playback: "${currentFileName}" chunk ${currentChunk}/${totalChunks}`);
+      console.log(`[Cat Wash Dry] Switching speaker to: ${newSpeaker}`);
+
+      // Build new URL with speaker param and resume chunk
+      const newReaderUrl = `${appUrl}/pdf-reader/${currentFileId}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(newSpeaker)}&resumeChunk=${currentChunk}&auth=${authParam}`;
+
+      // Re-open on tablets with the new speaker parameter
+      const tabletDevices = [
+        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: null as string | null },
+      ];
+
+      const deviceResults: Record<string, string> = {};
+
+      await Promise.all(tabletDevices.map(async (device) => {
+        const methods: string[] = [];
+
+        // Try command_activity first (most reliable)
+        for (const app of device.mobileApps) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: "command_activity",
+                data: { intent_action: "android.intent.action.VIEW", intent_uri: newReaderUrl }
+              }),
+            });
+            if (resp.ok) { methods.push(`${app}:command_activity`); break; }
+          } catch {}
+        }
+
+        // broadcast_intent fallback
+        if (methods.length === 0) {
+          for (const app of device.mobileApps) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: "command_broadcast_intent",
+                  data: { intent_action: "android.intent.action.VIEW", intent_uri: newReaderUrl, intent_package_name: "com.amazon.cloud9" }
+                }),
+              });
+              if (resp.ok) { methods.push(`${app}:broadcast_intent`); break; }
+            } catch {}
+          }
+        }
+
+        // play_media fallback
+        if (methods.length === 0 && device.mediaPlayer) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: newReaderUrl, media_content_type: 'url' }),
+            });
+            if (resp.ok) methods.push('play_media');
+          } catch {}
+        }
+
+        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
+      }));
+
+      // Also re-open on Samsung TV
+      try {
+        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
+        let fireStickSuccess = false;
+        for (const entity of fireStickEntities) {
+          if (await openUrlOnFireStick(haUrl, entity, newReaderUrl)) {
+            fireStickSuccess = true;
+            deviceResults['samsung_tv'] = `adb:${entity}`;
+            break;
+          }
+        }
+        if (!fireStickSuccess) {
+          const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
+          fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, newReaderUrl, 'samsung_tv_firestick');
+          deviceResults['samsung_tv'] = fireStickSuccess ? 'command_activity' : 'failed';
+        }
+      } catch (e: any) {
+        console.log(`[Cat Wash Dry] Samsung TV error: ${e.message}`);
+        deviceResults['samsung_tv'] = 'error';
+      }
+
+      console.log(`[Cat Wash Dry] Device results: ${JSON.stringify(deviceResults)}`);
+      console.log(`[Cat Wash Dry] Switched to ${newSpeaker} - tablet will now send TTS to speaker instead of Bluetooth`);
+
+      res.json({
+        action: "switched_speaker",
+        file: { id: currentFileId, name: currentFileName },
+        resumeFromChunk: currentChunk,
+        totalChunks,
+        newSpeaker,
+        devices: deviceResults,
+      });
+
+    } catch (error: any) {
+      console.error("[Cat Wash Dry] Error:", error);
+      res.status(500).json({ error: "Failed to handle cat wash dry webhook", details: error.message });
+    }
+  });
+
   // GET /api/cat-wash/progress - Returns current playback state for the active session
   app.get("/api/cat-wash/progress", (_req, res) => {
     if (!catWashPlaybackActive || !catWashPlaybackState) {
