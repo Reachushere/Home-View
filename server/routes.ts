@@ -4288,6 +4288,11 @@ export async function registerRoutes(
         return res.json({ action: "ignored", reason: `Unknown state: ${lightState}` });
       }
 
+      if (catWashPlaybackActive && catWashPlaybackState) {
+        console.log(`[Cat Lights] Already playing: "${catWashPlaybackState.fileName}" - skipping`);
+        return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+      }
+
       const today = new Date();
 
       // Get current week number
