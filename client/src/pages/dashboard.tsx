@@ -19039,7 +19039,7 @@ function ProfileForm({
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="e.g. 123 Main Street, Apt 4"
-          className="!text-black !text-[10px] h-8"
+          className="bg-white !text-black !text-[10px] h-8"
           style={{ fontSize: '10px', color: 'black' }}
           data-testid="input-profile-address"
         />
@@ -19151,7 +19151,7 @@ function ProfileForm({
             type="date"
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
-            className="!text-black !text-[10px] h-8"
+            className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-birthdate"
           />
@@ -19163,7 +19163,7 @@ function ProfileForm({
             value={allergies}
             onChange={(e) => setAllergies(e.target.value)}
             placeholder="e.g. Peanuts, Penicillin"
-            className="!text-black !text-[10px] h-8"
+            className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-allergies"
           />
@@ -19177,7 +19177,7 @@ function ProfileForm({
             value={emergencyContactName}
             onChange={(e) => setEmergencyContactName(e.target.value)}
             placeholder="Contact name"
-            className="!text-black !text-[10px] h-8"
+            className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-name"
           />
@@ -19190,7 +19190,7 @@ function ProfileForm({
             value={emergencyContactPhone}
             onChange={(e) => setEmergencyContactPhone(e.target.value)}
             placeholder="+1 (416) 555-0123"
-            className="!text-black !text-[10px] h-8"
+            className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-phone"
           />
