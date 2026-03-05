@@ -6661,21 +6661,34 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000'
       }}
     >
-      {/* Background image layer with brightness - hidden when overlay is active since overlay is fully opaque */}
-      {!colorSettings.mainBackgroundOverlay && (
+      {/* Background photo layer - always shown when set, behind overlay */}
+      {colorSettings.backgroundPhoto && (
         <div 
           className="absolute inset-0"
           style={{ 
-            backgroundImage: `url(${colorSettings.backgroundPhoto || dashboardBg})`,
-            backgroundSize: colorSettings.backgroundPhoto ? 'cover' : '100% 100%',
+            backgroundImage: `url(${colorSettings.backgroundPhoto})`,
+            backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            filter: colorSettings.backgroundPhoto ? 'none' : 'brightness(1.8)',
             zIndex: 0
           }}
         />
       )}
-      {/* Main Background Color Overlay */}
+      {/* Default background image layer - only when no custom photo and overlay is off */}
+      {!colorSettings.backgroundPhoto && !colorSettings.mainBackgroundOverlay && (
+        <div 
+          className="absolute inset-0"
+          style={{ 
+            backgroundImage: `url(${dashboardBg})`,
+            backgroundSize: '100% 100%',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'brightness(1.8)',
+            zIndex: 0
+          }}
+        />
+      )}
+      {/* Main Background Color Overlay - semi-transparent when photo is set */}
       {colorSettings.mainBackgroundOverlay && (
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -6683,6 +6696,7 @@ export default function Dashboard() {
             background: colorSettings.mainBackgroundGradient 
               ? `linear-gradient(180deg, ${safeHex(colorSettings.mainBackground, '#3a8bbf')} 0%, ${safeHex(colorSettings.mainBackgroundGradientEnd, '#164a72')} 100%)`
               : safeHex(colorSettings.mainBackground, '#3a8bbf'),
+            opacity: colorSettings.backgroundPhoto ? 0.7 : 1,
             zIndex: 1
           }}
         />
@@ -13085,7 +13099,13 @@ export default function Dashboard() {
           )}
 
           {/* Settings Dialog */}
-          <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
+          <Dialog open={isSettingsDialogOpen} onOpenChange={(open) => {
+            if (!open) {
+              setColorSettings(originalColorSettings);
+              setBlinkSettings(originalBlinkSettings);
+            }
+            setIsSettingsDialogOpen(open);
+          }}>
             <DialogContent data-settings-dialog className="max-w-4xl max-h-[85vh] text-[9px] border border-white/30 backdrop-blur-[3px] bg-white/[0.4] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
@@ -13317,52 +13337,55 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Background Photo Upload */}
-                    <div className="flex items-center justify-between gap-2">
-                      <Label className="text-xs flex-1">Background Photo</Label>
-                      <div className="flex items-center gap-2">
-                        {colorSettings.backgroundPhoto && (
-                          <div className="flex items-center gap-1.5">
-                            <div 
-                              className="w-8 h-5 rounded border border-white/30 bg-cover bg-center"
-                              style={{ backgroundImage: `url(${colorSettings.backgroundPhoto})` }}
-                            />
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <Label className="text-xs flex-1">Background Photo</Label>
+                        <div className="flex items-center gap-2">
+                          {colorSettings.backgroundPhoto && (
                             <button
-                              className="text-red-400 hover:text-red-300 transition-colors"
+                              className="flex items-center gap-1 text-[10px] text-red-400 hover:text-red-300 transition-colors"
                               onClick={() => setColorSettings(prev => ({ ...prev, backgroundPhoto: null }))}
                               data-testid="button-remove-background-photo"
                             >
                               <X className="w-3 h-3" />
+                              <span>Remove</span>
                             </button>
-                          </div>
-                        )}
-                        <label
-                          className="flex items-center gap-1 text-[10px] cursor-pointer bg-white/10 hover:bg-white/20 rounded px-2 py-1 transition-colors"
-                          data-testid="button-upload-background-photo"
-                        >
-                          <Upload className="w-3 h-3" />
-                          <span>{colorSettings.backgroundPhoto ? 'Change' : 'Upload'}</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              try {
-                                const resp = await fetch('/api/background-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-                                const { uploadURL, objectPath } = await resp.json();
-                                await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
-                                const servedUrl = `/objects/${objectPath.split('/').slice(1).join('/')}`;
-                                setColorSettings(prev => ({ ...prev, backgroundPhoto: servedUrl }));
-                              } catch (err) {
-                                console.error('Background photo upload failed:', err);
-                              }
-                              e.target.value = '';
-                            }}
-                            data-testid="input-background-photo-file"
-                          />
-                        </label>
+                          )}
+                          <label
+                            className="flex items-center gap-1 text-[10px] cursor-pointer bg-white/10 hover:bg-white/20 rounded px-2 py-1 transition-colors"
+                            data-testid="button-upload-background-photo"
+                          >
+                            <Upload className="w-3 h-3" />
+                            <span>{colorSettings.backgroundPhoto ? 'Change' : 'Upload'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                try {
+                                  const resp = await fetch('/api/background-photo/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+                                  const { uploadURL, objectPath } = await resp.json();
+                                  await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                                  setColorSettings(prev => ({ ...prev, backgroundPhoto: objectPath }));
+                                } catch (err) {
+                                  console.error('Background photo upload failed:', err);
+                                }
+                                e.target.value = '';
+                              }}
+                              data-testid="input-background-photo-file"
+                            />
+                          </label>
+                        </div>
                       </div>
+                      {colorSettings.backgroundPhoto && (
+                        <div 
+                          className="w-full h-16 rounded border border-white/20 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${colorSettings.backgroundPhoto})` }}
+                          data-testid="preview-background-photo"
+                        />
+                      )}
                     </div>
                     
                     {/* Main Background Colour - always visible */}
@@ -13842,9 +13865,22 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 
-                {/* Save Settings Button */}
+                {/* Save/Cancel Settings Buttons */}
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
+                  <Button 
+                    variant="outline"
+                    className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 px-4"
+                    style={{ fontSize: '12px' }}
+                    onClick={() => {
+                      setColorSettings(originalColorSettings);
+                      setBlinkSettings(originalBlinkSettings);
+                      setIsSettingsDialogOpen(false);
+                    }}
+                    data-testid="button-cancel-settings"
+                  >
+                    Cancel
+                  </Button>
                   <Button 
                     variant="outline"
                     className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 px-4"
@@ -13855,6 +13891,8 @@ export default function Dashboard() {
                     onClick={() => {
                       localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                       localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+                      setOriginalColorSettings({...colorSettings});
+                      setOriginalBlinkSettings({...blinkSettings});
                       toast({ title: "Settings saved", description: "Your settings have been applied." });
                       setIsSettingsDialogOpen(false);
                     }}
