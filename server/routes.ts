@@ -4345,34 +4345,74 @@ export async function registerRoutes(
         estimatedChunkDuration: 0,
       };
 
-      // Open PDF reader on tablets
-      const fireTablets = [
-        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'] },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'] },
-      ];
+      // Open PDF reader on tablets (same robust approach as cat-wash)
       const deviceResults: Record<string, string> = {};
+      const fireTablets = [
+        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
+        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: null as string | null },
+      ];
+
       await Promise.all(fireTablets.map(async (device) => {
+        const methods: string[] = [];
+
         const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-        deviceResults[device.name] = opened ? 'opened' : 'failed';
+        if (opened) methods.push('silk_launch');
+
+        for (const app of device.mobileApps) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                title: "📖 Cat Lights Reading",
+                message: `Now playing: ${fileName}`,
+                data: { clickAction: readerUrl, url: readerUrl, tag: "cat-lights-reader", importance: "high", channel: "cat-lights", sticky: true }
+              }),
+            });
+            if (resp.ok) { methods.push(`${app}:notification`); break; }
+          } catch {}
+        }
+
+        if (device.mediaPlayer) {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: readerUrl, media_content_type: 'url' }),
+            });
+            if (resp.ok) methods.push('play_media');
+          } catch {}
+        }
+
+        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
       }));
 
       // Also try Samsung TV via Fire Stick
       try {
-        await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+        const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
         });
+        console.log(`[Cat Lights] Samsung TV turn_on: ${turnOnResp.status}`);
         await new Promise(resolve => setTimeout(resolve, 5000));
-        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr'];
+        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
+        let fireStickSuccess = false;
         for (const entity of fireStickEntities) {
           if (await openUrlOnFireStick(haUrl, entity, readerUrl)) {
+            fireStickSuccess = true;
             deviceResults['samsung_tv'] = `adb:${entity}`;
             break;
           }
         }
+        if (!fireStickSuccess) {
+          const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
+          fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'samsung_tv_firestick');
+          deviceResults['samsung_tv'] = fireStickSuccess ? 'command_activity' : 'failed';
+        }
       } catch (e: any) {
         console.log(`[Cat Lights] Samsung TV error: ${e.message}`);
+        deviceResults['samsung_tv'] = 'error';
       }
 
       console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
