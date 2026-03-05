@@ -9224,7 +9224,7 @@ export default function Dashboard() {
                   const isDueZero = diffDays === 0;
                   const dueLine = (
                     <div
-                      className={isDueZero ? 'animate-zero-day-blink' : ''}
+                      className={isDueZero ? 'animate-zero-day-blink countdown-due-today' : ''}
                       style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                       onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
@@ -9251,6 +9251,7 @@ export default function Dashboard() {
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
+                    className={prepDaysText === 'today' ? 'animate-zero-day-blink countdown-due-today' : ''}
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
@@ -9266,7 +9267,7 @@ export default function Dashboard() {
                   const isDueZero2 = diffDays === 0;
                   return (
                     <div
-                      className={isDueZero2 ? 'animate-zero-day-blink' : ''}
+                      className={isDueZero2 ? 'animate-zero-day-blink countdown-due-today' : ''}
                       style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                       onMouseEnter={() => setHoveredCountdownTaskId(next.id)}
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
@@ -15386,7 +15387,7 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Silver shimmer header with checkbox and title for due today tasks */}
+                                {/* Red shimmer swipe for due today tasks */}
                                 <div className={`flex items-center gap-1.5 px-0.5 pt-0.5 pb-0 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
                                     <Checkbox
@@ -15612,7 +15613,7 @@ export default function Dashboard() {
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
-                      {/* Silver shimmer header with checkbox and title for due today tasks */}
+                      {/* Red shimmer swipe for due today tasks */}
                       <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                         {!isCASL101Task(task) && (
                           <Checkbox

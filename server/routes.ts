@@ -4032,6 +4032,11 @@ export async function registerRoutes(
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
+      if (catWashPlaybackActive && catWashPlaybackState) {
+        console.log(`[Cat Wash] Already playing: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} - skipping`);
+        return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+      }
+
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const speakerEntity = "media_player.echo_cat_left_am";
       const appUrl = "https://home-view--bkh416.replit.app";
