@@ -1727,9 +1727,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '' };
+    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1861,7 +1861,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -18818,9 +18818,9 @@ function ProfileForm({
   profilePhotoUrl,
   onProfilePhotoChange
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string }) => void;
   onCancel: () => void;
   profilePhotoUrl: string | null;
   onProfilePhotoChange: (url: string | null) => void;
@@ -18841,10 +18841,59 @@ function ProfileForm({
   const [location, setLocation] = useState(profileData.location || '');
   const [phoneNumber, setPhoneNumber] = useState(profileData.phoneNumber || '');
   const [email, setEmail] = useState(profileData.email || '');
+  const [address, setAddress] = useState(profileData.address || '');
+  const [country, setCountry] = useState(profileData.country || '');
+  const [provinceState, setProvinceState] = useState(profileData.provinceState || '');
+
+  const COUNTRIES = [
+    { value: 'CA', label: 'Canada' },
+    { value: 'US', label: 'United States' },
+    { value: 'UK', label: 'United Kingdom' },
+    { value: 'AU', label: 'Australia' },
+    { value: 'FR', label: 'France' },
+    { value: 'DE', label: 'Germany' },
+    { value: 'IN', label: 'India' },
+    { value: 'JP', label: 'Japan' },
+    { value: 'MX', label: 'Mexico' },
+    { value: 'BR', label: 'Brazil' },
+    { value: 'other', label: 'Other' },
+  ];
+
+  const PROVINCES_STATES: Record<string, { value: string; label: string }[]> = {
+    CA: [
+      { value: 'AB', label: 'Alberta' }, { value: 'BC', label: 'British Columbia' }, { value: 'MB', label: 'Manitoba' },
+      { value: 'NB', label: 'New Brunswick' }, { value: 'NL', label: 'Newfoundland and Labrador' }, { value: 'NS', label: 'Nova Scotia' },
+      { value: 'NT', label: 'Northwest Territories' }, { value: 'NU', label: 'Nunavut' }, { value: 'ON', label: 'Ontario' },
+      { value: 'PE', label: 'Prince Edward Island' }, { value: 'QC', label: 'Quebec' }, { value: 'SK', label: 'Saskatchewan' }, { value: 'YT', label: 'Yukon' },
+    ],
+    US: [
+      { value: 'AL', label: 'Alabama' }, { value: 'AK', label: 'Alaska' }, { value: 'AZ', label: 'Arizona' }, { value: 'AR', label: 'Arkansas' },
+      { value: 'CA', label: 'California' }, { value: 'CO', label: 'Colorado' }, { value: 'CT', label: 'Connecticut' }, { value: 'DE', label: 'Delaware' },
+      { value: 'FL', label: 'Florida' }, { value: 'GA', label: 'Georgia' }, { value: 'HI', label: 'Hawaii' }, { value: 'ID', label: 'Idaho' },
+      { value: 'IL', label: 'Illinois' }, { value: 'IN', label: 'Indiana' }, { value: 'IA', label: 'Iowa' }, { value: 'KS', label: 'Kansas' },
+      { value: 'KY', label: 'Kentucky' }, { value: 'LA', label: 'Louisiana' }, { value: 'ME', label: 'Maine' }, { value: 'MD', label: 'Maryland' },
+      { value: 'MA', label: 'Massachusetts' }, { value: 'MI', label: 'Michigan' }, { value: 'MN', label: 'Minnesota' }, { value: 'MS', label: 'Mississippi' },
+      { value: 'MO', label: 'Missouri' }, { value: 'MT', label: 'Montana' }, { value: 'NE', label: 'Nebraska' }, { value: 'NV', label: 'Nevada' },
+      { value: 'NH', label: 'New Hampshire' }, { value: 'NJ', label: 'New Jersey' }, { value: 'NM', label: 'New Mexico' }, { value: 'NY', label: 'New York' },
+      { value: 'NC', label: 'North Carolina' }, { value: 'ND', label: 'North Dakota' }, { value: 'OH', label: 'Ohio' }, { value: 'OK', label: 'Oklahoma' },
+      { value: 'OR', label: 'Oregon' }, { value: 'PA', label: 'Pennsylvania' }, { value: 'RI', label: 'Rhode Island' }, { value: 'SC', label: 'South Carolina' },
+      { value: 'SD', label: 'South Dakota' }, { value: 'TN', label: 'Tennessee' }, { value: 'TX', label: 'Texas' }, { value: 'UT', label: 'Utah' },
+      { value: 'VT', label: 'Vermont' }, { value: 'VA', label: 'Virginia' }, { value: 'WA', label: 'Washington' }, { value: 'WV', label: 'West Virginia' },
+      { value: 'WI', label: 'Wisconsin' }, { value: 'WY', label: 'Wyoming' }, { value: 'DC', label: 'District of Columbia' },
+    ],
+    AU: [
+      { value: 'ACT', label: 'Australian Capital Territory' }, { value: 'NSW', label: 'New South Wales' }, { value: 'NT', label: 'Northern Territory' },
+      { value: 'QLD', label: 'Queensland' }, { value: 'SA', label: 'South Australia' }, { value: 'TAS', label: 'Tasmania' },
+      { value: 'VIC', label: 'Victoria' }, { value: 'WA', label: 'Western Australia' },
+    ],
+  };
+
+  const regionLabel = country === 'CA' ? 'Province' : country === 'US' ? 'State' : country === 'AU' ? 'State/Territory' : 'Province/State';
+  const regionOptions = PROVINCES_STATES[country] || [];
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState });
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18991,7 +19040,19 @@ function ProfileForm({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="location" className="text-[10px]">Location</Label>
+        <Label htmlFor="address" className="text-[10px]">Address</Label>
+        <Input 
+          id="address" 
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="e.g. 123 Main Street, Apt 4"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
+          data-testid="input-profile-address"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="location" className="text-[10px]">City</Label>
         <select
           value={location}
           onChange={(e) => setLocation(e.target.value)}
@@ -19001,6 +19062,36 @@ function ProfileForm({
           <option value="">Select your city</option>
           {TRAVEL_CITIES.map(c => (
             <option key={c.label} value={c.label}>{c.label}</option>
+          ))}
+        </select>
+      </div>
+      {regionOptions.length > 0 && (
+        <div className="space-y-2">
+          <Label htmlFor="provinceState" className="text-[10px]">{regionLabel}</Label>
+          <select
+            value={provinceState}
+            onChange={(e) => setProvinceState(e.target.value)}
+            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            data-testid="select-profile-province-state"
+          >
+            <option value="">Select {regionLabel.toLowerCase()}</option>
+            {regionOptions.map(r => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="country" className="text-[10px]">Country</Label>
+        <select
+          value={country}
+          onChange={(e) => { setCountry(e.target.value); setProvinceState(''); }}
+          className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+          data-testid="select-profile-country"
+        >
+          <option value="">Select your country</option>
+          {COUNTRIES.map(c => (
+            <option key={c.value} value={c.value}>{c.label}</option>
           ))}
         </select>
       </div>
