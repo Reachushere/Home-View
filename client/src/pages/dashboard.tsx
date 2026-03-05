@@ -18971,7 +18971,7 @@ function ProfileForm({
           </div>
         </div>
       )}
-      <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-6px' }}>
+      <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-8px' }}>
         <div 
           className="relative cursor-pointer group"
           style={{ marginTop: '-15px' }}
