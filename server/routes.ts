@@ -2908,6 +2908,7 @@ export async function registerRoutes(
   app.post("/api/tts/speaker", async (req, res) => {
     try {
       const { text, voice = "nova", entityId } = req.body;
+      console.log(`[TTS Speaker] Request received - entity: ${entityId}, voice: ${voice}, text length: ${text?.length || 0}`);
 
       if (!text || typeof text !== "string") {
         return res.status(400).json({ error: "Text is required" });
@@ -2924,10 +2925,13 @@ export async function registerRoutes(
       const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
 
       const cleanedText = cleanTextForTTS(text);
+      console.log(`[TTS Speaker] Generating OpenAI audio (${cleanedText.length} chars, voice: ${selectedVoice})`);
 
       const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
       const appUrl = "https://home-view--bkh416.replit.app";
       const fullAudioUrl = `${appUrl}${audioPath}`;
+      console.log(`[TTS Speaker] Audio generated: ${audioPath}`);
+      console.log(`[TTS Speaker] Playing via media_player/play_media on ${entityId} (NOT alexa_media)`);
 
       const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
@@ -2941,16 +2945,17 @@ export async function registerRoutes(
 
       if (!playResp.ok) {
         const errText = await playResp.text();
-        console.error(`[TTS Speaker] play_media failed: ${playResp.status} ${errText}`);
+        console.error(`[TTS Speaker] play_media FAILED: ${playResp.status} ${errText}`);
         return res.status(500).json({ error: "Failed to play audio on speaker" });
       }
 
       const wordCount = cleanedText.split(/\s+/).length;
       const estimatedDurationMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
+      console.log(`[TTS Speaker] SUCCESS - audio playing on ${entityId} (~${Math.round(estimatedDurationMs/1000)}s estimated)`);
 
       res.json({ success: true, entityId, method: "openai_audio_play_media", estimatedDurationMs });
     } catch (err) {
-      console.error("Error playing TTS on speaker:", err);
+      console.error("[TTS Speaker] Error:", err);
       res.status(500).json({ error: "Failed to play TTS on speaker" });
     }
   });
@@ -4018,7 +4023,10 @@ export async function registerRoutes(
 
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
-      console.log("[Cat Wash] Webhook triggered - finding next PDF file");
+      console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");
+      console.log("[Cat Wash] Timestamp:", new Date().toISOString());
+      console.log("[Cat Wash] Request body:", JSON.stringify(req.body));
+      console.log("[Cat Wash] Architecture: tablet-browser TTS → Bluetooth → Echo (NO alexa_media/AMP calls)");
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -4250,7 +4258,11 @@ export async function registerRoutes(
     try {
       const { state } = req.body;
       const lightState = state || req.body.new_state?.state || 'unknown';
-      console.log(`[Cat Lights] Webhook triggered - light state: ${lightState}`);
+      console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
+      console.log(`[Cat Lights] Timestamp: ${new Date().toISOString()}`);
+      console.log(`[Cat Lights] Light state: ${lightState}`);
+      console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
+      console.log(`[Cat Lights] Architecture: TTS via /api/tts/speaker → media_player.cat_wash_2 (NO alexa_media/AMP calls)`);
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -4512,26 +4524,53 @@ export async function registerRoutes(
     res.json({ ok: true });
   });
 
-  // POST /api/cat-wash/stop - Stop cat wash playback
+  // POST /api/cat-wash/stop - Stop ALL playback (cat wash, cat lights, TTS sessions, all echo devices)
   app.post("/api/cat-wash/stop", async (_req, res) => {
-    console.log("[Cat Wash] Playback stopped by user");
+    console.log("[Cat Wash Stop] === STOP ALL PLAYBACK ===");
+
+    const stopped: string[] = [];
+
+    if (catWashPlaybackActive) {
+      console.log(`[Cat Wash Stop] Stopping cat wash playback (file: ${catWashPlaybackState?.fileName})`);
+      stopped.push("catWashPlayback");
+    }
     catWashPlaybackActive = false;
     catWashPlaybackState = null;
 
+    if (currentTTSSession) {
+      console.log(`[Cat Wash Stop] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
+      stopTTSSession("Force stopped via cat-wash/stop");
+      stopped.push("ttsSession");
+    }
+
     if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      try {
-        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: "media_player.echo_cat_left_am" }),
-        });
-      } catch (e: any) {
-        console.log(`[Cat Wash] Stop HA media player error: ${e.message}`);
+      const echoEntities = [
+        "media_player.echo_cat_left_am",
+        "media_player.echo_cat_right_am",
+        "media_player.echo_cat_washroom_middle",
+        "media_player.cat_wash_2",
+        "media_player.cat_washroom_media_group",
+      ];
+      for (const entity of echoEntities) {
+        try {
+          const resp = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: entity }),
+          });
+          if (resp.ok) {
+            console.log(`[Cat Wash Stop] Stopped ${entity}`);
+            stopped.push(entity);
+          }
+        } catch (e: any) {
+          console.log(`[Cat Wash Stop] Error stopping ${entity}: ${e.message}`);
+        }
       }
     }
 
-    res.json({ stopped: true });
+    console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
+    res.json({ stopped: true, stoppedItems: stopped });
   });
 
   app.get("/api/ha/entities", async (_req, res) => {
