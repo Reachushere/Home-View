@@ -9208,6 +9208,7 @@ export default function Dashboard() {
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
+                    className={isPrepZeroDays ? 'animate-zero-day-blink' : ''}
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
