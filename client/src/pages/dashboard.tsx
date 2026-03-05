@@ -19106,7 +19106,7 @@ function ProfileForm({
           style={{ fontSize: '10px' }}
           data-testid="input-profile-postalcode"
         />
-        <p className="text-[9px] text-muted-foreground">Used to track your home location.</p>
+        <p className="text-[9px] text-muted-foreground">Used to determine your home location.</p>
       </div>
       <div className="space-y-0">
         <Label htmlFor="phoneNumber" className="text-[10px]">Phone Number</Label>
