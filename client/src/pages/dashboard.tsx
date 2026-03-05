@@ -19074,7 +19074,7 @@ function ProfileForm({
         </div>
       </div>
       <div className="flex gap-[6px]">
-        <div className="space-y-0 w-1/3">
+        <div className="space-y-0" style={{ width: '30%', flexShrink: 0 }}>
           <Label htmlFor="country" className="text-[10px]">Country</Label>
           <select
             value={country}
