@@ -381,6 +381,49 @@ export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   
+  // Return-from-break reading prompt (dev mode only - when returning to Replit after 2+ hours)
+  const [showReturnReadingPrompt, setShowReturnReadingPrompt] = useState(false);
+  const [returnReadingFiles, setReturnReadingFiles] = useState<Array<{id: number; name: string; folder: string}>>([]);
+  const [selectedReturnFile, setSelectedReturnFile] = useState<number | null>(null);
+  const returnPromptShown = useRef(false);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    if (returnPromptShown.current) return;
+    returnPromptShown.current = true;
+
+    const TWO_HOURS = 2 * 60 * 60 * 1000;
+    const lastActive = localStorage.getItem('replitLastActiveTime');
+    const now = Date.now();
+
+    localStorage.setItem('replitLastActiveTime', String(now));
+
+    if (!lastActive) return;
+    const elapsed = now - parseInt(lastActive, 10);
+    if (elapsed < TWO_HOURS) return;
+
+    fetch("/api/files")
+      .then(r => r.json())
+      .then((files: any[]) => {
+        const unlistened = files.filter((f: any) => !f.listened && f.folder?.match(/week-\d+/i));
+        if (unlistened.length > 0) {
+          setReturnReadingFiles(unlistened.map((f: any) => ({
+            id: f.id,
+            name: f.displayName || f.originalName || 'Unknown',
+            folder: f.folder || '',
+          })));
+          setSelectedReturnFile(unlistened[0].id);
+          setShowReturnReadingPrompt(true);
+        }
+      })
+      .catch(() => {});
+
+    const interval = setInterval(() => {
+      localStorage.setItem('replitLastActiveTime', String(Date.now()));
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Share link state
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareLink, setShareLink] = useState("");
