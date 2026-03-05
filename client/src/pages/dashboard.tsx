@@ -1727,9 +1727,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '' };
+    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1861,7 +1861,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -18818,9 +18818,9 @@ function ProfileForm({
   profilePhotoUrl,
   onProfilePhotoChange
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string }) => void;
   onCancel: () => void;
   profilePhotoUrl: string | null;
   onProfilePhotoChange: (url: string | null) => void;
@@ -18844,6 +18844,8 @@ function ProfileForm({
   const [address, setAddress] = useState(profileData.address || '');
   const [country, setCountry] = useState(profileData.country || '');
   const [provinceState, setProvinceState] = useState(profileData.provinceState || '');
+  const [emergencyContactName, setEmergencyContactName] = useState(profileData.emergencyContactName || '');
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState(profileData.emergencyContactPhone || '');
 
   const COUNTRIES = [
     { value: 'CA', label: 'Canada' },
@@ -18893,7 +18895,7 @@ function ProfileForm({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone });
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19150,6 +19152,33 @@ function ProfileForm({
               <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
             ))}
           </select>
+        </div>
+      </div>
+      <div className="flex gap-[6px]">
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="emergencyContactName" className="text-[10px]">Emergency Contact Name</Label>
+          <Input 
+            id="emergencyContactName" 
+            value={emergencyContactName}
+            onChange={(e) => setEmergencyContactName(e.target.value)}
+            placeholder="Contact name"
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-emergency-name"
+          />
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="emergencyContactPhone" className="text-[10px]">Emergency Contact Phone</Label>
+          <Input 
+            id="emergencyContactPhone" 
+            type="tel"
+            value={emergencyContactPhone}
+            onChange={(e) => setEmergencyContactPhone(e.target.value)}
+            placeholder="+1 (416) 555-0123"
+            className="!text-black !text-[10px] h-8"
+            style={{ fontSize: '10px' }}
+            data-testid="input-profile-emergency-phone"
+          />
         </div>
       </div>
 
