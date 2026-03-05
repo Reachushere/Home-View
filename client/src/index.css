@@ -662,7 +662,7 @@ button[role="combobox"] > span {
     rgba(220, 38, 38, 0.2) 70%,
     transparent 100%
   );
-  animation: red-shimmer-sweep 10s ease-in-out infinite;
+  animation: red-shimmer-sweep 20s ease-in-out infinite;
   pointer-events: none;
   transform: translateX(-100%);
   border-radius: inherit;
@@ -707,47 +707,6 @@ button[role="combobox"] > span {
   color: #dc2626 !important;
 }
 
-.countdown-due-today::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.15) 35%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.15) 65%,
-    transparent 100%
-  );
-  animation: countdown-shimmer-sweep 10s ease-in-out infinite;
-  pointer-events: none;
-  transform: translateX(-100%);
-  border-radius: inherit;
-}
-
-@keyframes countdown-shimmer-sweep {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  15% {
-    transform: translateX(100%);
-    opacity: 1;
-  }
-  20% {
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
 
 /* Silver shimmer overlay for task rows and prep boxes - every 5 seconds */
 .silver-shimmer-task {
@@ -951,7 +910,7 @@ button[role="combobox"] > span {
     transparent 100%
   );
   transform: translateY(-100%);
-  animation: red-separator-shimmer-sweep 20s ease-in-out infinite;
+  animation: red-separator-shimmer-sweep 40s ease-in-out infinite;
   pointer-events: none;
 }
 
