@@ -696,6 +696,15 @@ export default function PDFReaderPage() {
         console.error('Failed to save progress:', e);
       }
     }
+
+    if (catWashFollow || speakerParam) {
+      try {
+        await fetch("/api/cat-wash/stop", { method: "POST" });
+        console.log('[TTS] Server-side playback state cleared');
+      } catch (e) {
+        console.error('Failed to stop server-side playback:', e);
+      }
+    }
     
     setIsPlaying(false);
     isPlayingRef.current = false;
