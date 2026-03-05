@@ -2923,27 +2923,14 @@ export async function registerRoutes(
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
       const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
 
-      const ssmlText = `<speak><prosody rate="90%">${cleanTextForTTS(text)}</prosody></speak>`;
-      const ttsResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: ssmlText,
-          target: entityId,
-          data: { type: "tts" },
-        }),
-      });
+      const cleanedText = cleanTextForTTS(text);
+      const ttsResult = await sendCatWashTTSToEcho(cleanedText, haUrl, entityId);
 
-      if (!ttsResp.ok) {
-        const errText = await ttsResp.text();
-        console.error(`[Speak to Echo] Alexa Media TTS error: ${ttsResp.status} ${errText}`);
-        return res.status(500).json({ error: "Alexa Media TTS failed" });
+      if (!ttsResult.ok) {
+        return res.status(500).json({ error: "TTS playback failed" });
       }
 
-      res.json({ success: true, entityId, method: "alexa_media_tts" });
+      res.json({ success: true, entityId, method: "openai_audio_or_alexa_tts", estimatedDurationMs: ttsResult.durationMs });
     } catch (err) {
       console.error("Error playing TTS on speaker:", err);
       res.status(500).json({ error: "Failed to play TTS on speaker" });
@@ -3900,12 +3887,12 @@ export async function registerRoutes(
     const chunks: string[] = [];
     let remaining = cleanedContent;
     while (remaining.length > 0) {
-      if (remaining.length <= 3500) { chunks.push(remaining); break; }
-      let splitAt = remaining.lastIndexOf('. ', 3500);
-      if (splitAt < 1000) splitAt = remaining.lastIndexOf('? ', 3500);
-      if (splitAt < 1000) splitAt = remaining.lastIndexOf('! ', 3500);
-      if (splitAt < 1000) splitAt = remaining.lastIndexOf(' ', 3500);
-      if (splitAt < 500) splitAt = 3500;
+      if (remaining.length <= 1500) { chunks.push(remaining); break; }
+      let splitAt = remaining.lastIndexOf('. ', 1500);
+      if (splitAt < 500) splitAt = remaining.lastIndexOf('? ', 1500);
+      if (splitAt < 500) splitAt = remaining.lastIndexOf('! ', 1500);
+      if (splitAt < 500) splitAt = remaining.lastIndexOf(' ', 1500);
+      if (splitAt < 300) splitAt = 1500;
       chunks.push(remaining.slice(0, splitAt + 1).trim());
       remaining = remaining.slice(splitAt + 1).trim();
     }
@@ -3913,9 +3900,44 @@ export async function registerRoutes(
     return { textContent: cleanedContent, chunks };
   }
 
-  // Helper to send TTS text to Echo via notify/alexa_media (avoids music streaming restriction)
-  async function sendCatWashTTSToEcho(text: string, haUrl: string, speakerEntity: string) {
-    const ssmlChunk = `<speak><prosody rate="90%">${text}</prosody></speak>`;
+  // Helper to send TTS text to Echo via notify/alexa_media
+  // Uses OpenAI-generated audio embedded as SSML <audio> tag for natural voice,
+  // with fallback to Alexa's built-in TTS if audio generation fails.
+  async function sendCatWashTTSToEcho(text: string, haUrl: string, speakerEntity: string): Promise<{ ok: boolean; durationMs: number }> {
+    const appUrl = "https://home-view--bkh416.replit.app";
+    const wordsPerMinute = 145;
+    const wordCount = text.split(/\s+/).length;
+    const estimatedDurationMs = Math.max(5000, (wordCount / wordsPerMinute) * 60 * 1000 + 2000);
+
+    // Try OpenAI TTS first for natural-sounding voice
+    try {
+      const audioPath = await generateAndSaveTTSAudio(text, `catwash-tts-${Date.now()}`);
+      const fullAudioUrl = `${appUrl}${audioPath}`;
+
+      // Use SSML <audio> tag to play the generated MP3 on Echo
+      const ssmlMsg = `<speak><audio src="${fullAudioUrl}" /></speak>`;
+      const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: ssmlMsg, target: speakerEntity, data: { type: "tts" } }),
+      });
+      if (resp.ok) {
+        console.log(`[Cat Wash TTS] OpenAI audio sent via SSML <audio> (${wordCount} words, ~${Math.round(estimatedDurationMs/1000)}s)`);
+        return { ok: true, durationMs: estimatedDurationMs };
+      }
+      const errText = await resp.text();
+      console.log(`[Cat Wash TTS] SSML <audio> failed (${resp.status}): ${errText}, falling back to Alexa TTS`);
+    } catch (e: any) {
+      console.log(`[Cat Wash TTS] OpenAI audio generation failed: ${e.message}, falling back to Alexa TTS`);
+    }
+
+    // Fallback: Use Alexa's built-in TTS with slow prosody and academic formatting
+    const formattedText = text
+      .replace(/^(Chapter|Section|Part|Module|Unit|Lesson)\s+/gm, '<break time="500ms"/>$&')
+      .replace(/\n{2,}/g, ' <break time="400ms"/> ')
+      .replace(/\.\s+/g, '. <break time="200ms"/> ')
+      .replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] || c));
+    const ssmlChunk = `<speak><prosody rate="75%">${formattedText}</prosody></speak>`;
     const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -3923,36 +3945,59 @@ export async function registerRoutes(
     });
     if (!resp.ok) {
       const errorText = await resp.text();
-      console.error(`[Cat Wash TTS] Alexa Media notify error: ${resp.status} ${errorText}`);
+      console.error(`[Cat Wash TTS] Alexa TTS fallback error: ${resp.status} ${errorText}`);
     }
-    return resp.ok;
+    // Alexa TTS at 75% speed is slower
+    const alexaDuration = Math.max(5000, (wordCount / 120) * 60 * 1000 + 2000);
+    return { ok: resp.ok, durationMs: alexaDuration };
   }
 
-  // Helper to open URL on Fire Tablets via command_launch_app for Silk browser
+  // Helper to open URL on Fire Tablets via command_activity (launches Silk browser with intent)
   async function openUrlOnFireDevice(haUrl: string, mobileApps: string[], url: string, deviceName: string): Promise<boolean> {
+    // Method 1: command_activity - launches an Android activity directly
     for (const app of mobileApps) {
       try {
-        // Use command_webview which opens URL in the HA companion app's webview
-        // If that triggers Browser Mod, try launching Silk browser directly with intent
         const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: "command_launch_app",
+            message: "command_activity",
             data: {
-              package: "com.amazon.cloud9",
-              action: "android.intent.action.VIEW",
-              uri: url
+              intent_package_name: "com.amazon.cloud9",
+              intent_action: "android.intent.action.VIEW",
+              intent_uri: url,
+              intent_type: "text/html"
             }
           }),
         });
-        console.log(`[Cat Wash] ${deviceName} → ${app} command_launch_app Silk: ${resp.status}`);
+        console.log(`[Cat Wash] ${deviceName} → ${app} command_activity: ${resp.status}`);
         if (resp.ok) return true;
       } catch (e: any) {
-        console.log(`[Cat Wash] ${deviceName} → ${app} launch_app failed: ${e.message}`);
+        console.log(`[Cat Wash] ${deviceName} → ${app} command_activity failed: ${e.message}`);
       }
     }
-    // Fallback: try command_webview
+    // Method 2: command_broadcast_intent to open URL in default browser
+    for (const app of mobileApps) {
+      try {
+        const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: "command_broadcast_intent",
+            data: {
+              intent_package_name: "com.amazon.cloud9",
+              intent_action: "android.intent.action.VIEW",
+              intent_uri: url
+            }
+          }),
+        });
+        console.log(`[Cat Wash] ${deviceName} → ${app} command_broadcast_intent: ${resp.status}`);
+        if (resp.ok) return true;
+      } catch (e: any) {
+        console.log(`[Cat Wash] ${deviceName} → ${app} broadcast_intent failed: ${e.message}`);
+      }
+    }
+    // Method 3: command_webview fallback (opens in HA companion app webview)
     for (const app of mobileApps) {
       try {
         const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
@@ -3965,6 +4010,36 @@ export async function registerRoutes(
       } catch (e: any) {
         console.log(`[Cat Wash] ${deviceName} → ${app} webview fallback failed: ${e.message}`);
       }
+    }
+    return false;
+  }
+
+  // Helper to open URL on Fire Stick via androidtv integration
+  async function openUrlOnFireStick(haUrl: string, entityId: string, url: string): Promise<boolean> {
+    // Method 1: Use androidtv.adb_command to launch Silk with URL
+    try {
+      const adbCmd = `am start -a android.intent.action.VIEW -d "${url}" com.amazon.cloud9`;
+      const resp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: entityId, command: adbCmd }),
+      });
+      console.log(`[Cat Wash] Fire Stick ${entityId} adb_command: ${resp.status}`);
+      if (resp.ok) return true;
+    } catch (e: any) {
+      console.log(`[Cat Wash] Fire Stick adb_command failed: ${e.message}`);
+    }
+    // Method 2: media_player.play_media with url type
+    try {
+      const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: entityId, media_content_id: url, media_content_type: 'url' }),
+      });
+      console.log(`[Cat Wash] Fire Stick ${entityId} play_media url: ${resp.status}`);
+      if (resp.ok) return true;
+    } catch (e: any) {
+      console.log(`[Cat Wash] Fire Stick play_media failed: ${e.message}`);
     }
     return false;
   }
@@ -4030,7 +4105,12 @@ export async function registerRoutes(
       ...fireTablets.map(async (device, idx) => {
         await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, `tablet_${idx}`);
       }),
-      openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'fire_stick_auto'),
+      (async () => {
+        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
+        for (const entity of fireStickEntities) {
+          if (await openUrlOnFireStick(haUrl, entity, readerUrl)) break;
+        }
+      })(),
     ]);
 
     // Update playback state
@@ -4066,19 +4146,14 @@ export async function registerRoutes(
       }
 
       try {
-        // Clean chunk text for TTS
         const cleanedChunk = cleanTextForTTS(chunk);
         if (cleanedChunk.trim().length === 0) {
           console.log(`[Cat Wash Auto] Chunk ${i} empty after cleaning, skipping`);
           continue;
         }
 
-        // Send text directly to Echo via Alexa Media Player TTS (same approach as PDF reader)
-        await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
-
-        // Estimate duration based on chunk length at 90% speed
-        const charsPerSecond = 15;
-        const estimatedDuration = Math.max(8000, (cleanedChunk.length / charsPerSecond) * 1000 + 3000);
+        const ttsResult = await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
+        const estimatedDuration = ttsResult.durationMs;
         if (catWashPlaybackState) {
           catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
         }
@@ -4232,29 +4307,16 @@ export async function registerRoutes(
       }
       const { chunks } = extractResult;
 
-      // Determine resume point from checked chunks or lastChunkIndex
+      // Always start from the beginning on a fresh trigger.
+      // Old lastChunkIndex/checkedChunks data from previous failed attempts
+      // was causing playback to jump to the middle of the document.
+      // Reset all stale progress data for this file.
       let resumeFromChunk = 0;
-      if (nextFile.checkedChunks) {
-        try {
-          const checked = JSON.parse(nextFile.checkedChunks) as number[];
-          if (checked.length > 0) {
-            resumeFromChunk = Math.max(...checked) + 1;
-            if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
-          }
-        } catch {}
-      }
-      if (resumeFromChunk === 0 && nextFile.lastChunkIndex > 0) {
-        resumeFromChunk = nextFile.lastChunkIndex;
-        if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
-      }
-
       const progressKey = `file-${nextFile.id}`;
-      const existingServerProgress = playbackProgress[progressKey];
-      if (existingServerProgress?.lastCompletedChunk != null && existingServerProgress.lastCompletedChunk > resumeFromChunk) {
-        resumeFromChunk = existingServerProgress.lastCompletedChunk;
-      }
+      delete playbackProgress[progressKey];
+      await storage.updateFile(nextFile.id, { lastChunkIndex: 0, checkedChunks: '[]' });
 
-      console.log(`[Cat Wash] ${chunks.length} chunks, resuming from chunk ${resumeFromChunk}`);
+      console.log(`[Cat Wash] ${chunks.length} chunks, starting from beginning`);
 
       // === STEP 2: Open PDF reader on all display devices ===
       const deviceResults: Record<string, string> = {};
@@ -4314,10 +4376,22 @@ export async function registerRoutes(
         // Brief delay for TV to wake up
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        // Step 2: Open URL via Fire Stick using Silk browser launch (avoids cached pages)
-        const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
-        const fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'samsung_tv_firestick');
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'silk_launch' : 'failed';
+        // Step 2: Open URL via Fire Stick ADB command (most reliable for Fire Sticks)
+        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
+        let fireStickSuccess = false;
+        for (const entity of fireStickEntities) {
+          if (await openUrlOnFireStick(haUrl, entity, readerUrl)) {
+            fireStickSuccess = true;
+            deviceResults['samsung_tv'] = `adb:${entity}`;
+            break;
+          }
+        }
+        // Fallback: try notify service with command_activity
+        if (!fireStickSuccess) {
+          const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
+          fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'samsung_tv_firestick');
+          deviceResults['samsung_tv'] = fireStickSuccess ? 'command_activity' : 'failed';
+        }
       } catch (e: any) {
         console.log(`[Cat Wash] Samsung TV/Fire Stick error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
@@ -4388,11 +4462,10 @@ export async function registerRoutes(
                 continue;
               }
 
-              await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
+              const ttsResult = await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
               console.log(`[Cat Wash TTS] Sent TTS chunk ${i + 1} to Echo`);
 
-              const charsPerSecond = 15;
-              const estimatedDuration = Math.max(8000, (cleanedChunk.length / charsPerSecond) * 1000 + 3000);
+              const estimatedDuration = ttsResult.durationMs;
               if (catWashPlaybackState) {
                 catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
               }
@@ -4879,7 +4952,7 @@ export async function registerRoutes(
       
       // Clean and chunk the text for TTS (larger chunks for OpenAI - up to 4096 chars)
       let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
-      const chunks = cleanedContent.match(/.{1,3500}[.!?]?\s*/g) || [cleanedContent];
+      const chunks = cleanedContent.match(/.{1,1500}[.!?]?\s*/g) || [cleanedContent];
       
       // Start from resume point
       const chunk = chunks[resumeFromChunk] || chunks[0];
