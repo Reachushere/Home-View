@@ -18941,7 +18941,7 @@ function ProfileForm({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-[13px] text-[10px]">
+    <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
       {cropImageSrc && (
         <div className="rounded-lg overflow-hidden border border-white/20 bg-black/50 p-3 space-y-3">
           <span className="text-[10px] text-white/70">Move and zoom to crop your photo</span>
