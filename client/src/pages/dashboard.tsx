@@ -13870,7 +13870,7 @@ export default function Dashboard() {
                 <div className="flex justify-end gap-2">
                   <Button 
                     variant="outline"
-                    className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 px-4"
+                    className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
                     style={{ fontSize: '12px' }}
                     onClick={() => {
                       setColorSettings(originalColorSettings);
@@ -13883,7 +13883,7 @@ export default function Dashboard() {
                   </Button>
                   <Button 
                     variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 px-4"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
                     style={{
                       boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                       fontSize: '12px'
