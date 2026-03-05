@@ -1727,9 +1727,9 @@ export default function Dashboard() {
     };
   }, [isResizingThisWeek]);
 
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '' };
+    return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '', ...JSON.parse(saved) } : { firstName: 'Bryn', lastName: 'Kai-Hendricks', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '' };
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
@@ -1861,7 +1861,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -18818,9 +18818,9 @@ function ProfileForm({
   profilePhotoUrl,
   onProfilePhotoChange
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string }) => void;
   onCancel: () => void;
   profilePhotoUrl: string | null;
   onProfilePhotoChange: (url: string | null) => void;
@@ -18846,6 +18846,7 @@ function ProfileForm({
   const [provinceState, setProvinceState] = useState(profileData.provinceState || '');
   const [emergencyContactName, setEmergencyContactName] = useState(profileData.emergencyContactName || '');
   const [emergencyContactPhone, setEmergencyContactPhone] = useState(profileData.emergencyContactPhone || '');
+  const [allergies, setAllergies] = useState(profileData.allergies || '');
 
   const COUNTRIES = [
     { value: 'CA', label: 'Canada' },
@@ -18895,7 +18896,7 @@ function ProfileForm({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone, allergies });
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19116,18 +19117,32 @@ function ProfileForm({
           />
         </div>
       </div>
-      <div className="space-y-0">
-        <Label htmlFor="email" className="text-[10px]">Email</Label>
-        <Input 
-          id="email" 
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="e.g. name@example.com"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
-          data-testid="input-profile-email"
-        />
+      <div className="flex gap-[6px]">
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="email" className="text-[10px]">Email</Label>
+          <Input 
+            id="email" 
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="e.g. name@example.com"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-email"
+          />
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="allergies" className="text-[10px]">Allergies</Label>
+          <Input 
+            id="allergies" 
+            value={allergies}
+            onChange={(e) => setAllergies(e.target.value)}
+            placeholder="e.g. Peanuts, Penicillin"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-allergies"
+          />
+        </div>
       </div>
       <div className="flex gap-[6px]">
         <div className="space-y-0 w-1/2">
