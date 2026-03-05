@@ -19038,8 +19038,8 @@ function ProfileForm({
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="e.g. 123 Main Street, Apt 4"
-          className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
+          className="!text-white !text-[10px] h-8"
+          style={{ fontSize: '10px', backgroundColor: '#3b82f6' }}
           data-testid="input-profile-address"
         />
       </div>
@@ -19095,8 +19095,8 @@ function ProfileForm({
             value={postalCode}
             onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
             placeholder="M5V 2T6"
-            className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            className="!text-white !text-[10px] h-8"
+            style={{ fontSize: '10px', backgroundColor: '#3b82f6' }}
             data-testid="input-profile-postalcode"
           />
         </div>
@@ -19135,8 +19135,8 @@ function ProfileForm({
             type="date"
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
-            className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            className="!text-white !text-[10px] h-8"
+            style={{ fontSize: '10px', backgroundColor: '#3b82f6' }}
             data-testid="input-profile-birthdate"
           />
         </div>
