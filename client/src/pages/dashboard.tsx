@@ -19164,8 +19164,8 @@ function ProfileForm({
             value={emergencyContactName}
             onChange={(e) => setEmergencyContactName(e.target.value)}
             placeholder="Contact name"
-            className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-name"
           />
         </div>
@@ -19177,8 +19177,8 @@ function ProfileForm({
             value={emergencyContactPhone}
             onChange={(e) => setEmergencyContactPhone(e.target.value)}
             placeholder="+1 (416) 555-0123"
-            className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-phone"
           />
         </div>
