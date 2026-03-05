@@ -128,32 +128,26 @@ export default function PDFReaderPage() {
       .catch(() => {});
   }, []);
 
+  const catWashAutoStarted = useRef(false);
+
   useEffect(() => {
-    if (!catWashFollow) return;
-    const poll = async () => {
-      try {
-        const resp = await fetch("/api/cat-wash/progress");
-        const data = await resp.json();
-        if (data.active) {
-          setFollowState({
-            active: true,
-            chunkIndex: data.chunkIndex,
-            totalChunks: data.totalChunks,
-            chunkText: data.chunkText,
-            words: data.words || [],
-            estimatedWordIndex: data.estimatedWordIndex || 0,
-            progress: data.progress || 0,
-            fileName: data.fileName || '',
-          });
-        } else {
-          setFollowState(null);
-        }
-      } catch {}
+    if (!catWashFollow || !autoplayParam) return;
+    if (catWashAutoStarted.current) return;
+    if (!extractedText || extractedText.length < 10) return;
+    if (isPlayingRef.current) return;
+
+    catWashAutoStarted.current = true;
+    console.log("[Cat Wash] Auto-starting TTS playback (tablet → Bluetooth → Echo)");
+    
+    const startCatWashPlayback = async () => {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const playBtn = document.querySelector('[data-testid="button-play-tts"]') as HTMLButtonElement;
+      if (playBtn && !isPlayingRef.current) {
+        playBtn.click();
+      }
     };
-    poll();
-    const interval = setInterval(poll, 500);
-    return () => clearInterval(interval);
-  }, [catWashFollow]);
+    startCatWashPlayback();
+  }, [catWashFollow, autoplayParam, extractedText]);
 
   const handleFlick = async (deviceId: string) => {
     if (!fileId) {
@@ -606,11 +600,39 @@ export default function PDFReaderPage() {
       isPlayingRef.current = false;
       setCurrentChunk(0);
       currentChunkRef.current = 0;
-      toast({
-        title: "Finished",
-        description: "Finished reading the document",
-      });
+
+      if (catWashFollow && fileId) {
+        try {
+          const resp = await fetch("/api/cat-wash/update-progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileId, completed: true }),
+          });
+          const data = await resp.json();
+          if (data.nextFile) {
+            console.log(`[Cat Wash] Auto-continuing to: ${data.nextFile.name}`);
+            toast({ title: "Next reading", description: `Loading: ${data.nextFile.name}` });
+            window.location.href = data.nextFile.readerUrl;
+            return;
+          } else if (data.allComplete) {
+            toast({ title: "All done!", description: "All readings for this week are complete." });
+          }
+        } catch (e) {
+          console.error("[Cat Wash] Failed to report completion:", e);
+        }
+      } else {
+        toast({ title: "Finished", description: "Finished reading the document" });
+      }
       return;
+    }
+
+    if (catWashFollow && fileId) {
+      const words = chunksRef.current[index]?.split(/\s+/).filter((w: string) => w.length > 0) || [];
+      fetch("/api/cat-wash/update-progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileId, chunkIndex: index, totalChunks: chunksRef.current.length, words }),
+      }).catch(() => {});
     }
 
     setCurrentChunk(index);

@@ -4021,175 +4021,10 @@ export async function registerRoutes(
     return false;
   }
 
-  async function playCatWashFile(
-    file: any, storageRef: any, haUrl: string, speakerEntity: string,
-    appUrl: string, authParam: string, currentWeekNumber: number, sessionId?: number
-  ) {
-    const mySession = sessionId ?? catWashSessionId;
-    const fileName = file.displayName || file.originalName || 'Unknown file';
-    const isModuleFile = file.folder?.toLowerCase().includes('module');
-    const fileType = isModuleFile ? 'module' : 'reading';
-    console.log(`[Cat Wash Auto] Playing: ${fileName} (${fileType}, id=${file.id})`);
-
-    const result = await extractAndChunkPdf(file);
-    if (!result || result.chunks.length === 0) {
-      console.error(`[Cat Wash Auto] Could not extract text from ${fileName}, skipping`);
-      await storageRef.updateFile(file.id, { listened: true });
-      const nextFile = await findNextCatWashFile(storageRef, currentWeekNumber, file.id);
-      if (nextFile && catWashPlaybackActive && catWashSessionId === mySession) {
-        const nextName = nextFile.displayName || nextFile.originalName || 'Unknown file';
-        const skipText = `Could not read ${fileName}. Moving on to ${nextName}.`;
-        await sendCatWashTTSToEcho(skipText, haUrl, speakerEntity);
-        const skipDuration = Math.max(6000, (skipText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
-        await new Promise(resolve => setTimeout(resolve, skipDuration));
-        await playCatWashFile(nextFile, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
-      }
-      return;
-    }
-
-    const { chunks } = result;
-
-    let resumeFromChunk = 0;
-    if (file.checkedChunks) {
-      try {
-        const checked = JSON.parse(file.checkedChunks) as number[];
-        if (checked.length > 0) {
-          resumeFromChunk = Math.max(...checked) + 1;
-          if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
-        }
-      } catch {}
-    }
-    if (resumeFromChunk === 0 && file.lastChunkIndex > 0) {
-      resumeFromChunk = file.lastChunkIndex;
-      if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
-    }
-
-    const progressKey = `file-${file.id}`;
-    const existingServerProgress = playbackProgress[progressKey];
-    if (existingServerProgress?.lastCompletedChunk != null && existingServerProgress.lastCompletedChunk > resumeFromChunk) {
-      resumeFromChunk = existingServerProgress.lastCompletedChunk;
-    }
-
-    // Update reader URL on display devices
-    const readerUrl = `${appUrl}/pdf-reader/${file.id}?catWashFollow=true&auth=${authParam}`;
-    const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
-    const fireTablets = [
-      { mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'] },
-      { mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'] },
-    ];
-
-    // Update all display devices to new PDF using Silk browser launch
-    await Promise.all([
-      ...fireTablets.map(async (device, idx) => {
-        await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, `tablet_${idx}`);
-      }),
-      (async () => {
-        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
-        for (const entity of fireStickEntities) {
-          if (await openUrlOnFireStick(haUrl, entity, readerUrl)) break;
-        }
-      })(),
-    ]);
-
-    // Update playback state
-    catWashPlaybackState = {
-      fileId: file.id,
-      fileName,
-      chunkIndex: resumeFromChunk,
-      totalChunks: chunks.length,
-      chunks,
-      currentWords: [],
-      wordIndex: 0,
-      startedAt: new Date(),
-      chunkStartedAt: new Date(),
-      estimatedChunkDuration: 0,
-    };
-
-    // Play chunks
-    for (let i = resumeFromChunk; i < chunks.length; i++) {
-      if (!catWashPlaybackActive || catWashSessionId !== mySession) {
-        console.log(`[Cat Wash Auto] Stopped at chunk ${i} (session ${mySession} vs current ${catWashSessionId})`);
-        return;
-      }
-
-      const chunk = chunks[i];
-      const words = chunk.split(/\s+/);
-      console.log(`[Cat Wash Auto] Chunk ${i + 1}/${chunks.length} (${words.length} words)`);
-
-      if (catWashPlaybackState) {
-        catWashPlaybackState.chunkIndex = i;
-        catWashPlaybackState.currentWords = words;
-        catWashPlaybackState.wordIndex = 0;
-        catWashPlaybackState.chunkStartedAt = new Date();
-      }
-
-      try {
-        const cleanedChunk = cleanTextForTTS(chunk);
-        if (cleanedChunk.trim().length === 0) {
-          console.log(`[Cat Wash Auto] Chunk ${i} empty after cleaning, skipping`);
-          continue;
-        }
-
-        const ttsResult = await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
-        const estimatedDuration = ttsResult.durationMs;
-        if (catWashPlaybackState) {
-          catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
-        }
-
-        playbackProgress[progressKey] = {
-          chunkIndex: i,
-          lastCompletedChunk: i,
-          totalChunks: chunks.length,
-          lastPlayed: new Date(),
-          fileId: file.id,
-        };
-
-        await storageRef.updateFile(file.id, { lastChunkIndex: i, totalChunks: chunks.length });
-        console.log(`[Cat Wash Auto] Waiting ${Math.round(estimatedDuration / 1000)}s for chunk ${i + 1}`);
-        await new Promise(resolve => setTimeout(resolve, estimatedDuration));
-      } catch (ttsError: any) {
-        console.error(`[Cat Wash Auto] Error on chunk ${i}:`, ttsError.message);
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    }
-
-    // File complete - mark listened and auto-continue
-    if (catWashPlaybackActive && catWashSessionId === mySession) {
-      console.log(`[Cat Wash Auto] ${fileName} complete - marking listened`);
-      await storageRef.updateFile(file.id, { listened: true });
-
-      const nextFileToPlay = await findNextCatWashFile(storageRef, currentWeekNumber, file.id);
-      if (nextFileToPlay) {
-        const nextFileName = nextFileToPlay.displayName || nextFileToPlay.originalName || 'Unknown file';
-        const nextIsModule = nextFileToPlay.folder?.toLowerCase().includes('module');
-        const folderType = nextIsModule ? 'module' : 'reading';
-        const courseMatch = nextFileToPlay.folder?.match(/week-\d+-([a-z]+\d+)/i);
-        const courseName = courseMatch ? courseMatch[1].toUpperCase() : 'your course';
-
-        const transitionText = `The reading of ${fileName} has concluded. We will now begin playing ${nextFileName}, from ${courseName}, from the ${folderType} folder.`;
-        console.log(`[Cat Wash Auto] Transition: ${transitionText}`);
-
-        await sendCatWashTTSToEcho(transitionText, haUrl, speakerEntity);
-        const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
-        await new Promise(resolve => setTimeout(resolve, announceDuration));
-
-        if (!catWashPlaybackActive || catWashSessionId !== mySession) return;
-        await playCatWashFile(nextFileToPlay, storageRef, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber, mySession);
-      } else {
-        const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
-        await sendCatWashTTSToEcho(completionText, haUrl, speakerEntity);
-        await new Promise(resolve => setTimeout(resolve, 8000));
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
-        });
-        console.log("[Cat Wash Auto] All files complete - switched to radio");
-        catWashPlaybackActive = false;
-        catWashPlaybackState = null;
-      }
-    }
-  }
+  // playCatWashFile is no longer needed for server-side TTS.
+  // The tablet handles all audio playback via browser <audio> → Bluetooth → Echo.
+  // Auto-continuation is handled by the tablet calling POST /api/cat-wash/update-progress
+  // with { completed: true }, which returns the next file URL for the tablet to navigate to.
 
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
@@ -4275,8 +4110,7 @@ export async function registerRoutes(
       const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
       console.log(`[Cat Wash] Selected: ${fileName} (${fileType}, id=${nextFile.id}, folder=${nextFile.folder})`);
 
-      // Build reader URL for display devices (no autoplay - server handles TTS directly)
-      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
 
       // === STEP 1: Extract text from PDF for server-side TTS ===
       const extractResult = await extractAndChunkPdf(nextFile);
@@ -4377,13 +4211,15 @@ export async function registerRoutes(
 
       console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
 
-      // === STEP 3: Start server-side TTS playback on Echo Cat Left ===
+      // === STEP 3: Track playback state (tablet handles audio via Bluetooth → Echo) ===
+      // The tablet's PDF reader plays OpenAI TTS audio through its browser <audio> element.
+      // Audio goes from tablet → Bluetooth → Echo speaker. No server-side AMP calls needed.
+      // The server just tracks state so the progress/stop endpoints work.
+      catWashSessionId++;
+      const currentSession = catWashSessionId;
       if (catWashPlaybackActive) {
         console.log("[Cat Wash] Stopping previous playback session");
-        catWashPlaybackActive = false;
-        catWashPlaybackState = null;
       }
-
       catWashPlaybackActive = true;
       catWashPlaybackState = {
         fileId: nextFile.id,
@@ -4398,135 +4234,18 @@ export async function registerRoutes(
         estimatedChunkDuration: 0,
       };
 
-      // Respond immediately
+      console.log(`[Cat Wash] Session ${currentSession}: tablet will handle TTS playback via Bluetooth → Echo`);
+      console.log(`[Cat Wash] Reader URL: ${readerUrl}`);
+
       res.json({
         action: "playing",
         file: { id: nextFile.id, name: fileName, type: fileType, folder: nextFile.folder },
         readerUrl,
-        speaker: speakerEntity,
         currentWeek: currentWeekNumber,
-        resumeFromChunk,
         totalChunks: chunks.length,
         devices: deviceResults,
+        playbackMode: "tablet-bluetooth",
       });
-
-      // Background: play chunks sequentially using OpenAI TTS → Object Storage → HA media_player
-      (async () => {
-        try {
-          // Small delay for devices to load
-          await new Promise(resolve => setTimeout(resolve, 2000));
-
-          for (let i = resumeFromChunk; i < chunks.length; i++) {
-            if (!catWashPlaybackActive) {
-              console.log(`[Cat Wash TTS] Stopped at chunk ${i}`);
-              break;
-            }
-
-            const chunk = chunks[i];
-            const words = chunk.split(/\s+/);
-            console.log(`[Cat Wash TTS] Playing chunk ${i + 1}/${chunks.length} (${chunk.length} chars, ${words.length} words)`);
-
-            if (catWashPlaybackState) {
-              catWashPlaybackState.chunkIndex = i;
-              catWashPlaybackState.currentWords = words;
-              catWashPlaybackState.wordIndex = 0;
-              catWashPlaybackState.chunkStartedAt = new Date();
-            }
-
-            try {
-              const cleanedChunk = cleanTextForTTS(chunk);
-              if (cleanedChunk.trim().length === 0) {
-                console.log(`[Cat Wash TTS] Chunk ${i} empty after cleaning, skipping`);
-                continue;
-              }
-
-              const ttsResult = await sendCatWashTTSToEcho(cleanedChunk, haUrl, speakerEntity);
-              console.log(`[Cat Wash TTS] Sent TTS chunk ${i + 1} to Echo`);
-
-              const estimatedDuration = ttsResult.durationMs;
-              if (catWashPlaybackState) {
-                catWashPlaybackState.estimatedChunkDuration = estimatedDuration;
-              }
-
-              // Save progress to DB
-              playbackProgress[progressKey] = {
-                chunkIndex: i,
-                lastCompletedChunk: i,
-                totalChunks: chunks.length,
-                lastPlayed: new Date(),
-                fileId: nextFile.id,
-              };
-
-              await storage.updateFile(nextFile.id, { lastChunkIndex: i, totalChunks: chunks.length });
-
-              // Wait for estimated playback duration before sending next chunk
-              console.log(`[Cat Wash TTS] Waiting ${Math.round(estimatedDuration / 1000)}s for chunk ${i + 1}`);
-              await new Promise(resolve => setTimeout(resolve, estimatedDuration));
-
-            } catch (ttsError: any) {
-              console.error(`[Cat Wash TTS] Error on chunk ${i}:`, ttsError.message);
-              await new Promise(resolve => setTimeout(resolve, 3000));
-            }
-          }
-
-          // All chunks complete - mark listened and auto-continue to next file
-          if (catWashPlaybackActive) {
-            console.log(`[Cat Wash TTS] All ${chunks.length} chunks complete - marking file as listened`);
-            await storage.updateFile(nextFile.id, { listened: true });
-
-            // Find the next unlistened file in the priority list
-            const nextFileToPlay = await findNextCatWashFile(storage, currentWeekNumber, nextFile.id);
-
-            if (nextFileToPlay) {
-              const nextFileName = nextFileToPlay.displayName || nextFileToPlay.originalName || 'Unknown file';
-              const isModule = nextFileToPlay.folder?.toLowerCase().includes('module');
-              const folderType = isModule ? 'module' : 'reading';
-              const courseMatch = nextFileToPlay.folder?.match(/week-\d+-([a-z]+\d+)/i);
-              const courseName = courseMatch ? courseMatch[1].toUpperCase() : 'your course';
-
-              // Announce completion and next file
-              const transitionText = `The reading of ${fileName} has concluded. We will now begin playing ${nextFileName}, from ${courseName}, from the ${folderType} folder.`;
-              console.log(`[Cat Wash TTS] Transition announcement: ${transitionText}`);
-
-              await sendCatWashTTSToEcho(transitionText, haUrl, speakerEntity);
-
-              // Wait for announcement to finish (~5 seconds per sentence)
-              const announceDuration = Math.max(6000, (transitionText.split(/\s+/).length / 150) * 60 * 1000 + 2000);
-              await new Promise(resolve => setTimeout(resolve, announceDuration));
-
-              if (!catWashPlaybackActive) {
-                console.log("[Cat Wash TTS] Stopped during transition announcement");
-                catWashPlaybackState = null;
-                return;
-              }
-
-              // Auto-play the next file
-              console.log(`[Cat Wash TTS] Auto-continuing to: ${nextFileName}`);
-              await playCatWashFile(nextFileToPlay, storage, haUrl, speakerEntity, appUrl, authParam, currentWeekNumber);
-            } else {
-              // No more files - announce completion and play radio
-              const completionText = `All readings for week ${currentWeekNumber} have been completed. Great work! Switching to radio now.`;
-              await sendCatWashTTSToEcho(completionText, haUrl, speakerEntity);
-              await new Promise(resolve => setTimeout(resolve, 8000));
-              
-              // Switch to radio
-              await fetch(`${haUrl}/api/services/media_player/play_media`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: speakerEntity, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
-              });
-              console.log("[Cat Wash TTS] All files complete - switched to radio");
-              catWashPlaybackActive = false;
-              catWashPlaybackState = null;
-            }
-          }
-
-        } catch (bgError: any) {
-          console.error("[Cat Wash TTS] Background playback error:", bgError.message);
-          catWashPlaybackActive = false;
-          catWashPlaybackState = null;
-        }
-      })();
 
     } catch (error: any) {
       console.error("[Cat Wash] Error:", error);
@@ -4534,17 +4253,13 @@ export async function registerRoutes(
     }
   });
 
-  // GET /api/cat-wash/progress - Display devices poll this to sync text highlighting
+  // GET /api/cat-wash/progress - Returns current playback state for the active session
   app.get("/api/cat-wash/progress", (_req, res) => {
     if (!catWashPlaybackActive || !catWashPlaybackState) {
       return res.json({ active: false });
     }
 
     const state = catWashPlaybackState;
-    const elapsed = Date.now() - state.chunkStartedAt.getTime();
-    const progress = state.estimatedChunkDuration > 0 ? Math.min(1, elapsed / state.estimatedChunkDuration) : 0;
-    const estimatedWordIndex = Math.floor(progress * state.currentWords.length);
-
     res.json({
       active: true,
       fileId: state.fileId,
@@ -4553,11 +4268,69 @@ export async function registerRoutes(
       totalChunks: state.totalChunks,
       chunkText: state.chunks[state.chunkIndex] || '',
       words: state.currentWords,
-      estimatedWordIndex: Math.min(estimatedWordIndex, state.currentWords.length - 1),
-      progress,
-      elapsed,
-      estimatedDuration: state.estimatedChunkDuration,
     });
+  });
+
+  // POST /api/cat-wash/update-progress - Tablet reports its playback progress
+  app.post("/api/cat-wash/update-progress", async (req, res) => {
+    const { fileId, chunkIndex, totalChunks, words, wordIndex, completed } = req.body;
+
+    if (catWashPlaybackState && catWashPlaybackState.fileId === fileId) {
+      catWashPlaybackState.chunkIndex = chunkIndex ?? catWashPlaybackState.chunkIndex;
+      catWashPlaybackState.currentWords = words ?? catWashPlaybackState.currentWords;
+      catWashPlaybackState.wordIndex = wordIndex ?? catWashPlaybackState.wordIndex;
+      catWashPlaybackState.chunkStartedAt = new Date();
+    }
+
+    if (fileId && chunkIndex != null) {
+      await storage.updateFile(fileId, { lastChunkIndex: chunkIndex, totalChunks: totalChunks ?? undefined });
+    }
+
+    // When the tablet signals file completion, find and return the next file
+    if (completed && fileId) {
+      console.log(`[Cat Wash] Tablet reports file ${fileId} complete`);
+      await storage.updateFile(fileId, { listened: true });
+
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const today = new Date();
+        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
+
+      const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
+      if (nextFile) {
+        const appUrl = "https://home-view--bkh416.replit.app";
+        const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+        const nextReaderUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
+        const nextFileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+
+        catWashPlaybackState = {
+          fileId: nextFile.id,
+          fileName: nextFileName,
+          chunkIndex: 0,
+          totalChunks: 0,
+          chunks: [],
+          currentWords: [],
+          wordIndex: 0,
+          startedAt: new Date(),
+          chunkStartedAt: new Date(),
+          estimatedChunkDuration: 0,
+        };
+
+        console.log(`[Cat Wash] Next file: ${nextFileName} (id=${nextFile.id})`);
+        return res.json({ nextFile: { id: nextFile.id, name: nextFileName, readerUrl: nextReaderUrl } });
+      } else {
+        catWashPlaybackActive = false;
+        catWashPlaybackState = null;
+        console.log("[Cat Wash] All files complete");
+        return res.json({ allComplete: true });
+      }
+    }
+
+    res.json({ ok: true });
   });
 
   // POST /api/cat-wash/stop - Stop cat wash playback
