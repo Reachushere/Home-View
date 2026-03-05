@@ -19015,7 +19015,7 @@ function ProfileForm({
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="First name"
             className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-firstname"
           />
         </div>
@@ -19027,7 +19027,7 @@ function ProfileForm({
             onChange={(e) => setLastName(e.target.value)}
             placeholder="Last name"
             className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-lastname"
           />
         </div>
@@ -19040,7 +19040,7 @@ function ProfileForm({
           onChange={(e) => setAddress(e.target.value)}
           placeholder="e.g. 123 Main Street, Apt 4"
           className="!text-black !text-[10px] h-8"
-          style={{ fontSize: '10px' }}
+          style={{ fontSize: '10px', color: 'black' }}
           data-testid="input-profile-address"
         />
       </div>
@@ -19152,7 +19152,7 @@ function ProfileForm({
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
             className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-birthdate"
           />
         </div>
@@ -19164,7 +19164,7 @@ function ProfileForm({
             onChange={(e) => setAllergies(e.target.value)}
             placeholder="e.g. Peanuts, Penicillin"
             className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-allergies"
           />
         </div>
@@ -19178,7 +19178,7 @@ function ProfileForm({
             onChange={(e) => setEmergencyContactName(e.target.value)}
             placeholder="Contact name"
             className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-name"
           />
         </div>
@@ -19191,7 +19191,7 @@ function ProfileForm({
             onChange={(e) => setEmergencyContactPhone(e.target.value)}
             placeholder="+1 (416) 555-0123"
             className="!text-black !text-[10px] h-8"
-            style={{ fontSize: '10px' }}
+            style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-phone"
           />
         </div>
