@@ -13445,7 +13445,7 @@ export default function Dashboard() {
             }
             setIsSettingsDialogOpen(open);
           }}>
-            <DialogContent data-settings-dialog className="max-w-4xl max-h-[95vh] text-[9px] border border-white/30 backdrop-blur-[3px] bg-white/[0.45] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
+            <DialogContent data-settings-dialog className="max-w-4xl max-h-[98vh] text-[9px] border border-white/30 backdrop-blur-[3px] bg-white/[0.45] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
@@ -13462,11 +13462,11 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="px-4 pb-4 pt-0 overflow-y-auto flex-1" style={{ marginTop: '-4px' }}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="px-4 pb-3 pt-0 overflow-y-auto flex-1" style={{ marginTop: '-4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="grid grid-cols-2 gap-3">
                 {/* Left Column */}
-                <div className="flex flex-col gap-4 justify-between">
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 justify-between">
+                <div className="flex flex-col gap-3">
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Colour Settings</Label>
@@ -13910,8 +13910,8 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column */}
-                <div className="flex flex-col gap-4 justify-between" style={{ marginTop: '-2px' }}>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 justify-between" style={{ marginTop: '-2px' }}>
+                <div className="flex flex-col gap-3">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '1px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
