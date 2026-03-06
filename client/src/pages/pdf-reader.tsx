@@ -827,15 +827,15 @@ export default function PDFReaderPage() {
 
   if (fileLoading && !isOneDrive) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3a8bbf, #164a72)' }}>
+        <Loader2 className="h-8 w-8 animate-spin text-white/60" />
       </div>
     );
   }
 
   if (!file && !isOneDrive) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100 p-4">
+      <div className="min-h-screen p-4" style={{ background: 'linear-gradient(135deg, #3a8bbf, #164a72)' }}>
         <div className="max-w-4xl mx-auto">
           <Link href="/files">
             <Button variant="ghost" className="mb-4">
@@ -853,21 +853,31 @@ export default function PDFReaderPage() {
     );
   }
 
+  const folderParts = file?.folder?.split('-') || [];
+  const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
+  const cId = courseCodeFromFolder?.toLowerCase() || '';
+  const playerHeaderGradient = (() => {
+    if (cId === 'cppa122') return 'linear-gradient(0deg, rgb(71, 176, 69) 0%, rgb(15, 80, 4) 100%)';
+    if (cId === 'cfnf400') return 'linear-gradient(180deg, rgb(222, 24, 100) 0%, rgb(250, 103, 179) 100%)';
+    if (cId === 'casl101') return 'linear-gradient(180deg, rgb(80, 4, 66) 0%, rgb(176, 69, 162) 100%)';
+    return 'linear-gradient(to br, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))';
+  })();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #3a8bbf 0%, #164a72 100%)' }}>
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} />
       
-      <div className="sticky top-0 z-50 bg-amber-800 backdrop-blur-md border-b border-amber-900 px-4 py-3">
+      <div className="sticky top-0 z-50 px-4 py-4 border-b border-white/20 backdrop-blur-md" style={{ background: playerHeaderGradient }}>
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/files">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-white/80 hover:text-white hover:bg-white/10" data-testid="button-back">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div className="truncate">
-              <h1 className="font-semibold text-white truncate">{fileName || "PDF Document"}</h1>
-              <p className="text-xs text-amber-200">Page {currentPage} of {numPages}</p>
+              <h1 className="font-semibold text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>{fileName || "PDF Document"}</h1>
+              <p className="text-xs text-white/60">Page {currentPage} of {numPages}</p>
             </div>
           </div>
           
@@ -875,6 +885,7 @@ export default function PDFReaderPage() {
             <Button
               variant="ghost"
               size="icon"
+              className="text-white/80 hover:text-white hover:bg-white/10"
               onClick={goToPreviousPage}
               disabled={currentPage <= 1}
             >
@@ -884,6 +895,7 @@ export default function PDFReaderPage() {
             <Button
               variant="ghost"
               size="icon"
+              className="text-white/80 hover:text-white hover:bg-white/10"
               onClick={goToNextPage}
               disabled={currentPage >= numPages}
             >
@@ -894,15 +906,13 @@ export default function PDFReaderPage() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        {/* Side-by-side layout: PDF on left, TTS controls on right */}
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-60px)]">
-          {/* Left side: PDF Viewer */}
-          <div className="flex-1 lg:w-1/2 overflow-auto bg-gray-100 p-4">
+        <div className="flex flex-col lg:flex-row h-[calc(100vh-73px)]">
+          <div className="flex-1 lg:w-1/2 overflow-auto p-4" style={{ background: 'rgba(255,255,255,0.08)' }}>
             {/* File selector for multiple reading files */}
             {allFiles.length > 1 && (
               <div className="bg-gray-800 rounded-lg shadow p-3 mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-4 w-4 text-amber-300" />
+                  <FileText className="h-4 w-4 text-white/70" />
                   <span className="text-sm font-medium text-white">Reading Files ({allFiles.length})</span>
                 </div>
                 <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
@@ -925,8 +935,8 @@ export default function PDFReaderPage() {
                         onClick={() => switchToFile(file)}
                         className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                           isCurrentFile 
-                            ? 'bg-amber-700 border border-amber-500' 
-                            : 'hover:bg-gray-700'
+                            ? 'bg-white/20 border border-white/30' 
+                            : 'hover:bg-white/10'
                         }`}
                         data-testid={`reading-file-${idx}`}
                       >
@@ -947,12 +957,12 @@ export default function PDFReaderPage() {
                           onClick={(e) => e.stopPropagation()}
                           className="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
                         />
-                        <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-amber-300' : 'text-red-400'}`} />
+                        <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-white' : 'text-white/60'}`} />
                         <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-white'} ${isCurrentFile ? 'font-medium' : ''}`}>
                           {cleanName || file.name}
                         </span>
                         {isCurrentFile && (
-                          <span className="ml-auto text-xs bg-amber-600 text-white px-2 py-0.5 rounded">Current</span>
+                          <span className="ml-auto text-xs bg-white/20 text-white px-2 py-0.5 rounded">Current</span>
                         )}
                       </div>
                     );
@@ -968,7 +978,7 @@ export default function PDFReaderPage() {
                   onLoadSuccess={onDocumentLoadSuccess}
                   loading={
                     <div className="flex items-center justify-center h-[400px]">
-                      <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+                      <Loader2 className="h-8 w-8 animate-spin text-white/60" />
                     </div>
                   }
                 >
@@ -983,18 +993,17 @@ export default function PDFReaderPage() {
             </div>
           </div>
           
-          {/* Right side: TTS Controls */}
-          <div className="lg:w-1/2 bg-white border-l border-gray-200 p-6 overflow-auto rounded-lg">
+          <div className="lg:w-1/2 border-l border-white/10 p-6 overflow-auto" style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(20px)' }}>
             <div className="max-w-md mx-auto">
               <div className="flex items-center gap-2 mb-4">
-                <Volume2 className="h-6 w-6 text-amber-600" />
-                <h2 className="text-xl font-semibold text-gray-800">OpenAI Text-to-Speech</h2>
+                <Volume2 className="h-6 w-6 text-white/80" />
+                <h2 className="text-xl font-semibold text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Text-to-Speech</h2>
               </div>
 
               {isEditingText && (
                 <div className="mb-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Edit TTS Text</span>
+                    <span className="text-sm font-medium text-white/80">Edit TTS Text</span>
                     <div className="flex items-center gap-1">
                       <Button
                         variant="ghost"
@@ -1033,7 +1042,7 @@ export default function PDFReaderPage() {
                     data-testid="textarea-edit-tts-text"
                     value={editableText}
                     onChange={(e) => setEditableText(e.target.value)}
-                    className="w-full h-64 p-3 text-sm border border-gray-300 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white text-gray-800"
+                    className="w-full h-64 p-3 text-sm border border-white/20 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/30 bg-black/30 text-white"
                     placeholder="Edit the extracted text here..."
                   />
                   <p className="text-xs text-gray-500">{editableText.length} characters</p>
@@ -1089,30 +1098,30 @@ export default function PDFReaderPage() {
               )}
 
               {isPlaying && !isEditingText && (
-                <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="mb-6 p-4 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-green-700">Now Playing</span>
-                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                    <span className="text-sm font-medium text-white">Now Playing</span>
+                    <span className="text-xs bg-white/15 text-white/80 px-2 py-1 rounded-full">
                       Chunk {currentChunk + 1} of {totalChunks} ({chunkProgress}% done)
                     </span>
                   </div>
-                  <div className="bg-green-200 rounded-full h-2 overflow-hidden mb-3">
+                  <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-3">
                     <div
-                      className="bg-green-500 h-full transition-all duration-300"
+                      className="bg-green-400 h-full transition-all duration-300"
                       style={{ width: `${chunkProgress}%` }}
                     />
                   </div>
                   {chunkWords.length > 0 && (
-                    <div className="max-h-40 overflow-y-auto p-3 bg-white rounded border border-green-100 text-sm leading-relaxed">
+                    <div className="max-h-40 overflow-y-auto p-3 rounded border border-white/10 text-sm leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }}>
                       {chunkWords.map((word, idx) => (
                         <span
                           key={idx}
                           className={`${
                             idx === currentWordIndex
-                              ? "bg-yellow-300 text-black font-semibold px-0.5 rounded"
+                              ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded"
                               : idx < currentWordIndex
-                              ? "text-gray-400"
-                              : "text-gray-700"
+                              ? "text-white/30"
+                              : "text-white/80"
                           } transition-colors duration-100`}
                         >
                           {word}{" "}
@@ -1125,7 +1134,7 @@ export default function PDFReaderPage() {
 
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Voice</label>
+                  <label className="text-sm font-medium text-white/70 mb-2 block">Voice</label>
                   <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
                     <SelectTrigger className="w-full bg-gray-800 text-white border-gray-600" style={{ fontFamily: "'Raleway', sans-serif" }}>
                       <SelectValue />
@@ -1141,7 +1150,7 @@ export default function PDFReaderPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Speed</label>
+                  <label className="text-sm font-medium text-white/70 mb-2 block">Speed</label>
                   <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
                     <button
                       type="button"
@@ -1193,7 +1202,7 @@ export default function PDFReaderPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Volume</label>
+                  <label className="text-sm font-medium text-white/70 mb-2 block">Volume</label>
                   <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
                     <button
                       type="button"
@@ -1359,9 +1368,9 @@ export default function PDFReaderPage() {
                                 >
                                   {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
                                    device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
-                                   device.type === "group" ? <Speaker className="h-3 w-3 text-amber-400 flex-shrink-0" /> :
+                                   device.type === "group" ? <Speaker className="h-3 w-3 text-yellow-400 flex-shrink-0" /> :
                                    <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
-                                  <span className={`text-xs truncate ${device.type === "group" ? "text-amber-300 font-medium" : "text-white"}`}>{device.name}</span>
+                                  <span className={`text-xs truncate ${device.type === "group" ? "text-yellow-300 font-medium" : "text-white"}`}>{device.name}</span>
                                 </button>
                               ))}
                             </div>
@@ -1373,7 +1382,7 @@ export default function PDFReaderPage() {
                 )}
 
                 <button
-                  className={`p-2 rounded-md hover:bg-white/20 transition-colors ${isEditingText ? 'ring-2 ring-amber-400' : ''}`}
+                  className={`p-2 rounded-md hover:bg-white/20 transition-colors ${isEditingText ? 'ring-2 ring-white/40' : ''}`}
                   data-testid="button-edit-tts-text"
                   onClick={() => {
                     if (isEditingText) {
@@ -1400,28 +1409,28 @@ export default function PDFReaderPage() {
               {chunksList.length > 0 && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Chunks ({checkedChunks.size}/{totalChunks})</span>
-                    <span className="text-xs text-gray-500">{chunkProgress}% complete</span>
+                    <span className="text-sm font-medium text-white/80">Chunks ({checkedChunks.size}/{totalChunks})</span>
+                    <span className="text-xs text-white/50">{chunkProgress}% complete</span>
                   </div>
-                  <div className="bg-gray-200 rounded-full h-2 overflow-hidden mb-3">
+                  <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-3">
                     <div
-                      className="bg-amber-500 h-full transition-all duration-300"
+                      className="bg-green-400 h-full transition-all duration-300"
                       style={{ width: `${chunkProgress}%` }}
                     />
                   </div>
-                  <div className="max-h-[200px] overflow-y-auto space-y-1 border rounded-lg p-2">
+                  <div className="max-h-[200px] overflow-y-auto space-y-1 border border-white/10 rounded-lg p-2" style={{ background: 'rgba(0,0,0,0.2)' }}>
                     {chunksList.map((chunk, idx) => (
                       <div
                         key={idx}
                         className={`flex items-center gap-2 px-2 py-1.5 rounded transition-colors ${
-                          currentChunk === idx && isPlaying ? 'bg-amber-50 border border-amber-200' : 'hover:bg-gray-50'
+                          currentChunk === idx && isPlaying ? 'bg-white/15 border border-white/20' : 'hover:bg-white/5'
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={checkedChunks.has(idx)}
                           onChange={() => toggleChunkChecked(idx)}
-                          className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 shrink-0"
+                          className="h-4 w-4 rounded border-white/30 text-green-500 focus:ring-green-500 shrink-0"
                           data-testid={`checkbox-chunk-${idx}`}
                         />
                         <Button
@@ -1439,12 +1448,12 @@ export default function PDFReaderPage() {
                           data-testid={`button-play-chunk-${idx}`}
                         >
                           {currentChunk === idx && isPlaying && !isPaused ? (
-                            <Pause className="h-3.5 w-3.5 text-amber-600" />
+                            <Pause className="h-3.5 w-3.5 text-white/80" />
                           ) : (
-                            <Play className="h-3.5 w-3.5 text-amber-600 ml-0.5" />
+                            <Play className="h-3.5 w-3.5 text-white/80 ml-0.5" />
                           )}
                         </Button>
-                        <span className={`text-xs truncate ${checkedChunks.has(idx) ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                        <span className={`text-xs truncate ${checkedChunks.has(idx) ? 'text-white/30 line-through' : 'text-white/70'}`}>
                           {idx + 1}. {chunk.slice(0, 60)}...
                         </span>
                       </div>
@@ -1454,16 +1463,16 @@ export default function PDFReaderPage() {
               )}
 
               {/* Progress Indicators */}
-              <div className="space-y-3 mb-4 mt-6 border-t border-gray-200 pt-4">
+              <div className="space-y-3 mb-4 mt-6 border-t border-white/10 pt-4">
                 {/* Current File Progress */}
                 <div data-testid="progress-current-file">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-gray-600">This File</span>
-                    <span className="text-xs text-gray-500">{checkedChunks.size}/{totalChunks} chunks ({chunkProgress}%)</span>
+                    <span className="text-xs font-medium text-white/70">This File</span>
+                    <span className="text-xs text-white/50">{checkedChunks.size}/{totalChunks} chunks ({chunkProgress}%)</span>
                   </div>
-                  <div className="bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                  <div className="bg-white/10 rounded-full h-2.5 overflow-hidden">
                     <div
-                      className="bg-amber-500 h-full transition-all duration-300 rounded-full"
+                      className="bg-green-400 h-full transition-all duration-300 rounded-full"
                       style={{ width: `${chunkProgress}%` }}
                     />
                   </div>
@@ -1499,10 +1508,10 @@ export default function PDFReaderPage() {
                   return (
                     <div data-testid="progress-all-files">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-gray-600">All Files ({allFiles.length})</span>
-                        <span className="text-xs text-gray-500">{totalFilesComplete}/{allFiles.length} complete ({folderPct}%)</span>
+                        <span className="text-xs font-medium text-white/70">All Files ({allFiles.length})</span>
+                        <span className="text-xs text-white/50">{totalFilesComplete}/{allFiles.length} complete ({folderPct}%)</span>
                       </div>
-                      <div className="bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                      <div className="bg-white/10 rounded-full h-2.5 overflow-hidden">
                         <div
                           className="bg-green-500 h-full transition-all duration-300 rounded-full"
                           style={{ width: `${folderPct}%` }}
