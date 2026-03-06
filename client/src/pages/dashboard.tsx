@@ -10161,6 +10161,7 @@ export default function Dashboard() {
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-completed-tasks"
+              title="Completed"
               onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
             >
               <CheckSquare className="h-[18px] w-[18px] text-white" />
