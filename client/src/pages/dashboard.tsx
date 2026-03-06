@@ -9763,9 +9763,7 @@ export default function Dashboard() {
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
               background: colorSettings.todayCellBackground,
-              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
               border: '1.5px solid rgba(255,255,255,0.5)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className="pill-button-hover"
