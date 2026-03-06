@@ -11349,8 +11349,8 @@ export default function Dashboard() {
             paddingLeft: '3px',
           }}
         >
-          <ListTodo style={{ color: '#FFFFFF', height: '11px', width: '11px', strokeWidth: 2.5, marginTop: '-4px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 700, lineHeight: 1, marginTop: '1px' }}>+</span>
+          <ListTodo style={{ color: '#FFFFFF', height: '11px', width: '11px', strokeWidth: 2.5 }} />
+          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '4px' }}>+</span>
         </div>
       </div>
 
@@ -11390,8 +11390,8 @@ export default function Dashboard() {
             paddingRight: '3px',
           }}
         >
-          <FolderOpen style={{ color: '#FFFFFF', height: '11px', width: '11px', strokeWidth: 2.5, marginTop: '-4px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 700, lineHeight: 1, marginTop: '1px' }}>+</span>
+          <FolderOpen style={{ color: '#FFFFFF', height: '11px', width: '11px', strokeWidth: 2.5 }} />
+          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '4px' }}>+</span>
         </div>
       </div>
 
