@@ -393,7 +393,8 @@ export default function Dashboard() {
   const returnPromptShown = useRef(false);
 
   useEffect(() => {
-    if (returnPromptShown.current) return;
+    // TEMP: bypass guard to force-show Welcome Back dialog for testing
+    // if (returnPromptShown.current) return;
     returnPromptShown.current = true;
 
     fetch("/api/files")
