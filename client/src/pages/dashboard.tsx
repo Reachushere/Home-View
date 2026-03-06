@@ -17915,6 +17915,25 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'today'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                {(() => {
+                  const todayCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                  const todayCourseCodeLower = todayCourseCode.toLowerCase();
+                  const todayModuleFolder = `week-${task.weekNumber}-${todayCourseCodeLower}-module`;
+                  const todayModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === todayModuleFolder && f.objectPath) : null;
+                  const todayAttUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : null;
+                  const todayRefLink = task.referenceLink || null;
+                  const todayPdfUrl = todayAttUrl || todayRefLink || todayModuleFile?.objectPath || null;
+                  if (!todayPdfUrl) return null;
+                  return (
+                    <img
+                      src={pdfIconPath}
+                      alt="Open PDF"
+                      style={{ position: 'absolute', left: `${HEADER_POS.code - 32}px`, top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
+                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = todayPdfUrl; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                      data-testid={`pdf-icon-today-${task.id}`}
+                    />
+                  );
+                })()}
                 <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.courseName?.split(' - ')[0] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '11px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
