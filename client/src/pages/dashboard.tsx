@@ -11409,7 +11409,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Right side half-circle tab - Add Project */}
+      {/* Right side half-circle tab - Projects Page */}
       <div
         className="fixed z-[59] cursor-pointer right-tab-bounce"
         style={{
@@ -11419,10 +11419,9 @@ export default function Dashboard() {
           pointerEvents: 'auto',
         }}
         onClick={() => {
-          setEditingProject(null);
-          setProjectDialogOpen(true);
+          window.location.href = '/projects';
         }}
-        data-testid="right-add-project-tab"
+        data-testid="right-projects-tab"
       >
         <div
           style={{
@@ -11441,12 +11440,10 @@ export default function Dashboard() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '2px',
             paddingRight: '3px',
           }}
         >
-          <FolderOpen style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '6px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>+</span>
+          <FolderOpen style={{ color: '#FFFFFF', height: '16px', width: '16px', strokeWidth: 2.5, marginTop: '2px' }} />
         </div>
       </div>
 
