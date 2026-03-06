@@ -9636,7 +9636,7 @@ export default function Dashboard() {
           }}
         >
           <svg width="88" height="28" viewBox="0 0 88 28" style={{ display: 'block' }}>
-            <path d="M0,0 L88,0 L88,6 L82,6 L82,16 Q82,28 70,28 L18,28 Q6,28 6,16 L6,6 L0,6 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <path d="M0,0 L88,0 L88,6 Q82,6 82,12 L82,16 Q82,28 70,28 L18,28 Q6,28 6,16 L6,12 Q6,6 0,6 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           </svg>
         </div>
 
@@ -11298,7 +11298,7 @@ export default function Dashboard() {
         data-testid="bottom-tab-files"
       >
         <svg width="88" height="28" viewBox="0 0 88 28" style={{ display: 'block' }}>
-          <path d="M0,28 L88,28 L88,22 L82,22 L82,12 Q82,0 70,0 L18,0 Q6,0 6,12 L6,22 L0,22 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M0,28 L88,28 L88,22 Q82,22 82,16 L82,12 Q82,0 70,0 L18,0 Q6,0 6,12 L6,16 Q6,22 0,22 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
       {/* Left binder tab - Add Task */}
@@ -11318,7 +11318,7 @@ export default function Dashboard() {
         data-testid="left-add-task-tab"
       >
         <svg width="28" height="88" viewBox="0 0 28 88" style={{ display: 'block' }}>
-          <path d="M28,0 L28,88 L22,88 L22,82 L12,82 Q0,82 0,70 L0,18 Q0,6 12,6 L22,6 L22,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M28,0 L28,88 L22,88 Q22,82 16,82 L12,82 Q0,82 0,70 L0,18 Q0,6 12,6 L16,6 Q22,6 22,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
@@ -11337,7 +11337,7 @@ export default function Dashboard() {
         data-testid="right-projects-tab"
       >
         <svg width="28" height="88" viewBox="0 0 28 88" style={{ display: 'block' }}>
-          <path d="M0,0 L0,88 L6,88 L6,82 L16,82 Q28,82 28,70 L28,18 Q28,6 16,6 L6,6 L6,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M0,0 L0,88 L6,88 Q6,82 12,82 L16,82 Q28,82 28,70 L28,18 Q28,6 16,6 L12,6 Q6,6 6,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
