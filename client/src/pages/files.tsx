@@ -1156,7 +1156,8 @@ export default function FilesPage() {
       }
     }
     
-    return [`/files/${selectedFolder}`];
+    const folderPath = selectedFolder.replace(/^(week-\d+)-/, '$1/');
+    return [`/files/${folderPath}`];
   };
 
   const navigateBack = () => {
