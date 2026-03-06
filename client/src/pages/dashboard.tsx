@@ -512,14 +512,14 @@ export default function Dashboard() {
     if (el && sidePillIdle) {
       const computed = getComputedStyle(el);
       const matrix = new DOMMatrixReadOnly(computed.transform);
-      const currentX = matrix.m41;
+      const currentY = matrix.m42;
       el.style.transition = 'none';
-      el.style.transform = `translateX(${currentX}px)`;
+      el.style.transform = `translateX(-50%) translateY(${currentY}px)`;
       setSidePillIdle(false);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           el.style.transition = 'transform 0.3s ease-in-out';
-          el.style.transform = 'translateX(0px)';
+          el.style.transform = 'translateX(-50%) translateY(0px)';
           setIsPillMenuOpen(true);
         });
       });
@@ -11064,20 +11064,16 @@ export default function Dashboard() {
         </Button>
       </div>
       
-      {/* Tall Pill Panel - Slides in from right edge */}
+      {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {(() => {
-        const pillW = 52;
-        const pillH = (8 * 52) + 5;
-        const arrowW = 15;
-        const arrowH = 30;
-        const totalW = pillW + arrowW;
-        const midY = pillH / 2;
-        const arrowTopY = midY - (arrowH / 2);
-        const arrowBotY = midY + (arrowH / 2);
+        const btnCount = 9;
+        const btnSize = 44;
+        const btnGap = 8;
+        const pillH = 52;
+        const pillW = (btnCount * (btnSize + btnGap)) + btnGap;
+        const arrowH = 15;
         const r = 28;
-        const calH = calendarHeight - 35;
-        const pillTop = calendarTop + (calH / 2) - (pillH / 2);
-        const slideOffset = pillW + 4;
+        const slideOffset = pillH + 4;
         sidePillSlideOffset.current = slideOffset;
         
         const startAutoHide = () => {
@@ -11102,10 +11098,10 @@ export default function Dashboard() {
 
         const btnStyle = (slot: number, _bg: string, extraStyle?: React.CSSProperties): React.CSSProperties => ({
           position: 'absolute',
-          width: '44px',
-          height: '44px',
-          top: `${4 + (slot * 52)}px`,
-          right: '8px',
+          width: `${btnSize}px`,
+          height: `${btnSize}px`,
+          left: `${btnGap + (slot * (btnSize + btnGap))}px`,
+          top: '4px',
           borderRadius: '50%',
           background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
           backdropFilter: 'blur(24px)',
@@ -11132,29 +11128,29 @@ export default function Dashboard() {
         return (
           <div 
             ref={sidePillRef}
-            className={`absolute z-[60] ${sidePillIdle ? 'side-pill-container-idle' : ''}`}
+            className={`fixed z-[60] ${sidePillIdle ? 'bottom-pill-container-idle' : ''}`}
             style={{ 
-              top: `${pillTop}px`, 
-              right: '-10px', 
-              width: `${totalW + 4}px`, 
-              height: `${pillH}px`,
-              transform: `translateX(${isPillMenuOpen ? '-11px' : `${slideOffset}px`})`,
+              bottom: '-10px', 
+              left: '50%',
+              width: `${pillW}px`, 
+              height: `${pillH + arrowH + 4}px`,
+              transform: `translateX(-50%) translateY(${isPillMenuOpen ? '-11px' : `${slideOffset}px`})`,
               transition: sidePillMounted ? 'transform 0.3s ease-in-out' : 'none',
             }}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
           >
-            {/* Arrow hover zone - always accessible */}
+            {/* Arrow hover zone - always accessible at top */}
             <div 
-              style={{ position: 'absolute', left: '-6px', top: '0', width: `${arrowW + 12}px`, height: `${pillH}px`, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }}
+              style={{ position: 'absolute', top: '-6px', left: '0', width: `${pillW}px`, height: `${arrowH + 12}px`, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }}
               onMouseEnter={handleOpen}
             />
             {/* Glass pill body with backdrop blur */}
             <div style={{
               position: 'absolute',
-              top: '0px',
-              left: `${arrowW}px`,
-              width: `${totalW - arrowW}px`,
+              top: `${arrowH}px`,
+              left: '0px',
+              width: `${pillW}px`,
               height: `${pillH}px`,
               borderRadius: `${r}px`,
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
@@ -11162,23 +11158,26 @@ export default function Dashboard() {
               WebkitBackdropFilter: 'blur(24px)',
               border: '1.5px solid rgba(255,255,255,0.35)',
               borderTop: '1.5px solid rgba(255,255,255,0.55)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               pointerEvents: 'none',
             }} />
-            {/* Rounded tab - only visible when pill is closed */}
+            {/* Rounded tab - half circle on top, visible when pill is closed */}
             <div
               style={{
                 position: 'absolute',
-                top: `${arrowTopY}px`,
-                left: `${arrowW - 23}px`,
-                width: '23px',
-                height: '46px',
-                borderRadius: '9999px 0 0 9999px',
-                background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+                top: `${arrowH - 23}px`,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '46px',
+                height: '23px',
+                borderRadius: '9999px 9999px 0 0',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
-                border: '1.5px solid rgba(255,255,255,0.35)',
-                borderRight: 'none',
+                borderLeft: '1.5px solid rgba(255,255,255,0.35)',
+                borderRight: '1.5px solid rgba(255,255,255,0.35)',
+                borderTop: '1.5px solid rgba(255,255,255,0.35)',
+                borderBottom: 'none',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
                 pointerEvents: 'none',
                 opacity: isPillMenuOpen ? 0 : 0.9,
@@ -11186,9 +11185,27 @@ export default function Dashboard() {
               }}
             />
 
-            {/* Bell Button - Slot 0 */}
+            {/* Buttons container - offset by arrowH */}
+            <div style={{ position: 'absolute', top: `${arrowH}px`, left: '0', width: `${pillW}px`, height: `${pillH}px` }}>
+
+            {/* Add Task Button - Slot 0 */}
             <div 
-              style={btnStyle(0, isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              style={btnStyle(0, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              data-testid="bottom-pill-add-task"
+              onClick={() => {
+                setQuickAddStep(0);
+                setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                setIsQuickAddOpen(true);
+              }}
+            >
+              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Add Task">
+                <Plus className="h-[18px] w-[18px] text-white" />
+              </div>
+            </div>
+
+            {/* Bell Button - Slot 1 */}
+            <div 
+              style={btnStyle(1, isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="button-mute-toggle"
               onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
@@ -11198,9 +11215,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Push Button - Slot 1 */}
+            {/* Push Button - Slot 2 */}
             <div 
-              style={btnStyle(1, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              style={btnStyle(2, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="honeycomb-push"
               onClick={() => { toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" }); syncAllCalendarMutation.mutate(); }}
             >
@@ -11209,9 +11226,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Pull Button - Slot 2 */}
+            {/* Pull Button - Slot 3 */}
             <div 
-              style={btnStyle(2, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              style={btnStyle(3, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="honeycomb-pull"
               onClick={async () => {
                 toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
@@ -11226,9 +11243,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Sync Button - Slot 3 */}
+            {/* Sync Button - Slot 4 */}
             <div 
-              style={btnStyle(3, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              style={btnStyle(4, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="button-sync-calendar"
               onClick={() => { if (!syncAllCalendarMutation.isPending) { if (window.confirm('Are you sure you want to sync?')) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } } }}
             >
@@ -11237,9 +11254,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Kitchen Stop Button - Slot 4 */}
+            {/* Kitchen Stop Button - Slot 5 */}
             <div 
-              style={btnStyle(4, isKitchenPlaying ? 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', { animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none' })}
+              style={btnStyle(5, isKitchenPlaying ? 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', { animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none' })}
               data-testid="button-kitchen-stop"
               onClick={handleKitchenStop}
             >
@@ -11248,9 +11265,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Radio Button - Slot 5 */}
+            {/* Radio Button - Slot 6 */}
             <div 
-              style={btnStyle(5, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              style={btnStyle(6, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="button-radio-dialog"
               onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
             >
@@ -11259,9 +11276,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Fullscreen Toggle - Slot 6 */}
+            {/* Fullscreen Toggle - Slot 7 */}
             <div 
-              style={btnStyle(6, isFullscreen ? 'linear-gradient(0deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
+              style={btnStyle(7, isFullscreen ? 'linear-gradient(0deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
               data-testid="button-fullscreen"
               onClick={toggleFullscreen}
             >
@@ -11270,9 +11287,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Home Assistant - Slot 7 */}
+            {/* Home Assistant - Slot 8 */}
             <div 
-              style={btnStyle(7, 'linear-gradient(0deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)')}
+              style={btnStyle(8, 'linear-gradient(0deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)')}
               data-testid="button-home-assistant"
               onClick={async () => {
                 try {
@@ -11289,6 +11306,8 @@ export default function Dashboard() {
                   <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
                 </svg>
               </div>
+            </div>
+
             </div>
           </div>
         );
@@ -11820,42 +11839,6 @@ export default function Dashboard() {
             </section>
           </div>
           
-          {/* Right-side bouncing "+ Task" tab */}
-          <div
-            className="fixed z-[59] cursor-pointer bottom-task-tab-bounce"
-            style={{
-              bottom: 0,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              pointerEvents: 'auto',
-            }}
-            onClick={() => {
-              setQuickAddStep(0);
-              setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
-              setIsQuickAddOpen(true);
-            }}
-            data-testid="right-add-task-tab"
-          >
-            <div
-              style={{
-                width: '46px',
-                height: '23px',
-                borderRadius: '9999px 9999px 0 0',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                border: '1.5px solid rgba(255,255,255,0.35)',
-                borderBottom: 'none',
-                boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
-                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span style={{ color: '#FFFFFF', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px' }}>+</span>
-            </div>
-          </div>
 
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (

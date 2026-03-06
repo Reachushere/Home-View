@@ -246,19 +246,19 @@ button[role="combobox"] > span {
   animation: pill-nudge 18s ease-in-out infinite !important;
 }
 
-@keyframes side-pill-container-nudge {
-  0%, 70% { transform: translateX(56px); }
-  74% { transform: translateX(50px); }
-  78% { transform: translateX(56px); }
-  82% { transform: translateX(51px); }
-  86% { transform: translateX(56px); }
-  90% { transform: translateX(52px); }
-  94% { transform: translateX(56px); }
-  100% { transform: translateX(56px); }
+@keyframes bottom-pill-container-nudge {
+  0%, 70% { transform: translateX(-50%) translateY(56px); }
+  74% { transform: translateX(-50%) translateY(50px); }
+  78% { transform: translateX(-50%) translateY(56px); }
+  82% { transform: translateX(-50%) translateY(51px); }
+  86% { transform: translateX(-50%) translateY(56px); }
+  90% { transform: translateX(-50%) translateY(52px); }
+  94% { transform: translateX(-50%) translateY(56px); }
+  100% { transform: translateX(-50%) translateY(56px); }
 }
 
-.side-pill-container-idle {
-  animation: side-pill-container-nudge 6s ease-in-out infinite !important;
+.bottom-pill-container-idle {
+  animation: bottom-pill-container-nudge 6s ease-in-out infinite !important;
 }
 
 @keyframes top-pill-container-nudge {
@@ -272,20 +272,6 @@ button[role="combobox"] > span {
   100% { transform: translateY(-63px); }
 }
 
-@keyframes bottom-task-tab-bounce {
-  0%, 70% { transform: translateX(-50%) translateY(0px); }
-  74% { transform: translateX(-50%) translateY(-5px); }
-  78% { transform: translateX(-50%) translateY(0px); }
-  82% { transform: translateX(-50%) translateY(-3px); }
-  86% { transform: translateX(-50%) translateY(0px); }
-  90% { transform: translateX(-50%) translateY(-2px); }
-  94% { transform: translateX(-50%) translateY(0px); }
-  100% { transform: translateX(-50%) translateY(0px); }
-}
-
-.bottom-task-tab-bounce {
-  animation: bottom-task-tab-bounce 6s ease-in-out infinite;
-}
 
 @keyframes burst-in {
   0% { transform: scale(0); opacity: 0; }
