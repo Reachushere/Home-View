@@ -1213,14 +1213,6 @@ export default function FilesPage() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-1 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
-        <a
-          href="/"
-          className="flex items-center justify-center h-7 w-7 rounded-md hover:bg-white/10 mr-1"
-          data-testid="button-home"
-          title="Back to Dashboard"
-        >
-          <Home className="h-4 w-4 text-white/70" />
-        </a>
         {/* View Mode Toggle */}
         <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden mr-2">
           <button
@@ -1251,16 +1243,14 @@ export default function FilesPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-[#3d3d3d]"
+            <a
+              href="/"
+              className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#3d3d3d]"
               data-testid="button-home"
-              onClick={() => { setSelectedFolder(null); setExpandedFolders(new Set()); }}
-              disabled={!selectedFolder}
+              title="Back to Dashboard"
             >
               <Home className="h-4 w-4" />
-            </Button>
+            </a>
             <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 min-w-0 truncate">
               <span className="truncate text-white">{getBreadcrumb()[0]}</span>
             </div>
@@ -1305,18 +1295,14 @@ export default function FilesPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-[#3d3d3d]"
-              onClick={() => {
-                setOneDrivePathHistory([]);
-                setOneDrivePath("/");
-              }}
+            <a
+              href="/"
+              className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#3d3d3d]"
               data-testid="button-onedrive-home"
+              title="Back to Dashboard"
             >
               <Home className="h-4 w-4" />
-            </Button>
+            </a>
             <Button
               variant="ghost"
               size="icon"
@@ -2408,26 +2394,6 @@ export default function FilesPage() {
         </DialogContent>
       </Dialog>
 
-      <a
-        href="/"
-        className="fixed z-[60] bottom-tab-bounce"
-        style={{
-          bottom: '0px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'block',
-          textDecoration: 'none',
-        }}
-        data-testid="bottom-tab-home"
-        title="Home"
-      >
-        <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
-          <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          <g transform="translate(34, 2)">
-            <path d="M8,1 L1,7 L3,7 L3,13 L6,13 L6,9 L10,9 L10,13 L13,13 L13,7 L15,7 Z" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round" />
-          </g>
-        </svg>
-      </a>
     </div>
   );
 }
