@@ -11358,7 +11358,7 @@ export default function Dashboard() {
       <div
         className="fixed z-[59] cursor-pointer"
         style={{
-          right: 0,
+          right: '-7px',
           top: '50%',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
