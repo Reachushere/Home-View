@@ -9627,16 +9627,16 @@ export default function Dashboard() {
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-22px',
-            width: '60px',
+            bottom: '-24px',
+            width: '78px',
             height: '26px',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
           }}
         >
-          <svg width="60" height="26" viewBox="0 0 60 26" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))' }}>
-            <path d="M4,0 L0,18 Q0,26 8,26 L52,26 Q60,26 60,18 L56,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <svg width="78" height="26" viewBox="0 0 78 26" style={{ display: 'block' }}>
+            <path d="M16,0 C8,0 4,2 2,6 C0,9 0,12 2,15 L6,20 C9,24 13,26 18,26 L60,26 C65,26 69,24 72,20 L76,15 C78,12 78,9 76,6 C74,2 70,0 62,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           </svg>
         </div>
 
@@ -11297,12 +11297,9 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <svg width="60" height="26" viewBox="0 0 60 26" style={{ filter: 'drop-shadow(0 -2px 8px rgba(0,0,0,0.15))' }}>
-          <path d="M4,26 L0,8 Q0,0 8,0 L52,0 Q60,0 60,8 L56,26 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="78" height="26" viewBox="0 0 78 26" style={{ display: 'block' }}>
+          <path d="M16,26 C8,26 4,24 2,20 C0,17 0,14 2,11 L6,6 C9,2 13,0 18,0 L60,0 C65,0 69,2 72,6 L76,11 C78,14 78,17 76,20 C74,24 70,26 62,26 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '3px' }}>
-          <FolderOpen className="h-[13px] w-[13px] text-white" />
-        </div>
       </div>
       {/* Left binder tab - Add Task */}
       <div
@@ -11320,12 +11317,9 @@ export default function Dashboard() {
         }}
         data-testid="left-add-task-tab"
       >
-        <svg width="26" height="60" viewBox="0 0 26 60" style={{ filter: 'drop-shadow(2px 0 8px rgba(0,0,0,0.15))' }}>
-          <path d="M0,4 L18,0 Q26,0 26,8 L26,52 Q26,60 18,60 L0,56 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="26" height="78" viewBox="0 0 26 78" style={{ display: 'block' }}>
+          <path d="M26,16 C26,8 24,4 20,2 C17,0 14,0 11,2 L6,6 C2,9 0,13 0,18 L0,60 C0,65 2,69 6,72 L11,76 C14,78 17,78 20,76 C24,74 26,70 26,62 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '4px' }}>
-          <span style={{ color: '#FFFFFF', fontSize: '18px', fontWeight: 700, lineHeight: 1 }}>+</span>
-        </div>
       </div>
 
       {/* Right binder tab - Projects */}
@@ -11342,12 +11336,9 @@ export default function Dashboard() {
         }}
         data-testid="right-projects-tab"
       >
-        <svg width="26" height="60" viewBox="0 0 26 60" style={{ filter: 'drop-shadow(-2px 0 8px rgba(0,0,0,0.15))' }}>
-          <path d="M26,4 L8,0 Q0,0 0,8 L0,52 Q0,60 8,60 L26,56 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="26" height="78" viewBox="0 0 26 78" style={{ display: 'block' }}>
+          <path d="M0,16 C0,8 2,4 6,2 C9,0 12,0 15,2 L20,6 C24,9 26,13 26,18 L26,60 C26,65 24,69 20,72 L15,76 C12,78 9,78 6,76 C2,74 0,70 0,62 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingRight: '4px' }}>
-          <ClipboardList style={{ color: '#FFFFFF', height: '13px', width: '13px', strokeWidth: 2.5 }} />
-        </div>
       </div>
 
       {/* Spring out honeycombs for course readings - moved outside files button */}
