@@ -390,8 +390,17 @@ export const SEMESTER_START = new Date("2026-01-10T12:00:00"); // Week 1 Saturda
 export const FIRST_WEEK = 1;
 export const LAST_WEEK = 13;
 
+export function alignToSaturday(d: Date): Date {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = day === 6 ? 0 : -(day + 1);
+  date.setDate(date.getDate() + diff);
+  return date;
+}
+
 export function getWeekNumber(date: Date, customSemesterStart?: Date, readingWeekStart?: Date | null): number {
-  const startOfSemester = new Date(customSemesterStart || SEMESTER_START);
+  const rawStart = new Date(customSemesterStart || SEMESTER_START);
+  const startOfSemester = alignToSaturday(rawStart);
   const diffTime = date.getTime() - startOfSemester.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   let weekNum = Math.floor(diffDays / 7) + 1;
@@ -414,7 +423,7 @@ export function getWeekNumber(date: Date, customSemesterStart?: Date, readingWee
 }
 
 export function getWeekDates(weekNum: number, customSemesterStart?: Date, readingWeekStart?: Date | null): { start: Date; end: Date } {
-  const startOfSemester = customSemesterStart || SEMESTER_START;
+  const startOfSemester = alignToSaturday(new Date(customSemesterStart || SEMESTER_START));
   const msPerDay = 24 * 60 * 60 * 1000;
   let calendarWeek = weekNum;
   if (readingWeekStart) {
