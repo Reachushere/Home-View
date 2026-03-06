@@ -11326,7 +11326,7 @@ export default function Dashboard() {
       <div
         className="fixed z-[59] cursor-pointer right-tab-bounce"
         style={{
-          right: '0px',
+          right: '-2px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
