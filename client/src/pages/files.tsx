@@ -44,7 +44,8 @@ import {
   SkipForward,
   RotateCcw,
   Minus,
-  BookOpen
+  BookOpen,
+  Home
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FileRecord } from "@shared/schema";
@@ -1090,6 +1091,36 @@ export default function FilesPage() {
     return result;
   };
 
+  const navigateBack = () => {
+    if (!selectedFolder) return;
+    if (selectedFolder.startsWith("custom-")) {
+      const customId = parseInt(selectedFolder.replace("custom-", ""));
+      const customFolder = customFoldersData.find(cf => cf.id === customId);
+      if (customFolder) {
+        if (customFolder.parentFolderId === "root") {
+          setSelectedFolder(null);
+        } else if (customFolder.parentFolderId.startsWith("custom-")) {
+          setSelectedFolder(customFolder.parentFolderId);
+        } else {
+          setSelectedFolder(customFolder.parentFolderId);
+        }
+        return;
+      }
+    }
+    const parts = selectedFolder.split("-");
+    if (parts.length <= 1) {
+      setSelectedFolder(null);
+    } else {
+      parts.pop();
+      setSelectedFolder(parts.join("-"));
+    }
+  };
+
+  const navigateHome = () => {
+    setSelectedFolder(null);
+    setExpandedFolders(new Set());
+  };
+
   return (
     <div 
       className={`h-screen flex flex-col bg-[#191919] text-white transition-all ${isExternalDragOver ? "ring-4 ring-primary ring-inset bg-primary/5" : ""}`}
@@ -1114,11 +1145,26 @@ export default function FilesPage() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
-        <Link href="/">
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[#3d3d3d]" data-testid="button-back">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 hover:bg-[#3d3d3d]"
+          data-testid="button-back"
+          onClick={navigateBack}
+          disabled={!selectedFolder}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 hover:bg-[#3d3d3d]"
+          data-testid="button-home"
+          onClick={navigateHome}
+          disabled={!selectedFolder}
+        >
+          <Home className="h-4 w-4" />
+        </Button>
         <div className="flex items-center gap-1 text-sm text-gray-400">
           {getBreadcrumb().map((part, idx) => (
             <span key={idx} className="flex items-center gap-1">
