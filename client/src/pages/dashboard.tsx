@@ -9414,7 +9414,7 @@ export default function Dashboard() {
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
-          <span className="text-white font-normal text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+          <span className="text-white font-light text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
       </div>
 
