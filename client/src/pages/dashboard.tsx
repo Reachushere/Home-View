@@ -11300,10 +11300,10 @@ export default function Dashboard() {
         <div style={{ position: 'relative', width: '84px', height: '27px' }}>
           <div style={{
             position: 'absolute',
-            bottom: '-2px',
+            top: '-4px',
             left: '-6px',
             width: '96px',
-            height: '16px',
+            height: '20px',
             background: colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground,
             zIndex: 0,
           }} />
