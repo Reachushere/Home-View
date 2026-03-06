@@ -136,6 +136,7 @@ import {
   Cast,
   Monitor,
   Speaker,
+  Headphones,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -15241,7 +15242,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('module'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('module'); }}
                               >
-                                <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
+                                <Headphones className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: '21px', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1, color: course.darkColor || '#ffffff' }} />
                               </div>
                               )}
                             </div>
@@ -15276,7 +15277,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('reading'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('reading'); }}
                               >
-                                <img src={pdfIconPath} alt="PDF" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
+                                <Headphones className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: '21px', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1, color: course.darkColor || '#ffffff' }} />
                               </div>
                               )}
                             </div>
