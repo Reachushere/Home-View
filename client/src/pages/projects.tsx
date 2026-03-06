@@ -308,7 +308,7 @@ function ProjectCard({
       {/* Header - matching Today box header */}
       <div 
         style={{ 
-          backgroundColor: '#160502',
+          backgroundColor: '#3a8bbf',
           padding: '8px 12px'
         }}
       >
