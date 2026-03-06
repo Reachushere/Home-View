@@ -1548,9 +1548,8 @@ export default function FilesPage() {
                       <div
                         className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === week.id ? "bg-[#0078d4]/50" : ""} ${shouldBlink ? "animate-slow-blink" : ""}`}
                         onClick={(e) => {
-                          if (e.ctrlKey || e.metaKey) {
-                            setSelectedFolder(week.id);
-                          } else if (weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`))) {
+                          setSelectedFolder(week.id);
+                          if (!(e.ctrlKey || e.metaKey) && (weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`)))) {
                             toggleFolder(week.id);
                           }
                         }}
@@ -1645,9 +1644,8 @@ export default function FilesPage() {
                                 <div
                                   className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === courseFolderId ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === courseFolderId ? "bg-[#0078d4]/50" : ""}`}
                                   onClick={(e) => {
-                                    if (e.ctrlKey || e.metaKey) {
-                                      setSelectedFolder(courseFolderId);
-                                    } else if (courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`))) {
+                                    setSelectedFolder(courseFolderId);
+                                    if (!(e.ctrlKey || e.metaKey) && (courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`)))) {
                                       toggleFolder(courseFolderId);
                                     }
                                   }}
