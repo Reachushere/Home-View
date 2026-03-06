@@ -4307,7 +4307,8 @@ export async function registerRoutes(
   app.post("/api/webhook/cat-lights", async (req, res) => {
     try {
       const { state } = req.body;
-      const lightState = state || req.body.new_state?.state || 'unknown';
+      const rawNewState = req.body.new_state;
+      const lightState = state || (typeof rawNewState === 'string' ? rawNewState : rawNewState?.state) || 'unknown';
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Lights] Timestamp: ${new Date().toISOString()}`);
       console.log(`[Cat Lights] Light state: ${lightState}`);
@@ -4517,7 +4518,8 @@ export async function registerRoutes(
   // Stops cat lights playback and saves progress when someone opens the cat washroom door.
   app.post("/api/webhook/cat-door", async (req, res) => {
     try {
-      const doorState = req.body?.state || req.body?.new_state?.state || 'unknown';
+      const rawDoorNewState = req.body?.new_state;
+      const doorState = req.body?.state || (typeof rawDoorNewState === 'string' ? rawDoorNewState : rawDoorNewState?.state) || 'unknown';
       console.log(`[Cat Door] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Door] Timestamp: ${new Date().toISOString()}`);
       console.log(`[Cat Door] Door state: ${doorState}`);
@@ -4593,7 +4595,8 @@ export async function registerRoutes(
   // Switches cat wash TTS playback from tablet Bluetooth (Echo Cat Left) to Echo Cat Middle speaker
   app.post("/api/webhook/cat-wash-dry", async (req, res) => {
     try {
-      const sensorState = req.body?.state || req.body?.new_state?.state || 'unknown';
+      const rawSensorNewState = req.body?.new_state;
+      const sensorState = req.body?.state || (typeof rawSensorNewState === 'string' ? rawSensorNewState : rawSensorNewState?.state) || 'unknown';
       console.log(`[Cat Wash Dry] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Wash Dry] Timestamp: ${new Date().toISOString()}`);
       console.log(`[Cat Wash Dry] Sensor state: ${sensorState}`);
