@@ -11924,36 +11924,35 @@ export default function Dashboard() {
 
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={handleQuickAddClose}>
+            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-black shadow-2xl"
+                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-                  backdropFilter: 'blur(40px)',
-                  WebkitBackdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(255,255,255,0.5)',
-                  borderTop: '1px solid rgba(255,255,255,0.7)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.4)',
+                  backdropFilter: 'blur(3px)',
+                  WebkitBackdropFilter: 'blur(3px)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.05), 0 25px 50px -12px rgba(0,0,0,0.4)',
                 }}
                 onClick={(e) => e.stopPropagation()}
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-black/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }}>
+                <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.1)' }}>
                   <div className="flex items-center gap-2">
-                    <Plus className="h-3.5 w-3.5 text-black/70" />
-                    <h2 className="text-xs font-normal text-black/70 tracking-wide uppercase">
+                    <Plus className="h-3.5 w-3.5 text-white" />
+                    <h2 className="text-xs font-normal text-white tracking-wide uppercase">
                       {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </h2>
                   </div>
-                  <button onClick={handleQuickAddClose} className="text-black/60 hover:text-black/80 transition-colors p-1" data-testid="button-close-quick-add">
+                  <button onClick={handleQuickAddClose} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
 
                 {/* Step indicator */}
-                <div className="flex items-center gap-0.5 px-4 py-2 border-b border-black/5 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.15)' }}>
+                <div className="flex items-center gap-0.5 px-4 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)' }}>
                   {[
                     { id: 0, label: "Type" },
                     { id: 1, label: "Name" },
@@ -11973,36 +11972,36 @@ export default function Dashboard() {
                         onClick={() => { if (s.id < quickAddStep) setQuickAddStep(s.id); }}
                         className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full text-[8px] transition-all ${
                           s.id === quickAddStep
-                            ? "bg-black/10 text-black/80 font-medium"
+                            ? "bg-white/20 text-white font-medium"
                             : s.id < quickAddStep
-                            ? "text-black/50 cursor-pointer hover:text-black/70"
-                            : "text-black/25 cursor-default"
+                            ? "text-white/60 cursor-pointer hover:text-white/80"
+                            : "text-white/30 cursor-default"
                         }`}
                         data-testid={`quick-add-step-${s.id}`}
                       >
                         <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold ${
-                          s.id === quickAddStep ? "bg-black/70 text-white" : s.id < quickAddStep ? "bg-black/30 text-white" : "bg-black/10 text-black/30"
+                          s.id === quickAddStep ? "bg-white text-black" : s.id < quickAddStep ? "bg-white/40 text-white" : "bg-white/10 text-white/40"
                         }`}>
                           {s.id + 1}
                         </span>
                         <span>{s.label}</span>
                       </button>
                       {i < arr.length - 1 && (
-                        <div className={`w-2 h-px mx-0.5 ${s.id < quickAddStep ? "bg-black/30" : "bg-black/10"}`} />
+                        <div className={`w-2 h-px mx-0.5 ${s.id < quickAddStep ? "bg-white/40" : "bg-white/10"}`} />
                       )}
                     </div>
                   ))}
                 </div>
 
                 {/* Content area */}
-                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-black/70 [&_span]:text-black/70 [&_label]:text-black/70 [&_input]:text-black [&_input]:bg-white/50 [&_textarea]:text-black [&_textarea]:bg-white/50" style={{ scrollbarWidth: 'thin', height: '400px' }}>
+                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10" style={{ scrollbarWidth: 'thin', height: '400px' }}>
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
                       <div className="text-center mb-2">
                         <Layers className="h-8 w-8 text-violet-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Select Type</h3>
-                        <p className="text-[9px] text-black/40 mt-1">What would you like to add?</p>
+                        <h3 className="text-sm font-medium text-white">Select Type</h3>
+                        <p className="text-[9px] text-white/50 mt-1">What would you like to add?</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         {TASK_TYPES.filter(t => t !== "class").map(type => {
@@ -12010,7 +12009,7 @@ export default function Dashboard() {
                           return (
                             <button
                               key={type}
-                              className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 ${quickAddData.type === type ? 'bg-black/10 text-black/80 border border-black/15' : 'bg-white/30 text-black/80 border border-black/8 hover:bg-black/10'}`}
+                              className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white border border-white/10 hover:bg-white/20'}`}
                               onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
                               data-testid={`quick-add-type-${type}`}
                             >
@@ -12020,7 +12019,7 @@ export default function Dashboard() {
                           );
                         })}
                         <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-white/30 text-black/80 border border-black/8 hover:bg-black/10 flex items-center gap-1.5"
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-white/5 text-white border border-white/10 hover:bg-white/20 flex items-center gap-1.5"
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
@@ -12036,15 +12035,15 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3 flex-1">
                       <div className="text-center mb-2">
                         <FileText className="h-8 w-8 text-sky-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Task Name</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Enter the {quickAddData.type} name</p>
+                        <h3 className="text-sm font-medium text-white">Task Name</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Enter the {quickAddData.type} name</p>
                       </div>
                       <input
                         type="text"
                         value={quickAddData.title}
                         onChange={(e) => setQuickAddData(p => ({ ...p, title: e.target.value }))}
                         placeholder={`e.g. Chapter 5 ${quickAddData.type}`}
-                        className="w-full bg-white/40 border border-black/10 rounded-lg px-4 py-3 text-black/80 text-[13px] placeholder-black/30 focus:outline-none focus:border-black/30 transition-colors"
+                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                         autoFocus
                         data-testid="quick-add-title"
                         onKeyDown={(e) => { if (e.key === 'Enter' && quickAddData.title.trim()) setQuickAddStep(2); }}
@@ -12057,11 +12056,11 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-2">
                       <div className="text-center mb-2">
                         <GraduationCap className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Course</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Select the course</p>
+                        <h3 className="text-sm font-medium text-white">Course</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Select the course</p>
                       </div>
                       <button
-                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === '' ? 'bg-black/10 text-black/80 border border-black/15' : 'bg-white/30 text-black/60 border border-black/8 hover:bg-black/10'}`}
+                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === '' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20'}`}
                         onClick={() => { setQuickAddData(p => ({ ...p, courseName: '' })); setQuickAddStep(3); }}
                         data-testid="quick-add-course-none"
                       >
@@ -12070,7 +12069,7 @@ export default function Dashboard() {
                       {COURSES.map(course => (
                         <button
                           key={course.code}
-                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-black/10 text-black/80 border border-black/15' : 'bg-white/30 text-black/60 border border-black/8 hover:bg-black/10 hover:text-black/70'}`}
+                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
                           onClick={() => { setQuickAddData(p => ({ ...p, courseName: `${course.code} - ${course.name}` })); setQuickAddStep(3); }}
                           data-testid={`quick-add-course-${course.code}`}
                         >
@@ -12085,22 +12084,22 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <Calendar className="h-8 w-8 text-amber-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Date & Time</h3>
-                        <p className="text-[9px] text-black/40 mt-1">When is it due?</p>
+                        <h3 className="text-sm font-medium text-white">Date & Time</h3>
+                        <p className="text-[9px] text-white/50 mt-1">When is it due?</p>
                       </div>
                       <input
                         type="date"
                         value={quickAddData.dueDate}
                         onChange={(e) => setQuickAddData(p => ({ ...p, dueDate: e.target.value }))}
-                        className="w-full bg-white/40 border border-black/10 rounded-lg px-4 py-3 text-black/80 text-[13px] focus:outline-none focus:border-black/30 transition-colors [color-scheme:light]"
+                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 transition-colors [color-scheme:dark]"
                         data-testid="quick-add-due-date"
                       />
                       <div className="flex gap-2 items-center">
-                        <span className="text-black/40 text-[11px]">Due time:</span>
+                        <span className="text-white/50 text-[11px]">Due time:</span>
                         <select
                           value={quickAddData.dueDateHour}
                           onChange={(e) => setQuickAddData(p => ({ ...p, dueDateHour: e.target.value }))}
-                          className="bg-white/40 border border-black/10 rounded-lg px-2 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                          className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                           data-testid="quick-add-hour"
                         >
                           {Array.from({ length: 24 }, (_, i) => (
@@ -12109,11 +12108,11 @@ export default function Dashboard() {
                             </option>
                           ))}
                         </select>
-                        <span className="text-black/35">:</span>
+                        <span className="text-white/40">:</span>
                         <select
                           value={quickAddData.dueDateMinute}
                           onChange={(e) => setQuickAddData(p => ({ ...p, dueDateMinute: e.target.value }))}
-                          className="bg-white/40 border border-black/10 rounded-lg px-2 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                          className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                           data-testid="quick-add-minute"
                         >
                           {['00', '15', '30', '45'].map(m => (
@@ -12121,25 +12120,25 @@ export default function Dashboard() {
                           ))}
                         </select>
                       </div>
-                      <div className="border-t border-black/8 pt-3 mt-1">
-                        <p className="text-black/50 text-[11px] mb-2">Event time block (optional)</p>
+                      <div className="border-t border-white/10 pt-3 mt-1">
+                        <p className="text-white/50 text-[11px] mb-2">Event time block (optional)</p>
                         <div className="flex gap-2 items-center">
-                          <span className="text-black/40 text-[11px] w-[38px]">Start:</span>
+                          <span className="text-white/50 text-[11px] w-[38px]">Start:</span>
                           <input
                             type="time"
                             value={quickAddData.eventStartTime}
                             onChange={(e) => setQuickAddData(p => ({ ...p, eventStartTime: e.target.value }))}
-                            className="flex-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-start-time"
                           />
                         </div>
                         <div className="flex gap-2 items-center mt-2">
-                          <span className="text-black/40 text-[11px] w-[38px]">End:</span>
+                          <span className="text-white/50 text-[11px] w-[38px]">End:</span>
                           <input
                             type="time"
                             value={quickAddData.eventEndTime}
                             onChange={(e) => setQuickAddData(p => ({ ...p, eventEndTime: e.target.value }))}
-                            className="flex-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-end-time"
                           />
                         </div>
@@ -12152,13 +12151,13 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <Clock className="h-8 w-8 text-teal-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Prep Days</h3>
-                        <p className="text-[9px] text-black/40 mt-1">How many preparation days are needed?</p>
+                        <h3 className="text-sm font-medium text-white">Prep Days</h3>
+                        <p className="text-[9px] text-white/50 mt-1">How many preparation days are needed?</p>
                       </div>
                       <select
                         value={quickAddData.prepDays}
                         onChange={(e) => setQuickAddData(p => ({ ...p, prepDays: parseInt(e.target.value) }))}
-                        className="w-full bg-white/40 border border-black/10 rounded-lg px-4 py-3 text-black/80 text-[13px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                         data-testid="quick-add-prep-days"
                       >
                         {Array.from({ length: 15 }, (_, i) => (
@@ -12173,13 +12172,13 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-2">
                       <div className="text-center mb-2">
                         <AlertCircle className="h-8 w-8 text-rose-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Priority</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Set priority level</p>
+                        <h3 className="text-sm font-medium text-white">Priority</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Set priority level</p>
                       </div>
                       {(['low', 'medium', 'high'] as const).map(p => (
                         <button
                           key={p}
-                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.priority === p ? 'bg-black/10 text-black/80 border border-black/15' : 'bg-white/30 text-black/60 border border-black/8 hover:bg-black/10 hover:text-black/70'}`}
+                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.priority === p ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
                           onClick={() => { setQuickAddData(prev => ({ ...prev, priority: p })); setQuickAddStep(6); }}
                           data-testid={`quick-add-priority-${p}`}
                         >
@@ -12194,8 +12193,8 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <Bell className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Reminders</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Set reminders before due date</p>
+                        <h3 className="text-sm font-medium text-white">Reminders</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Set reminders before due date</p>
                       </div>
                       {[
                         { label: 'Reminder 1', key: 'reminder1' as const },
@@ -12204,14 +12203,14 @@ export default function Dashboard() {
                         { label: 'Reminder 4', key: 'reminder4' as const },
                       ].map(r => (
                         <div key={r.key} className="flex gap-2 items-center">
-                          <span className="text-black/40 text-[11px] w-[72px]">{r.label}:</span>
+                          <span className="text-white/50 text-[11px] w-[72px]">{r.label}:</span>
                           <select
                             value={quickAddData[r.key] ?? 0}
                             onChange={(e) => {
                               const val = parseInt(e.target.value);
                               setQuickAddData(p => ({ ...p, [r.key]: val === 0 && (r.key === 'reminder3' || r.key === 'reminder4') ? null : val }));
                             }}
-                            className="flex-1 bg-white/40 border border-black/10 rounded-lg px-2 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid={`quick-add-${r.key}`}
                           >
                             {REMINDER_OPTIONS.map(opt => (
@@ -12228,12 +12227,12 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <Paperclip className="h-8 w-8 text-cyan-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Attachments</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Add attachments</p>
+                        <h3 className="text-sm font-medium text-white">Attachments</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Add attachments</p>
                       </div>
-                      <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-white/20 bg-white/30 hover:bg-black/10 transition-colors cursor-pointer">
-                        <Upload className="h-4 w-4 text-black/40" />
-                        <span className="text-black/50 text-[12px]">Upload file</span>
+                      <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-white/20 bg-white/5 hover:bg-white/20 transition-colors cursor-pointer">
+                        <Upload className="h-4 w-4 text-white/50" />
+                        <span className="text-white/50 text-[12px]">Upload file</span>
                         <input
                           type="file"
                           className="hidden"
@@ -12261,7 +12260,7 @@ export default function Dashboard() {
                           value={quickAddData.pasteUrl}
                           onChange={(e) => setQuickAddData(p => ({ ...p, pasteUrl: e.target.value }))}
                           placeholder="Paste URL to attach..."
-                          className="flex-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] placeholder-black/30 focus:outline-none focus:border-black/30 transition-colors"
+                          className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                           data-testid="quick-add-paste-url"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && quickAddData.pasteUrl.trim()) {
@@ -12275,7 +12274,7 @@ export default function Dashboard() {
                               setQuickAddData(p => ({ ...p, attachments: [...p.attachments, p.pasteUrl.trim()], pasteUrl: '' }));
                             }
                           }}
-                          className="px-3 py-2 rounded-lg text-[11px] bg-black/8 text-black/80 hover:bg-black/15 transition-colors"
+                          className="px-3 py-2 rounded-lg text-[11px] bg-white/15 text-white hover:bg-white/25 transition-colors"
                           data-testid="quick-add-paste-url-add"
                         >
                           Add
@@ -12284,12 +12283,12 @@ export default function Dashboard() {
                       {quickAddData.attachments.length > 0 && (
                         <div className="flex flex-col gap-1.5">
                           {quickAddData.attachments.map((att, idx) => (
-                            <div key={idx} className="flex items-center gap-2 bg-white/30 rounded-lg px-3 py-2 border border-black/8">
-                              <Paperclip className="h-3 w-3 text-black/35 flex-shrink-0" />
-                              <span className="text-black/60 text-[11px] truncate flex-1">{att.split('/').pop() || att}</span>
+                            <div key={idx} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                              <Paperclip className="h-3 w-3 text-white/40 flex-shrink-0" />
+                              <span className="text-white/70 text-[11px] truncate flex-1">{att.split('/').pop() || att}</span>
                               <button
                                 onClick={() => setQuickAddData(p => ({ ...p, attachments: p.attachments.filter((_, i) => i !== idx) }))}
-                                className="text-black/25 hover:text-red-400 transition-colors"
+                                className="text-white/30 hover:text-red-400 transition-colors"
                                 data-testid={`quick-add-remove-attachment-${idx}`}
                               >
                                 <X className="h-3 w-3" />
@@ -12299,7 +12298,7 @@ export default function Dashboard() {
                         </div>
                       )}
                       {quickAddData.attachments.length === 0 && (
-                        <p className="text-black/25 text-[10px] text-center">No attachments added yet</p>
+                        <p className="text-white/30 text-[10px] text-center">No attachments added yet</p>
                       )}
                     </div>
                   )}
@@ -12309,28 +12308,28 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <StickyNote className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Notes & Links</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Add notes and reference links</p>
+                        <h3 className="text-sm font-medium text-white">Notes & Links</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Add notes and reference links</p>
                       </div>
                       <div>
-                        <span className="text-black/40 text-[11px]">Notes</span>
+                        <span className="text-white/50 text-[11px]">Notes</span>
                         <textarea
                           value={quickAddData.notes}
                           onChange={(e) => setQuickAddData(p => ({ ...p, notes: e.target.value }))}
                           placeholder="Add any notes..."
                           rows={3}
-                          className="w-full mt-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] placeholder-black/30 focus:outline-none focus:border-black/30 transition-colors resize-none"
+                          className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors resize-none"
                           data-testid="quick-add-notes"
                         />
                       </div>
                       <div>
-                        <span className="text-black/40 text-[11px]">Reference link</span>
+                        <span className="text-white/50 text-[11px]">Reference link</span>
                         <input
                           type="url"
                           value={quickAddData.referenceLink}
                           onChange={(e) => setQuickAddData(p => ({ ...p, referenceLink: e.target.value }))}
                           placeholder="https://..."
-                          className="w-full mt-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] placeholder-black/30 focus:outline-none focus:border-black/30 transition-colors"
+                          className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                           data-testid="quick-add-reference-link"
                         />
                       </div>
@@ -12342,18 +12341,18 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <ListChecks className="h-8 w-8 text-indigo-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Subtasks & Project</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Add subtasks and link to a project</p>
+                        <h3 className="text-sm font-medium text-white">Subtasks & Project</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Add subtasks and link to a project</p>
                       </div>
                       <div>
-                        <span className="text-black/40 text-[11px]">Subtasks</span>
+                        <span className="text-white/50 text-[11px]">Subtasks</span>
                         <div className="flex gap-2 mt-1">
                           <input
                             type="text"
                             value={quickAddData.subtaskInput}
                             onChange={(e) => setQuickAddData(p => ({ ...p, subtaskInput: e.target.value }))}
                             placeholder="Add a subtask..."
-                            className="flex-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] placeholder-black/30 focus:outline-none focus:border-black/30 transition-colors"
+                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                             data-testid="quick-add-subtask-input"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && quickAddData.subtaskInput.trim()) {
@@ -12367,7 +12366,7 @@ export default function Dashboard() {
                                 setQuickAddData(p => ({ ...p, subtasks: [...p.subtasks, { title: p.subtaskInput.trim(), completed: false }], subtaskInput: '' }));
                               }
                             }}
-                            className="px-3 py-2 rounded-lg text-[11px] bg-black/8 text-black/80 hover:bg-black/15 transition-colors"
+                            className="px-3 py-2 rounded-lg text-[11px] bg-white/15 text-white hover:bg-white/25 transition-colors"
                             data-testid="quick-add-subtask-add"
                           >
                             Add
@@ -12376,12 +12375,12 @@ export default function Dashboard() {
                         {quickAddData.subtasks.length > 0 && (
                           <div className="flex flex-col gap-1.5 mt-2">
                             {quickAddData.subtasks.map((st, idx) => (
-                              <div key={idx} className="flex items-center gap-2 bg-white/30 rounded-lg px-3 py-2 border border-black/8">
-                                <div className="w-3 h-3 rounded-sm border border-black/15 flex-shrink-0" />
-                                <span className="text-black/60 text-[11px] flex-1">{st.title}</span>
+                              <div key={idx} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                                <div className="w-3 h-3 rounded-sm border border-white/30 flex-shrink-0" />
+                                <span className="text-white/70 text-[11px] flex-1">{st.title}</span>
                                 <button
                                   onClick={() => setQuickAddData(p => ({ ...p, subtasks: p.subtasks.filter((_, i) => i !== idx) }))}
-                                  className="text-black/25 hover:text-red-400 transition-colors"
+                                  className="text-white/30 hover:text-red-400 transition-colors"
                                   data-testid={`quick-add-remove-subtask-${idx}`}
                                 >
                                   <X className="h-3 w-3" />
@@ -12391,12 +12390,12 @@ export default function Dashboard() {
                           </div>
                         )}
                       </div>
-                      <div className="border-t border-black/8 pt-3">
-                        <span className="text-black/40 text-[11px]">Link to project</span>
+                      <div className="border-t border-white/10 pt-3">
+                        <span className="text-white/50 text-[11px]">Link to project</span>
                         <select
                           value={quickAddData.projectId ?? ''}
                           onChange={(e) => setQuickAddData(p => ({ ...p, projectId: e.target.value ? parseInt(e.target.value) : null }))}
-                          className="w-full mt-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                          className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                           data-testid="quick-add-project"
                         >
                           <option value="" style={{ color: 'black' }}>No project</option>
@@ -12413,14 +12412,14 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <Repeat2 className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Repeat</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Set task repetition</p>
+                        <h3 className="text-sm font-medium text-white">Repeat</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Set task repetition</p>
                       </div>
                       <div className="flex flex-col gap-2">
                         {REPEAT_TYPES.map(rt => (
                           <button
                             key={rt}
-                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.repeatType === rt ? 'bg-black/10 text-black/80 border border-black/15' : 'bg-white/30 text-black/60 border border-black/8 hover:bg-black/10 hover:text-black/70'}`}
+                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.repeatType === rt ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
                             onClick={() => setQuickAddData(p => ({ ...p, repeatType: rt }))}
                             data-testid={`quick-add-repeat-${rt}`}
                           >
@@ -12430,19 +12429,19 @@ export default function Dashboard() {
                       </div>
                       {quickAddData.repeatType === 'custom' && (
                         <div className="flex gap-2 items-center mt-1">
-                          <span className="text-black/40 text-[11px]">Every</span>
+                          <span className="text-white/50 text-[11px]">Every</span>
                           <input
                             type="number"
                             min={1}
                             value={quickAddData.repeatInterval ?? 1}
                             onChange={(e) => setQuickAddData(p => ({ ...p, repeatInterval: parseInt(e.target.value) || 1 }))}
-                            className="w-16 bg-white/40 border border-black/10 rounded-lg px-2 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30"
+                            className="w-16 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40"
                             data-testid="quick-add-repeat-interval"
                           />
                           <select
                             value={quickAddData.repeatIntervalUnit ?? 'days'}
                             onChange={(e) => setQuickAddData(p => ({ ...p, repeatIntervalUnit: e.target.value }))}
-                            className="bg-white/40 border border-black/10 rounded-lg px-2 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                            className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-repeat-unit"
                           >
                             {REPEAT_INTERVAL_UNITS.map(u => (
@@ -12453,12 +12452,12 @@ export default function Dashboard() {
                       )}
                       {quickAddData.repeatType !== 'none' && (
                         <div className="mt-1">
-                          <span className="text-black/40 text-[11px]">End date (optional)</span>
+                          <span className="text-white/50 text-[11px]">End date (optional)</span>
                           <input
                             type="date"
                             value={quickAddData.repeatEndDate}
                             onChange={(e) => setQuickAddData(p => ({ ...p, repeatEndDate: e.target.value }))}
-                            className="w-full mt-1 bg-white/40 border border-black/10 rounded-lg px-3 py-2 text-black/80 text-[12px] focus:outline-none focus:border-black/30 [color-scheme:light]"
+                            className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-repeat-end-date"
                           />
                         </div>
@@ -12471,43 +12470,43 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <ClipboardCheck className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-black/80">Review</h3>
-                        <p className="text-[9px] text-black/40 mt-1">Review your task</p>
+                        <h3 className="text-sm font-medium text-white">Review</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Review your task</p>
                       </div>
-                      <div className="bg-white/30 rounded-lg p-3 space-y-2 border border-black/8">
+                      <div className="bg-white/5 rounded-lg p-3 space-y-2 border border-white/10">
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Type</span>
-                          <span className="text-black/80">{quickAddData.type.charAt(0).toUpperCase() + quickAddData.type.slice(1)}</span>
+                          <span className="text-white/50">Type</span>
+                          <span className="text-white">{quickAddData.type.charAt(0).toUpperCase() + quickAddData.type.slice(1)}</span>
                         </div>
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Title</span>
-                          <span className="text-black/80 truncate ml-4">{quickAddData.title}</span>
+                          <span className="text-white/50">Title</span>
+                          <span className="text-white truncate ml-4">{quickAddData.title}</span>
                         </div>
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Course</span>
-                          <span className="text-black/80">{quickAddData.courseName || 'None'}</span>
+                          <span className="text-white/50">Course</span>
+                          <span className="text-white">{quickAddData.courseName || 'None'}</span>
                         </div>
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Due Date</span>
-                          <span className="text-black/80">{quickAddData.dueDate ? format(new Date(quickAddData.dueDate + 'T' + quickAddData.dueDateHour + ':' + quickAddData.dueDateMinute), "MMM d, yyyy 'at' h:mm a") : 'Not set'}</span>
+                          <span className="text-white/50">Due Date</span>
+                          <span className="text-white">{quickAddData.dueDate ? format(new Date(quickAddData.dueDate + 'T' + quickAddData.dueDateHour + ':' + quickAddData.dueDateMinute), "MMM d, yyyy 'at' h:mm a") : 'Not set'}</span>
                         </div>
                         {(quickAddData.eventStartTime || quickAddData.eventEndTime) && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Time Block</span>
-                            <span className="text-black/80">{quickAddData.eventStartTime || '?'} - {quickAddData.eventEndTime || '?'}</span>
+                            <span className="text-white/50">Time Block</span>
+                            <span className="text-white">{quickAddData.eventStartTime || '?'} - {quickAddData.eventEndTime || '?'}</span>
                           </div>
                         )}
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Prep Days</span>
-                          <span className="text-black/80">{quickAddData.prepDays === 0 ? 'None' : `${quickAddData.prepDays} day${quickAddData.prepDays > 1 ? 's' : ''}`}</span>
+                          <span className="text-white/50">Prep Days</span>
+                          <span className="text-white">{quickAddData.prepDays === 0 ? 'None' : `${quickAddData.prepDays} day${quickAddData.prepDays > 1 ? 's' : ''}`}</span>
                         </div>
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Priority</span>
-                          <span className="text-black/80">{quickAddData.priority.charAt(0).toUpperCase() + quickAddData.priority.slice(1)}</span>
+                          <span className="text-white/50">Priority</span>
+                          <span className="text-white">{quickAddData.priority.charAt(0).toUpperCase() + quickAddData.priority.slice(1)}</span>
                         </div>
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-black/40">Reminders</span>
-                          <span className="text-black/80 text-right">
+                          <span className="text-white/50">Reminders</span>
+                          <span className="text-white text-right">
                             {[quickAddData.reminder1, quickAddData.reminder2, quickAddData.reminder3, quickAddData.reminder4]
                               .filter(r => r !== null && r !== undefined && r > 0)
                               .map(r => REMINDER_OPTIONS.find(o => o.value === r)?.label || `${r}m`)
@@ -12516,38 +12515,38 @@ export default function Dashboard() {
                         </div>
                         {quickAddData.attachments.length > 0 && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Attachments</span>
-                            <span className="text-black/80">{quickAddData.attachments.length} file{quickAddData.attachments.length > 1 ? 's' : ''}</span>
+                            <span className="text-white/50">Attachments</span>
+                            <span className="text-white">{quickAddData.attachments.length} file{quickAddData.attachments.length > 1 ? 's' : ''}</span>
                           </div>
                         )}
                         {quickAddData.notes && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Notes</span>
-                            <span className="text-black/80 truncate ml-4">{quickAddData.notes.substring(0, 40)}{quickAddData.notes.length > 40 ? '...' : ''}</span>
+                            <span className="text-white/50">Notes</span>
+                            <span className="text-white truncate ml-4">{quickAddData.notes.substring(0, 40)}{quickAddData.notes.length > 40 ? '...' : ''}</span>
                           </div>
                         )}
                         {quickAddData.referenceLink && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Reference</span>
-                            <span className="text-black/80 truncate ml-4">{quickAddData.referenceLink.substring(0, 30)}...</span>
+                            <span className="text-white/50">Reference</span>
+                            <span className="text-white truncate ml-4">{quickAddData.referenceLink.substring(0, 30)}...</span>
                           </div>
                         )}
                         {quickAddData.subtasks.length > 0 && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Subtasks</span>
-                            <span className="text-black/80">{quickAddData.subtasks.length}</span>
+                            <span className="text-white/50">Subtasks</span>
+                            <span className="text-white">{quickAddData.subtasks.length}</span>
                           </div>
                         )}
                         {quickAddData.projectId && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Project</span>
-                            <span className="text-black/80">{allProjects.find(p => p.id === quickAddData.projectId)?.name || 'Unknown'}</span>
+                            <span className="text-white/50">Project</span>
+                            <span className="text-white">{allProjects.find(p => p.id === quickAddData.projectId)?.name || 'Unknown'}</span>
                           </div>
                         )}
                         {quickAddData.repeatType !== 'none' && (
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-black/40">Repeat</span>
-                            <span className="text-black/80">
+                            <span className="text-white/50">Repeat</span>
+                            <span className="text-white">
                               {quickAddData.repeatType === 'custom'
                                 ? `Every ${quickAddData.repeatInterval || 1} ${quickAddData.repeatIntervalUnit || 'days'}`
                                 : quickAddData.repeatType.charAt(0).toUpperCase() + quickAddData.repeatType.slice(1)}
@@ -12561,11 +12560,11 @@ export default function Dashboard() {
                 </div>
 
                 {/* Footer with navigation */}
-                <div className="flex items-center justify-between px-4 py-3 border-t border-black/5 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
                   <Button
                     variant="outline"
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
-                    className="border !border-black/20 text-black/60 transition-all duration-200"
+                    className="border !border-white/30 text-white/60 transition-all duration-200"
                     style={{ fontSize: "11px" }}
                     data-testid="quick-add-back"
                   >
@@ -12579,9 +12578,9 @@ export default function Dashboard() {
                         variant="outline"
                         onClick={() => setQuickAddStep(s => s + 1)}
                         disabled={!canNext}
-                        className="border !border-blue-500 text-blue-600 transition-all duration-200 disabled:opacity-30"
+                        className="border !border-white/50 text-white transition-all duration-200 disabled:opacity-30"
                         style={{
-                          boxShadow: canNext ? "0 0 6px rgba(59,130,246,0.3), 0 0 12px rgba(59,130,246,0.15)" : "none",
+                          boxShadow: canNext ? "0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)" : "none",
                           fontSize: "11px",
                         }}
                         data-testid="quick-add-next"
@@ -12594,9 +12593,9 @@ export default function Dashboard() {
                   {quickAddStep === 11 && (
                     <Button
                       variant="outline"
-                      className="border !border-blue-500 text-blue-600 transition-all duration-200"
+                      className="border !border-white/50 text-white transition-all duration-200"
                       style={{
-                        boxShadow: "0 0 6px rgba(59,130,246,0.3), 0 0 12px rgba(59,130,246,0.2)",
+                        boxShadow: "0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)",
                         fontSize: "11px",
                       }}
                       onClick={async () => {
@@ -18444,7 +18443,7 @@ export default function Dashboard() {
         
         {/* Project Dialog - Burst from Center */}
         {projectDialogOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
           <div
             className="transition-all ease-out"
             style={{
@@ -18455,23 +18454,22 @@ export default function Dashboard() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-          <div className="overflow-hidden flex flex-col rounded-xl text-black text-[11px] [&_input]:text-black [&_input]:bg-white/50 [&_textarea]:text-black [&_textarea]:bg-white/50"
+          <div className="overflow-hidden flex flex-col rounded-xl text-white text-[11px] [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10"
             style={{
               fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-              backdropFilter: 'blur(40px)',
-              WebkitBackdropFilter: 'blur(40px)',
-              border: '1px solid rgba(255,255,255,0.5)',
-              borderTop: '1px solid rgba(255,255,255,0.7)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+              background: 'rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(3px)',
+              WebkitBackdropFilter: 'blur(3px)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.05), 0 25px 50px -12px rgba(0,0,0,0.4)',
             }}
           >
-            <div className="flex items-center justify-between px-5 py-3 border-b border-black/10" style={{ background: 'rgba(255,255,255,0.3)' }}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10" style={{ background: 'rgba(255,255,255,0.1)' }}>
               <div className="flex items-center gap-2">
-                <FolderOpen className="h-3.5 w-3.5 text-black/70" />
-                <h2 className="text-xs font-normal text-black/70 tracking-wide uppercase">{editingProject ? "Edit Project" : "Create New Project"}</h2>
+                <FolderOpen className="h-3.5 w-3.5 text-white" />
+                <h2 className="text-xs font-normal text-white tracking-wide uppercase">{editingProject ? "Edit Project" : "Create New Project"}</h2>
               </div>
-              <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-black/60 hover:text-black/80 transition-colors p-1" data-testid="button-close-project-dialog">
+              <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-project-dialog">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -18498,7 +18496,7 @@ export default function Dashboard() {
               className="space-y-3"
             >
               <div className="space-y-2">
-                <label className="text-[11px] font-medium text-black/70">Project Name</label>
+                <label className="text-[11px] font-medium text-white">Project Name</label>
                 <Input 
                   name="name"
                   defaultValue={editingProject?.name || ''}
@@ -18510,7 +18508,7 @@ export default function Dashboard() {
               </div>
               
               <div className="space-y-2">
-                <label className="text-[11px] font-medium text-black/70">Description</label>
+                <label className="text-[11px] font-medium text-white">Description</label>
                 <Textarea 
                   name="description"
                   defaultValue={editingProject?.description || ''}
@@ -18523,7 +18521,7 @@ export default function Dashboard() {
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-black/70">Color</label>
+                  <label className="text-[11px] font-medium text-white">Color</label>
                   <input 
                     type="color"
                     name="color"
@@ -18534,11 +18532,11 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-black/70">Status</label>
+                  <label className="text-[11px] font-medium text-white">Status</label>
                   <select 
                     name="status"
                     defaultValue={editingProject?.status || 'planning'}
-                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white text-black"
+                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white/10 text-white"
                     data-testid="select-project-status-flyout"
                   >
                     <option value="planning">Planning</option>
@@ -18551,7 +18549,7 @@ export default function Dashboard() {
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-black/70">Target Date</label>
+                  <label className="text-[11px] font-medium text-white">Target Date</label>
                   <Input 
                     type="date"
                     name="targetDate"
@@ -18562,11 +18560,11 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-black/70">Priority</label>
+                  <label className="text-[11px] font-medium text-white">Priority</label>
                   <select 
                     name="priority"
                     defaultValue={editingProject?.priority || 'medium'}
-                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white text-black"
+                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white/10 text-white"
                     data-testid="select-project-priority-flyout"
                   >
                     <option value="low">Low</option>
@@ -18577,13 +18575,13 @@ export default function Dashboard() {
               </div>
               
               <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-black/20 text-black/70 hover:bg-black/5 hover:text-black">
+                <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   variant="outline"
-                  className="border !border-blue-500 text-blue-600 hover:text-blue-700 hover:!border-blue-400 hover:bg-blue-50 shadow-[0_0_8px_rgba(59,130,246,0.3)] hover:shadow-[0_0_12px_rgba(59,130,246,0.4)] transition-all duration-200"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white/60 hover:bg-white/10 shadow-[0_0_8px_rgba(255,255,255,0.4)] hover:shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-200"
                   data-testid="button-save-project-flyout"
                 >
                   {editingProject ? "Save Changes" : "Create Project"}
