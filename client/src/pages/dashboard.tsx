@@ -11298,7 +11298,7 @@ export default function Dashboard() {
         data-testid="bottom-tab-files"
       >
         <svg width="76" height="22" viewBox="0 0 76 22" style={{ display: 'block' }}>
-          <path d="M0,0 L76,0 L76,6 Q76,22 58,22 L18,22 Q0,22 0,6 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M0,22 L76,22 L76,11 Q76,0 65,0 L11,0 Q0,0 0,11 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
       {/* Left binder tab - Add Task */}
