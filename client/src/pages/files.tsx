@@ -1562,9 +1562,9 @@ export default function FilesPage() {
                           <div className="w-3 h-3" />
                         )}
                         {isWeekExpanded ? (
-                          <FolderOpen className={`h-4 w-4 ${isCurrent ? "text-white fill-white" : "text-yellow-500 fill-yellow-400"}`} />
+                          <FolderOpen className={`h-4 w-4 ${isCurrent && viewMode === 'week' ? "text-white fill-white" : "text-yellow-500 fill-yellow-400"}`} />
                         ) : (
-                          <Folder className={`h-4 w-4 ${isCurrent ? "text-white fill-white" : "text-yellow-600 fill-yellow-400"}`} />
+                          <Folder className={`h-4 w-4 ${isCurrent && viewMode === 'week' ? "text-white fill-white" : "text-yellow-600 fill-yellow-400"}`} />
                         )}
                         {editingBuiltinFolderId === week.id ? (
                           <input
