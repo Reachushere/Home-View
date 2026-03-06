@@ -14589,7 +14589,7 @@ export default function Dashboard() {
                 const minThreeTaskHeight = 3 * 20 + 4; // 64px minimum (3 tasks)
                 const maxCourseRowHeight = Math.max(minThreeTaskHeight, ...filteredCourses.map(cd => {
                   const cn = cd.name.split(' - ')[0].toUpperCase();
-                  const count = tasks?.filter(task => {
+                  const count = allTasks?.filter(task => {
                     if (!task.courseName?.toUpperCase().startsWith(cn)) return false;
                     if (task.isCompleted) return false;
                     const taskDueDate = startOfDay(new Date(task.dueDate));
@@ -14837,17 +14837,15 @@ export default function Dashboard() {
                 }
                 
                 // Calculate how many tasks this course has in the current week to set dynamic height
-                const courseTaskCount = tasks?.filter(task => {
+                const courseTaskCount = allTasks?.filter(task => {
                   if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                   if (task.isCompleted) return false;
-                  // Check if task falls within the week (due date or prep days)
                   const taskDueDate = startOfDay(new Date(task.dueDate));
                   const weekStart = startOfDay(weekDays[0]);
                   const weekEnd = startOfDay(addDays(weekDays[6], 1));
                   if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
                   if (task.startDate) {
                     const taskStartDate = startOfDay(new Date(task.startDate));
-                    // Check if any prep day falls in the week
                     if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
                   }
                   return false;
@@ -15288,13 +15286,13 @@ export default function Dashboard() {
                     const day = weekDays[6];
                     const isSatToday = isSameDay(day, new Date());
                     const cellDate = startOfDay(day);
-                    const dueTasks = tasks?.filter(task => {
+                    const dueTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       const taskDueDate = startOfDay(new Date(task.dueDate));
                       return isSameDay(taskDueDate, cellDate);
                     }) || [];
-                    const prepTasks = tasks?.filter(task => {
+                    const prepTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       if (!task.startDate) return false;
@@ -15423,7 +15421,7 @@ export default function Dashboard() {
 
               {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
               {(() => {
-                const otherTasks = tasks?.filter(task => {
+                const otherTasks = allTasks?.filter(task => {
                   if (task.type !== 'other') return false;
                   if (task.isCompleted) return false;
                   const taskDueDate = startOfDay(new Date(task.dueDate));
