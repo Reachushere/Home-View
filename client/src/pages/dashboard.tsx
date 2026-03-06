@@ -11886,20 +11886,17 @@ export default function Dashboard() {
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
+                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                  background: 'rgba(255,255,255,0.45)',
-                  backdropFilter: 'blur(3px)',
-                  WebkitBackdropFilter: 'blur(3px)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.05), 0 25px 50px -12px rgba(0,0,0,0.4)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
                 }}
                 onClick={(e) => e.stopPropagation()}
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                <div className="flex items-center justify-between px-5 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                   <div className="flex items-center gap-2">
                     <Plus className="h-3.5 w-3.5 text-white" />
                     <h2 className="text-xs font-normal text-white tracking-wide uppercase">
