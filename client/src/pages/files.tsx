@@ -1555,9 +1555,9 @@ export default function FilesPage() {
                       >
                         {weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`)) ? (
                           isWeekExpanded ? (
-                            <ChevronDown className="h-3 w-3 text-gray-500" />
+                            <ChevronDown className={`h-3 w-3 ${isCurrent && viewMode === 'week' ? 'text-white/70' : 'text-gray-500'}`} />
                           ) : (
-                            <ChevronRight className="h-3 w-3 text-gray-500" />
+                            <ChevronRight className={`h-3 w-3 ${isCurrent && viewMode === 'week' ? 'text-white/70' : 'text-gray-500'}`} />
                           )
                         ) : (
                           <div className="w-3 h-3" />
@@ -1594,9 +1594,9 @@ export default function FilesPage() {
                             data-testid={`input-rename-week-folder-${week.id}`}
                           />
                         ) : (
-                          <span className={`text-sm flex-1 ${shouldStrikethrough ? 'line-through text-gray-500' : ''}`}>{folderDisplayNames[week.id] || week.name}</span>
+                          <span className={`text-sm flex-1 ${shouldStrikethrough ? 'line-through text-gray-500' : isCurrent && viewMode === 'week' ? 'text-white font-medium' : ''}`}>{folderDisplayNames[week.id] || week.name}</span>
                         )}
-                        <span className="text-xs text-gray-500">{weekFiles.length}</span>
+                        <span className={`text-xs ${isCurrent && viewMode === 'week' ? 'text-white/70' : 'text-gray-500'}`}>{weekFiles.length}</span>
                       </div>
                     </ContextMenuTrigger>
                     <ContextMenuContent className="w-48">
