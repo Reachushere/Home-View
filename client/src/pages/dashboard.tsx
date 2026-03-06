@@ -11349,7 +11349,7 @@ export default function Dashboard() {
           }}
         >
           <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '6px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '4px' }}>+</span>
+          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>+</span>
         </div>
       </div>
 
@@ -11390,7 +11390,7 @@ export default function Dashboard() {
           }}
         >
           <FolderOpen style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '6px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '4px' }}>+</span>
+          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>+</span>
         </div>
       </div>
 
