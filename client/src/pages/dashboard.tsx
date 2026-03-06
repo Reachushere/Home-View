@@ -9627,7 +9627,7 @@ export default function Dashboard() {
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-16px',
+            bottom: '-20px',
             width: '94px',
             height: '27px',
             pointerEvents: 'none',
@@ -11289,7 +11289,7 @@ export default function Dashboard() {
         onClick={() => { window.location.href = '/files'; }}
         className="fixed z-[60] cursor-pointer bottom-tab-bounce"
         style={{
-          bottom: '-2px',
+          bottom: '-5px',
           left: '50%',
           transform: 'translateX(-50%)',
           pointerEvents: 'auto',
