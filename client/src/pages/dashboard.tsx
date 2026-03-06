@@ -11390,7 +11390,7 @@ export default function Dashboard() {
         <div
           style={{
             width: '28px',
-            height: '56px',
+            height: '46px',
             borderRadius: '0 9999px 9999px 0',
             background: 'linear-gradient(270deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
             backdropFilter: 'blur(24px)',
