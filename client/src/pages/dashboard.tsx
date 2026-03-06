@@ -11977,34 +11977,33 @@ export default function Dashboard() {
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col shadow-2xl"
+                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                  background: 'linear-gradient(135deg, #fef3c7 0%, #ffedd5 40%, #fef9c3 100%)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.5)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.3)',
-                  color: '#44403c',
+                  background: 'rgba(255,255,255,0.4)',
+                  backdropFilter: 'blur(3px)',
+                  WebkitBackdropFilter: 'blur(3px)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.05), 0 25px 50px -12px rgba(0,0,0,0.4)',
                 }}
                 onClick={(e) => e.stopPropagation()}
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-amber-200/60 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }}>
+                <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.1)' }}>
                   <div className="flex items-center gap-2">
-                    <Plus className="h-3.5 w-3.5 text-amber-800" />
-                    <h2 className="text-xs font-normal text-amber-800 tracking-wide uppercase">
+                    <Plus className="h-3.5 w-3.5 text-white" />
+                    <h2 className="text-xs font-normal text-white tracking-wide uppercase">
                       {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </h2>
                   </div>
-                  <button onClick={handleQuickAddClose} className="text-amber-700/60 hover:text-amber-800 transition-colors p-1" data-testid="button-close-quick-add">
+                  <button onClick={handleQuickAddClose} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
 
                 {/* Step indicator */}
-                <div className="flex items-center gap-0.5 px-4 py-2 border-b border-amber-200/40 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.15)' }}>
+                <div className="flex items-center gap-0.5 px-4 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)' }}>
                   {[
                     { id: 0, label: "Type" },
                     { id: 1, label: "Name" },
@@ -12612,12 +12611,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* Footer with navigation */}
-                <div className="flex items-center justify-between px-4 py-3 border-t border-amber-200/60 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
                   <div style={{ flex: 1 }} />
                   <Button
                     variant="outline"
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
-                    className="border !border-amber-300 text-amber-800 transition-all duration-200"
+                    className="border !border-white/30 text-white/60 transition-all duration-200"
                     style={{ fontSize: "11px" }}
                     data-testid="quick-add-back"
                   >
@@ -12631,9 +12630,9 @@ export default function Dashboard() {
                         variant="outline"
                         onClick={() => setQuickAddStep(s => s + 1)}
                         disabled={!canNext}
-                        className="border !border-amber-400 text-amber-900 font-medium transition-all duration-200 disabled:opacity-30"
+                        className="border !border-white/50 text-white transition-all duration-200 disabled:opacity-30"
                         style={{
-                          boxShadow: canNext ? "0 0 6px rgba(217,119,6,0.3), 0 0 12px rgba(217,119,6,0.15)" : "none",
+                          boxShadow: canNext ? "0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)" : "none",
                           fontSize: "11px",
                         }}
                         data-testid="quick-add-next"
@@ -12646,9 +12645,9 @@ export default function Dashboard() {
                   {quickAddStep === 11 && (
                     <Button
                       variant="outline"
-                      className="border !border-amber-400 text-amber-900 font-medium transition-all duration-200"
+                      className="border !border-white/50 text-white transition-all duration-200"
                       style={{
-                        boxShadow: "0 0 6px rgba(217,119,6,0.4), 0 0 12px rgba(217,119,6,0.25), 0 0 18px rgba(217,119,6,0.15)",
+                        boxShadow: "0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)",
                         fontSize: "11px",
                       }}
                       onClick={async () => {
