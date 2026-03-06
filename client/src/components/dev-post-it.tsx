@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { X, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PostItTask {
@@ -56,22 +56,43 @@ export function DevPostIt() {
     localStorage.setItem(COLLAPSED_KEY, String(collapsed));
   }, [collapsed]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleDragStart = useCallback((clientX: number, clientY: number) => {
     setDragging(true);
-    setDragOffset({ x: e.clientX - pos.x, y: e.clientY - pos.y });
+    setDragOffset({ x: clientX - pos.x, y: clientY - pos.y });
   }, [pos]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDragStart(e.clientX, e.clientY);
+  }, [handleDragStart]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, [handleDragStart]);
 
   useEffect(() => {
     if (!dragging) return;
-    const handleMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setPos({ x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y });
     };
-    const handleUp = () => setDragging(false);
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleUp);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        setPos({ x: e.touches[0].clientX - dragOffset.x, y: e.touches[0].clientY - dragOffset.y });
+      }
+    };
+    const handleEnd = () => setDragging(false);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleEnd);
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleEnd);
     return () => {
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleEnd);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleEnd);
     };
   }, [dragging, dragOffset]);
 
@@ -90,6 +111,8 @@ export function DevPostIt() {
     }
   };
 
+  const dialogShownRef = useRef(false);
+
   useEffect(() => {
     if (import.meta.env.PROD) return;
     const poll = async () => {
@@ -106,10 +129,9 @@ export function DevPostIt() {
 
           const completedTexts = incoming.filter(t => t.complete).map(t => t.text);
           const toPrompt = prev.filter(t => completedTexts.includes(t.text) && !dismissed.includes(t.text));
-          if (toPrompt.length > 0 && !confirmDialog) {
-            setTimeout(() => {
-              setConfirmDialog({ taskId: toPrompt[0].id, taskText: toPrompt[0].text });
-            }, 300);
+          if (toPrompt.length > 0 && !dialogShownRef.current) {
+            dialogShownRef.current = true;
+            setConfirmDialog({ taskId: toPrompt[0].id, taskText: toPrompt[0].text });
           }
 
           if (newOnes.length === 0) return prev;
@@ -120,7 +142,7 @@ export function DevPostIt() {
     poll();
     const interval = setInterval(poll, 5000);
     return () => clearInterval(interval);
-  }, [confirmDialog]);
+  }, []);
 
   const handleCheckChange = useCallback((taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
@@ -143,6 +165,7 @@ export function DevPostIt() {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "answer-later" } : t));
     }
     setConfirmDialog(null);
+    dialogShownRef.current = false;
   }, [confirmDialog]);
 
   const handleRetry = useCallback((taskId: string) => {
@@ -189,8 +212,9 @@ export function DevPostIt() {
           }}
         >
           <div
-            style={{ display: "flex", alignItems: "center", gap: "4px", cursor: "grab", marginBottom: collapsed ? 0 : "6px" }}
+            style={{ display: "flex", alignItems: "center", gap: "4px", cursor: "grab", marginBottom: collapsed ? 0 : "6px", touchAction: "none" }}
             onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
           >
             <GripVertical className="h-3 w-3 text-yellow-700/40" />
             <span style={{ fontWeight: 600, fontSize: "12px", color: "#92400e", flex: 1 }}>Dev Tasks</span>
