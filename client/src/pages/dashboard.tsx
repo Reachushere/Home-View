@@ -387,7 +387,7 @@ export default function Dashboard() {
   
   // Return-from-break reading prompt (dev mode only - when returning to Replit after 2+ hours)
   const [showReturnReadingPrompt, setShowReturnReadingPrompt] = useState(false);
-  const [returnReadingFiles, setReturnReadingFiles] = useState<Array<{id: number; name: string; folder: string}>>([]);
+  const [returnReadingFiles, setReturnReadingFiles] = useState<Array<{id: number; name: string; folder: string; originalName: string; displayName: string; objectPath: string; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string}>>([]);
   const [selectedReturnFile, setSelectedReturnFile] = useState<number | null>(null);
   const returnPromptShown = useRef(false);
 
@@ -416,6 +416,13 @@ export default function Dashboard() {
             id: f.id,
             name: f.displayName || f.originalName || 'Unknown',
             folder: f.folder || '',
+            originalName: f.originalName || '',
+            displayName: f.displayName || f.originalName || '',
+            objectPath: f.objectPath || '',
+            listened: f.listened,
+            lastChunkIndex: f.lastChunkIndex,
+            totalChunks: f.totalChunks,
+            checkedChunks: f.checkedChunks,
           })));
           setSelectedReturnFile(unlistened[0].id);
           setShowReturnReadingPrompt(true);
@@ -10164,7 +10171,20 @@ export default function Dashboard() {
                       className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
                       onClick={() => {
                         if (selectedReturnFile) {
-                          window.open(`/pdf-reader/${selectedReturnFile}?autoplay=true`, '_blank');
+                          const file = returnReadingFiles.find(f => f.id === selectedReturnFile);
+                          if (file) {
+                            setPreviewFile({
+                              id: file.id,
+                              originalName: file.originalName,
+                              displayName: file.displayName,
+                              objectPath: file.objectPath,
+                              folder: file.folder,
+                              listened: file.listened,
+                              lastChunkIndex: file.lastChunkIndex,
+                              totalChunks: file.totalChunks,
+                              checkedChunks: file.checkedChunks,
+                            });
+                          }
                         }
                         setShowReturnReadingPrompt(false);
                       }}
