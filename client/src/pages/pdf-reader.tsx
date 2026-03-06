@@ -118,6 +118,7 @@ export default function PDFReaderPage() {
 
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pdfContainerHeight, setPdfContainerHeight] = useState<number>(0);
   const [extractedText, setExtractedText] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -1486,20 +1487,21 @@ export default function PDFReaderPage() {
               </Button>
             </div>
           </div>
-          <div className="flex-1 overflow-auto flex justify-center p-4">
+          <div className="flex-1 overflow-auto flex justify-center items-start p-2" ref={(el) => { if (el && !el.dataset.observed) { el.dataset.observed = '1'; const ro = new ResizeObserver(() => { const h = el.clientHeight; if (h > 0) setPdfContainerHeight(h); }); ro.observe(el); } }}>
             {pdfUrl && (
               <Document
                 file={pdfUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={
-                  <div className="flex items-center justify-center h-[400px]">
+                  <div className="flex items-center justify-center h-full">
                     <Loader2 className="h-8 w-8 animate-spin text-white/40" />
                   </div>
                 }
               >
                 <Page
                   pageNumber={currentPage}
-                  width={isMobile ? window.innerWidth - 32 : 480}
+                  height={pdfContainerHeight ? pdfContainerHeight - 16 : undefined}
+                  width={!pdfContainerHeight ? (isMobile ? window.innerWidth - 32 : 480) : undefined}
                   renderTextLayer={true}
                   renderAnnotationLayer={true}
                 />
