@@ -38,6 +38,7 @@ import {
   Loader2,
   ChevronRight,
   ChevronDown,
+  ChevronLeft,
   Plus,
   FolderPlus,
   SkipBack,
@@ -45,7 +46,9 @@ import {
   RotateCcw,
   Minus,
   BookOpen,
-  Home
+  Home,
+  Cloud,
+  RefreshCw
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FileRecord } from "@shared/schema";
@@ -150,8 +153,24 @@ const SPEAKERS = [
   { id: "media_player.queen_bedroom", name: "Queen Bedroom" },
 ];
 
+interface OneDriveItem {
+  id: string;
+  name: string;
+  type: "folder" | "file";
+  mimeType?: string;
+  size?: number;
+  lastModified?: string;
+  downloadUrl?: string;
+  path: string;
+}
+
+type ViewMode = "all" | "week";
+
 export default function FilesPage() {
   const { toast } = useToast();
+  const [viewMode, setViewMode] = useState<ViewMode>("all");
+  const [oneDrivePath, setOneDrivePath] = useState("/School/1. TMU/Courses/2026/Winter");
+  const [oneDrivePathHistory, setOneDrivePathHistory] = useState<string[]>([]);
   const [editingFile, setEditingFile] = useState<FileRecord | null>(null);
   const [newName, setNewName] = useState("");
   const [assigningFile, setAssigningFile] = useState<FileRecord | null>(null);
@@ -287,6 +306,66 @@ export default function FilesPage() {
     queryKey: ["/api/weeks"],
     queryFn: () => fetch("/api/weeks").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
+
+  const { data: oneDriveItems = [], isLoading: oneDriveLoading } = useQuery<OneDriveItem[]>({
+    queryKey: ["/api/onedrive/files", oneDrivePath],
+    queryFn: async () => {
+      const response = await fetch(`/api/onedrive/files?path=${encodeURIComponent(oneDrivePath)}`);
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to load files");
+      }
+      return response.json();
+    },
+    enabled: viewMode === "week",
+  });
+
+  const oneDriveFolders = oneDriveItems
+    .filter(item => item.type === "folder")
+    .sort((a, b) => {
+      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+      const getCourseIndex = (name: string) => {
+        for (let i = 0; i < courseOrder.length; i++) {
+          if (name.includes(courseOrder[i])) return i;
+        }
+        return -1;
+      };
+      const courseIdxA = getCourseIndex(a.name);
+      const courseIdxB = getCourseIndex(b.name);
+      if (courseIdxA !== -1 && courseIdxB !== -1) return courseIdxA - courseIdxB;
+      if (courseIdxA !== -1) return -1;
+      if (courseIdxB !== -1) return 1;
+      const weekMatch = (name: string) => {
+        const match = name.match(/week\s*(\d+)/i);
+        return match ? parseInt(match[1], 10) : null;
+      };
+      const weekA = weekMatch(a.name);
+      const weekB = weekMatch(b.name);
+      if (weekA !== null && weekB !== null) {
+        return weekA - weekB;
+      }
+      if (weekA !== null) return -1;
+      if (weekB !== null) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  const oneDriveFiles = oneDriveItems.filter(item => item.type === "file");
+  const oneDrivePdfFiles = oneDriveFiles.filter(item => item.mimeType?.includes("pdf"));
+
+  const courseColorMap: Record<string, string> = {
+    'CPPA122': '#47B045',
+    'CFNF400': '#FA67B3',
+    'CASL101': '#6366f1',
+  };
+
+  const getOneDriveFolderColor = (folderName: string): string | undefined => {
+    for (const [courseCode, color] of Object.entries(courseColorMap)) {
+      if (oneDrivePath.includes(courseCode)) return color;
+    }
+    for (const [courseCode, color] of Object.entries(courseColorMap)) {
+      if (folderName.includes(courseCode)) return color;
+    }
+    return undefined;
+  };
 
   // Helper to get week number from week id
   const getWeekNumberFromId = (weekId: string): number | null => {
@@ -1145,59 +1224,202 @@ export default function FilesPage() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-[#3d3d3d]"
-          data-testid="button-back"
-          onClick={navigateBack}
-          disabled={!selectedFolder}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-[#3d3d3d]"
-          data-testid="button-home"
-          onClick={navigateHome}
-          disabled={!selectedFolder}
-        >
-          <Home className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center gap-1 text-sm text-gray-400">
-          {getBreadcrumb().map((part, idx) => (
-            <span key={idx} className="flex items-center gap-1">
-              {idx > 0 && <ChevronRight className="h-3 w-3" />}
-              <span className={idx === getBreadcrumb().length - 1 ? "text-white" : ""}>{part}</span>
-            </span>
-          ))}
+        {/* View Mode Toggle */}
+        <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden mr-2">
+          <button
+            className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'all' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            onClick={() => setViewMode('all')}
+            data-testid="button-view-all"
+          >
+            All
+          </button>
+          <button
+            className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'week' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            onClick={() => setViewMode('week')}
+            data-testid="button-view-week"
+          >
+            Week
+          </button>
         </div>
-        <div className="flex-1" />
-        <ObjectUploader
-          maxNumberOfFiles={5}
-          onGetUploadParameters={getUploadParameters}
-          onComplete={handleUploadComplete}
-          buttonClassName="h-7 text-xs px-3 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
-        >
-          <Upload className="h-3 w-3 mr-1" />
-          Upload
-        </ObjectUploader>
-        <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-          <SelectTrigger className="w-[130px] h-7 text-xs bg-[#2d2d2d] border-[#3d3d3d] text-white" data-testid="select-sort">
-            <SelectValue placeholder="Sort by..." />
-          </SelectTrigger>
-          <SelectContent className="bg-[#2d2d2d] border-[#3d3d3d]">
-            <SelectItem value="date-newest">Newest first</SelectItem>
-            <SelectItem value="date-oldest">Oldest first</SelectItem>
-            <SelectItem value="name-asc">Name A-Z</SelectItem>
-            <SelectItem value="name-desc">Name Z-A</SelectItem>
-            <SelectItem value="size-largest">Largest first</SelectItem>
-            <SelectItem value="size-smallest">Smallest first</SelectItem>
-          </SelectContent>
-        </Select>
+
+        {viewMode === 'all' ? (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-[#3d3d3d]"
+              data-testid="button-back"
+              onClick={navigateBack}
+              disabled={!selectedFolder}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-[#3d3d3d]"
+              data-testid="button-home"
+              onClick={navigateHome}
+              disabled={!selectedFolder}
+            >
+              <Home className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-1 text-sm text-gray-400">
+              {getBreadcrumb().map((part, idx) => (
+                <span key={idx} className="flex items-center gap-1">
+                  {idx > 0 && <ChevronRight className="h-3 w-3" />}
+                  <span className={idx === getBreadcrumb().length - 1 ? "text-white" : ""}>{part}</span>
+                </span>
+              ))}
+            </div>
+            <div className="flex-1" />
+            <ObjectUploader
+              maxNumberOfFiles={5}
+              onGetUploadParameters={getUploadParameters}
+              onComplete={handleUploadComplete}
+              buttonClassName="h-7 text-xs px-3 bg-transparent hover:bg-white/10 text-white border border-white/40 shadow-none"
+            >
+              <Upload className="h-3 w-3 mr-1" />
+              Upload
+            </ObjectUploader>
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+              <SelectTrigger className="w-[130px] h-7 text-xs bg-[#2d2d2d] border-[#3d3d3d] text-white" data-testid="select-sort">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent className="bg-[#2d2d2d] border-[#3d3d3d]">
+                <SelectItem value="date-newest">Newest first</SelectItem>
+                <SelectItem value="date-oldest">Oldest first</SelectItem>
+                <SelectItem value="name-asc">Name A-Z</SelectItem>
+                <SelectItem value="name-desc">Name Z-A</SelectItem>
+                <SelectItem value="size-largest">Largest first</SelectItem>
+                <SelectItem value="size-smallest">Smallest first</SelectItem>
+              </SelectContent>
+            </Select>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-[#3d3d3d]"
+              onClick={() => {
+                if (oneDrivePathHistory.length > 0) {
+                  const previousPath = oneDrivePathHistory[oneDrivePathHistory.length - 1];
+                  setOneDrivePathHistory(oneDrivePathHistory.slice(0, -1));
+                  setOneDrivePath(previousPath);
+                }
+              }}
+              disabled={oneDrivePathHistory.length === 0}
+              data-testid="button-onedrive-back"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-[#3d3d3d]"
+              onClick={() => {
+                setOneDrivePathHistory([]);
+                setOneDrivePath("/");
+              }}
+              data-testid="button-onedrive-home"
+            >
+              <Home className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-[#3d3d3d]"
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ["/api/onedrive/files", oneDrivePath] });
+              }}
+              data-testid="button-onedrive-refresh"
+            >
+              <RefreshCw className={`h-4 w-4 ${oneDriveLoading ? 'animate-spin' : ''}`} />
+            </Button>
+            <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 truncate">
+              <Cloud className="h-3 w-3" />
+              <span className="truncate">{oneDrivePath === "/" ? "OneDrive" : oneDrivePath}</span>
+            </div>
+          </>
+        )}
       </div>
 
+      {viewMode === 'week' ? (
+        <div className="flex-1 overflow-y-auto py-3 px-3" style={{ scrollbarWidth: 'none' }}>
+          {oneDriveLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-white/50" />
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {oneDriveFolders.map((folder) => {
+                const folderColor = getOneDriveFolderColor(folder.name);
+                return (
+                  <div
+                    key={folder.id}
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 cursor-pointer rounded transition-colors"
+                    onClick={() => {
+                      setOneDrivePathHistory([...oneDrivePathHistory, oneDrivePath]);
+                      setOneDrivePath(folder.path);
+                    }}
+                    data-testid={`onedrive-folder-${folder.id}`}
+                  >
+                    <Folder
+                      className={folderColor ? "h-4 w-4" : "h-4 w-4 text-yellow-500 fill-yellow-400"}
+                      style={folderColor ? { color: folderColor, fill: folderColor } : undefined}
+                    />
+                    <span className="text-[13px] text-white/90 truncate flex-1">{folder.name}</span>
+                    <ChevronRight className="h-3 w-3 text-white/40" />
+                  </div>
+                );
+              })}
+
+              {oneDrivePdfFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 cursor-pointer rounded transition-colors group"
+                  onClick={() => {
+                    if (file.downloadUrl) {
+                      const encodedUrl = encodeURIComponent(file.downloadUrl);
+                      const encodedName = encodeURIComponent(file.name);
+                      window.open(`/pdf-reader?url=${encodedUrl}&name=${encodedName}`, '_blank');
+                    }
+                  }}
+                  data-testid={`onedrive-file-${file.id}`}
+                >
+                  <FileText className="h-4 w-4 text-red-400" />
+                  <span className="text-[13px] text-white/80 truncate flex-1">{file.name}</span>
+                  {file.size && (
+                    <span className="text-[11px] text-white/30">{formatFileSize(file.size)}</span>
+                  )}
+                </div>
+              ))}
+
+              {oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded transition-colors"
+                  data-testid={`onedrive-file-${file.id}`}
+                >
+                  <File className="h-4 w-4 text-white/50" />
+                  <span className="text-[13px] text-white/60 truncate flex-1">{file.name}</span>
+                  {file.size && (
+                    <span className="text-[11px] text-white/30">{formatFileSize(file.size)}</span>
+                  )}
+                </div>
+              ))}
+
+              {oneDriveFolders.length === 0 && oneDriveFiles.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-8 text-white/40">
+                  <Folder className="h-8 w-8 mb-2 opacity-50" />
+                  <p className="text-[12px]">No files found</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
       <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar - Tree Navigation */}
         <div 
@@ -2018,7 +2240,9 @@ export default function FilesPage() {
           </div>
         )}
       </div>
+      )}
 
+      {/* Dialogs */}
       <Dialog open={!!editingFile} onOpenChange={() => setEditingFile(null)}>
         <DialogContent>
           <DialogHeader>
