@@ -10230,7 +10230,7 @@ export default function Dashboard() {
               }
             }}
             data-testid="honeycomb-sync"
-            title="Sync: Push tasks & pull events"
+            title="Sync"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M14 4l7 7-7 7V4z" /><path d="M10 20l-7-7 7-7v14z" /></svg>
           </div>
