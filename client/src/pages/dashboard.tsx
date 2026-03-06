@@ -15034,25 +15034,25 @@ export default function Dashboard() {
                                 data-testid={`checkbox-course-row-${task.id}`}
                               />
                               <span 
-                                className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
+                                className="cursor-pointer hover:opacity-80 pl-1 flex items-center gap-0.5 flex-1 min-w-0"
                                 onClick={() => setEditingTask(task)}
                               >
-                                {task.title}
+                                <span className="truncate">{task.title}</span>
+                                {dueModulePdfUrl && (
+                                  <img
+                                    src={pdfIconPath}
+                                    alt="Open PDF"
+                                    className="shrink-0"
+                                    style={{ width: '14px', height: '14px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto' }}
+                                    onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/')) { window.location.href = `/pdf-reader/${encodeURIComponent(url)}`; } else { window.open(url, '_blank'); } }}
+                                    data-testid={`pdf-icon-task-${task.id}`}
+                                  />
+                                )}
                               </span>
                               {task.referenceLink && (
                                 <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-course-${task.id}`}>
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
-                              )}
-                              {dueModulePdfUrl && (
-                                <img
-                                  src={pdfIconPath}
-                                  alt="Open PDF"
-                                  className="shrink-0"
-                                  style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                  onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/')) { window.location.href = `/pdf-reader/${encodeURIComponent(url)}`; } else { window.open(url, '_blank'); } }}
-                                  data-testid={`pdf-icon-task-${task.id}`}
-                                />
                               )}
                             </div>
                           );
