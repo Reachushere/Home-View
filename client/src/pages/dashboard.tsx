@@ -13516,7 +13516,7 @@ export default function Dashboard() {
                 {/* Left Column */}
                 <div className="flex flex-col gap-3 justify-between">
                 <div className="flex flex-col gap-3">
-                <div className="border rounded-lg p-3 space-y-3">
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-3px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Colour Settings</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Customise colours for the app</span>
@@ -13962,7 +13962,7 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-3 justify-between" style={{ marginTop: '-2px' }}>
                 <div className="flex flex-col gap-3">
                 {/* Blinking & Spacing Settings */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '1px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-2px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Blinking & Spacing</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Control blinking animations and button spacing</span>
