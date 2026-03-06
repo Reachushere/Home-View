@@ -125,7 +125,7 @@ export function DevPostIt() {
         setTasks(prev => {
           const existingTexts = new Set(prev.map(t => t.text));
           const newOnes = incoming
-            .filter(t => !t.complete && !existingTexts.has(t.text))
+            .filter(t => !t.complete && !existingTexts.has(t.text) && !dismissed.includes(t.text))
             .map(t => ({ id: t.id || Date.now().toString(), text: t.text, checked: false, status: "active" as const }));
 
           const completedTexts = incoming.filter(t => t.complete).map(t => t.text);
