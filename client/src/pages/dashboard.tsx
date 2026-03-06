@@ -9702,7 +9702,7 @@ export default function Dashboard() {
               className="pill-button-hover"
               onClick={() => { triggerButtonGlow('undo'); handleUndo(); }}
               data-testid="button-undo"
-              title={`Undo: ${undoStack[0]?.description || ''} (${undoStack.length} available)`}
+              title="Undo"
             >
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
@@ -9717,7 +9717,7 @@ export default function Dashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5
               }}
               data-testid="button-undo-disabled"
-              title="Nothing to undo"
+              title="Undo"
             >
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
@@ -9737,7 +9737,7 @@ export default function Dashboard() {
               className="pill-button-hover"
               onClick={() => { triggerButtonGlow('redo'); handleRedo(); }}
               data-testid="button-redo"
-              title={`Redo: ${redoStack[0]?.description || ''} (${redoStack.length} available)`}
+              title="Redo"
             >
               <Redo2 className="h-[18px] w-[18px] text-white" />
             </div>
@@ -9752,7 +9752,7 @@ export default function Dashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5
               }}
               data-testid="button-redo-disabled"
-              title="Nothing to redo"
+              title="Redo"
             >
               <Redo2 className="h-[18px] w-[18px] text-white" />
             </div>
