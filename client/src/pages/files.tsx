@@ -392,6 +392,24 @@ export default function FilesPage() {
     return todayDateOnly > endDateOnly;
   }, [weeks]);
 
+  // Check if a week is the current week (today falls between start and end)
+  const isCurrentWeek = useCallback((weekId: string): boolean => {
+    const weekNum = getWeekNumberFromId(weekId);
+    if (weekNum === null) return false;
+    
+    const weekData = weeks.find(w => w.weekNumber === weekNum);
+    if (!weekData) return false;
+    
+    const today = new Date();
+    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const startDate = parseISO(weekData.startDate);
+    const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endDate = parseISO(weekData.endDate);
+    const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    
+    return todayDateOnly >= startDateOnly && todayDateOnly <= endDateOnly;
+  }, [weeks]);
+
   // Sort weeks: current and future weeks first (in order), then past weeks (in order)
   const sortedWeeks = useMemo(() => {
     return [...WEEKS].sort((a, b) => {
@@ -1553,6 +1571,7 @@ export default function FilesPage() {
               const isWeekExpanded = expandedFolders.has(week.id);
               const allFilesListened = weekFiles.length > 0 && weekFiles.every(f => f.listened);
               const isPastWeek = isWeekPast(week.id);
+              const isCurrent = isCurrentWeek(week.id);
               // Past week with incomplete files should blink
               const shouldBlink = isPastWeek && weekFiles.length > 0 && !allFilesListened;
               // Past week with all files completed should have strikethrough
@@ -1586,9 +1605,9 @@ export default function FilesPage() {
                           <div className="w-3 h-3" />
                         )}
                         {isWeekExpanded ? (
-                          <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                          <FolderOpen className={`h-4 w-4 ${isCurrent ? "text-white fill-white" : "text-yellow-500 fill-yellow-400"}`} />
                         ) : (
-                          <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                          <Folder className={`h-4 w-4 ${isCurrent ? "text-white fill-white" : "text-yellow-600 fill-yellow-400"}`} />
                         )}
                         {editingBuiltinFolderId === week.id ? (
                           <input
