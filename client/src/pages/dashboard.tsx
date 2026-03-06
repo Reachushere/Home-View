@@ -15010,7 +15010,8 @@ export default function Dashboard() {
                           const dueTaskCourseCodeLower = dueTaskCourseCode.toLowerCase();
                           const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
                           const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
-                          const dueModulePdfUrl = dueModuleFile?.objectPath || null;
+                          const dueAttachmentPdf = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
+                          const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentPdf || null;
                           return (
                             <div 
                               key={task.id}
@@ -15365,7 +15366,8 @@ export default function Dashboard() {
                           const satDueCourseCodeLower = satDueCourseCode.toLowerCase();
                           const satDueModuleFolder = `week-${task.weekNumber}-${satDueCourseCodeLower}-module`;
                           const satDueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === satDueModuleFolder && f.objectPath) : null;
-                          const satDuePdfUrl = satDueModuleFile?.objectPath || null;
+                          const satDueAttachmentPdf = !satDueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
+                          const satDuePdfUrl = satDueModuleFile?.objectPath || satDueAttachmentPdf || null;
                           return (
                             <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden' }}
@@ -15587,6 +15589,11 @@ export default function Dashboard() {
                       const tomorrow = addDays(today, 1);
                       const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                       const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      const adCourseCodeLower = courseCode.toLowerCase();
+                      const adModuleFolderName = `week-${task.weekNumber}-${adCourseCodeLower}-module`;
+                      const adModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === adModuleFolderName && f.objectPath) : null;
+                      const adAttachmentPdf = !adModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
+                      const adPdfUrl = adModuleFile?.objectPath || adAttachmentPdf || null;
                       return (
                         <div
                           key={task.id}
@@ -15629,6 +15636,21 @@ export default function Dashboard() {
                             >
                               {task.title}
                             </span>
+                            {task.referenceLink && (
+                              <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
+                                <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                              </a>
+                            )}
+                            {adPdfUrl && (
+                              <img
+                                src={pdfIconPath}
+                                alt="Open PDF"
+                                className="shrink-0"
+                                style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
+                                onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(adPdfUrl)}`; }}
+                                data-testid={`pdf-icon-allday-${task.id}`}
+                              />
+                            )}
                             {/* Delete button - always visible */}
                             <button
                               onClick={(e) => {
@@ -15710,6 +15732,11 @@ export default function Dashboard() {
                       const tomorrow = addDays(today, 1);
                       const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                       const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      const ad2CourseCodeLower = courseCode.toLowerCase();
+                      const ad2ModuleFolderName = `week-${task.weekNumber}-${ad2CourseCodeLower}-module`;
+                      const ad2ModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === ad2ModuleFolderName && f.objectPath) : null;
+                      const ad2AttachmentPdf = !ad2ModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
+                      const ad2PdfUrl = ad2ModuleFile?.objectPath || ad2AttachmentPdf || null;
                       return (
                         <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
                           <div
@@ -15725,6 +15752,16 @@ export default function Dashboard() {
                               <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
                                 <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
                               </a>
+                            )}
+                            {ad2PdfUrl && (
+                              <img
+                                src={pdfIconPath}
+                                alt="Open PDF"
+                                className="shrink-0"
+                                style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
+                                onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(ad2PdfUrl)}`; }}
+                                data-testid={`pdf-icon-allday2-${task.id}`}
+                              />
                             )}
                             <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteTaskWithUndo(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
                           </div>
