@@ -20319,8 +20319,8 @@ function SchoolForm({
                   type="date"
                   value={week1StartDate}
                   onChange={(e) => setWeek1StartDate(e.target.value)}
-                  className="!text-black !text-[10px] h-8"
-                  style={{ fontSize: '10px' }}
+                  className="!text-black !text-[10px] h-8 bg-white border-white/20"
+                  style={{ fontSize: '10px', color: 'black' }}
                   data-testid="input-week1-start-date"
                 />
               </div>
