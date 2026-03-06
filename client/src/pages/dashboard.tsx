@@ -11416,7 +11416,7 @@ export default function Dashboard() {
             paddingRight: '3px',
           }}
         >
-          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5 }} />
+          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginRight: '2px' }} />
         </div>
       </div>
 
