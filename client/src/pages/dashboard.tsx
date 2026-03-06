@@ -11940,7 +11940,7 @@ export default function Dashboard() {
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }}>
+                <div className="flex items-center justify-between px-5 py-3 border-b border-black/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }}>
                   <div className="flex items-center gap-2">
                     <Plus className="h-3.5 w-3.5 text-black/70" />
                     <h2 className="text-xs font-normal text-black/70 tracking-wide uppercase">
