@@ -320,6 +320,9 @@ export default function PDFReaderPage() {
     }
   };
 
+  const [moduleFiles, setModuleFiles] = useState<FileRecord[]>([]);
+  const [readingFiles, setReadingFiles] = useState<FileRecord[]>([]);
+
   const { data: file, isLoading: fileLoading } = useQuery<FileRecord>({
     queryKey: ["/api/files", fileId],
     queryFn: async () => {
@@ -329,6 +332,23 @@ export default function PDFReaderPage() {
     },
     enabled: !!fileId && !isOneDriveRoute,
   });
+
+  useEffect(() => {
+    if (!file?.folder) return;
+    const parts = file.folder.split('-');
+    if (parts.length < 3) return;
+    const weekNum = parts[1];
+    const courseCode = parts[2];
+    fetch('/api/files')
+      .then(r => r.json())
+      .then((allDbFiles: FileRecord[]) => {
+        const mods = allDbFiles.filter(f => f.folder?.includes(`week-${weekNum}-${courseCode}`) && f.folder?.includes('module'));
+        const reads = allDbFiles.filter(f => f.folder?.includes(`week-${weekNum}-${courseCode}`) && f.folder?.includes('reading'));
+        setModuleFiles(mods);
+        setReadingFiles(reads);
+      })
+      .catch(() => {});
+  }, [file?.folder]);
   
   const isOneDrive = isOneDriveRoute && oneDriveUrl;
   const pdfUrl = isOneDrive ? (currentFileUrl || decodeURIComponent(oneDriveUrl)) : file?.objectPath;
@@ -1086,60 +1106,144 @@ export default function PDFReaderPage() {
         </div>
 
         <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
-          {allFiles.length > 1 ? (
-            <>
-              <div className="flex items-center gap-1 min-w-0 shrink">
-                <span className="text-[11px] font-bold text-white shrink-0">Module:</span>
-                <Select
-                  value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
-                  onValueChange={(url) => {
-                    const f = allFiles.find(af => af.downloadUrl === url);
-                    if (f) switchToFile(f);
-                  }}
-                >
-                  <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
-                    <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
-                      {(() => {
-                        const current = allFiles.find(af => af.downloadUrl === (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')));
-                        if (!current) return 'Select...';
-                        return current.name.replace(/\.pdf$/i, '');
-                      })()}
-                    </span>
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px] min-w-[350px]">
-                    {allFiles.map((af, idx) => {
-                      const listened = listenedFiles.has(af.path);
-                      return (
-                        <SelectItem key={af.path || idx} value={af.downloadUrl} className={`text-[10px] ${listened ? 'text-white/50 line-through' : ''}`}>
-                          {af.name.replace(/\.pdf$/i, '')}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
+          {(() => {
+            const isDbFile = !!fileId && !isOneDrive;
+            const isModule = file?.folder?.includes('module');
+            const isReading = file?.folder?.includes('reading');
+            const relatedFiles = isReading ? readingFiles : moduleFiles;
+            const currentIndex = relatedFiles.findIndex(f => f.id === fileId);
+            const canGoPrev = currentIndex > 0;
+            const canGoNext = currentIndex < relatedFiles.length - 1;
 
-              <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
-                <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
-                  const currentIdx = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
-                  if (currentIdx > 0) switchToFile(allFiles[currentIdx - 1]);
-                }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) <= 0} data-testid="button-prev-file">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-[9px] text-white min-w-[40px] text-center">
-                  {(() => { const idx = allFiles.findIndex(af => af.downloadUrl === currentFileUrl); return idx >= 0 ? `${idx + 1}/${allFiles.length}` : '-'; })()}
-                </span>
-                <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
-                  const currentIdx = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
-                  if (currentIdx < allFiles.length - 1) switchToFile(allFiles[currentIdx + 1]);
-                }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) >= allFiles.length - 1} data-testid="button-next-file">
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </>
-          ) : (
-            <span className="text-[11px] font-bold text-white truncate">{file?.displayName || file?.originalName || currentFileName || 'PDF Reader'}</span>
-          )}
+            if (isDbFile && (moduleFiles.length > 0 || readingFiles.length > 0)) {
+              return (
+                <>
+                  <div className="flex items-center gap-1 min-w-0 shrink">
+                    <span className="text-[11px] font-bold text-white shrink-0">Module:</span>
+                    <Select
+                      value={isModule && fileId ? fileId.toString() : (moduleFiles[0]?.id?.toString() || 'none')}
+                      onValueChange={(val) => {
+                        if (val === 'none') return;
+                        window.location.href = `/pdf-reader/${val}`;
+                      }}
+                    >
+                      <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
+                        <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
+                          {moduleFiles.length === 0 ? 'No modules' : (() => {
+                            const f = isModule ? file : moduleFiles[0];
+                            return f ? (f.displayName || f.originalName || '').replace(/\.pdf$/i, '') : 'No modules';
+                          })()}
+                        </span>
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] min-w-[350px]">
+                        {moduleFiles.length === 0 && <SelectItem value="none" disabled className="text-[10px] text-gray-500">No module files</SelectItem>}
+                        {moduleFiles.map(f => (
+                          <SelectItem key={f.id} value={f.id.toString()} className={`text-[10px] ${f.listened ? 'text-white/50 line-through' : ''}`}>
+                            {(f.displayName || f.originalName || '').replace(/\.pdf$/i, '')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-1 min-w-0 shrink" style={{ marginLeft: '40px' }}>
+                    <span className="text-[11px] font-bold text-white shrink-0">Reading:</span>
+                    <Select
+                      value={isReading && fileId ? fileId.toString() : (readingFiles[0]?.id?.toString() || 'none')}
+                      onValueChange={(val) => {
+                        if (val === 'none') return;
+                        window.location.href = `/pdf-reader/${val}`;
+                      }}
+                    >
+                      <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-reading-file">
+                        <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
+                          {readingFiles.length === 0 ? 'No readings' : (() => {
+                            const f = isReading ? file : readingFiles[0];
+                            return f ? (f.displayName || f.originalName || '').replace(/\.pdf$/i, '') : 'No readings';
+                          })()}
+                        </span>
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] min-w-[350px]">
+                        {readingFiles.length === 0 ? <SelectItem value="none" disabled className="text-[10px] text-gray-500">No reading files</SelectItem> : readingFiles.map(f => (
+                          <SelectItem key={f.id} value={f.id.toString()} className={`text-[10px] ${f.listened ? 'text-white/50 line-through' : ''}`}>
+                            {(f.displayName || f.originalName || '').replace(/\.pdf$/i, '')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
+                    <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
+                      if (canGoPrev) window.location.href = `/pdf-reader/${relatedFiles[currentIndex - 1].id}`;
+                    }} disabled={!canGoPrev} data-testid="button-prev-file">
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-[9px] text-white min-w-[40px] text-center">
+                      {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
+                    </span>
+                    <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
+                      if (canGoNext) window.location.href = `/pdf-reader/${relatedFiles[currentIndex + 1].id}`;
+                    }} disabled={!canGoNext} data-testid="button-next-file">
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </>
+              );
+            }
+
+            if (allFiles.length > 1) {
+              return (
+                <>
+                  <div className="flex items-center gap-1 min-w-0 shrink">
+                    <span className="text-[11px] font-bold text-white shrink-0">Module:</span>
+                    <Select
+                      value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
+                      onValueChange={(url) => {
+                        const f = allFiles.find(af => af.downloadUrl === url);
+                        if (f) switchToFile(f);
+                      }}
+                    >
+                      <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-onedrive-file">
+                        <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
+                          {(() => {
+                            const current = allFiles.find(af => af.downloadUrl === (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')));
+                            return current ? current.name.replace(/\.pdf$/i, '') : 'Select...';
+                          })()}
+                        </span>
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] min-w-[350px]">
+                        {allFiles.map((af, idx) => (
+                          <SelectItem key={af.path || idx} value={af.downloadUrl} className={`text-[10px] ${listenedFiles.has(af.path) ? 'text-white/50 line-through' : ''}`}>
+                            {af.name.replace(/\.pdf$/i, '')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
+                    <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
+                      const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
+                      if (i > 0) switchToFile(allFiles[i - 1]);
+                    }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) <= 0} data-testid="button-prev-onedrive">
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-[9px] text-white min-w-[40px] text-center">
+                      {(() => { const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl); return i >= 0 ? `${i + 1}/${allFiles.length}` : '-'; })()}
+                    </span>
+                    <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
+                      const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
+                      if (i < allFiles.length - 1) switchToFile(allFiles[i + 1]);
+                    }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) >= allFiles.length - 1} data-testid="button-next-onedrive">
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </>
+              );
+            }
+
+            return <span className="text-[11px] font-bold text-white truncate">{file?.displayName || file?.originalName || currentFileName || 'PDF Reader'}</span>;
+          })()}
 
           <div className="ml-auto flex items-center gap-2 text-white/40 text-[10px]">
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin" />}
