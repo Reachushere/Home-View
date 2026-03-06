@@ -272,19 +272,19 @@ button[role="combobox"] > span {
   100% { transform: translateY(-63px); }
 }
 
-@keyframes right-task-tab-bounce {
-  0%, 70% { transform: translateY(-50%) translateX(0px); }
-  74% { transform: translateY(-50%) translateX(-5px); }
-  78% { transform: translateY(-50%) translateX(0px); }
-  82% { transform: translateY(-50%) translateX(-3px); }
-  86% { transform: translateY(-50%) translateX(0px); }
-  90% { transform: translateY(-50%) translateX(-2px); }
-  94% { transform: translateY(-50%) translateX(0px); }
-  100% { transform: translateY(-50%) translateX(0px); }
+@keyframes bottom-task-tab-bounce {
+  0%, 70% { transform: translateX(-50%) translateY(0px); }
+  74% { transform: translateX(-50%) translateY(-5px); }
+  78% { transform: translateX(-50%) translateY(0px); }
+  82% { transform: translateX(-50%) translateY(-3px); }
+  86% { transform: translateX(-50%) translateY(0px); }
+  90% { transform: translateX(-50%) translateY(-2px); }
+  94% { transform: translateX(-50%) translateY(0px); }
+  100% { transform: translateX(-50%) translateY(0px); }
 }
 
-.right-task-tab-bounce {
-  animation: right-task-tab-bounce 6s ease-in-out infinite;
+.bottom-task-tab-bounce {
+  animation: bottom-task-tab-bounce 6s ease-in-out infinite;
 }
 
 @keyframes burst-in {

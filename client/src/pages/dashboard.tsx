@@ -11822,11 +11822,11 @@ export default function Dashboard() {
           
           {/* Right-side bouncing "+ Task" tab */}
           <div
-            className="fixed z-[59] cursor-pointer right-task-tab-bounce"
+            className="fixed z-[59] cursor-pointer bottom-task-tab-bounce"
             style={{
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
+              bottom: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
               pointerEvents: 'auto',
             }}
             onClick={() => {
@@ -11838,22 +11838,22 @@ export default function Dashboard() {
           >
             <div
               style={{
-                width: '23px',
-                height: '46px',
-                borderRadius: '9999px 0 0 9999px',
-                background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+                width: '46px',
+                height: '23px',
+                borderRadius: '9999px 9999px 0 0',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
                 border: '1.5px solid rgba(255,255,255,0.35)',
-                borderRight: 'none',
-                boxShadow: '-4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+                borderBottom: 'none',
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
                 fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <span style={{ color: '#FFFFFF', fontSize: '9px', fontWeight: 700, writingMode: 'vertical-rl', textOrientation: 'mixed', letterSpacing: '0.5px' }}>+</span>
+              <span style={{ color: '#FFFFFF', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px' }}>+</span>
             </div>
           </div>
 
