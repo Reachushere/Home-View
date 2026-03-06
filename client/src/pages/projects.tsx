@@ -280,7 +280,8 @@ function ProjectCard({
   onEdit, 
   onDelete,
   expanded,
-  onToggleExpand
+  onToggleExpand,
+  headerBarColor
 }: { 
   project: Project;
   tasks: Task[];
@@ -288,6 +289,7 @@ function ProjectCard({
   onDelete: () => void;
   expanded: boolean;
   onToggleExpand: () => void;
+  headerBarColor: string;
 }) {
   const completedTasks = tasks.filter(t => t.isCompleted);
   const progress = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
@@ -308,7 +310,7 @@ function ProjectCard({
       {/* Header - matching Today box header */}
       <div 
         style={{ 
-          backgroundColor: '#3a8bbf',
+          backgroundColor: headerBarColor,
           padding: '8px 12px'
         }}
       >
@@ -619,6 +621,13 @@ function WorkflowView({
 
 export default function ProjectsPage() {
   const { toast } = useToast();
+  const headerBarColor = (() => {
+    try {
+      const saved = localStorage.getItem('colorSettings');
+      if (saved) { const parsed = JSON.parse(saved); return parsed.headerBar || '#160502'; }
+    } catch {}
+    return '#160502';
+  })();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
@@ -1094,6 +1103,7 @@ export default function ProjectsPage() {
                 onDelete={() => handleDeleteProject(project.id)}
                 expanded={expandedProjects.has(project.id)}
                 onToggleExpand={() => toggleProjectExpanded(project.id)}
+                headerBarColor={headerBarColor}
               />
             ))}
           </div>
