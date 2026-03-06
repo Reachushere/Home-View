@@ -11417,8 +11417,10 @@ export default function Dashboard() {
         
         // Use local drag position during drag for smooth movement
         const isDragging = draggingStickyNote === note.id;
-        const displayX = isDragging && dragPosition ? dragPosition.x : note.positionX;
-        const displayY = isDragging && dragPosition ? dragPosition.y : note.positionY;
+        const rawX = isDragging && dragPosition ? dragPosition.x : note.positionX;
+        const rawY = isDragging && dragPosition ? dragPosition.y : note.positionY;
+        const displayX = Math.max(0, Math.min(rawX, window.innerWidth - 50));
+        const displayY = Math.max(0, Math.min(rawY, window.innerHeight - 30));
         
         return (
           <div
