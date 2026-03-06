@@ -22274,26 +22274,23 @@ function TaskForm({
       )}
 
       {!hideSubmitButton && (
-        <div className="flex gap-2 pt-4">
-          <Button 
+        <div className="flex justify-end pt-4">
+          <button 
             type="submit" 
-            variant="outline"
-            disabled={createMutation.isPending} 
-            className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200" 
+            disabled={createMutation.isPending}
+            className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-all duration-200"
             style={{ 
               fontSize: '11px',
-              boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
-            }} 
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)';
+              border: '1.5px solid rgba(255,255,255,0.6)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)';
-            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
             data-testid="button-submit-task"
           >
             {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
-          </Button>
+          </button>
         </div>
       )}
     </form>
