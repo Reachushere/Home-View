@@ -9628,11 +9628,15 @@ export default function Dashboard() {
             left: '50%',
             transform: 'translateX(-50%)',
             bottom: '-20px',
-            width: '46px',
-            height: '23px',
-            borderRadius: '0 0 9999px 9999px',
-            background: 'rgba(255, 255, 255, 0.25)',
-            border: '1px solid rgba(255, 255, 255, 0.35)',
+            width: '50px',
+            height: '22px',
+            borderRadius: '0 0 6px 6px',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.22) 100%)',
+            borderLeft: '1.5px solid rgba(255,255,255,0.35)',
+            borderRight: '1.5px solid rgba(255,255,255,0.35)',
+            borderBottom: '1.5px solid rgba(255,255,255,0.35)',
+            borderTop: 'none',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12), inset 0 -1px 0 rgba(255,255,255,0.25)',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
@@ -11325,11 +11329,11 @@ export default function Dashboard() {
           </div>
         );
       })()}
-      {/* Left side half-circle tab - Add Task */}
+      {/* Left binder tab - Add Task */}
       <div
         className="fixed z-[59] cursor-pointer left-tab-bounce"
         style={{
-          left: '-11px',
+          left: '0px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
@@ -11343,34 +11347,32 @@ export default function Dashboard() {
       >
         <div
           style={{
-            width: '28px',
-            height: '46px',
-            borderRadius: '0 9999px 9999px 0',
-            background: 'linear-gradient(270deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+            width: '22px',
+            height: '50px',
+            borderRadius: '0 6px 6px 0',
+            background: 'linear-gradient(270deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             borderTop: '1.5px solid rgba(255,255,255,0.35)',
             borderRight: '1.5px solid rgba(255,255,255,0.35)',
             borderBottom: '1.5px solid rgba(255,255,255,0.35)',
             borderLeft: 'none',
-            boxShadow: '4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+            boxShadow: '4px 0 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '2px',
-            paddingLeft: '3px',
+            paddingLeft: '2px',
           }}
         >
-          <span style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, lineHeight: 1, marginLeft: '4px' }}>+</span>
+          <span style={{ color: '#FFFFFF', fontSize: '18px', fontWeight: 700, lineHeight: 1, marginLeft: '2px' }}>+</span>
         </div>
       </div>
 
-      {/* Right side half-circle tab */}
+      {/* Right binder tab - Projects */}
       <div
         className="fixed z-[59] cursor-pointer right-tab-bounce"
         style={{
-          right: '-9px',
+          right: '0px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
@@ -11382,26 +11384,24 @@ export default function Dashboard() {
       >
         <div
           style={{
-            width: '28px',
-            height: '56px',
-            borderRadius: '9999px 0 0 9999px',
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+            width: '22px',
+            height: '50px',
+            borderRadius: '6px 0 0 6px',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             borderTop: '1.5px solid rgba(255,255,255,0.35)',
             borderLeft: '1.5px solid rgba(255,255,255,0.35)',
             borderBottom: '1.5px solid rgba(255,255,255,0.35)',
             borderRight: 'none',
-            boxShadow: '-4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+            boxShadow: '-4px 0 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '2px',
-            paddingRight: '3px',
+            paddingRight: '2px',
           }}
         >
-          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginRight: '2px' }} />
+          <ClipboardList style={{ color: '#FFFFFF', height: '13px', width: '13px', strokeWidth: 2.5, marginRight: '2px' }} />
         </div>
       </div>
 
