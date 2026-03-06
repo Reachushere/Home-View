@@ -14304,7 +14304,7 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className="max-w-md border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white" style={{ background: 'linear-gradient(to bottom right, rgba(120,120,130,0.95), rgba(30,30,35,0.90), rgba(110,110,120,0.95))', backdropFilter: 'blur(19px)', WebkitBackdropFilter: 'blur(19px)' }}>
+            <DialogContent className="max-w-md border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white" style={{ background: 'linear-gradient(to bottom right, rgba(120,120,130,0.95), rgba(30,30,35,0.90), rgba(110,110,120,0.95))', backdropFilter: 'blur(19px)', WebkitBackdropFilter: 'blur(19px)', paddingTop: '30px', paddingBottom: '30px' }}>
               <DialogHeader>
                 <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
