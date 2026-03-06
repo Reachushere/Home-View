@@ -10261,6 +10261,7 @@ export default function Dashboard() {
             className="pill-button-hover"
             onClick={() => { triggerButtonGlow('refresh'); queryClient.invalidateQueries(); }}
             data-testid="button-refresh-data"
+            title="Refresh"
           >
             <RefreshCw className="h-[18px] w-[18px] text-white" />
           </div>
@@ -10279,7 +10280,7 @@ export default function Dashboard() {
             className="pill-button-hover"
             onClick={handleKitchenStop}
             data-testid="button-kitchen-stop"
-            title="Stop Kitchen Reading"
+            title="Stop"
           >
             <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
           </div>
