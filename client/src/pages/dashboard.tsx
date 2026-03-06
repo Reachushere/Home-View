@@ -10258,7 +10258,7 @@ export default function Dashboard() {
             onClick={() => { if (!syncAllCalendarMutation.isPending) { if (window.confirm('Are you sure you want to sync?')) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } } }}
             data-testid="button-sync-calendar"
           >
-            {syncAllCalendarMutation.isPending ? <Loader2 className="h-[18px] w-[18px] text-white animate-spin" /> : <RefreshCw className="h-[18px] w-[18px] text-white" />}
+            {syncAllCalendarMutation.isPending ? <Loader2 className="h-[18px] w-[18px] text-white animate-spin" /> : <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M14 4l7 7-7 7V4z" /><path d="M10 20l-7-7 7-7v14z" /></svg>}
           </div>
 
           {/* Kitchen Stop Button (moved from bottom pill) */}
