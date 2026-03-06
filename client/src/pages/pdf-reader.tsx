@@ -26,9 +26,11 @@ import {
   X,
   Cast,
   Monitor,
-  Speaker
+  Speaker,
+  Headphones
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
+import tmuBgPath from "@assets/TMU2_1772838350055.png";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -977,687 +979,479 @@ export default function PDFReaderPage() {
     return 'linear-gradient(to br, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))';
   })();
 
+  const controlsBarBg = (() => {
+    if (cId === 'cppa122') return 'rgba(15, 80, 4, 0.85)';
+    if (cId === 'cfnf400') return 'rgba(140, 15, 65, 0.85)';
+    if (cId === 'casl101') return 'rgba(80, 4, 66, 0.85)';
+    return 'rgba(10, 30, 60, 0.85)';
+  })();
+
   return (
-    <div className="min-h-screen relative" style={{ background: 'linear-gradient(180deg, #3a8bbf 0%, #164a72 100%)' }}>
+    <div className="h-screen flex flex-col relative overflow-hidden">
+      <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,15,40,0.88) 0%, rgba(0,10,30,0.92) 100%)' }} />
       <canvas
         ref={canvasRef}
-        className="fixed inset-0 w-full h-full pointer-events-none"
+        className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ zIndex: 1 }}
         data-testid="audio-visualizer-canvas"
       />
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
-      
-      <div className="sticky top-0 z-50 px-4 py-4 border-b border-white/20 backdrop-blur-md" style={{ background: playerHeaderGradient, position: 'relative', zIndex: 10 }}>
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/files">
-              <Button variant="ghost" size="icon" className="text-white/80 hover:text-white hover:bg-white/10" data-testid="button-back">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div className="truncate">
-              <h1 className="font-semibold text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>{fileName || "PDF Document"}</h1>
-              <p className="text-xs text-white/60">Page {currentPage} of {numPages}</p>
-            </div>
-          </div>
-          
+
+      <div className="relative" style={{ zIndex: 10 }}>
+        <div className="flex items-center gap-3 px-5 py-2 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.95)' }}>
+          <Link href="/files">
+            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10 h-8 w-8" data-testid="button-back">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white/80 hover:text-white hover:bg-white/10"
-              onClick={goToPreviousPage}
-              disabled={currentPage <= 1}
+            <div className="w-px h-6 bg-white/20" />
+            <h1 className="text-lg font-bold tracking-wide" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", color: '#f0c040' }}>
+              Scholar<span className="text-white">Sync</span>
+            </h1>
+          </div>
+          <span className="text-[10px] text-white/40 uppercase tracking-widest ml-1">PDF Audio Reader</span>
+          <div className="ml-auto flex items-center gap-3">
+            {fileId && flickDeviceGroups.length > 0 && (
+              <div className="relative">
+                <button
+                  className={`p-1.5 rounded hover:bg-white/10 ${showFlickMenu ? 'ring-1 ring-blue-400' : ''}`}
+                  data-testid="button-flick-cast"
+                  onClick={() => setShowFlickMenu(!showFlickMenu)}
+                  disabled={isFlicking}
+                  title="Flick to another device"
+                >
+                  {isFlicking ? <Loader2 className="h-4 w-4 text-white animate-spin" /> : <Cast className="h-4 w-4 text-white/70" />}
+                </button>
+                {showFlickMenu && (
+                  <div className="absolute top-full right-0 mt-1 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                    <div className="px-3 py-1.5 border-b border-gray-700 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-white">Flick to...</span>
+                      <button onClick={() => setShowFlickMenu(false)} className="text-gray-400 hover:text-white" data-testid="button-close-flick-menu">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <div className="max-h-[350px] overflow-y-auto">
+                      {flickDeviceGroups.map((group) => (
+                        <div key={group.room}>
+                          <div className="px-2 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
+                            <span className="text-xs">{group.icon}</span>
+                            <span className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
+                          </div>
+                          {group.devices.map((device) => (
+                            <button
+                              key={device.id}
+                              data-testid={`button-flick-${device.id}`}
+                              className="w-full px-2 py-1.5 pl-6 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
+                              onClick={() => handleFlick(device.id)}
+                              disabled={isFlicking}
+                            >
+                              {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
+                               device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
+                               device.type === "group" ? <Speaker className="h-3 w-3 text-yellow-400 flex-shrink-0" /> :
+                               <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
+                              <span className={`text-xs truncate ${device.type === "group" ? "text-yellow-300 font-medium" : "text-white"}`}>{device.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            <button
+              className={`p-1.5 rounded hover:bg-white/10 ${isEditingText ? 'ring-1 ring-white/40' : ''}`}
+              data-testid="button-edit-tts-text"
+              onClick={() => {
+                if (isEditingText) {
+                  setIsEditingText(false);
+                  setEditableText(extractedText);
+                } else {
+                  if (isPlaying) stopReading();
+                  if (extractedText) {
+                    setEditableText(extractedText);
+                    setIsEditingText(true);
+                  } else {
+                    toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
+                  }
+                }
+              }}
+              disabled={isPreloading}
             >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <span className="text-sm font-medium min-w-[60px] text-center text-white">{currentPage}/{numPages}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white/80 hover:text-white hover:bg-white/10"
-              onClick={goToNextPage}
-              disabled={currentPage >= numPages}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
+              <Pencil className="h-4 w-4 text-white/70" />
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-hidden relative" style={{ zIndex: 2 }}>
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-73px)]">
-          <div className="flex-1 lg:w-1/2 overflow-auto p-4" style={{ background: 'rgba(255,255,255,0.08)' }}>
-            {/* File selector for multiple reading files */}
-            {allFiles.length > 1 && (
-              <div className="bg-gray-800 rounded-lg shadow p-3 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-4 w-4 text-white/70" />
-                  <span className="text-sm font-medium text-white">Reading Files ({allFiles.length})</span>
-                </div>
-                <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
-                  {allFiles.map((file, idx) => {
-                    const isListened = listenedFiles.has(file.path);
-                    const isCurrentFile = (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')) === file.downloadUrl;
-                    let cleanName = file.name
+        <div className="flex items-center gap-2 px-5 py-2 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
+          {allFiles.length > 1 && (
+            <div className="flex flex-col">
+              <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Select Reading</span>
+              <Select
+                value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
+                onValueChange={(url) => {
+                  const f = allFiles.find(af => af.downloadUrl === url);
+                  if (f) switchToFile(f);
+                }}
+              >
+                <SelectTrigger className="h-7 text-[10px] bg-black/30 border-white/20 text-white min-w-[200px]" data-testid="select-reading-file">
+                  <FileText className="h-3 w-3 mr-1 shrink-0" />
+                  <SelectValue placeholder="Select reading..." />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-white/20 text-white max-h-[300px]">
+                  {allFiles.map((af, idx) => {
+                    const listened = listenedFiles.has(af.path);
+                    let cleanName = af.name
                       .replace(/^CPPA\s*122[-_\s.]*/i, '')
                       .replace(/^CFNF\s*400[-_\s.]*/i, '')
                       .replace(/^CASL\s*101[-_\s.]*/i, '')
                       .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
                       .replace(/\.pdf$/i, '')
                       .trim();
-                    while (cleanName.match(/^[.\s\-_:•·]/)) {
-                      cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                    }
+                    while (cleanName.match(/^[.\s\-_:•·]/)) cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
                     return (
-                      <div
-                        key={file.path || idx}
-                        onClick={() => switchToFile(file)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                          isCurrentFile 
-                            ? 'bg-white/20 border border-white/30' 
-                            : 'hover:bg-white/10'
-                        }`}
-                        data-testid={`reading-file-${idx}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isListened}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            const newListened = new Set(listenedFiles);
-                            if (e.target.checked) {
-                              newListened.add(file.path);
-                            } else {
-                              newListened.delete(file.path);
-                            }
-                            setListenedFiles(newListened);
-                            localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
-                        />
-                        <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-white' : 'text-white/60'}`} />
-                        <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-white'} ${isCurrentFile ? 'font-medium' : ''}`}>
-                          {cleanName || file.name}
-                        </span>
-                        {isCurrentFile && (
-                          <span className="ml-auto text-xs bg-white/20 text-white px-2 py-0.5 rounded">Current</span>
-                        )}
-                      </div>
+                      <SelectItem key={af.path || idx} value={af.downloadUrl} className={`text-[10px] ${listened ? 'text-white/40 line-through' : 'text-white'}`}>
+                        {cleanName || af.name}
+                      </SelectItem>
                     );
                   })}
-                </div>
-              </div>
-            )}
-            
-            <div className="flex justify-center">
-              {pdfUrl && (
-                <Document
-                  file={pdfUrl}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  loading={
-                    <div className="flex items-center justify-center h-[400px]">
-                      <Loader2 className="h-8 w-8 animate-spin text-white/60" />
-                    </div>
-                  }
-                >
-                  <Page
-                    pageNumber={currentPage}
-                    width={isMobile ? window.innerWidth - 32 : 500}
-                    renderTextLayer={true}
-                    renderAnnotationLayer={true}
-                  />
-                </Document>
-              )}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Voice</span>
+            <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
+              <SelectTrigger className="h-7 text-[10px] bg-black/30 border-white/20 text-white min-w-[140px]" data-testid="select-voice">
+                <Headphones className="h-3 w-3 mr-1 shrink-0" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-900 border-white/20 text-white">
+                <SelectItem value="alloy">OpenAI Alloy (Female)</SelectItem>
+                <SelectItem value="echo">OpenAI Echo (Male)</SelectItem>
+                <SelectItem value="fable">OpenAI Fable (British)</SelectItem>
+                <SelectItem value="onyx">OpenAI Onyx (Deep)</SelectItem>
+                <SelectItem value="nova">OpenAI Nova (Female)</SelectItem>
+                <SelectItem value="shimmer">OpenAI Shimmer (Soft)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Speed</span>
+            <div className="flex items-center gap-1 h-7 bg-black/30 border border-white/20 rounded-md px-2">
+              <button type="button" data-testid="button-speed-down" className="text-white/60 hover:text-white text-sm font-bold cursor-pointer" onPointerDown={(e) => { e.preventDefault(); setPlaybackSpeed(s => Math.max(0.5, Math.round((s - 0.25) * 100) / 100)); }}>&ndash;</button>
+              <span className="text-[10px] text-white font-medium min-w-[3ch] text-center tabular-nums">{playbackSpeed}x</span>
+              <button type="button" data-testid="button-speed-up" className="text-white/60 hover:text-white text-sm font-bold cursor-pointer" onPointerDown={(e) => { e.preventDefault(); setPlaybackSpeed(s => Math.min(2, Math.round((s + 0.25) * 100) / 100)); }}>+</button>
             </div>
           </div>
-          
-          <div className="lg:w-1/2 border-l border-white/10 p-6 overflow-auto" style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(20px)' }}>
-            <div className="max-w-md mx-auto">
-              <div className="flex items-center gap-2 mb-4">
-                <Volume2 className="h-6 w-6 text-white/80" />
-                <h2 className="text-xl font-semibold text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Text-to-Speech</h2>
-              </div>
 
-              {isEditingText && (
-                <div className="mb-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-white/80">Edit TTS Text</span>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        data-testid="button-save-text-edit"
-                        onClick={() => {
-                          setExtractedText(editableText);
-                          const newChunks = chunkText(editableText);
-                          chunksRef.current = newChunks;
-                          setChunksList(newChunks);
-                          setTotalChunks(newChunks.length);
-                          setCurrentChunk(0);
-                          currentChunkRef.current = 0;
-                          setIsEditingText(false);
-                          const key = getFileKey();
-                          localStorage.setItem(`tts_edited_v2_${key}`, editableText);
-                          toast({ title: "Text updated", description: "Your edits have been saved. Press play to read the updated text." });
-                        }}
-                      >
-                        <Check className="h-4 w-4 text-green-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        data-testid="button-cancel-text-edit"
-                        onClick={() => {
-                          setIsEditingText(false);
-                          setEditableText(extractedText);
-                        }}
-                      >
-                        <X className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                  <textarea
-                    data-testid="textarea-edit-tts-text"
-                    value={editableText}
-                    onChange={(e) => setEditableText(e.target.value)}
-                    className="w-full h-64 p-3 text-sm border border-white/20 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/30 bg-black/30 text-white"
-                    placeholder="Edit the extracted text here..."
-                  />
-                  <p className="text-xs text-gray-500">{editableText.length} characters</p>
-                </div>
-              )}
-
-              {catWashFollow && followState?.active && (
-                <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-blue-700">Following Cat Wash Playback</span>
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                      Chunk {followState.chunkIndex + 1} of {followState.totalChunks} ({Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%)
-                    </span>
-                  </div>
-                  <div className="bg-blue-200 rounded-full h-2 overflow-hidden mb-3">
-                    <div
-                      className="bg-blue-500 h-full transition-all duration-300"
-                      style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }}
-                    />
-                  </div>
-                  {followState.words.length > 0 && (
-                    <div className="max-h-60 overflow-y-auto p-3 bg-white rounded border border-blue-100 text-sm leading-relaxed" data-testid="follow-text-display">
-                      {followState.words.map((word, idx) => (
-                        <span
-                          key={idx}
-                          className={`${
-                            idx === followState.estimatedWordIndex
-                              ? "bg-yellow-300 text-black font-semibold px-0.5 rounded"
-                              : idx < followState.estimatedWordIndex
-                              ? "text-gray-400"
-                              : "text-gray-700"
-                          } transition-colors duration-100`}
-                        >
-                          {word}{" "}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <button
-                    className="mt-3 text-xs text-red-500 hover:text-red-700 underline"
-                    onClick={() => fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null))}
-                    data-testid="stop-catwash-playback"
-                  >
-                    Stop Playback
-                  </button>
-                </div>
-              )}
-
-              {catWashFollow && !followState?.active && (
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
-                  <span className="text-sm text-gray-500">Waiting for Cat Wash playback to start...</span>
-                </div>
-              )}
-
-              {isPlaying && !isEditingText && (
-                <div className="mb-6 p-4 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-white">Now Playing</span>
-                    <span className="text-xs bg-white/15 text-white/80 px-2 py-1 rounded-full">
-                      Chunk {currentChunk + 1} of {totalChunks} ({chunkProgress}% done)
-                    </span>
-                  </div>
-                  <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-3">
-                    <div
-                      className="bg-green-400 h-full transition-all duration-300"
-                      style={{ width: `${chunkProgress}%` }}
-                    />
-                  </div>
-                  {chunkWords.length > 0 && (
-                    <div className="max-h-40 overflow-y-auto p-3 rounded border border-white/10 text-sm leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                      {chunkWords.map((word, idx) => (
-                        <span
-                          key={idx}
-                          className={`${
-                            idx === currentWordIndex
-                              ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded"
-                              : idx < currentWordIndex
-                              ? "text-white/30"
-                              : "text-white/80"
-                          } transition-colors duration-100`}
-                        >
-                          {word}{" "}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="text-sm font-medium text-white/70 mb-2 block">Voice</label>
-                  <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
-                    <SelectTrigger className="w-full bg-gray-800 text-white border-gray-600" style={{ fontFamily: "'Raleway', sans-serif" }}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent position="popper" sideOffset={4} className="max-h-[300px] overflow-y-auto bg-gray-800 text-white border-gray-600" style={{ fontFamily: "'Raleway', sans-serif" }}>
-                      <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
-                      <SelectItem value="echo">Echo (Male)</SelectItem>
-                      <SelectItem value="fable">Fable (British)</SelectItem>
-                      <SelectItem value="onyx">Onyx (Deep)</SelectItem>
-                      <SelectItem value="nova">Nova (Female)</SelectItem>
-                      <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-white/70 mb-2 block">Speed</label>
-                  <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
-                    <button
-                      type="button"
-                      data-testid="button-speed-down"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        setPlaybackSpeed(s => {
-                          const newVal = Math.max(0.5, Math.round((s - 0.25) * 100) / 100);
-                          console.log(`[TTS] Speed down: ${s} -> ${newVal}`);
-                          return newVal;
-                        });
-                      }}
-                    >
-                      &ndash;
-                    </button>
-                    <div className="flex-1 touch-auto">
-                      <Slider
-                        data-testid="slider-speed"
-                        value={[playbackSpeed]}
-                        onValueChange={([v]) => {
-                          console.log(`[TTS] Speed slider: ${v}`);
-                          setPlaybackSpeed(v);
-                        }}
-                        min={0.5}
-                        max={2}
-                        step={0.25}
-                        className="touch-auto [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      data-testid="button-speed-up"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        setPlaybackSpeed(s => {
-                          const newVal = Math.min(2, Math.round((s + 0.25) * 100) / 100);
-                          console.log(`[TTS] Speed up: ${s} -> ${newVal}`);
-                          return newVal;
-                        });
-                      }}
-                    >
-                      +
-                    </button>
-                    <span className="text-white text-sm font-medium min-w-[4ch] text-right tabular-nums">
-                      {playbackSpeed}x
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-white/70 mb-2 block">Volume</label>
-                  <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-2.5">
-                    <button
-                      type="button"
-                      data-testid="button-volume-down"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        setVolume(v => {
-                          const newVal = Math.max(0, Math.round((v - 0.05) * 100) / 100);
-                          console.log(`[TTS] Volume down: ${v} -> ${newVal}`);
-                          return newVal;
-                        });
-                      }}
-                    >
-                      &ndash;
-                    </button>
-                    <div className="flex-1 touch-auto">
-                      <Slider
-                        data-testid="slider-volume"
-                        value={[volume]}
-                        onValueChange={([v]) => {
-                          console.log(`[TTS] Volume slider: ${v}`);
-                          setVolume(v);
-                        }}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="touch-auto [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      data-testid="button-volume-up"
-                      className="text-blue-400 hover:text-blue-300 font-bold text-2xl leading-none px-2 py-1 cursor-pointer"
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        setVolume(v => {
-                          const newVal = Math.min(1, Math.round((v + 0.05) * 100) / 100);
-                          console.log(`[TTS] Volume up: ${v} -> ${newVal}`);
-                          return newVal;
-                        });
-                      }}
-                    >
-                      +
-                    </button>
-                    <span className="text-white text-sm font-medium min-w-[3ch] text-right tabular-nums">
-                      {Math.round(volume * 100)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <button
-                  className="media-btn media-btn-lg"
-                  onClick={skipBack}
-                  disabled={!isPlaying || currentChunk === 0}
-                >
-                  <SkipBack className="h-5 w-5 text-white" />
-                </button>
-
-                {!isPlaying ? (
-                  <div className="flex items-center gap-3">
-                    {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
-                      <button
-                        className="media-btn media-btn-lg media-btn-resume"
-                        onClick={resumeFromLast}
-                        disabled={isLoading || numPages === 0}
-                        title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
-                      >
-                        {isLoading ? (
-                          <Loader2 className="h-5 w-5 text-white animate-spin" />
-                        ) : (
-                          <RotateCcw className="h-5 w-5 text-white" />
-                        )}
-                      </button>
-                    )}
-                    <button
-                      className="media-btn media-btn-play"
-                      onClick={startReading}
-                      disabled={isLoading || numPages === 0}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-7 w-7 text-white animate-spin" />
-                      ) : (
-                        <Play className="h-7 w-7 text-white fill-white ml-0.5" />
-                      )}
-                    </button>
-                  </div>
-                ) : isPaused ? (
-                  <button
-                    className="media-btn media-btn-play"
-                    onClick={resumeReading}
-                  >
-                    <Play className="h-7 w-7 text-white fill-white ml-0.5" />
-                  </button>
-                ) : (
-                  <button
-                    className="media-btn media-btn-play media-btn-active"
-                    onClick={pauseReading}
-                  >
-                    <Pause className="h-7 w-7 text-white" />
-                  </button>
-                )}
-
-                <button
-                  className="media-btn media-btn-lg media-btn-stop"
-                  onClick={stopReading}
-                  disabled={!isPlaying}
-                >
-                  <Square className="h-5 w-5 text-white fill-white" />
-                </button>
-
-                <button
-                  className="media-btn media-btn-lg"
-                  onClick={skipForward}
-                  disabled={!isPlaying || currentChunk >= totalChunks - 1}
-                >
-                  <SkipForward className="h-5 w-5 text-white" />
-                </button>
-
-                {fileId && flickDeviceGroups.length > 0 && (
-                  <div className="relative">
-                    <button
-                      className={`media-btn media-btn-lg ${showFlickMenu ? 'ring-2 ring-blue-400' : ''}`}
-                      data-testid="button-flick-cast"
-                      onClick={() => setShowFlickMenu(!showFlickMenu)}
-                      disabled={isFlicking}
-                      title="Flick to another device"
-                    >
-                      {isFlicking ? (
-                        <Loader2 className="h-5 w-5 text-white animate-spin" />
-                      ) : (
-                        <Cast className="h-5 w-5 text-white" />
-                      )}
-                    </button>
-                    {showFlickMenu && (
-                      <div className="absolute bottom-full right-0 mb-2 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
-                        <div className="px-3 py-1.5 border-b border-gray-700 flex items-center justify-between">
-                          <span className="text-xs font-semibold text-white">Flick to...</span>
-                          <button
-                            onClick={() => setShowFlickMenu(false)}
-                            className="text-gray-400 hover:text-white"
-                            data-testid="button-close-flick-menu"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                        <div className="max-h-[350px] overflow-y-auto">
-                          {flickDeviceGroups.map((group) => (
-                            <div key={group.room}>
-                              <div className="px-2 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
-                                <span className="text-xs">{group.icon}</span>
-                                <span className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
-                              </div>
-                              {group.devices.map((device) => (
-                                <button
-                                  key={device.id}
-                                  data-testid={`button-flick-${device.id}`}
-                                  className="w-full px-2 py-1.5 pl-6 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
-                                  onClick={() => handleFlick(device.id)}
-                                  disabled={isFlicking}
-                                >
-                                  {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
-                                   device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
-                                   device.type === "group" ? <Speaker className="h-3 w-3 text-yellow-400 flex-shrink-0" /> :
-                                   <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
-                                  <span className={`text-xs truncate ${device.type === "group" ? "text-yellow-300 font-medium" : "text-white"}`}>{device.name}</span>
-                                </button>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  className={`p-2 rounded-md hover:bg-white/20 transition-colors ${isEditingText ? 'ring-2 ring-white/40' : ''}`}
-                  data-testid="button-edit-tts-text"
-                  onClick={() => {
-                    if (isEditingText) {
-                      setIsEditingText(false);
-                      setEditableText(extractedText);
-                    } else {
-                      if (isPlaying) {
-                        stopReading();
-                      }
-                      if (extractedText) {
-                        setEditableText(extractedText);
-                        setIsEditingText(true);
-                      } else {
-                        toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
-                      }
-                    }
-                  }}
-                  disabled={isPreloading}
-                >
-                  <Pencil className="h-5 w-5 text-white" />
-                </button>
-              </div>
-
-              {chunksList.length > 0 && (
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-white/80">Chunks ({checkedChunks.size}/{totalChunks})</span>
-                    <span className="text-xs text-white/50">{chunkProgress}% complete</span>
-                  </div>
-                  <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-3">
-                    <div
-                      className="bg-green-400 h-full transition-all duration-300"
-                      style={{ width: `${chunkProgress}%` }}
-                    />
-                  </div>
-                  <div className="max-h-[200px] overflow-y-auto space-y-1 border border-white/10 rounded-lg p-2" style={{ background: 'rgba(0,0,0,0.2)' }}>
-                    {chunksList.map((chunk, idx) => (
-                      <div
-                        key={idx}
-                        className={`flex items-center gap-2 px-2 py-1.5 rounded transition-colors ${
-                          currentChunk === idx && isPlaying ? 'bg-white/15 border border-white/20' : 'hover:bg-white/5'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checkedChunks.has(idx)}
-                          onChange={() => toggleChunkChecked(idx)}
-                          className="h-4 w-4 rounded border-white/30 text-green-500 focus:ring-green-500 shrink-0"
-                          data-testid={`checkbox-chunk-${idx}`}
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 shrink-0"
-                          onClick={() => {
-                            if (audioRef.current) {
-                              audioRef.current.pause();
-                            }
-                            setIsPlaying(true);
-                            setIsPaused(false);
-                            playNextChunk(idx);
-                          }}
-                          data-testid={`button-play-chunk-${idx}`}
-                        >
-                          {currentChunk === idx && isPlaying && !isPaused ? (
-                            <Pause className="h-3.5 w-3.5 text-white/80" />
-                          ) : (
-                            <Play className="h-3.5 w-3.5 text-white/80 ml-0.5" />
-                          )}
-                        </Button>
-                        <span className={`text-xs truncate ${checkedChunks.has(idx) ? 'text-white/30 line-through' : 'text-white/70'}`}>
-                          {idx + 1}. {chunk.slice(0, 60)}...
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Progress Indicators */}
-              <div className="space-y-3 mb-4 mt-6 border-t border-white/10 pt-4">
-                {/* Current File Progress */}
-                <div data-testid="progress-current-file">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-white/70">This File</span>
-                    <span className="text-xs text-white/50">{checkedChunks.size}/{totalChunks} chunks ({chunkProgress}%)</span>
-                  </div>
-                  <div className="bg-white/10 rounded-full h-2.5 overflow-hidden">
-                    <div
-                      className="bg-green-400 h-full transition-all duration-300 rounded-full"
-                      style={{ width: `${chunkProgress}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* All Files in Folder Progress */}
-                {allFiles.length > 1 && (() => {
-                  const allChunkProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
-                  let totalFilesComplete = 0;
-                  let totalChunksAll = 0;
-                  let totalCheckedAll = 0;
-                  for (const file of allFiles) {
-                    const fileKey = `onedrive_${btoa(file.downloadUrl).slice(0, 40)}`;
-                    const progress = allChunkProgress[fileKey];
-                    if (progress && progress.total > 0) {
-                      totalChunksAll += progress.total;
-                      totalCheckedAll += progress.checked;
-                      if (progress.checked >= progress.total) totalFilesComplete++;
-                    } else if (listenedFiles.has(file.path)) {
-                      totalFilesComplete++;
-                    }
-                  }
-                  if (fileId === null && (currentFileUrl || oneDriveUrl)) {
-                    const currentKey = getFileKey();
-                    if (allChunkProgress[currentKey]) {
-                      const existing = allChunkProgress[currentKey];
-                      totalChunksAll = totalChunksAll - existing.total + totalChunks;
-                      totalCheckedAll = totalCheckedAll - existing.checked + checkedChunks.size;
-                    }
-                  }
-                  const folderPct = totalChunksAll > 0 ? Math.round((totalCheckedAll / totalChunksAll) * 100) : 
-                    (allFiles.length > 0 ? Math.round((totalFilesComplete / allFiles.length) * 100) : 0);
-                  return (
-                    <div data-testid="progress-all-files">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-white/70">All Files ({allFiles.length})</span>
-                        <span className="text-xs text-white/50">{totalFilesComplete}/{allFiles.length} complete ({folderPct}%)</span>
-                      </div>
-                      <div className="bg-white/10 rounded-full h-2.5 overflow-hidden">
-                        <div
-                          className="bg-green-500 h-full transition-all duration-300 rounded-full"
-                          style={{ width: `${folderPct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              <div className="text-center text-sm text-gray-500">
-                <p>Powered by OpenAI TTS</p>
-                {isPreloading ? (
-                  <p className="text-xs mt-1 flex items-center justify-center gap-1">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Preparing text...
-                  </p>
-                ) : extractedText ? (
-                  <p className="text-xs mt-1 text-green-600">Ready for instant playback</p>
-                ) : (
-                  <p className="text-xs mt-1">Text is chunked for efficient streaming playback</p>
-                )}
+          <div className="flex flex-col ml-1">
+            <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Volume</span>
+            <div className="flex items-center gap-1 h-7">
+              <Volume2 className="h-3 w-3 text-white/50 shrink-0" />
+              <div className="w-20 touch-auto">
+                <Slider
+                  data-testid="slider-volume"
+                  value={[volume]}
+                  onValueChange={([v]) => setVolume(v)}
+                  min={0} max={1} step={0.01}
+                  className="touch-auto [&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3"
+                />
               </div>
             </div>
+          </div>
+
+          <div className="ml-auto flex items-center gap-2 text-white/40 text-[10px]">
+            {isPreloading && <Loader2 className="h-3 w-3 animate-spin" />}
+            {extractedText && !isPreloading && <span className="text-green-400/80">Ready</span>}
+            {courseCodeFromFolder && <span className="bg-white/10 px-2 py-0.5 rounded text-white/70 font-medium">{courseCodeFromFolder}</span>}
           </div>
         </div>
+      </div>
+
+      <div className="flex-1 flex relative overflow-hidden" style={{ zIndex: 2 }}>
+        <div className="flex-1 lg:w-1/2 overflow-auto" style={{ background: 'rgba(0,0,0,0.4)' }}>
+          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.9)' }}>
+            <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
+            <span className="text-[10px] text-white/40">{checkedChunks.size}/{totalChunks} chunks</span>
+          </div>
+
+          {isEditingText && (
+            <div className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-white/80">Edit TTS Text</span>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" data-testid="button-save-text-edit" className="h-6 w-6"
+                    onClick={() => {
+                      setExtractedText(editableText);
+                      const newChunks = chunkText(editableText);
+                      chunksRef.current = newChunks;
+                      setChunksList(newChunks);
+                      setTotalChunks(newChunks.length);
+                      setCurrentChunk(0);
+                      currentChunkRef.current = 0;
+                      setIsEditingText(false);
+                      const key = getFileKey();
+                      localStorage.setItem(`tts_edited_v2_${key}`, editableText);
+                      toast({ title: "Text updated", description: "Your edits have been saved. Press play to read the updated text." });
+                    }}>
+                    <Check className="h-3.5 w-3.5 text-green-500" />
+                  </Button>
+                  <Button variant="ghost" size="icon" data-testid="button-cancel-text-edit" className="h-6 w-6"
+                    onClick={() => { setIsEditingText(false); setEditableText(extractedText); }}>
+                    <X className="h-3.5 w-3.5 text-red-400" />
+                  </Button>
+                </div>
+              </div>
+              <textarea
+                data-testid="textarea-edit-tts-text"
+                value={editableText}
+                onChange={(e) => setEditableText(e.target.value)}
+                className="w-full h-64 p-3 text-sm border border-white/20 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-white/30 bg-black/40 text-white"
+                placeholder="Edit the extracted text here..."
+              />
+              <p className="text-xs text-white/40">{editableText.length} characters</p>
+            </div>
+          )}
+
+          {catWashFollow && followState?.active && (
+            <div className="m-4 p-4 rounded-lg border border-blue-400/30" style={{ background: 'rgba(30,60,120,0.4)' }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-blue-300">Following Cat Wash Playback</span>
+                <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+                  Chunk {followState.chunkIndex + 1} of {followState.totalChunks} ({Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%)
+                </span>
+              </div>
+              <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-3">
+                <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }} />
+              </div>
+              {followState.words.length > 0 && (
+                <div className="max-h-60 overflow-y-auto p-3 rounded border border-white/10 text-sm leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }} data-testid="follow-text-display">
+                  {followState.words.map((word, idx) => (
+                    <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded" : idx < followState.estimatedWordIndex ? "text-white/30" : "text-white/80"} transition-colors duration-100`}>
+                      {word}{" "}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <button className="mt-3 text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null))} data-testid="stop-catwash-playback">
+                Stop Playback
+              </button>
+            </div>
+          )}
+
+          {catWashFollow && !followState?.active && (
+            <div className="m-4 p-4 rounded-lg border border-white/10 text-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
+              <span className="text-sm text-white/50">Waiting for Cat Wash playback to start...</span>
+            </div>
+          )}
+
+          {!isEditingText && (
+            <div className="p-4 space-y-2">
+              {chunksList.map((chunk, idx) => {
+                const isActive = currentChunk === idx && isPlaying;
+                const isChecked = checkedChunks.has(idx);
+                return (
+                  <div
+                    key={idx}
+                    className={`flex gap-3 p-3 rounded-lg transition-colors cursor-pointer ${isActive ? 'bg-white/10 border border-white/20' : 'hover:bg-white/5'}`}
+                    onClick={() => {
+                      if (audioRef.current) audioRef.current.pause();
+                      setIsPlaying(true);
+                      isPlayingRef.current = true;
+                      setIsPaused(false);
+                      isPausedRef.current = false;
+                      playNextChunk(idx);
+                    }}
+                    data-testid={`chunk-row-${idx}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => { e.stopPropagation(); toggleChunkChecked(idx); }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-5 w-5 rounded border-white/30 text-blue-500 focus:ring-blue-500 shrink-0 mt-0.5 cursor-pointer"
+                      style={{ accentColor: '#3b82f6' }}
+                      data-testid={`checkbox-chunk-${idx}`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm leading-relaxed ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
+                        <span className="text-white/40 mr-1">{idx + 1}.</span>
+                        {isActive && chunkWords.length > 0 ? (
+                          chunkWords.map((word, wIdx) => (
+                            <span
+                              key={wIdx}
+                              className={`${
+                                wIdx === currentWordIndex
+                                  ? "bg-red-500 text-white font-semibold px-0.5 rounded"
+                                  : wIdx < currentWordIndex
+                                  ? "text-white/40"
+                                  : ""
+                              } transition-colors duration-100`}
+                            >
+                              {word}{" "}
+                            </span>
+                          ))
+                        ) : (
+                          chunk
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+              {chunksList.length === 0 && !isPreloading && extractedText && (
+                <p className="text-center text-white/40 py-8 text-sm">Press play to extract and chunk the text</p>
+              )}
+              {chunksList.length === 0 && !extractedText && !isPreloading && (
+                <p className="text-center text-white/40 py-8 text-sm">Loading PDF text...</p>
+              )}
+              {isPreloading && (
+                <div className="flex items-center justify-center py-8 gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin text-white/40" />
+                  <span className="text-sm text-white/40">Preparing text...</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="hidden lg:flex lg:w-[45%] flex-col border-l border-white/10" style={{ background: 'rgba(0,0,0,0.3)' }}>
+          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.9)' }}>
+            <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Original PDF</span>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="h-6 w-6 text-white/60 hover:text-white" onClick={goToPreviousPage} disabled={currentPage <= 1}>
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              <span className="text-[10px] text-white/60 min-w-[40px] text-center">{currentPage} / {numPages}</span>
+              <Button variant="ghost" size="icon" className="h-6 w-6 text-white/60 hover:text-white" onClick={goToNextPage} disabled={currentPage >= numPages}>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-auto flex justify-center p-4">
+            {pdfUrl && (
+              <Document
+                file={pdfUrl}
+                onLoadSuccess={onDocumentLoadSuccess}
+                loading={
+                  <div className="flex items-center justify-center h-[400px]">
+                    <Loader2 className="h-8 w-8 animate-spin text-white/40" />
+                  </div>
+                }
+              >
+                <Page
+                  pageNumber={currentPage}
+                  width={isMobile ? window.innerWidth - 32 : 480}
+                  renderTextLayer={true}
+                  renderAnnotationLayer={true}
+                />
+              </Document>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative border-t border-white/10" style={{ zIndex: 10, background: 'rgba(0,10,30,0.95)', backdropFilter: 'blur(20px)' }}>
+        <div className="flex items-center justify-center gap-2 pt-1 pb-0.5">
+          <span className="text-[10px] text-white/40">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+        </div>
+        <div className="flex items-center justify-center gap-3 px-6 pb-2">
+          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+            <SkipBack className="h-4 w-4 text-white" />
+          </button>
+
+          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+            <span className="text-[10px] text-white font-medium">15s</span>
+          </button>
+
+          {!isPlaying ? (
+            <div className="flex items-center gap-2">
+              {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                <button
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                  onClick={resumeFromLast}
+                  disabled={isLoading || numPages === 0}
+                  title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
+                  data-testid="button-resume"
+                >
+                  {isLoading ? <Loader2 className="h-5 w-5 text-white animate-spin" /> : <RotateCcw className="h-5 w-5 text-white" />}
+                </button>
+              )}
+              <button
+                className="p-3 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                onClick={startReading}
+                disabled={isLoading || numPages === 0}
+                data-testid="button-play"
+              >
+                {isLoading ? <Loader2 className="h-6 w-6 text-gray-900 animate-spin" /> : <Play className="h-6 w-6 text-gray-900 fill-gray-900 ml-0.5" />}
+              </button>
+            </div>
+          ) : isPaused ? (
+            <button className="p-3 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
+              <Play className="h-6 w-6 text-gray-900 fill-gray-900 ml-0.5" />
+            </button>
+          ) : (
+            <button className="p-3 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
+              <Pause className="h-6 w-6 text-gray-900" />
+            </button>
+          )}
+
+          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+            <span className="text-[10px] text-white font-medium">15s</span>
+          </button>
+
+          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward">
+            <SkipForward className="h-4 w-4 text-white" />
+          </button>
+
+          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+            <Square className="h-4 w-4 text-white fill-white" />
+          </button>
+        </div>
+
+        {allFiles.length > 1 && (() => {
+          const allChunkProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+          let totalFilesComplete = 0;
+          let totalChunksAll = 0;
+          let totalCheckedAll = 0;
+          for (const f of allFiles) {
+            const fileKey = `onedrive_${btoa(f.downloadUrl).slice(0, 40)}`;
+            const progress = allChunkProgress[fileKey];
+            if (progress && progress.total > 0) {
+              totalChunksAll += progress.total;
+              totalCheckedAll += progress.checked;
+              if (progress.checked >= progress.total) totalFilesComplete++;
+            } else if (listenedFiles.has(f.path)) {
+              totalFilesComplete++;
+            }
+          }
+          if (fileId === null && (currentFileUrl || oneDriveUrl)) {
+            const currentKey = getFileKey();
+            if (allChunkProgress[currentKey]) {
+              const existing = allChunkProgress[currentKey];
+              totalChunksAll = totalChunksAll - existing.total + totalChunks;
+              totalCheckedAll = totalCheckedAll - existing.checked + checkedChunks.size;
+            }
+          }
+          const folderPct = totalChunksAll > 0 ? Math.round((totalCheckedAll / totalChunksAll) * 100) : 
+            (allFiles.length > 0 ? Math.round((totalFilesComplete / allFiles.length) * 100) : 0);
+          return (
+            <div className="px-6 pb-2" data-testid="progress-all-files">
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[9px] text-white/40">All Files ({allFiles.length})</span>
+                <span className="text-[9px] text-white/40">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
+              </div>
+              <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
+                <div className="bg-green-400 h-full transition-all duration-300 rounded-full" style={{ width: `${folderPct}%` }} />
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
