@@ -23,7 +23,7 @@ import pdfLogo from "@assets/Adobe51_1772514760872.png";
 import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
-import readerIconPath from "@assets/Adobe69_1772600848534.png";
+import readerIconPath from "@assets/Adobe65_1772615790465.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15243,7 +15243,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('module'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('module'); }}
                               >
-                                <Headphones className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: '21px', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1, color: course.darkColor || '#ffffff' }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                               )}
                             </div>
@@ -15278,7 +15278,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('reading'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('reading'); }}
                               >
-                                <Headphones className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: '21px', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1, color: course.darkColor || '#ffffff' }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                               )}
                             </div>
