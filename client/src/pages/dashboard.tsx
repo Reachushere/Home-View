@@ -11325,37 +11325,6 @@ export default function Dashboard() {
           </div>
         );
       })()}
-      {/* Bottom tab - Files (fixed, does not move on hover) */}
-      <div
-        onClick={() => { window.location.href = '/files'; }}
-        className="fixed z-[61] cursor-pointer"
-        style={{
-          bottom: '11px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '46px',
-          height: '23px',
-          borderRadius: '9999px 9999px 0 0',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderLeft: '1.5px solid rgba(255,255,255,0.35)',
-          borderRight: '1.5px solid rgba(255,255,255,0.35)',
-          borderTop: '1.5px solid rgba(255,255,255,0.35)',
-          borderBottom: 'none',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
-          pointerEvents: 'auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingBottom: '2px',
-          opacity: 0.9,
-        }}
-        title="Files"
-        data-testid="bottom-tab-files"
-      >
-        <FolderOpen className="h-[14px] w-[14px] text-white" />
-      </div>
       {/* Left side half-circle tab - Add Task */}
       <div
         className="fixed z-[59] cursor-pointer left-tab-bounce"
