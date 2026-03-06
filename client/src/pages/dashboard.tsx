@@ -9762,10 +9762,10 @@ export default function Dashboard() {
           <div 
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              background: 'linear-gradient(180deg, rgba(255,230,102,0.85) 0%, rgba(255,210,50,0.7) 100%)',
               backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              border: '1.5px solid rgba(255,255,255,0.5)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className="pill-button-hover"
@@ -9773,7 +9773,7 @@ export default function Dashboard() {
             title="Add Sticky Note"
             data-testid="honeycomb-sticky-note"
           >
-            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+            <StickyNote style={{ color: '#5a4a00', strokeWidth: 1.5, height: '18px', width: '18px' }} />
           </div>
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
