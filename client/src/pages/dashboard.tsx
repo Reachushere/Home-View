@@ -15007,10 +15007,10 @@ export default function Dashboard() {
                           const dueTaskCourseCodeLower = dueTaskCourseCode.toLowerCase();
                           const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
                           const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
-                          const dueAttachmentUrl = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http') && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                          const dueAttachmentLink = !dueModuleFile && !dueAttachmentUrl && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
-                          const dueRefLinkPdf = !dueModuleFile && !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
-                          const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentUrl || dueRefLinkPdf || null;
+                          const dueAttachmentUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
+                          const dueAttachmentLink = !dueAttachmentUrl && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
+                          const dueRefLinkPdf = !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
+                          const dueModulePdfUrl = dueAttachmentUrl || dueRefLinkPdf || dueModuleFile?.objectPath || null;
                           return (
                             <div key={task.id} className="relative" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
                             <div 
