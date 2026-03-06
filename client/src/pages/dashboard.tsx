@@ -11727,7 +11727,7 @@ export default function Dashboard() {
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ top: '55%' }}>
+            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border border-white/30 backdrop-blur-[3px] bg-white/[0.45] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-white text-sm">
                   <CheckSquare className="h-5 w-5" />
