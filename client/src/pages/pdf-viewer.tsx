@@ -8,8 +8,8 @@ import "react-pdf/dist/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function PDFViewerPage() {
-  const [, params] = useRoute("/pdf-viewer/:filePath*");
-  const filePath = params?.filePath ? decodeURIComponent(params.filePath) : null;
+  const [, params] = useRoute("/pdf-viewer/*");
+  const filePath = params?.["*"] ? decodeURIComponent(params["*"]) : null;
 
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);

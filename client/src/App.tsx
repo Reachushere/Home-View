@@ -22,7 +22,7 @@ function Router() {
       <Route path="/projects" component={ProjectsPage} />
       <Route path="/pdf-reader/onedrive" component={PDFReaderPage} />
       <Route path="/pdf-reader/:fileId" component={PDFReaderPage} />
-      <Route path="/pdf-viewer/:filePath*" component={PDFViewerPage} />
+      <Route path="/pdf-viewer/*" component={PDFViewerPage} />
       <Route component={NotFound} />
     </Switch>
   );
