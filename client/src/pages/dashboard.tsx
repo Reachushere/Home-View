@@ -9413,6 +9413,7 @@ export default function Dashboard() {
         const upcoming = allTasks
           .filter(t => {
             if (!t.dueDate || t.isCompleted) return false;
+            if (isCASL101Finished(t)) return false;
             const dd = new Date(t.dueDate);
             const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
             if (ddOnly.getTime() < nowDate.getTime()) return false;
