@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { X, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
+import { X, GripVertical, ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 
 interface PostItTask {
   id: string;
@@ -33,6 +33,7 @@ export function DevPostIt() {
     } catch { return []; }
   });
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialog | null>(null);
+  const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem(COLLAPSED_KEY) === "true"; } catch { return false; }
   });
@@ -307,6 +308,22 @@ export function DevPostIt() {
                     title="Ask agent to try again"
                   >
                     {task.retrySentAt ? "✓ Sent!" : "Try Again"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(task.text).then(() => {
+                        setCopiedTaskId(task.id);
+                        setTimeout(() => setCopiedTaskId(null), 1500);
+                      });
+                    }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "1px", flexShrink: 0, marginTop: "1px" }}
+                    data-testid={`postit-copy-${task.id}`}
+                    title="Copy task text"
+                  >
+                    {copiedTaskId === task.id
+                      ? <Check className="h-3 w-3 text-green-600" />
+                      : <Copy className="h-3 w-3 text-yellow-700/40 hover:text-yellow-700" />
+                    }
                   </button>
                   <button
                     onClick={() => setTasks(prev => prev.filter(t => t.id !== task.id))}
