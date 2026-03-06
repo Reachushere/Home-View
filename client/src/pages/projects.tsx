@@ -825,7 +825,7 @@ export default function ProjectsPage() {
         fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
       }}
     >
-      <header className="border-b border-white/20 sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: '#296A97' }}>
+      <header className="border-b border-white/20 sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: '#1F5983' }}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
