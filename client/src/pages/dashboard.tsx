@@ -15012,16 +15012,16 @@ export default function Dashboard() {
                           const dueRefLinkPdf = !dueModuleFile && !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
                           const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentUrl || dueRefLinkPdf || null;
                           return (
+                            <div key={task.id} className="relative" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
                             <div 
-                              key={task.id}
                               className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
-                                zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                paddingRight: dueModulePdfUrl ? '30px' : undefined,
                               }}
                               title={task.title}
                             >
@@ -15037,16 +15037,6 @@ export default function Dashboard() {
                               >
                                 {task.title}
                               </span>
-                              {dueModulePdfUrl && (
-                                <img
-                                  src={pdfIconPath}
-                                  alt="Open PDF"
-                                  className="shrink-0"
-                                  style={{ width: '32px', height: '32px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', marginTop: '-9px', marginBottom: '-9px', animation: 'none' }}
-                                  onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/') || url.startsWith('uploads/')) { window.open(`/pdf-viewer/${encodeURIComponent(url)}`, '_blank'); } else { window.open(url, '_blank'); } }}
-                                  data-testid={`pdf-icon-task-${task.id}`}
-                                />
-                              )}
                               {dueAttachmentLink && !dueModulePdfUrl && (
                                 <a href={dueAttachmentLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={dueAttachmentLink} data-testid={`att-link-icon-task-${task.id}`}>
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
@@ -15057,6 +15047,16 @@ export default function Dashboard() {
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
                               )}
+                            </div>
+                            {dueModulePdfUrl && (
+                              <img
+                                src={pdfIconPath}
+                                alt="Open PDF"
+                                style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/') || url.startsWith('uploads/')) { window.open(`/pdf-viewer/${encodeURIComponent(url)}`, '_blank'); } else { window.open(url, '_blank'); } }}
+                                data-testid={`pdf-icon-task-${task.id}`}
+                              />
+                            )}
                             </div>
                           );
                         })}
