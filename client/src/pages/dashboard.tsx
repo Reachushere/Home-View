@@ -11297,20 +11297,10 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <div style={{ position: 'relative', width: '94px', height: '27px' }}>
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '12px',
-            background: colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground,
-            zIndex: 0,
-          }} />
-          <svg width="94" height="27" viewBox="0 0 94 27" style={{ display: 'block', position: 'relative', zIndex: 1 }}>
-            <path d="M0,27 L94,27 L94,18 Q85,18 85,12 L85,11 Q85,0 73,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          </svg>
-        </div>
+        <svg width="94" height="27" viewBox="0 0 94 27" style={{ display: 'block', overflow: 'visible' }}>
+          <rect x="-2" y="15" width="98" height="14" fill={colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground} />
+          <path d="M0,27 L94,27 L94,18 Q85,18 85,12 L85,11 Q85,0 73,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        </svg>
       </div>
       {/* Left binder tab - Add Task */}
       <div
