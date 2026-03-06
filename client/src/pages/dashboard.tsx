@@ -9773,7 +9773,7 @@ export default function Dashboard() {
             title="Add Sticky Note"
             data-testid="honeycomb-sticky-note"
           >
-            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+            <StickyNote style={{ color: '#333', strokeWidth: 1.5, height: '18px', width: '18px' }} />
           </div>
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
