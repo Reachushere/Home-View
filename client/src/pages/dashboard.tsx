@@ -11289,7 +11289,7 @@ export default function Dashboard() {
         onClick={() => { window.location.href = '/files'; }}
         className="fixed z-[60] cursor-pointer bottom-tab-bounce"
         style={{
-          bottom: '-7px',
+          bottom: '-8px',
           left: '50%',
           transform: 'translateX(-50%)',
           pointerEvents: 'auto',
