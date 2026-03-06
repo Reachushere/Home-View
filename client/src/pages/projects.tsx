@@ -861,8 +861,8 @@ export default function ProjectsPage() {
                 </div>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-                  <FolderOpen className="w-6 h-6" />
+                <h1 className="text-base font-bold flex items-center gap-1.5 text-white">
+                  <FolderOpen className="w-3.5 h-3.5" />
                   Projects
                 </h1>
                 <p className="text-sm text-white/70">
