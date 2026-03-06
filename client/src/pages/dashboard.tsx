@@ -10335,21 +10335,15 @@ export default function Dashboard() {
           <div 
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, #038FC7 0%, #04A4E0 50%, #18BDF6 100%)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
               border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className="pill-button-hover"
-            onClick={async () => {
-              try {
-                const res = await fetch('/api/ha-url');
-                if (res.ok) {
-                  const data = await res.json();
-                  window.open(data.url, '_blank');
-                }
-              } catch (e) { console.error('HA link error', e); }
+            onClick={() => {
+              window.open('http://172.24.0.2:8123/config/dashboard', '_blank');
             }}
             data-testid="button-home-assistant"
             title="Open Home Assistant"
