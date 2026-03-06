@@ -14890,11 +14890,10 @@ export default function Dashboard() {
                             const isFirstPrepDay = isSameDay(cellDate, prepStartDate);
                             const isLastPrepDay = isSameDay(addDays(cellDate, 1), prepDueDate);
                             const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                            const modulePdfTask = allTasks.find(t => {
-                              const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                              return tCode === taskCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
-                            });
-                            const modulePdfUrl = modulePdfTask?.attachments?.[0] || null;
+                            const taskCourseCodeLower = taskCourseCode.toLowerCase();
+                            const moduleFolderName = `week-${task.weekNumber}-${taskCourseCodeLower}-module`;
+                            const moduleFile = weeklyFiles.find(f => f.folder === moduleFolderName && f.objectPath);
+                            const modulePdfUrl = moduleFile?.objectPath || null;
                             return (
                               <div 
                                 key={`prep-${task.id}`}
@@ -14936,11 +14935,10 @@ export default function Dashboard() {
                           }
                           
                           const dueTaskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                          const dueModulePdfTask = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? allTasks.find(t => {
-                            const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                            return tCode === dueTaskCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
-                          }) : null;
-                          const dueModulePdfUrl = dueModulePdfTask?.attachments?.[0] || null;
+                          const dueTaskCourseCodeLower = dueTaskCourseCode.toLowerCase();
+                          const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
+                          const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
+                          const dueModulePdfUrl = dueModuleFile?.objectPath || null;
                           return (
                             <div 
                               key={task.id}
