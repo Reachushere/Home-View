@@ -15264,7 +15264,13 @@ export default function Dashboard() {
                                 return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
                               }));
                               setOneDrivePreviewFiles(ensuredFiles);
-                              setPreviewFile(ensuredFiles[0]);
+                              const firstFile = ensuredFiles[0];
+                              if (firstFile.objectPath?.startsWith('http')) {
+                                const filesJson = encodeURIComponent(JSON.stringify(pdfFiles.map((p: any) => ({ name: p.name, downloadUrl: p.downloadUrl, path: p.path }))));
+                                window.open(`/pdf-reader/onedrive?url=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.originalName)}&files=${filesJson}&course=${courseId}`, '_blank');
+                              } else {
+                                window.open(`/pdf-reader/${firstFile.id}`, '_blank');
+                              }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
                             }
@@ -17228,7 +17234,7 @@ export default function Dashboard() {
                                                     <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
                                                     <span 
                                                       className={`text-[11px] truncate flex-1 hover:underline cursor-pointer ${file.listened ? 'text-white/40' : 'text-white/80'}`}
-                                                      onClick={() => setPreviewFile(file)}
+                                                      onClick={() => window.open(`/pdf-reader/${file.id}`, '_blank')}
                                                       onContextMenu={(e) => {
                                                         e.preventDefault();
                                                         const menu = document.createElement('div');
@@ -17725,7 +17731,7 @@ export default function Dashboard() {
                           className={`flex items-center gap-1.5 text-[10px] text-white cursor-pointer w-full pl-6 ${blinkSettings.taskBoxFilesBlink ? 'animate-file-box-blink-fast' : 'bg-[rgba(127,219,225,0.8)]'}`}
                           onClick={() => {
                             if (matchingFile) {
-                              setPreviewFile(matchingFile);
+                              window.open(`/pdf-reader/${matchingFile.id}`, '_blank');
                             } else {
                               window.open(file.url, '_blank');
                             }
