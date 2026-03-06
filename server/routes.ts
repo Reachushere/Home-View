@@ -4035,6 +4035,19 @@ export async function registerRoutes(
   // Auto-continuation is handled by the tablet calling POST /api/cat-wash/update-progress
   // with { completed: true }, which returns the next file URL for the tablet to navigate to.
 
+  app.get("/api/webhook/status", (_req, res) => {
+    res.json({
+      ok: true,
+      timestamp: new Date().toISOString(),
+      catWashPlaybackActive,
+      catWashPlaybackStartedAt,
+      currentFile: catWashPlaybackState?.fileName || null,
+      currentChunk: catWashPlaybackState?.chunkIndex || 0,
+      totalChunks: catWashPlaybackState?.totalChunks || 0,
+      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-door"],
+    });
+  });
+
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
       console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");

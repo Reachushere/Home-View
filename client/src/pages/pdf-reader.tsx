@@ -467,7 +467,7 @@ export default function PDFReaderPage() {
     return chunks;
   };
 
-  const playTTS = async (text: string) => {
+  const playTTS = async (text: string, retryCount = 0): Promise<boolean> => {
     try {
       const words = text.split(/\s+/).filter(w => w.length > 0);
       setChunkWords(words);
@@ -487,7 +487,7 @@ export default function PDFReaderPage() {
             audioRef.current.dispatchEvent(new Event('ended'));
           }
         }, estimatedDuration * 1000);
-        return;
+        return true;
       }
       
       console.log(`[TTS] Fetching audio for ${words.length} words, voice=${voice}`);
@@ -530,15 +530,15 @@ export default function PDFReaderPage() {
         audioRef.current.volume = volumeRef.current;
         console.log(`[TTS] Playing: speed=${audioRef.current.playbackRate}, vol=${audioRef.current.volume}`);
       }
+      return true;
     } catch (error) {
-      console.error("[TTS] Error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate speech",
-        variant: "destructive",
-      });
-      setIsPlaying(false);
-      isPlayingRef.current = false;
+      console.error(`[TTS] Error (attempt ${retryCount + 1}):`, error);
+      if (retryCount < 2) {
+        console.log(`[TTS] Retrying in 2 seconds...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return playTTS(text, retryCount + 1);
+      }
+      return false;
     }
   };
   
@@ -643,7 +643,12 @@ export default function PDFReaderPage() {
     setCurrentChunk(index);
     currentChunkRef.current = index;
     console.log(`[TTS] Playing chunk ${index + 1}/${chunksRef.current.length}`);
-    await playTTS(chunksRef.current[index]);
+    const success = await playTTS(chunksRef.current[index]);
+    if (!success && isPlayingRef.current) {
+      console.log(`[TTS] Chunk ${index + 1} failed after retries, skipping to next chunk`);
+      toast({ title: "Skipped chunk", description: `Chunk ${index + 1} failed, moving to next` });
+      playNextChunk(index + 1);
+    }
   };
 
   const handleAudioEnded = () => {
