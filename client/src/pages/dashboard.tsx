@@ -14989,16 +14989,16 @@ export default function Dashboard() {
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
                                   <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  {modulePdfUrl && (
+                                    <img
+                                      src={pdfIconPath}
+                                      alt="Open PDF"
+                                      style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const p = modulePdfUrl.startsWith('/') ? modulePdfUrl.slice(1) : encodeURIComponent(modulePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
+                                      data-testid={`pdf-icon-prep-${task.id}`}
+                                    />
+                                  )}
                                 </div>
-                                {modulePdfUrl && (
-                                  <img
-                                    src={pdfIconPath}
-                                    alt="Open PDF"
-                                    style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const p = modulePdfUrl.startsWith('/') ? modulePdfUrl.slice(1) : encodeURIComponent(modulePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
-                                    data-testid={`pdf-icon-prep-${task.id}`}
-                                  />
-                                )}
                               </div>
                             );
                           }
@@ -15047,16 +15047,16 @@ export default function Dashboard() {
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
                               )}
+                              {dueModulePdfUrl && (
+                                <img
+                                  src={pdfIconPath}
+                                  alt="Open PDF"
+                                  style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = dueModulePdfUrl; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                                  data-testid={`pdf-icon-task-${task.id}`}
+                                />
+                              )}
                             </div>
-                            {dueModulePdfUrl && (
-                              <img
-                                src={pdfIconPath}
-                                alt="Open PDF"
-                                style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const url = dueModulePdfUrl; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                                data-testid={`pdf-icon-task-${task.id}`}
-                              />
-                            )}
                             </div>
                           );
                         })}
@@ -15352,16 +15352,16 @@ export default function Dashboard() {
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
                                   <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  {satPrepPdfUrl && (
+                                    <img
+                                      src={pdfIconPath}
+                                      alt="Open PDF"
+                                      style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
+                                      data-testid={`pdf-icon-sat-prep-${task.id}`}
+                                    />
+                                  )}
                                 </div>
-                                {satPrepPdfUrl && (
-                                  <img
-                                    src={pdfIconPath}
-                                    alt="Open PDF"
-                                    style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
-                                    data-testid={`pdf-icon-sat-prep-${task.id}`}
-                                  />
-                                )}
                               </div>
                             );
                           }
@@ -15393,16 +15393,16 @@ export default function Dashboard() {
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
                               )}
+                              {satDuePdfUrl && (
+                                <img
+                                  src={pdfIconPath}
+                                  alt="Open PDF"
+                                  style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
+                                  data-testid={`pdf-icon-sat-task-${task.id}`}
+                                />
+                              )}
                             </div>
-                            {satDuePdfUrl && (
-                              <img
-                                src={pdfIconPath}
-                                alt="Open PDF"
-                                style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
-                                data-testid={`pdf-icon-sat-task-${task.id}`}
-                              />
-                            )}
                             </div>
                           );
                         })}
