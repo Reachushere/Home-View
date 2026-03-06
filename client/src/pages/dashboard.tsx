@@ -141,8 +141,8 @@ import {
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
-import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
-import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
+import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
+import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -22359,6 +22359,11 @@ function TaskForm({
         <SubtasksSection taskId={task.id} />
       )}
 
+      {/* Dependencies Section - Only show when editing existing task */}
+      {task && (
+        <TaskDependencies taskId={task.id} taskTitle={task.title} />
+      )}
+
       {!hideSubmitButton && (
         <div className="flex justify-end pt-4">
           <button 
@@ -22561,6 +22566,185 @@ function SubtasksSection({ taskId }: { taskId: number }) {
           >
             Cancel
           </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TaskDependencies({ taskId, taskTitle }: { taskId: number; taskTitle: string }) {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLinkType, setSelectedLinkType] = useState<string>("blocks");
+
+  const { data: allLinks = [] } = useQuery<TaskLink[]>({
+    queryKey: ['/api/links'],
+  });
+
+  const { data: allTasks = [] } = useQuery<Task[]>({
+    queryKey: ['/api/tasks'],
+  });
+
+  const taskLinks = allLinks.filter(
+    l => (l.sourceType === 'task' && l.sourceId === taskId) ||
+         (l.targetType === 'task' && l.targetId === taskId)
+  );
+
+  const createLinkMutation = useMutation({
+    mutationFn: async (data: { targetId: number; linkType: string }) => {
+      return apiRequest("POST", "/api/links", {
+        sourceType: "task",
+        sourceId: taskId,
+        targetType: "task",
+        targetId: data.targetId,
+        linkType: data.linkType,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/links'] });
+      setShowAddForm(false);
+      setSearchQuery("");
+    },
+  });
+
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (linkId: number) => {
+      return apiRequest("DELETE", `/api/links/${linkId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/links'] });
+    },
+  });
+
+  const linkTypeLabels: Record<string, string> = {
+    blocks: "Blocks",
+    blocked_by: "Blocked by",
+    relates_to: "Related to",
+  };
+
+  const linkTypeColors: Record<string, string> = {
+    blocks: "text-orange-400",
+    blocked_by: "text-red-400",
+    relates_to: "text-blue-400",
+  };
+
+  const filteredTasks = allTasks.filter(t => {
+    if (t.id === taskId) return false;
+    const alreadyLinked = taskLinks.some(
+      l => (l.sourceId === t.id && l.sourceType === 'task') ||
+           (l.targetId === t.id && l.targetType === 'task')
+    );
+    if (alreadyLinked) return false;
+    if (!searchQuery.trim()) return false;
+    const q = searchQuery.toLowerCase();
+    return t.title.toLowerCase().includes(q) || (t.courseName || '').toLowerCase().includes(q);
+  });
+
+  const getLinkedTaskInfo = (link: TaskLink) => {
+    const linkedId = link.sourceId === taskId && link.sourceType === 'task' ? link.targetId : link.sourceId;
+    const linkedTask = allTasks.find(t => t.id === linkedId);
+    let displayType = link.linkType;
+    if (link.targetId === taskId && link.targetType === 'task') {
+      if (link.linkType === 'blocks') displayType = 'blocked_by';
+      else if (link.linkType === 'blocked_by') displayType = 'blocks';
+    }
+    return { linkedTask, displayType };
+  };
+
+  return (
+    <div className="space-y-2 pt-2 border-t border-white/10">
+      <div className="flex items-center justify-between">
+        <label className="text-xs text-white/60 font-medium">Dependencies</label>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
+          onClick={() => setShowAddForm(!showAddForm)}
+          data-testid="button-toggle-dependencies"
+        >
+          {showAddForm ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3 mr-1" />}
+          {showAddForm ? "" : "Add"}
+        </Button>
+      </div>
+
+      {taskLinks.length === 0 && !showAddForm && (
+        <p className="text-xs text-white/30 italic">No dependencies</p>
+      )}
+
+      {taskLinks.map(link => {
+        const { linkedTask, displayType } = getLinkedTaskInfo(link);
+        if (!linkedTask) return null;
+        return (
+          <div key={link.id} className="flex items-center gap-2 rounded px-2 py-1.5 bg-white/5" data-testid={`dependency-${link.id}`}>
+            <span className={`text-[10px] font-medium uppercase tracking-wider ${linkTypeColors[displayType] || 'text-white/50'}`}>
+              {linkTypeLabels[displayType] || displayType}
+            </span>
+            <span className="text-xs text-white/80 truncate flex-1">{linkedTask.title}</span>
+            {linkedTask.courseName && (
+              <span className="text-[10px] text-white/40 truncate max-w-[120px]">{linkedTask.courseName.split(' - ')[0]}</span>
+            )}
+            <button
+              type="button"
+              onClick={() => deleteLinkMutation.mutate(link.id)}
+              className="shrink-0 p-0.5 rounded hover:bg-red-500/20 text-white/30 hover:text-red-400"
+              data-testid={`button-delete-dependency-${link.id}`}
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        );
+      })}
+
+      {showAddForm && (
+        <div className="space-y-2 p-2 rounded bg-white/5 border border-white/10">
+          <div className="flex gap-2">
+            <select
+              value={selectedLinkType}
+              onChange={(e) => setSelectedLinkType(e.target.value)}
+              className="h-7 text-xs rounded bg-white/10 border border-white/20 text-white px-2"
+              data-testid="select-link-type"
+            >
+              <option value="blocks">Blocks</option>
+              <option value="blocked_by">Blocked by</option>
+              <option value="relates_to">Related to</option>
+            </select>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tasks..."
+              className="flex-1 h-7 text-xs rounded bg-white/10 border border-white/20 text-white px-2 placeholder:text-white/30"
+              autoFocus
+              data-testid="input-search-dependency"
+            />
+          </div>
+
+          {searchQuery.trim() && (
+            <div className="max-h-[150px] overflow-y-auto space-y-0.5">
+              {filteredTasks.length === 0 ? (
+                <p className="text-xs text-white/30 py-1 px-1">No matching tasks</p>
+              ) : (
+                filteredTasks.slice(0, 10).map(t => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left hover:bg-white/10 transition-colors"
+                    onClick={() => createLinkMutation.mutate({ targetId: t.id, linkType: selectedLinkType })}
+                    data-testid={`button-link-task-${t.id}`}
+                  >
+                    <span className="text-xs text-white/80 truncate flex-1">{t.title}</span>
+                    {t.courseName && (
+                      <span className="text-[10px] text-white/40 truncate max-w-[100px]">{t.courseName.split(' - ')[0]}</span>
+                    )}
+                    {t.dueDate && (
+                      <span className="text-[10px] text-white/30">{format(new Date(t.dueDate), 'MMM d')}</span>
+                    )}
+                  </button>
+                ))
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
