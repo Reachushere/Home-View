@@ -11875,7 +11875,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <Plus className="h-3.5 w-3.5 text-white" />
                     <h2 className="text-xs font-normal text-white tracking-wide uppercase">
-                      {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
+                      {quickAddStep === 0 ? 'Add Task' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </h2>
                   </div>
                   <button onClick={handleQuickAddClose} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
