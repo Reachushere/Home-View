@@ -1,0 +1,251 @@
+import { useState, useEffect, useCallback } from "react";
+import { X, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
+
+interface PostItTask {
+  id: string;
+  text: string;
+  checked: boolean;
+  status: "active" | "answer-later";
+}
+
+interface ConfirmDialog {
+  taskId: string;
+  taskText: string;
+}
+
+const STORAGE_KEY = "dev-post-it-tasks";
+const POS_KEY = "dev-post-it-pos";
+const COLLAPSED_KEY = "dev-post-it-collapsed";
+
+export function DevPostIt() {
+  const [tasks, setTasks] = useState<PostItTask[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+      return [
+        { id: "1", text: "Top pill buttons overflow right edge", checked: false, status: "active" as const },
+        { id: "2", text: "Files home button from bottom tab", checked: false, status: "active" as const },
+        { id: "3", text: "CPPA122 tasks still in DB (countdown shows Local Politics)", checked: false, status: "active" as const },
+        { id: "4", text: "PDF icon shows for pasted links", checked: false, status: "active" as const },
+      ];
+    } catch { return []; }
+  });
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmDialog | null>(null);
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem(COLLAPSED_KEY) === "true"; } catch { return false; }
+  });
+  const [pos, setPos] = useState(() => {
+    try {
+      const saved = localStorage.getItem(POS_KEY);
+      return saved ? JSON.parse(saved) : { x: 20, y: 120 };
+    } catch { return { x: 20, y: 120 }; }
+  });
+  const [dragging, setDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem(POS_KEY, JSON.stringify(pos));
+  }, [pos]);
+
+  useEffect(() => {
+    localStorage.setItem(COLLAPSED_KEY, String(collapsed));
+  }, [collapsed]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setDragging(true);
+    setDragOffset({ x: e.clientX - pos.x, y: e.clientY - pos.y });
+  }, [pos]);
+
+  useEffect(() => {
+    if (!dragging) return;
+    const handleMove = (e: MouseEvent) => {
+      setPos({ x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y });
+    };
+    const handleUp = () => setDragging(false);
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+  }, [dragging, dragOffset]);
+
+  const addTask = useCallback((text: string) => {
+    setTasks(prev => [...prev, { id: Date.now().toString(), text, checked: false, status: "active" }]);
+  }, []);
+
+  const handleCheckChange = useCallback((taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    if (!task.checked) {
+      setConfirmDialog({ taskId, taskText: task.text });
+    }
+  }, [tasks]);
+
+  const handleConfirmResponse = useCallback((response: "yes" | "no" | "answer-later") => {
+    if (!confirmDialog) return;
+    const taskId = confirmDialog.taskId;
+    if (response === "yes") {
+      setTasks(prev => prev.filter(t => t.id !== taskId));
+    } else if (response === "no") {
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, checked: false, status: "active" } : t));
+    } else {
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "answer-later" } : t));
+    }
+    setConfirmDialog(null);
+  }, [confirmDialog]);
+
+  useEffect(() => {
+    (window as any).__devPostItAddTask = addTask;
+    return () => { delete (window as any).__devPostItAddTask; };
+  }, [addTask]);
+
+  if (import.meta.env.PROD) return null;
+
+  return (
+    <>
+      <div
+        style={{
+          position: "fixed",
+          left: `${pos.x}px`,
+          top: `${pos.y}px`,
+          zIndex: 99999,
+          width: collapsed ? "180px" : "260px",
+          fontFamily: "'Caveat', 'Segoe Print', 'Comic Sans MS', cursive",
+          userSelect: "none",
+        }}
+        data-testid="dev-post-it"
+      >
+        <div
+          style={{
+            background: "#fef08a",
+            borderRadius: "2px",
+            boxShadow: "2px 3px 12px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.10)",
+            padding: collapsed ? "8px 12px" : "10px 14px 14px",
+            transform: "rotate(-1.2deg)",
+            border: "1px solid #fde047",
+          }}
+        >
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "4px", cursor: "grab", marginBottom: collapsed ? 0 : "6px" }}
+            onMouseDown={handleMouseDown}
+          >
+            <GripVertical className="h-3 w-3 text-yellow-700/40" />
+            <span style={{ fontWeight: 700, fontSize: "15px", color: "#92400e", flex: 1 }}>Dev Tasks</span>
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
+              data-testid="button-toggle-postit"
+            >
+              {collapsed ? <ChevronDown className="h-3.5 w-3.5 text-yellow-700/60" /> : <ChevronUp className="h-3.5 w-3.5 text-yellow-700/60" />}
+            </button>
+          </div>
+          {!collapsed && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+              {tasks.length === 0 && (
+                <div style={{ fontSize: "13px", color: "#a16207", fontStyle: "italic", padding: "4px 0" }}>No tasks yet</div>
+              )}
+              {tasks.map((task) => (
+                <div
+                  key={task.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "6px",
+                    padding: "2px 0",
+                    opacity: task.status === "answer-later" ? 0.55 : 1,
+                  }}
+                  data-testid={`postit-task-${task.id}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={false}
+                    onChange={() => handleCheckChange(task.id)}
+                    style={{ marginTop: "3px", accentColor: "#92400e", cursor: "pointer" }}
+                    data-testid={`postit-checkbox-${task.id}`}
+                  />
+                  <span style={{
+                    fontSize: "13.5px",
+                    color: "#78350f",
+                    lineHeight: 1.3,
+                    wordBreak: "break-word",
+                  }}>
+                    {task.text}
+                    {task.status === "answer-later" && (
+                      <span style={{ fontSize: "10px", color: "#b45309", marginLeft: "4px" }}>(later)</span>
+                    )}
+                  </span>
+                  <button
+                    onClick={() => setTasks(prev => prev.filter(t => t.id !== task.id))}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "1px", marginLeft: "auto", flexShrink: 0 }}
+                    data-testid={`postit-delete-${task.id}`}
+                  >
+                    <X className="h-3 w-3 text-yellow-700/40 hover:text-red-600" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {confirmDialog && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 999999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.35)",
+          }}
+          data-testid="postit-confirm-dialog"
+        >
+          <div style={{
+            background: "#fef9c3",
+            borderRadius: "8px",
+            padding: "20px 24px",
+            maxWidth: "340px",
+            width: "90%",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+            fontFamily: "'Caveat', 'Segoe Print', 'Comic Sans MS', cursive",
+            border: "2px solid #fde047",
+          }}>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "#92400e", marginBottom: "8px" }}>Task Complete?</div>
+            <div style={{ fontSize: "14px", color: "#78350f", marginBottom: "16px", lineHeight: 1.4 }}>
+              "{confirmDialog.taskText}"
+            </div>
+            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => handleConfirmResponse("yes")}
+                style={{ padding: "6px 16px", borderRadius: "6px", border: "none", background: "#16a34a", color: "white", fontWeight: 700, fontSize: "14px", cursor: "pointer", fontFamily: "inherit" }}
+                data-testid="postit-confirm-yes"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => handleConfirmResponse("no")}
+                style={{ padding: "6px 16px", borderRadius: "6px", border: "1px solid #d97706", background: "white", color: "#92400e", fontWeight: 700, fontSize: "14px", cursor: "pointer", fontFamily: "inherit" }}
+                data-testid="postit-confirm-no"
+              >
+                No
+              </button>
+              <button
+                onClick={() => handleConfirmResponse("answer-later")}
+                style={{ padding: "6px 16px", borderRadius: "6px", border: "1px solid #d97706", background: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "14px", cursor: "pointer", fontFamily: "inherit" }}
+                data-testid="postit-confirm-later"
+              >
+                Answer Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
