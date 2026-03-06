@@ -9492,14 +9492,14 @@ export default function Dashboard() {
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}><b style={{ textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</b></span>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
                         </>
                       ) : (
                         <>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}><b style={{ textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</b></span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
+                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
                         </>
                       )}
                     </div>
@@ -9535,14 +9535,14 @@ export default function Dashboard() {
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}><b style={{ textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</b></span>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
                         </>
                       ) : (
                         <>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}><b style={{ textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</b></span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
+                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
                         </>
                       )}
                     </div>
