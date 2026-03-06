@@ -13884,7 +13884,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Layout Settings - in left column */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-8px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-5px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Layout Settings</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Adjust spacing and reset column widths</span>
@@ -14125,7 +14125,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Data Sync Section */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-10px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-8px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Data Sync</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Push to or pull from the published app</span>
@@ -14228,7 +14228,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Column Spacing */}
-                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-10px' }}>
+                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-9px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Column Spacing</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Reset the column widths in the summary boxes</span>
