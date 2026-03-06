@@ -149,7 +149,7 @@ export function DevPostIt() {
           top: `${pos.y}px`,
           zIndex: 99999,
           width: collapsed ? "180px" : "260px",
-          fontFamily: "'Caveat', 'Segoe Print', 'Comic Sans MS', cursive",
+          fontFamily: "system-ui, -apple-system, sans-serif",
           userSelect: "none",
         }}
         data-testid="dev-post-it"
@@ -169,7 +169,7 @@ export function DevPostIt() {
             onMouseDown={handleMouseDown}
           >
             <GripVertical className="h-3 w-3 text-yellow-700/40" />
-            <span style={{ fontWeight: 700, fontSize: "15px", color: "#92400e", flex: 1 }}>Dev Tasks</span>
+            <span style={{ fontWeight: 600, fontSize: "12px", color: "#92400e", flex: 1 }}>Dev Tasks</span>
             <button
               onClick={() => setCollapsed(!collapsed)}
               style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
@@ -181,7 +181,7 @@ export function DevPostIt() {
           {!collapsed && (
             <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
               {tasks.length === 0 && (
-                <div style={{ fontSize: "13px", color: "#a16207", fontStyle: "italic", padding: "4px 0" }}>No tasks yet</div>
+                <div style={{ fontSize: "11px", color: "#a16207", fontStyle: "italic", padding: "4px 0" }}>No tasks yet</div>
               )}
               {tasks.map((task) => (
                 <div
@@ -205,12 +205,12 @@ export function DevPostIt() {
                     data-testid={`postit-checkbox-${task.id}`}
                   />
                   <span style={{
-                    fontSize: "13.5px",
+                    fontSize: "11px",
                     color: task.status === "retry" ? "#dc2626" : "#78350f",
                     lineHeight: 1.3,
                     wordBreak: "break-word",
                     flex: 1,
-                    fontWeight: task.status === "retry" ? 700 : 400,
+                    fontWeight: task.status === "retry" ? 600 : 400,
                   }}>
                     {task.text}
                     {task.status === "answer-later" && (
@@ -278,7 +278,7 @@ export function DevPostIt() {
             maxWidth: "340px",
             width: "90%",
             boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-            fontFamily: "'Caveat', 'Segoe Print', 'Comic Sans MS', cursive",
+            fontFamily: "system-ui, -apple-system, sans-serif",
             border: "2px solid #fde047",
           }}>
             <div style={{ fontSize: "16px", fontWeight: 700, color: "#92400e", marginBottom: "8px" }}>Task Complete?</div>
