@@ -2400,30 +2400,26 @@ export default function FilesPage() {
         </DialogContent>
       </Dialog>
 
-      <div
+      <a
+        href="/"
         className="fixed z-[60] bottom-tab-bounce"
         style={{
-          bottom: '-8px',
+          bottom: '0px',
           left: '50%',
           transform: 'translateX(-50%)',
-          pointerEvents: 'none',
+          display: 'block',
+          textDecoration: 'none',
         }}
         data-testid="bottom-tab-home"
+        title="Home"
       >
-        <div
-          onClick={() => { window.location.href = '/'; }}
-          className="cursor-pointer"
-          style={{ pointerEvents: 'auto' }}
-          title="Home"
-        >
-          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
-            <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <g transform="translate(34, 2)">
-              <path d="M8,1 L1,7 L3,7 L3,13 L6,13 L6,9 L10,9 L10,13 L13,13 L13,7 L15,7 Z" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round" />
-            </g>
-          </svg>
-        </div>
-      </div>
+        <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+          <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <g transform="translate(34, 2)">
+            <path d="M8,1 L1,7 L3,7 L3,13 L6,13 L6,9 L10,9 L10,13 L13,13 L13,7 L15,7 Z" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round" />
+          </g>
+        </svg>
+      </a>
     </div>
   );
 }
