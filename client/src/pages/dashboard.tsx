@@ -11874,18 +11874,29 @@ export default function Dashboard() {
                     <Plus className="h-4 w-4 mr-2" />
                     Add Task
                   </Button>
-                  <button 
+                  <Button 
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8"
+                    style={{
+                      fontSize: '12px',
+                      boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)';
+                    }}
                     onClick={() => {
                       setIsAddDialogOpen(false);
                       setInitialStartTime("");
                       setInitialEndTime("");
                       setNewTaskType("module");
                     }}
-                    className="text-white hover:text-white/80 transition-colors p-1"
                     data-testid="button-close-add-task"
                   >
-                    <X className="h-5 w-5" />
-                  </button>
+                    Cancel
+                  </Button>
                 </div>
               </div>
               <div className="p-4 flex-1 overflow-y-auto [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&_span]:text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_svg]:text-white">
