@@ -21,6 +21,7 @@ import {
   FileText,
   Loader2,
   RotateCcw,
+  RotateCw,
   Pencil,
   Check,
   X,
@@ -1511,62 +1512,70 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="relative border-t border-white/10" style={{ zIndex: 10, background: 'rgba(0,10,30,0.6)', backdropFilter: 'blur(20px)' }}>
-        <div className="flex items-center justify-center gap-2 pt-1 pb-0.5">
-          <span className="text-[10px] text-white/40">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
-        </div>
-        <div className="flex items-center justify-center gap-3 px-6 pb-2">
-          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
-            <SkipBack className="h-4 w-4 text-white" />
-          </button>
+      <div className="relative flex-shrink-0" style={{ zIndex: 10, padding: '8px 60px 12px 60px' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(0,10,30,0.7)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="flex items-center justify-center gap-2 pt-2 pb-1">
+            <span className="text-[11px] text-white/50">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+          </div>
+          <div className="flex items-center justify-center gap-5 px-8 pb-3">
+            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+              <SkipBack className="h-5 w-5 text-white" />
+            </button>
 
-          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-            <span className="text-[10px] text-white font-medium">15s</span>
-          </button>
+            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+              <SkipForward className="h-5 w-5 text-white" />
+            </button>
 
-          {!isPlaying ? (
-            <div className="flex items-center gap-2">
-              {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
-                <button
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
-                  onClick={resumeFromLast}
-                  disabled={isLoading || numPages === 0}
-                  title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
-                  data-testid="button-resume"
-                >
-                  {isLoading ? <Loader2 className="h-5 w-5 text-white animate-spin" /> : <RotateCcw className="h-5 w-5 text-white" />}
-                </button>
-              )}
-              <button
-                className="p-3 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
-                onClick={startReading}
-                disabled={isLoading || numPages === 0}
-                data-testid="button-play"
-              >
-                {isLoading ? <Loader2 className="h-6 w-6 text-gray-900 animate-spin" /> : <Play className="h-6 w-6 text-gray-900 fill-gray-900 ml-0.5" />}
-              </button>
+            <div className="flex-1 max-w-[200px] h-8 flex items-center justify-center">
+              <canvas ref={canvasRef} className="w-full h-full rounded" style={{ opacity: isPlaying ? 1 : 0.3 }} />
             </div>
-          ) : isPaused ? (
-            <button className="p-3 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
-              <Play className="h-6 w-6 text-gray-900 fill-gray-900 ml-0.5" />
+
+            {!isPlaying ? (
+              <div className="flex items-center gap-3">
+                {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                  <button
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                    onClick={resumeFromLast}
+                    disabled={isLoading || numPages === 0}
+                    title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
+                    data-testid="button-resume"
+                  >
+                    {isLoading ? <Loader2 className="h-6 w-6 text-white animate-spin" /> : <RotateCcw className="h-6 w-6 text-white" />}
+                  </button>
+                )}
+                <button
+                  className="p-4 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                  onClick={startReading}
+                  disabled={isLoading || numPages === 0}
+                  data-testid="button-play"
+                >
+                  {isLoading ? <Loader2 className="h-7 w-7 text-gray-900 animate-spin" /> : <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />}
+                </button>
+              </div>
+            ) : isPaused ? (
+              <button className="p-4 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
+                <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />
+              </button>
+            ) : (
+              <button className="p-4 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
+                <Pause className="h-7 w-7 text-gray-900" />
+              </button>
+            )}
+
+            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+              <RotateCcw className="h-4 w-4 text-white" />
+              <span className="text-[11px] text-white font-medium">15s</span>
             </button>
-          ) : (
-            <button className="p-3 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
-              <Pause className="h-6 w-6 text-gray-900" />
+
+            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+              <span className="text-[11px] text-white font-medium">15s</span>
+              <RotateCw className="h-4 w-4 text-white" />
             </button>
-          )}
 
-          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-            <span className="text-[10px] text-white font-medium">15s</span>
-          </button>
-
-          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward">
-            <SkipForward className="h-4 w-4 text-white" />
-          </button>
-
-          <button className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
-            <Square className="h-4 w-4 text-white fill-white" />
-          </button>
+            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+              <Square className="h-5 w-5 text-white fill-white" />
+            </button>
+          </div>
         </div>
 
         {allFiles.length > 1 && (() => {
