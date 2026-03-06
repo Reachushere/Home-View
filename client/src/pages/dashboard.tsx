@@ -11267,23 +11267,30 @@ export default function Dashboard() {
       })()}
       {/* Bottom binder tab - Files */}
       <div
-        onClick={() => { window.location.href = '/files'; }}
-        className="fixed z-[60] cursor-pointer bottom-tab-bounce"
+        className="fixed z-[60] bottom-tab-bounce"
         style={{
           bottom: '-8px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          pointerEvents: 'auto',
+          left: `${calendarLeft - 15}px`,
+          right: `${calendarRight - 15}px`,
+          display: 'flex',
+          justifyContent: 'center',
+          pointerEvents: 'none',
         }}
-        title="Files"
         data-testid="bottom-tab-files"
       >
+        <div
+          onClick={() => { window.location.href = '/files'; }}
+          className="cursor-pointer"
+          style={{ pointerEvents: 'auto' }}
+          title="Files"
+        >
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
           <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <g transform="translate(34, 1)">
             <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round" />
           </g>
         </svg>
+        </div>
       </div>
       {/* Left binder tab - Add Task */}
       <div
