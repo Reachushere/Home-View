@@ -971,6 +971,7 @@ export default function FilesPage() {
             data-testid={`text-filename-${file.id}`}
           >
             {file.displayName}
+            <div className="text-[8px] text-black/50 truncate font-normal" data-testid={`text-filepath-${file.id}`}>{file.objectPath}</div>
           </a>
           {assignedTasks.length > 0 && (
             <Badge variant="secondary" className="text-[8px] py-0 px-1">
