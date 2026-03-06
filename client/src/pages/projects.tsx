@@ -281,7 +281,8 @@ function ProjectCard({
   onDelete,
   expanded,
   onToggleExpand,
-  headerBarColor
+  headerBarColor,
+  onRename
 }: { 
   project: Project;
   tasks: Task[];
@@ -290,9 +291,12 @@ function ProjectCard({
   expanded: boolean;
   onToggleExpand: () => void;
   headerBarColor: string;
+  onRename: (name: string) => void;
 }) {
   const completedTasks = tasks.filter(t => t.isCompleted);
   const progress = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editName, setEditName] = useState(project.name);
   
   return (
     <div 
@@ -320,12 +324,41 @@ function ProjectCard({
               className="w-3 h-3 rounded-full flex-shrink-0 border border-white/30" 
               style={{ backgroundColor: project.color || "#6366F1" }} 
             />
-            <span 
-              className="text-xs font-medium text-white truncate"
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
-            >
-              {project.name}
-            </span>
+            {isEditingName ? (
+              <input
+                className="text-xs font-medium text-white bg-white/20 border border-white/40 rounded px-1 py-0.5 outline-none w-full"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onBlur={() => {
+                  if (editName.trim() && editName.trim() !== project.name) {
+                    onRename(editName.trim());
+                  } else {
+                    setEditName(project.name);
+                  }
+                  setIsEditingName(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    (e.target as HTMLInputElement).blur();
+                  } else if (e.key === 'Escape') {
+                    setEditName(project.name);
+                    setIsEditingName(false);
+                  }
+                }}
+                autoFocus
+                data-testid={`input-rename-project-${project.id}`}
+              />
+            ) : (
+              <span 
+                className="text-xs font-medium text-white truncate cursor-text"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                onClick={(e) => { e.stopPropagation(); setEditName(project.name); setIsEditingName(true); }}
+                data-testid={`text-project-name-${project.id}`}
+              >
+                {project.name}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0">
             <Button 
@@ -1104,6 +1137,7 @@ export default function ProjectsPage() {
                 expanded={expandedProjects.has(project.id)}
                 onToggleExpand={() => toggleProjectExpanded(project.id)}
                 headerBarColor={headerBarColor}
+                onRename={(name) => updateProjectMutation.mutate({ id: project.id, data: { name } })}
               />
             ))}
           </div>
