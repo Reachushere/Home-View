@@ -11820,11 +11820,13 @@ export default function Dashboard() {
             </section>
           </div>
           
-          {/* Bottom bouncing "+ Task" tab */}
+          {/* Right-side bouncing "+ Task" tab */}
           <div
-            className="fixed bottom-0 left-1/2 z-[59] cursor-pointer bottom-tab-bounce"
+            className="fixed z-[59] cursor-pointer right-task-tab-bounce"
             style={{
-              transform: 'translateX(-50%)',
+              right: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
               pointerEvents: 'auto',
             }}
             onClick={() => {
@@ -11832,19 +11834,21 @@ export default function Dashboard() {
               setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
               setIsQuickAddOpen(true);
             }}
-            data-testid="bottom-add-task-tab"
+            data-testid="right-add-task-tab"
           >
             <div
               style={{
-                padding: '6px 20px 8px 20px',
-                borderRadius: '12px 12px 0 0',
+                padding: '14px 8px',
+                borderRadius: '12px 0 0 12px',
                 background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
                 border: '1.5px solid rgba(255,255,255,0.35)',
-                borderBottom: 'none',
-                boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+                borderRight: 'none',
+                boxShadow: '-4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
                 fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                writingMode: 'vertical-rl',
+                textOrientation: 'mixed',
               }}
             >
               <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 600, letterSpacing: '0.3px' }}>+ Task</span>
