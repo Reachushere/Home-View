@@ -393,19 +393,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (returnPromptShown.current) return;
-    if (sessionStorage.getItem('returnPromptShown')) return;
     returnPromptShown.current = true;
-    sessionStorage.setItem('returnPromptShown', '1');
-
-    const TWO_HOURS = 2 * 60 * 60 * 1000;
-    const lastActive = localStorage.getItem('replitLastActiveTime');
-    const now = Date.now();
-
-    localStorage.setItem('replitLastActiveTime', String(now));
-
-    if (!lastActive) return;
-    const elapsed = now - parseInt(lastActive, 10);
-    if (elapsed < TWO_HOURS) return;
 
     fetch("/api/files")
       .then(r => r.json())
