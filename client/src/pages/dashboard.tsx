@@ -9656,7 +9656,7 @@ export default function Dashboard() {
         </div>
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${(blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing + 4}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '16px', paddingRight: '16px', width: '100%', pointerEvents: 'auto' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${(blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing + 4}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '16px', paddingRight: '16px', width: '100%', overflow: 'hidden', pointerEvents: 'auto' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { setIsHamburgerOpen(open); if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
@@ -14963,7 +14963,9 @@ export default function Dashboard() {
                             const taskCourseCodeLower = taskCourseCode.toLowerCase();
                             const moduleFolderName = `week-${task.weekNumber}-${taskCourseCodeLower}-module`;
                             const moduleFile = weeklyFiles.find(f => f.folder === moduleFolderName && f.objectPath);
-                            const modulePdfUrl = moduleFile?.objectPath || null;
+                            const moduleAttachmentPdf = !moduleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
+                            const moduleRefLinkPdf = !moduleFile && !moduleAttachmentPdf && task.referenceLink ? task.referenceLink : null;
+                            const modulePdfUrl = moduleFile?.objectPath || moduleAttachmentPdf || moduleRefLinkPdf || null;
                             return (
                               <div 
                                 key={`prep-${task.id}`}
@@ -15011,7 +15013,8 @@ export default function Dashboard() {
                           const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
                           const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
                           const dueAttachmentPdf = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                          const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentPdf || null;
+                          const dueRefLinkPdf = !dueModuleFile && !dueAttachmentPdf && task.referenceLink ? task.referenceLink : null;
+                          const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentPdf || dueRefLinkPdf || null;
                           return (
                             <div 
                               key={task.id}
@@ -15367,7 +15370,8 @@ export default function Dashboard() {
                           const satDueModuleFolder = `week-${task.weekNumber}-${satDueCourseCodeLower}-module`;
                           const satDueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === satDueModuleFolder && f.objectPath) : null;
                           const satDueAttachmentPdf = !satDueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                          const satDuePdfUrl = satDueModuleFile?.objectPath || satDueAttachmentPdf || null;
+                          const satDueRefLinkPdf = !satDueModuleFile && !satDueAttachmentPdf && task.referenceLink ? task.referenceLink : null;
+                          const satDuePdfUrl = satDueModuleFile?.objectPath || satDueAttachmentPdf || satDueRefLinkPdf || null;
                           return (
                             <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden' }}
@@ -15593,7 +15597,8 @@ export default function Dashboard() {
                       const adModuleFolderName = `week-${task.weekNumber}-${adCourseCodeLower}-module`;
                       const adModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === adModuleFolderName && f.objectPath) : null;
                       const adAttachmentPdf = !adModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                      const adPdfUrl = adModuleFile?.objectPath || adAttachmentPdf || null;
+                      const adRefLinkPdf = !adModuleFile && !adAttachmentPdf && task.referenceLink ? task.referenceLink : null;
+                      const adPdfUrl = adModuleFile?.objectPath || adAttachmentPdf || adRefLinkPdf || null;
                       return (
                         <div
                           key={task.id}
@@ -15736,7 +15741,8 @@ export default function Dashboard() {
                       const ad2ModuleFolderName = `week-${task.weekNumber}-${ad2CourseCodeLower}-module`;
                       const ad2ModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === ad2ModuleFolderName && f.objectPath) : null;
                       const ad2AttachmentPdf = !ad2ModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                      const ad2PdfUrl = ad2ModuleFile?.objectPath || ad2AttachmentPdf || null;
+                      const ad2RefLinkPdf = !ad2ModuleFile && !ad2AttachmentPdf && task.referenceLink ? task.referenceLink : null;
+                      const ad2PdfUrl = ad2ModuleFile?.objectPath || ad2AttachmentPdf || ad2RefLinkPdf || null;
                       return (
                         <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
                           <div
