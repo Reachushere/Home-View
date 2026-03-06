@@ -11297,8 +11297,9 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '94px', height: '11px', background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%)', zIndex: 1 }} />
-        <svg width="94" height="27" viewBox="0 0 94 27" style={{ display: 'block', position: 'relative', zIndex: 2 }}>
+        <svg width="94" height="27" viewBox="0 0 94 27" style={{ display: 'block' }}>
+          <rect x="0" y="18" width="94" height="9" fill="rgba(255,255,255,0.30)" />
+          <rect x="0" y="17" width="94" height="3" fill="rgba(255,255,255,0.30)" />
           <path d="M0,27 L94,27 L94,18 Q85,18 85,12 L85,11 Q85,0 73,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
@@ -11306,7 +11307,7 @@ export default function Dashboard() {
       <div
         className="fixed z-[59] cursor-pointer left-tab-bounce"
         style={{
-          left: '-9px',
+          left: '-10px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
