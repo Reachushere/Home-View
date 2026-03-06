@@ -15009,7 +15009,8 @@ export default function Dashboard() {
                           const dueTaskCourseCodeLower = dueTaskCourseCode.toLowerCase();
                           const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
                           const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
-                          const dueAttachmentUrl = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
+                          const dueAttachmentUrl = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http') && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
+                          const dueAttachmentLink = !dueModuleFile && !dueAttachmentUrl && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
                           const dueRefLinkPdf = !dueModuleFile && !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
                           const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentUrl || dueRefLinkPdf || null;
                           return (
@@ -15048,7 +15049,12 @@ export default function Dashboard() {
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
                               )}
-                              {task.referenceLink && (
+                              {dueAttachmentLink && !dueModulePdfUrl && (
+                                <a href={dueAttachmentLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={dueAttachmentLink} data-testid={`att-link-icon-task-${task.id}`}>
+                                  <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
+                                </a>
+                              )}
+                              {task.referenceLink && !dueModulePdfUrl && (
                                 <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-course-${task.id}`}>
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
