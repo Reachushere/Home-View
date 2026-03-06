@@ -1079,6 +1079,7 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
   });
@@ -9641,7 +9642,7 @@ export default function Dashboard() {
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-wrap flex-shrink" style={{ gap: `${blinkSettings.buttonSpacing + 4}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '16px', paddingRight: '16px', width: '100%', pointerEvents: 'auto' }}>
           {/* Hamburger Menu */}
-          <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
+          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { setIsHamburgerOpen(open); if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
               <div 
                 className="pill-button-hover"
@@ -9661,11 +9662,13 @@ export default function Dashboard() {
                   cursor: 'pointer'
                 }}
                 data-testid="button-hamburger-menu"
+                title="Menu"
+                onMouseEnter={() => setIsHamburgerOpen(true)}
               >
                 <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" noAnimation>
+            <DropdownMenuContent align="start" noAnimation onMouseLeave={() => setIsHamburgerOpen(false)}>
               <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => setIsProfileDialogOpen(true)}>
                 <User className="h-3.5 w-3.5 mr-2" />
                 Profile Settings
