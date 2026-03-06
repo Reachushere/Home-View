@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PostItTask {
@@ -16,6 +16,7 @@ interface ConfirmDialog {
 const STORAGE_KEY = "dev-post-it-tasks";
 const POS_KEY = "dev-post-it-pos";
 const COLLAPSED_KEY = "dev-post-it-collapsed";
+const DISMISSED_KEY = "dev-post-it-dismissed";
 
 export function DevPostIt() {
   const [tasks, setTasks] = useState<PostItTask[]>(() => {
@@ -78,7 +79,16 @@ export function DevPostIt() {
     setTasks(prev => [...prev, { id: Date.now().toString(), text, checked: false, status: "active" }]);
   }, []);
 
-  const pendingCompleteRef = useRef<string[]>([]);
+  const getDismissed = (): string[] => {
+    try { return JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]"); } catch { return []; }
+  };
+  const addDismissed = (text: string) => {
+    const list = getDismissed();
+    if (!list.includes(text)) {
+      list.push(text);
+      localStorage.setItem(DISMISSED_KEY, JSON.stringify(list));
+    }
+  };
 
   useEffect(() => {
     if (import.meta.env.PROD) return;
@@ -87,6 +97,7 @@ export function DevPostIt() {
         const res = await fetch(`/dev-tasks.json?t=${Date.now()}`);
         if (!res.ok) return;
         const incoming: { id: string; text: string; complete?: boolean }[] = await res.json();
+        const dismissed = getDismissed();
         setTasks(prev => {
           const existingTexts = new Set(prev.map(t => t.text));
           const newOnes = incoming
@@ -94,9 +105,8 @@ export function DevPostIt() {
             .map(t => ({ id: t.id || Date.now().toString(), text: t.text, checked: false, status: "active" as const }));
 
           const completedTexts = incoming.filter(t => t.complete).map(t => t.text);
-          const toPrompt = prev.filter(t => completedTexts.includes(t.text) && !pendingCompleteRef.current.includes(t.id));
-          if (toPrompt.length > 0) {
-            pendingCompleteRef.current = [...pendingCompleteRef.current, ...toPrompt.map(t => t.id)];
+          const toPrompt = prev.filter(t => completedTexts.includes(t.text) && !dismissed.includes(t.text));
+          if (toPrompt.length > 0 && !confirmDialog) {
             setTimeout(() => {
               setConfirmDialog({ taskId: toPrompt[0].id, taskText: toPrompt[0].text });
             }, 300);
@@ -110,7 +120,7 @@ export function DevPostIt() {
     poll();
     const interval = setInterval(poll, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [confirmDialog]);
 
   const handleCheckChange = useCallback((taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
@@ -123,6 +133,8 @@ export function DevPostIt() {
   const handleConfirmResponse = useCallback((response: "yes" | "no" | "answer-later") => {
     if (!confirmDialog) return;
     const taskId = confirmDialog.taskId;
+    const taskText = confirmDialog.taskText;
+    addDismissed(taskText);
     if (response === "yes") {
       setTasks(prev => prev.filter(t => t.id !== taskId));
     } else if (response === "no") {
