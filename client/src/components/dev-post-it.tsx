@@ -113,6 +113,7 @@ export function DevPostIt() {
   };
 
   const dialogShownRef = useRef(false);
+  const promptedTextsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (import.meta.env.PROD) return;
@@ -129,9 +130,10 @@ export function DevPostIt() {
             .map(t => ({ id: t.id || Date.now().toString(), text: t.text, checked: false, status: "active" as const }));
 
           const completedTexts = incoming.filter(t => t.complete).map(t => t.text);
-          const toPrompt = prev.filter(t => completedTexts.includes(t.text) && !dismissed.includes(t.text));
+          const toPrompt = prev.filter(t => completedTexts.includes(t.text) && !dismissed.includes(t.text) && !promptedTextsRef.current.has(t.text));
           if (toPrompt.length > 0 && !dialogShownRef.current) {
             dialogShownRef.current = true;
+            promptedTextsRef.current.add(toPrompt[0].text);
             setConfirmDialog({ taskId: toPrompt[0].id, taskText: toPrompt[0].text });
           }
 
