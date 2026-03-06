@@ -11261,10 +11261,8 @@ export default function Dashboard() {
         className="fixed z-[60] bottom-tab-bounce"
         style={{
           bottom: '-8px',
-          left: `${calendarLeft - 15}px`,
-          right: `${calendarRight - 15}px`,
-          display: 'flex',
-          justifyContent: 'center',
+          left: '50%',
+          transform: 'translateX(-50%)',
           pointerEvents: 'none',
         }}
         data-testid="bottom-tab-files"
