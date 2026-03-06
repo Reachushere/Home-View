@@ -8202,7 +8202,22 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-0 mx-6 gap-2" style={{ marginTop: '-21px' }}>
+          {(() => {
+            const barFolderParts = previewFile?.folder?.split('-') || [];
+            const barCourseCode = barFolderParts[2]?.toUpperCase() || '';
+            const barCourseBg = (() => {
+              if (barCourseCode === 'CPPA122') return 'linear-gradient(90deg, rgba(15,80,4,0.92) 0%, rgba(71,176,69,0.85) 100%)';
+              if (barCourseCode === 'CFNF400') return 'linear-gradient(90deg, rgba(140,10,60,0.92) 0%, rgba(222,24,100,0.85) 100%)';
+              if (barCourseCode === 'CASL101') return 'linear-gradient(90deg, rgba(80,4,66,0.92) 0%, rgba(176,69,162,0.85) 100%)';
+              const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === barCourseCode)?.color;
+              if (courseHex) {
+                const rgb = hexToRgb(courseHex);
+                return `linear-gradient(90deg, rgba(${Math.max(0,rgb.r-40)},${Math.max(0,rgb.g-40)},${Math.max(0,rgb.b-40)},0.92) 0%, rgba(${rgb.r},${rgb.g},${rgb.b},0.85) 100%)`;
+              }
+              return 'linear-gradient(90deg, rgba(31,41,55,0.92) 0%, rgba(55,65,81,0.85) 100%)';
+            })();
+            return (
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-4 gap-2 rounded-md" style={{ marginTop: '-21px', marginLeft: '12px', marginRight: '12px', background: barCourseBg, borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
             {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -8438,6 +8453,8 @@ export default function Dashboard() {
             </div>
             
           </div>
+            );
+          })()}
           
           {/* Playback Controls Bar */}
           <div className="flex items-center justify-evenly p-1.5 mx-6" style={{ marginTop: '-20px', paddingLeft: '15px', paddingRight: '15px' }}>
