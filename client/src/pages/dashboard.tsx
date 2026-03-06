@@ -11309,6 +11309,9 @@ export default function Dashboard() {
           }} />
           <svg width="84" height="27" viewBox="0 0 84 27" style={{ display: 'block', position: 'relative', zIndex: 1 }}>
             <path d="M0,27 L84,27 L84,18 Q75,18 75,12 L75,11 Q75,0 63,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <g transform="translate(34, 1)" opacity="0.7">
+              <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill="none" stroke="white" strokeWidth="1.2" strokeLinejoin="round" />
+            </g>
           </svg>
         </div>
       </div>
@@ -11330,6 +11333,7 @@ export default function Dashboard() {
       >
         <svg width="27" height="84" viewBox="0 0 27 84" style={{ display: 'block' }}>
           <path d="M0,0 L0,84 L11,84 Q11,75 17,75 L18,75 Q27,75 27,63 L27,21 Q27,9 18,9 L17,9 Q11,9 11,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <text x="18" y="46" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold" opacity="0.7">+</text>
         </svg>
       </div>
 
@@ -11349,6 +11353,12 @@ export default function Dashboard() {
       >
         <svg width="27" height="84" viewBox="0 0 27 84" style={{ display: 'block' }}>
           <path d="M27,0 L27,84 L16,84 Q16,75 10,75 L9,75 Q0,75 0,63 L0,21 Q0,9 9,9 L10,9 Q16,9 16,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <g transform="translate(2, 35)" opacity="0.7">
+            <rect x="1" y="1" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
+            <rect x="7" y="1" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
+            <rect x="1" y="7" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
+            <rect x="7" y="7" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
+          </g>
         </svg>
       </div>
 
@@ -17607,7 +17617,7 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '16px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '17px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
