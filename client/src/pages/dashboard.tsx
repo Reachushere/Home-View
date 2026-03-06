@@ -18984,27 +18984,71 @@ export default function Dashboard() {
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
           <DialogContent className="max-w-[95vw] sm:max-w-[900px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal">
-            <DialogHeader className="flex flex-row items-center justify-between gap-4">
-              <DialogTitle className="text-white">Edit Task</DialogTitle>
-              {editingTask && (
+            <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <div className="flex items-center gap-2">
+                <Pencil className="h-3 w-3 text-white" />
+                <DialogTitle className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>EDIT TASK</DialogTitle>
+              </div>
+              <div className="flex items-center gap-3">
+                {editingTask && (
+                  <Button
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8"
+                    style={{
+                      fontSize: '12px',
+                      boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'; }}
+                    onClick={() => {
+                      const form = document.querySelector('[data-task-form]') as HTMLFormElement;
+                      if (form) form.requestSubmit();
+                    }}
+                    data-testid="button-update-task-header"
+                  >
+                    Update Task
+                  </Button>
+                )}
+                {editingTask && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="border !border-red-400/50 text-red-400 hover:text-red-300 hover:!border-red-300 hover:bg-transparent transition-all duration-200 h-8 w-8"
+                    style={{
+                      boxShadow: '0 0 6px rgba(255,100,100,0.4), 0 0 12px rgba(255,100,100,0.2)'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,100,100,0.6), 0 0 16px rgba(255,100,100,0.4)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,100,100,0.4), 0 0 12px rgba(255,100,100,0.2)'; }}
+                    onClick={() => {
+                      deleteTaskWithUndo(editingTask.id);
+                    }}
+                    data-testid="button-delete-task-dialog"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
                 <Button
-                  size="icon"
-                  variant="ghost"
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/20 mr-6"
-                  onClick={() => {
-                    deleteTaskWithUndo(editingTask.id);
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8"
+                  style={{
+                    fontSize: '12px',
+                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
                   }}
-                  data-testid="button-delete-task-dialog"
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'; }}
+                  onClick={() => setEditingTask(null)}
+                  data-testid="button-cancel-edit-task"
                 >
-                  <Trash2 className="h-5 w-5 text-red-500" />
+                  Cancel
                 </Button>
-              )}
+              </div>
             </DialogHeader>
             {editingTask && (
               <TaskForm 
                 key={`edit-task-${editingTask.id}`}
                 task={editingTask}
                 weekNumber={editingTask.weekNumber}
+                hideSubmitButton
                 onSuccess={() => setEditingTask(null)} 
               />
             )}
