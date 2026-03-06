@@ -11134,7 +11134,7 @@ export default function Dashboard() {
               left: '50%',
               width: `${pillW}px`, 
               height: `${pillH + arrowH + 4}px`,
-              transform: `translateX(-50%) translateY(${isPillMenuOpen ? '-11px' : `${slideOffset}px`})`,
+              transform: `translateX(-50%) translateY(${isPillMenuOpen ? '-15px' : `${slideOffset}px`})`,
               transition: sidePillMounted ? 'transform 0.3s ease-in-out' : 'none',
             }}
             onMouseEnter={handleEnter}
