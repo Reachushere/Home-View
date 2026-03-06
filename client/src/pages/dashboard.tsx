@@ -16045,12 +16045,21 @@ export default function Dashboard() {
                                   )}
                                   <div 
                                     onClick={() => setEditingTask(task)}
-                                    className={`text-[8px] font-bold truncate cursor-pointer flex-1 ${
+                                    className={`text-[8px] font-normal truncate cursor-pointer flex-1 ${
                                       task.isCompleted ? "text-gray-400 line-through" : "text-black"
                                     }`}
                                   >
                                     {task.title}
                                   </div>
+                                  {task.fileUrl && (
+                                    <img
+                                      src={pdfIconPath}
+                                      alt="Open PDF"
+                                      style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }}
+                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = task.fileUrl!; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                                      data-testid={`pdf-icon-time-${task.id}`}
+                                    />
+                                  )}
                                 </div>
                                 <div 
                                   className={`text-[9px] font-semibold mt-0 mb-3 ml-[18px] px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
@@ -16159,7 +16168,16 @@ export default function Dashboard() {
                                   {!isCASL101Task(task) && (
                                     <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black" data-testid={`checkbox-sat-${task.id}`} />
                                   )}
-                                  <span className="text-[8px] font-bold text-black truncate">{task.title}</span>
+                                  <span className="text-[8px] font-normal text-black truncate">{task.title}</span>
+                                  {task.fileUrl && (
+                                    <img
+                                      src={pdfIconPath}
+                                      alt="Open PDF"
+                                      style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }}
+                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = task.fileUrl!; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                                      data-testid={`pdf-icon-sat-${task.id}`}
+                                    />
+                                  )}
                                 </div>
                                 {task.eventStartTime && (
                                   <div className="px-1 text-[7px] text-gray-600">{task.eventStartTime}{task.eventEndTime ? ` - ${task.eventEndTime}` : ''}</div>
@@ -16271,10 +16289,19 @@ export default function Dashboard() {
                         )}
                         <span 
                           onClick={() => setEditingTask(task)}
-                          className={`text-[9px] leading-tight font-bold line-clamp-2 cursor-pointer flex-1 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
+                          className={`text-[9px] leading-tight font-normal line-clamp-2 cursor-pointer flex-1 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
                         >
                           {task.title}
                         </span>
+                        {task.fileUrl && (
+                          <img
+                            src={pdfIconPath}
+                            alt="Open PDF"
+                            style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }}
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = task.fileUrl!; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                            data-testid={`pdf-icon-multi-${task.id}`}
+                          />
+                        )}
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
                         <div 
