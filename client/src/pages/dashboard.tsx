@@ -1542,6 +1542,7 @@ export default function Dashboard() {
   } | null>(null);
   
   // Context menu state for right-click delete
+  const [recurringDeleteTask, setRecurringDeleteTask] = useState<{ id: number; title: string; callback?: () => void } | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -2221,10 +2222,8 @@ export default function Dashboard() {
           return;
         }
         e.preventDefault();
-        if (confirm('Delete this task?')) {
-          deleteTaskWithUndo(selectedTaskId);
-          setSelectedTaskId(null);
-        }
+        deleteTaskWithUndo(selectedTaskId);
+        setSelectedTaskId(null);
       }
       // Escape to deselect
       if (e.key === 'Escape') {
@@ -5727,7 +5726,11 @@ export default function Dashboard() {
     },
   });
 
-  const deleteTaskWithUndo = (taskId: number) => {
+  const isRecurringTask = (task: Task) => {
+    return (task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId;
+  };
+
+  const doDeleteSingleTask = (taskId: number) => {
     const task = allTasks.find(t => t.id === taskId);
     if (task) {
       pushUndo({
@@ -5761,6 +5764,26 @@ export default function Dashboard() {
       });
     }
     deleteMutation.mutate(taskId);
+  };
+
+  const deleteFutureMutation = useMutation({
+    mutationFn: async (taskId: number) => {
+      return apiRequest("DELETE", `/api/tasks/${taskId}/future`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
+  const deleteTaskWithUndo = (taskId: number, skipDialog?: boolean) => {
+    const task = allTasks.find(t => t.id === taskId);
+    if (!task) { deleteMutation.mutate(taskId); return; }
+    if (!skipDialog && isRecurringTask(task)) {
+      setRecurringDeleteTask({ id: taskId, title: task.title });
+      return;
+    }
+    if (!skipDialog && !confirm(`Delete "${task.title}"?`)) return;
+    doDeleteSingleTask(taskId);
   };
 
   const syncAllCalendarMutation = useMutation({
@@ -15714,9 +15737,7 @@ export default function Dashboard() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (confirm('Delete this task?')) {
-                                  deleteTaskWithUndo(task.id);
-                                }
+                                deleteTaskWithUndo(task.id);
                               }}
                               className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500"
                               title="Delete task"
@@ -15823,7 +15844,7 @@ export default function Dashboard() {
                                 data-testid={`pdf-icon-allday2-${task.id}`}
                               />
                             )}
-                            <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteTaskWithUndo(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
+                            <button onClick={(e) => { e.stopPropagation(); deleteTaskWithUndo(task.id); }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
                           </div>
                         </div>
                       );
@@ -18876,6 +18897,69 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Recurring Delete Dialog */}
+        <Dialog open={!!recurringDeleteTask} onOpenChange={(open) => !open && setRecurringDeleteTask(null)}>
+          <DialogContent className="max-w-sm bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+            <DialogHeader>
+              <DialogTitle className="text-white text-sm">Delete Recurring Task</DialogTitle>
+            </DialogHeader>
+            <p className="text-white/80 text-xs">
+              "{recurringDeleteTask?.title}" is a recurring task. What would you like to do?
+            </p>
+            <div className="flex flex-col gap-2 pt-2">
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-all duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(255,255,255,0.6)',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
+                onClick={() => {
+                  if (recurringDeleteTask) {
+                    doDeleteSingleTask(recurringDeleteTask.id);
+                    setRecurringDeleteTask(null);
+                    setEditingTask(null);
+                    setContextMenu(null);
+                  }
+                }}
+                data-testid="button-delete-this-only"
+              >
+                Delete this task only
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-red-300 transition-all duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(239,68,68,0.6)',
+                  background: 'linear-gradient(180deg, rgba(239,68,68,0.38) 0%, rgba(239,68,68,0.15) 48%, rgba(239,68,68,0.06) 52%, rgba(239,68,68,0.22) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(239,68,68,0.4), inset 0 -1px 0 rgba(239,68,68,0.1)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(239,68,68,0.5) 0%, rgba(239,68,68,0.22) 48%, rgba(239,68,68,0.1) 52%, rgba(239,68,68,0.3) 100%)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(239,68,68,0.38) 0%, rgba(239,68,68,0.15) 48%, rgba(239,68,68,0.06) 52%, rgba(239,68,68,0.22) 100%)'; }}
+                onClick={() => {
+                  if (recurringDeleteTask) {
+                    deleteFutureMutation.mutate(recurringDeleteTask.id);
+                    setRecurringDeleteTask(null);
+                    setEditingTask(null);
+                    setContextMenu(null);
+                  }
+                }}
+                data-testid="button-delete-all-future"
+              >
+                Delete this and all future events
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-all duration-200 text-xs hover:text-white/80"
+                onClick={() => setRecurringDeleteTask(null)}
+                data-testid="button-cancel-recurring-delete"
+              >
+                Cancel
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
           <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
@@ -18902,10 +18986,7 @@ export default function Dashboard() {
                   variant="ghost"
                   className="text-red-400 hover:text-red-300 hover:bg-red-500/20 mr-6"
                   onClick={() => {
-                    if (confirm("Are you sure you want to delete this task?")) {
-                      deleteTaskWithUndo(editingTask.id);
-                      setEditingTask(null);
-                    }
+                    deleteTaskWithUndo(editingTask.id);
                   }}
                   data-testid="button-delete-task-dialog"
                 >

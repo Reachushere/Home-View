@@ -970,6 +970,46 @@ export async function registerRoutes(
     res.status(204).end();
   });
 
+  // DELETE /api/tasks/:id/future - Delete this task and all future recurring instances
+  app.delete("/api/tasks/:id/future", async (req, res) => {
+    const taskId = Number(req.params.id);
+    const task = await storage.getTask(taskId);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    const parentId = task.parentTaskId || task.id;
+    const allSiblings = await storage.getChildTasks(parentId);
+    const parentTask = task.parentTaskId ? await storage.getTask(parentId) : task;
+
+    const tasksToDelete = [task];
+    for (const sibling of allSiblings) {
+      if (sibling.id !== task.id && new Date(sibling.dueDate) >= new Date(task.dueDate)) {
+        tasksToDelete.push(sibling);
+      }
+    }
+    if (parentTask && parentTask.id !== task.id && new Date(parentTask.dueDate) >= new Date(task.dueDate)) {
+      tasksToDelete.push(parentTask);
+    }
+
+    for (const t of tasksToDelete) {
+      if (t.calendarEventId) {
+        try { await deleteCalendarEvent(t.calendarEventId); } catch {}
+      }
+      if (t.secondAccountCalendarEventId) {
+        try { await deleteEventFromSecondAccount(t.secondAccountCalendarEventId); } catch {}
+      }
+      if (t.prepCalendarEventId) {
+        try { await deleteCalendarEvent(t.prepCalendarEventId); } catch {}
+      }
+      if (t.secondAccountPrepEventId) {
+        try { await deleteEventFromSecondAccount(t.secondAccountPrepEventId); } catch {}
+      }
+      await storage.deleteSubtasksByTask(t.id);
+      await storage.deleteTask(t.id);
+    }
+
+    res.status(204).end();
+  });
+
   // PATCH /api/tasks/:id/complete
   app.patch(api.tasks.complete.path, async (req, res) => {
     const { isCompleted } = req.body;
