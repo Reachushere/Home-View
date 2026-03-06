@@ -10244,6 +10244,23 @@ export default function Dashboard() {
             <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
           </div>
 
+          {/* Refresh Button */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => { triggerButtonGlow('refresh'); queryClient.invalidateQueries(); }}
+            data-testid="button-refresh-data"
+          >
+            <RefreshCw className="h-[18px] w-[18px] text-white" />
+          </div>
+
           {/* Sync Button (moved from bottom pill) */}
           <div 
             style={{ 
