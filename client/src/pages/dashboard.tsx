@@ -11298,7 +11298,15 @@ export default function Dashboard() {
         data-testid="bottom-tab-files"
       >
         <svg width="94" height="27" viewBox="0 0 94 27" style={{ display: 'block', overflow: 'visible' }}>
-          <rect x="-2" y="15" width="98" height="14" fill={colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground} />
+          <defs>
+            <clipPath id="bottom-tab-base-clip">
+              <rect x="0" y="17" width="94" height="10" />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#bottom-tab-base-clip)">
+            <rect x="-4" y="14" width="102" height="16" fill={colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground} />
+            <rect x="-4" y="14" width="102" height="16" fill="rgba(255,255,255,0.35)" />
+          </g>
           <path d="M0,27 L94,27 L94,18 Q85,18 85,12 L85,11 Q85,0 73,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
