@@ -11317,40 +11317,6 @@ export default function Dashboard() {
               boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               pointerEvents: 'none',
             }} />
-            {/* Rounded tab - half circle on top with Files icon, navigates to /files */}
-            <div
-              onClick={() => { window.location.href = '/files'; }}
-              style={{
-                position: 'absolute',
-                top: `${arrowH - 23}px`,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '46px',
-                height: '23px',
-                borderRadius: '9999px 9999px 0 0',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                borderLeft: '1.5px solid rgba(255,255,255,0.35)',
-                borderRight: '1.5px solid rgba(255,255,255,0.35)',
-                borderTop: '1.5px solid rgba(255,255,255,0.35)',
-                borderBottom: 'none',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
-                pointerEvents: 'auto',
-                cursor: 'pointer',
-                opacity: isPillMenuOpen ? 0 : 0.9,
-                transition: 'opacity 0.3s ease-in-out',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingBottom: '2px',
-              }}
-              title="Files"
-              data-testid="bottom-tab-files"
-            >
-              <FolderOpen className="h-[14px] w-[14px] text-white" />
-            </div>
-
             {/* Buttons container - offset by arrowH */}
             <div style={{ position: 'absolute', top: `${arrowH}px`, left: '0', width: `${pillW}px`, height: `${pillH}px` }}>
 
@@ -11411,12 +11377,11 @@ export default function Dashboard() {
             paddingLeft: '3px',
           }}
         >
-          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '6px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>+</span>
+          <span style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, lineHeight: 1 }}>+</span>
         </div>
       </div>
 
-      {/* Right side half-circle tab - Projects Page */}
+      {/* Right side half-circle tab */}
       <div
         className="fixed z-[59] cursor-pointer right-tab-bounce"
         style={{
@@ -11447,10 +11412,12 @@ export default function Dashboard() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            gap: '2px',
             paddingRight: '3px',
           }}
         >
-          <FolderOpen style={{ color: '#FFFFFF', height: '16px', width: '16px', strokeWidth: 2.5, marginTop: '2px' }} />
+          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '6px' }} />
+          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>+</span>
         </div>
       </div>
 
