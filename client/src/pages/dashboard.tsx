@@ -11377,7 +11377,7 @@ export default function Dashboard() {
             paddingLeft: '3px',
           }}
         >
-          <span style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, lineHeight: 1, marginLeft: '2px' }}>+</span>
+          <span style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, lineHeight: 1, marginLeft: '4px' }}>+</span>
         </div>
       </div>
 
