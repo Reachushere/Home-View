@@ -9791,6 +9791,7 @@ export default function Dashboard() {
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-settings-panel"
+              title="Certificate Tracking"
               onClick={() => {
                 triggerButtonGlow('settings');
                 setIsSettingsPanelOpen(true);
