@@ -157,8 +157,8 @@ export function DevPostIt() {
     if (!confirmDialog) return;
     const taskId = confirmDialog.taskId;
     const taskText = confirmDialog.taskText;
-    addDismissed(taskText);
     if (response === "yes") {
+      addDismissed(taskText);
       setTasks(prev => prev.filter(t => t.id !== taskId));
       fetch("/api/dev-dismiss", {
         method: "POST",
@@ -167,11 +167,6 @@ export function DevPostIt() {
       }).catch(() => {});
     } else if (response === "no") {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, checked: false, status: "retry", retrySentAt: Date.now() } : t));
-      fetch("/api/dev-retry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ taskId, text: taskText, reason: "not-completed" }),
-      }).catch(() => {});
       setTimeout(() => {
         setTasks(prev => prev.map(t => t.id === taskId && t.status === "retry" ? { ...t, retrySentAt: undefined } : t));
       }, 2000);
