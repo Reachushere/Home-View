@@ -11929,7 +11929,7 @@ export default function Dashboard() {
                 className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-black shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 50%, rgba(255,255,255,0.70) 100%)',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
                   backdropFilter: 'blur(40px)',
                   WebkitBackdropFilter: 'blur(40px)',
                   border: '1px solid rgba(255,255,255,0.5)',
@@ -18458,7 +18458,7 @@ export default function Dashboard() {
           <div className="overflow-hidden flex flex-col rounded-xl text-black text-[11px] [&_input]:text-black [&_input]:bg-white/50 [&_textarea]:text-black [&_textarea]:bg-white/50"
             style={{
               fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 50%, rgba(255,255,255,0.70) 100%)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
               backdropFilter: 'blur(40px)',
               WebkitBackdropFilter: 'blur(40px)',
               border: '1px solid rgba(255,255,255,0.5)',
