@@ -9548,7 +9548,7 @@ export default function Dashboard() {
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
-                          {next.fileUrl && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
+                          {(next.attachments?.length || next.referenceLink) && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
                         </>
                       ) : (
                         <>
@@ -9556,7 +9556,7 @@ export default function Dashboard() {
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
-                          {next.fileUrl && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
+                          {(next.attachments?.length || next.referenceLink) && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
                         </>
                       )}
                     </div>
@@ -9593,7 +9593,7 @@ export default function Dashboard() {
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
-                          {next.fileUrl && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
+                          {(next.attachments?.length || next.referenceLink) && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
                         </>
                       ) : (
                         <>
@@ -9601,7 +9601,7 @@ export default function Dashboard() {
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
                           <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
-                          {next.fileUrl && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
+                          {(next.attachments?.length || next.referenceLink) && <img src={pdfIconPath} alt="" style={{ width: '28px', height: '28px', animation: 'none' }} />}
                         </>
                       )}
                     </div>
@@ -16051,15 +16051,7 @@ export default function Dashboard() {
                                   >
                                     {task.title}
                                   </div>
-                                  {task.fileUrl && (
-                                    <img
-                                      src={pdfIconPath}
-                                      alt="Open PDF"
-                                      style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }}
-                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = task.fileUrl!; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                                      data-testid={`pdf-icon-time-${task.id}`}
-                                    />
-                                  )}
+                                  {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-time-${task.id}`} /> : null; })()}
                                 </div>
                                 <div 
                                   className={`text-[9px] font-normal mt-0 mb-3 ml-[18px] px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
@@ -16169,15 +16161,7 @@ export default function Dashboard() {
                                     <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black" data-testid={`checkbox-sat-${task.id}`} />
                                   )}
                                   <span className="text-[8px] font-normal text-black truncate">{task.title}</span>
-                                  {task.fileUrl && (
-                                    <img
-                                      src={pdfIconPath}
-                                      alt="Open PDF"
-                                      style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }}
-                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = task.fileUrl!; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                                      data-testid={`pdf-icon-sat-${task.id}`}
-                                    />
-                                  )}
+                                  {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-sat-${task.id}`} /> : null; })()}
                                 </div>
                                 {task.eventStartTime && (
                                   <div className="px-1 text-[7px] text-gray-600">{task.eventStartTime}{task.eventEndTime ? ` - ${task.eventEndTime}` : ''}</div>
@@ -16293,15 +16277,7 @@ export default function Dashboard() {
                         >
                           {task.title}
                         </span>
-                        {task.fileUrl && (
-                          <img
-                            src={pdfIconPath}
-                            alt="Open PDF"
-                            style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }}
-                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = task.fileUrl!; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                            data-testid={`pdf-icon-multi-${task.id}`}
-                          />
-                        )}
+                        {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-multi-${task.id}`} /> : null; })()}
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
                         <div 
