@@ -14910,6 +14910,8 @@ export default function Dashboard() {
                       if (!task.startDate) return false;
                       const taskDueDate = startOfDay(new Date(task.dueDate));
                       const taskStartDate = startOfDay(new Date(task.startDate));
+                      const today = startOfDay(new Date());
+                      if (cellDate < today) return false;
                       return cellDate >= taskStartDate && cellDate < taskDueDate;
                     }) || [];
                     
