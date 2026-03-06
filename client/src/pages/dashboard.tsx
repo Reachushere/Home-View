@@ -14837,7 +14837,7 @@ export default function Dashboard() {
                 }
                 
                 // Calculate how many tasks this course has in the current week to set dynamic height
-                const courseTaskCount = allTasks?.filter(task => {
+                const courseTaskCount = tasks?.filter(task => {
                   if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                   if (task.isCompleted) return false;
                   const taskDueDate = startOfDay(new Date(task.dueDate));
@@ -15042,7 +15042,7 @@ export default function Dashboard() {
                                   src={pdfIconPath}
                                   alt="Open PDF"
                                   className="shrink-0"
-                                  style={{ width: '14px', height: '14px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto' }}
+                                  style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto' }}
                                   onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/') || url.startsWith('uploads/')) { window.open(`/pdf-viewer/${encodeURIComponent(url)}`, '_blank'); } else { window.open(url, '_blank'); } }}
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
