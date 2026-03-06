@@ -11312,6 +11312,89 @@ export default function Dashboard() {
           </div>
         );
       })()}
+      {/* Left side half-circle tab - Add Task */}
+      <div
+        className="fixed z-[59] cursor-pointer"
+        style={{
+          left: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          pointerEvents: 'auto',
+        }}
+        onClick={() => {
+          setQuickAddStep(0);
+          setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+          setIsQuickAddOpen(true);
+        }}
+        data-testid="left-add-task-tab"
+      >
+        <div
+          style={{
+            width: '28px',
+            height: '56px',
+            borderRadius: '0 9999px 9999px 0',
+            background: 'linear-gradient(270deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderTop: '1.5px solid rgba(255,255,255,0.35)',
+            borderRight: '1.5px solid rgba(255,255,255,0.35)',
+            borderBottom: '1.5px solid rgba(255,255,255,0.35)',
+            borderLeft: 'none',
+            boxShadow: '4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2px',
+            paddingLeft: '3px',
+          }}
+        >
+          <ListTodo style={{ color: '#FFFFFF', height: '11px', width: '11px', strokeWidth: 2.5 }} />
+          <span style={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 700, lineHeight: 1 }}>+</span>
+        </div>
+      </div>
+
+      {/* Right side half-circle tab - Add Project */}
+      <div
+        className="fixed z-[59] cursor-pointer"
+        style={{
+          right: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          pointerEvents: 'auto',
+        }}
+        onClick={() => {
+          setEditingProject(null);
+          setProjectDialogOpen(true);
+        }}
+        data-testid="right-add-project-tab"
+      >
+        <div
+          style={{
+            width: '28px',
+            height: '56px',
+            borderRadius: '9999px 0 0 9999px',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderTop: '1.5px solid rgba(255,255,255,0.35)',
+            borderLeft: '1.5px solid rgba(255,255,255,0.35)',
+            borderBottom: '1.5px solid rgba(255,255,255,0.35)',
+            borderRight: 'none',
+            boxShadow: '-4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2px',
+            paddingRight: '3px',
+          }}
+        >
+          <FolderOpen style={{ color: '#FFFFFF', height: '11px', width: '11px', strokeWidth: 2.5 }} />
+          <span style={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 700, lineHeight: 1 }}>+</span>
+        </div>
+      </div>
+
       {/* Spring out honeycombs for course readings - moved outside files button */}
       {/* CPPA122 */}
       <div 
