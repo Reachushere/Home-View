@@ -10,6 +10,7 @@ import Dashboard from "@/pages/dashboard";
 import FilesPage from "@/pages/files";
 import ProjectsPage from "@/pages/projects";
 import PDFReaderPage from "@/pages/pdf-reader";
+import PDFViewerPage from "@/pages/pdf-viewer";
 import OneDrivePage from "@/pages/onedrive";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/projects" component={ProjectsPage} />
       <Route path="/pdf-reader/onedrive" component={PDFReaderPage} />
       <Route path="/pdf-reader/:fileId" component={PDFReaderPage} />
+      <Route path="/pdf-viewer/:filePath*" component={PDFViewerPage} />
       <Route component={NotFound} />
     </Switch>
   );
