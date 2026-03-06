@@ -1036,10 +1036,10 @@ export default function PDFReaderPage() {
   })();
 
   const controlsBarBg = (() => {
-    if (cId === 'cppa122') return 'rgba(15, 80, 4, 0.85)';
-    if (cId === 'cfnf400') return 'rgba(140, 15, 65, 0.85)';
-    if (cId === 'casl101') return 'rgba(80, 4, 66, 0.85)';
-    return 'rgba(10, 30, 60, 0.85)';
+    if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
+    if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
+    if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+    return 'linear-gradient(180deg, rgba(10, 30, 60, 0.88) 0%, rgba(30, 60, 100, 0.78) 100%)';
   })();
 
   return (
@@ -1055,86 +1055,33 @@ export default function PDFReaderPage() {
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
 
       <div className="relative" style={{ zIndex: 10 }}>
-        <div className="flex items-center gap-3 px-5 py-2 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.5)' }}>
+        <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
           <Link href="/files">
-            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10 h-8 w-8" data-testid="button-back">
+            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10 h-7 w-7" data-testid="button-back">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div className="ml-auto flex items-center gap-3">
-            {fileId && flickDeviceGroups.length > 0 && (
-              <div className="relative">
-                <button
-                  className={`p-1.5 rounded hover:bg-white/10 ${showFlickMenu ? 'ring-1 ring-blue-400' : ''}`}
-                  data-testid="button-flick-cast"
-                  onClick={() => setShowFlickMenu(!showFlickMenu)}
-                  disabled={isFlicking}
-                  title="Flick to another device"
-                >
-                  {isFlicking ? <Loader2 className="h-4 w-4 text-white animate-spin" /> : <Cast className="h-4 w-4 text-white/70" />}
-                </button>
-                {showFlickMenu && (
-                  <div className="absolute top-full right-0 mt-1 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
-                    <div className="px-3 py-1.5 border-b border-gray-700 flex items-center justify-between">
-                      <span className="text-xs font-semibold text-white">Flick to...</span>
-                      <button onClick={() => setShowFlickMenu(false)} className="text-gray-400 hover:text-white" data-testid="button-close-flick-menu">
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                    <div className="max-h-[350px] overflow-y-auto">
-                      {flickDeviceGroups.map((group) => (
-                        <div key={group.room}>
-                          <div className="px-2 py-1 bg-gray-800/60 flex items-center gap-1.5 sticky top-0">
-                            <span className="text-xs">{group.icon}</span>
-                            <span className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider">{group.room}</span>
-                          </div>
-                          {group.devices.map((device) => (
-                            <button
-                              key={device.id}
-                              data-testid={`button-flick-${device.id}`}
-                              className="w-full px-2 py-1.5 pl-6 flex items-center gap-2 hover:bg-gray-800 transition-colors text-left"
-                              onClick={() => handleFlick(device.id)}
-                              disabled={isFlicking}
-                            >
-                              {device.type === "tablet" || device.type === "echo_show" ? <Monitor className="h-3 w-3 text-blue-400 flex-shrink-0" /> :
-                               device.type === "tv" ? <Monitor className="h-3 w-3 text-purple-400 flex-shrink-0" /> :
-                               device.type === "group" ? <Speaker className="h-3 w-3 text-yellow-400 flex-shrink-0" /> :
-                               <Speaker className="h-3 w-3 text-gray-400 flex-shrink-0" />}
-                              <span className={`text-xs truncate ${device.type === "group" ? "text-yellow-300 font-medium" : "text-white"}`}>{device.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            <button
-              className={`p-1.5 rounded hover:bg-white/10 ${isEditingText ? 'ring-1 ring-white/40' : ''}`}
-              data-testid="button-edit-tts-text"
-              onClick={() => {
-                if (isEditingText) {
-                  setIsEditingText(false);
+          <button
+            className={`p-1 rounded hover:bg-white/10 ${isEditingText ? 'ring-1 ring-white/40' : ''}`}
+            data-testid="button-edit-tts-text"
+            onClick={() => {
+              if (isEditingText) {
+                setIsEditingText(false);
+                setEditableText(extractedText);
+              } else {
+                if (isPlaying) stopReading();
+                if (extractedText) {
                   setEditableText(extractedText);
+                  setIsEditingText(true);
                 } else {
-                  if (isPlaying) stopReading();
-                  if (extractedText) {
-                    setEditableText(extractedText);
-                    setIsEditingText(true);
-                  } else {
-                    toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
-                  }
+                  toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
                 }
-              }}
-              disabled={isPreloading}
-            >
-              <Pencil className="h-4 w-4 text-white/70" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
+              }
+            }}
+            disabled={isPreloading}
+          >
+            <Pencil className="h-3.5 w-3.5 text-white/70" />
+          </button>
           {(() => {
             const isDbFile = !!fileId && !isOneDrive;
             const isModule = file?.folder?.includes('module');
