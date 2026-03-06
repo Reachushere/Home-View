@@ -14889,6 +14889,12 @@ export default function Dashboard() {
                             const cellDate = startOfDay(day);
                             const isFirstPrepDay = isSameDay(cellDate, prepStartDate);
                             const isLastPrepDay = isSameDay(addDays(cellDate, 1), prepDueDate);
+                            const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                            const modulePdfTask = allTasks.find(t => {
+                              const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                              return tCode === taskCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
+                            });
+                            const modulePdfUrl = modulePdfTask?.attachments?.[0] || null;
                             return (
                               <div 
                                 key={`prep-${task.id}`}
@@ -14914,12 +14920,27 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREP</span>
-                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center flex-1" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  {modulePdfUrl && (
+                                    <img
+                                      src={pdfIconPath}
+                                      alt="Open PDF"
+                                      style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
+                                      onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(modulePdfUrl)}`; }}
+                                      data-testid={`pdf-icon-prep-${task.id}`}
+                                    />
+                                  )}
                                 </div>
                               </div>
                             );
                           }
                           
+                          const dueTaskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                          const dueModulePdfTask = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? allTasks.find(t => {
+                            const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                            return tCode === dueTaskCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
+                          }) : null;
+                          const dueModulePdfUrl = dueModulePdfTask?.attachments?.[0] || null;
                           return (
                             <div 
                               key={task.id}
@@ -14941,11 +14962,20 @@ export default function Dashboard() {
                                 data-testid={`checkbox-course-row-${task.id}`}
                               />
                               <span 
-                                className="truncate cursor-pointer hover:opacity-80 pl-1"
+                                className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1"
                                 onClick={() => setEditingTask(task)}
                               >
                                 {task.title}
                               </span>
+                              {dueModulePdfUrl && (
+                                <img
+                                  src={pdfIconPath}
+                                  alt="Open PDF"
+                                  style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
+                                  onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(dueModulePdfUrl)}`; }}
+                                  data-testid={`pdf-icon-task-${task.id}`}
+                                />
+                              )}
                             </div>
                           );
                         })}
@@ -15212,6 +15242,12 @@ export default function Dashboard() {
                             const satCellDate = startOfDay(day);
                             const isFirstPrepDay = isSameDay(satCellDate, prepStartDate);
                             const isLastPrepDay = isSameDay(addDays(satCellDate, 1), prepDueDate);
+                            const satPrepCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                            const satPrepPdfTask = allTasks.find(t => {
+                              const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                              return tCode === satPrepCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
+                            });
+                            const satPrepPdfUrl = satPrepPdfTask?.attachments?.[0] || null;
                             return (
                               <div 
                                 key={`prep-${task.id}`}
@@ -15233,17 +15269,41 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREP</span>
-                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center flex-1" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  {satPrepPdfUrl && (
+                                    <img
+                                      src={pdfIconPath}
+                                      alt="Open PDF"
+                                      style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
+                                      onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(satPrepPdfUrl)}`; }}
+                                      data-testid={`pdf-icon-sat-prep-${task.id}`}
+                                    />
+                                  )}
                                 </div>
                               </div>
                             );
                           }
+                          const satDueCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                          const satDuePdfTask = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? allTasks.find(t => {
+                            const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                            return tCode === satDueCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
+                          }) : null;
+                          const satDuePdfUrl = satDuePdfTask?.attachments?.[0] || null;
                           return (
                             <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
                               onClick={() => setEditingTask(task)}
                             >
-                              <span className="truncate font-bold pl-px">{task.title}</span>
+                              <span className="truncate font-bold pl-px flex-1">{task.title}</span>
+                              {satDuePdfUrl && (
+                                <img
+                                  src={pdfIconPath}
+                                  alt="Open PDF"
+                                  style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
+                                  onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(satDuePdfUrl)}`; }}
+                                  data-testid={`pdf-icon-sat-task-${task.id}`}
+                                />
+                              )}
                             </div>
                           );
                         })}
