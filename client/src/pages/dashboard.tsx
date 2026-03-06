@@ -11320,21 +11320,6 @@ export default function Dashboard() {
             {/* Buttons container - offset by arrowH */}
             <div style={{ position: 'absolute', top: `${arrowH}px`, left: '0', width: `${pillW}px`, height: `${pillH}px` }}>
 
-            {/* Add Task Button - Slot 0 */}
-            <div 
-              style={btnStyle(0, 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')}
-              data-testid="bottom-pill-add-task"
-              onClick={() => {
-                setQuickAddStep(0);
-                setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
-                setIsQuickAddOpen(true);
-              }}
-            >
-              <div className="pill-button-hover" style={innerStyle('linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)')} title="Add Task">
-                <Plus className="h-[18px] w-[18px] text-white" />
-              </div>
-            </div>
-
 
             </div>
           </div>
