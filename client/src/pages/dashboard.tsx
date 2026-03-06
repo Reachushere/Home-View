@@ -11350,7 +11350,7 @@ export default function Dashboard() {
             paddingLeft: '3px',
           }}
         >
-          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '2px' }} />
+          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '4px' }} />
           <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '4px' }}>+</span>
         </div>
       </div>
