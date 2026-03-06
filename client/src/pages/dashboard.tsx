@@ -15373,8 +15373,9 @@ export default function Dashboard() {
                           const satDueRefLinkPdf = !satDueModuleFile && !satDueAttachmentPdf && task.referenceLink ? task.referenceLink : null;
                           const satDuePdfUrl = satDueModuleFile?.objectPath || satDueAttachmentPdf || satDueRefLinkPdf || null;
                           return (
-                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden' }}
+                            <div key={task.id} className="relative">
+                            <div className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden', paddingRight: satDuePdfUrl ? '30px' : undefined }}
                               onClick={() => setEditingTask(task)}
                             >
                               <Checkbox
@@ -15392,16 +15393,16 @@ export default function Dashboard() {
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
                               )}
-                              {satDuePdfUrl && (
-                                <img
-                                  src={pdfIconPath}
-                                  alt="Open PDF"
-                                  className="shrink-0"
-                                  style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                  onClick={(e) => { e.stopPropagation(); window.open(`/pdf-viewer/${encodeURIComponent(satDuePdfUrl)}`, '_blank'); }}
-                                  data-testid={`pdf-icon-sat-task-${task.id}`}
-                                />
-                              )}
+                            </div>
+                            {satDuePdfUrl && (
+                              <img
+                                src={pdfIconPath}
+                                alt="Open PDF"
+                                style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                onClick={(e) => { e.stopPropagation(); window.open(`/pdf-viewer/${encodeURIComponent(satDuePdfUrl)}`, '_blank'); }}
+                                data-testid={`pdf-icon-sat-task-${task.id}`}
+                              />
+                            )}
                             </div>
                           );
                         })}
