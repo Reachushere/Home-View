@@ -1260,7 +1260,7 @@ export default function FilesPage() {
               size="icon"
               className="h-8 w-8 hover:bg-[#3d3d3d]"
               data-testid="button-home"
-              onClick={navigateHome}
+              onClick={() => { setSelectedFolder(null); setExpandedFolders(new Set()); }}
               disabled={!selectedFolder}
             >
               <Home className="h-4 w-4" />
