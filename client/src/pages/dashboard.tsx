@@ -14988,7 +14988,7 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
-                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                 </div>
                                 {modulePdfUrl && (
                                   <img
@@ -15351,7 +15351,7 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
-                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                 </div>
                                 {satPrepPdfUrl && (
                                   <img
@@ -15387,7 +15387,7 @@ export default function Dashboard() {
                                 onClick={(e) => e.stopPropagation()}
                                 data-testid={`checkbox-sat-task-${task.id}`}
                               />
-                              <span className={`truncate font-bold pl-px flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
+                              <span className={`truncate pl-px flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
                               {task.referenceLink && (
                                 <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-sat-course-${task.id}`}>
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
