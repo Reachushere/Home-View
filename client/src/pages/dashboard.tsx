@@ -11344,7 +11344,7 @@ export default function Dashboard() {
       <div
         className="fixed z-[59] cursor-pointer left-tab-bounce"
         style={{
-          left: '-9px',
+          left: '-11px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
@@ -11377,7 +11377,7 @@ export default function Dashboard() {
             paddingLeft: '3px',
           }}
         >
-          <span style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, lineHeight: 1 }}>+</span>
+          <span style={{ color: '#FFFFFF', fontSize: '20px', fontWeight: 700, lineHeight: 1, marginLeft: '2px' }}>+</span>
         </div>
       </div>
 
@@ -11416,8 +11416,7 @@ export default function Dashboard() {
             paddingRight: '3px',
           }}
         >
-          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5, marginTop: '6px' }} />
-          <span style={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>+</span>
+          <ClipboardList style={{ color: '#FFFFFF', height: '14px', width: '14px', strokeWidth: 2.5 }} />
         </div>
       </div>
 
