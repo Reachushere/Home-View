@@ -1045,7 +1045,7 @@ export default function PDFReaderPage() {
   return (
     <div className="h-screen flex flex-col relative overflow-hidden">
       <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,15,40,0.88) 0%, rgba(0,10,30,0.92) 100%)' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,15,40,0.45) 0%, rgba(0,10,30,0.55) 100%)' }} />
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
