@@ -361,6 +361,23 @@ function cleanTextForTTS(text: string): string {
     .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder|Tab Panels?.*|Tab:.*)\s*$/gim, '')
     .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gim, '');
 
+  // Remove tab/accordion UI artifacts from PDFs (e.g. "Tab 1", "tab expand", "Tab Panel", etc.)
+  cleanedText = cleanedText
+    .replace(/\btab\s*\d+\b/gi, '')
+    .replace(/\btab\s+expand\b/gi, '')
+    .replace(/\btab\s+collapse\b/gi, '')
+    .replace(/\btab\s+panel\b/gi, '')
+    .replace(/\btab\s+selected\b/gi, '')
+    .replace(/\btab\s+unselected\b/gi, '')
+    .replace(/\bselected\s+tab\b/gi, '')
+    .replace(/\bcurrent\s+tab\b/gi, '')
+    .replace(/\bexpand\s+tab\b/gi, '')
+    .replace(/\bcollapse\s+tab\b/gi, '')
+    .replace(/(?:^|\s)tab(?:\s|$)/gi, ' ')
+    .replace(/\btabs?\s*:/gi, '')
+    .replace(/\bexpand\s+all\b/gi, '')
+    .replace(/\bcollapse\s+all\b/gi, '');
+
   // Final cleanup
   let result = cleanedText
     .replace(/&amp;/g, 'and')
