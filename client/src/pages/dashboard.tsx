@@ -14899,14 +14899,14 @@ export default function Dashboard() {
                     const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
                     const cellDate = startOfDay(day);
                     
-                    const dueTasks = tasks?.filter(task => {
+                    const dueTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       const taskDueDate = startOfDay(new Date(task.dueDate));
                       return isSameDay(taskDueDate, cellDate);
                     }) || [];
                     
-                    const prepTasks = tasks?.filter(task => {
+                    const prepTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       if (!task.startDate) return false;
