@@ -18983,7 +18983,7 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal">
+          <DialogContent className="max-w-[95vw] sm:max-w-[900px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal">
             <DialogHeader className="flex flex-row items-center justify-between gap-4">
               <DialogTitle className="text-white">Edit Task</DialogTitle>
               {editingTask && (
@@ -21777,11 +21777,10 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" data-task-form>
-      {/* Two column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-3" data-task-form>
+      <div className="grid grid-cols-2 gap-5">
         {/* Left Column */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
             <Label htmlFor="title" className="text-[11px] text-white">Title</Label>
             <Input
@@ -22084,7 +22083,7 @@ function TaskForm({
         </div>
 
         {/* Right Column */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
@@ -22286,6 +22285,16 @@ function TaskForm({
               Add
             </Button>
           </div>
+
+          {/* Subtasks Section - Only show when editing existing task */}
+          {task && (
+            <SubtasksSection taskId={task.id} />
+          )}
+
+          {/* Dependencies Section - Only show when editing existing task */}
+          {task && (
+            <TaskDependencies taskId={task.id} taskTitle={task.title} />
+          )}
         </div>
       </div>
 
@@ -22354,18 +22363,8 @@ function TaskForm({
         </div>
       )}
 
-      {/* Subtasks Section - Only show when editing existing task */}
-      {task && (
-        <SubtasksSection taskId={task.id} />
-      )}
-
-      {/* Dependencies Section - Only show when editing existing task */}
-      {task && (
-        <TaskDependencies taskId={task.id} taskTitle={task.title} />
-      )}
-
       {!hideSubmitButton && (
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-2">
           <button 
             type="submit" 
             disabled={createMutation.isPending}
