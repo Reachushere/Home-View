@@ -15042,7 +15042,7 @@ export default function Dashboard() {
                                   src={pdfIconPath}
                                   alt="Open PDF"
                                   className="shrink-0"
-                                  style={{ width: '18px', height: '18px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto' }}
+                                  style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', marginTop: '-7px', marginBottom: '-7px' }}
                                   onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/') || url.startsWith('uploads/')) { window.open(`/pdf-viewer/${encodeURIComponent(url)}`, '_blank'); } else { window.open(url, '_blank'); } }}
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
