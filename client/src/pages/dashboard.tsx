@@ -11175,7 +11175,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '53px', right: '0px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+          style={{ bottom: '20px', right: `${calendarRight - 15}px`, transform: 'rotate(90deg)', transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -17606,7 +17606,7 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '19px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '20px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
