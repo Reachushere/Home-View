@@ -15,8 +15,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
-      <Route path="/files" component={OneDrivePage} />
-      <Route path="/files-local" component={FilesPage} />
+      <Route path="/files" component={FilesPage} />
+      <Route path="/onedrive" component={OneDrivePage} />
       <Route path="/projects" component={ProjectsPage} />
       <Route path="/pdf-reader/onedrive" component={PDFReaderPage} />
       <Route path="/pdf-reader/:fileId" component={PDFReaderPage} />
