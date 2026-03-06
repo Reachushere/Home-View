@@ -15357,7 +15357,7 @@ export default function Dashboard() {
                                     <img
                                       src={pdfIconPath}
                                       alt="Open PDF"
-                                      style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                      style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
                                       onClick={(e) => { e.stopPropagation(); e.preventDefault(); const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                       data-testid={`pdf-icon-sat-prep-${task.id}`}
                                     />
@@ -15398,7 +15398,7 @@ export default function Dashboard() {
                                 <img
                                   src={pdfIconPath}
                                   alt="Open PDF"
-                                  style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
+                                  style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
                                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                   data-testid={`pdf-icon-sat-task-${task.id}`}
                                 />
