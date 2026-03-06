@@ -11509,8 +11509,9 @@ export default function Dashboard() {
 
       {/* Render Sticky Notes */}
       {stickyNotes.map((note) => {
+        const todayBg = colorSettings.todayCellBackground || '#d4d4d4';
         const noteColors: Record<string, { bg: string; border: string; header: string }> = {
-          yellow: { bg: '#FFFACD', border: '#E6D200', header: '#FFE566' },
+          yellow: { bg: todayBg, border: todayBg, header: todayBg },
           pink: { bg: '#FFE4EC', border: '#FF69B4', header: '#FFB6C1' },
           blue: { bg: '#E0F0FF', border: '#4DA6FF', header: '#87CEEB' },
           green: { bg: '#E0FFE0', border: '#32CD32', header: '#98FB98' },
