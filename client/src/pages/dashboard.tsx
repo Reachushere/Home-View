@@ -12559,10 +12559,10 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
-                    style={{ fontSize: "11px", boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'; }}
+                    className="border !border-white/60 text-white hover:text-white transition-all duration-200"
+                    style={{ fontSize: "11px", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 51%, rgba(255,255,255,0.18) 100%)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3), inset 0 1px 0 rgba(255,255,255,0.5)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 51%, rgba(255,255,255,0.25) 100%)'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5), inset 0 1px 0 rgba(255,255,255,0.6)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 51%, rgba(255,255,255,0.18) 100%)'; e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3), inset 0 1px 0 rgba(255,255,255,0.5)'; }}
                     data-testid="quick-add-back"
                   >
                     {quickAddStep === 0 ? 'Cancel' : <><ChevronLeft className="h-3 w-3 mr-1" /> Back</>}
