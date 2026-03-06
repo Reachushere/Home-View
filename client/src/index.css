@@ -273,6 +273,36 @@ button[role="combobox"] > span {
 }
 
 
+@keyframes left-tab-nudge {
+  0%, 40% { transform: translateY(-50%) translateX(0px); }
+  44% { transform: translateY(-50%) translateX(5px); }
+  48% { transform: translateY(-50%) translateX(0px); }
+  52% { transform: translateY(-50%) translateX(3px); }
+  56% { transform: translateY(-50%) translateX(0px); }
+  60% { transform: translateY(-50%) translateX(2px); }
+  64% { transform: translateY(-50%) translateX(0px); }
+  70%, 100% { transform: translateY(-50%) translateX(0px); }
+}
+
+@keyframes right-tab-nudge {
+  0%, 40% { transform: translateY(-50%) translateX(0px); }
+  44% { transform: translateY(-50%) translateX(-5px); }
+  48% { transform: translateY(-50%) translateX(0px); }
+  52% { transform: translateY(-50%) translateX(-3px); }
+  56% { transform: translateY(-50%) translateX(0px); }
+  60% { transform: translateY(-50%) translateX(-2px); }
+  64% { transform: translateY(-50%) translateX(0px); }
+  70%, 100% { transform: translateY(-50%) translateX(0px); }
+}
+
+.left-tab-bounce {
+  animation: left-tab-nudge 6s 3s ease-in-out infinite;
+}
+
+.right-tab-bounce {
+  animation: right-tab-nudge 6s 3s ease-in-out infinite;
+}
+
 @keyframes burst-in {
   0% { transform: scale(0); opacity: 0; }
   60% { transform: scale(1.05); opacity: 1; }

@@ -11315,7 +11315,7 @@ export default function Dashboard() {
       })()}
       {/* Left side half-circle tab - Add Task */}
       <div
-        className="fixed z-[59] cursor-pointer"
+        className="fixed z-[59] cursor-pointer left-tab-bounce"
         style={{
           left: '-7px',
           top: '50%',
@@ -11357,7 +11357,7 @@ export default function Dashboard() {
 
       {/* Right side half-circle tab - Add Project */}
       <div
-        className="fixed z-[59] cursor-pointer"
+        className="fixed z-[59] cursor-pointer right-tab-bounce"
         style={{
           right: '-7px',
           top: '50%',
