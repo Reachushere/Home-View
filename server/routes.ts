@@ -573,7 +573,17 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+
+  try {
+    const fixResult = await db.execute(sql`UPDATE files SET folder = REPLACE(folder, 'casl101-other', 'casl101-module') WHERE folder LIKE '%casl101-other%'`);
+    const count = (fixResult as any)?.rowCount || (fixResult as any)?.changes || 0;
+    if (count > 0) {
+      console.log(`Fixed ${count} CASL101 file folder(s) from 'other' to 'module'`);
+    }
+  } catch (e) {
+    console.error("Failed to fix CASL101 file folders:", e);
+  }
+
   app.get('/api/version', (_req, res) => {
     res.json({ version: BUILD_VERSION });
   });
