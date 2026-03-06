@@ -113,6 +113,11 @@ export default function PDFReaderPage() {
   const isPausedRef = useRef<boolean>(false);
   const playbackSpeedRef = useRef<number>(1);
   const volumeRef = useRef<number>(1);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const animFrameRef = useRef<number>(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -120,6 +125,115 @@ export default function PDFReaderPage() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    const audio = audioRef.current;
+
+    const initVisualizer = () => {
+      if (audioContextRef.current) return;
+      try {
+        const ctx = new AudioContext();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.8;
+        const source = ctx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+        audioContextRef.current = ctx;
+        analyserRef.current = analyser;
+        sourceRef.current = source;
+      } catch (e) {
+        console.warn('[Visualizer] Init failed:', e);
+      }
+    };
+
+    const drawWaveform = () => {
+      const canvas = canvasRef.current;
+      const analyser = analyserRef.current;
+      if (!canvas || !analyser) {
+        animFrameRef.current = requestAnimationFrame(drawWaveform);
+        return;
+      }
+
+      const canvasCtx = canvas.getContext('2d');
+      if (!canvasCtx) return;
+
+      canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+      canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+      canvasCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      const bufLen = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufLen);
+      analyser.getByteFrequencyData(dataArray);
+
+      canvasCtx.clearRect(0, 0, w, h);
+
+      const barCount = 80;
+      const gap = 3;
+      const totalBarWidth = w - (barCount - 1) * gap;
+      const barWidth = Math.max(2, totalBarWidth / barCount);
+      const centerY = h / 2;
+
+      for (let i = 0; i < barCount; i++) {
+        const dataIdx = Math.floor((i / barCount) * bufLen);
+        const val = dataArray[dataIdx] / 255;
+        const barH = Math.max(2, val * centerY * 0.85);
+
+        const x = i * (barWidth + gap);
+        const alpha = 0.3 + val * 0.7;
+        const lightness = 70 + val * 30;
+
+        canvasCtx.fillStyle = `hsla(200, 90%, ${Math.round(lightness)}%, ${alpha.toFixed(2)})`;
+        canvasCtx.shadowColor = `hsla(200, 100%, 80%, ${(val * 0.6).toFixed(2)})`;
+        canvasCtx.shadowBlur = val * 15;
+
+        canvasCtx.beginPath();
+        canvasCtx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 2);
+        canvasCtx.fill();
+        canvasCtx.beginPath();
+        canvasCtx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 2);
+        canvasCtx.fill();
+
+        canvasCtx.shadowBlur = 0;
+      }
+
+      animFrameRef.current = requestAnimationFrame(drawWaveform);
+    };
+
+    const onPlay = () => {
+      initVisualizer();
+      if (audioContextRef.current?.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = requestAnimationFrame(drawWaveform);
+    };
+
+    const onPauseEnd = () => {
+      setTimeout(() => {
+        cancelAnimationFrame(animFrameRef.current);
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }, 100);
+    };
+
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPauseEnd);
+    audio.addEventListener('ended', onPauseEnd);
+
+    return () => {
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPauseEnd);
+      audio.removeEventListener('ended', onPauseEnd);
+      cancelAnimationFrame(animFrameRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -864,10 +978,16 @@ export default function PDFReaderPage() {
   })();
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #3a8bbf 0%, #164a72 100%)' }}>
-      <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} />
+    <div className="min-h-screen relative" style={{ background: 'linear-gradient(180deg, #3a8bbf 0%, #164a72 100%)' }}>
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 1 }}
+        data-testid="audio-visualizer-canvas"
+      />
+      <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
       
-      <div className="sticky top-0 z-50 px-4 py-4 border-b border-white/20 backdrop-blur-md" style={{ background: playerHeaderGradient }}>
+      <div className="sticky top-0 z-50 px-4 py-4 border-b border-white/20 backdrop-blur-md" style={{ background: playerHeaderGradient, position: 'relative', zIndex: 10 }}>
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/files">
@@ -905,7 +1025,7 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative" style={{ zIndex: 2 }}>
         <div className="flex flex-col lg:flex-row h-[calc(100vh-73px)]">
           <div className="flex-1 lg:w-1/2 overflow-auto p-4" style={{ background: 'rgba(255,255,255,0.08)' }}>
             {/* File selector for multiple reading files */}
