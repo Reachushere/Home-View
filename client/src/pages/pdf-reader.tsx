@@ -1054,7 +1054,7 @@ export default function PDFReaderPage() {
       />
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
 
-      <div className="relative" style={{ zIndex: 10 }}>
+      <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
         <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
           <Link href="/files">
             <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10 h-7 w-7" data-testid="button-back">
@@ -1326,7 +1326,7 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex relative overflow-hidden" style={{ zIndex: 2 }}>
+      <div className="flex-1 flex relative overflow-hidden min-h-0" style={{ zIndex: 2 }}>
         <div className="flex-1 lg:w-1/2 overflow-auto" style={{ background: 'rgba(0,0,0,0.4)' }}>
           <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
             <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
