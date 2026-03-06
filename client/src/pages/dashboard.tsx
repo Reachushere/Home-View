@@ -9,6 +9,7 @@ import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
+import tmuDialogBg from "@assets/TMU2_1772839789326.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
@@ -8095,8 +8096,14 @@ export default function Dashboard() {
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); setDialogPos(null); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
         <DialogContent 
-          className="w-[1350px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/30 backdrop-blur-[3px] bg-white/[0.4] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&>button]:text-white [&>button]:top-[22px] [&>button]:opacity-100 [&>button]:right-[28px] [&>button]:scale-125"
-          style={dialogPos ? { transform: `translate(calc(-50% + ${dialogPos.x}px), calc(-50% + ${dialogPos.y}px))` } : undefined}
+          className="w-[1350px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&>button]:text-white [&>button]:top-[22px] [&>button]:opacity-100 [&>button]:right-[28px] [&>button]:scale-125"
+          style={{ 
+            ...(dialogPos ? { transform: `translate(calc(-50% + ${dialogPos.x}px), calc(-50% + ${dialogPos.y}px))` } : {}),
+            backgroundImage: `url(${tmuDialogBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
         >
           {(() => {
             const folderParts = previewFile?.folder?.split('-') || [];
@@ -8457,7 +8464,7 @@ export default function Dashboard() {
           })()}
           
           {/* Playback Controls Bar */}
-          <div className="flex items-center justify-evenly p-1.5 mx-6" style={{ marginTop: '-20px', paddingLeft: '15px', paddingRight: '15px' }}>
+          <div className="flex items-center justify-evenly p-2 mx-3 rounded-lg backdrop-blur-md" style={{ marginTop: '-16px', paddingLeft: '15px', paddingRight: '15px', background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.12)' }}>
             <button
               className="media-btn media-btn-sm"
               onClick={handleSkipBack}
