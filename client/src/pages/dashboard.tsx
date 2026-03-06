@@ -10180,6 +10180,7 @@ export default function Dashboard() {
             className="pill-button-hover"
             onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
             data-testid="honeycomb-todo-header"
+            title="ToDo"
           >
             <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
           </div>
