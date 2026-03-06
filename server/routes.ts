@@ -732,7 +732,7 @@ export async function registerRoutes(
             reminder2: task.reminder2,
             reminder3: task.reminder3,
             reminder4: task.reminder4,
-            weekNumber: getWeekNumber(repeatDueDate, semesterStart),
+            weekNumber: getWeekNumber(repeatDueDate, semesterStart, activeSemester?.readingWeekStart),
             priority: task.priority,
             notes: task.notes,
             referenceLink: task.referenceLink,
@@ -1122,7 +1122,7 @@ export async function registerRoutes(
             const taskDate = new Date(current);
             taskDate.setHours(endHour, endMinute, 0, 0);
 
-            const weekNum = getWeekNumber(taskDate);
+            const weekNum = getWeekNumber(taskDate, undefined, activeSemester?.readingWeekStart);
             if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
               const dateStr = taskDate.toISOString().split('T')[0];
               const isDuplicate = existingClassTasks.some(t => {
@@ -2436,12 +2436,12 @@ export async function registerRoutes(
 
   // GET /api/weeks/current
   app.get(api.weeks.current.path, async (_req, res) => {
-    // Hardcode semester start as UTC to ensure consistency across all servers
-    // Winter 2026 starts Saturday January 10, 2026
-    const semesterStart = new Date(Date.UTC(2026, 0, 10, 12, 0, 0)); // Jan 10, 2026 noon UTC
+    const activeSemester = await storage.getActiveSemesterSettings();
+    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : new Date(Date.UTC(2026, 0, 10, 12, 0, 0));
+    const readingWeek = activeSemester?.readingWeekStart || null;
     const now = new Date();
-    const weekNum = getWeekNumber(now, semesterStart);
-    const { start, end } = getWeekDates(weekNum, semesterStart);
+    const weekNum = getWeekNumber(now, semesterStart, readingWeek);
+    const { start, end } = getWeekDates(weekNum, semesterStart, readingWeek);
     // Format as YYYY-MM-DD using UTC
     const formatDateOnly = (d: Date) => {
       return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
@@ -2466,7 +2466,7 @@ export async function registerRoutes(
       return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
     };
     for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
-      const { start, end } = getWeekDates(w, semesterStart);
+      const { start, end } = getWeekDates(w, semesterStart, readingWeek);
       weeks.push({
         weekNumber: w,
         startDate: formatDateOnly(start),
@@ -2718,7 +2718,7 @@ export async function registerRoutes(
       const semesterStart = activeSemester?.semesterStartDate 
         ? new Date(activeSemester.semesterStartDate) 
         : undefined;
-      const weekNumber = week || getWeekNumber(dueDate, semesterStart);
+      const weekNumber = week || getWeekNumber(dueDate, semesterStart, activeSemester?.readingWeekStart);
       
       // Create the task
       const task = await storage.createTask({
@@ -3667,7 +3667,7 @@ export async function registerRoutes(
       const startDate = new Date(semesterSettings.semesterStartDate);
       const diffTime = today.getTime() - startDate.getTime();
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      const currentWeekNumber = getWeekNumber(today, startDate, semesterSettings.readingWeekStart);
       
       return res.json({
         semesterStartDate: semesterSettings.semesterStartDate,
@@ -3716,11 +3716,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const today = new Date();
-        const diffTime = today.getTime() - startDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       
       // Filter for unlistened files from current week
@@ -4085,10 +4081,7 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const today = new Date();
-        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
 
       const allFiles = await storage.getFiles();
@@ -4356,9 +4349,7 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
 
       // Find CPPA module for current week that hasn't been fully listened to
@@ -4742,10 +4733,7 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const today = new Date();
-        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
@@ -4978,11 +4966,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const today = new Date();
-        const diffTime = today.getTime() - startDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       
       // Sync OneDrive files for current week
@@ -5294,10 +5278,7 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const today = new Date();
-        const diffDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       
       // Get all files
@@ -6012,10 +5993,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const diffTime = today.getTime() - startDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       
       console.log(`Kitchen trigger: Current week is ${currentWeekNumber}`);
@@ -7480,8 +7458,8 @@ export async function registerRoutes(
     try {
       const activeSemester = await storage.getActiveSemesterSettings();
       const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
-      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date(), semesterStart);
-      const { start, end } = getWeekDates(weekNumber, semesterStart);
+      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date(), semesterStart, activeSemester?.readingWeekStart);
+      const { start, end } = getWeekDates(weekNumber, semesterStart, activeSemester?.readingWeekStart);
       
       // Fetch events from primary account
       let primaryEvents: any[] = [];

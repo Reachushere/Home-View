@@ -5437,6 +5437,8 @@ export default function Dashboard() {
 
   // Get the current semester name from settings or use default
   const currentSemesterName = semesterSettings?.semesterName || "Winter 2026 Semester";
+  const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
+  const readingWeekStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
   
   // Initialize secondary calendar from semester settings
   useEffect(() => {
@@ -5838,7 +5840,7 @@ export default function Dashboard() {
     mutationFn: async ({ day, hour, attachmentPath, fileName }: { day: Date; hour: number; attachmentPath: string; fileName: string }) => {
       const dueDate = new Date(day);
       dueDate.setHours(hour, 0, 0, 0);
-      const weekNum = getWeekNumber(dueDate);
+      const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
       return apiRequest("POST", "/api/tasks", {
         title: fileName,
         type: "reading",
@@ -13341,7 +13343,7 @@ export default function Dashboard() {
                               courseName: fullName,
                               dueDate: dueDate.toISOString(),
                               priority: deadline.type === 'exam' || deadline.type === 'quiz' ? 'high' : 'medium',
-                              weekNumber: getWeekNumber(dueDate),
+                              weekNumber: getWeekNumber(dueDate, semStart, readingWeekStart),
                               reminder1: DEFAULT_REMINDER_1,
                               reminder2: DEFAULT_REMINDER_2,
                             });
@@ -13437,7 +13439,7 @@ export default function Dashboard() {
                             courseName: fullName,
                             dueDate: dueDate.toISOString(),
                             priority: task.type === 'exam' || task.type === 'quiz' ? 'high' : 'medium',
-                            weekNumber: getWeekNumber(dueDate),
+                            weekNumber: getWeekNumber(dueDate, semStart, readingWeekStart),
                             reminder1: task.reminder1 || DEFAULT_REMINDER_1,
                             reminder2: task.reminder2 || DEFAULT_REMINDER_2,
                             reminder3: task.reminder3 || null,
@@ -20087,6 +20089,13 @@ function SchoolForm({
   const [travelStartDate, setTravelStartDate] = useState(schoolData.travelStartDate || '');
   const [travelEndDate, setTravelEndDate] = useState(schoolData.travelEndDate || '');
   const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
+  const [readingWeekDate, setReadingWeekDate] = useState(() => {
+    if (semesterSettings?.readingWeekStart) {
+      const d = new Date(semesterSettings.readingWeekStart);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    return '';
+  });
   const [logoPreview, setLogoPreview] = useState<string | null>(schoolData.schoolLogo);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -20117,6 +20126,11 @@ function SchoolForm({
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
     onSave({ schoolLogo: logoPreview, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, travelStartDate: isTravelling ? travelStartDate : undefined, travelEndDate: isTravelling ? travelEndDate : undefined, semesterType });
+    if (readingWeekDate) {
+      apiRequest("PATCH", "/api/semester", { readingWeekStart: new Date(readingWeekDate).toISOString() });
+    } else {
+      apiRequest("PATCH", "/api/semester", { readingWeekStart: null });
+    }
   };
 
   const semesterEnd = week1StartDate 
@@ -20307,6 +20321,35 @@ function SchoolForm({
                 </select>
               </div>
             </div>
+            <div className="space-y-1">
+              <Label htmlFor="readingWeekDate" className="text-[10px] text-white/70">Reading Week Start Date</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="readingWeekDate"
+                  type="date"
+                  value={readingWeekDate}
+                  onChange={(e) => setReadingWeekDate(e.target.value)}
+                  className="!text-black !text-[10px] h-8 bg-white border-white/20 w-40"
+                  style={{ fontSize: '10px', color: 'black' }}
+                  data-testid="input-reading-week-date"
+                />
+                {readingWeekDate && (
+                  <button
+                    type="button"
+                    onClick={() => setReadingWeekDate('')}
+                    className="text-[9px] text-red-300 hover:text-red-200 underline"
+                    data-testid="button-clear-reading-week"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              {readingWeekDate && (
+                <div className="text-[9px] text-white/50">
+                  Week of {format(new Date(readingWeekDate), 'MMM d, yyyy')} will be skipped in week numbering
+                </div>
+              )}
+            </div>
             <div className="space-y-2 pt-1">
               <div className="flex items-center gap-2">
                 <Checkbox 
@@ -20475,7 +20518,7 @@ function CoursesForm({
                 courseName: fullName,
                 dueDate: dueDate.toISOString(),
                 priority: deadline.type === 'exam' || deadline.type === 'quiz' ? 'high' : 'medium',
-                weekNumber: getWeekNumber(dueDate),
+                weekNumber: getWeekNumber(dueDate, semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined, semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null),
                 reminder1: DEFAULT_REMINDER_1,
                 reminder2: DEFAULT_REMINDER_2,
               });

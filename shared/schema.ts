@@ -136,6 +136,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course3FinalGrade: integer("course3_final_grade"),
   course3Completed: boolean("course3_completed").default(false),
   secondaryCalendarId: text("secondary_calendar_id"),
+  readingWeekStart: timestamp("reading_week_start"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -389,18 +390,42 @@ export const SEMESTER_START = new Date("2026-01-10T12:00:00"); // Week 1 Saturda
 export const FIRST_WEEK = 1;
 export const LAST_WEEK = 13;
 
-export function getWeekNumber(date: Date, customSemesterStart?: Date): number {
+export function getWeekNumber(date: Date, customSemesterStart?: Date, readingWeekStart?: Date | null): number {
   const startOfSemester = new Date(customSemesterStart || SEMESTER_START);
   const diffTime = date.getTime() - startOfSemester.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  return Math.floor(diffDays / 7) + 1;
+  let weekNum = Math.floor(diffDays / 7) + 1;
+  if (readingWeekStart) {
+    const rwStart = new Date(readingWeekStart);
+    const rwDiff = rwStart.getTime() - startOfSemester.getTime();
+    const rwWeek = Math.floor(Math.floor(rwDiff / (1000 * 60 * 60 * 24)) / 7) + 1;
+    if (weekNum >= rwWeek) {
+      const rwEnd = new Date(rwStart);
+      rwEnd.setDate(rwEnd.getDate() + 7);
+      if (date.getTime() >= rwStart.getTime() && date.getTime() < rwEnd.getTime()) {
+        return -1;
+      }
+      if (weekNum > rwWeek) {
+        weekNum -= 1;
+      }
+    }
+  }
+  return weekNum;
 }
 
-export function getWeekDates(weekNum: number, customSemesterStart?: Date): { start: Date; end: Date } {
+export function getWeekDates(weekNum: number, customSemesterStart?: Date, readingWeekStart?: Date | null): { start: Date; end: Date } {
   const startOfSemester = customSemesterStart || SEMESTER_START;
-  // Calculate week start by adding days in milliseconds (timezone-safe)
   const msPerDay = 24 * 60 * 60 * 1000;
-  const weekStartMs = startOfSemester.getTime() + (weekNum - 1) * 7 * msPerDay;
+  let calendarWeek = weekNum;
+  if (readingWeekStart) {
+    const rwStart = new Date(readingWeekStart);
+    const rwDiff = rwStart.getTime() - new Date(startOfSemester).getTime();
+    const rwWeek = Math.floor(Math.floor(rwDiff / (1000 * 60 * 60 * 24)) / 7) + 1;
+    if (weekNum >= rwWeek) {
+      calendarWeek = weekNum + 1;
+    }
+  }
+  const weekStartMs = new Date(startOfSemester).getTime() + (calendarWeek - 1) * 7 * msPerDay;
   const weekStart = new Date(weekStartMs);
   const weekEnd = new Date(weekStartMs + 6 * msPerDay);
   return { start: weekStart, end: weekEnd };
