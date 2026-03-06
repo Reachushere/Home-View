@@ -1322,8 +1322,6 @@ export default function PDFReaderPage() {
 
           <div className="ml-auto flex items-center gap-2 text-white/40 text-[10px]">
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin" />}
-            {extractedText && !isPreloading && <span className="text-green-400/80">Ready</span>}
-            {courseCodeFromFolder && <span className="bg-white/10 px-2 py-0.5 rounded text-white/70 font-medium">{courseCodeFromFolder}</span>}
           </div>
         </div>
       </div>
