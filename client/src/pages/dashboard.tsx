@@ -9627,16 +9627,16 @@ export default function Dashboard() {
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-22px',
+            bottom: '-30px',
             width: '76px',
-            height: '22px',
+            height: '30px',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
           }}
         >
-          <svg width="76" height="22" viewBox="0 0 76 22" style={{ display: 'block' }}>
-            <path d="M0,0 L76,0 L76,10 Q76,22 64,22 L12,22 Q0,22 0,10 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <svg width="76" height="30" viewBox="0 0 76 30" style={{ display: 'block' }}>
+            <path d="M0,0 L76,0 L76,12 L76,18 Q76,30 64,30 L12,30 Q0,30 0,18 L0,12 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           </svg>
         </div>
 
@@ -11297,8 +11297,8 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <svg width="76" height="22" viewBox="0 0 76 22" style={{ display: 'block' }}>
-          <path d="M0,22 L76,22 L76,12 Q76,0 64,0 L12,0 Q0,0 0,12 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="76" height="30" viewBox="0 0 76 30" style={{ display: 'block' }}>
+          <path d="M0,30 L76,30 L76,18 L76,12 Q76,0 64,0 L12,0 Q0,0 0,12 L0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
       {/* Left binder tab - Add Task */}
@@ -11317,8 +11317,8 @@ export default function Dashboard() {
         }}
         data-testid="left-add-task-tab"
       >
-        <svg width="22" height="76" viewBox="0 0 22 76" style={{ display: 'block' }}>
-          <path d="M22,0 L22,76 L12,76 Q0,76 0,64 L0,12 Q0,0 12,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="30" height="76" viewBox="0 0 30 76" style={{ display: 'block' }}>
+          <path d="M30,0 L30,76 L18,76 L12,76 Q0,76 0,64 L0,12 Q0,0 12,0 L18,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
@@ -11336,8 +11336,8 @@ export default function Dashboard() {
         }}
         data-testid="right-projects-tab"
       >
-        <svg width="22" height="76" viewBox="0 0 22 76" style={{ display: 'block' }}>
-          <path d="M0,0 L0,76 L10,76 Q22,76 22,64 L22,12 Q22,0 10,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="30" height="76" viewBox="0 0 30 76" style={{ display: 'block' }}>
+          <path d="M0,0 L0,76 L12,76 L18,76 Q30,76 30,64 L30,12 Q30,0 18,0 L12,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
