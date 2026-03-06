@@ -78,6 +78,28 @@ export function DevPostIt() {
     setTasks(prev => [...prev, { id: Date.now().toString(), text, checked: false, status: "active" }]);
   }, []);
 
+  useEffect(() => {
+    if (import.meta.env.PROD) return;
+    const poll = async () => {
+      try {
+        const res = await fetch(`/dev-tasks.json?t=${Date.now()}`);
+        if (!res.ok) return;
+        const incoming: { id: string; text: string }[] = await res.json();
+        setTasks(prev => {
+          const existingTexts = new Set(prev.map(t => t.text));
+          const newOnes = incoming
+            .filter(t => !existingTexts.has(t.text))
+            .map(t => ({ id: t.id || Date.now().toString(), text: t.text, checked: false, status: "active" as const }));
+          if (newOnes.length === 0) return prev;
+          return [...prev, ...newOnes];
+        });
+      } catch {}
+    };
+    poll();
+    const interval = setInterval(poll, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleCheckChange = useCallback((taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
