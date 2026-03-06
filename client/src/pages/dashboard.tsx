@@ -9627,7 +9627,7 @@ export default function Dashboard() {
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-20px',
+            bottom: '-22px',
             width: '94px',
             height: '27px',
             pointerEvents: 'none',
