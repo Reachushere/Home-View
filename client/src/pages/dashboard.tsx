@@ -11820,6 +11820,37 @@ export default function Dashboard() {
             </section>
           </div>
           
+          {/* Bottom bouncing "+ Task" tab */}
+          <div
+            className="fixed bottom-0 left-1/2 z-[59] cursor-pointer bottom-tab-bounce"
+            style={{
+              transform: 'translateX(-50%)',
+              pointerEvents: 'auto',
+            }}
+            onClick={() => {
+              setQuickAddStep(0);
+              setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+              setIsQuickAddOpen(true);
+            }}
+            data-testid="bottom-add-task-tab"
+          >
+            <div
+              style={{
+                padding: '6px 20px 8px 20px',
+                borderRadius: '12px 12px 0 0',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                borderBottom: 'none',
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+              }}
+            >
+              <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 600, letterSpacing: '0.3px' }}>+ Task</span>
+            </div>
+          </div>
+
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={handleQuickAddClose}>
