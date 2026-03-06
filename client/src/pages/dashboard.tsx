@@ -14989,6 +14989,15 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
+                                  {!isCASL101Task(task) && (
+                                    <Checkbox
+                                      checked={task.isCompleted || false}
+                                      onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                      className="h-3 w-3 shrink-0 ml-0.5 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                      onClick={(e) => e.stopPropagation()}
+                                      data-testid={`checkbox-prep-${task.id}`}
+                                    />
+                                  )}
                                   <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                   {modulePdfUrl && (
                                     <img
@@ -15352,6 +15361,15 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
+                                  {!isCASL101Task(task) && (
+                                    <Checkbox
+                                      checked={task.isCompleted || false}
+                                      onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                      className="h-3 w-3 shrink-0 ml-0.5 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                      onClick={(e) => e.stopPropagation()}
+                                      data-testid={`checkbox-sat-prep-${task.id}`}
+                                    />
+                                  )}
                                   <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                   {satPrepPdfUrl && (
                                     <img
