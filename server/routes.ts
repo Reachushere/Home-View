@@ -4120,7 +4120,7 @@ export async function registerRoutes(
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-door"],
+      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-wash-stop"],
     });
   });
 
@@ -4584,36 +4584,30 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/webhook/cat-door - Triggered when binary_sensor.door_sensor_cat opens
-  // Stops cat lights playback and saves progress when someone opens the cat washroom door.
-  app.post("/api/webhook/cat-door", async (req, res) => {
+  // POST /api/webhook/cat-wash-stop - Triggered when toothbrush returns to charger (running → charging)
+  // Stops cat wash playback and saves progress.
+  app.post("/api/webhook/cat-wash-stop", async (req, res) => {
     try {
-      const rawDoorNewState = req.body?.new_state;
-      const doorState = req.body?.state || (typeof rawDoorNewState === 'string' ? rawDoorNewState : rawDoorNewState?.state) || 'unknown';
-      console.log(`[Cat Door] ====== WEBHOOK TRIGGERED ======`);
-      console.log(`[Cat Door] Timestamp: ${new Date().toISOString()}`);
-      console.log(`[Cat Door] Door state: ${doorState}`);
-
-      if (doorState !== 'on' && doorState !== 'open') {
-        console.log(`[Cat Door] Door not opened (state: ${doorState}), ignoring`);
-        return res.json({ action: "ignored", reason: `Door state ${doorState} is not open` });
-      }
-
-      // Race condition guard: if cat-lights/cat-wash just started within last 10 seconds, wait before stopping
-      if (catWashPlaybackActive && catWashPlaybackStartedAt) {
-        const msSinceStart = Date.now() - catWashPlaybackStartedAt.getTime();
-        if (msSinceStart < 10000) {
-          console.log(`[Cat Door] Playback started ${msSinceStart}ms ago (< 10s) - likely race condition with cat-lights/cat-wash, ignoring door trigger`);
-          return res.json({ action: "ignored", reason: `Playback just started ${msSinceStart}ms ago, likely race condition` });
-        }
-      }
+      console.log(`[Cat Wash Stop Webhook] ====== WEBHOOK TRIGGERED ======`);
+      console.log(`[Cat Wash Stop Webhook] Timestamp: ${new Date().toISOString()}`);
+      console.log(`[Cat Wash Stop Webhook] Request body: ${JSON.stringify(req.body)}`);
 
       const stopped: string[] = [];
 
       if (catWashPlaybackActive && catWashPlaybackState) {
         const savedFileId = catWashPlaybackState.fileId;
         const savedChunk = catWashPlaybackState.chunkIndex;
-        console.log(`[Cat Door] Stopping playback - file ${savedFileId} (${catWashPlaybackState.fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
+        console.log(`[Cat Wash Stop Webhook] Stopping playback - file ${savedFileId} (${catWashPlaybackState.fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
+
+        if (savedFileId && savedChunk > 0) {
+          try {
+            await storage.updateFile(savedFileId, { lastChunkIndex: savedChunk });
+            console.log(`[Cat Wash Stop Webhook] Saved progress: chunk ${savedChunk}`);
+          } catch (e: any) {
+            console.log(`[Cat Wash Stop Webhook] Failed to save progress: ${e.message}`);
+          }
+        }
+
         stopped.push(`playback:${catWashPlaybackState.fileName}`);
         catWashPlaybackActive = false;
         catWashPlaybackStartedAt = null;
@@ -4621,21 +4615,17 @@ export async function registerRoutes(
       }
 
       if (currentTTSSession) {
-        console.log(`[Cat Door] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
-        stopTTSSession("Door sensor opened - stopping playback");
+        console.log(`[Cat Wash Stop Webhook] Stopping active TTS session`);
+        stopTTSSession("Toothbrush returned to charger - stopping playback");
         stopped.push("ttsSession");
       }
 
-      // NO Alexa Media Player (AMP) calls to Echo devices — audio plays via tablet Bluetooth.
-      // Stopping the tablets (by clearing server state) is sufficient.
-      // Sending media_stop to Echo entities causes Alexa to speak confirmations.
-
-      console.log(`[Cat Door] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
+      console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
 
     } catch (error: any) {
-      console.error("[Cat Door] Error:", error);
-      res.status(500).json({ error: "Failed to handle cat door webhook", details: error.message });
+      console.error("[Cat Wash Stop Webhook] Error:", error);
+      res.status(500).json({ error: "Failed to handle stop webhook", details: error.message });
     }
   });
 
