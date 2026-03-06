@@ -9601,7 +9601,6 @@ export default function Dashboard() {
           style={{
             position: 'absolute',
             left: '50%',
-            marginLeft: '-15px',
             transform: 'translateX(-50%)',
             bottom: '-18px',
             width: '60px',
@@ -9626,7 +9625,6 @@ export default function Dashboard() {
           style={{
             position: 'absolute',
             left: '50%',
-            marginLeft: '-15px',
             transform: 'translateX(-50%)',
             bottom: '-20px',
             width: '46px',
