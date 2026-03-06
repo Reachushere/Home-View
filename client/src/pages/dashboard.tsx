@@ -13303,7 +13303,7 @@ export default function Dashboard() {
                   }}
                   data-testid="button-save-school"
                 >
-                  Save School Settings
+                  Save
                 </Button>
               </div>
             </DialogContent>
