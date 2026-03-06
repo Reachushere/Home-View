@@ -1320,9 +1320,9 @@ export default function FilesPage() {
             >
               <RefreshCw className={`h-4 w-4 ${oneDriveLoading ? 'animate-spin' : ''}`} />
             </Button>
-            <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 truncate">
-              <Cloud className="h-3 w-3" />
-              <span className="truncate">{oneDrivePath === "/" ? "OneDrive" : oneDrivePath}</span>
+            <div className="flex items-center gap-1 text-sm flex-1 min-w-0 truncate">
+              <Cloud className="h-3 w-3 text-white/60" />
+              <span className="truncate text-white">{oneDrivePath === "/" ? "OneDrive" : oneDrivePath}</span>
             </div>
           </>
         )}
