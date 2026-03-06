@@ -1213,6 +1213,14 @@ export default function FilesPage() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-1 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
+        <a
+          href="/"
+          className="flex items-center justify-center h-7 w-7 rounded-md hover:bg-white/10 mr-1"
+          data-testid="button-home"
+          title="Back to Dashboard"
+        >
+          <Home className="h-4 w-4 text-white/70" />
+        </a>
         {/* View Mode Toggle */}
         <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden mr-2">
           <button
