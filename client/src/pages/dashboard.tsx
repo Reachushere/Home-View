@@ -17522,14 +17522,21 @@ export default function Dashboard() {
                   {/* Handle 2 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
                   {/* Col 3: Task name */}
-                  <button 
-                    className="text-[12px] text-white font-bold truncate hover:underline cursor-pointer leading-none"
-                    onClick={() => setEditingTask(task)}
-                    data-testid={`task-link-${task.id}`}
-                    style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0, textAlign: 'left' }}
-                  >
-                    {task.title}
-                  </button>
+                  <div className="flex items-center gap-1" style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0 }}>
+                    <button 
+                      className="text-[12px] text-white font-bold truncate hover:underline cursor-pointer leading-none"
+                      onClick={() => setEditingTask(task)}
+                      data-testid={`task-link-${task.id}`}
+                      style={{ textAlign: 'left', flex: '1 1 0', minWidth: 0 }}
+                    >
+                      {task.title}
+                    </button>
+                    {task.referenceLink && (
+                      <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-box-${task.id}`}>
+                        <ExternalLink className="h-3 w-3 text-white/60 hover:text-white" />
+                      </a>
+                    )}
+                  </div>
                   {/* Handle 3 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
                   {/* Col 4: Course code */}
