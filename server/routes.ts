@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import type { Server } from "http";
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
@@ -7715,6 +7717,21 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Import error:", err);
       res.status(500).json({ error: "Failed to import data" });
+    }
+  });
+
+  app.post("/api/dev-dismiss", async (req, res) => {
+    try {
+      const { taskId, text } = req.body;
+      const filePath = path.join(process.cwd(), "client", "public", "dev-tasks.json");
+      const raw = await fs.promises.readFile(filePath, "utf-8");
+      const tasks: { id: string; text: string; complete?: boolean }[] = JSON.parse(raw);
+      const filtered = tasks.filter(t => t.id !== taskId && t.text !== text);
+      await fs.promises.writeFile(filePath, JSON.stringify(filtered, null, 2) + "\n");
+      res.json({ ok: true, remaining: filtered.length });
+    } catch (err) {
+      console.error("dev-dismiss error:", err);
+      res.status(500).json({ error: "Failed to update dev-tasks.json" });
     }
   });
 

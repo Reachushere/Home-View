@@ -160,6 +160,11 @@ export function DevPostIt() {
     addDismissed(taskText);
     if (response === "yes") {
       setTasks(prev => prev.filter(t => t.id !== taskId));
+      fetch("/api/dev-dismiss", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId, text: taskText }),
+      }).catch(() => {});
     } else if (response === "no") {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, checked: false, status: "retry", retrySentAt: Date.now() } : t));
       fetch("/api/dev-retry", {
