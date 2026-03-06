@@ -15241,11 +15241,10 @@ export default function Dashboard() {
                             const isFirstPrepDay = isSameDay(satCellDate, prepStartDate);
                             const isLastPrepDay = isSameDay(addDays(satCellDate, 1), prepDueDate);
                             const satPrepCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                            const satPrepPdfTask = allTasks.find(t => {
-                              const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                              return tCode === satPrepCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
-                            });
-                            const satPrepPdfUrl = satPrepPdfTask?.attachments?.[0] || null;
+                            const satPrepCourseCodeLower = satPrepCourseCode.toLowerCase();
+                            const satPrepModuleFolder = `week-${task.weekNumber}-${satPrepCourseCodeLower}-module`;
+                            const satPrepModuleFile = weeklyFiles.find(f => f.folder === satPrepModuleFolder && f.objectPath);
+                            const satPrepPdfUrl = satPrepModuleFile?.objectPath || null;
                             return (
                               <div 
                                 key={`prep-${task.id}`}
@@ -15282,11 +15281,10 @@ export default function Dashboard() {
                             );
                           }
                           const satDueCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                          const satDuePdfTask = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? allTasks.find(t => {
-                            const tCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                            return tCode === satDueCourseCode && t.weekNumber === task.weekNumber && t.attachments && t.attachments.length > 0 && t.attachments.some((a: string) => a.includes('/objects/') || a.endsWith('.pdf'));
-                          }) : null;
-                          const satDuePdfUrl = satDuePdfTask?.attachments?.[0] || null;
+                          const satDueCourseCodeLower = satDueCourseCode.toLowerCase();
+                          const satDueModuleFolder = `week-${task.weekNumber}-${satDueCourseCodeLower}-module`;
+                          const satDueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === satDueModuleFolder && f.objectPath) : null;
+                          const satDuePdfUrl = satDueModuleFile?.objectPath || null;
                           return (
                             <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
