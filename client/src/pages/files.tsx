@@ -1145,48 +1145,18 @@ export default function FilesPage() {
 
   // Get breadcrumb path for selected folder
   const getBreadcrumb = () => {
-    if (!selectedFolder) return ["Bryn's Files"];
+    if (!selectedFolder) return ["/files"];
     
     // Handle custom folders
     if (selectedFolder.startsWith("custom-")) {
       const customId = parseInt(selectedFolder.replace("custom-", ""));
       const customFolder = customFoldersData.find(cf => cf.id === customId);
       if (customFolder) {
-        // Get parent breadcrumb and add custom folder name
-        const parentParts = customFolder.parentFolderId.split("-");
-        const result = ["Bryn's Files"];
-        if (parentParts[0] === "week") {
-          const week = WEEKS.find(w => w.id === `${parentParts[0]}-${parentParts[1]}`);
-          if (week) result.push(week.name);
-        }
-        if (parentParts.length >= 3) {
-          const course = COURSE_FOLDERS.find(c => c.id === parentParts[2]);
-          if (course) result.push(course.name);
-        }
-        if (parentParts.length >= 4) {
-          const content = CONTENT_FOLDERS.find(c => c.id === parentParts[3]);
-          if (content) result.push(content.name);
-        }
-        result.push(customFolder.name);
-        return result;
+        return [`/files/${customFolder.parentFolderId}/${customFolder.name}`];
       }
     }
     
-    const parts = selectedFolder.split("-");
-    const result = ["Bryn's Files"];
-    if (parts[0]) {
-      const week = WEEKS.find(w => w.id === parts[0]);
-      if (week) result.push(week.name);
-    }
-    if (parts[1]) {
-      const course = COURSE_FOLDERS.find(c => c.id === parts[1]);
-      if (course) result.push(course.name);
-    }
-    if (parts[2]) {
-      const content = CONTENT_FOLDERS.find(c => c.id === parts[2]);
-      if (content) result.push(content.name);
-    }
-    return result;
+    return [`/files/${selectedFolder}`];
   };
 
   const navigateBack = () => {
