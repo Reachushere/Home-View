@@ -10207,7 +10207,7 @@ export default function Dashboard() {
             className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
             style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
             data-testid="button-projects"
-            onClick={() => { bringFlyoutToFront('projects'); setIsProjectsFlyoutOpen(true); }}
+            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectDialogOpen(true); }}
           >
             + Projects
           </Button>
@@ -18366,13 +18366,36 @@ export default function Dashboard() {
           </div>
         </div>
         
-        {/* Project Dialog */}
-        <Dialog open={projectDialogOpen} onOpenChange={setProjectDialogOpen}>
-          <DialogContent className="max-w-lg text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_textarea]:text-black [&_textarea]:bg-white">
-            <DialogHeader>
-              <DialogTitle className="text-white text-sm">{editingProject ? "Edit Project" : "Create New Project"}</DialogTitle>
-            </DialogHeader>
-            <form 
+        {/* Project Dialog - Burst from Center */}
+        {projectDialogOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
+          <div
+            className="transition-all ease-out"
+            style={{
+              width: '480px',
+              transform: 'scale(1)',
+              transformOrigin: 'center center',
+              animation: 'burst-in 0.35s ease-out',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+          <div className="overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white text-[11px] [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_textarea]:text-black [&_textarea]:bg-white"
+            style={{
+              fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 0 40px rgba(0,0,0,0.4)',
+            }}
+          >
+            <div className="flex items-center justify-between px-5 py-3 bg-black/30 border-b border-white/20">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="h-3.5 w-3.5 text-white" />
+                <h2 className="text-xs font-normal text-white tracking-wide uppercase">{editingProject ? "Edit Project" : "Create New Project"}</h2>
+              </div>
+              <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-project-dialog">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form className="p-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
@@ -18473,7 +18496,7 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <DialogFooter>
+              <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
                   Cancel
                 </Button>
@@ -18485,10 +18508,12 @@ export default function Dashboard() {
                 >
                   {editingProject ? "Save Changes" : "Create Project"}
                 </Button>
-              </DialogFooter>
+              </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </div>
+          </div>
+          </div>
+        )}
 
         {/* Task Context Menu for right-click delete */}
         {contextMenu && (
