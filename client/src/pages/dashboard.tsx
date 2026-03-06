@@ -14208,7 +14208,7 @@ export default function Dashboard() {
                 
                 {/* Save/Cancel Settings Buttons */}
                 </div>
-                <div className="flex justify-end gap-2" style={{ marginTop: '-3px' }}>
+                <div className="flex justify-between gap-2" style={{ marginTop: '-3px' }}>
                   <Button 
                     variant="outline"
                     className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
