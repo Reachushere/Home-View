@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -654,13 +654,22 @@ function WorkflowView({
 
 export default function ProjectsPage() {
   const { toast } = useToast();
-  const headerBarColor = (() => {
+  const savedColors = useMemo(() => {
     try {
       const saved = localStorage.getItem('colorSettings');
-      if (saved) { const parsed = JSON.parse(saved); return parsed.headerBar || '#160502'; }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          headerBar: parsed.headerBar || '#160502',
+          mainBackground: parsed.mainBackground || '#3a8bbf',
+          mainBackgroundGradient: parsed.mainBackgroundGradient ?? true,
+          mainBackgroundGradientEnd: parsed.mainBackgroundGradientEnd || '#164a72',
+        };
+      }
     } catch {}
-    return '#160502';
-  })();
+    return { headerBar: '#160502', mainBackground: '#3a8bbf', mainBackgroundGradient: true, mainBackgroundGradientEnd: '#164a72' };
+  }, []);
+  const headerBarColor = savedColors.headerBar;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
@@ -820,12 +829,14 @@ export default function ProjectsPage() {
     <div 
       className="min-h-screen"
       style={{
-        background: 'linear-gradient(180deg, #3a8bbf 0%, #164a72 100%)',
+        background: savedColors.mainBackgroundGradient 
+          ? `linear-gradient(180deg, ${savedColors.mainBackground} 0%, ${savedColors.mainBackgroundGradientEnd} 100%)`
+          : savedColors.mainBackground,
         backgroundAttachment: 'fixed',
         fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
       }}
     >
-      <header className="border-b border-white/20 sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: '#1F5983' }}>
+      <header className="border-b border-white/20 sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: savedColors.mainBackgroundGradientEnd }}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
