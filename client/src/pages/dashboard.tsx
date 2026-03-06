@@ -15009,9 +15009,9 @@ export default function Dashboard() {
                           const dueTaskCourseCodeLower = dueTaskCourseCode.toLowerCase();
                           const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
                           const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
-                          const dueAttachmentPdf = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                          const dueRefLinkPdf = !dueModuleFile && !dueAttachmentPdf && task.referenceLink ? task.referenceLink : null;
-                          const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentPdf || dueRefLinkPdf || null;
+                          const dueAttachmentUrl = !dueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
+                          const dueRefLinkPdf = !dueModuleFile && !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
+                          const dueModulePdfUrl = dueModuleFile?.objectPath || dueAttachmentUrl || dueRefLinkPdf || null;
                           return (
                             <div 
                               key={task.id}
@@ -15050,7 +15050,7 @@ export default function Dashboard() {
                                   alt="Open PDF"
                                   className="shrink-0"
                                   style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                  onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(dueModulePdfUrl)}`; }}
+                                  onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/')) { window.location.href = `/pdf-reader/${encodeURIComponent(url)}`; } else { window.open(url, '_blank'); } }}
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
                               )}
