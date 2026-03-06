@@ -10162,17 +10162,7 @@ export default function Dashboard() {
                         if (selectedReturnFile) {
                           const file = returnReadingFiles.find(f => f.id === selectedReturnFile);
                           if (file) {
-                            setPreviewFile({
-                              id: file.id,
-                              originalName: file.originalName,
-                              displayName: file.displayName,
-                              objectPath: file.objectPath,
-                              folder: file.folder,
-                              listened: file.listened,
-                              lastChunkIndex: file.lastChunkIndex,
-                              totalChunks: file.totalChunks,
-                              checkedChunks: file.checkedChunks,
-                            });
+                            window.open(`/pdf-reader/${file.id}`, '_blank');
                           }
                         }
                         setShowReturnReadingPrompt(false);
