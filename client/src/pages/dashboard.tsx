@@ -11297,23 +11297,12 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <div style={{ position: 'relative', width: '84px', height: '27px' }}>
-          <div style={{
-            position: 'absolute',
-            top: '-4px',
-            left: '-6px',
-            width: '96px',
-            height: '20px',
-            background: colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground,
-            zIndex: 0,
-          }} />
-          <svg width="84" height="27" viewBox="0 0 84 27" style={{ display: 'block', position: 'relative', zIndex: 1 }}>
-            <path d="M0,27 L84,27 L84,18 Q75,18 75,12 L75,11 Q75,0 63,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <g transform="translate(34, 1)" opacity="0.7">
-              <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill="none" stroke="white" strokeWidth="1.2" strokeLinejoin="round" />
-            </g>
-          </svg>
-        </div>
+        <svg width="84" height="27" viewBox="0 0 84 27" style={{ display: 'block' }}>
+          <path d="M0,27 L84,27 L84,18 Q75,18 75,12 L75,11 Q75,0 63,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <g transform="translate(34, 1)" opacity="0.7">
+            <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill="none" stroke="white" strokeWidth="1.2" strokeLinejoin="round" />
+          </g>
+        </svg>
       </div>
       {/* Left binder tab - Add Task */}
       <div
