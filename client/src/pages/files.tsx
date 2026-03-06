@@ -1212,7 +1212,7 @@ export default function FilesPage() {
       )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
+      <div className="flex items-center gap-1 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
         {/* View Mode Toggle */}
         <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden mr-2">
           <button
@@ -1253,15 +1253,9 @@ export default function FilesPage() {
             >
               <Home className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-1 text-sm text-gray-400">
-              {getBreadcrumb().map((part, idx) => (
-                <span key={idx} className="flex items-center gap-1">
-                  {idx > 0 && <ChevronRight className="h-3 w-3" />}
-                  <span className={idx === getBreadcrumb().length - 1 ? "text-white" : ""}>{part}</span>
-                </span>
-              ))}
+            <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 min-w-0 truncate">
+              <span className="truncate text-white">{getBreadcrumb()[0]}</span>
             </div>
-            <div className="flex-1" />
             <ObjectUploader
               maxNumberOfFiles={5}
               onGetUploadParameters={getUploadParameters}
@@ -1272,7 +1266,7 @@ export default function FilesPage() {
               Upload
             </ObjectUploader>
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-              <SelectTrigger className="w-[130px] h-7 text-xs bg-[#2d2d2d] border-[#3d3d3d] text-white" data-testid="select-sort">
+              <SelectTrigger className="w-[110px] h-7 text-xs bg-[#2d2d2d] border-[#3d3d3d] text-white shrink-0" data-testid="select-sort">
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent className="bg-[#2d2d2d] border-[#3d3d3d]">
