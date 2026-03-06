@@ -12796,9 +12796,9 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-8px' }}>
+                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-12px' }}>
                 {/* Course Legend */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '11px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '7px' }}>
                   <Label className="text-[10px] font-medium">Courses</Label>
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
@@ -20170,7 +20170,8 @@ function SchoolForm({
   
   return (
     <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
-      <div className="border rounded-lg p-3 space-y-3 !-mt-[1px]">
+      <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-5px' }}>
+        <Label className="text-[10px] font-medium" style={{ fontSize: '11px', letterSpacing: '0.05em' }}>School Settings</Label>
         <Label className="text-[10px] font-medium">School Logo</Label>
         <div className="space-y-3">
           <div className="space-y-1">
