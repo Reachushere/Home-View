@@ -297,15 +297,18 @@ function ProjectCard({
       data-testid={`card-project-${project.id}`}
       className="rounded-[12px] overflow-hidden flex flex-col hover-elevate transition-all"
       style={{ 
-        background: 'rgba(255, 255, 255, 0.35)',
-        border: '1px solid rgba(255, 255, 255, 0.4)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+        backdropFilter: 'blur(40px)',
+        WebkitBackdropFilter: 'blur(40px)',
+        border: '1px solid rgba(255,255,255,0.5)',
+        borderTop: '1px solid rgba(255,255,255,0.7)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
       }}
     >
-      {/* Orange gradient header */}
+      {/* Header - matching Today box header */}
       <div 
         style={{ 
-          background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+          backgroundColor: '#160502',
           padding: '8px 12px'
         }}
       >
@@ -345,8 +348,8 @@ function ProjectCard({
         </div>
       </div>
       
-      {/* Body with backdrop blur */}
-      <div className="flex-1 p-3" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+      {/* Body */}
+      <div className="flex-1 p-3">
         {project.description && (
           <p className="text-xs text-white/80 mb-3 line-clamp-2">
             {project.description}
