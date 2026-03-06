@@ -8508,6 +8508,19 @@ export default function Dashboard() {
             >
               <RotateCcw className="h-5 w-5 text-white" />
             </button>
+
+            <button
+              className="media-btn media-btn-sm"
+              onClick={() => {
+                if (previewFile?.id) {
+                  window.open(`/pdf-reader/${previewFile.id}`, '_blank');
+                }
+              }}
+              data-testid="button-open-fullpage"
+              title="Open in full page reader"
+            >
+              <Maximize className="h-5 w-5 text-white" />
+            </button>
             
             <Button
               size="icon"
