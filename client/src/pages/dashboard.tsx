@@ -386,7 +386,7 @@ export default function Dashboard() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   
   // Return-from-break reading prompt (dev mode only - when returning to Replit after 2+ hours)
-  const [showReturnReadingPrompt, setShowReturnReadingPrompt] = useState(false);
+  const [showReturnReadingPrompt, setShowReturnReadingPrompt] = useState(true);
   const [returnReadingFiles, setReturnReadingFiles] = useState<Array<{id: number; name: string; folder: string; originalName: string; displayName: string; objectPath: string; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string}>>([]);
   const [selectedReturnFile, setSelectedReturnFile] = useState<number | null>(null);
   const returnPromptShown = useRef(false);
