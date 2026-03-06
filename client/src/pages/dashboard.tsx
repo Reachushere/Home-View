@@ -13858,7 +13858,9 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        onInput={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number((e.target as HTMLInputElement).value) }))}
+                        className="w-1/3 h-2 bg-white/20 rounded-lg cursor-pointer accent-[#3b82f6]"
+                        style={{ touchAction: 'none' }}
                         data-testid="slider-button-spacing"
                       />
                       <span className="text-xs text-muted-foreground w-14 text-right">{blinkSettings.buttonSpacing}px</span>
