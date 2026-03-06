@@ -1460,15 +1460,8 @@ export default function Dashboard() {
         parsed.progressColumnWidth = oldWidths[6];
         parsed.dayColumnWidths = [...oldWidths.slice(0, 6), oldWidths[7]];
       }
-      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 7) {
-        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
-      }
-      if (parsed.progressColumnWidth === undefined || parsed.progressColumnWidth <= 0.5) {
-        parsed.progressColumnWidth = 0.75;
-      }
-      if (parsed.dayColumnWidths[6] !== 1) {
-        parsed.dayColumnWidths[6] = 1;
-      }
+      parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
+      parsed.progressColumnWidth = 0.75;
     };
     
     // Check for device-specific saved settings first
