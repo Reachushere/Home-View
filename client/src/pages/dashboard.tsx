@@ -5772,6 +5772,46 @@ export default function Dashboard() {
     },
   });
 
+  useEffect(() => {
+    const ACTIVE_INTERVAL = 3 * 60 * 1000;
+    const BACKGROUND_INTERVAL = 10 * 60 * 1000;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    const lastSyncRef = { current: Date.now() };
+
+    const doAutoSync = async () => {
+      try {
+        await Promise.all([
+          fetch('/api/tasks/sync-all-calendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }),
+          fetch('/api/calendar/pull', { method: 'POST' })
+        ]);
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        lastSyncRef.current = Date.now();
+      } catch {}
+    };
+
+    const setupInterval = () => {
+      if (intervalId) clearInterval(intervalId);
+      const ms = document.visibilityState === 'visible' ? ACTIVE_INTERVAL : BACKGROUND_INTERVAL;
+      intervalId = setInterval(doAutoSync, ms);
+    };
+
+    const handleVisibilityChange = () => {
+      const now = Date.now();
+      if (document.visibilityState === 'visible' && now - lastSyncRef.current >= ACTIVE_INTERVAL) {
+        doAutoSync();
+      }
+      setupInterval();
+    };
+
+    setupInterval();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   // Mutation for updating task time when dragged to new slot
   const updateTaskTimeMutation = useMutation({
     mutationFn: async ({ id, newDate, newHour, newMinutes = 0 }: { id: number; newDate: Date; newHour: number; newMinutes?: number }) => {
