@@ -9408,12 +9408,16 @@ export default function Dashboard() {
       {(() => {
         const now = new Date();
         const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const calendarStartDate = weekDays.length > 0 ? new Date(weekDays[0].getFullYear(), weekDays[0].getMonth(), weekDays[0].getDate()) : nowDate;
+        const calendarEndDate = weekDays.length > 0 ? new Date(weekDays[weekDays.length - 1].getFullYear(), weekDays[weekDays.length - 1].getMonth(), weekDays[weekDays.length - 1].getDate()) : nowDate;
         const upcoming = allTasks
           .filter(t => {
             if (!t.dueDate || t.isCompleted) return false;
             const dd = new Date(t.dueDate);
             const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
-            return ddOnly.getTime() >= nowDate.getTime();
+            if (ddOnly.getTime() < nowDate.getTime()) return false;
+            if (ddOnly.getTime() < calendarStartDate.getTime() || ddOnly.getTime() > calendarEndDate.getTime()) return false;
+            return true;
           })
           .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
         const next = upcoming[0];
