@@ -26,7 +26,7 @@ export default function PDFViewerPage() {
   const pageInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const pdfUrl = filePath ? (filePath.startsWith("http") ? filePath : `/objects/${filePath}`) : null;
+  const pdfUrl = filePath ? (filePath.startsWith("http") ? filePath : filePath.startsWith("/objects/") ? filePath : `/objects/${filePath}`) : null;
 
   const onDocumentLoadSuccess = useCallback(({ numPages: n }: { numPages: number }) => {
     setNumPages(n);
