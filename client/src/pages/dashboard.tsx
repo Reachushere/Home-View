@@ -12559,9 +12559,9 @@ export default function Dashboard() {
                   <button
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
                     className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-all duration-200"
-                    style={{ fontSize: "11px", border: '1.5px solid rgba(255,255,255,0.6)', background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)', boxShadow: '0 0 8px rgba(255,255,255,0.6), 0 0 14px rgba(255,255,255,0.4), 0 0 20px rgba(255,255,255,0.25), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; e.currentTarget.style.boxShadow = '0 0 10px rgba(255,255,255,0.8), 0 0 18px rgba(255,255,255,0.6), 0 0 26px rgba(255,255,255,0.4), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(255,255,255,0.15)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.6), 0 0 14px rgba(255,255,255,0.4), 0 0 20px rgba(255,255,255,0.25), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'; }}
+                    style={{ fontSize: "11px", border: '1.5px solid rgba(255,255,255,0.6)', background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
                     data-testid="quick-add-back"
                   >
                     {quickAddStep === 0 ? 'Cancel' : <><ChevronLeft className="h-3 w-3 mr-1" /> Back</>}
