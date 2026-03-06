@@ -1055,19 +1055,12 @@ export default function PDFReaderPage() {
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
 
       <div className="relative" style={{ zIndex: 10 }}>
-        <div className="flex items-center gap-3 px-5 py-2 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.95)' }}>
+        <div className="flex items-center gap-3 px-5 py-2 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.5)' }}>
           <Link href="/files">
             <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10 h-8 w-8" data-testid="button-back">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div className="flex items-center gap-2">
-            <div className="w-px h-6 bg-white/20" />
-            <h1 className="text-lg font-bold tracking-wide" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", color: '#f0c040' }}>
-              Scholar<span className="text-white">Sync</span>
-            </h1>
-          </div>
-          <span className="text-[10px] text-white/40 uppercase tracking-widest ml-1">PDF Audio Reader</span>
           <div className="ml-auto flex items-center gap-3">
             {fileId && flickDeviceGroups.length > 0 && (
               <div className="relative">
@@ -1390,7 +1383,7 @@ export default function PDFReaderPage() {
 
       <div className="flex-1 flex relative overflow-hidden" style={{ zIndex: 2 }}>
         <div className="flex-1 lg:w-1/2 overflow-auto" style={{ background: 'rgba(0,0,0,0.4)' }}>
-          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.9)' }}>
+          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
             <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
             <span className="text-[10px] text-white/40">{checkedChunks.size}/{totalChunks} chunks</span>
           </div>
@@ -1536,7 +1529,7 @@ export default function PDFReaderPage() {
         </div>
 
         <div className="hidden lg:flex lg:w-[45%] flex-col border-l border-white/10" style={{ background: 'rgba(0,0,0,0.3)' }}>
-          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.9)' }}>
+          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
             <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Original PDF</span>
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" className="h-6 w-6 text-white/60 hover:text-white" onClick={goToPreviousPage} disabled={currentPage <= 1}>
@@ -1571,7 +1564,7 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="relative border-t border-white/10" style={{ zIndex: 10, background: 'rgba(0,10,30,0.95)', backdropFilter: 'blur(20px)' }}>
+      <div className="relative border-t border-white/10" style={{ zIndex: 10, background: 'rgba(0,10,30,0.6)', backdropFilter: 'blur(20px)' }}>
         <div className="flex items-center justify-center gap-2 pt-1 pb-0.5">
           <span className="text-[10px] text-white/40">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
         </div>
