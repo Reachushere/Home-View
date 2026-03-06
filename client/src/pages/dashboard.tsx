@@ -15377,7 +15377,16 @@ export default function Dashboard() {
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden' }}
                               onClick={() => setEditingTask(task)}
                             >
-                              <span className="truncate font-bold pl-px flex-1 min-w-0">{task.title}</span>
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => {
+                                  completeMutation.mutate({ id: task.id, isCompleted: !!checked });
+                                }}
+                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                onClick={(e) => e.stopPropagation()}
+                                data-testid={`checkbox-sat-task-${task.id}`}
+                              />
+                              <span className={`truncate font-bold pl-px flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
                               {satDuePdfUrl && (
                                 <img
                                   src={pdfIconPath}

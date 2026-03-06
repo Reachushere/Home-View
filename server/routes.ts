@@ -2455,9 +2455,9 @@ export async function registerRoutes(
 
   // GET /api/weeks
   app.get(api.weeks.list.path, async (_req, res) => {
-    // Hardcode semester start as UTC to ensure consistency across all servers
-    // Winter 2026 starts Saturday January 10, 2026
-    const semesterStart = new Date(Date.UTC(2026, 0, 10, 12, 0, 0)); // Jan 10, 2026 noon UTC
+    const activeSemester = await storage.getActiveSemesterSettings();
+    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : new Date(Date.UTC(2026, 0, 10, 12, 0, 0));
+    const readingWeek = activeSemester?.readingWeekStart || null;
     const taskCounts = await storage.getTaskCountByWeek();
     const weeks = [];
     
