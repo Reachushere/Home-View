@@ -641,6 +641,8 @@ export default function Dashboard() {
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [projectWizardStep, setProjectWizardStep] = useState(0);
+  const [projectWizardData, setProjectWizardData] = useState({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' });
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
   // Folder context menu state
@@ -10336,7 +10338,7 @@ export default function Dashboard() {
             className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
             style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
             data-testid="button-projects"
-            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectDialogOpen(true); }}
+            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
           >
             + Projects
           </Button>
@@ -18156,6 +18158,8 @@ export default function Dashboard() {
                   }}
                   onClick={() => {
                     setEditingProject(null);
+                    setProjectWizardStep(0);
+                    setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' });
                     setProjectDialogOpen(true);
                   }}
                   data-testid="button-new-project-flyout"
@@ -18226,7 +18230,7 @@ export default function Dashboard() {
                         <Button 
                           variant="outline"
                           className="border-white/30 text-white hover:bg-white/10 hover:text-white"
-                          onClick={() => { setEditingProject(null); setProjectDialogOpen(true); }}
+                          onClick={() => { setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
                         >
                           <Plus className="w-4 h-4 mr-2" />
                           Create Your First Project
@@ -18279,6 +18283,8 @@ export default function Dashboard() {
                                     variant="ghost" 
                                     onClick={() => {
                                       setEditingProject(project);
+                                      setProjectWizardStep(0);
+                                      setProjectWizardData({ name: project.name, description: project.description || '', color: project.color || '#6366F1', status: project.status || 'planning', targetDate: project.targetDate ? format(new Date(project.targetDate), 'yyyy-MM-dd') : '', priority: project.priority || 'medium' });
                                       setProjectDialogOpen(true);
                                     }}
                                     className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
@@ -18432,152 +18438,306 @@ export default function Dashboard() {
         {/* Project Dialog - Burst from Center */}
         {projectDialogOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
-          <div
-            className="transition-all ease-out"
-            style={{
-              width: '480px',
-              transform: 'scale(1)',
-              transformOrigin: 'center center',
-              animation: 'burst-in 0.35s ease-out',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-          <div className="overflow-hidden flex flex-col rounded-xl text-white text-[11px] [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10"
-            style={{
-              fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-              background: 'rgba(255,255,255,0.4)',
-              backdropFilter: 'blur(3px)',
-              WebkitBackdropFilter: 'blur(3px)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.05), 0 25px 50px -12px rgba(0,0,0,0.4)',
-            }}
-          >
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10" style={{ background: 'rgba(255,255,255,0.1)' }}>
-              <div className="flex items-center gap-2">
-                <FolderOpen className="h-3.5 w-3.5 text-white" />
-                <h2 className="text-xs font-normal text-white tracking-wide uppercase">{editingProject ? "Edit Project" : "Create New Project"}</h2>
-              </div>
-              <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-project-dialog">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <form className="p-5"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const data = {
-                  name: formData.get('name') as string,
-                  description: formData.get('description') as string,
-                  color: formData.get('color') as string || '#6366F1',
-                  status: formData.get('status') as string || 'planning',
-                  targetDate: formData.get('targetDate') as string || undefined,
-                  priority: formData.get('priority') as string || 'medium',
-                };
-                if (editingProject) {
-                  updateProjectMutation.mutate({ id: editingProject.id, data });
-                } else {
-                  createProjectMutation.mutate(data);
-                }
-                setProjectDialogOpen(false);
-                setEditingProject(null);
-              }} 
-              className="space-y-3"
+            <div
+              className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-2xl"
+              style={{
+                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+              data-testid="project-wizard"
             >
-              <div className="space-y-2">
-                <label className="text-[11px] font-medium text-white">Project Name</label>
-                <Input 
-                  name="name"
-                  defaultValue={editingProject?.name || ''}
-                  placeholder="Enter project name"
-                  required
-                  className="text-[10px]"
-                  data-testid="input-project-name-flyout"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-[11px] font-medium text-white">Description</label>
-                <Textarea 
-                  name="description"
-                  defaultValue={editingProject?.description || ''}
-                  placeholder="Describe your project..."
-                  rows={2}
-                  className="text-[10px]"
-                  data-testid="input-project-description-flyout"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Color</label>
-                  <input 
-                    type="color"
-                    name="color"
-                    defaultValue={editingProject?.color || '#6366F1'}
-                    className="h-9 w-full rounded-md border cursor-pointer"
-                    data-testid="input-project-color-flyout"
-                  />
+              <div className="flex items-center justify-between px-5 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <FolderOpen className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white tracking-wide uppercase">
+                    {projectWizardStep === 0 ? (editingProject ? 'Edit Project' : 'Project Name') : projectWizardStep === 1 ? 'Description' : projectWizardStep === 2 ? 'Color & Status' : projectWizardStep === 3 ? 'Date & Priority' : 'Review'}
+                  </h2>
                 </div>
-                
-                <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Status</label>
-                  <select 
-                    name="status"
-                    defaultValue={editingProject?.status || 'planning'}
-                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white/10 text-white"
-                    data-testid="select-project-status-flyout"
-                  >
-                    <option value="planning">Planning</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="on_hold">On Hold</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
+                <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-project-dialog">
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Target Date</label>
-                  <Input 
-                    type="date"
-                    name="targetDate"
-                    defaultValue={editingProject?.targetDate ? format(new Date(editingProject.targetDate), 'yyyy-MM-dd') : ''}
-                    className="text-[10px]"
-                    data-testid="input-project-targetdate-flyout"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Priority</label>
-                  <select 
-                    name="priority"
-                    defaultValue={editingProject?.priority || 'medium'}
-                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white/10 text-white"
-                    data-testid="select-project-priority-flyout"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
+
+              <div className="flex items-center gap-0.5 px-4 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)' }}>
+                {[
+                  { id: 0, label: "Name" },
+                  { id: 1, label: "Description" },
+                  { id: 2, label: "Style" },
+                  { id: 3, label: "Schedule" },
+                  { id: 4, label: "Review" },
+                ].map((s, i, arr) => (
+                  <div key={s.id} className="flex items-center flex-shrink-0">
+                    <button
+                      onClick={() => { if (s.id < projectWizardStep) setProjectWizardStep(s.id); }}
+                      className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full text-[8px] transition-all ${
+                        s.id === projectWizardStep
+                          ? "bg-white/20 text-white font-medium"
+                          : s.id < projectWizardStep
+                          ? "text-white/60 cursor-pointer hover:text-white/80"
+                          : "text-white/30 cursor-default"
+                      }`}
+                      data-testid={`project-wizard-step-${s.id}`}
+                    >
+                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold ${
+                        s.id === projectWizardStep ? "bg-white text-black" : s.id < projectWizardStep ? "bg-white/40 text-white" : "bg-white/10 text-white/40"
+                      }`}>
+                        {s.id + 1}
+                      </span>
+                      <span>{s.label}</span>
+                    </button>
+                    {i < arr.length - 1 && (
+                      <div className={`w-2 h-px mx-0.5 ${s.id < projectWizardStep ? "bg-white/40" : "bg-white/10"}`} />
+                    )}
+                  </div>
+                ))}
               </div>
-              
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white/60 hover:bg-white/10 shadow-[0_0_8px_rgba(255,255,255,0.4)] hover:shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-200"
-                  data-testid="button-save-project-flyout"
-                >
-                  {editingProject ? "Save Changes" : "Create Project"}
-                </Button>
+
+              <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10" style={{ scrollbarWidth: 'thin', height: '350px' }}>
+
+                {projectWizardStep === 0 && (
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center mb-2">
+                      <FolderOpen className="h-8 w-8 text-indigo-400 mx-auto mb-2" />
+                      <h3 className="text-sm font-medium text-white">Project Name</h3>
+                      <p className="text-[9px] text-white/50 mt-1">Give your project a name</p>
+                    </div>
+                    <Input
+                      value={projectWizardData.name}
+                      onChange={(e) => setProjectWizardData(p => ({ ...p, name: e.target.value }))}
+                      placeholder="Enter project name"
+                      className="text-[12px] h-10"
+                      autoFocus
+                      onKeyDown={(e) => { if (e.key === 'Enter' && projectWizardData.name.trim()) setProjectWizardStep(1); }}
+                      data-testid="input-project-name-wizard"
+                    />
+                    <div className="flex justify-end mt-2">
+                      <Button
+                        variant="outline"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
+                        disabled={!projectWizardData.name.trim()}
+                        onClick={() => setProjectWizardStep(1)}
+                        data-testid="button-project-wizard-next-0"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {projectWizardStep === 1 && (
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center mb-2">
+                      <FileText className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                      <h3 className="text-sm font-medium text-white">Description</h3>
+                      <p className="text-[9px] text-white/50 mt-1">Describe what this project is about (optional)</p>
+                    </div>
+                    <Textarea
+                      value={projectWizardData.description}
+                      onChange={(e) => setProjectWizardData(p => ({ ...p, description: e.target.value }))}
+                      placeholder="Describe your project..."
+                      rows={4}
+                      className="text-[12px]"
+                      autoFocus
+                      data-testid="input-project-description-wizard"
+                    />
+                    <div className="flex justify-between mt-2">
+                      <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(0)} data-testid="button-project-wizard-back-1">Back</Button>
+                      <Button
+                        variant="outline"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
+                        onClick={() => setProjectWizardStep(2)}
+                        data-testid="button-project-wizard-next-1"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {projectWizardStep === 2 && (
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center mb-2">
+                      <Palette className="h-8 w-8 text-pink-400 mx-auto mb-2" />
+                      <h3 className="text-sm font-medium text-white">Color & Status</h3>
+                      <p className="text-[9px] text-white/50 mt-1">Choose a color and set the project status</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-medium text-white">Color</label>
+                        <div className="flex flex-wrap gap-2">
+                          {['#6366F1', '#EC4899', '#22C55E', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6', '#14B8A6', '#F97316', '#64748B'].map(c => (
+                            <button
+                              key={c}
+                              className={`w-8 h-8 rounded-full border-2 transition-all ${projectWizardData.color === c ? 'border-white scale-110' : 'border-transparent hover:border-white/40'}`}
+                              style={{ backgroundColor: c }}
+                              onClick={() => setProjectWizardData(p => ({ ...p, color: c }))}
+                              data-testid={`project-color-${c}`}
+                            />
+                          ))}
+                        </div>
+                        <input
+                          type="color"
+                          value={projectWizardData.color}
+                          onChange={(e) => setProjectWizardData(p => ({ ...p, color: e.target.value }))}
+                          className="h-8 w-full rounded-md border cursor-pointer mt-1"
+                          data-testid="input-project-color-custom"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-medium text-white">Status</label>
+                        <div className="flex flex-col gap-1.5">
+                          {[
+                            { value: 'planning', label: 'Planning', icon: '📋' },
+                            { value: 'in_progress', label: 'In Progress', icon: '🔨' },
+                            { value: 'on_hold', label: 'On Hold', icon: '⏸️' },
+                            { value: 'completed', label: 'Completed', icon: '✅' },
+                          ].map(s => (
+                            <button
+                              key={s.value}
+                              className={`px-3 py-2 rounded-lg text-[11px] text-left transition-all flex items-center gap-2 ${projectWizardData.status === s.value ? 'bg-white/20 border border-white/30' : 'bg-white/5 border border-white/10 hover:bg-white/15'}`}
+                              onClick={() => setProjectWizardData(p => ({ ...p, status: s.value }))}
+                              data-testid={`project-status-${s.value}`}
+                            >
+                              <span>{s.icon}</span> {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(1)} data-testid="button-project-wizard-back-2">Back</Button>
+                      <Button
+                        variant="outline"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
+                        onClick={() => setProjectWizardStep(3)}
+                        data-testid="button-project-wizard-next-2"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {projectWizardStep === 3 && (
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center mb-2">
+                      <Calendar className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                      <h3 className="text-sm font-medium text-white">Date & Priority</h3>
+                      <p className="text-[9px] text-white/50 mt-1">Set a target date and priority level</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-medium text-white">Target Date</label>
+                        <Input
+                          type="date"
+                          value={projectWizardData.targetDate}
+                          onChange={(e) => setProjectWizardData(p => ({ ...p, targetDate: e.target.value }))}
+                          className="text-[11px]"
+                          data-testid="input-project-targetdate-wizard"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-medium text-white">Priority</label>
+                        <div className="flex flex-col gap-1.5">
+                          {[
+                            { value: 'low', label: 'Low', color: 'text-gray-300' },
+                            { value: 'medium', label: 'Medium', color: 'text-yellow-300' },
+                            { value: 'high', label: 'High', color: 'text-red-300' },
+                          ].map(p => (
+                            <button
+                              key={p.value}
+                              className={`px-3 py-2 rounded-lg text-[11px] text-left transition-all flex items-center gap-2 ${projectWizardData.priority === p.value ? 'bg-white/20 border border-white/30' : 'bg-white/5 border border-white/10 hover:bg-white/15'}`}
+                              onClick={() => setProjectWizardData(prev => ({ ...prev, priority: p.value }))}
+                              data-testid={`project-priority-${p.value}`}
+                            >
+                              <span className={`${p.color} font-medium`}>{p.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(2)} data-testid="button-project-wizard-back-3">Back</Button>
+                      <Button
+                        variant="outline"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
+                        onClick={() => setProjectWizardStep(4)}
+                        data-testid="button-project-wizard-next-3"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {projectWizardStep === 4 && (
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center mb-2">
+                      <CheckCircle2 className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
+                      <h3 className="text-sm font-medium text-white">Review</h3>
+                      <p className="text-[9px] text-white/50 mt-1">Confirm your project details</p>
+                    </div>
+                    <div className="space-y-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: projectWizardData.color }} />
+                        <span className="text-[13px] font-medium">{projectWizardData.name}</span>
+                      </div>
+                      {projectWizardData.description && (
+                        <p className="text-[10px] text-white/60 mt-1">{projectWizardData.description}</p>
+                      )}
+                      <div className="grid grid-cols-3 gap-2 mt-3 text-[10px]">
+                        <div className="bg-white/5 rounded p-2">
+                          <div className="text-white/40 mb-0.5">Status</div>
+                          <div className="capitalize">{projectWizardData.status.replace('_', ' ')}</div>
+                        </div>
+                        <div className="bg-white/5 rounded p-2">
+                          <div className="text-white/40 mb-0.5">Priority</div>
+                          <div className="capitalize">{projectWizardData.priority}</div>
+                        </div>
+                        <div className="bg-white/5 rounded p-2">
+                          <div className="text-white/40 mb-0.5">Target Date</div>
+                          <div>{projectWizardData.targetDate || 'None'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(3)} data-testid="button-project-wizard-back-4">Back</Button>
+                      <Button
+                        variant="outline"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' }}
+                        onClick={() => {
+                          const data = {
+                            name: projectWizardData.name,
+                            description: projectWizardData.description,
+                            color: projectWizardData.color,
+                            status: projectWizardData.status,
+                            targetDate: projectWizardData.targetDate || undefined,
+                            priority: projectWizardData.priority,
+                          };
+                          if (editingProject) {
+                            updateProjectMutation.mutate({ id: editingProject.id, data });
+                          } else {
+                            createProjectMutation.mutate(data);
+                          }
+                          setProjectDialogOpen(false);
+                          setEditingProject(null);
+                        }}
+                        data-testid="button-save-project-wizard"
+                      >
+                        {editingProject ? "Save Changes" : "Create Project"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </form>
-          </div>
-          </div>
+            </div>
           </div>
         )}
 
