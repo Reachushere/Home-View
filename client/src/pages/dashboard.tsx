@@ -9678,6 +9678,7 @@ export default function Dashboard() {
                 School Settings
               </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-settings" className="text-xs" onClick={() => {
+                  setIsQuickAddOpen(false);
                   setOriginalColorSettings({...colorSettings});
                   setOriginalBlinkSettings({...blinkSettings});
                   setIsSettingsDialogOpen(true);
