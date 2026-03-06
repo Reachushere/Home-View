@@ -9656,7 +9656,7 @@ export default function Dashboard() {
         </div>
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${(blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing + 4}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '16px', paddingRight: '16px', width: '100%', overflow: 'hidden', pointerEvents: 'auto' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${(blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing + 4}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '8px', paddingRight: '8px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { setIsHamburgerOpen(open); if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
