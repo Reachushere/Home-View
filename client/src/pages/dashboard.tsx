@@ -13937,7 +13937,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Layout Settings - in left column */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-5px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-8px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Layout Settings</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Adjust spacing and reset column widths</span>
@@ -14310,7 +14310,7 @@ export default function Dashboard() {
                 
                 {/* Save/Cancel Settings Buttons */}
                 </div>
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2" style={{ marginTop: '-3px' }}>
                   <Button 
                     variant="outline"
                     className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
@@ -14346,7 +14346,7 @@ export default function Dashboard() {
                     }}
                     data-testid="button-save-settings"
                   >
-                    Save Settings
+                    Save
                   </Button>
                 </div>
                 </div>
