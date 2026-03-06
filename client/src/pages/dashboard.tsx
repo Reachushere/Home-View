@@ -10131,7 +10131,7 @@ export default function Dashboard() {
                 </div>
                 <div className="px-4 py-3 space-y-3">
                   <p className="text-[10px] text-white/80">
-                    You have {returnReadingFiles.length} outstanding PDF{returnReadingFiles.length !== 1 ? 's' : ''} to listen to. Play one on the Kitchen Echo Studio?
+                    You have {returnReadingFiles.length} outstanding PDF{returnReadingFiles.length !== 1 ? 's' : ''} to listen to. Open one in the reader?
                   </p>
                   <Select
                     value={selectedReturnFile?.toString() || ''}
@@ -10163,13 +10163,13 @@ export default function Dashboard() {
                       className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
                       onClick={() => {
                         if (selectedReturnFile) {
-                          window.open(`/pdf-reader/${selectedReturnFile}?autoplay=true&speaker=${encodeURIComponent('media_player.echo_kitchen_studio_black_am')}`, '_blank');
+                          window.open(`/pdf-reader/${selectedReturnFile}?autoplay=true`, '_blank');
                         }
                         setShowReturnReadingPrompt(false);
                       }}
                       data-testid="button-return-play"
                     >
-                      Play on Kitchen Echo
+                      Open Reader
                     </Button>
                   </div>
                 </div>
