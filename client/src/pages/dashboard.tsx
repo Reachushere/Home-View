@@ -14994,7 +14994,7 @@ export default function Dashboard() {
                                       alt="Open PDF"
                                       className="shrink-0"
                                       style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
-                                      onClick={(e) => { e.stopPropagation(); window.open(`/pdf-viewer/${encodeURIComponent(modulePdfUrl)}`, '_blank'); }}
+                                      onClick={(e) => { e.stopPropagation(); const p = modulePdfUrl.startsWith('/') ? modulePdfUrl.slice(1) : encodeURIComponent(modulePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                       data-testid={`pdf-icon-prep-${task.id}`}
                                     />
                                   )}
@@ -15053,7 +15053,7 @@ export default function Dashboard() {
                                 src={pdfIconPath}
                                 alt="Open PDF"
                                 style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf') || url.startsWith('public/') || url.startsWith('uploads/')) { window.open(`/pdf-viewer/${encodeURIComponent(url)}`, '_blank'); } else { window.open(url, '_blank'); } }}
+                                onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
                                 data-testid={`pdf-icon-task-${task.id}`}
                               />
                             )}
@@ -15357,7 +15357,7 @@ export default function Dashboard() {
                                       alt="Open PDF"
                                       className="shrink-0"
                                       style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
-                                      onClick={(e) => { e.stopPropagation(); window.open(`/pdf-viewer/${encodeURIComponent(satPrepPdfUrl)}`, '_blank'); }}
+                                      onClick={(e) => { e.stopPropagation(); const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                       data-testid={`pdf-icon-sat-prep-${task.id}`}
                                     />
                                   )}
@@ -15399,7 +15399,7 @@ export default function Dashboard() {
                                 src={pdfIconPath}
                                 alt="Open PDF"
                                 style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                onClick={(e) => { e.stopPropagation(); window.open(`/pdf-viewer/${encodeURIComponent(satDuePdfUrl)}`, '_blank'); }}
+                                onClick={(e) => { e.stopPropagation(); const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                 data-testid={`pdf-icon-sat-task-${task.id}`}
                               />
                             )}
