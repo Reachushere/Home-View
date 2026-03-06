@@ -1085,85 +1085,61 @@ export default function PDFReaderPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-5 py-2 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
-          {allFiles.length > 1 && (
-            <div className="flex flex-col">
-              <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Select Reading</span>
-              <Select
-                value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
-                onValueChange={(url) => {
-                  const f = allFiles.find(af => af.downloadUrl === url);
-                  if (f) switchToFile(f);
-                }}
-              >
-                <SelectTrigger className="h-7 text-[10px] bg-black/30 border-white/20 text-white min-w-[200px]" data-testid="select-reading-file">
-                  <FileText className="h-3 w-3 mr-1 shrink-0" />
-                  <SelectValue placeholder="Select reading..." />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-white/20 text-white max-h-[300px]">
-                  {allFiles.map((af, idx) => {
-                    const listened = listenedFiles.has(af.path);
-                    let cleanName = af.name
-                      .replace(/^CPPA\s*122[-_\s.]*/i, '')
-                      .replace(/^CFNF\s*400[-_\s.]*/i, '')
-                      .replace(/^CASL\s*101[-_\s.]*/i, '')
-                      .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
-                      .replace(/\.pdf$/i, '')
-                      .trim();
-                    while (cleanName.match(/^[.\s\-_:•·]/)) cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                    return (
-                      <SelectItem key={af.path || idx} value={af.downloadUrl} className={`text-[10px] ${listened ? 'text-white/40 line-through' : 'text-white'}`}>
-                        {cleanName || af.name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <div className="flex flex-col">
-            <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Voice</span>
-            <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
-              <SelectTrigger className="h-7 text-[10px] bg-black/30 border-white/20 text-white min-w-[140px]" data-testid="select-voice">
-                <Headphones className="h-3 w-3 mr-1 shrink-0" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-white/20 text-white">
-                <SelectItem value="alloy">OpenAI Alloy (Female)</SelectItem>
-                <SelectItem value="echo">OpenAI Echo (Male)</SelectItem>
-                <SelectItem value="fable">OpenAI Fable (British)</SelectItem>
-                <SelectItem value="onyx">OpenAI Onyx (Deep)</SelectItem>
-                <SelectItem value="nova">OpenAI Nova (Female)</SelectItem>
-                <SelectItem value="shimmer">OpenAI Shimmer (Soft)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Speed</span>
-            <div className="flex items-center gap-1 h-7 bg-black/30 border border-white/20 rounded-md px-2">
-              <button type="button" data-testid="button-speed-down" className="text-white/60 hover:text-white text-sm font-bold cursor-pointer" onPointerDown={(e) => { e.preventDefault(); setPlaybackSpeed(s => Math.max(0.5, Math.round((s - 0.25) * 100) / 100)); }}>&ndash;</button>
-              <span className="text-[10px] text-white font-medium min-w-[3ch] text-center tabular-nums">{playbackSpeed}x</span>
-              <button type="button" data-testid="button-speed-up" className="text-white/60 hover:text-white text-sm font-bold cursor-pointer" onPointerDown={(e) => { e.preventDefault(); setPlaybackSpeed(s => Math.min(2, Math.round((s + 0.25) * 100) / 100)); }}>+</button>
-            </div>
-          </div>
-
-          <div className="flex flex-col ml-1">
-            <span className="text-[8px] uppercase tracking-wider text-white/50 mb-0.5">Volume</span>
-            <div className="flex items-center gap-1 h-7">
-              <Volume2 className="h-3 w-3 text-white/50 shrink-0" />
-              <div className="w-20 touch-auto">
-                <Slider
-                  data-testid="slider-volume"
-                  value={[volume]}
-                  onValueChange={([v]) => setVolume(v)}
-                  min={0} max={1} step={0.01}
-                  className="touch-auto [&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3"
-                />
+        <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
+          {allFiles.length > 1 ? (
+            <>
+              <div className="flex items-center gap-1 min-w-0 shrink">
+                <span className="text-[11px] font-bold text-white shrink-0">Module:</span>
+                <Select
+                  value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
+                  onValueChange={(url) => {
+                    const f = allFiles.find(af => af.downloadUrl === url);
+                    if (f) switchToFile(f);
+                  }}
+                >
+                  <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
+                    <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
+                      {(() => {
+                        const current = allFiles.find(af => af.downloadUrl === (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')));
+                        if (!current) return 'Select...';
+                        return current.name.replace(/\.pdf$/i, '');
+                      })()}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px] min-w-[350px]">
+                    {allFiles.map((af, idx) => {
+                      const listened = listenedFiles.has(af.path);
+                      return (
+                        <SelectItem key={af.path || idx} value={af.downloadUrl} className={`text-[10px] ${listened ? 'text-white/50 line-through' : ''}`}>
+                          {af.name.replace(/\.pdf$/i, '')}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-          </div>
+
+              <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
+                <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
+                  const currentIdx = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
+                  if (currentIdx > 0) switchToFile(allFiles[currentIdx - 1]);
+                }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) <= 0} data-testid="button-prev-file">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-[9px] text-white min-w-[40px] text-center">
+                  {(() => { const idx = allFiles.findIndex(af => af.downloadUrl === currentFileUrl); return idx >= 0 ? `${idx + 1}/${allFiles.length}` : '-'; })()}
+                </span>
+                <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
+                  const currentIdx = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
+                  if (currentIdx < allFiles.length - 1) switchToFile(allFiles[currentIdx + 1]);
+                }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) >= allFiles.length - 1} data-testid="button-next-file">
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <span className="text-[11px] font-bold text-white truncate">{file?.displayName || file?.originalName || currentFileName || 'PDF Reader'}</span>
+          )}
 
           <div className="ml-auto flex items-center gap-2 text-white/40 text-[10px]">
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin" />}
