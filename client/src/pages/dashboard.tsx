@@ -2748,20 +2748,16 @@ export default function Dashboard() {
   });
 
   // Handle adding a new sticky note
-  // Calculate sticky note home position (all-day box on day before today column)
+  const clampPosition = (x: number, y: number, noteWidth = 271, noteHeight = 250) => {
+    const maxX = Math.max(0, window.innerWidth - noteWidth);
+    const maxY = Math.max(0, window.innerHeight - 30);
+    return { x: Math.max(0, Math.min(x, maxX)), y: Math.max(0, Math.min(y, maxY)) };
+  };
+
   const getStickyNoteHomePosition = () => {
-    // The calendar starts at around x=400, each day column is ~150px wide
-    // Yesterday is 1 column before today, today column is typically around index 3-4
-    // All-day box is at the top of the calendar, around y=160
-    const calendarStartX = 430; // Approximate start of calendar
-    const dayColumnWidth = 150; // Width of each day column
-    const yesterdayColumnIndex = 2; // Yesterday is typically 2nd column (0-indexed)
-    const allDayBoxY = 170; // Top of all-day area
-    
-    return {
-      x: Math.floor(calendarStartX + (yesterdayColumnIndex * dayColumnWidth) + 10),
-      y: allDayBoxY
-    };
+    const centerX = Math.floor(window.innerWidth / 2 - 135);
+    const centerY = Math.floor(window.innerHeight / 2 - 125);
+    return clampPosition(centerX, centerY);
   };
 
   const handleAddStickyNote = () => {
@@ -2865,21 +2861,20 @@ export default function Dashboard() {
           
           if (targetCell) {
             const cellRect = targetCell.getBoundingClientRect();
-            const snapX = cellRect.left + 2;
-            const snapY = cellRect.top + 2;
-            const snapWidth = cellRect.width - 4;
-            const snapHeight = cellRect.height - 4;
+            const snapWidth = Math.round(cellRect.width - 4);
+            const snapHeight = Math.round(cellRect.height - 4);
+            const clamped = clampPosition(cellRect.left + 2, cellRect.top + 2, snapWidth, snapHeight);
             
             updateStickyNoteMutation.mutate({ 
               id: currentNoteId, 
               updates: { 
-                positionX: Math.round(snapX),
-                positionY: Math.round(snapY),
-                width: Math.round(snapWidth),
-                height: Math.round(snapHeight),
+                positionX: Math.round(clamped.x),
+                positionY: Math.round(clamped.y),
+                width: snapWidth,
+                height: snapHeight,
                 lastMovedAt: new Date(),
-                homePositionX: Math.round(snapX),
-                homePositionY: Math.round(snapY)
+                homePositionX: Math.round(clamped.x),
+                homePositionY: Math.round(clamped.y)
               } 
             });
             setDraggingStickyNote(null);
@@ -2896,11 +2891,14 @@ export default function Dashboard() {
       const wasSnapped = currentNote && (currentNote.width < 200 || currentNote.height < 200);
       
       // Save final position to database, resizing to default if it was snapped
+      const noteW = wasSnapped ? 271 : (currentNote?.width || 271);
+      const noteH = wasSnapped ? 250 : (currentNote?.height || 250);
+      const clampedPos = clampPosition(currentDragPosition.x, currentDragPosition.y, noteW, noteH);
       updateStickyNoteMutation.mutate({ 
         id: currentNoteId, 
         updates: { 
-          positionX: currentDragPosition.x,
-          positionY: currentDragPosition.y,
+          positionX: Math.round(clampedPos.x),
+          positionY: Math.round(clampedPos.y),
           ...(wasSnapped ? { width: 271, height: 250 } : {}),
           lastMovedAt: new Date() 
         } 
@@ -2935,18 +2933,31 @@ export default function Dashboard() {
         if (note.lastMovedAt && note.homePositionX !== null && note.homePositionY !== null) {
           const movedAt = new Date(note.lastMovedAt);
           if (movedAt < twoHoursAgo) {
-            // Check if note is not at home position
             if (note.positionX !== note.homePositionX || note.positionY !== note.homePositionY) {
+              const clamped = clampPosition(note.homePositionX, note.homePositionY, note.width, note.height);
               updateStickyNoteMutation.mutate({
                 id: note.id,
                 updates: { 
-                  positionX: note.homePositionX, 
-                  positionY: note.homePositionY,
+                  positionX: Math.round(clamped.x), 
+                  positionY: Math.round(clamped.y),
                   lastMovedAt: null
                 }
               });
             }
           }
+        }
+
+        // Also fix any notes that are currently off-screen
+        const maxX = window.innerWidth - note.width;
+        if (note.positionX > maxX || note.positionY > window.innerHeight - 30) {
+          const fixed = clampPosition(note.positionX, note.positionY, note.width, note.height);
+          updateStickyNoteMutation.mutate({
+            id: note.id,
+            updates: { 
+              positionX: Math.round(fixed.x), 
+              positionY: Math.round(fixed.y)
+            }
+          });
         }
       });
     };
