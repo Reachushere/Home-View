@@ -4626,31 +4626,9 @@ export async function registerRoutes(
         stopped.push("ttsSession");
       }
 
-      if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
-        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        const echoEntities = [
-          "media_player.echo_cat_left_am",
-          "media_player.echo_cat_right_am",
-          "media_player.echo_cat_washroom_middle",
-          "media_player.cat_wash_2",
-          "media_player.cat_washroom_media_group",
-        ];
-        for (const entity of echoEntities) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: entity }),
-            });
-            if (resp.ok) {
-              console.log(`[Cat Door] Stopped ${entity}`);
-              stopped.push(entity);
-            }
-          } catch (e: any) {
-            console.log(`[Cat Door] Error stopping ${entity}: ${e.message}`);
-          }
-        }
-      }
+      // NO Alexa Media Player (AMP) calls to Echo devices — audio plays via tablet Bluetooth.
+      // Stopping the tablets (by clearing server state) is sufficient.
+      // Sending media_stop to Echo entities causes Alexa to speak confirmations.
 
       console.log(`[Cat Door] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
@@ -4869,31 +4847,9 @@ export async function registerRoutes(
       stopped.push("ttsSession");
     }
 
-    if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const echoEntities = [
-        "media_player.echo_cat_left_am",
-        "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle",
-        "media_player.cat_wash_2",
-        "media_player.cat_washroom_media_group",
-      ];
-      for (const entity of echoEntities) {
-        try {
-          const resp = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: entity }),
-          });
-          if (resp.ok) {
-            console.log(`[Cat Wash Stop] Stopped ${entity}`);
-            stopped.push(entity);
-          }
-        } catch (e: any) {
-          console.log(`[Cat Wash Stop] Error stopping ${entity}: ${e.message}`);
-        }
-      }
-    }
+    // NO Alexa Media Player (AMP) calls to Echo devices — audio plays via tablet Bluetooth.
+    // Stopping the tablets (by clearing server state) is sufficient.
+    // Sending media_stop to Echo entities causes Alexa to speak confirmations.
 
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
     res.json({ stopped: true, stoppedItems: stopped });
