@@ -223,27 +223,34 @@ export async function updateCalendarEvent(eventId: string, task: {
   
   const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
   
-  // First, try to get the existing event to check its type
   let existingEvent;
   try {
     existingEvent = await calendar.events.get({
       calendarId: 'primary',
       eventId: eventId,
     });
-  } catch (err) {
+  } catch (err: any) {
+    const status = err?.status || err?.code;
+    if (status === 410 || status === 404) {
+      console.log(`Event ${eventId} was deleted/gone, will recreate`);
+      return { id: null, deleted: true } as any;
+    }
     console.log(`Existing event ${eventId} not found, will create new`);
     existingEvent = null;
   }
   
   const existingIsAllDay = !!(existingEvent?.data?.start?.date && !existingEvent?.data?.start?.dateTime);
   
-  // If switching between all-day and timed, delete and recreate
   if (existingEvent && existingIsAllDay !== isAllDay) {
     console.log(`Switching event type: was all-day=${existingIsAllDay}, now all-day=${isAllDay}`);
-    await calendar.events.delete({
-      calendarId: 'primary',
-      eventId: eventId,
-    });
+    try {
+      await calendar.events.delete({
+        calendarId: 'primary',
+        eventId: eventId,
+      });
+    } catch (delErr: any) {
+      console.log(`Delete during type switch failed (likely already gone), continuing with create`);
+    }
     
     // Create new event with correct type
     let event: any;
@@ -394,24 +401,32 @@ export async function updatePrepCalendarEvent(eventId: string, task: {
   const summary = `[PREP] ${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
   const description = `Start preparing for: ${task.title}\nDue: ${dueDate.toLocaleDateString()}\n\n${task.description || ''}`;
   
-  // Check if we need to delete and recreate (type change)
   let existingEvent;
   try {
     existingEvent = await calendar.events.get({
       calendarId: 'primary',
       eventId: eventId,
     });
-  } catch (err) {
+  } catch (err: any) {
+    const status = err?.status || err?.code;
+    if (status === 410 || status === 404) {
+      console.log(`Prep event ${eventId} was deleted/gone, will recreate`);
+      return { id: null, deleted: true } as any;
+    }
     existingEvent = null;
   }
   
   const existingIsAllDay = !!(existingEvent?.data?.start?.date && !existingEvent?.data?.start?.dateTime);
   
   if (existingEvent && existingIsAllDay !== isAllDay) {
-    await calendar.events.delete({
-      calendarId: 'primary',
-      eventId: eventId,
-    });
+    try {
+      await calendar.events.delete({
+        calendarId: 'primary',
+        eventId: eventId,
+      });
+    } catch (delErr: any) {
+      console.log(`Delete prep during type switch failed (likely already gone), continuing with create`);
+    }
     
     let event: any;
     if (isAllDay) {

@@ -2346,80 +2346,108 @@ export async function registerRoutes(
     try {
       const tasks = await storage.getTasks({});
       const results = { dueEvents: { created: 0, updated: 0, failed: 0 }, prepEvents: { created: 0, updated: 0, failed: 0, skipped: 0 } };
+      const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
       
       for (const task of tasks) {
-        // Sync due date event
         try {
           if (task.calendarEventId) {
-            // Update existing calendar event (may return new ID if type changed)
             const updatedEvent = await updateCalendarEvent(task.calendarEventId, {
               title: task.title,
               description: task.description,
               dueDate: task.dueDate,
               courseName: task.courseName,
             });
-            // If event was recreated, update the stored ID
-            if (updatedEvent.id && updatedEvent.id !== task.calendarEventId) {
-              await storage.updateTask(task.id, { calendarEventId: updatedEvent.id });
+            if (updatedEvent?.deleted) {
+              const event = await createCalendarEvent({
+                id: task.id, title: task.title, description: task.description,
+                dueDate: task.dueDate, courseName: task.courseName,
+              });
+              await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: "google" });
+              results.dueEvents.created++;
+            } else {
+              if (updatedEvent.id && updatedEvent.id !== task.calendarEventId) {
+                await storage.updateTask(task.id, { calendarEventId: updatedEvent.id });
+              }
+              results.dueEvents.updated++;
             }
-            results.dueEvents.updated++;
           } else {
-            // Create new calendar event
             const event = await createCalendarEvent({
-              id: task.id,
-              title: task.title,
-              description: task.description,
-              dueDate: task.dueDate,
-              courseName: task.courseName,
+              id: task.id, title: task.title, description: task.description,
+              dueDate: task.dueDate, courseName: task.courseName,
             });
-            
-            await storage.updateTask(task.id, {
-              calendarEventId: event.id,
-              calendarProvider: "google",
-            });
-            
+            await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: "google" });
             results.dueEvents.created++;
           }
-        } catch (err) {
-          console.error(`Failed to sync due date for task ${task.id}:`, err);
-          results.dueEvents.failed++;
+        } catch (err: any) {
+          const status = err?.status || err?.code;
+          if (status === 410) {
+            try {
+              const event = await createCalendarEvent({
+                id: task.id, title: task.title, description: task.description,
+                dueDate: task.dueDate, courseName: task.courseName,
+              });
+              await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: "google" });
+              results.dueEvents.created++;
+            } catch (recreateErr) {
+              console.error(`Failed to recreate event for task ${task.id}:`, recreateErr);
+              results.dueEvents.failed++;
+            }
+          } else {
+            console.error(`Failed to sync due date for task ${task.id}:`, err);
+            results.dueEvents.failed++;
+          }
         }
         
-        // Sync prep/start date event (if task has a startDate)
+        await delay(100);
+        
         if (task.startDate) {
           try {
             if (task.prepCalendarEventId) {
-              // Update existing prep event
               const updatedEvent = await updatePrepCalendarEvent(task.prepCalendarEventId, {
-                title: task.title,
-                description: task.description,
-                startDate: task.startDate,
-                dueDate: task.dueDate,
-                courseName: task.courseName,
+                title: task.title, description: task.description,
+                startDate: task.startDate, dueDate: task.dueDate, courseName: task.courseName,
               });
-              // If event was recreated, update the stored ID
-              if (updatedEvent.id && updatedEvent.id !== task.prepCalendarEventId) {
-                await storage.updateTask(task.id, { prepCalendarEventId: updatedEvent.id });
+              if (updatedEvent?.deleted) {
+                const event = await createPrepCalendarEvent({
+                  id: task.id, title: task.title, description: task.description,
+                  startDate: task.startDate, dueDate: task.dueDate, courseName: task.courseName,
+                });
+                await storage.updateTask(task.id, { prepCalendarEventId: event.id });
+                results.prepEvents.created++;
+              } else {
+                if (updatedEvent.id && updatedEvent.id !== task.prepCalendarEventId) {
+                  await storage.updateTask(task.id, { prepCalendarEventId: updatedEvent.id });
+                }
+                results.prepEvents.updated++;
               }
-              results.prepEvents.updated++;
             } else {
-              // Create new prep event
               const event = await createPrepCalendarEvent({
-                id: task.id,
-                title: task.title,
-                description: task.description,
-                startDate: task.startDate,
-                dueDate: task.dueDate,
-                courseName: task.courseName,
+                id: task.id, title: task.title, description: task.description,
+                startDate: task.startDate, dueDate: task.dueDate, courseName: task.courseName,
               });
-              
               await storage.updateTask(task.id, { prepCalendarEventId: event.id });
               results.prepEvents.created++;
             }
-          } catch (err) {
-            console.error(`Failed to sync prep event for task ${task.id}:`, err);
-            results.prepEvents.failed++;
+          } catch (err: any) {
+            const status = err?.status || err?.code;
+            if (status === 410) {
+              try {
+                const event = await createPrepCalendarEvent({
+                  id: task.id, title: task.title, description: task.description,
+                  startDate: task.startDate, dueDate: task.dueDate, courseName: task.courseName,
+                });
+                await storage.updateTask(task.id, { prepCalendarEventId: event.id });
+                results.prepEvents.created++;
+              } catch (recreateErr) {
+                console.error(`Failed to recreate prep event for task ${task.id}:`, recreateErr);
+                results.prepEvents.failed++;
+              }
+            } else {
+              console.error(`Failed to sync prep event for task ${task.id}:`, err);
+              results.prepEvents.failed++;
+            }
           }
+          await delay(100);
         } else {
           results.prepEvents.skipped++;
         }

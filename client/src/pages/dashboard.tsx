@@ -10294,14 +10294,20 @@ export default function Dashboard() {
               triggerButtonGlow('sync');
               toast({ title: "Syncing...", description: "Pushing tasks & pulling events" });
               try {
-                await Promise.all([
+                const [syncResult, pullResult] = await Promise.all([
                   syncAllCalendarMutation.mutateAsync(),
                   fetch('/api/calendar/pull', { method: 'POST' })
                 ]);
-                toast({ title: "Sync complete", description: "Push & pull finished" });
+                const syncData = syncResult as any;
+                const failCount = (syncData?.results?.dueEvents?.failed || 0) + (syncData?.results?.prepEvents?.failed || 0);
+                if (failCount > 0) {
+                  toast({ title: "Sync partially complete", description: `${failCount} event(s) failed (rate limit). Try again in a minute.` });
+                } else {
+                  toast({ title: "Sync complete", description: "Push & pull finished" });
+                }
                 queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
               } catch (error) {
-                toast({ title: "Sync failed", variant: "destructive" });
+                toast({ title: "Sync failed", description: "Try again in a minute", variant: "destructive" });
               }
             }}
             data-testid="honeycomb-sync"
