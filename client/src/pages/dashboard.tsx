@@ -1444,8 +1444,8 @@ export default function Dashboard() {
     const defaultSizes = {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
-      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions for 7 days (Sun-Sat)
-      progressColumnWidth: 0.75, // separate from day columns
+      dayColumnWidths: [1, 1, 1, 1, 1, 1, 0.7], // flex proportions for 7 days (Sun-Sat), Sat narrower
+      progressColumnWidth: 1.05, // separate from day columns
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
@@ -1459,10 +1459,14 @@ export default function Dashboard() {
         parsed.dayColumnWidths = [...oldWidths.slice(0, 6), oldWidths[7]];
       }
       if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 7) {
-        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.7];
+      }
+      if (parsed.dayColumnWidths[6] === 1 && parsed.progressColumnWidth !== undefined && parsed.progressColumnWidth <= 0.8) {
+        parsed.dayColumnWidths[6] = 0.7;
+        parsed.progressColumnWidth = 1.05;
       }
       if (parsed.progressColumnWidth === undefined || parsed.progressColumnWidth <= 0.5) {
-        parsed.progressColumnWidth = 0.75;
+        parsed.progressColumnWidth = 1.05;
       }
     };
     
