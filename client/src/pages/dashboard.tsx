@@ -11131,7 +11131,7 @@ export default function Dashboard() {
             ref={sidePillRef}
             className={`fixed z-[60] ${sidePillIdle ? 'bottom-pill-container-idle' : ''}`}
             style={{ 
-              bottom: '-5px', 
+              bottom: '-6px', 
               left: '50%',
               width: `${pillW}px`, 
               height: `${pillH + arrowH + 4}px`,
