@@ -15177,7 +15177,7 @@ export default function Dashboard() {
                     const readingP = calcFileProgress(readingFiles, readingFolderKey);
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
-                    const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
+                    const hasNoData = courseCode === 'CASL101' ? false : (!moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles);
                     const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
                     const moduleFolderCount = fileCounts[moduleFolderKey];
                     const readingFolderCount = fileCounts[readingFolderKey];
@@ -15259,7 +15259,7 @@ export default function Dashboard() {
                       >
                         {hasNoData ? (
                           <div className="flex-1 flex items-center justify-center">
-                            <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
+                            <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                           </div>
                         ) : (
                           <>
