@@ -412,7 +412,7 @@ export default function Dashboard() {
       .then((files: any[]) => {
         const unlistened = files.filter((f: any) => !f.listened && f.folder?.match(/week-\d+/i));
         if (unlistened.length > 0) {
-          setReturnReadingFiles(unlistened.map((f: any) => ({
+          const mapped = unlistened.map((f: any) => ({
             id: f.id,
             name: f.displayName || f.originalName || 'Unknown',
             folder: f.folder || '',
@@ -423,8 +423,9 @@ export default function Dashboard() {
             lastChunkIndex: f.lastChunkIndex,
             totalChunks: f.totalChunks,
             checkedChunks: f.checkedChunks,
-          })));
-          setSelectedReturnFile(unlistened[0].id);
+          }));
+          setReturnReadingFiles(mapped);
+          setSelectedReturnFile(mapped[0].id);
           setShowReturnReadingPrompt(true);
         }
       })
@@ -10120,7 +10121,7 @@ export default function Dashboard() {
 
           {/* Return-from-break reading prompt (dev mode only) */}
           {import.meta.env.DEV && (
-            <Dialog open={showReturnReadingPrompt} onOpenChange={setShowReturnReadingPrompt}>
+            <Dialog open={showReturnReadingPrompt && returnReadingFiles.length > 0} onOpenChange={setShowReturnReadingPrompt}>
               <DialogContent className="max-w-[340px] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%' }}>
                 <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                   <div className="flex items-center gap-2">
