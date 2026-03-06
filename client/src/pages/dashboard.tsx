@@ -9627,21 +9627,18 @@ export default function Dashboard() {
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-20px',
-            width: '50px',
-            height: '22px',
-            borderRadius: '0 0 6px 6px',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.22) 100%)',
-            borderLeft: '1.5px solid rgba(255,255,255,0.35)',
-            borderRight: '1.5px solid rgba(255,255,255,0.35)',
-            borderBottom: '1.5px solid rgba(255,255,255,0.35)',
-            borderTop: 'none',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12), inset 0 -1px 0 rgba(255,255,255,0.25)',
+            bottom: '-22px',
+            width: '60px',
+            height: '26px',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
           }}
-        />
+        >
+          <svg width="60" height="26" viewBox="0 0 60 26" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))' }}>
+            <path d="M4,0 L0,18 Q0,26 8,26 L52,26 Q60,26 60,18 L56,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          </svg>
+        </div>
 
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-wrap flex-shrink" style={{ gap: `${blinkSettings.buttonSpacing + 4}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '16px', paddingRight: '16px', width: '100%', pointerEvents: 'auto' }}>
@@ -11300,25 +11297,10 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <div
-          style={{
-            width: '50px',
-            height: '22px',
-            borderRadius: '6px 6px 0 0',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            borderLeft: '1.5px solid rgba(255,255,255,0.35)',
-            borderRight: '1.5px solid rgba(255,255,255,0.35)',
-            borderTop: '1.5px solid rgba(255,255,255,0.35)',
-            borderBottom: 'none',
-            boxShadow: '0 -4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingBottom: '2px',
-          }}
-        >
+        <svg width="60" height="26" viewBox="0 0 60 26" style={{ filter: 'drop-shadow(0 -2px 8px rgba(0,0,0,0.15))' }}>
+          <path d="M4,26 L0,8 Q0,0 8,0 L52,0 Q60,0 60,8 L56,26 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '3px' }}>
           <FolderOpen className="h-[13px] w-[13px] text-white" />
         </div>
       </div>
@@ -11338,26 +11320,11 @@ export default function Dashboard() {
         }}
         data-testid="left-add-task-tab"
       >
-        <div
-          style={{
-            width: '22px',
-            height: '50px',
-            borderRadius: '0 6px 6px 0',
-            background: 'linear-gradient(270deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            borderTop: '1.5px solid rgba(255,255,255,0.35)',
-            borderRight: '1.5px solid rgba(255,255,255,0.35)',
-            borderBottom: '1.5px solid rgba(255,255,255,0.35)',
-            borderLeft: 'none',
-            boxShadow: '4px 0 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingLeft: '2px',
-          }}
-        >
-          <span style={{ color: '#FFFFFF', fontSize: '18px', fontWeight: 700, lineHeight: 1, marginLeft: '2px' }}>+</span>
+        <svg width="26" height="60" viewBox="0 0 26 60" style={{ filter: 'drop-shadow(2px 0 8px rgba(0,0,0,0.15))' }}>
+          <path d="M0,4 L18,0 Q26,0 26,8 L26,52 Q26,60 18,60 L0,56 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '4px' }}>
+          <span style={{ color: '#FFFFFF', fontSize: '18px', fontWeight: 700, lineHeight: 1 }}>+</span>
         </div>
       </div>
 
@@ -11375,26 +11342,11 @@ export default function Dashboard() {
         }}
         data-testid="right-projects-tab"
       >
-        <div
-          style={{
-            width: '22px',
-            height: '50px',
-            borderRadius: '6px 0 0 6px',
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            borderTop: '1.5px solid rgba(255,255,255,0.35)',
-            borderLeft: '1.5px solid rgba(255,255,255,0.35)',
-            borderBottom: '1.5px solid rgba(255,255,255,0.35)',
-            borderRight: 'none',
-            boxShadow: '-4px 0 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingRight: '2px',
-          }}
-        >
-          <ClipboardList style={{ color: '#FFFFFF', height: '13px', width: '13px', strokeWidth: 2.5, marginRight: '2px' }} />
+        <svg width="26" height="60" viewBox="0 0 26 60" style={{ filter: 'drop-shadow(-2px 0 8px rgba(0,0,0,0.15))' }}>
+          <path d="M26,4 L8,0 Q0,0 0,8 L0,52 Q0,60 8,60 L26,56 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingRight: '4px' }}>
+          <ClipboardList style={{ color: '#FFFFFF', height: '13px', width: '13px', strokeWidth: 2.5 }} />
         </div>
       </div>
 
