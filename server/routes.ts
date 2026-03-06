@@ -4386,7 +4386,7 @@ export async function registerRoutes(
       console.log(`[Cat Lights] Timestamp: ${new Date().toISOString()}`);
       console.log(`[Cat Lights] Light state: ${lightState}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
-      console.log(`[Cat Lights] Architecture: TTS via /api/tts/speaker → media_player.cat_wash_2 (NO alexa_media/AMP calls)`);
+      console.log(`[Cat Lights] Architecture: tablet-browser TTS → Bluetooth → Echo (NO alexa_media/AMP calls)`);
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -4451,9 +4451,8 @@ export async function registerRoutes(
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
-      // Build reader URL with autoplay - plays to Cat Wash speaker group via /api/tts/speaker
-      const catWashSpeakerGroup = "media_player.cat_wash_2";
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(catWashSpeakerGroup)}&auth=${authParam}`;
+      // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
 
       // Extract chunks to store in state
       const extractResult = await extractAndChunkPdf(cppaModule);
