@@ -9628,15 +9628,15 @@ export default function Dashboard() {
             left: '50%',
             transform: 'translateX(-50%)',
             bottom: '-25px',
-            width: '90px',
+            width: '84px',
             height: '27px',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
           }}
         >
-          <svg width="90" height="27" viewBox="0 0 90 27" style={{ display: 'block' }}>
-            <path d="M0,0 L90,0 L90,11 Q81,11 81,16 L81,15 Q81,27 69,27 L21,27 Q9,27 9,15 L9,16 Q9,11 0,11 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <svg width="84" height="27" viewBox="0 0 84 27" style={{ display: 'block' }}>
+            <path d="M0,0 L84,0 L84,11 Q75,11 75,16 L75,15 Q75,27 63,27 L21,27 Q9,27 9,15 L9,16 Q9,11 0,11 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           </svg>
         </div>
 
@@ -11297,18 +11297,18 @@ export default function Dashboard() {
         title="Files"
         data-testid="bottom-tab-files"
       >
-        <div style={{ position: 'relative', width: '90px', height: '27px' }}>
+        <div style={{ position: 'relative', width: '84px', height: '27px' }}>
           <div style={{
             position: 'absolute',
             bottom: '-2px',
             left: '-6px',
-            width: '102px',
+            width: '96px',
             height: '16px',
             background: colorSettings.mainBackgroundGradient ? colorSettings.mainBackgroundGradientEnd : colorSettings.mainBackground,
             zIndex: 0,
           }} />
-          <svg width="90" height="27" viewBox="0 0 90 27" style={{ display: 'block', position: 'relative', zIndex: 1 }}>
-            <path d="M0,27 L90,27 L90,18 Q81,18 81,12 L81,11 Q81,0 69,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <svg width="84" height="27" viewBox="0 0 84 27" style={{ display: 'block', position: 'relative', zIndex: 1 }}>
+            <path d="M0,27 L84,27 L84,18 Q75,18 75,12 L75,11 Q75,0 63,0 L21,0 Q9,0 9,11 L9,12 Q9,18 0,18 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           </svg>
         </div>
       </div>
@@ -11328,8 +11328,8 @@ export default function Dashboard() {
         }}
         data-testid="left-add-task-tab"
       >
-        <svg width="27" height="90" viewBox="0 0 27 90" style={{ display: 'block' }}>
-          <path d="M0,0 L0,90 L11,90 Q11,81 17,81 L18,81 Q27,81 27,69 L27,21 Q27,9 18,9 L17,9 Q11,9 11,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="27" height="84" viewBox="0 0 27 84" style={{ display: 'block' }}>
+          <path d="M0,0 L0,84 L11,84 Q11,75 17,75 L18,75 Q27,75 27,63 L27,21 Q27,9 18,9 L17,9 Q11,9 11,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
@@ -11347,8 +11347,8 @@ export default function Dashboard() {
         }}
         data-testid="right-projects-tab"
       >
-        <svg width="27" height="90" viewBox="0 0 27 90" style={{ display: 'block' }}>
-          <path d="M27,0 L27,90 L16,90 Q16,81 10,81 L9,81 Q0,81 0,69 L0,21 Q0,9 9,9 L10,9 Q16,9 16,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <svg width="27" height="84" viewBox="0 0 27 84" style={{ display: 'block' }}>
+          <path d="M27,0 L27,84 L16,84 Q16,75 10,75 L9,75 Q0,75 0,63 L0,21 Q0,9 9,9 L10,9 Q16,9 16,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
@@ -17607,7 +17607,7 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '13px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '16px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
