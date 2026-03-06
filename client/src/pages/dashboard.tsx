@@ -404,7 +404,8 @@ export default function Dashboard() {
 
     if (!lastActive) return;
     const elapsed = now - parseInt(lastActive, 10);
-    if (elapsed < TWO_HOURS) return;
+    // TEMP: force show for testing
+    // if (elapsed < TWO_HOURS) return;
 
     fetch("/api/files")
       .then(r => r.json())
