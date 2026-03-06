@@ -10202,25 +10202,7 @@ export default function Dashboard() {
             {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
           </div>
 
-          {/* Push Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => { toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" }); syncAllCalendarMutation.mutate(); }}
-            data-testid="honeycomb-push"
-            title="Push tasks to Google Calendar"
-          >
-            <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-          </div>
-
-          {/* Pull Button (moved from bottom pill) */}
+          {/* Sync Button - Push & Pull combined */}
           <div 
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -10232,16 +10214,23 @@ export default function Dashboard() {
             }}
             className="pill-button-hover"
             onClick={async () => {
-              toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
+              triggerButtonGlow('sync');
+              toast({ title: "Syncing...", description: "Pushing tasks & pulling events" });
               try {
-                const res = await fetch('/api/calendar/pull', { method: 'POST' });
-                if (res.ok) { toast({ title: "Pull complete", description: "Calendar events synced" }); queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }
-              } catch (error) { toast({ title: "Pull failed", variant: "destructive" }); }
+                await Promise.all([
+                  syncAllCalendarMutation.mutateAsync(),
+                  fetch('/api/calendar/pull', { method: 'POST' })
+                ]);
+                toast({ title: "Sync complete", description: "Push & pull finished" });
+                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+              } catch (error) {
+                toast({ title: "Sync failed", variant: "destructive" });
+              }
             }}
-            data-testid="honeycomb-pull"
-            title="Pull events from Google Calendar"
+            data-testid="honeycomb-sync"
+            title="Sync: Push tasks & pull events"
           >
-            <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7 16V4m0 0L3 8m4-4l4 4" /><path d="M17 8v12m0 0l4-4m-4 4l-4-4" /></svg>
           </div>
 
           {/* Refresh Button */}
@@ -10259,23 +10248,6 @@ export default function Dashboard() {
             data-testid="button-refresh-data"
           >
             <RefreshCw className="h-[18px] w-[18px] text-white" />
-          </div>
-
-          {/* Sync Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => { if (!syncAllCalendarMutation.isPending) { if (window.confirm('Are you sure you want to sync?')) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } } }}
-            data-testid="button-sync-calendar"
-          >
-            {syncAllCalendarMutation.isPending ? <Loader2 className="h-[18px] w-[18px] text-white animate-spin" /> : <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M14 4l7 7-7 7V4z" /><path d="M10 20l-7-7 7-7v14z" /></svg>}
           </div>
 
           {/* Kitchen Stop Button (moved from bottom pill) */}
