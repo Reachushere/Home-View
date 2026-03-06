@@ -17891,8 +17891,8 @@ export default function Dashboard() {
               borderTop: '1px solid rgba(255,255,255,0.7)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: '0px',
-              opacity: isPillMenuOpen ? 0 : 1,
-              pointerEvents: isPillMenuOpen ? 'none' : 'auto',
+              opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
+              pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
               transition: 'opacity 0.3s ease-in-out', 
               marginRight: '0px',
               paddingBottom: '5px'
