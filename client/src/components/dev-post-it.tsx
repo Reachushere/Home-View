@@ -161,7 +161,15 @@ export function DevPostIt() {
     if (response === "yes") {
       setTasks(prev => prev.filter(t => t.id !== taskId));
     } else if (response === "no") {
-      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, checked: false, status: "active" } : t));
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, checked: false, status: "retry", retrySentAt: Date.now() } : t));
+      fetch("/api/dev-retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId, text: taskText, reason: "not-completed" }),
+      }).catch(() => {});
+      setTimeout(() => {
+        setTasks(prev => prev.map(t => t.id === taskId && t.status === "retry" ? { ...t, retrySentAt: undefined } : t));
+      }, 2000);
     } else {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "answer-later" } : t));
     }
