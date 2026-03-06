@@ -5,7 +5,7 @@ interface PostItTask {
   id: string;
   text: string;
   checked: boolean;
-  status: "active" | "answer-later";
+  status: "active" | "answer-later" | "retry";
 }
 
 interface ConfirmDialog {
@@ -121,6 +121,18 @@ export function DevPostIt() {
     setConfirmDialog(null);
   }, [confirmDialog]);
 
+  const handleRetry = useCallback((taskId: string) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "retry" } : t));
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      fetch("/api/dev-retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId, text: task.text }),
+      }).catch(() => {});
+    }
+  }, [tasks]);
+
   useEffect(() => {
     (window as any).__devPostItAddTask = addTask;
     return () => { delete (window as any).__devPostItAddTask; };
@@ -177,9 +189,11 @@ export function DevPostIt() {
                   style={{
                     display: "flex",
                     alignItems: "flex-start",
-                    gap: "6px",
-                    padding: "2px 0",
+                    gap: "5px",
+                    padding: "3px 0",
+                    borderBottom: "1px dashed rgba(146,64,14,0.15)",
                     opacity: task.status === "answer-later" ? 0.55 : 1,
+                    background: task.status === "retry" ? "rgba(239,68,68,0.08)" : "transparent",
                   }}
                   data-testid={`postit-task-${task.id}`}
                 >
@@ -187,23 +201,52 @@ export function DevPostIt() {
                     type="checkbox"
                     checked={false}
                     onChange={() => handleCheckChange(task.id)}
-                    style={{ marginTop: "3px", accentColor: "#92400e", cursor: "pointer" }}
+                    style={{ marginTop: "3px", accentColor: "#92400e", cursor: "pointer", flexShrink: 0 }}
                     data-testid={`postit-checkbox-${task.id}`}
                   />
                   <span style={{
                     fontSize: "13.5px",
-                    color: "#78350f",
+                    color: task.status === "retry" ? "#dc2626" : "#78350f",
                     lineHeight: 1.3,
                     wordBreak: "break-word",
+                    flex: 1,
+                    fontWeight: task.status === "retry" ? 700 : 400,
                   }}>
                     {task.text}
                     {task.status === "answer-later" && (
                       <span style={{ fontSize: "10px", color: "#b45309", marginLeft: "4px" }}>(later)</span>
                     )}
+                    {task.status === "retry" && (
+                      <span style={{ fontSize: "10px", color: "#dc2626", marginLeft: "4px" }}>(retrying...)</span>
+                    )}
                   </span>
                   <button
+                    onClick={() => handleRetry(task.id)}
+                    style={{
+                      background: "linear-gradient(180deg, #ef4444 0%, #b91c1c 100%)",
+                      border: "1px solid #991b1b",
+                      borderRadius: "10px",
+                      color: "white",
+                      fontSize: "8px",
+                      fontWeight: 700,
+                      fontFamily: "system-ui, sans-serif",
+                      padding: "2px 6px",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                      marginTop: "1px",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2)",
+                      letterSpacing: "0.3px",
+                      lineHeight: "1.4",
+                      whiteSpace: "nowrap",
+                    }}
+                    data-testid={`postit-retry-${task.id}`}
+                    title="Ask agent to try again"
+                  >
+                    Try Again
+                  </button>
+                  <button
                     onClick={() => setTasks(prev => prev.filter(t => t.id !== task.id))}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "1px", marginLeft: "auto", flexShrink: 0 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "1px", flexShrink: 0, marginTop: "1px" }}
                     data-testid={`postit-delete-${task.id}`}
                   >
                     <X className="h-3 w-3 text-yellow-700/40 hover:text-red-600" />
