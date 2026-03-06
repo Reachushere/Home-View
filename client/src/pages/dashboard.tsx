@@ -17859,7 +17859,7 @@ export default function Dashboard() {
               {dueTodayTasks.slice(0, 3).map((task, idx) => (
               <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                  <input type="checkbox" checked={task.isCompleted ?? false} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" style={{ accentColor: (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; const c = coursesData.courses.find(co => co.name?.split(' - ')[0]?.toUpperCase() === cc); return c?.color || '#888'; })() }} data-today-checkbox={task.id} />
                 </div>
                 <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
@@ -17977,7 +17977,7 @@ export default function Dashboard() {
               {dueTomorrowTasks.slice(0, 3).map((task, idx) => (
               <div key={task.id || idx} data-box-task-id={task.id} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
                 <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" data-tomorrow-checkbox={task.id} disabled />
+                  <input type="checkbox" checked={task.isCompleted ?? false} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" style={{ accentColor: (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; const c = coursesData.courses.find(co => co.name?.split(' - ')[0]?.toUpperCase() === cc); return c?.color || '#888'; })() }} data-tomorrow-checkbox={task.id} />
                 </div>
                 <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
