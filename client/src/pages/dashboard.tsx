@@ -11345,7 +11345,7 @@ export default function Dashboard() {
         className="fixed z-[59] cursor-pointer left-tab-bounce"
         style={{
           left: '-9px',
-          top: '50%',
+          top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
         }}
@@ -11386,7 +11386,7 @@ export default function Dashboard() {
         className="fixed z-[59] cursor-pointer right-tab-bounce"
         style={{
           right: '-9px',
-          top: '50%',
+          top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
         }}
