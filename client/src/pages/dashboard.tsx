@@ -11317,8 +11317,9 @@ export default function Dashboard() {
               boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               pointerEvents: 'none',
             }} />
-            {/* Rounded tab - half circle on top, visible when pill is closed */}
+            {/* Rounded tab - half circle on top with Files icon, navigates to /files */}
             <div
+              onClick={() => { window.location.href = '/files'; }}
               style={{
                 position: 'absolute',
                 top: `${arrowH - 23}px`,
@@ -11335,11 +11336,20 @@ export default function Dashboard() {
                 borderTop: '1.5px solid rgba(255,255,255,0.35)',
                 borderBottom: 'none',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
-                pointerEvents: 'none',
+                pointerEvents: 'auto',
+                cursor: 'pointer',
                 opacity: isPillMenuOpen ? 0 : 0.9,
                 transition: 'opacity 0.3s ease-in-out',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingBottom: '2px',
               }}
-            />
+              title="Files"
+              data-testid="bottom-tab-files"
+            >
+              <FolderOpen className="h-[14px] w-[14px] text-white" />
+            </div>
 
             {/* Buttons container - offset by arrowH */}
             <div style={{ position: 'absolute', top: `${arrowH}px`, left: '0', width: `${pillW}px`, height: `${pillH}px` }}>
