@@ -11928,28 +11928,34 @@ export default function Dashboard() {
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={handleQuickAddClose}>
               <div 
-                className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
+                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-black shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 50%, rgba(255,255,255,0.70) 100%)',
+                  backdropFilter: 'blur(40px)',
+                  WebkitBackdropFilter: 'blur(40px)',
+                  border: '1px solid rgba(255,255,255,0.5)',
+                  borderTop: '1px solid rgba(255,255,255,0.7)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
                 }}
                 onClick={(e) => e.stopPropagation()}
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }}>
                   <div className="flex items-center gap-2">
-                    <Plus className="h-3.5 w-3.5 text-white" />
-                    <h2 className="text-xs font-normal text-white tracking-wide uppercase">
+                    <Plus className="h-3.5 w-3.5 text-black/70" />
+                    <h2 className="text-xs font-normal text-black/70 tracking-wide uppercase">
                       {quickAddStep === 0 ? 'Select Type' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
                     </h2>
                   </div>
-                  <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
+                  <button onClick={handleQuickAddClose} className="text-black/60 hover:text-black/80 transition-colors p-1" data-testid="button-close-quick-add">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
 
                 {/* Step indicator */}
-                <div className="flex items-center gap-0.5 px-4 py-2 bg-black/20 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+                <div className="flex items-center gap-0.5 px-4 py-2 border-b border-black/5 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.15)' }}>
                   {[
                     { id: 0, label: "Type" },
                     { id: 1, label: "Name" },
@@ -18451,19 +18457,23 @@ export default function Dashboard() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-          <div className="overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white text-[11px] [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_textarea]:text-black [&_textarea]:bg-white"
+          <div className="overflow-hidden flex flex-col rounded-xl text-black text-[11px] [&_input]:text-black [&_input]:bg-white/50 [&_textarea]:text-black [&_textarea]:bg-white/50"
             style={{
               fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 0 40px rgba(0,0,0,0.4)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 50%, rgba(255,255,255,0.70) 100%)',
+              backdropFilter: 'blur(40px)',
+              WebkitBackdropFilter: 'blur(40px)',
+              border: '1px solid rgba(255,255,255,0.5)',
+              borderTop: '1px solid rgba(255,255,255,0.7)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             }}
           >
-            <div className="flex items-center justify-between px-5 py-3 bg-black/30 border-b border-white/20">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-black/10" style={{ background: 'rgba(255,255,255,0.3)' }}>
               <div className="flex items-center gap-2">
-                <FolderOpen className="h-3.5 w-3.5 text-white" />
-                <h2 className="text-xs font-normal text-white tracking-wide uppercase">{editingProject ? "Edit Project" : "Create New Project"}</h2>
+                <FolderOpen className="h-3.5 w-3.5 text-black/70" />
+                <h2 className="text-xs font-normal text-black/70 tracking-wide uppercase">{editingProject ? "Edit Project" : "Create New Project"}</h2>
               </div>
-              <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-project-dialog">
+              <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-black/60 hover:text-black/80 transition-colors p-1" data-testid="button-close-project-dialog">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -18490,7 +18500,7 @@ export default function Dashboard() {
               className="space-y-3"
             >
               <div className="space-y-2">
-                <label className="text-[11px] font-medium text-white">Project Name</label>
+                <label className="text-[11px] font-medium text-black/70">Project Name</label>
                 <Input 
                   name="name"
                   defaultValue={editingProject?.name || ''}
@@ -18502,7 +18512,7 @@ export default function Dashboard() {
               </div>
               
               <div className="space-y-2">
-                <label className="text-[11px] font-medium text-white">Description</label>
+                <label className="text-[11px] font-medium text-black/70">Description</label>
                 <Textarea 
                   name="description"
                   defaultValue={editingProject?.description || ''}
@@ -18515,7 +18525,7 @@ export default function Dashboard() {
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Color</label>
+                  <label className="text-[11px] font-medium text-black/70">Color</label>
                   <input 
                     type="color"
                     name="color"
@@ -18526,7 +18536,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Status</label>
+                  <label className="text-[11px] font-medium text-black/70">Status</label>
                   <select 
                     name="status"
                     defaultValue={editingProject?.status || 'planning'}
@@ -18543,7 +18553,7 @@ export default function Dashboard() {
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Target Date</label>
+                  <label className="text-[11px] font-medium text-black/70">Target Date</label>
                   <Input 
                     type="date"
                     name="targetDate"
@@ -18554,7 +18564,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-white">Priority</label>
+                  <label className="text-[11px] font-medium text-black/70">Priority</label>
                   <select 
                     name="priority"
                     defaultValue={editingProject?.priority || 'medium'}
@@ -18569,13 +18579,13 @@ export default function Dashboard() {
               </div>
               
               <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+                <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-black/20 text-black/70 hover:bg-black/5 hover:text-black">
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   variant="outline"
-                  className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="border !border-blue-500 text-blue-600 hover:text-blue-700 hover:!border-blue-400 hover:bg-blue-50 shadow-[0_0_8px_rgba(59,130,246,0.3)] hover:shadow-[0_0_12px_rgba(59,130,246,0.4)] transition-all duration-200"
                   data-testid="button-save-project-flyout"
                 >
                   {editingProject ? "Save Changes" : "Create Project"}
