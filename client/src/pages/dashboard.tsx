@@ -11838,20 +11838,22 @@ export default function Dashboard() {
           >
             <div
               style={{
-                padding: '14px 8px',
-                borderRadius: '12px 0 0 12px',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
+                width: '23px',
+                height: '46px',
+                borderRadius: '9999px 0 0 9999px',
+                background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
                 border: '1.5px solid rgba(255,255,255,0.35)',
                 borderRight: 'none',
                 boxShadow: '-4px 0 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
                 fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                writingMode: 'vertical-rl',
-                textOrientation: 'mixed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 600, letterSpacing: '0.3px' }}>+ Task</span>
+              <span style={{ color: '#FFFFFF', fontSize: '9px', fontWeight: 700, writingMode: 'vertical-rl', textOrientation: 'mixed', letterSpacing: '0.5px' }}>+</span>
             </div>
           </div>
 
