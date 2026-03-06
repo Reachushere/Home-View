@@ -9547,7 +9547,7 @@ export default function Dashboard() {
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
                         </>
                       ) : (
                         <>
@@ -9590,7 +9590,7 @@ export default function Dashboard() {
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
+                          <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
                         </>
                       ) : (
                         <>
