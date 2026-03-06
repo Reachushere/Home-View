@@ -14993,7 +14993,7 @@ export default function Dashboard() {
                                     src={pdfIconPath}
                                     alt="Open PDF"
                                     style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                    onClick={(e) => { e.stopPropagation(); const p = modulePdfUrl.startsWith('/') ? modulePdfUrl.slice(1) : encodeURIComponent(modulePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
+                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const p = modulePdfUrl.startsWith('/') ? modulePdfUrl.slice(1) : encodeURIComponent(modulePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                     data-testid={`pdf-icon-prep-${task.id}`}
                                   />
                                 )}
@@ -15051,7 +15051,7 @@ export default function Dashboard() {
                                 src={pdfIconPath}
                                 alt="Open PDF"
                                 style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                onClick={(e) => { e.stopPropagation(); const url = dueModulePdfUrl; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const url = dueModulePdfUrl; if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
                                 data-testid={`pdf-icon-task-${task.id}`}
                               />
                             )}
@@ -15356,7 +15356,7 @@ export default function Dashboard() {
                                     src={pdfIconPath}
                                     alt="Open PDF"
                                     style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                    onClick={(e) => { e.stopPropagation(); const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
+                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                     data-testid={`pdf-icon-sat-prep-${task.id}`}
                                   />
                                 )}
@@ -15397,7 +15397,7 @@ export default function Dashboard() {
                                 src={pdfIconPath}
                                 alt="Open PDF"
                                 style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2 }}
-                                onClick={(e) => { e.stopPropagation(); const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
+                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); e.nativeEvent.stopImmediatePropagation(); const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); }}
                                 data-testid={`pdf-icon-sat-task-${task.id}`}
                               />
                             )}
