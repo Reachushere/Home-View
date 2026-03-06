@@ -14906,7 +14906,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '0px', boxShadow: `0 0 0 0.3px ${course.darkColor}` }} />
                                 )}
                                 <div
-                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden relative"
+                                  className="flex items-center text-[9px] rounded border cursor-pointer relative"
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
@@ -14914,17 +14914,19 @@ export default function Dashboard() {
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                     boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                    overflow: 'hidden',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREP</span>
-                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center flex-1" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
+                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                   {modulePdfUrl && (
                                     <img
                                       src={pdfIconPath}
                                       alt="Open PDF"
-                                      style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
+                                      className="shrink-0"
+                                      style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
                                       onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(modulePdfUrl)}`; }}
                                       data-testid={`pdf-icon-prep-${task.id}`}
                                     />
@@ -14942,7 +14944,7 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={task.id}
-                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -14950,6 +14952,7 @@ export default function Dashboard() {
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                overflow: 'hidden',
                               }}
                               title={task.title}
                             >
@@ -14960,7 +14963,7 @@ export default function Dashboard() {
                                 data-testid={`checkbox-course-row-${task.id}`}
                               />
                               <span 
-                                className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1"
+                                className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
                                 onClick={() => setEditingTask(task)}
                               >
                                 {task.title}
@@ -14969,7 +14972,8 @@ export default function Dashboard() {
                                 <img
                                   src={pdfIconPath}
                                   alt="Open PDF"
-                                  style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
+                                  className="shrink-0"
+                                  style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
                                   onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(dueModulePdfUrl)}`; }}
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
@@ -15257,21 +15261,23 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                                 )}
                                 <div
-                                  className="flex items-stretch text-[9px] truncate rounded border cursor-pointer overflow-hidden"
+                                  className="flex items-center text-[9px] rounded border cursor-pointer"
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
+                                    overflow: 'hidden',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF' }}>PREP</span>
-                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex items-center flex-1" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '0.1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
+                                  <span className="truncate font-bold text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                   {satPrepPdfUrl && (
                                     <img
                                       src={pdfIconPath}
                                       alt="Open PDF"
-                                      style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
+                                      className="shrink-0"
+                                      style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '2px', cursor: 'pointer', imageRendering: 'auto' }}
                                       onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(satPrepPdfUrl)}`; }}
                                       data-testid={`pdf-icon-sat-prep-${task.id}`}
                                     />
@@ -15286,16 +15292,17 @@ export default function Dashboard() {
                           const satDueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === satDueModuleFolder && f.objectPath) : null;
                           const satDuePdfUrl = satDueModuleFile?.objectPath || null;
                           return (
-                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor }}
+                            <div key={task.id} className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden' }}
                               onClick={() => setEditingTask(task)}
                             >
-                              <span className="truncate font-bold pl-px flex-1">{task.title}</span>
+                              <span className="truncate font-bold pl-px flex-1 min-w-0">{task.title}</span>
                               {satDuePdfUrl && (
                                 <img
                                   src={pdfIconPath}
                                   alt="Open PDF"
-                                  style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0, marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
+                                  className="shrink-0"
+                                  style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
                                   onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(satDuePdfUrl)}`; }}
                                   data-testid={`pdf-icon-sat-task-${task.id}`}
                                 />
