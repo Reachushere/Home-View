@@ -6,6 +6,7 @@ interface PostItTask {
   text: string;
   checked: boolean;
   status: "active" | "answer-later" | "retry";
+  retrySentAt?: number;
 }
 
 interface ConfirmDialog {
@@ -169,7 +170,7 @@ export function DevPostIt() {
   }, [confirmDialog]);
 
   const handleRetry = useCallback((taskId: string) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "retry" } : t));
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "retry", retrySentAt: Date.now() } : t));
     const task = tasks.find(t => t.id === taskId);
     if (task) {
       fetch("/api/dev-retry", {
@@ -178,6 +179,9 @@ export function DevPostIt() {
         body: JSON.stringify({ taskId, text: task.text }),
       }).catch(() => {});
     }
+    setTimeout(() => {
+      setTasks(prev => prev.map(t => t.id === taskId && t.status === "retry" ? { ...t, retrySentAt: undefined } : t));
+    }, 2000);
   }, [tasks]);
 
   useEffect(() => {
@@ -271,26 +275,30 @@ export function DevPostIt() {
                   <button
                     onClick={() => handleRetry(task.id)}
                     style={{
-                      background: "linear-gradient(180deg, #ef4444 0%, #b91c1c 100%)",
-                      border: "1px solid #991b1b",
+                      background: task.retrySentAt
+                        ? "linear-gradient(180deg, #22c55e 0%, #15803d 100%)"
+                        : "linear-gradient(180deg, #ef4444 0%, #b91c1c 100%)",
+                      border: task.retrySentAt ? "1px solid #166534" : "1px solid #991b1b",
                       borderRadius: "10px",
                       color: "white",
                       fontSize: "8px",
                       fontWeight: 700,
                       fontFamily: "system-ui, sans-serif",
                       padding: "2px 6px",
-                      cursor: "pointer",
+                      cursor: task.retrySentAt ? "default" : "pointer",
                       flexShrink: 0,
                       marginTop: "1px",
                       boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2)",
                       letterSpacing: "0.3px",
                       lineHeight: "1.4",
                       whiteSpace: "nowrap",
+                      transition: "all 0.2s ease",
                     }}
+                    disabled={!!task.retrySentAt}
                     data-testid={`postit-retry-${task.id}`}
                     title="Ask agent to try again"
                   >
-                    Try Again
+                    {task.retrySentAt ? "✓ Sent!" : "Try Again"}
                   </button>
                   <button
                     onClick={() => setTasks(prev => prev.filter(t => t.id !== task.id))}
