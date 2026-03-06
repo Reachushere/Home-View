@@ -18561,7 +18561,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <FolderOpen className="h-3.5 w-3.5 text-white" />
                   <h2 className="text-xs font-normal text-white tracking-wide uppercase">
-                    {projectWizardStep === 0 ? (editingProject ? 'Edit Project' : 'Project Name') : projectWizardStep === 1 ? 'Description' : projectWizardStep === 2 ? 'Color & Status' : projectWizardStep === 3 ? 'Date & Priority' : 'Review'}
+                    {projectWizardStep === 0 ? (editingProject ? 'Edit Project' : 'Add Project') : projectWizardStep === 1 ? 'Description' : projectWizardStep === 2 ? 'Color & Status' : projectWizardStep === 3 ? 'Date & Priority' : 'Review'}
                   </h2>
                 </div>
                 <button onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-project-dialog">
