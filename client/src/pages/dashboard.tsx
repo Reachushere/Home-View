@@ -9636,7 +9636,7 @@ export default function Dashboard() {
           }}
         >
           <svg width="76" height="22" viewBox="0 0 76 22" style={{ display: 'block' }}>
-            <path d="M0,0 L76,0 L73,14 Q72,22 63,22 L13,22 Q4,22 3,14 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <path d="M0,0 L76,0 L76,10 Q76,22 64,22 L12,22 Q0,22 0,10 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           </svg>
         </div>
 
@@ -11298,7 +11298,7 @@ export default function Dashboard() {
         data-testid="bottom-tab-files"
       >
         <svg width="76" height="22" viewBox="0 0 76 22" style={{ display: 'block' }}>
-          <path d="M0,22 L76,22 L73,8 Q72,0 63,0 L13,0 Q4,0 3,8 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M0,22 L76,22 L76,12 Q76,0 64,0 L12,0 Q0,0 0,12 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
       {/* Left binder tab - Add Task */}
@@ -11318,7 +11318,7 @@ export default function Dashboard() {
         data-testid="left-add-task-tab"
       >
         <svg width="22" height="76" viewBox="0 0 22 76" style={{ display: 'block' }}>
-          <path d="M22,0 L22,76 L8,73 Q0,72 0,63 L0,13 Q0,4 8,3 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M22,0 L22,76 L12,76 Q0,76 0,64 L0,12 Q0,0 12,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
@@ -11337,7 +11337,7 @@ export default function Dashboard() {
         data-testid="right-projects-tab"
       >
         <svg width="22" height="76" viewBox="0 0 22 76" style={{ display: 'block' }}>
-          <path d="M0,0 L0,76 L14,73 Q22,72 22,63 L22,13 Q22,4 14,3 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M0,0 L0,76 L10,76 Q22,76 22,64 L22,12 Q22,0 10,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
       </div>
 
