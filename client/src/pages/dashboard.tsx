@@ -11342,11 +11342,11 @@ export default function Dashboard() {
       >
         <svg width="25" height="84" viewBox="0 0 25 84" style={{ display: 'block' }}>
           <path d="M25,0 L25,84 L16,84 Q16,75 10,75 L9,75 Q0,75 0,63 L0,21 Q0,9 9,9 L10,9 Q16,9 16,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          <g transform="translate(1, 35)">
-            <rect x="1" y="1" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
-            <rect x="7" y="1" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
-            <rect x="1" y="7" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
-            <rect x="7" y="7" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1" />
+          <g transform="translate(2, 35)">
+            <rect x="1" y="1" width="4" height="4" rx="0.5" fill="white" stroke="white" strokeWidth="0.5" />
+            <rect x="7" y="1" width="4" height="4" rx="0.5" fill="white" stroke="white" strokeWidth="0.5" />
+            <rect x="1" y="7" width="4" height="4" rx="0.5" fill="white" stroke="white" strokeWidth="0.5" />
+            <rect x="7" y="7" width="4" height="4" rx="0.5" fill="white" stroke="white" strokeWidth="0.5" />
           </g>
         </svg>
       </div>
