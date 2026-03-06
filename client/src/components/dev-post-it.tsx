@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { X, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PostItTask {
@@ -78,18 +78,30 @@ export function DevPostIt() {
     setTasks(prev => [...prev, { id: Date.now().toString(), text, checked: false, status: "active" }]);
   }, []);
 
+  const pendingCompleteRef = useRef<string[]>([]);
+
   useEffect(() => {
     if (import.meta.env.PROD) return;
     const poll = async () => {
       try {
         const res = await fetch(`/dev-tasks.json?t=${Date.now()}`);
         if (!res.ok) return;
-        const incoming: { id: string; text: string }[] = await res.json();
+        const incoming: { id: string; text: string; complete?: boolean }[] = await res.json();
         setTasks(prev => {
           const existingTexts = new Set(prev.map(t => t.text));
           const newOnes = incoming
-            .filter(t => !existingTexts.has(t.text))
+            .filter(t => !t.complete && !existingTexts.has(t.text))
             .map(t => ({ id: t.id || Date.now().toString(), text: t.text, checked: false, status: "active" as const }));
+
+          const completedTexts = incoming.filter(t => t.complete).map(t => t.text);
+          const toPrompt = prev.filter(t => completedTexts.includes(t.text) && !pendingCompleteRef.current.includes(t.id));
+          if (toPrompt.length > 0) {
+            pendingCompleteRef.current = [...pendingCompleteRef.current, ...toPrompt.map(t => t.id)];
+            setTimeout(() => {
+              setConfirmDialog({ taskId: toPrompt[0].id, taskText: toPrompt[0].text });
+            }, 300);
+          }
+
           if (newOnes.length === 0) return prev;
           return [...prev, ...newOnes];
         });
