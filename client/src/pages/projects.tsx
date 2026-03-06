@@ -321,7 +321,7 @@ function ProjectCard({
               style={{ backgroundColor: project.color || "#6366F1" }} 
             />
             <span 
-              className="text-sm font-medium text-white truncate"
+              className="text-xs font-medium text-white truncate"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
             >
               {project.name}
