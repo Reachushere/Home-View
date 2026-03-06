@@ -261,6 +261,21 @@ button[role="combobox"] > span {
   animation: bottom-pill-container-nudge 6s ease-in-out infinite !important;
 }
 
+@keyframes bottom-tab-bounce {
+  0%, 70% { transform: translateX(-50%) translateY(0); }
+  74% { transform: translateX(-50%) translateY(-5px); }
+  78% { transform: translateX(-50%) translateY(0); }
+  82% { transform: translateX(-50%) translateY(-4px); }
+  86% { transform: translateX(-50%) translateY(0); }
+  90% { transform: translateX(-50%) translateY(-3px); }
+  94% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(0); }
+}
+
+.bottom-tab-bounce {
+  animation: bottom-tab-bounce 6s ease-in-out 1s infinite;
+}
+
 @keyframes top-pill-container-nudge {
   0%, 70% { transform: translateY(-63px); }
   74% { transform: translateY(-57px); }

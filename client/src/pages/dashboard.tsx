@@ -11285,50 +11285,43 @@ export default function Dashboard() {
           background: 'transparent',
         });
 
-        return (
-          <div 
-            ref={sidePillRef}
-            className={`fixed z-[60] ${sidePillIdle ? 'bottom-pill-container-idle' : ''}`}
-            style={{ 
-              bottom: '11px', 
-              left: '50%',
-              width: `${pillW}px`, 
-              height: `${pillH + arrowH + 4}px`,
-              transform: `translateX(-50%) translateY(${isPillMenuOpen ? '-15px' : `${slideOffset}px`})`,
-              transition: sidePillMounted ? 'transform 0.3s ease-in-out' : 'none',
-            }}
-            onMouseEnter={handleEnter}
-            onMouseLeave={handleLeave}
-          >
-            {/* Arrow hover zone - always accessible at top */}
-            <div 
-              style={{ position: 'absolute', top: '-6px', left: '0', width: `${pillW}px`, height: `${arrowH + 12}px`, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }}
-              onMouseEnter={handleOpen}
-            />
-            {/* Glass pill body with backdrop blur */}
-            <div style={{
-              position: 'absolute',
-              top: `${arrowH}px`,
-              left: '0px',
-              width: `${pillW}px`,
-              height: `${pillH}px`,
-              borderRadius: `${r}px`,
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: '1.5px solid rgba(255,255,255,0.55)',
-              boxShadow: '0 -4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              pointerEvents: 'none',
-            }} />
-            {/* Buttons container - offset by arrowH */}
-            <div style={{ position: 'absolute', top: `${arrowH}px`, left: '0', width: `${pillW}px`, height: `${pillH}px` }}>
-
-
-            </div>
-          </div>
-        );
+        return null;
       })()}
+      {/* Bottom binder tab - Files */}
+      <div
+        onClick={() => { window.location.href = '/files'; }}
+        className="fixed z-[60] cursor-pointer bottom-tab-bounce"
+        style={{
+          bottom: '14px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          pointerEvents: 'auto',
+        }}
+        title="Files"
+        data-testid="bottom-tab-files"
+      >
+        <div
+          style={{
+            width: '50px',
+            height: '22px',
+            borderRadius: '6px 6px 0 0',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderLeft: '1.5px solid rgba(255,255,255,0.35)',
+            borderRight: '1.5px solid rgba(255,255,255,0.35)',
+            borderTop: '1.5px solid rgba(255,255,255,0.35)',
+            borderBottom: 'none',
+            boxShadow: '0 -4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingBottom: '2px',
+          }}
+        >
+          <FolderOpen className="h-[13px] w-[13px] text-white" />
+        </div>
+      </div>
       {/* Left binder tab - Add Task */}
       <div
         className="fixed z-[59] cursor-pointer left-tab-bounce"
