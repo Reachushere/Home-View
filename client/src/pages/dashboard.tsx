@@ -9764,7 +9764,7 @@ export default function Dashboard() {
           <div 
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: colorSettings.todayCellBackground,
+              background: colorSettings.headerBar,
               border: '1.5px solid rgba(255,255,255,0.5)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
