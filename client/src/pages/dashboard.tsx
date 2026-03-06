@@ -15046,6 +15046,11 @@ export default function Dashboard() {
                               >
                                 {task.title}
                               </span>
+                              {task.referenceLink && (
+                                <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-course-${task.id}`}>
+                                  <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
+                                </a>
+                              )}
                               {dueModulePdfUrl && (
                                 <img
                                   src={pdfIconPath}
@@ -15384,6 +15389,11 @@ export default function Dashboard() {
                                 data-testid={`checkbox-sat-task-${task.id}`}
                               />
                               <span className={`truncate font-bold pl-px flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
+                              {task.referenceLink && (
+                                <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-sat-course-${task.id}`}>
+                                  <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
+                                </a>
+                              )}
                               {satDuePdfUrl && (
                                 <img
                                   src={pdfIconPath}
@@ -15482,6 +15492,11 @@ export default function Dashboard() {
                                 >
                                   {task.title}
                                 </span>
+                                {task.referenceLink && (
+                                  <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
+                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                                  </a>
+                                )}
                               </div>
                             );
                           })}
@@ -15536,6 +15551,11 @@ export default function Dashboard() {
                                 >
                                   {task.title}
                                 </span>
+                                {task.referenceLink && (
+                                  <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-sat-${task.id}`}>
+                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                                  </a>
+                                )}
                               </div>
                             );
                           })}
@@ -15709,6 +15729,11 @@ export default function Dashboard() {
                               <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
                             )}
                             <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
+                            {task.referenceLink && (
+                              <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
+                                <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                              </a>
+                            )}
                             <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteTaskWithUndo(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
                           </div>
                         </div>
