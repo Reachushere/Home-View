@@ -1518,6 +1518,38 @@ button[role="combobox"] > span {
   }
 }
 
+/* PDF reader chunk list scrollbar */
+.pdf-reader-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) rgba(255, 255, 255, 0.05);
+}
+
+.pdf-reader-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.pdf-reader-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+.pdf-reader-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.pdf-reader-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.55);
+  background-clip: padding-box;
+}
+
+.pdf-reader-scrollbar::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.7);
+  background-clip: padding-box;
+}
+
 /* Hidden scrollbar - scrollable but no visible scrollbar */
 .scrollbar-hidden {
   scrollbar-width: none;

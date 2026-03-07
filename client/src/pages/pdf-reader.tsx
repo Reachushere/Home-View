@@ -1340,7 +1340,7 @@ export default function PDFReaderPage() {
       </div>
 
       <div className="flex-1 flex relative overflow-hidden min-h-0" style={{ zIndex: 2 }}>
-        <div className="flex-1 lg:w-1/2 overflow-auto" style={{ background: 'rgba(0,0,0,0.4)' }}>
+        <div className="flex-1 lg:w-1/2 overflow-auto pdf-reader-scrollbar" style={{ background: 'rgba(0,0,0,0.4)' }}>
           <div className="sticky top-0 z-20" style={{ background: 'rgba(0,10,30,0.8)', backdropFilter: 'blur(10px)' }}>
             <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/10">
               <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
