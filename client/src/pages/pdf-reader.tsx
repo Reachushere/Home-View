@@ -1538,17 +1538,17 @@ export default function PDFReaderPage() {
                     className={`flex gap-3 p-4 rounded-xl transition-colors border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
                     data-testid={`chunk-row-${idx}`}
                   >
-                    <div className="flex flex-col items-center gap-2 shrink-0">
+                    <div className="flex flex-col items-center gap-2 shrink-0 mt-1">
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleChunkChecked(idx)}
-                        className="h-5 w-5 rounded border-white/30 text-blue-500 focus:ring-blue-500 cursor-pointer"
-                        style={{ accentColor: '#3b82f6' }}
+                        className="h-5 w-5 rounded border-2 border-white/60 cursor-pointer appearance-none checked:bg-white checked:border-white relative"
+                        style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         data-testid={`checkbox-chunk-${idx}`}
                       />
                       <button
-                        className={`p-2 rounded-full transition-colors ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-white/10 hover:bg-white/20'}`}
+                        className={`p-1.5 rounded-full transition-colors ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-white/10 hover:bg-white/20'}`}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
@@ -1566,9 +1566,9 @@ export default function PDFReaderPage() {
                         data-testid={`button-chunk-play-${idx}`}
                       >
                         {isActive && !isPaused ? (
-                          <Pause className="h-5 w-5 text-white" />
+                          <Pause className="h-4 w-4 text-white" />
                         ) : (
-                          <Play className="h-5 w-5 text-white ml-0.5" />
+                          <Play className="h-4 w-4 text-white ml-0.5" />
                         )}
                       </button>
                     </div>

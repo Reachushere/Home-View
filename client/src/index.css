@@ -1518,6 +1518,19 @@ button[role="combobox"] > span {
   }
 }
 
+/* PDF reader white checkboxes */
+.pdf-reader-scrollbar input[type="checkbox"].appearance-none:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 /* PDF reader chunk list scrollbar */
 .pdf-reader-scrollbar {
   scrollbar-width: thin;
