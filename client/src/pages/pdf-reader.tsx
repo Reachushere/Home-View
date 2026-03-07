@@ -859,24 +859,23 @@ export default function PDFReaderPage() {
   };
 
   const extractAllText = async (): Promise<string> => {
-    if (!pdfUrl || numPages === 0) return "";
+    const currentNumPages = numPagesRef.current || numPages;
+    if (!pdfUrl || currentNumPages === 0) return "";
     
-    // If already extracted, return cached text
+    if (extractedTextRef.current) return extractedTextRef.current;
     if (extractedText) return extractedText;
     
-    // Wait for background extraction if in progress
     if (isExtractingRef.current) {
       setIsLoading(true);
-      // Poll until extraction completes
       while (isExtractingRef.current) {
         await new Promise(r => setTimeout(r, 100));
-        if (extractedText) {
+        if (extractedTextRef.current) {
           setIsLoading(false);
-          return extractedText;
+          return extractedTextRef.current;
         }
       }
       setIsLoading(false);
-      return extractedText || "";
+      return extractedTextRef.current || extractedText || "";
     }
     
     setIsLoading(true);
@@ -890,7 +889,7 @@ export default function PDFReaderPage() {
         pdfDocRef.current = pdf;
       }
       
-      for (let i = 1; i <= numPages; i++) {
+      for (let i = 1; i <= currentNumPages; i++) {
         const pageText = await extractPageTextWithParagraphs(pdf, i);
         fullText += pageText + "\n\n";
       }
@@ -1084,7 +1083,7 @@ export default function PDFReaderPage() {
     // Mark this file as listened when playback starts
     markCurrentFileListened();
     
-    let textToRead = extractedText;
+    let textToRead = extractedTextRef.current || extractedText;
     
     if (!textToRead) {
       textToRead = await extractAllText();
