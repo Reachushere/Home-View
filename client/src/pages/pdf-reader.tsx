@@ -406,7 +406,7 @@ export default function PDFReaderPage() {
     if (!catWashFollow || !autoplayParam) return;
     if (catWashAutoStarted.current) return;
     if (isPlayingRef.current) return;
-    if (!pdfUrlRef.current && !oneDriveUrl) return;
+    if (!pdfUrl && !oneDriveUrl) return;
 
     catWashAutoStarted.current = true;
     console.log("[Cat Wash] Auto-starting TTS playback with audio unlock");
@@ -455,7 +455,7 @@ export default function PDFReaderPage() {
       }
     };
     startCatWashPlayback();
-  }, [catWashFollow, autoplayParam, file, oneDriveUrl]);
+  }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
 
   useEffect(() => {
     if (!followOnly && !(catWashFollow && !autoplayParam)) return;
