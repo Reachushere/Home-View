@@ -1302,8 +1302,8 @@ export default function PDFReaderPage() {
             if (isDbFile && (moduleFiles.length > 0 || readingFiles.length > 0)) {
               return (
                 <>
-                  <div className="flex items-center gap-1 min-w-0 shrink">
-                    <span className="text-[11px] font-bold text-white shrink-0">Module:</span>
+                  <div className="flex items-center gap-1.5 min-w-0 shrink">
+                    <span className="text-[13px] font-bold text-white shrink-0">Module:</span>
                     <Select
                       value={isModule && fileId ? fileId.toString() : (moduleFiles[0]?.id?.toString() || 'none')}
                       onValueChange={(val) => {
@@ -1311,7 +1311,7 @@ export default function PDFReaderPage() {
                         window.location.href = `/pdf-reader/${val}`;
                       }}
                     >
-                      <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
+                      <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
                         <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
                           {moduleFiles.length === 0 ? 'No modules' : (() => {
                             const f = isModule ? file : moduleFiles[0];
@@ -1330,8 +1330,8 @@ export default function PDFReaderPage() {
                     </Select>
                   </div>
 
-                  <div className="flex items-center gap-1 min-w-0 shrink" style={{ marginLeft: '40px' }}>
-                    <span className="text-[11px] font-bold text-white shrink-0">Reading:</span>
+                  <div className="flex items-center gap-1.5 min-w-0 shrink" style={{ marginLeft: '40px' }}>
+                    <span className="text-[13px] font-bold text-white shrink-0">Reading:</span>
                     <Select
                       value={isReading && fileId ? fileId.toString() : (readingFiles[0]?.id?.toString() || 'none')}
                       onValueChange={(val) => {
@@ -1339,7 +1339,7 @@ export default function PDFReaderPage() {
                         window.location.href = `/pdf-reader/${val}`;
                       }}
                     >
-                      <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-reading-file">
+                      <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-reading-file">
                         <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
                           {readingFiles.length === 0 ? 'No readings' : (() => {
                             const f = isReading ? file : readingFiles[0];
@@ -1363,7 +1363,7 @@ export default function PDFReaderPage() {
                     }} disabled={!canGoPrev} data-testid="button-prev-file">
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-[9px] text-white min-w-[40px] text-center">
+                    <span className="text-[11px] text-white min-w-[40px] text-center">
                       {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
                     </span>
                     <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
@@ -1380,8 +1380,8 @@ export default function PDFReaderPage() {
             if (allFiles.length > 1) {
               return (
                 <>
-                  <div className="flex items-center gap-1 min-w-0 shrink">
-                    <span className="text-[11px] font-bold text-white shrink-0">Module:</span>
+                  <div className="flex items-center gap-1.5 min-w-0 shrink">
+                    <span className="text-[13px] font-bold text-white shrink-0">Module:</span>
                     <Select
                       value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
                       onValueChange={(url) => {
@@ -1389,7 +1389,7 @@ export default function PDFReaderPage() {
                         if (f) switchToFile(f);
                       }}
                     >
-                      <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-onedrive-file">
+                      <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-onedrive-file">
                         <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
                           {(() => {
                             const current = allFiles.find(af => af.downloadUrl === (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')));
@@ -1428,7 +1428,7 @@ export default function PDFReaderPage() {
             }
 
             return (
-              <span className="text-[11px] font-bold text-white truncate">{file?.displayName || file?.originalName || currentFileName || 'PDF Reader'}</span>
+              <span className="text-[13px] font-bold text-white truncate">{file?.displayName || file?.originalName || currentFileName || 'PDF Reader'}</span>
             );
           })()}
 
@@ -1480,9 +1480,9 @@ export default function PDFReaderPage() {
               {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
             </button>
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
-            <span className="text-[11px] font-bold text-white">Speaker:</span>
+            <span className="text-[13px] font-bold text-white">Speaker:</span>
             <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
-              <SelectTrigger className="h-5 text-[9px] px-2 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0 text-white w-[180px]" data-testid="select-speaker">
+              <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0 text-white w-[190px]" data-testid="select-speaker">
                 <SelectValue placeholder="Select Speaker" />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
