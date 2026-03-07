@@ -1290,11 +1290,6 @@ export default function PDFReaderPage() {
 
       <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
         <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
-          <Link href="/files">
-            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10 h-7 w-7" data-testid="button-back">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
           {(() => {
             const isDbFile = !!fileId && !isOneDrive;
             const isModule = file?.folder?.includes('module');
