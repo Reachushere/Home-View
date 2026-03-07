@@ -8170,6 +8170,7 @@ export default function Dashboard() {
             backgroundRepeat: 'no-repeat',
           }}
         >
+          <VisuallyHidden.Root><DialogTitle>File Preview</DialogTitle></VisuallyHidden.Root>
           {(() => {
             const folderParts = previewFile?.folder?.split('-') || [];
             const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
