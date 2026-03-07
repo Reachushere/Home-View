@@ -1556,7 +1556,7 @@ export default function PDFReaderPage() {
                       data-testid={`checkbox-chunk-${idx}`}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-[13px] leading-[1.8] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
+                      <p className={`text-[15px] leading-[2.1] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
                         <span className="text-white/40 mr-1.5 font-medium">{idx + 1}.</span>
                         {isActive && chunkWords.length > 0 ? (
                           chunkWords.map((word, wIdx) => (
@@ -1654,19 +1654,19 @@ export default function PDFReaderPage() {
 
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '8px 20px 12px 20px', background: 'transparent' }}>
         <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '600px', width: '100%' }}>
-          <div className="flex items-center justify-center gap-2 pt-2 pb-1">
-            <span className="text-[11px] text-white/50">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+          <div className="flex items-center justify-center gap-2 pt-3 pb-1">
+            <span className="text-xs text-white/50">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
           </div>
-          <div className="flex items-center justify-center gap-5 px-8 pb-3">
-            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
-              <SkipBack className="h-5 w-5 text-white" />
+          <div className="flex items-center justify-center gap-6 px-8 pb-4">
+            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+              <SkipBack className="h-7 w-7 text-white" />
             </button>
 
-            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
-              <SkipForward className="h-5 w-5 text-white" />
+            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+              <SkipForward className="h-7 w-7 text-white" />
             </button>
 
-            <div className="flex items-center gap-[3px] h-8" data-testid="sound-waves-left">
+            <div className="flex items-center gap-[3px] h-10" data-testid="sound-waves-left">
               {[0,1,2,3,4].map(i => (
                 <div key={i} className="rounded-full" style={{
                   width: '3px',
@@ -1680,52 +1680,52 @@ export default function PDFReaderPage() {
             </div>
 
             {!isPlaying ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                   <button
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                    className="p-3 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
                     onClick={resumeFromLast}
                     disabled={isLoading || numPages === 0}
                     title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
                     data-testid="button-resume"
                   >
-                    {isLoading ? <Loader2 className="h-6 w-6 text-white animate-spin" /> : <RotateCcw className="h-6 w-6 text-white" />}
+                    {isLoading ? <Loader2 className="h-7 w-7 text-white animate-spin" /> : <RotateCcw className="h-7 w-7 text-white" />}
                   </button>
                 )}
                 <button
-                  className="p-4 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                  className="p-5 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
                   onClick={startReading}
                   disabled={isLoading || numPages === 0}
                   data-testid="button-play"
                 >
-                  {isLoading ? <Loader2 className="h-7 w-7 text-gray-900 animate-spin" /> : <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />}
+                  {isLoading ? <Loader2 className="h-9 w-9 text-gray-900 animate-spin" /> : <Play className="h-9 w-9 text-gray-900 fill-gray-900 ml-0.5" />}
                 </button>
               </div>
             ) : isPaused ? (
-              <button className="p-4 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
-                <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />
+              <button className="p-5 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
+                <Play className="h-9 w-9 text-gray-900 fill-gray-900 ml-0.5" />
               </button>
             ) : (
-              <button className="p-4 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
-                <Pause className="h-7 w-7 text-gray-900" />
+              <button className="p-5 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
+                <Pause className="h-9 w-9 text-gray-900" />
               </button>
             )}
 
-            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-              <RotateCcw className="h-4 w-4 text-white" />
-              <span className="text-[11px] text-white font-medium">15s</span>
+            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+              <RotateCcw className="h-5 w-5 text-white" />
+              <span className="text-xs text-white font-medium">15s</span>
             </button>
 
-            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-              <span className="text-[11px] text-white font-medium">15s</span>
-              <RotateCw className="h-4 w-4 text-white" />
+            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+              <span className="text-xs text-white font-medium">15s</span>
+              <RotateCw className="h-5 w-5 text-white" />
             </button>
 
-            <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
-              <Square className="h-5 w-5 text-white fill-white" />
+            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+              <Square className="h-7 w-7 text-white fill-white" />
             </button>
 
-            <div className="flex items-center gap-[3px] h-8" data-testid="sound-waves-right">
+            <div className="flex items-center gap-[3px] h-10" data-testid="sound-waves-right">
               {[0,1,2,3,4].map(i => (
                 <div key={i} className="rounded-full" style={{
                   width: '3px',
