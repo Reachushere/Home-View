@@ -389,21 +389,21 @@ export default function PDFReaderPage() {
   useEffect(() => {
     if (!catWashFollow || !autoplayParam) return;
     if (catWashAutoStarted.current) return;
-    if (!extractedText || extractedText.length < 10) return;
     if (isPlayingRef.current) return;
+    if (!pdfUrl && !oneDriveUrl) return;
 
     catWashAutoStarted.current = true;
     console.log("[Cat Wash] Auto-starting TTS playback (tablet → Bluetooth → Echo)");
-    
+
     const startCatWashPlayback = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const playBtn = document.querySelector('[data-testid="button-play-tts"]') as HTMLButtonElement;
-      if (playBtn && !isPlayingRef.current) {
-        playBtn.click();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (!isPlayingRef.current) {
+        console.log("[Cat Wash] Calling startReading() directly");
+        startReading();
       }
     };
     startCatWashPlayback();
-  }, [catWashFollow, autoplayParam, extractedText]);
+  }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
 
   const lastNavTimestamp = useRef(0);
   useEffect(() => {
