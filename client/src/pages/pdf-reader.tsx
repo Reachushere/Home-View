@@ -1840,17 +1840,32 @@ export default function PDFReaderPage() {
                 onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
                 data-testid="button-speed-down"
               >−</button>
-              <span className="text-base text-white font-semibold min-w-[45px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.25"
+                value={playbackSpeed}
+                onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
+                className="w-24 h-1.5 cursor-pointer"
+                style={{ accentColor: 'white' }}
+                data-testid="slider-speed"
+              />
               <button
                 className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
+              <span className="text-sm text-white font-semibold min-w-[40px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
             </div>
 
             <div className="flex items-center gap-3" data-testid="volume-control">
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
-              <Volume2 className="h-5 w-5 text-white" />
+              <button
+                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
+                data-testid="button-volume-down"
+              >−</button>
               <input
                 type="range"
                 min="0"
@@ -1858,10 +1873,16 @@ export default function PDFReaderPage() {
                 step="0.05"
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-28 h-1.5 accent-white cursor-pointer"
+                className="w-24 h-1.5 cursor-pointer"
                 style={{ accentColor: 'white' }}
                 data-testid="slider-volume"
               />
+              <button
+                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
+                data-testid="button-volume-up"
+              >+</button>
+              <Volume2 className="h-5 w-5 text-white" />
             </div>
           </div>
 
