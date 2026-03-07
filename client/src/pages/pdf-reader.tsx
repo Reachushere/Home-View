@@ -201,7 +201,7 @@ export default function PDFReaderPage() {
   const [totalChunks, setTotalChunks] = useState(0);
   const [voice, setVoice] = useState<Voice>(() => {
     const saved = localStorage.getItem('pdf-reader-voice');
-    return (saved && ["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"].includes(saved) ? saved : "echo") as Voice;
+    return (saved && ["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"].includes(saved) ? saved : "ash") as Voice;
   });
   const [isFullPage, setIsFullPage] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
