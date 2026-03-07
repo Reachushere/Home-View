@@ -34,10 +34,10 @@ export default defineConfig({
       external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
       output: {
         paths: {
-          'react': 'https://esm.sh/react@18.3.1',
-          'react-dom': 'https://esm.sh/react-dom@18.3.1',
-          'react/jsx-runtime': 'https://esm.sh/react@18.3.1/jsx-runtime',
-          'react/jsx-dev-runtime': 'https://esm.sh/react@18.3.1/jsx-dev-runtime',
+          'react': 'https://esm.sh/react@18.3.1?target=es2015',
+          'react-dom': 'https://esm.sh/react-dom@18.3.1?target=es2015',
+          'react/jsx-runtime': 'https://esm.sh/react@18.3.1/jsx-runtime?target=es2015',
+          'react/jsx-dev-runtime': 'https://esm.sh/react@18.3.1/jsx-dev-runtime?target=es2015',
         },
       },
     },
