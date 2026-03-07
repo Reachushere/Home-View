@@ -3870,6 +3870,7 @@ export async function registerRoutes(
     startedAt: Date;
     chunkStartedAt: Date;
     estimatedChunkDuration: number;
+    playbackMode?: 'tablet-bluetooth' | 'server-tts';
   } | null = null;
   
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
@@ -4518,6 +4519,51 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] Session ${currentSession}: tablet will handle TTS playback via Bluetooth → Echo`);
       console.log(`[Cat Wash] Reader URL: ${readerUrl}`);
 
+      // === STEP 4: Server-side TTS fallback ===
+      // If no tablet progress update within 30 seconds, play TTS directly to Echo speaker
+      const fallbackSpeaker = 'media_player.cat_wash_2';
+      const fallbackDelay = 30000;
+      setTimeout(async () => {
+        if (catWashSessionId !== currentSession) return;
+        if (!catWashPlaybackActive || !catWashPlaybackState) return;
+        if (catWashPlaybackState.chunkIndex > 0) {
+          console.log(`[Cat Wash Fallback] Session ${currentSession}: tablet is playing (chunk ${catWashPlaybackState.chunkIndex}), no fallback needed`);
+          return;
+        }
+        console.log(`[Cat Wash Fallback] Session ${currentSession}: No tablet progress after ${fallbackDelay/1000}s — starting server-side TTS to ${fallbackSpeaker}`);
+        catWashPlaybackState.playbackMode = 'server-tts';
+
+        for (let i = 0; i < chunks.length; i++) {
+          if (catWashSessionId !== currentSession || !catWashPlaybackActive) {
+            console.log(`[Cat Wash Fallback] Session ${currentSession}: stopped at chunk ${i}`);
+            break;
+          }
+          catWashPlaybackState.chunkIndex = i;
+          try {
+            const audioPath = await generateAndSaveTTSAudio(cleanTextForTTS(chunks[i]), `catwash-${currentSession}-${i}`);
+            const fullAudioUrl = `${appUrl}${audioPath}`;
+            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: fallbackSpeaker, media_content_id: fullAudioUrl, media_content_type: 'music' }),
+            });
+            console.log(`[Cat Wash Fallback] Chunk ${i}/${chunks.length}: play_media ${playResp.status}`);
+            const wordCount = chunks[i].split(/\s+/).length;
+            const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
+            await new Promise(r => setTimeout(r, estimatedMs));
+          } catch (e: any) {
+            console.log(`[Cat Wash Fallback] Chunk ${i} error: ${e.message}`);
+          }
+        }
+
+        if (catWashSessionId === currentSession && catWashPlaybackActive) {
+          console.log(`[Cat Wash Fallback] Session ${currentSession}: all chunks complete`);
+          catWashPlaybackActive = false;
+          catWashPlaybackState = null;
+          await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
+        }
+      }, fallbackDelay);
+
       res.json({
         action: "playing",
         file: { id: nextFile.id, name: fileName, type: fileType, folder: nextFile.folder },
@@ -4526,6 +4572,8 @@ document.body.removeChild(a);
         totalChunks: chunks.length,
         devices: deviceResults,
         playbackMode: "tablet-bluetooth",
+        fallbackSpeaker,
+        fallbackDelaySeconds: fallbackDelay / 1000,
       });
 
     } catch (error: any) {
@@ -4679,6 +4727,51 @@ document.body.removeChild(a);
 
       console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
 
+      // === Server-side TTS fallback ===
+      const currentSession = catWashSessionId;
+      const fallbackSpeaker = 'media_player.cat_wash_2';
+      const fallbackDelay = 30000;
+      setTimeout(async () => {
+        if (catWashSessionId !== currentSession) return;
+        if (!catWashPlaybackActive || !catWashPlaybackState) return;
+        if (catWashPlaybackState.chunkIndex > resumeFromChunk) {
+          console.log(`[Cat Lights Fallback] Session ${currentSession}: tablet is playing (chunk ${catWashPlaybackState.chunkIndex}), no fallback needed`);
+          return;
+        }
+        console.log(`[Cat Lights Fallback] Session ${currentSession}: No tablet progress after ${fallbackDelay/1000}s — starting server-side TTS to ${fallbackSpeaker}`);
+        catWashPlaybackState.playbackMode = 'server-tts';
+
+        for (let i = resumeFromChunk; i < chunks.length; i++) {
+          if (catWashSessionId !== currentSession || !catWashPlaybackActive) {
+            console.log(`[Cat Lights Fallback] Session ${currentSession}: stopped at chunk ${i}`);
+            break;
+          }
+          catWashPlaybackState.chunkIndex = i;
+          try {
+            const audioPath = await generateAndSaveTTSAudio(cleanTextForTTS(chunks[i]), `catlights-${currentSession}-${i}`);
+            const fullAudioUrl = `${appUrl}${audioPath}`;
+            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: fallbackSpeaker, media_content_id: fullAudioUrl, media_content_type: 'music' }),
+            });
+            console.log(`[Cat Lights Fallback] Chunk ${i}/${chunks.length}: play_media ${playResp.status}`);
+            const wordCount = chunks[i].split(/\s+/).length;
+            const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
+            await new Promise(r => setTimeout(r, estimatedMs));
+          } catch (e: any) {
+            console.log(`[Cat Lights Fallback] Chunk ${i} error: ${e.message}`);
+          }
+        }
+
+        if (catWashSessionId === currentSession && catWashPlaybackActive) {
+          console.log(`[Cat Lights Fallback] Session ${currentSession}: all chunks complete`);
+          catWashPlaybackActive = false;
+          catWashPlaybackState = null;
+          await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
+        }
+      }, fallbackDelay);
+
       res.json({
         action: "playing",
         file: { id: cppaModule.id, name: fileName },
@@ -4686,6 +4779,8 @@ document.body.removeChild(a);
         totalChunks: chunks.length,
         devices: deviceResults,
         playbackMode: "tablet-bluetooth",
+        fallbackSpeaker,
+        fallbackDelaySeconds: fallbackDelay / 1000,
       });
 
     } catch (error: any) {
