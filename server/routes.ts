@@ -4685,7 +4685,7 @@ document.body.removeChild(a);
     }
   });
 
-  // POST /api/webhook/cat-wash-stop - Triggered when toothbrush returns to charger (running → charging)
+  // POST /api/webhook/cat-wash-stop - Triggered when toothbrush starts running (idle/charging → running)
   // Stops cat wash playback and saves progress.
   app.post("/api/webhook/cat-wash-stop", async (req, res) => {
     try {
@@ -4717,7 +4717,7 @@ document.body.removeChild(a);
 
       if (currentTTSSession) {
         console.log(`[Cat Wash Stop Webhook] Stopping active TTS session`);
-        stopTTSSession("Toothbrush returned to charger - stopping playback");
+        stopTTSSession("Toothbrush started running - stopping playback");
         stopped.push("ttsSession");
       }
 
