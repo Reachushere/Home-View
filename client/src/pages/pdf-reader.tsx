@@ -405,9 +405,37 @@ export default function PDFReaderPage() {
     if (!pdfUrl && !oneDriveUrl) return;
 
     catWashAutoStarted.current = true;
-    console.log("[Cat Wash] Auto-starting TTS playback (tablet → Bluetooth → Echo)");
+    console.log("[Cat Wash] Auto-starting TTS playback with audio unlock");
+
+    const unlockAudio = async () => {
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          if (ctx.state === 'suspended') await ctx.resume();
+          console.log("[Cat Wash] AudioContext unlocked:", ctx.state);
+        }
+        if (audioRef.current) {
+          audioRef.current.muted = true;
+          audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+          await audioRef.current.play().catch(() => {});
+          audioRef.current.pause();
+          audioRef.current.muted = false;
+          audioRef.current.src = "";
+          console.log("[Cat Wash] Audio element unlocked");
+        }
+      } catch (e) {
+        console.log("[Cat Wash] Audio unlock attempt:", e);
+      }
+    };
 
     const startCatWashPlayback = async () => {
+      await unlockAudio();
       await new Promise(resolve => setTimeout(resolve, 2000));
       if (!isPlayingRef.current) {
         console.log("[Cat Wash] Calling startReading() directly");
