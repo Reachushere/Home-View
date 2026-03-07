@@ -4378,59 +4378,65 @@ document.body.removeChild(a);
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
-      // Query the DEPLOYED server for the next file, since tablets run the deployed app
-      // which has a separate database. Fall back to local DB if deployed server is unreachable.
+      // Find the next file to play. Use LOCAL DB for file selection and PDF extraction
+      // (since we have the actual files here), but also query deployed server to get the
+      // DEPLOYED file ID — because tablets/TV load from the deployed app.
       let nextFile: any = null;
       let chunks: string[] = [];
       let currentWeekNumber = 1;
+      let deployedFileId: number | null = null;
 
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      if (semesterSettings?.semesterStartDate) {
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+      }
+
+      // Step 1: Find next file from local DB (has course priority + file content)
+      const localNextFile = await findNextCatWashFile(storage, currentWeekNumber);
+      if (!localNextFile) {
+        console.log("[Cat Wash] No files to play for week " + currentWeekNumber);
+        return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
+      }
+      const extractResult = await extractAndChunkPdf(localNextFile);
+      if (!extractResult || extractResult.chunks.length === 0) {
+        console.log("[Cat Wash] No files with readable text content");
+        return res.status(400).json({ error: "No PDFs with readable text content" });
+      }
+      nextFile = localNextFile;
+      chunks = extractResult.chunks;
+
+      // Step 2: Find the matching file on the deployed server by folder + name
+      // so we can use the deployed file ID in the URL (tablets run on deployed server)
       try {
-        const deployedResp = await fetch(`${DEPLOYED_APP_URL}/api/cat-wash/find-next?auth=${authParam}`);
+        const deployedResp = await fetch(`${DEPLOYED_APP_URL}/api/files?auth=${authParam}`);
         if (deployedResp.ok) {
-          const deployedData = await deployedResp.json();
-          currentWeekNumber = deployedData.weekNumber || 1;
-          if (deployedData.found && deployedData.fileId) {
-            console.log(`[Cat Wash] Deployed server found file: ${deployedData.fileName} (id=${deployedData.fileId})`);
-            // Get the full file from deployed server to extract text
-            const fileResp = await fetch(`${DEPLOYED_APP_URL}/api/files/${deployedData.fileId}?auth=${authParam}`);
-            if (fileResp.ok) {
-              nextFile = await fileResp.json();
-              const extractResult = await extractAndChunkPdf(nextFile);
-              if (extractResult && extractResult.chunks.length > 0) {
-                chunks = extractResult.chunks;
-              } else {
-                console.log(`[Cat Wash] Deployed file has no readable text, falling back to local`);
-                nextFile = null;
-              }
+          const deployedFiles: any[] = await deployedResp.json();
+          const localFolder = nextFile.folder || '';
+          const localOrigName = nextFile.originalName || '';
+          const folderMatches = deployedFiles.filter((f: any) => !f.deletedAt && f.folder === localFolder);
+          if (folderMatches.length === 1) {
+            deployedFileId = folderMatches[0].id;
+            console.log(`[Cat Wash] Matched by folder (single file): local id=${nextFile.id}, deployed id=${deployedFileId}`);
+          } else if (folderMatches.length > 1) {
+            const nameMatch = folderMatches.find((f: any) => f.originalName === localOrigName);
+            if (nameMatch) {
+              deployedFileId = nameMatch.id;
+              console.log(`[Cat Wash] Matched by originalName: local id=${nextFile.id}, deployed id=${deployedFileId}`);
+            } else {
+              console.log(`[Cat Wash] Multiple files in ${localFolder} on deployed, no name match for "${localOrigName}"`);
             }
           } else {
-            console.log(`[Cat Wash] Deployed server: no files for week ${currentWeekNumber}`);
-            return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
+            console.log(`[Cat Wash] No files in folder ${localFolder} on deployed server`);
           }
         }
       } catch (e: any) {
-        console.log(`[Cat Wash] Failed to query deployed server: ${e.message}, using local DB`);
+        console.log(`[Cat Wash] Failed to query deployed server for file match: ${e.message}`);
       }
 
-      // Fallback to local database if deployed server didn't work
-      if (!nextFile) {
-        const semesterSettings = await storage.getActiveSemesterSettings();
-        if (semesterSettings?.semesterStartDate) {
-          currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
-        }
-        const localNextFile = await findNextCatWashFile(storage, currentWeekNumber);
-        if (!localNextFile) {
-          console.log("[Cat Wash] No files to play (local fallback) for week " + currentWeekNumber);
-          return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
-        }
-        const extractResult = await extractAndChunkPdf(localNextFile);
-        if (extractResult && extractResult.chunks.length > 0) {
-          nextFile = localNextFile;
-          chunks = extractResult.chunks;
-        } else {
-          console.log("[Cat Wash] No files with readable text content (local fallback)");
-          return res.status(400).json({ error: "No PDFs with readable text content" });
-        }
+      // Use deployed file ID if available, otherwise fall back to local ID
+      const readerFileId = deployedFileId || nextFile.id;
+      if (!deployedFileId) {
+        console.log(`[Cat Wash] WARNING: Using local file ID ${nextFile.id} — tablets may get "file not found"`);
       }
 
       const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
@@ -4439,7 +4445,7 @@ document.body.removeChild(a);
       const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
       console.log(`[Cat Wash] Selected: ${fileName} (${fileType}, id=${nextFile.id}, folder=${nextFile.folder})`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${readerFileId}?catWashFollow=true&autoplay=true&auth=${authParam}`;
 
       // Always start from the beginning on a fresh trigger.
       // Old lastChunkIndex/checkedChunks data from previous failed attempts
@@ -4483,8 +4489,8 @@ document.body.removeChild(a);
         await new Promise(resolve => setTimeout(resolve, 5000));
 
         // Step 2: Open URL via Fire Stick ADB command (most reliable for Fire Sticks)
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', readerUrl);
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_stick_cat_wr' : 'failed';
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', readerUrl);
+        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Wash] Samsung TV/Fire Stick error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
@@ -4519,51 +4525,6 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] Session ${currentSession}: tablet will handle TTS playback via Bluetooth → Echo`);
       console.log(`[Cat Wash] Reader URL: ${readerUrl}`);
 
-      // === STEP 4: Server-side TTS fallback ===
-      // If no tablet progress update within 30 seconds, play TTS directly to Echo speaker
-      const fallbackSpeaker = 'media_player.cat_wash_2';
-      const fallbackDelay = 30000;
-      setTimeout(async () => {
-        if (catWashSessionId !== currentSession) return;
-        if (!catWashPlaybackActive || !catWashPlaybackState) return;
-        if (catWashPlaybackState.chunkIndex > 0) {
-          console.log(`[Cat Wash Fallback] Session ${currentSession}: tablet is playing (chunk ${catWashPlaybackState.chunkIndex}), no fallback needed`);
-          return;
-        }
-        console.log(`[Cat Wash Fallback] Session ${currentSession}: No tablet progress after ${fallbackDelay/1000}s — starting server-side TTS to ${fallbackSpeaker}`);
-        catWashPlaybackState.playbackMode = 'server-tts';
-
-        for (let i = 0; i < chunks.length; i++) {
-          if (catWashSessionId !== currentSession || !catWashPlaybackActive) {
-            console.log(`[Cat Wash Fallback] Session ${currentSession}: stopped at chunk ${i}`);
-            break;
-          }
-          catWashPlaybackState.chunkIndex = i;
-          try {
-            const audioPath = await generateAndSaveTTSAudio(cleanTextForTTS(chunks[i]), `catwash-${currentSession}-${i}`);
-            const fullAudioUrl = `${appUrl}${audioPath}`;
-            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: fallbackSpeaker, media_content_id: fullAudioUrl, media_content_type: 'music' }),
-            });
-            console.log(`[Cat Wash Fallback] Chunk ${i}/${chunks.length}: play_media ${playResp.status}`);
-            const wordCount = chunks[i].split(/\s+/).length;
-            const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
-            await new Promise(r => setTimeout(r, estimatedMs));
-          } catch (e: any) {
-            console.log(`[Cat Wash Fallback] Chunk ${i} error: ${e.message}`);
-          }
-        }
-
-        if (catWashSessionId === currentSession && catWashPlaybackActive) {
-          console.log(`[Cat Wash Fallback] Session ${currentSession}: all chunks complete`);
-          catWashPlaybackActive = false;
-          catWashPlaybackState = null;
-          await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
-        }
-      }, fallbackDelay);
-
       res.json({
         action: "playing",
         file: { id: nextFile.id, name: fileName, type: fileType, folder: nextFile.folder },
@@ -4572,8 +4533,6 @@ document.body.removeChild(a);
         totalChunks: chunks.length,
         devices: deviceResults,
         playbackMode: "tablet-bluetooth",
-        fallbackSpeaker,
-        fallbackDelaySeconds: fallbackDelay / 1000,
       });
 
     } catch (error: any) {
@@ -4718,59 +4677,14 @@ document.body.removeChild(a);
         });
         console.log(`[Cat Lights] Samsung TV turn_on: ${turnOnResp.status}`);
         await new Promise(resolve => setTimeout(resolve, 5000));
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', readerUrl);
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_stick_cat_wr' : 'failed';
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', readerUrl);
+        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Lights] Samsung TV error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
       }
 
       console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
-
-      // === Server-side TTS fallback ===
-      const currentSession = catWashSessionId;
-      const fallbackSpeaker = 'media_player.cat_wash_2';
-      const fallbackDelay = 30000;
-      setTimeout(async () => {
-        if (catWashSessionId !== currentSession) return;
-        if (!catWashPlaybackActive || !catWashPlaybackState) return;
-        if (catWashPlaybackState.chunkIndex > resumeFromChunk) {
-          console.log(`[Cat Lights Fallback] Session ${currentSession}: tablet is playing (chunk ${catWashPlaybackState.chunkIndex}), no fallback needed`);
-          return;
-        }
-        console.log(`[Cat Lights Fallback] Session ${currentSession}: No tablet progress after ${fallbackDelay/1000}s — starting server-side TTS to ${fallbackSpeaker}`);
-        catWashPlaybackState.playbackMode = 'server-tts';
-
-        for (let i = resumeFromChunk; i < chunks.length; i++) {
-          if (catWashSessionId !== currentSession || !catWashPlaybackActive) {
-            console.log(`[Cat Lights Fallback] Session ${currentSession}: stopped at chunk ${i}`);
-            break;
-          }
-          catWashPlaybackState.chunkIndex = i;
-          try {
-            const audioPath = await generateAndSaveTTSAudio(cleanTextForTTS(chunks[i]), `catlights-${currentSession}-${i}`);
-            const fullAudioUrl = `${appUrl}${audioPath}`;
-            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: fallbackSpeaker, media_content_id: fullAudioUrl, media_content_type: 'music' }),
-            });
-            console.log(`[Cat Lights Fallback] Chunk ${i}/${chunks.length}: play_media ${playResp.status}`);
-            const wordCount = chunks[i].split(/\s+/).length;
-            const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
-            await new Promise(r => setTimeout(r, estimatedMs));
-          } catch (e: any) {
-            console.log(`[Cat Lights Fallback] Chunk ${i} error: ${e.message}`);
-          }
-        }
-
-        if (catWashSessionId === currentSession && catWashPlaybackActive) {
-          console.log(`[Cat Lights Fallback] Session ${currentSession}: all chunks complete`);
-          catWashPlaybackActive = false;
-          catWashPlaybackState = null;
-          await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
-        }
-      }, fallbackDelay);
 
       res.json({
         action: "playing",
@@ -4779,8 +4693,6 @@ document.body.removeChild(a);
         totalChunks: chunks.length,
         devices: deviceResults,
         playbackMode: "tablet-bluetooth",
-        fallbackSpeaker,
-        fallbackDelaySeconds: fallbackDelay / 1000,
       });
 
     } catch (error: any) {
@@ -4888,8 +4800,8 @@ document.body.removeChild(a);
 
       // Also re-open on Samsung TV
       try {
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', newReaderUrl);
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_stick_cat_wr' : 'failed';
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', newReaderUrl);
+        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Wash Dry] Samsung TV error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
