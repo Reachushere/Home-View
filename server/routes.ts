@@ -4416,7 +4416,7 @@ document.body.removeChild(a);
       const resumeFromChunk = cppaModule.lastChunkIndex || 0;
       console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (PDF reader handles text extraction, filters, TTS)`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&speaker=media_player.cat_wr&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on all display devices ===
       // Set pending tablet command so tablets already on our app (in Silk) auto-navigate
@@ -4598,7 +4598,7 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (PDF reader handles text extraction, filters, TTS)`);
 
       // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&speaker=media_player.cat_wr&auth=${authParam}`;
 
       // Update session state
       catWashSessionId++;

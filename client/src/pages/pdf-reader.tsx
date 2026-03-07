@@ -417,21 +417,27 @@ export default function PDFReaderPage() {
     startCatWashPlayback();
   }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
 
-  const lastNavTimestamp = useRef(0);
+  const lastNavTimestamp = useRef(() => {
+    try { return Number(localStorage.getItem('lastNavTimestamp') || '0'); } catch { return 0; }
+  });
   useEffect(() => {
     const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
     if (!isFireDevice) return;
+    const saved = lastNavTimestamp.current;
+    lastNavTimestamp.current = typeof saved === 'function' ? saved() : saved;
     const interval = setInterval(async () => {
       try {
         const resp = await fetch('/api/tablet-nav');
         const data = await resp.json();
-        if (data.timestamp === lastNavTimestamp.current) return;
+        if (data.timestamp <= lastNavTimestamp.current) return;
         if (Date.now() - data.timestamp > 30000) return;
         if (data.action === 'navigate' && data.url) {
           lastNavTimestamp.current = data.timestamp;
+          try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           window.location.href = data.url;
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
+          try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           window.location.href = '/';
         }
       } catch {}

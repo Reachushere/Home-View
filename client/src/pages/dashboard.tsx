@@ -802,18 +802,23 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const lastTabletNavTimestamp = useRef(0);
+  const lastTabletNavTimestamp = useRef(() => {
+    try { return Number(localStorage.getItem('lastNavTimestamp') || '0'); } catch { return 0; }
+  });
   useEffect(() => {
     const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
     if (!isFireDevice) return;
+    const saved = lastTabletNavTimestamp.current;
+    lastTabletNavTimestamp.current = typeof saved === 'function' ? saved() : saved;
     const checkTabletNav = async () => {
       try {
         const resp = await fetch('/api/tablet-nav');
         const data = await resp.json();
-        if (data.timestamp === lastTabletNavTimestamp.current) return;
+        if (data.timestamp <= lastTabletNavTimestamp.current) return;
         if (Date.now() - data.timestamp > 30000) return;
         if (data.action === 'navigate' && data.url) {
           lastTabletNavTimestamp.current = data.timestamp;
+          try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           window.location.href = data.url;
         }
       } catch {}
