@@ -4408,19 +4408,10 @@ document.body.removeChild(a);
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Wash] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
-      const extractResult = await extractAndChunkPdf(cppaModule);
-      if (!extractResult || extractResult.chunks.length === 0) {
-        return res.status(400).json({ error: "PDF has no readable text content" });
-      }
-      const { chunks } = extractResult;
+      const resumeFromChunk = cppaModule.lastChunkIndex || 0;
+      console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (PDF reader handles text extraction, filters, TTS)`);
 
-      // Resume from saved progress (like cat-lights)
-      let resumeFromChunk = cppaModule.lastChunkIndex || 0;
-      if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
-
-      console.log(`[Cat Wash] Starting playback from chunk ${resumeFromChunk}/${chunks.length}`);
-
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on all display devices ===
       // Set pending tablet command so tablets already on our app (in Silk) auto-navigate
@@ -4485,8 +4476,8 @@ document.body.removeChild(a);
         fileId: cppaModule.id,
         fileName,
         chunkIndex: resumeFromChunk,
-        totalChunks: chunks.length,
-        chunks,
+        totalChunks: cppaModule.totalChunks || 0,
+        chunks: [],
         currentWords: [],
         wordIndex: 0,
         startedAt: new Date(),
@@ -4503,7 +4494,7 @@ document.body.removeChild(a);
         resumeFromChunk,
         readerUrl,
         currentWeek: currentWeekNumber,
-        totalChunks: chunks.length,
+        totalChunks: cppaModule.totalChunks || 0,
         devices: deviceResults,
         playbackMode: "tablet-bluetooth",
       });
@@ -4597,21 +4588,12 @@ document.body.removeChild(a);
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
-      // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
-
-      // Extract chunks to store in state
-      const extractResult = await extractAndChunkPdf(cppaModule);
-      if (!extractResult || extractResult.chunks.length === 0) {
-        return res.status(400).json({ error: "PDF has no readable text content" });
-      }
-      const { chunks } = extractResult;
-
       // Resume from saved progress if available
-      let resumeFromChunk = cppaModule.lastChunkIndex || 0;
-      if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
+      const resumeFromChunk = cppaModule.lastChunkIndex || 0;
+      console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (PDF reader handles text extraction, filters, TTS)`);
 
-      console.log(`[Cat Lights] Starting playback from chunk ${resumeFromChunk}/${chunks.length}`);
+      // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       // Update session state
       catWashSessionId++;
@@ -4624,8 +4606,8 @@ document.body.removeChild(a);
         fileId: cppaModule.id,
         fileName,
         chunkIndex: resumeFromChunk,
-        totalChunks: chunks.length,
-        chunks,
+        totalChunks: cppaModule.totalChunks || 0,
+        chunks: [],
         currentWords: [],
         wordIndex: 0,
         startedAt: new Date(),
@@ -4675,7 +4657,7 @@ document.body.removeChild(a);
         action: "playing",
         file: { id: cppaModule.id, name: fileName },
         resumeFromChunk,
-        totalChunks: chunks.length,
+        totalChunks: cppaModule.totalChunks || 0,
         devices: deviceResults,
         playbackMode: "tablet-bluetooth",
       });
