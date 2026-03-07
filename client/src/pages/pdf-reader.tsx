@@ -663,7 +663,13 @@ export default function PDFReaderPage() {
     return chunks;
   };
 
+  const speakerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const playTTS = async (text: string, retryCount = 0): Promise<boolean> => {
+    if (!isPlayingRef.current) {
+      console.log('[TTS] playTTS aborted — not playing');
+      return false;
+    }
     try {
       const words = text.split(/\s+/).filter(w => w.length > 0);
       setChunkWords(words);
@@ -677,9 +683,11 @@ export default function PDFReaderPage() {
           body: JSON.stringify({ text, voice, entityId: speakerParam }),
         });
         if (!response.ok) throw new Error(`Speaker TTS failed: ${response.status}`);
+        if (!isPlayingRef.current) return false;
         const estimatedDuration = Math.max(10, (words.length / 2.5));
-        setTimeout(() => {
-          if (audioRef.current) {
+        if (speakerTimerRef.current) clearTimeout(speakerTimerRef.current);
+        speakerTimerRef.current = setTimeout(() => {
+          if (isPlayingRef.current && audioRef.current) {
             audioRef.current.dispatchEvent(new Event('ended'));
           }
         }, estimatedDuration * 1000);
@@ -693,6 +701,11 @@ export default function PDFReaderPage() {
         body: JSON.stringify({ text, voice }),
       });
 
+      if (!isPlayingRef.current) {
+        console.log('[TTS] Stopped during fetch — aborting playback');
+        return false;
+      }
+
       if (!response.ok) {
         const errText = await response.text();
         console.error(`[TTS] Request failed: ${response.status} ${errText}`);
@@ -700,6 +713,10 @@ export default function PDFReaderPage() {
       }
 
       const audioBlob = await response.blob();
+      if (!isPlayingRef.current) {
+        console.log('[TTS] Stopped during blob read — aborting playback');
+        return false;
+      }
       console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
       const audioUrl = URL.createObjectURL(audioBlob);
       
@@ -721,6 +738,10 @@ export default function PDFReaderPage() {
           console.error('[TTS] Audio element error:', e, audioRef.current?.error);
         };
         
+        if (!isPlayingRef.current) {
+          console.log('[TTS] Stopped before play — aborting');
+          return false;
+        }
         await audioRef.current.play();
         audioRef.current.playbackRate = playbackSpeedRef.current;
         audioRef.current.volume = volumeRef.current;
@@ -728,10 +749,12 @@ export default function PDFReaderPage() {
       }
       return true;
     } catch (error) {
+      if (!isPlayingRef.current) return false;
       console.error(`[TTS] Error (attempt ${retryCount + 1}):`, error);
-      if (retryCount < 2) {
+      if (retryCount < 2 && isPlayingRef.current) {
         console.log(`[TTS] Retrying in 2 seconds...`);
         await new Promise(resolve => setTimeout(resolve, 2000));
+        if (!isPlayingRef.current) return false;
         return playTTS(text, retryCount + 1);
       }
       return false;
@@ -794,6 +817,10 @@ export default function PDFReaderPage() {
   };
 
   const playNextChunk = async (index: number) => {
+    if (!isPlayingRef.current) {
+      console.log(`[TTS] playNextChunk aborted — not playing`);
+      return;
+    }
     console.log(`[TTS] playNextChunk called: index=${index}, totalChunks=${chunksRef.current.length}`);
     if (index >= chunksRef.current.length) {
       console.log('[TTS] All chunks finished');
@@ -877,9 +904,19 @@ export default function PDFReaderPage() {
 
   const stopReading = async () => {
     console.log('[TTS] Stopping');
+    setIsPlaying(false);
+    isPlayingRef.current = false;
+    setIsPaused(false);
+    isPausedRef.current = false;
+    if (speakerTimerRef.current) {
+      clearTimeout(speakerTimerRef.current);
+      speakerTimerRef.current = null;
+    }
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      audioRef.current.onended = null;
+      audioRef.current.removeAttribute('src');
+      audioRef.current.load();
     }
     
     // Save progress to database if this is a stored file (not OneDrive)
@@ -907,10 +944,6 @@ export default function PDFReaderPage() {
       }
     }
     
-    setIsPlaying(false);
-    isPlayingRef.current = false;
-    setIsPaused(false);
-    isPausedRef.current = false;
     setCurrentChunk(0);
     currentChunkRef.current = 0;
   };
