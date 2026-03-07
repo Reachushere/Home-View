@@ -183,7 +183,10 @@ export default function PDFReaderPage() {
   const [isPreloading, setIsPreloading] = useState(false);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
-  const [voice, setVoice] = useState<Voice>("echo");
+  const [voice, setVoice] = useState<Voice>(() => {
+    const saved = localStorage.getItem('pdf-reader-voice');
+    return (saved && ["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"].includes(saved) ? saved : "echo") as Voice;
+  });
   const [isFullPage, setIsFullPage] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [volume, setVolume] = useState(1);
@@ -1974,7 +1977,7 @@ export default function PDFReaderPage() {
       )}
 
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
-        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1000px', width: '100%' }}>
+        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1200px', width: '100%' }}>
           <div className="flex items-center justify-center gap-10 px-8 pb-5">
             <button className="p-6 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
               <SkipBack className="h-11 w-11 text-white" />
@@ -2055,7 +2058,7 @@ export default function PDFReaderPage() {
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Voice</span>
               <select
                 value={voice}
-                onChange={(e) => setVoice(e.target.value as Voice)}
+                onChange={(e) => { const v = e.target.value as Voice; setVoice(v); localStorage.setItem('pdf-reader-voice', v); }}
                 className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[280px]"
                 data-testid="select-voice"
               >
