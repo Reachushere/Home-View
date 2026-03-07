@@ -4130,7 +4130,7 @@ export async function registerRoutes(
     const results: string[] = [];
 
     const urlObj = new URL(url);
-    const intentUri = `intent://${urlObj.host}${urlObj.pathname}${urlObj.search}#Intent;scheme=https;package=com.amazon.cloud9;end`;
+    const intentUri = `intent://${urlObj.host}${urlObj.pathname}${urlObj.search}#Intent;scheme=https;package=com.amazon.cloud9;launchFlags=0x14008000;end`;
 
     const jsCode = `
 var a = document.createElement('a');
@@ -4180,9 +4180,21 @@ document.body.removeChild(a);
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick WAKEUP failed: ${e.message}`);
     }
+    // Kill existing Silk browser instances first
+    try {
+      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }),
+      });
+      console.log(`[Cat Wash] Fire Stick ${entityId} force-stopped Silk`);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    } catch (e: any) {
+      console.log(`[Cat Wash] Fire Stick force-stop Silk failed: ${e.message}`);
+    }
     // Method 1: Use androidtv.adb_command to launch Silk with URL
     try {
-      const adbCmd = `am start -a android.intent.action.VIEW -d "${url}" com.amazon.cloud9`;
+      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${url}" com.amazon.cloud9`;
       const resp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
