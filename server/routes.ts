@@ -3842,6 +3842,15 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/tablet-nav/ack", (req, res) => {
+    const { timestamp } = req.body;
+    if (pendingTabletCommand && pendingTabletCommand.timestamp === timestamp) {
+      pendingTabletCommand = null;
+      console.log("[Tablet Nav] Command acknowledged and cleared");
+    }
+    res.json({ ok: true });
+  });
+
   app.post("/api/tablet-nav/set", (req, res) => {
     const authParam = (req.query.auth as string) || '';
     if (authParam !== (process.env.SITE_PASSWORD || '')) {

@@ -819,6 +819,7 @@ export default function Dashboard() {
         if (data.action === 'navigate' && data.url) {
           lastTabletNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
+          fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp }) }).catch(() => {});
           window.location.href = data.url;
         }
       } catch {}
