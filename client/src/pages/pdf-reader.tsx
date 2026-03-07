@@ -1535,27 +1535,51 @@ export default function PDFReaderPage() {
                 return (
                   <div
                     key={idx}
-                    className={`flex gap-3 p-4 rounded-xl transition-colors cursor-pointer border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
-                    onClick={() => {
+                    className={`flex gap-3 p-4 rounded-xl transition-colors border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
+                    data-testid={`chunk-row-${idx}`}
+                  >
+                    <div className="flex flex-col items-center gap-2 shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => toggleChunkChecked(idx)}
+                        className="h-5 w-5 rounded border-white/30 text-blue-500 focus:ring-blue-500 cursor-pointer"
+                        style={{ accentColor: '#3b82f6' }}
+                        data-testid={`checkbox-chunk-${idx}`}
+                      />
+                      <button
+                        className={`p-2 rounded-full transition-colors ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-white/10 hover:bg-white/20'}`}
+                        onClick={() => {
+                          if (isActive && !isPaused) {
+                            pauseReading();
+                          } else if (isActive && isPaused) {
+                            resumeReading();
+                          } else {
+                            if (audioRef.current) audioRef.current.pause();
+                            setIsPlaying(true);
+                            isPlayingRef.current = true;
+                            setIsPaused(false);
+                            isPausedRef.current = false;
+                            playNextChunk(idx);
+                          }
+                        }}
+                        data-testid={`button-chunk-play-${idx}`}
+                      >
+                        {isActive && !isPaused ? (
+                          <Pause className="h-5 w-5 text-white" />
+                        ) : (
+                          <Play className="h-5 w-5 text-white ml-0.5" />
+                        )}
+                      </button>
+                    </div>
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => {
                       if (audioRef.current) audioRef.current.pause();
                       setIsPlaying(true);
                       isPlayingRef.current = true;
                       setIsPaused(false);
                       isPausedRef.current = false;
                       playNextChunk(idx);
-                    }}
-                    data-testid={`chunk-row-${idx}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={(e) => { e.stopPropagation(); toggleChunkChecked(idx); }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-5 w-5 rounded border-white/30 text-blue-500 focus:ring-blue-500 shrink-0 mt-0.5 cursor-pointer"
-                      style={{ accentColor: '#3b82f6' }}
-                      data-testid={`checkbox-chunk-${idx}`}
-                    />
-                    <div className="flex-1 min-w-0">
+                    }}>
                       <p className={`text-[15px] leading-[2.1] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
                         <span className="text-white/40 mr-1.5 font-medium">{idx + 1}.</span>
                         {isActive && chunkWords.length > 0 ? (
