@@ -5207,7 +5207,7 @@ export default function Dashboard() {
       const url = isOneDrive
         ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(previewFile.objectPath || '')}&name=${encodeURIComponent(previewFile.displayName || previewFile.originalName)}&autoplay=1`
         : `/pdf-reader/${previewFile.id}?autoplay=1`;
-      window.open(url, '_blank');
+      window.location.href = url;
       return;
     }
     if (!previewText || !window.speechSynthesis) return;
@@ -8551,7 +8551,7 @@ export default function Dashboard() {
                 const url = isOneDrive
                   ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(previewFile.objectPath || '')}&name=${encodeURIComponent(previewFile.displayName || previewFile.originalName)}&autoplay=1`
                   : `/pdf-reader/${previewFile.id}?autoplay=1`;
-                window.open(url, '_blank');
+                window.location.href = url;
               }}
               data-testid="button-preview-play"
               title="Play in PDF Reader"
@@ -8589,7 +8589,7 @@ export default function Dashboard() {
               className="media-btn media-btn-sm"
               onClick={() => {
                 if (previewFile?.id) {
-                  window.open(`/pdf-reader/${previewFile.id}`, '_blank');
+                  window.location.href = `/pdf-reader/${previewFile.id}`;
                 }
               }}
               data-testid="button-open-fullpage"
@@ -9146,7 +9146,7 @@ export default function Dashboard() {
                                   const url = isOneDrive
                                     ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(previewFile.objectPath || '')}&name=${encodeURIComponent(previewFile.displayName || previewFile.originalName)}&resumeChunk=${chunkIdx}&autoplay=1`
                                     : `/pdf-reader/${previewFile.id}?resumeChunk=${chunkIdx}&autoplay=1`;
-                                  window.open(url, '_blank');
+                                  window.location.href = url;
                                 }
                               }}
                               data-testid={`button-play-chunk-${chunkIdx}`}
@@ -10297,7 +10297,7 @@ export default function Dashboard() {
                         if (selectedReturnFile) {
                           const file = returnReadingFiles.find(f => f.id === selectedReturnFile);
                           if (file) {
-                            window.open(`/pdf-reader/${file.id}`, '_blank');
+                            window.location.href = `/pdf-reader/${file.id}`;
                           }
                         }
                         setShowReturnReadingPrompt(false);
@@ -15404,7 +15404,7 @@ export default function Dashboard() {
                                 const url = isOneDrive
                                   ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
                                   : `/pdf-reader/${firstFile.id}?autoplay=1`;
-                                window.open(url, '_blank');
+                                window.location.href = url;
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
