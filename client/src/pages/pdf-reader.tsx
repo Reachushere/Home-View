@@ -1856,7 +1856,7 @@ export default function PDFReaderPage() {
                         data-testid={`checkbox-chunk-${idx}`}
                       />
                       <button
-                        className={`p-0.5 rounded-full transition-colors mt-[18px] border border-white ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-transparent hover:bg-white/10'}`}
+                        className={`p-1 rounded-full transition-colors mt-[18px] border border-white ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-transparent hover:bg-white/10'}`}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
@@ -1874,9 +1874,9 @@ export default function PDFReaderPage() {
                         data-testid={`button-chunk-play-${idx}`}
                       >
                         {isActive && !isPaused ? (
-                          <Pause className="h-2.5 w-2.5 text-white" />
+                          <Pause className="h-3 w-3 text-white" />
                         ) : (
-                          <Play className="h-2.5 w-2.5 text-white ml-px" />
+                          <Play className="h-3 w-3 text-white ml-px" />
                         )}
                       </button>
                     </div>
