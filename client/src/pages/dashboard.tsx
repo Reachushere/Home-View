@@ -800,6 +800,22 @@ export default function Dashboard() {
     const interval = setInterval(checkKitchenStatus, 5000); // Check every 5 seconds
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const isFireTablet = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
+    if (!isFireTablet) return;
+    const checkTabletNav = async () => {
+      try {
+        const resp = await fetch('/api/tablet-nav');
+        const data = await resp.json();
+        if (data.action === 'navigate' && data.url) {
+          window.location.href = data.url;
+        }
+      } catch {}
+    };
+    const interval = setInterval(checkTabletNav, 3000);
+    return () => clearInterval(interval);
+  }, []);
   
   // Handle kitchen reading trigger
   const handleKitchenReadingTrigger = async () => {

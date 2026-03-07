@@ -404,6 +404,22 @@ export default function PDFReaderPage() {
     startCatWashPlayback();
   }, [catWashFollow, autoplayParam, extractedText]);
 
+  useEffect(() => {
+    if (!catWashFollow) return;
+    const interval = setInterval(async () => {
+      try {
+        const resp = await fetch('/api/tablet-nav');
+        const data = await resp.json();
+        if (data.action === 'navigate' && data.url) {
+          window.location.href = data.url;
+        } else if (data.action === 'go_home') {
+          window.location.href = '/';
+        }
+      } catch {}
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [catWashFollow]);
+
   const handleFlick = async (deviceId: string) => {
     if (!fileId) {
       toast({ title: "Can't flick", description: "Flick only works with stored files, not OneDrive links." });

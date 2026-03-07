@@ -3795,16 +3795,16 @@ export async function registerRoutes(
   let kitchenPlaybackActive = false;
   let kitchenPlaybackAbortController: AbortController | null = null;
 
-  let pendingTabletNavigation: { url: string; timestamp: number } | null = null;
+  let pendingTabletCommand: { action: string; url?: string; timestamp: number } | null = null;
 
   app.get("/api/tablet-nav", (_req, res) => {
-    if (pendingTabletNavigation && Date.now() - pendingTabletNavigation.timestamp < 30000) {
-      const nav = pendingTabletNavigation;
-      pendingTabletNavigation = null;
-      return res.json({ navigate: nav.url });
+    if (pendingTabletCommand && Date.now() - pendingTabletCommand.timestamp < 60000) {
+      const cmd = pendingTabletCommand;
+      pendingTabletCommand = null;
+      return res.json(cmd);
     }
-    pendingTabletNavigation = null;
-    res.json({ navigate: null });
+    pendingTabletCommand = null;
+    res.json({ action: null });
   });
 
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
@@ -4080,24 +4080,38 @@ export async function registerRoutes(
   async function openUrlOnFireDevice(haUrl: string, browserIds: string[], url: string, deviceName: string): Promise<boolean> {
     const results: string[] = [];
 
+    // Parse URL to build intent URI — encode & as %26 so Android intent parser doesn't split them
+    const urlObj = new URL(url);
+    const intentPath = urlObj.pathname + '?' + urlObj.searchParams.toString().replace(/&/g, '%26');
+    const intentUri = `intent://${urlObj.host}${intentPath}#Intent;scheme=https;package=com.amazon.cloud9;end`;
+
+    const jsCode = `
+var a = document.createElement('a');
+a.href = '${intentUri}';
+a.style.display = 'none';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+`;
+
     for (const browserId of browserIds) {
       try {
-        const resp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+        const resp = await fetch(`${haUrl}/api/services/browser_mod/javascript`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ browser_id: browserId, path: url }),
+          body: JSON.stringify({ browser_id: browserId, code: jsCode }),
         });
         const body = await resp.text();
-        console.log(`[Device] ${deviceName} → browser_mod.navigate (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
+        console.log(`[Device] ${deviceName} → browser_mod.javascript/silk_intent (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
         if (resp.ok) {
-          results.push(`${browserId}:navigate:${resp.status}`);
+          results.push(`${browserId}:silk_intent:${resp.status}`);
           console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true`);
           return true;
         }
-        results.push(`${browserId}:navigate:${resp.status}`);
+        results.push(`${browserId}:silk_intent:${resp.status}`);
       } catch (e: any) {
-        console.log(`[Device] ${deviceName} → browser_mod.navigate (${browserId}) ERROR: ${e.message}`);
-        results.push(`${browserId}:navigate:error`);
+        console.log(`[Device] ${deviceName} → browser_mod.javascript (${browserId}) ERROR: ${e.message}`);
+        results.push(`${browserId}:silk_intent:error`);
       }
     }
 
@@ -4168,6 +4182,8 @@ export async function registerRoutes(
       console.log(`[TEST] URL: ${testUrl}`);
       console.log(`[TEST] Target device: ${targetDevice || 'all'}`);
       console.log(`[TEST] Method: ${testMethod || 'all'}`);
+
+      pendingTabletCommand = { action: 'navigate', url: testUrl, timestamp: Date.now() };
 
       const results: Record<string, any> = {};
 
@@ -4401,9 +4417,12 @@ export async function registerRoutes(
       console.log(`[Cat Wash] ${chunks.length} chunks, starting from beginning`);
 
       // === STEP 2: Open PDF reader on all display devices ===
+      // Set pending tablet command so tablets already on our app (in Silk) auto-navigate
+      pendingTabletCommand = { action: 'navigate', url: readerUrl, timestamp: Date.now() };
+
       const deviceResults: Record<string, string> = {};
 
-      // Fire Tablets
+      // Fire Tablets (browser_mod.javascript opens Silk if HA app is in foreground)
       const fireTablets = [
         { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'], mediaPlayer: 'media_player.tablet_cat' },
         { name: 'tablet_catn', browserIds: ['02392750-18703322'], mediaPlayer: 'media_player.tablet_catn' },
@@ -4606,7 +4625,9 @@ export async function registerRoutes(
         estimatedChunkDuration: 0,
       };
 
-      // Open PDF reader on tablets via browser_mod.navigate (companion app)
+      // Open PDF reader on tablets — set pending nav for Silk-based polling + try browser_mod for HA-based tablets
+      pendingTabletCommand = { action: 'navigate', url: readerUrl, timestamp: Date.now() };
+
       const deviceResults: Record<string, string> = {};
       const fireTablets = [
         { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
@@ -4615,7 +4636,7 @@ export async function registerRoutes(
 
       await Promise.all(fireTablets.map(async (device) => {
         const opened = await openUrlOnFireDevice(haUrl, device.browserIds, readerUrl, device.name);
-        deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
+        deviceResults[device.name] = opened ? 'silk_intent' : 'pending_nav';
       }));
 
       // Also try Samsung TV via Fire Stick
@@ -4699,6 +4720,7 @@ export async function registerRoutes(
         stopped.push("ttsSession");
       }
 
+      pendingTabletCommand = { action: 'go_home', timestamp: Date.now() };
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
 
@@ -4744,7 +4766,9 @@ export async function registerRoutes(
       // Build new URL with speaker param and resume chunk
       const newReaderUrl = `${appUrl}/pdf-reader/${currentFileId}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(newSpeaker)}&resumeChunk=${currentChunk}&auth=${authParam}`;
 
-      // Re-open on tablets with the new speaker parameter via browser_mod.navigate
+      // Re-open on tablets with the new speaker parameter
+      pendingTabletCommand = { action: 'navigate', url: newReaderUrl, timestamp: Date.now() };
+
       const tabletDevices = [
         { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
         { name: 'tablet_catn', browserIds: ['02392750-18703322'] },
@@ -4754,7 +4778,7 @@ export async function registerRoutes(
 
       await Promise.all(tabletDevices.map(async (device) => {
         const opened = await openUrlOnFireDevice(haUrl, device.browserIds, newReaderUrl, device.name);
-        deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
+        deviceResults[device.name] = opened ? 'silk_intent' : 'pending_nav';
       }));
 
       // Also re-open on Samsung TV
@@ -4898,6 +4922,7 @@ export async function registerRoutes(
     // Stopping the tablets (by clearing server state) is sufficient.
     // Sending media_stop to Echo entities causes Alexa to speak confirmations.
 
+    pendingTabletCommand = { action: 'go_home', timestamp: Date.now() };
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
     res.json({ stopped: true, stoppedItems: stopped });
   });
