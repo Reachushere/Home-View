@@ -1733,7 +1733,7 @@ export default function PDFReaderPage() {
                     className={`flex gap-3 p-4 rounded-xl transition-colors border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
                     data-testid={`chunk-row-${idx}`}
                   >
-                    <div className="flex flex-col items-center gap-2 shrink-0 mt-[10px]">
+                    <div className="flex flex-col items-center shrink-0 mt-[10px]">
                       <input
                         type="checkbox"
                         checked={isChecked}
@@ -1743,7 +1743,7 @@ export default function PDFReaderPage() {
                         data-testid={`checkbox-chunk-${idx}`}
                       />
                       <button
-                        className={`p-1.5 rounded-full transition-colors ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-white/10 hover:bg-white/20'}`}
+                        className={`p-1.5 rounded-full transition-colors mt-[18px] ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-white/10 hover:bg-white/20'}`}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
