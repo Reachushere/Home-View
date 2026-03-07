@@ -1911,7 +1911,7 @@ export default function PDFReaderPage() {
                 step="0.05"
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-24 h-1.5 cursor-pointer"
+                className="w-24 h-[3px] cursor-pointer"
                 style={{ accentColor: 'white' }}
                 data-testid="slider-volume"
               />
