@@ -4065,65 +4065,31 @@ export async function registerRoutes(
     return { textContent: cleanedContent, chunks };
   }
 
-  // Helper to open URL on Fire Tablets via command_activity (launches Silk browser with intent)
-  async function openUrlOnFireDevice(haUrl: string, mobileApps: string[], url: string, deviceName: string): Promise<boolean> {
-    // Method 1: command_activity - launches an Android activity directly
-    for (const app of mobileApps) {
+  async function openUrlOnFireDevice(haUrl: string, browserIds: string[], url: string, deviceName: string): Promise<boolean> {
+    const results: string[] = [];
+
+    for (const browserId of browserIds) {
       try {
-        const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
+        const resp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: "command_activity",
-            data: {
-              intent_package_name: "com.amazon.cloud9",
-              intent_action: "android.intent.action.VIEW",
-              intent_uri: url,
-              intent_type: "text/html"
-            }
-          }),
+          body: JSON.stringify({ browser_id: browserId, path: url }),
         });
-        console.log(`[Cat Wash] ${deviceName} → ${app} command_activity: ${resp.status}`);
-        if (resp.ok) return true;
+        const body = await resp.text();
+        console.log(`[Device] ${deviceName} → browser_mod.navigate (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
+        if (resp.ok) {
+          results.push(`${browserId}:navigate:${resp.status}`);
+          console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true`);
+          return true;
+        }
+        results.push(`${browserId}:navigate:${resp.status}`);
       } catch (e: any) {
-        console.log(`[Cat Wash] ${deviceName} → ${app} command_activity failed: ${e.message}`);
+        console.log(`[Device] ${deviceName} → browser_mod.navigate (${browserId}) ERROR: ${e.message}`);
+        results.push(`${browserId}:navigate:error`);
       }
     }
-    // Method 2: command_broadcast_intent to open URL in default browser
-    for (const app of mobileApps) {
-      try {
-        const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: "command_broadcast_intent",
-            data: {
-              intent_package_name: "com.amazon.cloud9",
-              intent_action: "android.intent.action.VIEW",
-              intent_uri: url
-            }
-          }),
-        });
-        console.log(`[Cat Wash] ${deviceName} → ${app} command_broadcast_intent: ${resp.status}`);
-        if (resp.ok) return true;
-      } catch (e: any) {
-        console.log(`[Cat Wash] ${deviceName} → ${app} broadcast_intent failed: ${e.message}`);
-      }
-    }
-    // Method 3: command_webview fallback (opens in HA companion app webview)
-    for (const app of mobileApps) {
-      try {
-        const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: "command_webview", data: { url } }),
-        });
-        console.log(`[Cat Wash] ${deviceName} → ${app} command_webview fallback: ${resp.status}`);
-        if (resp.ok) return true;
-      } catch (e: any) {
-        console.log(`[Cat Wash] ${deviceName} → ${app} webview fallback failed: ${e.message}`);
-      }
-    }
+
+    console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=false`);
     return false;
   }
 
@@ -4173,6 +4139,44 @@ export async function registerRoutes(
       totalChunks: catWashPlaybackState?.totalChunks || 0,
       endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-wash-stop"],
     });
+  });
+
+  app.post("/api/webhook/test-tablet-open", async (req, res) => {
+    try {
+      const haUrl = HOME_ASSISTANT_URL?.replace(/\/$/, '');
+      if (!haUrl || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+      const testUrl = `${appUrl}/pdf-reader/139?catWashFollow=true&autoplay=true&auth=${authParam}`;
+      const { device: targetDevice } = req.body;
+
+      console.log(`[TEST] ====== TABLET OPEN TEST ======`);
+      console.log(`[TEST] URL: ${testUrl}`);
+      console.log(`[TEST] Target device: ${targetDevice || 'all'}`);
+
+      const results: Record<string, any> = {};
+
+      const tablets = [
+        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'] },
+        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'] },
+      ];
+
+      const filteredTablets = targetDevice ? tablets.filter(t => t.name === targetDevice) : tablets;
+
+      for (const device of filteredTablets) {
+        console.log(`[TEST] --- Testing ${device.name} ---`);
+        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, testUrl, device.name);
+        results[device.name] = { browser_mod: opened };
+      }
+
+      console.log(`[TEST] Results: ${JSON.stringify(results)}`);
+      res.json({ action: "test_complete", url: testUrl, results });
+    } catch (e: any) {
+      console.error(`[TEST] Error: ${e.message}`, e.stack);
+      res.status(500).json({ error: e.message });
+    }
   });
 
   app.post("/api/webhook/cat-wash", async (req, res) => {
@@ -4313,51 +4317,13 @@ export async function registerRoutes(
 
       // Fire Tablets
       const fireTablets = [
-        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: 'media_player.tablet_catn' },
+        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
+        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'], mediaPlayer: 'media_player.tablet_catn' },
       ];
 
       await Promise.all(fireTablets.map(async (device) => {
-        const methods: string[] = [];
-
-        // Method 1: command_activity via mobile app (most reliable for opening Silk browser)
-        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-        if (opened) methods.push('command_activity');
-
-        // Method 2: play_media fallback (opens URL on media player entity)
-        if (methods.length === 0 && device.mediaPlayer) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: readerUrl, media_content_type: 'url' }),
-            });
-            console.log(`[Cat Wash] ${device.name} play_media (${device.mediaPlayer}): ${resp.status}`);
-            if (resp.ok) methods.push('play_media');
-          } catch (e: any) {
-            console.log(`[Cat Wash] ${device.name} play_media failed: ${e.message}`);
-          }
-        }
-
-        // Method 3: notification (last resort)
-        if (methods.length === 0) {
-          for (const app of device.mobileApps) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  title: "📖 Cat Wash Reading",
-                  message: `Now playing: ${fileName}`,
-                  data: { clickAction: readerUrl, url: readerUrl, tag: "cat-wash-reader", importance: "high", channel: "cat-wash", sticky: true }
-                }),
-              });
-              if (resp.ok) { methods.push(`${app}:notification`); break; }
-            } catch {}
-          }
-        }
-
-        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
+        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, readerUrl, device.name);
+        deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
       }));
 
       // Samsung TV via Fire Stick - turn on TV, then open Silk browser to PDF reader
@@ -4552,54 +4518,16 @@ export async function registerRoutes(
         estimatedChunkDuration: 0,
       };
 
-      // Open PDF reader on tablets (same robust approach as cat-wash)
+      // Open PDF reader on tablets via browser_mod.navigate (companion app)
       const deviceResults: Record<string, string> = {};
       const fireTablets = [
-        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: 'media_player.tablet_catn' },
+        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'] },
+        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'] },
       ];
 
       await Promise.all(fireTablets.map(async (device) => {
-        const methods: string[] = [];
-
-        // Method 1: command_activity via mobile app (most reliable for opening Silk browser)
-        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-        if (opened) methods.push('command_activity');
-
-        // Method 2: play_media fallback (opens URL on media player entity)
-        if (methods.length === 0 && device.mediaPlayer) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: readerUrl, media_content_type: 'url' }),
-            });
-            console.log(`[Cat Lights] ${device.name} play_media (${device.mediaPlayer}): ${resp.status}`);
-            if (resp.ok) methods.push('play_media');
-          } catch (e: any) {
-            console.log(`[Cat Lights] ${device.name} play_media failed: ${e.message}`);
-          }
-        }
-
-        // Method 3: notification (last resort)
-        if (methods.length === 0) {
-          for (const app of device.mobileApps) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${app}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  title: "📖 Cat Lights Reading",
-                  message: `Now playing: ${fileName}`,
-                  data: { clickAction: readerUrl, url: readerUrl, tag: "cat-lights-reader", importance: "high", channel: "cat-lights", sticky: true }
-                }),
-              });
-              if (resp.ok) { methods.push(`${app}:notification`); break; }
-            } catch {}
-          }
-        }
-
-        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
+        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, readerUrl, device.name);
+        deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
       }));
 
       // Also try Samsung TV via Fire Stick
@@ -4728,39 +4656,17 @@ export async function registerRoutes(
       // Build new URL with speaker param and resume chunk
       const newReaderUrl = `${appUrl}/pdf-reader/${currentFileId}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(newSpeaker)}&resumeChunk=${currentChunk}&auth=${authParam}`;
 
-      // Re-open on tablets with the new speaker parameter
+      // Re-open on tablets with the new speaker parameter via browser_mod.navigate
       const tabletDevices = [
-        { name: 'tablet_cat_wall', mobileApps: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', mobileApps: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2'], mediaPlayer: 'media_player.tablet_catn' },
+        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'] },
+        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'] },
       ];
 
       const deviceResults: Record<string, string> = {};
 
       await Promise.all(tabletDevices.map(async (device) => {
-        const methods: string[] = [];
-
-        // Method 1: play_media (most reliable - opens URL on tablet media player)
-        if (device.mediaPlayer) {
-          try {
-            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: newReaderUrl, media_content_type: 'url' }),
-            });
-            console.log(`[Cat Wash Dry] ${device.name} play_media (${device.mediaPlayer}): ${resp.status}`);
-            if (resp.ok) methods.push('play_media');
-          } catch (e: any) {
-            console.log(`[Cat Wash Dry] ${device.name} play_media failed: ${e.message}`);
-          }
-        }
-
-        // Method 2: command_activity/broadcast_intent/webview via mobile app (fallback)
-        if (methods.length === 0) {
-          const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, newReaderUrl, device.name);
-          if (opened) methods.push('silk_launch');
-        }
-
-        deviceResults[device.name] = methods.length > 0 ? methods.join(',') : 'no_method_succeeded';
+        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, newReaderUrl, device.name);
+        deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
       }));
 
       // Also re-open on Samsung TV
