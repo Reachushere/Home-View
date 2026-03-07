@@ -1788,12 +1788,12 @@ export default function PDFReaderPage() {
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleChunkChecked(idx)}
-                        className="h-5 w-5 rounded border-2 border-white/60 cursor-pointer appearance-none checked:bg-white checked:border-white relative"
+                        className="h-5 w-5 rounded border-2 border-white cursor-pointer appearance-none checked:bg-white checked:border-white relative"
                         style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         data-testid={`checkbox-chunk-${idx}`}
                       />
                       <button
-                        className={`p-1.5 rounded-full transition-colors mt-[18px] ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-white/10 hover:bg-white/20'}`}
+                        className={`p-1.5 rounded-full transition-colors mt-[18px] border-2 border-white ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-transparent hover:bg-white/10'}`}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
