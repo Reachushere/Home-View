@@ -1430,7 +1430,7 @@ export default function PDFReaderPage() {
                         window.location.href = `/pdf-reader/${val}`;
                       }}
                     >
-                      <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
+                      <SelectTrigger className="h-8 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-module-file">
                         <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
                           {moduleFiles.length === 0 ? 'No modules' : (() => {
                             const f = isModule ? file : moduleFiles[0];
@@ -1458,7 +1458,7 @@ export default function PDFReaderPage() {
                         window.location.href = `/pdf-reader/${val}`;
                       }}
                     >
-                      <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-reading-file">
+                      <SelectTrigger className="h-8 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-reading-file">
                         <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
                           {readingFiles.length === 0 ? 'No readings' : (() => {
                             const f = isReading ? file : readingFiles[0];
@@ -1508,7 +1508,7 @@ export default function PDFReaderPage() {
                         if (f) switchToFile(f);
                       }}
                     >
-                      <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-onedrive-file">
+                      <SelectTrigger className="h-8 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0" style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }} data-testid="select-onedrive-file">
                         <span className="truncate block" style={{ maxWidth: '300px', minWidth: '60px' }}>
                           {(() => {
                             const current = allFiles.find(af => af.downloadUrl === (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')));
@@ -1593,7 +1593,7 @@ export default function PDFReaderPage() {
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
             <span className="text-[13px] text-white">Speaker:</span>
             <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
-              <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0 text-white w-[190px]" data-testid="select-speaker">
+              <SelectTrigger className="h-8 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0 text-white w-[190px]" data-testid="select-speaker">
                 <SelectValue placeholder="Select Speaker" />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
