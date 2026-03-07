@@ -79,6 +79,18 @@ const SPEAKERS = [
 
 type Voice = "alloy" | "ash" | "coral" | "echo" | "fable" | "nova" | "onyx" | "sage" | "shimmer";
 
+const VOICE_LABELS: Record<Voice, string> = {
+  alloy: "Alloy - English (Neutral)",
+  ash: "Ash - English (Male, Warm)",
+  coral: "Coral - English (Female, Warm)",
+  echo: "Echo - English (Male, Clear)",
+  fable: "Fable - English (Male, British)",
+  nova: "Nova - English (Female, Friendly)",
+  onyx: "Onyx - English (Male, Deep)",
+  sage: "Sage - English (Female, Calm)",
+  shimmer: "Shimmer - English (Female, Bright)",
+};
+
 export default function PDFReaderPage() {
   const [, params] = useRoute("/pdf-reader/:fileId");
   const [isOneDriveRoute] = useRoute("/pdf-reader/onedrive");
@@ -2044,11 +2056,11 @@ export default function PDFReaderPage() {
               <select
                 value={voice}
                 onChange={(e) => setVoice(e.target.value as Voice)}
-                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[160px]"
+                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[280px]"
                 data-testid="select-voice"
               >
                 {(["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"] as Voice[]).map(v => (
-                  <option key={v} value={v} className="bg-gray-900 text-white">{v.charAt(0).toUpperCase() + v.slice(1)}</option>
+                  <option key={v} value={v} className="bg-gray-900 text-white">{VOICE_LABELS[v]}</option>
                 ))}
               </select>
               <button
