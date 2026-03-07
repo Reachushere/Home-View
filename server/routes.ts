@@ -4355,13 +4355,6 @@ document.body.removeChild(a);
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
-      const today = new Date();
-      const dayOfWeek = today.getDay();
-      if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3) {
-        console.log(`[Cat Wash] Day of week is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]} — only triggers Wednesday-Friday`);
-        return res.json({ action: "skipped", reason: `Only triggers Wednesday-Friday (today is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]})` });
-      }
-
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
