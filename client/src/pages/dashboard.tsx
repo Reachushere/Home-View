@@ -393,16 +393,49 @@ export default function Dashboard() {
   const returnPromptShown = useRef(false);
 
   useEffect(() => {
-    // TEMP: bypass guard to force-show Welcome Back dialog for testing
-    // if (returnPromptShown.current) return;
+    if (returnPromptShown.current) return;
     returnPromptShown.current = true;
 
-    fetch("/api/files")
-      .then(r => r.json())
-      .then((files: any[]) => {
-        const unlistened = files.filter((f: any) => !f.listened && f.folder?.match(/week-\d+/i));
-        if (unlistened.length > 0) {
-          const mapped = unlistened.map((f: any) => ({
+    Promise.all([
+      fetch("/api/files").then(r => r.json()),
+      fetch("/api/semester", { credentials: 'include' }).then(r => r.ok ? r.json() : null),
+    ])
+      .then(([files, semSettings]: [any[], any]) => {
+        let currentWeekNum = 1;
+        if (semSettings?.semesterStartDate) {
+          currentWeekNum = getWeekNumber(new Date(), new Date(semSettings.semesterStartDate), semSettings.readingWeekStart);
+        }
+
+        const isPartial = (f: any) => {
+          if (f.listened) return false;
+          const hasCheckedChunks = (() => {
+            if (!f.checkedChunks) return false;
+            try { const arr = JSON.parse(f.checkedChunks); return Array.isArray(arr) && arr.length > 0; } catch { return false; }
+          })();
+          const hasLastChunk = f.lastChunkIndex != null && f.lastChunkIndex > 0;
+          if (!hasCheckedChunks && !hasLastChunk) return false;
+          if (f.totalChunks && f.totalChunks > 0) {
+            if (hasCheckedChunks) {
+              try { const arr = JSON.parse(f.checkedChunks); if (arr.length >= f.totalChunks) return false; } catch {}
+            }
+            if (hasLastChunk && f.lastChunkIndex >= f.totalChunks) return false;
+          }
+          return true;
+        };
+
+        const partialFiles = files.filter(isPartial);
+
+        const currentWeekUnlistened = files.filter((f: any) => {
+          if (f.listened) return false;
+          if (partialFiles.some((p: any) => p.id === f.id)) return false;
+          const weekMatch = f.folder?.match(/week-(\d+)/i);
+          return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNum;
+        });
+
+        const orderedFiles = [...partialFiles, ...currentWeekUnlistened];
+
+        if (orderedFiles.length > 0) {
+          const mapped = orderedFiles.map((f: any) => ({
             id: f.id,
             name: f.displayName || f.originalName || 'Unknown',
             folder: f.folder || '',
@@ -10166,7 +10199,13 @@ export default function Dashboard() {
                 </div>
                 <div className="px-4 py-3 space-y-3">
                   <p className="text-[10px] text-white/80">
-                    You have {returnReadingFiles.length} outstanding PDF{returnReadingFiles.length !== 1 ? 's' : ''} to listen to. Open one in the reader?
+                    {(() => {
+                      const sel = returnReadingFiles.find(f => f.id === selectedReturnFile);
+                      const isPartial = sel && ((sel.lastChunkIndex != null && sel.lastChunkIndex > 0) || (sel.checkedChunks && (() => { try { return JSON.parse(sel.checkedChunks!).length > 0; } catch { return false; } })()));
+                      return isPartial
+                        ? "Resume where you left off?"
+                        : `You have ${returnReadingFiles.length} PDF${returnReadingFiles.length !== 1 ? 's' : ''} for this week. Open one in the reader?`;
+                    })()}
                   </p>
                   <Select
                     value={selectedReturnFile?.toString() || ''}
