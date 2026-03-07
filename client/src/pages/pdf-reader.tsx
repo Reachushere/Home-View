@@ -35,7 +35,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
-import tmuBgPath from "@assets/TMU2_1772841380363.png";
+import tmuBgPath from "@assets/TMU2_1772842073718.png";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
