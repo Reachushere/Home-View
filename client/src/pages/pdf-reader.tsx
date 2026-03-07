@@ -105,6 +105,7 @@ export default function PDFReaderPage() {
   const speakerParam = urlParams.get("speaker");
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
+  const followOnly = urlParams.get("followOnly") === "true";
   const [autoplayTriggered, setAutoplayTriggered] = useState(false);
 
   useEffect(() => {
@@ -444,6 +445,34 @@ export default function PDFReaderPage() {
     };
     startCatWashPlayback();
   }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
+
+  useEffect(() => {
+    if (!followOnly) return;
+    console.log("[FollowOnly] Starting progress polling for TV display");
+    const poll = async () => {
+      try {
+        const resp = await fetch("/api/cat-wash/progress");
+        const data = await resp.json();
+        if (data.active) {
+          setFollowState({
+            active: true,
+            chunkIndex: data.chunkIndex || 0,
+            totalChunks: data.totalChunks || 1,
+            chunkText: data.chunkText || '',
+            words: data.words || [],
+            estimatedWordIndex: data.wordIndex || 0,
+            progress: 0,
+            fileName: data.fileName || '',
+          });
+        } else {
+          setFollowState(null);
+        }
+      } catch {}
+    };
+    poll();
+    const interval = setInterval(poll, 500);
+    return () => clearInterval(interval);
+  }, [followOnly]);
 
   const lastNavTimestamp = useRef(() => {
     try { return Number(localStorage.getItem('lastNavTimestamp') || '0'); } catch { return 0; }
@@ -997,20 +1026,27 @@ export default function PDFReaderPage() {
     }
   };
   
-  // Track word highlighting based on audio progress
+  const lastReportedWordRef = useRef(-1);
   const handleTimeUpdate = () => {
     if (!audioRef.current || chunkWords.length === 0 || audioDurationRef.current === 0) return;
     
-    const currentTime = audioRef.current.currentTime;
-    const duration = audioDurationRef.current;
-    const progress = currentTime / duration;
+    var currentTime = audioRef.current.currentTime;
+    var duration = audioDurationRef.current;
+    var progress = currentTime / duration;
     
-    // Estimate current word based on progress through the chunk
-    const estimatedWordIndex = Math.floor(progress * chunkWords.length);
-    const clampedIndex = Math.min(estimatedWordIndex, chunkWords.length - 1);
+    var estimatedWordIndex = Math.floor(progress * chunkWords.length);
+    var clampedIndex = Math.min(estimatedWordIndex, chunkWords.length - 1);
     
     if (clampedIndex !== currentWordIndex) {
       setCurrentWordIndex(clampedIndex);
+      if (catWashFollow && fileId && clampedIndex !== lastReportedWordRef.current) {
+        lastReportedWordRef.current = clampedIndex;
+        fetch("/api/cat-wash/update-progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileId, wordIndex: clampedIndex }),
+        }).catch(() => {});
+      }
     }
   };
 
@@ -1830,7 +1866,38 @@ export default function PDFReaderPage() {
             </div>
           )}
 
-          {catWashFollow && followState?.active && (
+          {followOnly && followState?.active && (
+            <div className="fixed inset-0 z-50 flex flex-col" style={{ background: '#0a0a1a' }}>
+              <div className="flex items-center justify-between px-6 py-3 border-b border-white/10">
+                <span className="text-sm font-medium text-blue-300">{followState.fileName}</span>
+                <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+                  Chunk {followState.chunkIndex + 1} / {followState.totalChunks}
+                </span>
+              </div>
+              <div className="bg-white/10 h-1 overflow-hidden">
+                <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex) / followState.totalChunks) * 100)}%` }} />
+              </div>
+              <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="follow-text-display">
+                {followState.words.length > 0 && (
+                  <p className="text-2xl leading-relaxed">
+                    {followState.words.map((word, idx) => (
+                      <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-bold px-1 rounded" : idx < followState.estimatedWordIndex ? "text-white/25" : "text-white/90"} transition-colors duration-75`}>
+                        {word}{" "}
+                      </span>
+                    ))}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {followOnly && !followState?.active && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#0a0a1a' }}>
+              <span className="text-lg text-white/40">Waiting for playback...</span>
+            </div>
+          )}
+
+          {catWashFollow && !followOnly && followState?.active && (
             <div className="m-4 p-4 rounded-lg border border-blue-400/30" style={{ background: 'rgba(30,60,120,0.4)' }}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-blue-300">Following Cat Wash Playback</span>
@@ -1842,7 +1909,7 @@ export default function PDFReaderPage() {
                 <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }} />
               </div>
               {followState.words.length > 0 && (
-                <div className="max-h-60 overflow-y-auto p-3 rounded border border-white/10 text-sm leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }} data-testid="follow-text-display">
+                <div className="max-h-60 overflow-y-auto p-3 rounded border border-white/10 text-sm leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }} data-testid="follow-text-display-tablet">
                   {followState.words.map((word, idx) => (
                     <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded" : idx < followState.estimatedWordIndex ? "text-white/30" : "text-white/80"} transition-colors duration-100`}>
                       {word}{" "}
@@ -1856,7 +1923,7 @@ export default function PDFReaderPage() {
             </div>
           )}
 
-          {catWashFollow && !followState?.active && (
+          {catWashFollow && !followOnly && !followState?.active && (
             <div className="m-4 p-4 rounded-lg border border-white/10 text-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
               <span className="text-sm text-white/50">Waiting for Cat Wash playback to start...</span>
             </div>

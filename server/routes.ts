@@ -4456,8 +4456,9 @@ document.body.removeChild(a);
         // Brief delay for TV to wake up
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        // Step 2: Open URL via Fire Stick ADB command (most reliable for Fire Sticks)
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', readerUrl);
+        // Step 2: Open follow-only URL on Fire Stick (TV shows text/highlighting, no audio)
+        const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
         deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Wash] Samsung TV/Fire Stick error: ${e.message}`);
@@ -4649,7 +4650,8 @@ document.body.removeChild(a);
         });
         console.log(`[Cat Lights] Samsung TV turn_on (backup): ${turnOnResp.status}`);
         await new Promise(resolve => setTimeout(resolve, 5000));
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', readerUrl);
+        const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
         deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Lights] Samsung TV error: ${e.message}`);
@@ -4812,6 +4814,7 @@ document.body.removeChild(a);
       totalChunks: state.totalChunks,
       chunkText: state.chunks[state.chunkIndex] || '',
       words: state.currentWords,
+      wordIndex: state.wordIndex || 0,
     });
   });
 
