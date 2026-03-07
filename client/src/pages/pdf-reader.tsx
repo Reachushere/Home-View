@@ -1633,7 +1633,7 @@ export default function PDFReaderPage() {
             );
           })()}
 
-          <div className="ml-auto flex items-center gap-2" style={{ marginRight: '0px' }}>
+          <div className="ml-auto flex items-center gap-2" style={{ marginRight: '5px' }}>
             <button
               className={`p-1.5 rounded hover:bg-white/20 transition-colors ${searchOpen ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
               onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 100); }}
