@@ -4129,19 +4129,7 @@ export async function registerRoutes(
   async function openUrlOnFireDevice(haUrl: string, browserIds: string[], url: string, deviceName: string): Promise<boolean> {
     const results: string[] = [];
 
-    // Parse URL to build intent URI — encode & as %26 so Android intent parser doesn't split them
-    const urlObj = new URL(url);
-    const intentPath = urlObj.pathname + '?' + urlObj.searchParams.toString().replace(/&/g, '%26');
-    const intentUri = `intent://${urlObj.host}${intentPath}#Intent;scheme=https;package=com.amazon.cloud9;end`;
-
-    const jsCode = `
-var a = document.createElement('a');
-a.href = '${intentUri}';
-a.style.display = 'none';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-`;
+    const jsCode = `window.location.href = '${url.replace(/'/g, "\\'")}';`;
 
     for (const browserId of browserIds) {
       try {
