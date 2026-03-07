@@ -223,7 +223,9 @@ export async function checkDailyDigest() {
       const isTravelling = getIsTravellingMode();
       if (!isTravelling) {
         const taskList = upcomingTasks.map(t => t.title).join(", ");
-        const voiceMsg = `Good morning. You have ${upcomingTasks.length} task${upcomingTasks.length !== 1 ? 's' : ''} due soon: ${taskList}.`;
+        const hour = new Date().getHours();
+        const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+        const voiceMsg = `${greeting}. You have ${upcomingTasks.length} task${upcomingTasks.length !== 1 ? 's' : ''} due soon: ${taskList}.`;
         const echoResult = await sendEchoVoiceAnnouncement(voiceMsg);
         if (echoResult.success) {
           console.log(`[Reminder] Daily digest Echo announcement sent`);
