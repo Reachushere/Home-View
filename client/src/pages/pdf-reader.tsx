@@ -1726,19 +1726,6 @@ export default function PDFReaderPage() {
               <Square className="h-7 w-7 text-white fill-white" />
             </button>
 
-            <div className="flex items-end gap-[2px] h-12" data-testid="sound-waves-right">
-              {[8,20,12,26,18,30,22,14,28,10,24,16,26,18,12,30,22,14,8,20].map((h, i) => (
-                <div key={i} className="rounded-sm" style={{
-                  width: '2px',
-                  background: isPlaying && !isPaused
-                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
-                    : 'rgba(255,255,255,0.2)',
-                  height: isPlaying && !isPaused ? undefined : `${Math.max(3, h * 0.35)}px`,
-                  animation: isPlaying && !isPaused ? `soundWave ${0.8 + (i % 5) * 0.15}s ease-in-out ${i * 0.07}s infinite` : 'none',
-                  transition: 'height 0.3s ease',
-                }} />
-              ))}
-            </div>
           </div>
 
           {allFiles.length > 1 && (() => {
