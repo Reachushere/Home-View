@@ -810,7 +810,9 @@ export default function Dashboard() {
       try {
         const resp = await fetch('/api/tablet-nav');
         const data = await resp.json();
-        if (data.action === 'navigate' && data.url && data.timestamp !== lastTabletNavTimestamp.current) {
+        if (data.timestamp === lastTabletNavTimestamp.current) return;
+        if (Date.now() - data.timestamp > 30000) return;
+        if (data.action === 'navigate' && data.url) {
           lastTabletNavTimestamp.current = data.timestamp;
           window.location.href = data.url;
         }

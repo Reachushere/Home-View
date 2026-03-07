@@ -407,7 +407,6 @@ export default function PDFReaderPage() {
 
   const lastNavTimestamp = useRef(0);
   useEffect(() => {
-    if (!catWashFollow) return;
     const isFireTablet = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
     if (!isFireTablet) return;
     const interval = setInterval(async () => {
@@ -415,6 +414,7 @@ export default function PDFReaderPage() {
         const resp = await fetch('/api/tablet-nav');
         const data = await resp.json();
         if (data.timestamp === lastNavTimestamp.current) return;
+        if (Date.now() - data.timestamp > 30000) return;
         if (data.action === 'navigate' && data.url) {
           lastNavTimestamp.current = data.timestamp;
           window.location.href = data.url;
@@ -425,7 +425,7 @@ export default function PDFReaderPage() {
       } catch {}
     }, 3000);
     return () => clearInterval(interval);
-  }, [catWashFollow]);
+  }, []);
 
   const handleFlick = async (deviceId: string) => {
     if (!fileId) {
