@@ -171,7 +171,37 @@ export default function PDFReaderPage() {
   const animFrameRef = useRef<number>(0);
   const [waveBarHeights, setWaveBarHeights] = useState<number[]>(new Array(20).fill(0));
   const waveAnimRef = useRef<number>(0);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   const { toast } = useToast();
+
+  const previewVoice = async () => {
+    if (isPreviewing) {
+      if (previewAudioRef.current) { previewAudioRef.current.pause(); previewAudioRef.current = null; }
+      setIsPreviewing(false);
+      return;
+    }
+    setIsPreviewing(true);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: 'Hello, this is a preview of the selected voice.', voice }),
+      });
+      if (!res.ok) throw new Error('TTS failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.volume = volumeRef.current;
+      audio.playbackRate = playbackSpeedRef.current;
+      previewAudioRef.current = audio;
+      audio.onended = () => { setIsPreviewing(false); previewAudioRef.current = null; };
+      await audio.play();
+    } catch {
+      setIsPreviewing(false);
+      toast({ title: 'Preview failed', variant: 'destructive' });
+    }
+  };
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -1818,25 +1848,33 @@ export default function PDFReaderPage() {
 
           </div>
 
-          <div className="flex items-center justify-center gap-10 px-8 pb-4">
-            <div className="flex items-center gap-2" data-testid="voice-selector">
+          <div className="flex items-center justify-between px-8 pb-4">
+            <div className="flex items-center gap-3" data-testid="voice-selector">
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Voice</span>
               <select
                 value={voice}
                 onChange={(e) => setVoice(e.target.value as Voice)}
-                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer"
+                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[160px]"
                 data-testid="select-voice"
               >
                 {(["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"] as Voice[]).map(v => (
                   <option key={v} value={v} className="bg-gray-900 text-white">{v.charAt(0).toUpperCase() + v.slice(1)}</option>
                 ))}
               </select>
+              <button
+                className="p-1.5 rounded-full hover:bg-white/15 transition-colors border border-white/30"
+                onClick={previewVoice}
+                data-testid="button-preview-voice"
+                title="Preview voice"
+              >
+                {isPreviewing ? <Square className="h-4 w-4 text-white fill-white" /> : <Volume2 className="h-4 w-4 text-white" />}
+              </button>
             </div>
 
             <div className="flex items-center gap-3" data-testid="speed-control">
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Speed</span>
               <button
-                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
                 data-testid="button-speed-down"
               >−</button>
@@ -1852,7 +1890,7 @@ export default function PDFReaderPage() {
                 data-testid="slider-speed"
               />
               <button
-                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
@@ -1862,7 +1900,7 @@ export default function PDFReaderPage() {
             <div className="flex items-center gap-3" data-testid="volume-control">
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
               <button
-                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
                 data-testid="button-volume-down"
               >−</button>
@@ -1878,7 +1916,7 @@ export default function PDFReaderPage() {
                 data-testid="slider-volume"
               />
               <button
-                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
                 data-testid="button-volume-up"
               >+</button>
