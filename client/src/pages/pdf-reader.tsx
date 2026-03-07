@@ -32,7 +32,8 @@ import {
   Search,
   Replace,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Mic
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 import tmuBgPath from "@assets/TMU2_1772842397746.png";
@@ -73,7 +74,7 @@ const SPEAKERS = [
   { id: "media_player.queen_bedroom", name: "Queen Bedroom" },
 ];
 
-type Voice = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
+type Voice = "alloy" | "ash" | "coral" | "echo" | "fable" | "nova" | "onyx" | "sage" | "shimmer";
 
 export default function PDFReaderPage() {
   const [, params] = useRoute("/pdf-reader/:fileId");
@@ -1750,6 +1751,51 @@ export default function PDFReaderPage() {
               <Square className="h-11 w-11 text-white fill-white" />
             </button>
 
+          </div>
+
+          <div className="flex items-center justify-center gap-8 px-8 pb-4">
+            <div className="flex items-center gap-2" data-testid="voice-selector">
+              <Mic className="h-4 w-4 text-white/60" />
+              <select
+                value={voice}
+                onChange={(e) => setVoice(e.target.value as Voice)}
+                className="bg-white/10 text-white text-xs rounded-lg px-2 py-1.5 border border-white/20 focus:outline-none focus:border-white/40 cursor-pointer"
+                data-testid="select-voice"
+              >
+                {(["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"] as Voice[]).map(v => (
+                  <option key={v} value={v} className="bg-gray-900 text-white">{v.charAt(0).toUpperCase() + v.slice(1)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2" data-testid="speed-control">
+              <button
+                className="text-xs text-white/60 hover:text-white px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors"
+                onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
+                data-testid="button-speed-down"
+              >−</button>
+              <span className="text-sm text-white font-medium min-w-[40px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
+              <button
+                className="text-xs text-white/60 hover:text-white px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors"
+                onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
+                data-testid="button-speed-up"
+              >+</button>
+            </div>
+
+            <div className="flex items-center gap-2" data-testid="volume-control">
+              <Volume2 className="h-4 w-4 text-white/60" />
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={volume}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                className="w-24 h-1 accent-white cursor-pointer"
+                style={{ accentColor: 'white' }}
+                data-testid="slider-volume"
+              />
+            </div>
           </div>
 
           {allFiles.length > 1 && (() => {
