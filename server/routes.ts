@@ -4021,20 +4021,45 @@ export async function registerRoutes(
       return null;
     }
 
-    let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+    let cleanedContent = textContent.trim().replace(/[^\x20-\x7E\n]/g, ' ');
     if (cleanedContent.length < 10) return null;
 
+    const paragraphs = cleanedContent.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
+    const maxLen = 4000;
     const chunks: string[] = [];
-    let remaining = cleanedContent;
-    while (remaining.length > 0) {
-      if (remaining.length <= 1500) { chunks.push(remaining); break; }
-      let splitAt = remaining.lastIndexOf('. ', 1500);
-      if (splitAt < 500) splitAt = remaining.lastIndexOf('? ', 1500);
-      if (splitAt < 500) splitAt = remaining.lastIndexOf('! ', 1500);
-      if (splitAt < 500) splitAt = remaining.lastIndexOf(' ', 1500);
-      if (splitAt < 300) splitAt = 1500;
-      chunks.push(remaining.slice(0, splitAt + 1).trim());
-      remaining = remaining.slice(splitAt + 1).trim();
+
+    if (paragraphs.length > 1) {
+      let currentChunk = "";
+      for (const para of paragraphs) {
+        if (para.length > maxLen) {
+          if (currentChunk) { chunks.push(currentChunk.trim()); currentChunk = ""; }
+          let remaining = para;
+          while (remaining.length > 0) {
+            if (remaining.length <= maxLen) { chunks.push(remaining); break; }
+            let splitAt = remaining.lastIndexOf('. ', maxLen);
+            if (splitAt < 500) splitAt = remaining.lastIndexOf(' ', maxLen);
+            if (splitAt < 300) splitAt = maxLen;
+            chunks.push(remaining.slice(0, splitAt + 1).trim());
+            remaining = remaining.slice(splitAt + 1).trim();
+          }
+        } else if ((currentChunk + "\n\n" + para).length > maxLen) {
+          if (currentChunk) chunks.push(currentChunk.trim());
+          currentChunk = para;
+        } else {
+          currentChunk = currentChunk ? currentChunk + "\n\n" + para : para;
+        }
+      }
+      if (currentChunk) chunks.push(currentChunk.trim());
+    } else {
+      let remaining = cleanedContent.replace(/\s+/g, ' ');
+      while (remaining.length > 0) {
+        if (remaining.length <= maxLen) { chunks.push(remaining); break; }
+        let splitAt = remaining.lastIndexOf('. ', maxLen);
+        if (splitAt < 500) splitAt = remaining.lastIndexOf(' ', maxLen);
+        if (splitAt < 300) splitAt = maxLen;
+        chunks.push(remaining.slice(0, splitAt + 1).trim());
+        remaining = remaining.slice(splitAt + 1).trim();
+      }
     }
 
     return { textContent: cleanedContent, chunks };

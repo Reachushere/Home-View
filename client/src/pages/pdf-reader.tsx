@@ -617,6 +617,39 @@ export default function PDFReaderPage() {
     return rawText;
   };
 
+  const extractPageTextWithParagraphs = async (pdf: any, pageNum: number): Promise<string> => {
+    const page = await pdf.getPage(pageNum);
+    const textContent = await page.getTextContent();
+    const items = textContent.items as any[];
+    if (items.length === 0) return "";
+
+    let result = "";
+    let lastY: number | null = null;
+    let lastHeight = 12;
+
+    for (const item of items) {
+      if (!item.str || item.str.trim() === "") continue;
+      const y = item.transform ? item.transform[5] : null;
+      const height = item.height || lastHeight;
+
+      if (lastY !== null && y !== null) {
+        const gap = Math.abs(lastY - y);
+        if (gap > height * 1.3) {
+          result += "\n\n";
+        } else if (gap > height * 0.3) {
+          result += " ";
+        } else {
+          result += " ";
+        }
+      }
+
+      result += item.str;
+      if (y !== null) lastY = y;
+      if (height > 0) lastHeight = height;
+    }
+    return result;
+  };
+
   const extractTextInBackground = async (url: string, pages: number) => {
     setIsPreloading(true);
     try {
@@ -626,12 +659,8 @@ export default function PDFReaderPage() {
       
       let fullText = "";
       for (let i = 1; i <= pages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: any) => item.str)
-          .join(" ");
-        fullText += `Page ${i}. ${pageText} `;
+        const pageText = await extractPageTextWithParagraphs(pdf, i);
+        fullText += pageText + "\n\n";
       }
       
       const cleanedText = await cleanTextViaServer(fullText);
@@ -670,7 +699,6 @@ export default function PDFReaderPage() {
     let fullText = "";
     
     try {
-      // Use cached PDF document if available
       let pdf = pdfDocRef.current;
       if (!pdf) {
         const loadingTask = pdfjs.getDocument(pdfUrl);
@@ -679,12 +707,8 @@ export default function PDFReaderPage() {
       }
       
       for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: any) => item.str)
-          .join(" ");
-        fullText += `Page ${i}. ${pageText} `;
+        const pageText = await extractPageTextWithParagraphs(pdf, i);
+        fullText += pageText + "\n\n";
       }
       
       const cleanedText = await cleanTextViaServer(fullText);
@@ -703,17 +727,47 @@ export default function PDFReaderPage() {
     }
   };
 
-  const chunkText = (text: string, maxLength: number = 3500): string[] => {
-    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  const chunkText = (text: string, maxLength: number = 4000): string[] => {
+    const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
+
+    if (paragraphs.length <= 1) {
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      const chunks: string[] = [];
+      let currentChunk = "";
+      for (const sentence of sentences) {
+        if ((currentChunk + sentence).length > maxLength) {
+          if (currentChunk) chunks.push(currentChunk.trim());
+          currentChunk = sentence;
+        } else {
+          currentChunk += sentence;
+        }
+      }
+      if (currentChunk) chunks.push(currentChunk.trim());
+      return chunks;
+    }
+
     const chunks: string[] = [];
     let currentChunk = "";
 
-    for (const sentence of sentences) {
-      if ((currentChunk + sentence).length > maxLength) {
+    for (const para of paragraphs) {
+      if (para.length > maxLength) {
+        if (currentChunk) { chunks.push(currentChunk.trim()); currentChunk = ""; }
+        const sentences = para.match(/[^.!?]+[.!?]+/g) || [para];
+        let subChunk = "";
+        for (const sentence of sentences) {
+          if ((subChunk + sentence).length > maxLength) {
+            if (subChunk) chunks.push(subChunk.trim());
+            subChunk = sentence;
+          } else {
+            subChunk += sentence;
+          }
+        }
+        if (subChunk) chunks.push(subChunk.trim());
+      } else if ((currentChunk + "\n\n" + para).length > maxLength) {
         if (currentChunk) chunks.push(currentChunk.trim());
-        currentChunk = sentence;
+        currentChunk = para;
       } else {
-        currentChunk += sentence;
+        currentChunk = currentChunk ? currentChunk + "\n\n" + para : para;
       }
     }
     if (currentChunk) chunks.push(currentChunk.trim());
