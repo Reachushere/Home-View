@@ -1836,7 +1836,7 @@ export default function PDFReaderPage() {
             <div className="flex items-center gap-3" data-testid="speed-control">
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Speed</span>
               <button
-                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
                 data-testid="button-speed-down"
               >−</button>
@@ -1852,7 +1852,7 @@ export default function PDFReaderPage() {
                 data-testid="slider-speed"
               />
               <button
-                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
@@ -1862,7 +1862,7 @@ export default function PDFReaderPage() {
             <div className="flex items-center gap-3" data-testid="volume-control">
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
               <button
-                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
                 data-testid="button-volume-down"
               >−</button>
@@ -1878,7 +1878,7 @@ export default function PDFReaderPage() {
                 data-testid="slider-volume"
               />
               <button
-                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                className="w-7 h-7 flex items-center justify-center text-base text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
                 data-testid="button-volume-up"
               >+</button>
