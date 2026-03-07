@@ -30,15 +30,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    minify: 'terser',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-pdf': ['react-pdf', 'pdfjs-dist'],
-        },
-      },
-    },
+    target: 'es2015',
+    cssTarget: 'chrome100',
   },
   server: {
     fs: {
