@@ -192,6 +192,7 @@ export default function PDFReaderPage() {
   const [extractedText, setExtractedText] = useState<string>("");
   const extractedTextRef = useRef<string>("");
   useEffect(() => { extractedTextRef.current = extractedText; }, [extractedText]);
+  const pdfUrlRef = useRef<string | undefined | null>(undefined);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -405,7 +406,7 @@ export default function PDFReaderPage() {
     if (!catWashFollow || !autoplayParam) return;
     if (catWashAutoStarted.current) return;
     if (isPlayingRef.current) return;
-    if (!pdfUrl && !oneDriveUrl) return;
+    if (!pdfUrlRef.current && !oneDriveUrl) return;
 
     catWashAutoStarted.current = true;
     console.log("[Cat Wash] Auto-starting TTS playback with audio unlock");
@@ -463,7 +464,7 @@ export default function PDFReaderPage() {
       }
     };
     startCatWashPlayback();
-  }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
+  }, [catWashFollow, autoplayParam, file]);
 
   useEffect(() => {
     if (!followOnly && !(catWashFollow && !autoplayParam)) return;
@@ -611,6 +612,7 @@ export default function PDFReaderPage() {
     : fileId
       ? `/api/files/${fileId}/download`
       : file?.objectPath;
+  pdfUrlRef.current = pdfUrl;
   const rawFileName = isOneDrive ? (currentFileName || (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF")) : file?.displayName;
   const fileName = (() => {
     if (!rawFileName) return rawFileName;
@@ -1928,7 +1930,7 @@ export default function PDFReaderPage() {
                 <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }} />
               </div>
               {followState.words.length > 0 && (
-                <div className="max-h-60 overflow-y-auto p-3 rounded border border-white/10 text-sm leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }} data-testid="follow-text-display-tablet">
+                <div className="max-h-60 overflow-y-auto p-3 rounded border border-white/10 text-base leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }} data-testid="follow-text-display-tablet">
                   {followState.words.map((word, idx) => (
                     <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded" : idx < followState.estimatedWordIndex ? "text-white/30" : "text-white/80"} transition-colors duration-100`}>
                       {word}{" "}
@@ -2006,7 +2008,7 @@ export default function PDFReaderPage() {
                           <textarea
                             value={editableChunkText}
                             onChange={(e) => setEditableChunkText(e.target.value)}
-                            className="w-full bg-white/5 text-white/90 text-[18px] leading-[2.1] p-2 rounded-lg border border-white/20 focus:border-white/40 focus:outline-none resize-y min-h-[80px]"
+                            className="w-full bg-white/5 text-white/90 text-[22px] leading-[2.1] p-2 rounded-lg border border-white/20 focus:border-white/40 focus:outline-none resize-y min-h-[80px]"
                             style={{ minHeight: '80px' }}
                             autoFocus
                             data-testid={`textarea-chunk-edit-${idx}`}
@@ -2030,7 +2032,7 @@ export default function PDFReaderPage() {
                           </div>
                         </div>
                       ) : (
-                      <p className={`text-[18px] leading-[2.1] cursor-pointer ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`} onClick={() => {
+                      <p className={`text-[22px] leading-[2.1] cursor-pointer ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`} onClick={() => {
                         if (!isActive) {
                           setEditingChunkIndex(idx);
                           setEditableChunkText(chunk);
@@ -2172,79 +2174,85 @@ export default function PDFReaderPage() {
 
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '5px 20px 14px 20px' }}>
         <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
-          <div className="flex items-center justify-center gap-10 px-8 pb-5" style={{ overflow: 'visible' }}>
-            <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-              <RotateCcw className="h-5 w-5 text-white" />
-              <span className="text-xs text-white font-medium">15s</span>
-            </button>
+          <div className="flex items-end px-8 pb-5" style={{ overflow: 'visible' }}>
+            <div className="flex items-center gap-2">
+              <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+                <RotateCcw className="h-5 w-5 text-white" />
+                <span className="text-xs text-white font-medium">15s</span>
+              </button>
 
-            <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-              <span className="text-xs text-white font-medium">15s</span>
-              <RotateCw className="h-5 w-5 text-white" />
-            </button>
-
-            <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
-              {waveBarHeights.map((val, i) => {
-                const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
-                const activeH = Math.max(4, val * 56);
-                const h = isPlaying && !isPaused ? activeH : Math.max(4, idleH * 0.5);
-                return (
-                  <div key={i} className="rounded-sm" style={{
-                    width: '3px',
-                    background: isPlaying && !isPaused
-                      ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
-                      : 'rgba(255,255,255,0.2)',
-                    height: `${Math.round(h)}px`,
-                    transition: isPlaying && !isPaused ? 'height 0.05s linear' : 'height 0.3s ease',
-                  }} />
-                );
-              })}
+              <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+                <span className="text-xs text-white font-medium">15s</span>
+                <RotateCw className="h-5 w-5 text-white" />
+              </button>
             </div>
 
-            {!isPlaying ? (
-              <div className="flex items-center gap-5">
-                {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
-                  <button
-                    className="p-4 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
-                    onClick={resumeFromLast}
-                    disabled={isLoading || numPages === 0}
-                    title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
-                    data-testid="button-resume"
-                  >
-                    {isLoading ? <Loader2 className="h-8 w-8 text-white animate-spin" /> : <RotateCcw className="h-8 w-8 text-white" />}
-                  </button>
-                )}
-                <button
-                  className="p-4 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
-                  style={{ marginTop: '-20px' }}
-                  onClick={startReading}
-                  disabled={isLoading || numPages === 0}
-                  data-testid="button-play"
-                >
-                  {isLoading ? <Loader2 className="h-8 w-8 text-gray-900 animate-spin" /> : <Play className="h-8 w-8 text-gray-900 fill-gray-900 ml-0.5" />}
-                </button>
+            <div className="flex-1 flex items-end justify-center gap-4">
+              <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
+                {waveBarHeights.map((val, i) => {
+                  const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
+                  const activeH = Math.max(4, val * 56);
+                  const h = isPlaying && !isPaused ? activeH : Math.max(4, idleH * 0.5);
+                  return (
+                    <div key={i} className="rounded-sm" style={{
+                      width: '3px',
+                      background: isPlaying && !isPaused
+                        ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
+                        : 'rgba(255,255,255,0.2)',
+                      height: `${Math.round(h)}px`,
+                      transition: isPlaying && !isPaused ? 'height 0.05s linear' : 'height 0.3s ease',
+                    }} />
+                  );
+                })}
               </div>
-            ) : isPaused ? (
-              <button className="p-4 rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-20px' }} onClick={resumeReading} data-testid="button-resume-play">
-                <Play className="h-8 w-8 text-gray-900 fill-gray-900 ml-0.5" />
+
+              {!isPlaying ? (
+                <div className="flex items-center gap-5">
+                  {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                    <button
+                      className="p-5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                      onClick={resumeFromLast}
+                      disabled={isLoading || numPages === 0}
+                      title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
+                      data-testid="button-resume"
+                    >
+                      {isLoading ? <Loader2 className="h-10 w-10 text-white animate-spin" /> : <RotateCcw className="h-10 w-10 text-white" />}
+                    </button>
+                  )}
+                  <button
+                    className="rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                    style={{ marginTop: '-30px', padding: '18px', border: '2px solid rgba(255,255,255,0.3)' }}
+                    onClick={startReading}
+                    disabled={isLoading || numPages === 0}
+                    data-testid="button-play"
+                  >
+                    {isLoading ? <Loader2 className="h-10 w-10 text-gray-900 animate-spin" /> : <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />}
+                  </button>
+                </div>
+              ) : isPaused ? (
+                <button className="rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-30px', padding: '18px', border: '2px solid rgba(255,255,255,0.3)' }} onClick={resumeReading} data-testid="button-resume-play">
+                  <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />
+                </button>
+              ) : (
+                <button className="rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-30px', padding: '18px', border: '2px solid rgba(255,255,255,0.3)' }} onClick={pauseReading} data-testid="button-pause">
+                  <Pause className="h-10 w-10 text-gray-900" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button className="p-3 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+                <SkipBack className="h-5 w-5 text-white" />
               </button>
-            ) : (
-              <button className="p-4 rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-20px' }} onClick={pauseReading} data-testid="button-pause">
-                <Pause className="h-8 w-8 text-gray-900" />
+
+              <button className="p-3 rounded-full hover:bg-white/10" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+                <SkipForward className="h-5 w-5 text-white" />
               </button>
-            )}
 
-            <button className="p-3 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
-              <SkipBack className="h-5 w-5 text-white" />
-            </button>
-
-            <button className="p-3 rounded-full hover:bg-white/10" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
-              <SkipForward className="h-5 w-5 text-white" />
-            </button>
-
-            <button className="p-3 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
-              <Square className="h-5 w-5 text-white fill-white" />
-            </button>
+              <button className="p-3 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+                <Square className="h-5 w-5 text-white fill-white" />
+              </button>
+            </div>
 
           </div>
 
