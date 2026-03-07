@@ -17,25 +17,36 @@ import OneDrivePage from "@/pages/onedrive";
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
   const isSilk = typeof navigator !== 'undefined' && 
-    (/\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent));
+    (/\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent));
+
+  useEffect(() => {
+    if (!isSilk) return;
+    document.documentElement.style.cssText += ';position:fixed;top:0;left:0;width:100vw;height:100vh;overflow:auto;';
+    document.body.style.cssText += ';margin:0;padding:0;min-height:100vh;';
+  }, [isSilk]);
 
   const requestFullscreen = useCallback(() => {
-    if (requested || !isSilk) return;
+    if (requested) return;
     if (document.fullscreenElement) { setRequested(true); return; }
     const el = document.documentElement as any;
     const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (fn) {
       fn.call(el).then(() => setRequested(true)).catch(() => {});
     }
-  }, [requested, isSilk]);
+  }, [requested]);
 
   useEffect(() => {
     if (!isSilk || requested) return;
     requestFullscreen();
+    const interval = setInterval(() => {
+      if (document.fullscreenElement) { setRequested(true); clearInterval(interval); return; }
+      requestFullscreen();
+    }, 2000);
     const handler = () => requestFullscreen();
-    document.addEventListener('click', handler, { once: true });
-    document.addEventListener('touchstart', handler, { once: true });
+    document.addEventListener('click', handler);
+    document.addEventListener('touchstart', handler);
     return () => {
+      clearInterval(interval);
       document.removeEventListener('click', handler);
       document.removeEventListener('touchstart', handler);
     };
