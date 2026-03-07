@@ -45,10 +45,14 @@ function useAutoFullscreen() {
     const handler = () => requestFullscreen();
     document.addEventListener('click', handler);
     document.addEventListener('touchstart', handler);
+    document.addEventListener('keydown', handler);
+    window.addEventListener('focus', handler);
     return () => {
       clearInterval(interval);
       document.removeEventListener('click', handler);
       document.removeEventListener('touchstart', handler);
+      document.removeEventListener('keydown', handler);
+      window.removeEventListener('focus', handler);
     };
   }, [isSilk, requested, requestFullscreen]);
 }

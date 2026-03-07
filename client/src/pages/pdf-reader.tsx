@@ -1422,7 +1422,7 @@ export default function PDFReaderPage() {
               return (
                 <>
                   <div className="flex items-center gap-1.5 min-w-0 shrink" style={{ marginLeft: '-3px' }}>
-                    <span className="text-[13px] font-bold text-white shrink-0">Module:</span>
+                    <span className="text-[13px] text-white shrink-0">Module:</span>
                     <Select
                       value={isModule && fileId ? fileId.toString() : (moduleFiles[0]?.id?.toString() || 'none')}
                       onValueChange={(val) => {
@@ -1450,7 +1450,7 @@ export default function PDFReaderPage() {
                   </div>
 
                   <div className="flex items-center gap-1.5 min-w-0 shrink" style={{ marginLeft: '45px' }}>
-                    <span className="text-[13px] font-bold text-white shrink-0">Reading:</span>
+                    <span className="text-[13px] text-white shrink-0">Reading:</span>
                     <Select
                       value={isReading && fileId ? fileId.toString() : (readingFiles[0]?.id?.toString() || 'none')}
                       onValueChange={(val) => {
@@ -1500,7 +1500,7 @@ export default function PDFReaderPage() {
               return (
                 <>
                   <div className="flex items-center gap-1.5 min-w-0 shrink">
-                    <span className="text-[13px] font-bold text-white shrink-0">Module:</span>
+                    <span className="text-[13px] text-white shrink-0">Module:</span>
                     <Select
                       value={currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')}
                       onValueChange={(url) => {
@@ -1591,7 +1591,7 @@ export default function PDFReaderPage() {
               {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
             </button>
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
-            <span className="text-[13px] font-bold text-white">Speaker:</span>
+            <span className="text-[13px] text-white">Speaker:</span>
             <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
               <SelectTrigger className="h-6 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0 text-white w-[190px]" data-testid="select-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -2095,21 +2095,21 @@ export default function PDFReaderPage() {
                   </button>
                 )}
                 <button
-                  className="p-4 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                  className="p-2 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
                   onClick={startReading}
                   disabled={isLoading || numPages === 0}
                   data-testid="button-play"
                 >
-                  {isLoading ? <Loader2 className="h-8 w-8 text-gray-900 animate-spin" /> : <Play className="h-8 w-8 text-gray-900 fill-gray-900 ml-0.5" />}
+                  {isLoading ? <Loader2 className="h-4 w-4 text-gray-900 animate-spin" /> : <Play className="h-4 w-4 text-gray-900 fill-gray-900 ml-0.5" />}
                 </button>
               </div>
             ) : isPaused ? (
-              <button className="p-4 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
-                <Play className="h-8 w-8 text-gray-900 fill-gray-900 ml-0.5" />
+              <button className="p-2 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
+                <Play className="h-4 w-4 text-gray-900 fill-gray-900 ml-0.5" />
               </button>
             ) : (
-              <button className="p-4 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
-                <Pause className="h-8 w-8 text-gray-900" />
+              <button className="p-2 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
+                <Pause className="h-4 w-4 text-gray-900" />
               </button>
             )}
 
