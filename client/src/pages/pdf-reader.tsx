@@ -411,82 +411,51 @@ export default function PDFReaderPage() {
     catWashAutoStarted.current = true;
     console.log("[Cat Wash] Auto-starting TTS playback with audio unlock");
 
-    try {
-      if (!document.fullscreenElement) {
-        var el = document.documentElement as any;
-        var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-        if (fn) fn.call(el).catch(function() {});
-        console.log("[Cat Wash] Fullscreen requested synchronously");
-      }
-    } catch (e) {}
-
-    var unlockAudio = function() {
-      return new Promise(function(resolve) {
-        try {
-          var AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-          if (AudioCtx) {
-            var ctx = new AudioCtx();
-            var buf = ctx.createBuffer(1, 1, 22050);
-            var s = ctx.createBufferSource();
-            s.buffer = buf;
-            s.connect(ctx.destination);
-            s.start(0);
-            if (ctx.state === 'suspended') {
-              ctx.resume().then(function() {
-                console.log("[Cat Wash] AudioContext unlocked:", ctx.state);
-                resolve(undefined);
-              }).catch(function() { resolve(undefined); });
-              return;
-            }
-            console.log("[Cat Wash] AudioContext unlocked:", ctx.state);
-          }
-          if (audioRef.current) {
-            audioRef.current.muted = true;
-            audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
-            audioRef.current.play().then(function() {
-              audioRef.current!.pause();
-              audioRef.current!.muted = false;
-              audioRef.current!.src = "";
-              console.log("[Cat Wash] Audio element unlocked");
-              resolve(undefined);
-            }).catch(function() { resolve(undefined); });
-            return;
-          }
-        } catch (e) {
-          console.log("[Cat Wash] Audio unlock attempt:", e);
+    const unlockAudio = async () => {
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          if (ctx.state === 'suspended') await ctx.resume();
+          console.log("[Cat Wash] AudioContext unlocked:", ctx.state);
         }
-        resolve(undefined);
-      });
+        if (audioRef.current) {
+          audioRef.current.muted = true;
+          audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+          await audioRef.current.play().catch(() => {});
+          audioRef.current.pause();
+          audioRef.current.muted = false;
+          audioRef.current.src = "";
+          console.log("[Cat Wash] Audio element unlocked");
+        }
+      } catch (e) {
+        console.log("[Cat Wash] Audio unlock attempt:", e);
+      }
     };
 
-    var startCatWashPlayback = function() {
-      unlockAudio().then(function() {
-        var maxWait = 30;
-        var waited = 0;
-        var waitLoop = function() {
-          if (extractedTextRef.current || waited >= maxWait) {
-            if (!isPlayingRef.current) {
-              console.log("[Cat Wash] Calling startReading() after " + waited + "s wait");
-              try {
-                if (!document.fullscreenElement) {
-                  var el2 = document.documentElement as any;
-                  var fn2 = el2.requestFullscreen || el2.webkitRequestFullscreen || el2.mozRequestFullScreen || el2.msRequestFullscreen;
-                  if (fn2) fn2.call(el2).catch(function() {});
-                }
-              } catch (e) {}
-              startReading();
-            }
-            return;
-          }
+    const startCatWashPlayback = async () => {
+      await unlockAudio();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (!extractedTextRef.current) {
+        let waited = 0;
+        while (!extractedTextRef.current && waited < 28) {
           console.log("[Cat Wash] Waiting for text extraction... (" + waited + "s)");
+          await new Promise(resolve => setTimeout(resolve, 1000));
           waited++;
-          setTimeout(waitLoop, 1000);
-        };
-        waitLoop();
-      });
+        }
+      }
+      if (!isPlayingRef.current) {
+        console.log("[Cat Wash] Calling startReading() directly");
+        startReading();
+      }
     };
     startCatWashPlayback();
-  }, [catWashFollow, autoplayParam, file]);
+  }, [catWashFollow, autoplayParam, file, oneDriveUrl]);
 
   useEffect(() => {
     if (!followOnly && !(catWashFollow && !autoplayParam)) return;
