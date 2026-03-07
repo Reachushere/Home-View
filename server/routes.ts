@@ -4162,13 +4162,13 @@ export async function registerRoutes(
       const tablets = [
         {
           name: 'tablet_cat_wall',
-          browserIds: ['media_player.tablet_cat'],
+          browserIds: ['6507d68f-6563ca6c'],
           notifyServices: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'],
           mediaPlayer: 'media_player.tablet_cat',
         },
         {
           name: 'tablet_catn',
-          browserIds: ['media_player.tablet_catn'],
+          browserIds: ['02392750-18703322'],
           notifyServices: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2', 'mobile_app_tablet_catn_2'],
           mediaPlayer: 'media_player.tablet_catn',
         },
@@ -4393,8 +4393,8 @@ export async function registerRoutes(
 
       // Fire Tablets
       const fireTablets = [
-        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'], mediaPlayer: 'media_player.tablet_catn' },
+        { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'], mediaPlayer: 'media_player.tablet_cat' },
+        { name: 'tablet_catn', browserIds: ['02392750-18703322'], mediaPlayer: 'media_player.tablet_catn' },
       ];
 
       await Promise.all(fireTablets.map(async (device) => {
@@ -4597,8 +4597,8 @@ export async function registerRoutes(
       // Open PDF reader on tablets via browser_mod.navigate (companion app)
       const deviceResults: Record<string, string> = {};
       const fireTablets = [
-        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'] },
-        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'] },
+        { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
+        { name: 'tablet_catn', browserIds: ['02392750-18703322'] },
       ];
 
       await Promise.all(fireTablets.map(async (device) => {
@@ -4734,8 +4734,8 @@ export async function registerRoutes(
 
       // Re-open on tablets with the new speaker parameter via browser_mod.navigate
       const tabletDevices = [
-        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'] },
-        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'] },
+        { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
+        { name: 'tablet_catn', browserIds: ['02392750-18703322'] },
       ];
 
       const deviceResults: Record<string, string> = {};
