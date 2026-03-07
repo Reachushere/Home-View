@@ -169,6 +169,8 @@ export default function PDFReaderPage() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const animFrameRef = useRef<number>(0);
+  const [waveBarHeights, setWaveBarHeights] = useState<number[]>(new Array(20).fill(0));
+  const waveAnimRef = useRef<number>(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -1055,6 +1057,38 @@ export default function PDFReaderPage() {
     }
   }, [volume]);
 
+  useEffect(() => {
+    const updateWaveBars = () => {
+      const analyser = analyserRef.current;
+      if (analyser && isPlaying && !isPaused) {
+        const bufLen = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufLen);
+        analyser.getByteFrequencyData(dataArray);
+        const bars = 20;
+        const heights: number[] = [];
+        for (let i = 0; i < bars; i++) {
+          const startIdx = Math.floor((i / bars) * bufLen * 0.6);
+          const endIdx = Math.floor(((i + 1) / bars) * bufLen * 0.6);
+          let sum = 0;
+          for (let j = startIdx; j < endIdx; j++) sum += dataArray[j];
+          const avg = sum / (endIdx - startIdx) / 255;
+          heights.push(avg);
+        }
+        setWaveBarHeights(heights);
+      } else {
+        setWaveBarHeights(new Array(20).fill(0));
+      }
+      waveAnimRef.current = requestAnimationFrame(updateWaveBars);
+    };
+    if (isPlaying && !isPaused) {
+      waveAnimRef.current = requestAnimationFrame(updateWaveBars);
+    } else {
+      cancelAnimationFrame(waveAnimRef.current);
+      setWaveBarHeights(new Array(20).fill(0));
+    }
+    return () => cancelAnimationFrame(waveAnimRef.current);
+  }, [isPlaying, isPaused]);
+
   if (fileLoading && !isOneDrive) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3a8bbf, #164a72)' }}>
@@ -1692,17 +1726,21 @@ export default function PDFReaderPage() {
             </button>
 
             <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
-              {[8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8].map((h, i) => (
-                <div key={i} className="rounded-sm" style={{
-                  width: '3px',
-                  background: isPlaying && !isPaused
-                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
-                    : 'rgba(255,255,255,0.2)',
-                  height: isPlaying && !isPaused ? undefined : `${Math.max(4, h * 0.5)}px`,
-                  animation: isPlaying && !isPaused ? `soundWave ${0.8 + (i % 5) * 0.15}s ease-in-out ${i * 0.07}s infinite` : 'none',
-                  transition: 'height 0.3s ease',
-                }} />
-              ))}
+              {waveBarHeights.map((val, i) => {
+                const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
+                const activeH = Math.max(4, val * 56);
+                const h = isPlaying && !isPaused ? activeH : Math.max(4, idleH * 0.5);
+                return (
+                  <div key={i} className="rounded-sm" style={{
+                    width: '3px',
+                    background: isPlaying && !isPaused
+                      ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
+                      : 'rgba(255,255,255,0.2)',
+                    height: `${Math.round(h)}px`,
+                    transition: isPlaying && !isPaused ? 'height 0.05s linear' : 'height 0.3s ease',
+                  }} />
+                );
+              })}
             </div>
 
             {!isPlaying ? (
