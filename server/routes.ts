@@ -3821,6 +3821,27 @@ export async function registerRoutes(
     res.json({ action: null });
   });
 
+  app.get("/api/cat-wash/find-next", async (req, res) => {
+    const authParam = (req.query.auth as string) || '';
+    if (authParam !== (process.env.SITE_PASSWORD || '')) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      if (semesterSettings?.semesterStartDate) {
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+      }
+      const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
+      if (!nextFile) {
+        return res.json({ found: false, weekNumber: currentWeekNumber });
+      }
+      res.json({ found: true, fileId: nextFile.id, fileName: nextFile.displayName || nextFile.originalName, folder: nextFile.folder, weekNumber: currentWeekNumber });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.post("/api/tablet-nav/set", (req, res) => {
     const authParam = (req.query.auth as string) || '';
     if (authParam !== (process.env.SITE_PASSWORD || '')) {
@@ -4148,6 +4169,18 @@ document.body.removeChild(a);
 
   // Helper to open URL on Fire Stick via androidtv integration
   async function openUrlOnFireStick(haUrl: string, entityId: string, url: string): Promise<boolean> {
+    // Step 0: Wake up Fire Stick first (triggers HDMI-CEC to turn on TV)
+    try {
+      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }),
+      });
+      console.log(`[Cat Wash] Fire Stick ${entityId} WAKEUP sent`);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    } catch (e: any) {
+      console.log(`[Cat Wash] Fire Stick WAKEUP failed: ${e.message}`);
+    }
     // Method 1: Use androidtv.adb_command to launch Silk with URL
     try {
       const adbCmd = `am start -a android.intent.action.VIEW -d "${url}" com.amazon.cloud9`;
@@ -4344,87 +4377,62 @@ document.body.removeChild(a);
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
-      const semesterSettings = await storage.getActiveSemesterSettings();
+      // Query the DEPLOYED server for the next file, since tablets run the deployed app
+      // which has a separate database. Fall back to local DB if deployed server is unreachable.
+      let nextFile: any = null;
+      let chunks: string[] = [];
       let currentWeekNumber = 1;
-      if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+
+      try {
+        const deployedResp = await fetch(`${DEPLOYED_APP_URL}/api/cat-wash/find-next?auth=${authParam}`);
+        if (deployedResp.ok) {
+          const deployedData = await deployedResp.json();
+          currentWeekNumber = deployedData.weekNumber || 1;
+          if (deployedData.found && deployedData.fileId) {
+            console.log(`[Cat Wash] Deployed server found file: ${deployedData.fileName} (id=${deployedData.fileId})`);
+            // Get the full file from deployed server to extract text
+            const fileResp = await fetch(`${DEPLOYED_APP_URL}/api/files/${deployedData.fileId}?auth=${authParam}`);
+            if (fileResp.ok) {
+              nextFile = await fileResp.json();
+              const extractResult = await extractAndChunkPdf(nextFile);
+              if (extractResult && extractResult.chunks.length > 0) {
+                chunks = extractResult.chunks;
+              } else {
+                console.log(`[Cat Wash] Deployed file has no readable text, falling back to local`);
+                nextFile = null;
+              }
+            }
+          } else {
+            console.log(`[Cat Wash] Deployed server: no files for week ${currentWeekNumber}`);
+            return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
+          }
+        }
+      } catch (e: any) {
+        console.log(`[Cat Wash] Failed to query deployed server: ${e.message}, using local DB`);
       }
 
-      const allFiles = await storage.getFiles();
-
-      // 1. Find partially-listened files first (has progress but not complete)
-      const partialFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        const hasCheckedChunks = (() => {
-          if (!f.checkedChunks) return false;
-          try { const arr = JSON.parse(f.checkedChunks); return Array.isArray(arr) && arr.length > 0; } catch { return false; }
-        })();
-        const hasLastChunk = f.lastChunkIndex != null && f.lastChunkIndex > 0;
-        if (!hasCheckedChunks && !hasLastChunk) return false;
-        if (f.totalChunks && f.totalChunks > 0) {
-          if (hasCheckedChunks) {
-            try { const arr = JSON.parse(f.checkedChunks); if (arr.length >= f.totalChunks) return false; } catch {}
-          }
-          if (hasLastChunk && f.lastChunkIndex >= f.totalChunks) return false;
+      // Fallback to local database if deployed server didn't work
+      if (!nextFile) {
+        const semesterSettings = await storage.getActiveSemesterSettings();
+        if (semesterSettings?.semesterStartDate) {
+          currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
         }
-        return true;
-      });
-
-      // 2. Find unlistened files for current week (matching Homework Progress column order: modules first per course, then readings)
-      const unlistenedFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        if (partialFiles.some((p: any) => p.id === f.id)) return false;
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
-      });
+        const localNextFile = await findNextCatWashFile(storage, currentWeekNumber);
+        if (!localNextFile) {
+          console.log("[Cat Wash] No files to play (local fallback) for week " + currentWeekNumber);
+          return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
+        }
+        const extractResult = await extractAndChunkPdf(localNextFile);
+        if (extractResult && extractResult.chunks.length > 0) {
+          nextFile = localNextFile;
+          chunks = extractResult.chunks;
+        } else {
+          console.log("[Cat Wash] No files with readable text content (local fallback)");
+          return res.status(400).json({ error: "No PDFs with readable text content" });
+        }
+      }
 
       const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-      const getCourseCode = (f: any) => {
-        const match = f.folder?.match(/week-\d+-([a-z]+\d+)/i);
-        return match ? match[1].toLowerCase() : '';
-      };
-
-      // Group by course, modules before readings within each course
-      // Priority order: CPPA122 first, then CFNF400, then CASL101, then others
-      const coursePriority: Record<string, number> = { cppa122: 0, cfnf400: 1, casl101: 2 };
-      const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean)
-        .sort((a, b) => (coursePriority[a] ?? 99) - (coursePriority[b] ?? 99));
-      let orderedUnlistened: any[] = [];
-      for (const course of courses) {
-        const courseFiles = unlistenedFiles.filter((f: any) => getCourseCode(f) === course);
-        const modules = courseFiles.filter(isModuleFile);
-        const readings = courseFiles.filter((f: any) => !isModuleFile(f));
-        orderedUnlistened.push(...modules, ...readings);
-      }
-
-      // Partial files come first, then unlistened in order
-      let orderedFiles = [...partialFiles, ...orderedUnlistened];
-
-      if (orderedFiles.length === 0) {
-        console.log("[Cat Wash] No files to play - all complete or no files for week " + currentWeekNumber);
-        return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
-      }
-
-      let nextFile = null;
-      let chunks: string[] = [];
-      for (const candidate of orderedFiles) {
-        const candidateName = candidate.displayName || candidate.originalName || 'Unknown file';
-        const candidateType = isModuleFile(candidate) ? 'module' : 'reading';
-        console.log(`[Cat Wash] Trying: ${candidateName} (${candidateType}, id=${candidate.id}, folder=${candidate.folder})`);
-
-        const extractResult = await extractAndChunkPdf(candidate);
-        if (extractResult && extractResult.chunks.length > 0) {
-          nextFile = candidate;
-          chunks = extractResult.chunks;
-          break;
-        }
-        console.log(`[Cat Wash] Skipping "${candidateName}" - no readable text content`);
-      }
-
-      if (!nextFile) {
-        console.log("[Cat Wash] No files with readable text content for week " + currentWeekNumber);
-        return res.status(400).json({ error: "No PDFs with readable text content" });
-      }
 
       const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
       const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
