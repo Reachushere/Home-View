@@ -1780,8 +1780,8 @@ export default function PDFReaderPage() {
                       className="flex flex-col items-center shrink-0 pt-[10px] px-3"
                       style={{
                         background: isChecked
-                          ? `linear-gradient(180deg, ${waveColor} 0%, ${waveColor} 100%)`
-                          : `linear-gradient(180deg, ${waveColor} 0%, ${waveColor} 100%)`,
+                          ? `linear-gradient(180deg, ${waveColor} 0%, ${waveColor}BB 100%)`
+                          : `linear-gradient(180deg, ${waveColor} 0%, ${waveColor}99 100%)`,
                       }}
                     >
                       <input
