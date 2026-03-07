@@ -2172,6 +2172,37 @@ export default function PDFReaderPage() {
               >−</button>
               <Volume2 className="h-5 w-5 text-white" />
             </div>
+
+            <button
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors flex items-center gap-2"
+              onClick={async () => {
+                try {
+                  const testBtn = document.querySelector('[data-testid="button-test-audio"]');
+                  if (testBtn) testBtn.textContent = 'Playing...';
+                  const res = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: 'Audio test successful. If you can hear this through the Echo speaker, Bluetooth is working correctly.', voice }),
+                  });
+                  if (!res.ok) throw new Error('TTS failed');
+                  const blob = await res.blob();
+                  const url = URL.createObjectURL(blob);
+                  const testAudio = new Audio(url);
+                  testAudio.volume = volumeRef.current;
+                  testAudio.onended = () => {
+                    URL.revokeObjectURL(url);
+                    const btn = document.querySelector('[data-testid="button-test-audio"]');
+                    if (btn) btn.textContent = '🔊 Test Audio';
+                  };
+                  await testAudio.play();
+                } catch {
+                  const btn = document.querySelector('[data-testid="button-test-audio"]');
+                  if (btn) btn.textContent = 'Test Failed';
+                  setTimeout(() => { if (btn) btn.textContent = '🔊 Test Audio'; }, 2000);
+                }
+              }}
+              data-testid="button-test-audio"
+            >🔊 Test Audio</button>
           </div>
 
           {allFiles.length > 1 && (() => {
