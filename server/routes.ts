@@ -4150,25 +4150,101 @@ export async function registerRoutes(
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
       const testUrl = `${appUrl}/pdf-reader/139?catWashFollow=true&autoplay=true&auth=${authParam}`;
-      const { device: targetDevice } = req.body;
+      const { device: targetDevice, method: testMethod } = req.body;
 
       console.log(`[TEST] ====== TABLET OPEN TEST ======`);
       console.log(`[TEST] URL: ${testUrl}`);
       console.log(`[TEST] Target device: ${targetDevice || 'all'}`);
+      console.log(`[TEST] Method: ${testMethod || 'all'}`);
 
       const results: Record<string, any> = {};
 
       const tablets = [
-        { name: 'tablet_cat_wall', browserIds: ['media_player.tablet_cat'] },
-        { name: 'tablet_catn', browserIds: ['media_player.tablet_catn'] },
+        {
+          name: 'tablet_cat_wall',
+          browserIds: ['media_player.tablet_cat'],
+          notifyServices: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'],
+          mediaPlayer: 'media_player.tablet_cat',
+        },
+        {
+          name: 'tablet_catn',
+          browserIds: ['media_player.tablet_catn'],
+          notifyServices: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2', 'mobile_app_tablet_catn_2'],
+          mediaPlayer: 'media_player.tablet_catn',
+        },
       ];
 
       const filteredTablets = targetDevice ? tablets.filter(t => t.name === targetDevice) : tablets;
 
       for (const device of filteredTablets) {
         console.log(`[TEST] --- Testing ${device.name} ---`);
-        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, testUrl, device.name);
-        results[device.name] = { browser_mod: opened };
+        const deviceResults: Record<string, any> = {};
+
+        if (!testMethod || testMethod === 'browser_mod') {
+          const opened = await openUrlOnFireDevice(haUrl, device.browserIds, testUrl, device.name);
+          deviceResults.browser_mod = opened;
+        }
+
+        if (!testMethod || testMethod === 'notify_command') {
+          for (const svc of device.notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: "command_webview",
+                  data: { url: testUrl },
+                }),
+              });
+              const body = await resp.text();
+              console.log(`[TEST] ${device.name} notify/${svc} command_webview: ${resp.status} body=${body.substring(0, 200)}`);
+              deviceResults[`notify_${svc}_webview`] = resp.ok;
+              if (resp.ok) break;
+            } catch (e: any) {
+              console.log(`[TEST] ${device.name} notify/${svc} ERROR: ${e.message}`);
+              deviceResults[`notify_${svc}_webview`] = `error: ${e.message}`;
+            }
+          }
+        }
+
+        if (!testMethod || testMethod === 'notify_url') {
+          for (const svc of device.notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: "PDF Reader",
+                  message: "Opening reading...",
+                  data: { clickAction: testUrl, url: testUrl, tag: "test-tablet", importance: "high", channel: "cat-wash" },
+                }),
+              });
+              const body = await resp.text();
+              console.log(`[TEST] ${device.name} notify/${svc} url notification: ${resp.status} body=${body.substring(0, 200)}`);
+              deviceResults[`notify_${svc}_url`] = resp.ok;
+              if (resp.ok) break;
+            } catch (e: any) {
+              deviceResults[`notify_${svc}_url`] = `error: ${e.message}`;
+            }
+          }
+        }
+
+        if (!testMethod || testMethod === 'play_media') {
+          try {
+            const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: device.mediaPlayer, media_content_id: testUrl, media_content_type: 'url' }),
+            });
+            const body = await resp.text();
+            console.log(`[TEST] ${device.name} play_media (${device.mediaPlayer}): ${resp.status} body=${body.substring(0, 200)}`);
+            deviceResults.play_media = resp.ok;
+          } catch (e: any) {
+            deviceResults.play_media = `error: ${e.message}`;
+          }
+        }
+
+        results[device.name] = deviceResults;
       }
 
       console.log(`[TEST] Results: ${JSON.stringify(results)}`);
