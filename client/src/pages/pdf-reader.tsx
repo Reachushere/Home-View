@@ -1666,15 +1666,16 @@ export default function PDFReaderPage() {
               <SkipForward className="h-7 w-7 text-white" />
             </button>
 
-            <div className="flex items-center gap-[3px] h-10" data-testid="sound-waves-left">
-              {[0,1,2,3,4].map(i => (
-                <div key={i} className="rounded-full" style={{
-                  width: '3px',
+            <div className="flex items-end gap-[2px] h-12" data-testid="sound-waves-left">
+              {[8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8].map((h, i) => (
+                <div key={i} className="rounded-sm" style={{
+                  width: '2px',
                   background: isPlaying && !isPaused
-                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}55)`
-                    : 'rgba(255,255,255,0.15)',
-                  height: isPlaying && !isPaused ? undefined : '4px',
-                  animation: isPlaying && !isPaused ? `soundWave 1.2s ease-in-out ${i * 0.15}s infinite` : 'none',
+                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
+                    : 'rgba(255,255,255,0.2)',
+                  height: isPlaying && !isPaused ? undefined : `${Math.max(3, h * 0.35)}px`,
+                  animation: isPlaying && !isPaused ? `soundWave ${0.8 + (i % 5) * 0.15}s ease-in-out ${i * 0.07}s infinite` : 'none',
+                  transition: 'height 0.3s ease',
                 }} />
               ))}
             </div>
@@ -1725,15 +1726,16 @@ export default function PDFReaderPage() {
               <Square className="h-7 w-7 text-white fill-white" />
             </button>
 
-            <div className="flex items-center gap-[3px] h-10" data-testid="sound-waves-right">
-              {[0,1,2,3,4].map(i => (
-                <div key={i} className="rounded-full" style={{
-                  width: '3px',
+            <div className="flex items-end gap-[2px] h-12" data-testid="sound-waves-right">
+              {[8,20,12,26,18,30,22,14,28,10,24,16,26,18,12,30,22,14,8,20].map((h, i) => (
+                <div key={i} className="rounded-sm" style={{
+                  width: '2px',
                   background: isPlaying && !isPaused
-                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}55)`
-                    : 'rgba(255,255,255,0.15)',
-                  height: isPlaying && !isPaused ? undefined : '4px',
-                  animation: isPlaying && !isPaused ? `soundWave 1.2s ease-in-out ${(4 - i) * 0.15}s infinite` : 'none',
+                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
+                    : 'rgba(255,255,255,0.2)',
+                  height: isPlaying && !isPaused ? undefined : `${Math.max(3, h * 0.35)}px`,
+                  animation: isPlaying && !isPaused ? `soundWave ${0.8 + (i % 5) * 0.15}s ease-in-out ${i * 0.07}s infinite` : 'none',
+                  transition: 'height 0.3s ease',
                 }} />
               ))}
             </div>
