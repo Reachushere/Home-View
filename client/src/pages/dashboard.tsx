@@ -15359,6 +15359,7 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
                     })();
                     const handlePlayFiles = async (fileType: 'module' | 'reading') => {
+                      const newWindow = window.open('about:blank', '_blank');
                       setIsLoadingOneDriveFiles(true);
                       const courseId = courseCode.toLowerCase();
                       const basePath = `/School/1. TMU/Courses/2026/Winter`;
@@ -15369,7 +15370,7 @@ export default function Dashboard() {
                         const matchedFolder = baseFolders.find((f: any) => 
                           f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
                         );
-                        if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
+                        if (!matchedFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
                         const coursePath = matchedFolder.path;
                         const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
                         const courseFolders = await courseResponse.json();
@@ -15409,14 +15410,23 @@ export default function Dashboard() {
                                 const url = isOneDrive
                                   ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
                                   : `/pdf-reader/${firstFile.id}?autoplay=1`;
-                                window.open(url, '_blank');
+                                if (newWindow) { newWindow.location.href = url; } else { window.location.href = url; }
+                              } else {
+                                if (newWindow) newWindow.close();
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
+                            } else {
+                              if (newWindow) newWindow.close();
                             }
+                          } else {
+                            if (newWindow) newWindow.close();
                           }
+                        } else {
+                          if (newWindow) newWindow.close();
                         }
                       } catch (error) {
+                        if (newWindow) newWindow.close();
                         console.error(`Error fetching ${fileType} files:`, error);
                         try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton ${fileType} error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
                       } finally {
