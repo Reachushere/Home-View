@@ -1818,13 +1818,13 @@ export default function PDFReaderPage() {
 
           </div>
 
-          <div className="flex items-center justify-center gap-8 px-8 pb-4">
+          <div className="flex items-center justify-center gap-10 px-8 pb-4">
             <div className="flex items-center gap-2" data-testid="voice-selector">
-              <Mic className="h-4 w-4 text-white/60" />
+              <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Voice</span>
               <select
                 value={voice}
                 onChange={(e) => setVoice(e.target.value as Voice)}
-                className="bg-white/10 text-white text-xs rounded-lg px-2 py-1.5 border border-white/20 focus:outline-none focus:border-white/40 cursor-pointer"
+                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer"
                 data-testid="select-voice"
               >
                 {(["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"] as Voice[]).map(v => (
@@ -1833,22 +1833,24 @@ export default function PDFReaderPage() {
               </select>
             </div>
 
-            <div className="flex items-center gap-2" data-testid="speed-control">
+            <div className="flex items-center gap-3" data-testid="speed-control">
+              <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Speed</span>
               <button
-                className="text-xs text-white/60 hover:text-white px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors"
+                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
                 data-testid="button-speed-down"
               >−</button>
-              <span className="text-sm text-white font-medium min-w-[40px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
+              <span className="text-base text-white font-semibold min-w-[45px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
               <button
-                className="text-xs text-white/60 hover:text-white px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors"
+                className="w-8 h-8 flex items-center justify-center text-lg text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
             </div>
 
-            <div className="flex items-center gap-2" data-testid="volume-control">
-              <Volume2 className="h-4 w-4 text-white/60" />
+            <div className="flex items-center gap-3" data-testid="volume-control">
+              <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
+              <Volume2 className="h-5 w-5 text-white" />
               <input
                 type="range"
                 min="0"
@@ -1856,7 +1858,7 @@ export default function PDFReaderPage() {
                 step="0.05"
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-24 h-1 accent-white cursor-pointer"
+                className="w-28 h-1.5 accent-white cursor-pointer"
                 style={{ accentColor: 'white' }}
                 data-testid="slider-volume"
               />
