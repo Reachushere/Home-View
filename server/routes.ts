@@ -4827,6 +4827,23 @@ document.body.removeChild(a);
       catWashPlaybackState.currentWords = words ?? catWashPlaybackState.currentWords;
       catWashPlaybackState.wordIndex = wordIndex ?? catWashPlaybackState.wordIndex;
       catWashPlaybackState.chunkStartedAt = new Date();
+    } else if (fileId && !catWashPlaybackActive) {
+      console.log(`[Cat Wash] Re-activating playback state from tablet progress report (fileId=${fileId})`);
+      catWashPlaybackActive = true;
+      catWashPlaybackStartedAt = new Date();
+      const file = await storage.getFile(fileId);
+      catWashPlaybackState = {
+        fileId,
+        fileName: file?.displayName || file?.originalName || 'Unknown',
+        chunkIndex: chunkIndex ?? 0,
+        totalChunks: totalChunks ?? 0,
+        chunks: [],
+        currentWords: words || [],
+        wordIndex: wordIndex ?? 0,
+        startedAt: new Date(),
+        chunkStartedAt: new Date(),
+        estimatedChunkDuration: 0,
+      };
     }
 
     if (fileId && chunkIndex != null) {

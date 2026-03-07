@@ -447,8 +447,8 @@ export default function PDFReaderPage() {
   }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
 
   useEffect(() => {
-    if (!followOnly) return;
-    console.log("[FollowOnly] Starting progress polling for TV display");
+    if (!followOnly && !(catWashFollow && !autoplayParam)) return;
+    console.log("[FollowOnly] Starting progress polling for display");
     const poll = async () => {
       try {
         const resp = await fetch("/api/cat-wash/progress");
@@ -1923,7 +1923,7 @@ export default function PDFReaderPage() {
             </div>
           )}
 
-          {catWashFollow && !followOnly && !followState?.active && (
+          {catWashFollow && !followOnly && !autoplayParam && !followState?.active && (
             <div className="m-4 p-4 rounded-lg border border-white/10 text-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
               <span className="text-sm text-white/50">Waiting for Cat Wash playback to start...</span>
             </div>
