@@ -1528,14 +1528,14 @@ export default function PDFReaderPage() {
           )}
 
           {!isEditingText && (
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-3">
               {chunksList.map((chunk, idx) => {
                 const isActive = currentChunk === idx && isPlaying;
                 const isChecked = checkedChunks.has(idx);
                 return (
                   <div
                     key={idx}
-                    className={`flex gap-3 p-3 rounded-lg transition-colors cursor-pointer ${isActive ? 'bg-white/10 border border-white/20' : 'hover:bg-white/5'}`}
+                    className={`flex gap-3 p-4 rounded-xl transition-colors cursor-pointer border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
                     onClick={() => {
                       if (audioRef.current) audioRef.current.pause();
                       setIsPlaying(true);
@@ -1556,8 +1556,8 @@ export default function PDFReaderPage() {
                       data-testid={`checkbox-chunk-${idx}`}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm leading-relaxed ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
-                        <span className="text-white/40 mr-1">{idx + 1}.</span>
+                      <p className={`text-[13px] leading-[1.8] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
+                        <span className="text-white/40 mr-1.5 font-medium">{idx + 1}.</span>
                         {isActive && chunkWords.length > 0 ? (
                           chunkWords.map((word, wIdx) => (
                             <span
