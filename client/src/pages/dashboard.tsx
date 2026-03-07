@@ -5202,11 +5202,12 @@ export default function Dashboard() {
 
   // Restart from very beginning (first chunk)
   const handleRestartFromBeginning = async () => {
-    if (previewSpeaker !== "browser_tts") {
-      // For Echo speakers - restart from beginning
-      if (previewFile) {
-        handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName);
-      }
+    if (previewFile) {
+      const isOneDrive = previewFile.objectPath?.startsWith('http');
+      const url = isOneDrive
+        ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(previewFile.objectPath || '')}&name=${encodeURIComponent(previewFile.displayName || previewFile.originalName)}&autoplay=1`
+        : `/pdf-reader/${previewFile.id}?autoplay=1`;
+      window.open(url, '_blank');
       return;
     }
     if (!previewText || !window.speechSynthesis) return;
@@ -8544,9 +8545,16 @@ export default function Dashboard() {
             
             <button
               className={`media-btn media-btn-sm ${isPlaying ? 'media-btn-active' : ''}`}
-              onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
+              onClick={() => {
+                if (!previewFile) return;
+                const isOneDrive = previewFile.objectPath?.startsWith('http');
+                const url = isOneDrive
+                  ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(previewFile.objectPath || '')}&name=${encodeURIComponent(previewFile.displayName || previewFile.originalName)}&autoplay=1`
+                  : `/pdf-reader/${previewFile.id}?autoplay=1`;
+                window.open(url, '_blank');
+              }}
               data-testid="button-preview-play"
-              title="Play from start"
+              title="Play in PDF Reader"
             >
               <Play className="h-5 w-5 text-white fill-white ml-0.5" />
             </button>
@@ -15390,8 +15398,14 @@ export default function Dashboard() {
                                 } catch {}
                                 return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
                               }));
-                              setOneDrivePreviewFiles(ensuredFiles);
-                              setPreviewFile(ensuredFiles[0]);
+                              const firstFile = ensuredFiles[0];
+                              if (firstFile) {
+                                const isOneDrive = firstFile.objectPath?.startsWith('http');
+                                const url = isOneDrive
+                                  ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
+                                  : `/pdf-reader/${firstFile.id}?autoplay=1`;
+                                window.open(url, '_blank');
+                              }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
                             }
