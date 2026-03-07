@@ -31,7 +31,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose, DialogDescription } from "@/components/ui/dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
@@ -7438,6 +7439,7 @@ export default function Dashboard() {
       {/* Upload Files Dialog - Windows Explorer Style */}
       <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
         <DialogContent className="max-w-4xl h-[70vh] p-0 overflow-hidden bg-[#1e1e1e] border border-[#3c3c3c] text-white shadow-2xl">
+          <VisuallyHidden.Root><DialogTitle>Upload Files</DialogTitle></VisuallyHidden.Root>
           {/* Title Bar */}
           <div className="flex items-center gap-2 px-3 py-2 bg-[#323232] border-b border-[#3c3c3c]">
             <Upload className="h-4 w-4 text-blue-400" />

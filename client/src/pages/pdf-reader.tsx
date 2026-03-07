@@ -219,6 +219,7 @@ export default function PDFReaderPage() {
   const currentChunkRef = useRef<number>(0);
   const isPlayingRef = useRef<boolean>(false);
   const isPausedRef = useRef<boolean>(false);
+  const playingAttentionPromptRef = useRef<boolean>(false);
   const playbackSpeedRef = useRef<number>(1);
   const volumeRef = useRef<number>(1);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -1054,6 +1055,7 @@ export default function PDFReaderPage() {
 
     setCurrentChunk(index);
     currentChunkRef.current = index;
+    playingAttentionPromptRef.current = false;
     console.log(`[TTS] Playing chunk ${index + 1}/${chunksRef.current.length}`);
     const success = await playTTS(chunksRef.current[index]);
     if (!success && isPlayingRef.current) {
@@ -1062,19 +1064,24 @@ export default function PDFReaderPage() {
       playNextChunk(index + 1);
       return;
     }
-    if (success && isPlayingRef.current && index < chunksRef.current.length - 1) {
-      console.log(`[TTS] Playing attention prompt after chunk ${index + 1}`);
-      await playTTS("Bryn, are you paying attention?");
-    }
   };
 
-  const handleAudioEnded = () => {
+  const handleAudioEnded = async () => {
     const playing = isPlayingRef.current;
     const paused = isPausedRef.current;
     const chunk = currentChunkRef.current;
-    console.log(`[TTS] Audio ended: isPlaying=${playing}, isPaused=${paused}, currentChunk=${chunk}`);
+    console.log(`[TTS] Audio ended: isPlaying=${playing}, isPaused=${paused}, currentChunk=${chunk}, attentionPrompt=${playingAttentionPromptRef.current}`);
     if (playing && !paused) {
-      playNextChunk(chunk + 1);
+      if (playingAttentionPromptRef.current) {
+        playingAttentionPromptRef.current = false;
+        playNextChunk(chunk + 1);
+      } else if (chunk < chunksRef.current.length - 1) {
+        playingAttentionPromptRef.current = true;
+        console.log(`[TTS] Playing attention prompt after chunk ${chunk + 1}`);
+        await playTTS("Bryn, are you paying attention?");
+      } else {
+        playNextChunk(chunk + 1);
+      }
     }
   };
 
