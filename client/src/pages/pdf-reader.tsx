@@ -1642,7 +1642,7 @@ export default function PDFReaderPage() {
                       isPausedRef.current = false;
                       playNextChunk(idx);
                     }}>
-                      <p className={`text-[15px] leading-[2.1] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
+                      <p className={`text-[18px] leading-[2.1] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
                         <span className="text-white/40 mr-1.5 font-medium">{idx + 1}.</span>
                         {isActive && chunkWords.length > 0 ? (
                           chunkWords.map((word, wIdx) => (
