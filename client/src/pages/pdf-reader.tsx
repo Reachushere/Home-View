@@ -2024,12 +2024,14 @@ export default function PDFReaderPage() {
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
         <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1200px', width: '100%' }}>
           <div className="flex items-center justify-center gap-10 px-8 pb-5">
-            <button className="p-3 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
-              <SkipBack className="h-5 w-5 text-white" />
+            <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+              <RotateCcw className="h-5 w-5 text-white" />
+              <span className="text-xs text-white font-medium">15s</span>
             </button>
 
-            <button className="p-3 rounded-full hover:bg-white/10" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
-              <SkipForward className="h-5 w-5 text-white" />
+            <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+              <span className="text-xs text-white font-medium">15s</span>
+              <RotateCw className="h-5 w-5 text-white" />
             </button>
 
             <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
@@ -2082,14 +2084,12 @@ export default function PDFReaderPage() {
               </button>
             )}
 
-            <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-              <RotateCcw className="h-5 w-5 text-white" />
-              <span className="text-xs text-white font-medium">15s</span>
+            <button className="p-3 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+              <SkipBack className="h-5 w-5 text-white" />
             </button>
 
-            <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-              <span className="text-xs text-white font-medium">15s</span>
-              <RotateCw className="h-5 w-5 text-white" />
+            <button className="p-3 rounded-full hover:bg-white/10" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+              <SkipForward className="h-5 w-5 text-white" />
             </button>
 
             <button className="p-3 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
