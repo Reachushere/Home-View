@@ -1652,7 +1652,7 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '8px 20px 12px 20px', background: 'transparent' }}>
+      <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
         <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '600px', width: '100%' }}>
           <div className="flex items-center justify-center gap-2 pt-3 pb-1">
             <span className="text-xs text-white/50">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
