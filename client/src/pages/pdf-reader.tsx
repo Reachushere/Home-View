@@ -2025,7 +2025,7 @@ export default function PDFReaderPage() {
                   style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                   data-testid="checkbox-progress-all"
                 />
-                <div className="flex-1 flex items-center justify-between">
+                <div className="flex-1 flex items-center justify-between" style={{ marginTop: '4px' }}>
                   <div className="flex items-center gap-3">
                     <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed</span>
                     {checkedChunks.size < totalChunks && (
