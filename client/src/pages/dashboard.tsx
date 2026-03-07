@@ -9131,9 +9131,18 @@ export default function Dashboard() {
                             </span>
                             <button
                               className="media-btn media-btn-xs inline-flex items-center justify-center"
-                              onClick={(e) => { e.stopPropagation(); playFromChunk(chunkIdx); }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (previewFile) {
+                                  const isOneDrive = previewFile.objectPath?.startsWith('http');
+                                  const url = isOneDrive
+                                    ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(previewFile.objectPath || '')}&name=${encodeURIComponent(previewFile.displayName || previewFile.originalName)}&resumeChunk=${chunkIdx}&autoplay=1`
+                                    : `/pdf-reader/${previewFile.id}?resumeChunk=${chunkIdx}&autoplay=1`;
+                                  window.open(url, '_blank');
+                                }
+                              }}
                               data-testid={`button-play-chunk-${chunkIdx}`}
-                              title={`Play section ${chunkIdx + 1}`}
+                              title={`Play section ${chunkIdx + 1} in PDF Reader`}
                             >
                               <Play className="h-2.5 w-2.5 text-white fill-white ml-0.5" />
                             </button>
