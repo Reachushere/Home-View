@@ -222,6 +222,8 @@ export default function PDFReaderPage() {
   const [showReplace, setShowReplace] = useState(false);
   const [replaceText, setReplaceText] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const ttsPreloadCache = useRef<Record<number, string>>({});
+  const voiceRef = useRef<string>(voice);
   const [showFlickMenu, setShowFlickMenu] = useState(false);
   const [flickDeviceGroups, setFlickDeviceGroups] = useState<Array<{room: string; icon: string; devices: Array<{id: string; name: string; entityId: string; type: string; canDisplay: boolean; room: string}>}>>([]);
   const [isFlicking, setIsFlicking] = useState(false);
@@ -988,31 +990,41 @@ export default function PDFReaderPage() {
         return true;
       }
       
-      console.log(`[TTS] Fetching audio for ${words.length} words, voice=${voice}`);
-      const response = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, voice }),
-      });
+      const chunkIdx = currentChunkRef.current;
+      const cachedUrl = ttsPreloadCache.current[chunkIdx];
+      let audioUrl: string;
 
-      if (!isPlayingRef.current) {
-        console.log('[TTS] Stopped during fetch — aborting playback');
-        return false;
-      }
+      if (cachedUrl) {
+        console.log(`[TTS] Using preloaded audio for chunk ${chunkIdx + 1}`);
+        audioUrl = cachedUrl;
+        delete ttsPreloadCache.current[chunkIdx];
+      } else {
+        console.log(`[TTS] Fetching audio for ${words.length} words, voice=${voice}`);
+        const response = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, voice }),
+        });
 
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error(`[TTS] Request failed: ${response.status} ${errText}`);
-        throw new Error(`TTS request failed: ${response.status}`);
-      }
+        if (!isPlayingRef.current) {
+          console.log('[TTS] Stopped during fetch — aborting playback');
+          return false;
+        }
 
-      const audioBlob = await response.blob();
-      if (!isPlayingRef.current) {
-        console.log('[TTS] Stopped during blob read — aborting playback');
-        return false;
+        if (!response.ok) {
+          const errText = await response.text();
+          console.error(`[TTS] Request failed: ${response.status} ${errText}`);
+          throw new Error(`TTS request failed: ${response.status}`);
+        }
+
+        const audioBlob = await response.blob();
+        if (!isPlayingRef.current) {
+          console.log('[TTS] Stopped during blob read — aborting playback');
+          return false;
+        }
+        console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
+        audioUrl = URL.createObjectURL(audioBlob);
       }
-      console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
-      const audioUrl = URL.createObjectURL(audioBlob);
       
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
@@ -1177,7 +1189,7 @@ export default function PDFReaderPage() {
       fetch("/api/cat-wash/update-progress", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId, chunkIndex: index, totalChunks: chunksRef.current.length, words }),
+        body: JSON.stringify({ fileId, chunkIndex: index, totalChunks: chunksRef.current.length, words, chunkText: chunksRef.current[index] }),
       }).catch(() => {});
     }
 
@@ -1185,6 +1197,22 @@ export default function PDFReaderPage() {
     currentChunkRef.current = index;
     playingAttentionPromptRef.current = false;
     console.log(`[TTS] Playing chunk ${index + 1}/${chunksRef.current.length}`);
+
+    if (index + 1 < chunksRef.current.length && !ttsPreloadCache.current[index + 1]) {
+      const nextText = chunksRef.current[index + 1];
+      const nextVoice = voiceRef.current || voice;
+      fetch("/api/tts/speak", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: nextText, voice: nextVoice }),
+      }).then(r => r.ok ? r.blob() : null).then(blob => {
+        if (blob) {
+          ttsPreloadCache.current[index + 1] = URL.createObjectURL(blob);
+          console.log(`[TTS] Preloaded chunk ${index + 2}`);
+        }
+      }).catch(() => {});
+    }
+
     const success = await playTTS(chunksRef.current[index]);
     if (!success && isPlayingRef.current) {
       console.log(`[TTS] Chunk ${index + 1} failed after retries, skipping to next chunk`);
@@ -2267,7 +2295,7 @@ export default function PDFReaderPage() {
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Voice</span>
               <select
                 value={voice}
-                onChange={(e) => { const v = e.target.value as Voice; setVoice(v); localStorage.setItem('pdf-reader-voice', v); }}
+                onChange={(e) => { const v = e.target.value as Voice; setVoice(v); voiceRef.current = v; localStorage.setItem('pdf-reader-voice', v); }}
                 className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[280px]"
                 data-testid="select-voice"
               >

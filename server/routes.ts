@@ -4834,9 +4834,13 @@ document.body.removeChild(a);
 
     if (catWashPlaybackState && catWashPlaybackState.fileId === fileId) {
       catWashPlaybackState.chunkIndex = chunkIndex ?? catWashPlaybackState.chunkIndex;
+      catWashPlaybackState.totalChunks = totalChunks ?? catWashPlaybackState.totalChunks;
       catWashPlaybackState.currentWords = words ?? catWashPlaybackState.currentWords;
       catWashPlaybackState.wordIndex = wordIndex ?? catWashPlaybackState.wordIndex;
       catWashPlaybackState.chunkStartedAt = new Date();
+      if (req.body.chunkText && chunkIndex != null) {
+        catWashPlaybackState.chunks[chunkIndex] = req.body.chunkText;
+      }
     } else if (fileId && !catWashPlaybackActive) {
       console.log(`[Cat Wash] Re-activating playback state from tablet progress report (fileId=${fileId})`);
       catWashPlaybackActive = true;
