@@ -1762,10 +1762,17 @@ export default function PDFReaderPage() {
                 return (
                   <div
                     key={idx}
-                    className={`flex gap-3 p-4 rounded-xl transition-colors border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
+                    className={`flex gap-0 rounded-xl transition-colors border overflow-hidden ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
                     data-testid={`chunk-row-${idx}`}
                   >
-                    <div className="flex flex-col items-center shrink-0 mt-[10px]">
+                    <div
+                      className="flex flex-col items-center shrink-0 pt-[10px] px-3"
+                      style={{
+                        background: isChecked
+                          ? `linear-gradient(180deg, ${waveColor}55 0%, ${waveColor}22 100%)`
+                          : `linear-gradient(180deg, ${waveColor}22 0%, ${waveColor}08 100%)`,
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={isChecked}
@@ -1799,7 +1806,7 @@ export default function PDFReaderPage() {
                         )}
                       </button>
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 p-4 pl-3">
                       {editingChunkIndex === idx ? (
                         <div className="relative">
                           <textarea
