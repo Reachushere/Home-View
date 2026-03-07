@@ -4600,6 +4600,12 @@ document.body.removeChild(a);
 
       const today = new Date();
 
+      const dayOfWeek = today.getDay();
+      if (dayOfWeek >= 0 && dayOfWeek < 3) {
+        console.log(`[Cat Lights] Day of week is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]} — only triggers Wednesday or later`);
+        return res.json({ action: "skipped", reason: `Only triggers Wednesday-Saturday (today is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]})` });
+      }
+
       // Get current week number
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
