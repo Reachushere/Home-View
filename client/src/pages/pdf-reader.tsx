@@ -1658,11 +1658,11 @@ export default function PDFReaderPage() {
             <span className="text-xs text-white">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
           </div>
           <div className="flex items-center justify-center gap-6 px-8 pb-4">
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-60" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+            <button className="p-4 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
               <SkipBack className="h-7 w-7 text-white" />
             </button>
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-60" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+            <button className="p-4 rounded-full hover:bg-white/10" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
               <SkipForward className="h-7 w-7 text-white" />
             </button>
 
@@ -1712,17 +1712,17 @@ export default function PDFReaderPage() {
               </button>
             )}
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-60 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+            <button className="p-4 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
               <RotateCcw className="h-5 w-5 text-white" />
               <span className="text-xs text-white font-medium">15s</span>
             </button>
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-60 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+            <button className="p-4 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
               <span className="text-xs text-white font-medium">15s</span>
               <RotateCw className="h-5 w-5 text-white" />
             </button>
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-60" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+            <button className="p-4 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
               <Square className="h-7 w-7 text-white fill-white" />
             </button>
 
