@@ -396,6 +396,14 @@ export default function Dashboard() {
     if (returnPromptShown.current) return;
     returnPromptShown.current = true;
 
+    const lastActive = parseInt(localStorage.getItem('replitLastActiveTime') || '0', 10);
+    const now = Date.now();
+    const twoHoursMs = 2 * 60 * 60 * 1000;
+    if (lastActive > 0 && (now - lastActive) < twoHoursMs) {
+      localStorage.setItem('replitLastActiveTime', String(now));
+      return;
+    }
+
     Promise.all([
       fetch("/api/files").then(r => r.json()),
       fetch("/api/semester", { credentials: 'include' }).then(r => r.ok ? r.json() : null),
