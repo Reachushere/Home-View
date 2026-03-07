@@ -489,7 +489,11 @@ export default function PDFReaderPage() {
   }, [file?.folder]);
   
   const isOneDrive = isOneDriveRoute && oneDriveUrl;
-  const pdfUrl = isOneDrive ? (currentFileUrl || decodeURIComponent(oneDriveUrl)) : file?.objectPath;
+  const pdfUrl = isOneDrive
+    ? (currentFileUrl || decodeURIComponent(oneDriveUrl))
+    : fileId
+      ? `/api/files/${fileId}/download`
+      : file?.objectPath;
   const rawFileName = isOneDrive ? (currentFileName || (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF")) : file?.displayName;
   const fileName = (() => {
     if (!rawFileName) return rawFileName;
