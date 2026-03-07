@@ -407,8 +407,8 @@ export default function PDFReaderPage() {
 
   const lastNavTimestamp = useRef(0);
   useEffect(() => {
-    const isFireTablet = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
-    if (!isFireTablet) return;
+    const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
+    if (!isFireDevice) return;
     const interval = setInterval(async () => {
       try {
         const resp = await fetch('/api/tablet-nav');
