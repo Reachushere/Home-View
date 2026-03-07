@@ -2201,16 +2201,18 @@ export default function PDFReaderPage() {
               )}
             </div>
 
-            <div className="absolute left-8 bottom-5 flex items-center gap-2">
-              <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-                <RotateCcw className="h-5 w-5 text-white" />
-                <span className="text-xs text-white font-medium">15s</span>
-              </button>
-              <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-                <span className="text-xs text-white font-medium">15s</span>
-                <RotateCw className="h-5 w-5 text-white" />
-              </button>
-              <div className="flex items-end gap-[3px] h-16 ml-4" data-testid="sound-waves-left">
+            <div className="absolute left-8 bottom-5 flex items-end gap-2">
+              <div className="flex items-center gap-2">
+                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+                  <RotateCcw className="h-5 w-5 text-white" />
+                  <span className="text-xs text-white font-medium">15s</span>
+                </button>
+                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+                  <span className="text-xs text-white font-medium">15s</span>
+                  <RotateCw className="h-5 w-5 text-white" />
+                </button>
+              </div>
+              <div className="flex items-end gap-[3px] h-16" style={{ marginLeft: '25px' }} data-testid="sound-waves-left">
                 {waveBarHeights.map((val, i) => {
                   const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
                   const activeH = Math.max(4, val * 56);
@@ -2229,11 +2231,11 @@ export default function PDFReaderPage() {
               </div>
             </div>
 
-            <div className="absolute right-8 bottom-5 flex items-center justify-evenly" style={{ gap: '12px' }}>
-              <button className="p-3 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+            <div className="absolute right-8 bottom-5 flex items-center" style={{ gap: '12px' }}>
+              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '40px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '20px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
               </button>
               <button className="p-3 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
