@@ -1652,7 +1652,7 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '8px 20px 12px 20px' }}>
+      <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '8px 20px 12px 20px', background: 'transparent' }}>
         <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '600px', width: '100%' }}>
           <div className="flex items-center justify-center gap-2 pt-2 pb-1">
             <span className="text-[11px] text-white/50">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
@@ -1738,46 +1738,46 @@ export default function PDFReaderPage() {
               ))}
             </div>
           </div>
-        </div>
 
-        {allFiles.length > 1 && (() => {
-          const allChunkProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
-          let totalFilesComplete = 0;
-          let totalChunksAll = 0;
-          let totalCheckedAll = 0;
-          for (const f of allFiles) {
-            const fileKey = `onedrive_${btoa(f.downloadUrl).slice(0, 40)}`;
-            const progress = allChunkProgress[fileKey];
-            if (progress && progress.total > 0) {
-              totalChunksAll += progress.total;
-              totalCheckedAll += progress.checked;
-              if (progress.checked >= progress.total) totalFilesComplete++;
-            } else if (listenedFiles.has(f.path)) {
-              totalFilesComplete++;
+          {allFiles.length > 1 && (() => {
+            const allChunkProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+            let totalFilesComplete = 0;
+            let totalChunksAll = 0;
+            let totalCheckedAll = 0;
+            for (const f of allFiles) {
+              const fileKey = `onedrive_${btoa(f.downloadUrl).slice(0, 40)}`;
+              const progress = allChunkProgress[fileKey];
+              if (progress && progress.total > 0) {
+                totalChunksAll += progress.total;
+                totalCheckedAll += progress.checked;
+                if (progress.checked >= progress.total) totalFilesComplete++;
+              } else if (listenedFiles.has(f.path)) {
+                totalFilesComplete++;
+              }
             }
-          }
-          if (fileId === null && (currentFileUrl || oneDriveUrl)) {
-            const currentKey = getFileKey();
-            if (allChunkProgress[currentKey]) {
-              const existing = allChunkProgress[currentKey];
-              totalChunksAll = totalChunksAll - existing.total + totalChunks;
-              totalCheckedAll = totalCheckedAll - existing.checked + checkedChunks.size;
+            if (fileId === null && (currentFileUrl || oneDriveUrl)) {
+              const currentKey = getFileKey();
+              if (allChunkProgress[currentKey]) {
+                const existing = allChunkProgress[currentKey];
+                totalChunksAll = totalChunksAll - existing.total + totalChunks;
+                totalCheckedAll = totalCheckedAll - existing.checked + checkedChunks.size;
+              }
             }
-          }
-          const folderPct = totalChunksAll > 0 ? Math.round((totalCheckedAll / totalChunksAll) * 100) : 
-            (allFiles.length > 0 ? Math.round((totalFilesComplete / allFiles.length) * 100) : 0);
-          return (
-            <div className="px-6 pb-2" data-testid="progress-all-files">
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[9px] text-white/40">All Files ({allFiles.length})</span>
-                <span className="text-[9px] text-white/40">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
+            const folderPct = totalChunksAll > 0 ? Math.round((totalCheckedAll / totalChunksAll) * 100) : 
+              (allFiles.length > 0 ? Math.round((totalFilesComplete / allFiles.length) * 100) : 0);
+            return (
+              <div className="px-6 pb-2" data-testid="progress-all-files">
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[9px] text-white/40">All Files ({allFiles.length})</span>
+                  <span className="text-[9px] text-white/40">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
+                </div>
+                <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-green-400 h-full transition-all duration-300 rounded-full" style={{ width: `${folderPct}%` }} />
+                </div>
               </div>
-              <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-green-400 h-full transition-all duration-300 rounded-full" style={{ width: `${folderPct}%` }} />
-              </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
+        </div>
       </div>
     </div>
   );
