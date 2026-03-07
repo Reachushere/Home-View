@@ -3795,6 +3795,18 @@ export async function registerRoutes(
   let kitchenPlaybackActive = false;
   let kitchenPlaybackAbortController: AbortController | null = null;
 
+  let pendingTabletNavigation: { url: string; timestamp: number } | null = null;
+
+  app.get("/api/tablet-nav", (_req, res) => {
+    if (pendingTabletNavigation && Date.now() - pendingTabletNavigation.timestamp < 30000) {
+      const nav = pendingTabletNavigation;
+      pendingTabletNavigation = null;
+      return res.json({ navigate: nav.url });
+    }
+    pendingTabletNavigation = null;
+    res.json({ navigate: null });
+  });
+
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
