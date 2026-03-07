@@ -404,15 +404,21 @@ export default function PDFReaderPage() {
     startCatWashPlayback();
   }, [catWashFollow, autoplayParam, extractedText]);
 
+  const lastNavTimestamp = useRef(0);
   useEffect(() => {
     if (!catWashFollow) return;
+    const isFireTablet = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
+    if (!isFireTablet) return;
     const interval = setInterval(async () => {
       try {
         const resp = await fetch('/api/tablet-nav');
         const data = await resp.json();
+        if (data.timestamp === lastNavTimestamp.current) return;
         if (data.action === 'navigate' && data.url) {
+          lastNavTimestamp.current = data.timestamp;
           window.location.href = data.url;
         } else if (data.action === 'go_home') {
+          lastNavTimestamp.current = data.timestamp;
           window.location.href = '/';
         }
       } catch {}

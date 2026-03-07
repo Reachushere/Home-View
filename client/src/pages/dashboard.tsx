@@ -801,6 +801,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  const lastTabletNavTimestamp = useRef(0);
   useEffect(() => {
     const isFireTablet = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
     if (!isFireTablet) return;
@@ -808,7 +809,8 @@ export default function Dashboard() {
       try {
         const resp = await fetch('/api/tablet-nav');
         const data = await resp.json();
-        if (data.action === 'navigate' && data.url) {
+        if (data.action === 'navigate' && data.url && data.timestamp !== lastTabletNavTimestamp.current) {
+          lastTabletNavTimestamp.current = data.timestamp;
           window.location.href = data.url;
         }
       } catch {}

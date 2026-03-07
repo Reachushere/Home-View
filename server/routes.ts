@@ -3798,12 +3798,9 @@ export async function registerRoutes(
   let pendingTabletCommand: { action: string; url?: string; timestamp: number } | null = null;
 
   app.get("/api/tablet-nav", (_req, res) => {
-    if (pendingTabletCommand && Date.now() - pendingTabletCommand.timestamp < 60000) {
-      const cmd = pendingTabletCommand;
-      pendingTabletCommand = null;
-      return res.json(cmd);
+    if (pendingTabletCommand && Date.now() - pendingTabletCommand.timestamp < 30000) {
+      return res.json(pendingTabletCommand);
     }
-    pendingTabletCommand = null;
     res.json({ action: null });
   });
 
