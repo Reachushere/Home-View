@@ -4458,6 +4458,7 @@ document.body.removeChild(a);
 
         // Step 2: Open follow-only URL on Fire Stick (TV shows text/highlighting, no audio)
         const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
+        console.log(`[Cat Wash] TV follow URL: ${tvFollowUrl}`);
         const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
         deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {

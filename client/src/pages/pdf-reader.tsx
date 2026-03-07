@@ -190,6 +190,8 @@ export default function PDFReaderPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pdfContainerHeight, setPdfContainerHeight] = useState<number>(0);
   const [extractedText, setExtractedText] = useState<string>("");
+  const extractedTextRef = useRef<string>("");
+  useEffect(() => { extractedTextRef.current = extractedText; }, [extractedText]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -410,11 +412,11 @@ export default function PDFReaderPage() {
 
     const unlockAudio = async () => {
       try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        var AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioCtx) {
-          const ctx = new AudioCtx();
-          const buf = ctx.createBuffer(1, 1, 22050);
-          const src = ctx.createBufferSource();
+          var ctx = new AudioCtx();
+          var buf = ctx.createBuffer(1, 1, 22050);
+          var src = ctx.createBufferSource();
           src.buffer = buf;
           src.connect(ctx.destination);
           src.start(0);
@@ -424,7 +426,7 @@ export default function PDFReaderPage() {
         if (audioRef.current) {
           audioRef.current.muted = true;
           audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
-          await audioRef.current.play().catch(() => {});
+          await audioRef.current.play().catch(function() {});
           audioRef.current.pause();
           audioRef.current.muted = false;
           audioRef.current.src = "";
@@ -435,11 +437,28 @@ export default function PDFReaderPage() {
       }
     };
 
+    const tryFullscreen = () => {
+      try {
+        if (document.fullscreenElement) return;
+        var el = document.documentElement as any;
+        var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (fn) fn.call(el).catch(function() {});
+      } catch (e) {}
+    };
+
     const startCatWashPlayback = async () => {
       await unlockAudio();
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      tryFullscreen();
+      var maxWait = 30;
+      var waited = 0;
+      while (!extractedTextRef.current && waited < maxWait) {
+        console.log("[Cat Wash] Waiting for text extraction... (" + waited + "s)");
+        await new Promise(function(resolve) { setTimeout(resolve, 1000); });
+        waited++;
+      }
       if (!isPlayingRef.current) {
-        console.log("[Cat Wash] Calling startReading() directly");
+        console.log("[Cat Wash] Calling startReading() after " + waited + "s wait");
+        tryFullscreen();
         startReading();
       }
     };
