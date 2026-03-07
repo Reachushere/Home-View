@@ -4475,15 +4475,23 @@ document.body.removeChild(a);
         deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
       }));
 
-      // Samsung TV via Fire Stick - turn on TV, then open Silk browser to PDF reader
+      // Samsung TV via Fire Stick (home theatre pair) - turn on Fire Stick first (HDMI-CEC turns on TV)
       try {
-        // Step 1: Turn on the TV
+        // Step 1: Turn on Fire Stick (triggers HDMI-CEC to turn on TV since they're paired as home theatre)
+        const fireStickTurnOn = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+        });
+        console.log(`[Cat Wash] Fire Stick turn_on (home theatre → TV via CEC): ${fireStickTurnOn.status}`);
+
+        // Also send TV turn_on as backup
         const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
         });
-        console.log(`[Cat Wash] Samsung TV turn_on: ${turnOnResp.status}`);
+        console.log(`[Cat Wash] Samsung TV turn_on (backup): ${turnOnResp.status}`);
 
         // Brief delay for TV to wake up
         await new Promise(resolve => setTimeout(resolve, 5000));
@@ -4668,14 +4676,20 @@ document.body.removeChild(a);
         deviceResults[device.name] = opened ? 'silk_intent' : 'pending_nav';
       }));
 
-      // Also try Samsung TV via Fire Stick
+      // Also try Samsung TV via Fire Stick (home theatre pair)
       try {
+        const fireStickTurnOn = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+        });
+        console.log(`[Cat Lights] Fire Stick turn_on (home theatre → TV via CEC): ${fireStickTurnOn.status}`);
         const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
         });
-        console.log(`[Cat Lights] Samsung TV turn_on: ${turnOnResp.status}`);
+        console.log(`[Cat Lights] Samsung TV turn_on (backup): ${turnOnResp.status}`);
         await new Promise(resolve => setTimeout(resolve, 5000));
         const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', readerUrl);
         deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
