@@ -1650,7 +1650,7 @@ export default function PDFReaderPage() {
             );
           })()}
 
-          <div className="ml-auto flex items-center gap-2" style={{ marginRight: '5px' }}>
+          <div className="ml-auto flex items-center gap-2" style={{ marginRight: '-1px' }}>
             <button
               className={`p-1.5 rounded hover:bg-white/20 transition-colors ${searchOpen ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
               onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 100); }}
@@ -2248,7 +2248,7 @@ export default function PDFReaderPage() {
               </div>
             </div>
 
-            <div className="absolute right-8 bottom-5 flex items-center" style={{ gap: '12px' }}>
+            <div className="absolute right-8 flex items-center" style={{ gap: '12px', bottom: '10px' }}>
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '40px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
