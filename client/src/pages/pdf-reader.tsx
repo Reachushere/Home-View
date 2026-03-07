@@ -2036,7 +2036,7 @@ export default function PDFReaderPage() {
                 step="0.25"
                 value={playbackSpeed}
                 onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-                className="w-24 h-1.5 cursor-pointer"
+                className="w-24 h-[3px] cursor-pointer"
                 style={{ accentColor: 'white' }}
                 data-testid="slider-speed"
               />
