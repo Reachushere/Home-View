@@ -1789,7 +1789,7 @@ export default function PDFReaderPage() {
                         checked={isChecked}
                         onChange={() => toggleChunkChecked(idx)}
                         className="rounded cursor-pointer appearance-none relative"
-                        style={{ WebkitAppearance: 'none', MozAppearance: 'none', width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '2px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '6px' }}
+                        style={{ WebkitAppearance: 'none', MozAppearance: 'none', width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '2px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
                         data-testid={`checkbox-chunk-${idx}`}
                       />
                       <button
