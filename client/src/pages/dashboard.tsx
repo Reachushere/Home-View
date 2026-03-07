@@ -7203,7 +7203,7 @@ export default function Dashboard() {
                       setListenedOneDriveFiles(newListened);
                       localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
                       setReadingsPopupCourse(null);
-                      window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(file.downloadUrl)}&name=${encodeURIComponent(file.name)}`;
+                      window.open(`/pdf-reader/onedrive?url=${encodeURIComponent(file.downloadUrl)}&name=${encodeURIComponent(file.name)}`, '_blank');
                     }
                   }}
                 >
@@ -8589,7 +8589,7 @@ export default function Dashboard() {
               className="media-btn media-btn-sm"
               onClick={() => {
                 if (previewFile?.id) {
-                  window.location.href = `/pdf-reader/${previewFile.id}`;
+                  window.open(`/pdf-reader/${previewFile.id}`, '_blank');
                 }
               }}
               data-testid="button-open-fullpage"
@@ -10297,7 +10297,7 @@ export default function Dashboard() {
                         if (selectedReturnFile) {
                           const file = returnReadingFiles.find(f => f.id === selectedReturnFile);
                           if (file) {
-                            window.location.href = `/pdf-reader/${file.id}`;
+                            window.open(`/pdf-reader/${file.id}`, '_blank');
                           }
                         }
                         setShowReturnReadingPrompt(false);
@@ -15404,7 +15404,7 @@ export default function Dashboard() {
                                 const url = isOneDrive
                                   ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
                                   : `/pdf-reader/${firstFile.id}?autoplay=1`;
-                                window.location.href = url;
+                                window.open(url, '_blank');
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
@@ -15876,7 +15876,7 @@ export default function Dashboard() {
                                 alt="Open PDF"
                                 className="shrink-0"
                                 style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(adPdfUrl)}`; }}
+                                onClick={(e) => { e.stopPropagation(); window.open(`/pdf-reader/${encodeURIComponent(adPdfUrl)}`, '_blank'); }}
                                 data-testid={`pdf-icon-allday-${task.id}`}
                               />
                             )}
@@ -15987,7 +15987,7 @@ export default function Dashboard() {
                                 alt="Open PDF"
                                 className="shrink-0"
                                 style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                onClick={(e) => { e.stopPropagation(); window.location.href = `/pdf-reader/${encodeURIComponent(ad2PdfUrl)}`; }}
+                                onClick={(e) => { e.stopPropagation(); window.open(`/pdf-reader/${encodeURIComponent(ad2PdfUrl)}`, '_blank'); }}
                                 data-testid={`pdf-icon-allday2-${task.id}`}
                               />
                             )}
@@ -17079,7 +17079,7 @@ export default function Dashboard() {
                           if (file.downloadUrl) {
                             const encodedUrl = encodeURIComponent(file.downloadUrl);
                             const encodedName = encodeURIComponent(file.name);
-                            window.location.href = `/pdf-reader/onedrive?url=${encodedUrl}&name=${encodedName}`;
+                            window.open(`/pdf-reader/onedrive?url=${encodedUrl}&name=${encodedName}`, '_blank');
                           }
                         }}
                         data-testid={`onedrive-file-${file.id}`}

@@ -108,6 +108,18 @@ export default function PDFReaderPage() {
   const [autoplayTriggered, setAutoplayTriggered] = useState(false);
 
   useEffect(() => {
+    const myId = Date.now().toString() + Math.random().toString(36).slice(2);
+    try { localStorage.setItem('pdf-reader-instance', myId); } catch {}
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'pdf-reader-instance' && e.newValue && e.newValue !== myId) {
+        try { window.location.href = 'about:blank'; } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  useEffect(() => {
     if (fileId || isOneDriveRoute || oneDriveUrl) return;
     Promise.all([
       fetch("/api/files").then(r => r.json()),
