@@ -4662,20 +4662,8 @@ document.body.removeChild(a);
         });
         console.log(`[Cat Lights] Samsung TV turn_on: ${turnOnResp.status}`);
         await new Promise(resolve => setTimeout(resolve, 5000));
-        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
-        let fireStickSuccess = false;
-        for (const entity of fireStickEntities) {
-          if (await openUrlOnFireStick(haUrl, entity, readerUrl)) {
-            fireStickSuccess = true;
-            deviceResults['samsung_tv'] = `adb:${entity}`;
-            break;
-          }
-        }
-        if (!fireStickSuccess) {
-          const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
-          fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, readerUrl, 'samsung_tv_firestick');
-          deviceResults['samsung_tv'] = fireStickSuccess ? 'command_activity' : 'failed';
-        }
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', readerUrl);
+        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_stick_cat_wr' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Lights] Samsung TV error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
@@ -4797,20 +4785,8 @@ document.body.removeChild(a);
 
       // Also re-open on Samsung TV
       try {
-        const fireStickEntities = ['media_player.fire_stick_cat_wr', 'media_player.fire_tv_stick_cat_wr', 'media_player.fire_stick_cat'];
-        let fireStickSuccess = false;
-        for (const entity of fireStickEntities) {
-          if (await openUrlOnFireStick(haUrl, entity, newReaderUrl)) {
-            fireStickSuccess = true;
-            deviceResults['samsung_tv'] = `adb:${entity}`;
-            break;
-          }
-        }
-        if (!fireStickSuccess) {
-          const fireStickApps = ['mobile_app_fire_stick_cat_wr', 'mobile_app_fire_tv_stick_cat_wr', 'mobile_app_fire_stick_cat'];
-          fireStickSuccess = await openUrlOnFireDevice(haUrl, fireStickApps, newReaderUrl, 'samsung_tv_firestick');
-          deviceResults['samsung_tv'] = fireStickSuccess ? 'command_activity' : 'failed';
-        }
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', newReaderUrl);
+        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_stick_cat_wr' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Wash Dry] Samsung TV error: ${e.message}`);
         deviceResults['samsung_tv'] = 'error';
