@@ -1777,7 +1777,7 @@ export default function PDFReaderPage() {
                     data-testid={`chunk-row-${idx}`}
                   >
                     <div
-                      className="flex flex-col items-center shrink-0 pt-[10px] px-3"
+                      className="flex flex-col items-center shrink-0 pt-4 px-3"
                       style={{
                         background: isChecked
                           ? `linear-gradient(180deg, ${waveColor} 0%, ${waveColor}BB 100%)`
