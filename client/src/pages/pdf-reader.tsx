@@ -1099,6 +1099,13 @@ export default function PDFReaderPage() {
     return 'linear-gradient(180deg, rgba(10, 30, 60, 0.88) 0%, rgba(30, 60, 100, 0.78) 100%)';
   })();
 
+  const waveColor = (() => {
+    if (cId === 'cppa122') return '#47B045';
+    if (cId === 'cfnf400') return '#FA67B3';
+    if (cId === 'casl101') return '#B045A2';
+    return 'rgba(255,255,255,0.8)';
+  })();
+
   return (
     <div className="h-screen flex flex-col relative overflow-hidden">
       <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -1659,8 +1666,17 @@ export default function PDFReaderPage() {
               <SkipForward className="h-5 w-5 text-white" />
             </button>
 
-            <div className="flex-1 max-w-[200px] h-8 flex items-center justify-center">
-              <canvas ref={canvasRef} className="w-full h-full rounded" style={{ opacity: isPlaying ? 1 : 0.3 }} />
+            <div className="flex items-center gap-[3px] h-8" data-testid="sound-waves-left">
+              {[0,1,2,3,4].map(i => (
+                <div key={i} className="rounded-full" style={{
+                  width: '3px',
+                  background: isPlaying && !isPaused
+                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}55)`
+                    : 'rgba(255,255,255,0.15)',
+                  height: isPlaying && !isPaused ? undefined : '4px',
+                  animation: isPlaying && !isPaused ? `soundWave 1.2s ease-in-out ${i * 0.15}s infinite` : 'none',
+                }} />
+              ))}
             </div>
 
             {!isPlaying ? (
@@ -1708,6 +1724,19 @@ export default function PDFReaderPage() {
             <button className="p-3 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
               <Square className="h-5 w-5 text-white fill-white" />
             </button>
+
+            <div className="flex items-center gap-[3px] h-8" data-testid="sound-waves-right">
+              {[0,1,2,3,4].map(i => (
+                <div key={i} className="rounded-full" style={{
+                  width: '3px',
+                  background: isPlaying && !isPaused
+                    ? `linear-gradient(180deg, ${waveColor}, ${waveColor}55)`
+                    : 'rgba(255,255,255,0.15)',
+                  height: isPlaying && !isPaused ? undefined : '4px',
+                  animation: isPlaying && !isPaused ? `soundWave 1.2s ease-in-out ${(4 - i) * 0.15}s infinite` : 'none',
+                }} />
+              ))}
+            </div>
           </div>
         </div>
 
