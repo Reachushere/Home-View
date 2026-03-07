@@ -1392,7 +1392,7 @@ export default function PDFReaderPage() {
             if (isDbFile && (moduleFiles.length > 0 || readingFiles.length > 0)) {
               return (
                 <>
-                  <div className="flex items-center gap-1.5 min-w-0 shrink">
+                  <div className="flex items-center gap-1.5 min-w-0 shrink" style={{ marginLeft: '-3px' }}>
                     <span className="text-[13px] font-bold text-white shrink-0">Module:</span>
                     <Select
                       value={isModule && fileId ? fileId.toString() : (moduleFiles[0]?.id?.toString() || 'none')}
@@ -1420,7 +1420,7 @@ export default function PDFReaderPage() {
                     </Select>
                   </div>
 
-                  <div className="flex items-center gap-1.5 min-w-0 shrink" style={{ marginLeft: '40px' }}>
+                  <div className="flex items-center gap-1.5 min-w-0 shrink" style={{ marginLeft: '45px' }}>
                     <span className="text-[13px] font-bold text-white shrink-0">Reading:</span>
                     <Select
                       value={isReading && fileId ? fileId.toString() : (readingFiles[0]?.id?.toString() || 'none')}
@@ -1447,7 +1447,7 @@ export default function PDFReaderPage() {
                     </Select>
                   </div>
 
-                  <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
+                  <div className="flex items-center gap-1" style={{ marginLeft: '40px' }}>
                     <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
                       if (canGoPrev) window.location.href = `/pdf-reader/${relatedFiles[currentIndex - 1].id}`;
                     }} disabled={!canGoPrev} data-testid="button-prev-file">
@@ -1496,7 +1496,7 @@ export default function PDFReaderPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center gap-1" style={{ marginLeft: '35px' }}>
+                  <div className="flex items-center gap-1" style={{ marginLeft: '40px' }}>
                     <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
                       const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
                       if (i > 0) switchToFile(allFiles[i - 1]);
@@ -1522,7 +1522,7 @@ export default function PDFReaderPage() {
             );
           })()}
 
-          <div className="ml-auto flex items-center gap-2" style={{ marginRight: '10px' }}>
+          <div className="ml-auto flex items-center gap-2" style={{ marginRight: '15px' }}>
             <button
               className={`p-1.5 rounded hover:bg-white/20 transition-colors ${searchOpen ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
               onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 100); }}
