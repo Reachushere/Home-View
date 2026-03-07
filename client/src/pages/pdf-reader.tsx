@@ -33,7 +33,9 @@ import {
   Replace,
   ChevronUp,
   ChevronDown,
-  Mic
+  Mic,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 import tmuBgPath from "@assets/TMU2_1772842397746.png";
@@ -132,7 +134,8 @@ export default function PDFReaderPage() {
   const [isPreloading, setIsPreloading] = useState(false);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
-  const [voice, setVoice] = useState<Voice>("nova");
+  const [voice, setVoice] = useState<Voice>("echo");
+  const [isFullPage, setIsFullPage] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [volume, setVolume] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -513,6 +516,25 @@ export default function PDFReaderPage() {
     }
     setCheckedChunks(newChecked);
     saveCheckedChunks(key, newChecked, totalChunks);
+    if (fileId) {
+      fetch(`/api/files/${fileId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          checkedChunks: JSON.stringify(Array.from(newChecked)),
+          totalChunks,
+          lastChunkIndex: Math.max(...Array.from(newChecked), 0),
+        }),
+      }).catch(() => {});
+    }
+  };
+
+  const jumpToUnlistened = () => {
+    const firstUnchecked = chunksList.findIndex((_, idx) => !checkedChunks.has(idx));
+    if (firstUnchecked >= 0) {
+      const el = document.querySelector(`[data-testid="chunk-row-${firstUnchecked}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   const chunkProgress = totalChunks > 0 ? Math.round((checkedChunks.size / totalChunks) * 100) : 0;
@@ -1219,27 +1241,6 @@ export default function PDFReaderPage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <button
-            className={`p-1 rounded hover:bg-white/10 ${isEditingText ? 'ring-1 ring-white/40' : ''}`}
-            data-testid="button-edit-tts-text"
-            onClick={() => {
-              if (isEditingText) {
-                setIsEditingText(false);
-                setEditableText(extractedText);
-              } else {
-                if (isPlaying) stopReading();
-                if (extractedText) {
-                  setEditableText(extractedText);
-                  setIsEditingText(true);
-                } else {
-                  toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
-                }
-              }
-            }}
-            disabled={isPreloading}
-          >
-            <Pencil className="h-3.5 w-3.5 text-white/70" />
-          </button>
           {(() => {
             const isDbFile = !!fileId && !isOneDrive;
             const isModule = file?.folder?.includes('module');
@@ -1391,6 +1392,44 @@ export default function PDFReaderPage() {
             >
               <Search className="h-4 w-4 text-white" />
             </button>
+            <button
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={jumpToUnlistened}
+              data-testid="button-jump-unlistened"
+              title="Jump to first unlistened chunk"
+            >
+              <SkipForward className="h-4 w-4 text-white" />
+            </button>
+            <button
+              className={`p-1.5 rounded hover:bg-white/20 transition-colors ${isEditingText ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
+              data-testid="button-edit-tts-text"
+              onClick={() => {
+                if (isEditingText) {
+                  setIsEditingText(false);
+                  setEditableText(extractedText);
+                } else {
+                  if (isPlaying) stopReading();
+                  if (extractedText) {
+                    setEditableText(extractedText);
+                    setIsEditingText(true);
+                  } else {
+                    toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
+                  }
+                }
+              }}
+              disabled={isPreloading}
+              title="Edit text"
+            >
+              <Pencil className="h-4 w-4 text-white" />
+            </button>
+            <button
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => setIsFullPage(!isFullPage)}
+              data-testid="button-fullpage"
+              title={isFullPage ? "Exit full page" : "Full page reader"}
+            >
+              {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
+            </button>
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
             <span className="text-[11px] font-bold text-white">Speaker:</span>
             <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
@@ -1442,7 +1481,7 @@ export default function PDFReaderPage() {
       </div>
 
       <div className="flex-1 flex relative overflow-hidden min-h-0" style={{ zIndex: 2 }}>
-        <div className="flex-1 lg:w-1/2 overflow-auto pdf-reader-scrollbar" style={{ background: 'rgba(0,0,0,0.4)' }}>
+        <div className={`${isFullPage ? 'w-full' : 'flex-1 lg:w-1/2'} overflow-auto pdf-reader-scrollbar`} style={{ background: 'rgba(0,0,0,0.4)' }}>
           <div className="sticky top-0 z-20" style={{ background: 'rgba(0,10,30,0.8)', backdropFilter: 'blur(10px)' }}>
             <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/10">
               <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
@@ -1769,7 +1808,7 @@ export default function PDFReaderPage() {
           )}
         </div>
 
-        <div className="hidden lg:flex lg:w-[45%] flex-col border-l border-white/10" style={{ background: 'rgba(0,0,0,0.3)' }}>
+        <div className={`${isFullPage ? 'hidden' : 'hidden lg:flex'} lg:w-[45%] flex-col border-l border-white/10`} style={{ background: 'rgba(0,0,0,0.3)' }}>
           <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
             <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Original PDF</span>
             <div className="flex items-center gap-1">
@@ -1806,11 +1845,31 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
+      {totalChunks > 0 && (
+        <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
+          <div className="w-full px-0" data-testid="progress-gradient-bar">
+            <div className="relative w-full h-8 flex items-center" style={{ background: `linear-gradient(90deg, ${waveColor}33 0%, ${waveColor}88 ${chunkProgress}%, rgba(255,255,255,0.08) ${chunkProgress}%, rgba(255,255,255,0.08) 100%)` }}>
+              <div className="flex items-center gap-3 px-4 w-full">
+                <input
+                  type="checkbox"
+                  checked={chunkProgress === 100}
+                  readOnly
+                  className="h-4 w-4 rounded border-2 border-white/60 cursor-default appearance-none checked:bg-white checked:border-white relative shrink-0"
+                  style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                  data-testid="checkbox-progress-all"
+                />
+                <div className="flex-1 flex items-center justify-between">
+                  <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed</span>
+                  <span className="text-[11px] text-white font-bold">{chunkProgress}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
         <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1000px', width: '100%' }}>
-          <div className="flex items-center justify-center gap-2 pt-3 pb-1">
-            <span className="text-xs text-white">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
-          </div>
           <div className="flex items-center justify-center gap-10 px-8 pb-5">
             <button className="p-6 rounded-full hover:bg-white/10" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
               <SkipBack className="h-11 w-11 text-white" />
