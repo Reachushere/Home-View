@@ -4250,7 +4250,10 @@ export async function registerRoutes(
       };
 
       // Group by course, modules before readings within each course
-      const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean);
+      // Priority order: CPPA122 first, then CFNF400, then CASL101, then others
+      const coursePriority: Record<string, number> = { cppa122: 0, cfnf400: 1, casl101: 2 };
+      const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean)
+        .sort((a, b) => (coursePriority[a] ?? 99) - (coursePriority[b] ?? 99));
       let orderedUnlistened: any[] = [];
       for (const course of courses) {
         const courseFiles = unlistenedFiles.filter((f: any) => getCourseCode(f) === course);
@@ -4317,8 +4320,12 @@ export async function registerRoutes(
       await Promise.all(fireTablets.map(async (device) => {
         const methods: string[] = [];
 
-        // Method 1: play_media (most reliable - opens URL on media player entity)
-        if (device.mediaPlayer) {
+        // Method 1: command_activity via mobile app (most reliable for opening Silk browser)
+        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
+        if (opened) methods.push('command_activity');
+
+        // Method 2: play_media fallback (opens URL on media player entity)
+        if (methods.length === 0 && device.mediaPlayer) {
           try {
             const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST',
@@ -4330,12 +4337,6 @@ export async function registerRoutes(
           } catch (e: any) {
             console.log(`[Cat Wash] ${device.name} play_media failed: ${e.message}`);
           }
-        }
-
-        // Method 2: command_activity/broadcast_intent/webview via mobile app (fallback)
-        if (methods.length === 0) {
-          const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-          if (opened) methods.push('silk_launch');
         }
 
         // Method 3: notification (last resort)
@@ -4561,8 +4562,12 @@ export async function registerRoutes(
       await Promise.all(fireTablets.map(async (device) => {
         const methods: string[] = [];
 
-        // Method 1: play_media (most reliable - opens URL on media player entity)
-        if (device.mediaPlayer) {
+        // Method 1: command_activity via mobile app (most reliable for opening Silk browser)
+        const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
+        if (opened) methods.push('command_activity');
+
+        // Method 2: play_media fallback (opens URL on media player entity)
+        if (methods.length === 0 && device.mediaPlayer) {
           try {
             const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST',
@@ -4574,12 +4579,6 @@ export async function registerRoutes(
           } catch (e: any) {
             console.log(`[Cat Lights] ${device.name} play_media failed: ${e.message}`);
           }
-        }
-
-        // Method 2: command_activity/broadcast_intent/webview via mobile app (fallback)
-        if (methods.length === 0) {
-          const opened = await openUrlOnFireDevice(haUrl, device.mobileApps, readerUrl, device.name);
-          if (opened) methods.push('silk_launch');
         }
 
         // Method 3: notification (last resort)
