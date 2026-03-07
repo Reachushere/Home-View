@@ -3797,11 +3797,41 @@ export async function registerRoutes(
 
   let pendingTabletCommand: { action: string; url?: string; timestamp: number } | null = null;
 
+  const DEPLOYED_APP_URL = "https://home-view--bkh416.replit.app";
+
+  async function setTabletCommand(cmd: { action: string; url?: string; timestamp: number }, propagate = true) {
+    pendingTabletCommand = cmd;
+    if (propagate) {
+      try {
+        await fetch(`${DEPLOYED_APP_URL}/api/tablet-nav/set?auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cmd),
+        });
+      } catch (e: any) {
+        console.log(`[Tablet Nav] Failed to propagate to deployed: ${e.message}`);
+      }
+    }
+  }
+
   app.get("/api/tablet-nav", (_req, res) => {
     if (pendingTabletCommand && Date.now() - pendingTabletCommand.timestamp < 30000) {
       return res.json(pendingTabletCommand);
     }
     res.json({ action: null });
+  });
+
+  app.post("/api/tablet-nav/set", (req, res) => {
+    const authParam = (req.query.auth as string) || '';
+    if (authParam !== (process.env.SITE_PASSWORD || '')) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const { action, url, timestamp } = req.body;
+    if (action) {
+      pendingTabletCommand = { action, url, timestamp: timestamp || Date.now() };
+      console.log(`[Tablet Nav] Command set: ${action} ${url || ''}`);
+    }
+    res.json({ ok: true });
   });
 
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
@@ -4180,7 +4210,7 @@ document.body.removeChild(a);
       console.log(`[TEST] Target device: ${targetDevice || 'all'}`);
       console.log(`[TEST] Method: ${testMethod || 'all'}`);
 
-      pendingTabletCommand = { action: 'navigate', url: testUrl, timestamp: Date.now() };
+      await setTabletCommand({ action: 'navigate', url: testUrl, timestamp: Date.now() });
 
       const results: Record<string, any> = {};
 
@@ -4415,7 +4445,7 @@ document.body.removeChild(a);
 
       // === STEP 2: Open PDF reader on all display devices ===
       // Set pending tablet command so tablets already on our app (in Silk) auto-navigate
-      pendingTabletCommand = { action: 'navigate', url: readerUrl, timestamp: Date.now() };
+      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
 
       const deviceResults: Record<string, string> = {};
 
@@ -4610,7 +4640,7 @@ document.body.removeChild(a);
       };
 
       // Open PDF reader on tablets — set pending nav for Silk-based polling + try browser_mod for HA-based tablets
-      pendingTabletCommand = { action: 'navigate', url: readerUrl, timestamp: Date.now() };
+      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
 
       const deviceResults: Record<string, string> = {};
       const fireTablets = [
@@ -4704,7 +4734,7 @@ document.body.removeChild(a);
         stopped.push("ttsSession");
       }
 
-      pendingTabletCommand = { action: 'go_home', timestamp: Date.now() };
+      await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
 
@@ -4751,7 +4781,7 @@ document.body.removeChild(a);
       const newReaderUrl = `${appUrl}/pdf-reader/${currentFileId}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(newSpeaker)}&resumeChunk=${currentChunk}&auth=${authParam}`;
 
       // Re-open on tablets with the new speaker parameter
-      pendingTabletCommand = { action: 'navigate', url: newReaderUrl, timestamp: Date.now() };
+      await setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: Date.now() });
 
       const tabletDevices = [
         { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
@@ -4906,7 +4936,7 @@ document.body.removeChild(a);
     // Stopping the tablets (by clearing server state) is sufficient.
     // Sending media_stop to Echo entities causes Alexa to speak confirmations.
 
-    pendingTabletCommand = { action: 'go_home', timestamp: Date.now() };
+    await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
     res.json({ stopped: true, stoppedItems: stopped });
   });

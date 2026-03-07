@@ -797,7 +797,7 @@ export default function Dashboard() {
     };
     
     checkKitchenStatus();
-    const interval = setInterval(checkKitchenStatus, 5000); // Check every 5 seconds
+    const interval = setInterval(checkKitchenStatus, 15000); // Check every 15 seconds
     return () => clearInterval(interval);
   }, []);
 
