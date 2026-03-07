@@ -2050,9 +2050,9 @@ export default function PDFReaderPage() {
         </div>
       )}
 
-      <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
-        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1200px', width: '100%' }}>
-          <div className="flex items-center justify-center gap-10 px-8 pb-5">
+      <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '5px 20px 14px 20px' }}>
+        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
+          <div className="flex items-center justify-center gap-10 px-8 pb-5" style={{ overflow: 'visible' }}>
             <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
               <RotateCcw className="h-5 w-5 text-white" />
               <span className="text-xs text-white font-medium">15s</span>
@@ -2095,21 +2095,22 @@ export default function PDFReaderPage() {
                   </button>
                 )}
                 <button
-                  className="p-2 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                  className="p-4 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                  style={{ marginTop: '-20px' }}
                   onClick={startReading}
                   disabled={isLoading || numPages === 0}
                   data-testid="button-play"
                 >
-                  {isLoading ? <Loader2 className="h-4 w-4 text-gray-900 animate-spin" /> : <Play className="h-4 w-4 text-gray-900 fill-gray-900 ml-0.5" />}
+                  {isLoading ? <Loader2 className="h-8 w-8 text-gray-900 animate-spin" /> : <Play className="h-8 w-8 text-gray-900 fill-gray-900 ml-0.5" />}
                 </button>
               </div>
             ) : isPaused ? (
-              <button className="p-2 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
-                <Play className="h-4 w-4 text-gray-900 fill-gray-900 ml-0.5" />
+              <button className="p-4 rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-20px' }} onClick={resumeReading} data-testid="button-resume-play">
+                <Play className="h-8 w-8 text-gray-900 fill-gray-900 ml-0.5" />
               </button>
             ) : (
-              <button className="p-2 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
-                <Pause className="h-4 w-4 text-gray-900" />
+              <button className="p-4 rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-20px' }} onClick={pauseReading} data-testid="button-pause">
+                <Pause className="h-8 w-8 text-gray-900" />
               </button>
             )}
 
