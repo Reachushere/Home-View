@@ -38,6 +38,7 @@ import {
   Minimize2
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
+import { getWeekNumber } from "@shared/schema";
 import tmuBgPath from "@assets/TMU2_1772842397746.png";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -93,6 +94,42 @@ export default function PDFReaderPage() {
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
   const [autoplayTriggered, setAutoplayTriggered] = useState(false);
+
+  useEffect(() => {
+    if (fileId || isOneDriveRoute || oneDriveUrl) return;
+    Promise.all([
+      fetch("/api/files").then(r => r.json()),
+      fetch("/api/semester", { credentials: 'include' }).then(r => r.ok ? r.json() : null),
+    ]).then(([files, semSettings]: [any[], any]) => {
+      let weekNum = 1;
+      if (semSettings?.semesterStartDate) {
+        weekNum = getWeekNumber(new Date(), new Date(semSettings.semesterStartDate), semSettings.readingWeekStart);
+      }
+      const isPartial = (f: any) => {
+        if (f.listened) return false;
+        const hasChunks = (() => { if (!f.checkedChunks) return false; try { const a = JSON.parse(f.checkedChunks); return Array.isArray(a) && a.length > 0; } catch { return false; } })();
+        const hasLast = f.lastChunkIndex != null && f.lastChunkIndex > 0;
+        if (!hasChunks && !hasLast) return false;
+        if (f.totalChunks && f.totalChunks > 0) {
+          if (hasChunks) { try { if (JSON.parse(f.checkedChunks).length >= f.totalChunks) return false; } catch {} }
+          if (hasLast && f.lastChunkIndex >= f.totalChunks) return false;
+        }
+        return true;
+      };
+      const partials = files.filter(isPartial);
+      const weekFiles = files.filter((f: any) => {
+        if (f.listened) return false;
+        if (partials.some((p: any) => p.id === f.id)) return false;
+        const m = f.folder?.match(/week-(\d+)/i);
+        return m && parseInt(m[1], 10) === weekNum;
+      });
+      const best = [...partials, ...weekFiles][0];
+      if (best) {
+        window.location.replace(`/pdf-reader/${best.id}`);
+      }
+    }).catch(() => {});
+  }, []);
+
   const [followState, setFollowState] = useState<{
     active: boolean;
     chunkIndex: number;
