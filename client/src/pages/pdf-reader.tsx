@@ -142,6 +142,8 @@ export default function PDFReaderPage() {
   const [chunksList, setChunksList] = useState<string[]>([]);
   const [isEditingText, setIsEditingText] = useState(false);
   const [editableText, setEditableText] = useState("");
+  const [editingChunkIndex, setEditingChunkIndex] = useState<number | null>(null);
+  const [editableChunkText, setEditableChunkText] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMatchIndex, setSearchMatchIndex] = useState(0);
@@ -1381,6 +1383,14 @@ export default function PDFReaderPage() {
           })()}
 
           <div className="ml-auto flex items-center gap-2" style={{ marginRight: '10px' }}>
+            <button
+              className={`p-1.5 rounded hover:bg-white/20 transition-colors ${searchOpen ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
+              onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 100); }}
+              data-testid="button-header-search"
+              title="Search text"
+            >
+              <Search className="h-4 w-4 text-white" />
+            </button>
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
             <span className="text-[11px] font-bold text-white">Speaker:</span>
             <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
@@ -1664,15 +1674,42 @@ export default function PDFReaderPage() {
                         )}
                       </button>
                     </div>
-                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => {
-                      if (audioRef.current) audioRef.current.pause();
-                      setIsPlaying(true);
-                      isPlayingRef.current = true;
-                      setIsPaused(false);
-                      isPausedRef.current = false;
-                      playNextChunk(idx);
-                    }}>
-                      <p className={`text-[18px] leading-[2.1] ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`}>
+                    <div className="flex-1 min-w-0">
+                      {editingChunkIndex === idx ? (
+                        <div className="relative">
+                          <textarea
+                            value={editableChunkText}
+                            onChange={(e) => setEditableChunkText(e.target.value)}
+                            className="w-full bg-white/5 text-white/90 text-[18px] leading-[2.1] p-2 rounded-lg border border-white/20 focus:border-white/40 focus:outline-none resize-y min-h-[80px]"
+                            style={{ minHeight: '80px' }}
+                            autoFocus
+                            data-testid={`textarea-chunk-edit-${idx}`}
+                          />
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              className="px-3 py-1 bg-white/20 text-white text-xs rounded hover:bg-white/30 transition-colors"
+                              onClick={() => {
+                                const newChunks = [...chunksList];
+                                newChunks[idx] = editableChunkText;
+                                setChunksList(newChunks);
+                                setEditingChunkIndex(null);
+                              }}
+                              data-testid={`button-chunk-save-${idx}`}
+                            >Save</button>
+                            <button
+                              className="px-3 py-1 bg-white/10 text-white/60 text-xs rounded hover:bg-white/15 transition-colors"
+                              onClick={() => setEditingChunkIndex(null)}
+                              data-testid={`button-chunk-cancel-${idx}`}
+                            >Cancel</button>
+                          </div>
+                        </div>
+                      ) : (
+                      <p className={`text-[18px] leading-[2.1] cursor-pointer ${isChecked ? 'text-white/30 line-through' : 'text-white/90'}`} onClick={() => {
+                        if (!isActive) {
+                          setEditingChunkIndex(idx);
+                          setEditableChunkText(chunk);
+                        }
+                      }}>
                         <span className="text-white/40 mr-1.5 font-medium">{idx + 1}.</span>
                         {isActive && chunkWords.length > 0 ? (
                           chunkWords.map((word, wIdx) => (
@@ -1711,6 +1748,7 @@ export default function PDFReaderPage() {
                           chunk
                         )}
                       </p>
+                      )}
                     </div>
                   </div>
                 );
