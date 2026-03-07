@@ -990,6 +990,23 @@ export default function PDFReaderPage() {
       textToRead = await extractAllText();
     }
     
+    if (!textToRead && fileId) {
+      console.log("[TTS] Client-side extraction failed, trying server-side extraction for file", fileId);
+      try {
+        const resp = await fetch(`/api/files/${fileId}/text`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.text) {
+            textToRead = data.text;
+            setExtractedText(data.text);
+            console.log(`[TTS] Server-side extraction succeeded: ${data.text.length} chars`);
+          }
+        }
+      } catch (err) {
+        console.error("[TTS] Server-side extraction also failed:", err);
+      }
+    }
+
     if (!textToRead) {
       toast({
         title: "No text found",
