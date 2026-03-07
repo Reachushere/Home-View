@@ -4355,10 +4355,14 @@ document.body.removeChild(a);
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3) {
+        console.log(`[Cat Wash] Day of week is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]} — only triggers Wednesday-Friday`);
+        return res.json({ action: "skipped", reason: `Only triggers Wednesday-Friday (today is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]})` });
+      }
+
       if (catWashPlaybackActive && catWashPlaybackState) {
-        // Check for stale state: if playback started more than 5 minutes ago and chunk hasn't
-        // advanced, the tablet likely never loaded the PDF reader (devices failed to open).
-        // In that case, treat it as not playing and allow the new trigger.
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
         const likelyStale = msSinceStart > 5 * 60 * 1000 && chunkStillAtStart;
@@ -4378,85 +4382,45 @@ document.body.removeChild(a);
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
-      // Find the next file to play. Use LOCAL DB for file selection and PDF extraction
-      // (since we have the actual files here), but also query deployed server to get the
-      // DEPLOYED file ID — because tablets/TV load from the deployed app.
-      let nextFile: any = null;
-      let chunks: string[] = [];
-      let currentWeekNumber = 1;
-      let deployedFileId: number | null = null;
-
+      // Get current week number
       const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
 
-      // Step 1: Find next file from local DB (has course priority + file content)
-      const localNextFile = await findNextCatWashFile(storage, currentWeekNumber);
-      if (!localNextFile) {
-        console.log("[Cat Wash] No files to play for week " + currentWeekNumber);
-        return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
+      // Find CPPA module for current week (same logic as cat-lights)
+      const allFiles = await storage.getFiles();
+      const cppaModule = allFiles.find((f: any) => {
+        if (f.listened) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNumber) return false;
+        const isCppa = f.folder?.toLowerCase().includes('cppa');
+        const isModule = f.folder?.toLowerCase().includes('module');
+        return isCppa && isModule;
+      });
+
+      if (!cppaModule) {
+        console.log(`[Cat Wash] No unlistened CPPA module for week ${currentWeekNumber}`);
+        return res.json({ action: "skipped", reason: `No unlistened CPPA module for week ${currentWeekNumber}` });
       }
-      const extractResult = await extractAndChunkPdf(localNextFile);
+
+      const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
+      console.log(`[Cat Wash] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
+
+      const extractResult = await extractAndChunkPdf(cppaModule);
       if (!extractResult || extractResult.chunks.length === 0) {
-        console.log("[Cat Wash] No files with readable text content");
-        return res.status(400).json({ error: "No PDFs with readable text content" });
+        return res.status(400).json({ error: "PDF has no readable text content" });
       }
-      nextFile = localNextFile;
-      chunks = extractResult.chunks;
+      const { chunks } = extractResult;
 
-      // Step 2: Find the matching file on the deployed server by folder + name
-      // so we can use the deployed file ID in the URL (tablets run on deployed server)
-      try {
-        const deployedResp = await fetch(`${DEPLOYED_APP_URL}/api/files?auth=${authParam}`);
-        if (deployedResp.ok) {
-          const deployedFiles: any[] = await deployedResp.json();
-          const localFolder = nextFile.folder || '';
-          const localOrigName = nextFile.originalName || '';
-          const folderMatches = deployedFiles.filter((f: any) => !f.deletedAt && f.folder === localFolder);
-          if (folderMatches.length === 1) {
-            deployedFileId = folderMatches[0].id;
-            console.log(`[Cat Wash] Matched by folder (single file): local id=${nextFile.id}, deployed id=${deployedFileId}`);
-          } else if (folderMatches.length > 1) {
-            const nameMatch = folderMatches.find((f: any) => f.originalName === localOrigName);
-            if (nameMatch) {
-              deployedFileId = nameMatch.id;
-              console.log(`[Cat Wash] Matched by originalName: local id=${nextFile.id}, deployed id=${deployedFileId}`);
-            } else {
-              console.log(`[Cat Wash] Multiple files in ${localFolder} on deployed, no name match for "${localOrigName}"`);
-            }
-          } else {
-            console.log(`[Cat Wash] No files in folder ${localFolder} on deployed server`);
-          }
-        }
-      } catch (e: any) {
-        console.log(`[Cat Wash] Failed to query deployed server for file match: ${e.message}`);
-      }
+      // Resume from saved progress (like cat-lights)
+      let resumeFromChunk = cppaModule.lastChunkIndex || 0;
+      if (resumeFromChunk >= chunks.length) resumeFromChunk = 0;
 
-      // Use deployed file ID if available, otherwise fall back to local ID
-      const readerFileId = deployedFileId || nextFile.id;
-      if (!deployedFileId) {
-        console.log(`[Cat Wash] WARNING: Using local file ID ${nextFile.id} — tablets may get "file not found"`);
-      }
+      console.log(`[Cat Wash] Starting playback from chunk ${resumeFromChunk}/${chunks.length}`);
 
-      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-
-      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
-      const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
-      console.log(`[Cat Wash] Selected: ${fileName} (${fileType}, id=${nextFile.id}, folder=${nextFile.folder})`);
-
-      const readerUrl = `${appUrl}/pdf-reader/${readerFileId}?catWashFollow=true&autoplay=true&auth=${authParam}`;
-
-      // Always start from the beginning on a fresh trigger.
-      // Old lastChunkIndex/checkedChunks data from previous failed attempts
-      // was causing playback to jump to the middle of the document.
-      // Reset all stale progress data for this file.
-      let resumeFromChunk = 0;
-      const progressKey = `file-${nextFile.id}`;
-      delete playbackProgress[progressKey];
-      await storage.updateFile(nextFile.id, { lastChunkIndex: 0, checkedChunks: '[]' });
-
-      console.log(`[Cat Wash] ${chunks.length} chunks, starting from beginning`);
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on all display devices ===
       // Set pending tablet command so tablets already on our app (in Silk) auto-navigate
@@ -4518,7 +4482,7 @@ document.body.removeChild(a);
       catWashPlaybackActive = true;
       catWashPlaybackStartedAt = new Date();
       catWashPlaybackState = {
-        fileId: nextFile.id,
+        fileId: cppaModule.id,
         fileName,
         chunkIndex: resumeFromChunk,
         totalChunks: chunks.length,
@@ -4535,7 +4499,8 @@ document.body.removeChild(a);
 
       res.json({
         action: "playing",
-        file: { id: nextFile.id, name: fileName, type: fileType, folder: nextFile.folder },
+        file: { id: cppaModule.id, name: fileName },
+        resumeFromChunk,
         readerUrl,
         currentWeek: currentWeekNumber,
         totalChunks: chunks.length,
