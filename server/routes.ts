@@ -4267,19 +4267,32 @@ export async function registerRoutes(
         return res.json({ action: "no_files", message: `All week ${currentWeekNumber} readings complete` });
       }
 
-      const nextFile = orderedFiles[0];
+      let nextFile = null;
+      let chunks: string[] = [];
+      for (const candidate of orderedFiles) {
+        const candidateName = candidate.displayName || candidate.originalName || 'Unknown file';
+        const candidateType = isModuleFile(candidate) ? 'module' : 'reading';
+        console.log(`[Cat Wash] Trying: ${candidateName} (${candidateType}, id=${candidate.id}, folder=${candidate.folder})`);
+
+        const extractResult = await extractAndChunkPdf(candidate);
+        if (extractResult && extractResult.chunks.length > 0) {
+          nextFile = candidate;
+          chunks = extractResult.chunks;
+          break;
+        }
+        console.log(`[Cat Wash] Skipping "${candidateName}" - no readable text content`);
+      }
+
+      if (!nextFile) {
+        console.log("[Cat Wash] No files with readable text content for week " + currentWeekNumber);
+        return res.status(400).json({ error: "No PDFs with readable text content" });
+      }
+
       const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
       const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
       console.log(`[Cat Wash] Selected: ${fileName} (${fileType}, id=${nextFile.id}, folder=${nextFile.folder})`);
 
       const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
-
-      // === STEP 1: Extract text from PDF for server-side TTS ===
-      const extractResult = await extractAndChunkPdf(nextFile);
-      if (!extractResult || extractResult.chunks.length === 0) {
-        return res.status(400).json({ error: "PDF has no readable text content" });
-      }
-      const { chunks } = extractResult;
 
       // Always start from the beginning on a fresh trigger.
       // Old lastChunkIndex/checkedChunks data from previous failed attempts
