@@ -1964,6 +1964,19 @@ export default function PDFReaderPage() {
                 />
                 <div className="flex-1 flex items-center justify-between">
                   <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed</span>
+                  {checkedChunks.size < totalChunks && (
+                    <button
+                      className="text-[11px] text-white/70 hover:text-white underline ml-2"
+                      onClick={() => {
+                        const firstUnlistened = Array.from({ length: totalChunks }, (_, i) => i).find(i => !checkedChunks.has(i));
+                        if (firstUnlistened !== undefined) {
+                          const el = document.querySelector(`[data-testid="chunk-row-${firstUnlistened}"]`);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }}
+                      data-testid="button-jump-unlistened"
+                    >Jump to Unlistened</button>
+                  )}
                   <span className="text-[11px] text-white font-bold">{chunkProgress}%</span>
                 </div>
               </div>
