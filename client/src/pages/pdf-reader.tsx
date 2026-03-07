@@ -1655,7 +1655,7 @@ export default function PDFReaderPage() {
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
         <div className="rounded-2xl overflow-hidden mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '800px', width: '100%' }}>
           <div className="flex items-center justify-center gap-2 pt-3 pb-1">
-            <span className="text-xs text-white/50">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+            <span className="text-xs text-white">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
           </div>
           <div className="flex items-center justify-center gap-6 px-8 pb-4">
             <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
@@ -1768,8 +1768,8 @@ export default function PDFReaderPage() {
             return (
               <div className="px-6 pb-2" data-testid="progress-all-files">
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[9px] text-white/40">All Files ({allFiles.length})</span>
-                  <span className="text-[9px] text-white/40">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
+                  <span className="text-[9px] text-white/70">All Files ({allFiles.length})</span>
+                  <span className="text-[9px] text-white/70">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
                 </div>
                 <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
                   <div className="bg-green-400 h-full transition-all duration-300 rounded-full" style={{ width: `${folderPct}%` }} />
