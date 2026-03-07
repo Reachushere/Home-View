@@ -1058,26 +1058,53 @@ export default function PDFReaderPage() {
   }, [volume]);
 
   useEffect(() => {
+    let lastHeights = new Array(20).fill(0);
     const updateWaveBars = () => {
+      if (!isPlaying || isPaused) {
+        setWaveBarHeights(new Array(20).fill(0));
+        return;
+      }
       const analyser = analyserRef.current;
-      if (analyser && isPlaying && !isPaused) {
+      const bars = 20;
+      const heights: number[] = [];
+
+      if (analyser) {
+        if (audioContextRef.current?.state === 'suspended') {
+          audioContextRef.current.resume();
+        }
         const bufLen = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufLen);
         analyser.getByteFrequencyData(dataArray);
-        const bars = 20;
-        const heights: number[] = [];
+        let hasData = false;
         for (let i = 0; i < bars; i++) {
           const startIdx = Math.floor((i / bars) * bufLen * 0.6);
           const endIdx = Math.floor(((i + 1) / bars) * bufLen * 0.6);
           let sum = 0;
-          for (let j = startIdx; j < endIdx; j++) sum += dataArray[j];
+          for (let j = startIdx; j < endIdx; j++) {
+            sum += dataArray[j];
+            if (dataArray[j] > 0) hasData = true;
+          }
           const avg = sum / (endIdx - startIdx) / 255;
           heights.push(avg);
         }
-        setWaveBarHeights(heights);
-      } else {
-        setWaveBarHeights(new Array(20).fill(0));
+        if (hasData) {
+          lastHeights = heights;
+          setWaveBarHeights(heights);
+          waveAnimRef.current = requestAnimationFrame(updateWaveBars);
+          return;
+        }
       }
+
+      const t = Date.now() / 1000;
+      for (let i = 0; i < bars; i++) {
+        const base = 0.3 + Math.sin(t * 3 + i * 0.8) * 0.25;
+        const wave2 = Math.sin(t * 5.3 + i * 1.2) * 0.15;
+        const wave3 = Math.sin(t * 7.1 + i * 0.5) * 0.1;
+        const smoothed = lastHeights[i] * 0.3 + (base + wave2 + wave3) * 0.7;
+        heights.push(Math.max(0.05, Math.min(1, smoothed)));
+      }
+      lastHeights = heights;
+      setWaveBarHeights(heights);
       waveAnimRef.current = requestAnimationFrame(updateWaveBars);
     };
     if (isPlaying && !isPaused) {
