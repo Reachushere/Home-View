@@ -3489,7 +3489,10 @@ export default function Dashboard() {
   const activeWordRef = useRef<HTMLSpanElement | null>(null);
   const openaiNextChunkRef = useRef<{ blob: Blob; index: number } | null>(null);
   const [isOpenAiTtsAvailable] = useState(() => !window.speechSynthesis);
-  const [openaiVoice, setOpenaiVoice] = useState<"alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer">("nova");
+  const [openaiVoice, setOpenaiVoice] = useState<"alloy" | "ash" | "coral" | "echo" | "fable" | "nova" | "onyx" | "sage" | "shimmer">(() => {
+    const saved = localStorage.getItem('pdf-reader-voice');
+    return (saved && ["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"].includes(saved) ? saved : "echo") as any;
+  });
   
   // Pre-fetch the next chunk for seamless playback
   const prefetchNextChunk = async (nextIndex: number, voice: typeof openaiVoice) => {
@@ -8130,7 +8133,7 @@ export default function Dashboard() {
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={async (open) => { if (!open) { if (isPlayingRef.current || isPlaying) { console.log('[Dialog] Blocked close attempt while audio is playing'); return; } const fileToSave = previewFile; const chunksToSave = new Set(checkedChunksRef.current); const totalToSave = ttsChunksRef.current.length || totalChunks; if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) { const checkedJson = JSON.stringify(Array.from(chunksToSave)); try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch (err) { console.error('Final save on close:', err); } } setPreviewFile(null); setOneDrivePreviewFiles([]); setDialogPos(null); await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); refreshFileCounts(); } }}>
         <DialogContent 
-          className="w-[1350px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&>button]:text-white [&>button]:top-[22px] [&>button]:opacity-100 [&>button]:right-[28px] [&>button]:scale-125"
+          className="w-[1500px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&>button]:text-white [&>button]:top-[22px] [&>button]:opacity-100 [&>button]:right-[28px] [&>button]:scale-125"
           style={{ 
             ...(dialogPos ? { transform: `translate(calc(-50% + ${dialogPos.x}px), calc(-50% + ${dialogPos.y}px))` } : {}),
             backgroundImage: `url(${tmuDialogBg})`,
@@ -9246,17 +9249,24 @@ export default function Dashboard() {
               {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-white">Voice:</span>
-                  <Select value={openaiVoice} onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}>
-                    <SelectTrigger className="w-[110px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-openai-voice">
+                  <Select value={openaiVoice} onValueChange={(v) => { setOpenaiVoice(v as typeof openaiVoice); localStorage.setItem('pdf-reader-voice', v); }}>
+                    <SelectTrigger className="w-[280px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-openai-voice">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="alloy" className="text-[10px]">Alloy</SelectItem>
-                      <SelectItem value="echo" className="text-[10px]">Echo</SelectItem>
-                      <SelectItem value="fable" className="text-[10px]">Fable</SelectItem>
-                      <SelectItem value="onyx" className="text-[10px]">Onyx</SelectItem>
-                      <SelectItem value="nova" className="text-[10px]">Nova</SelectItem>
-                      <SelectItem value="shimmer" className="text-[10px]">Shimmer</SelectItem>
+                      {([
+                        { val: "alloy", label: "Alloy - English (Female, Neutral)" },
+                        { val: "ash", label: "Ash - English (Male, Warm)" },
+                        { val: "coral", label: "Coral - English (Female, Gentle)" },
+                        { val: "echo", label: "Echo - English (Male, Clear)" },
+                        { val: "fable", label: "Fable - English (Male, British)" },
+                        { val: "nova", label: "Nova - English (Female, Friendly)" },
+                        { val: "onyx", label: "Onyx - English (Male, Deep)" },
+                        { val: "sage", label: "Sage - English (Female, Calm)" },
+                        { val: "shimmer", label: "Shimmer - English (Female, Bright)" },
+                      ] as const).map(v => (
+                        <SelectItem key={v.val} value={v.val} className="text-[10px]">{v.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <Button
