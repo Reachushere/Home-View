@@ -187,6 +187,7 @@ export default function PDFReaderPage() {
   }, [filesParam]);
 
   const [numPages, setNumPages] = useState<number>(0);
+  const numPagesRef = useRef<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pdfContainerHeight, setPdfContainerHeight] = useState<number>(0);
   const [extractedText, setExtractedText] = useState<string>("");
@@ -441,16 +442,29 @@ export default function PDFReaderPage() {
     const startCatWashPlayback = async () => {
       await unlockAudio();
       await new Promise(resolve => setTimeout(resolve, 2000));
+      let waited = 0;
+      while (waited < 30) {
+        if (numPagesRef.current > 0) {
+          console.log("[Cat Wash] PDF loaded with " + numPagesRef.current + " pages after " + waited + "s");
+          break;
+        }
+        console.log("[Cat Wash] Waiting for PDF to load... (" + waited + "s)");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        waited++;
+      }
+      if (numPagesRef.current === 0) {
+        console.log("[Cat Wash] PDF never loaded after 30s, trying startReading anyway");
+      }
       if (!extractedTextRef.current) {
-        let waited = 0;
-        while (!extractedTextRef.current && waited < 28) {
+        waited = 0;
+        while (!extractedTextRef.current && waited < 20) {
           console.log("[Cat Wash] Waiting for text extraction... (" + waited + "s)");
           await new Promise(resolve => setTimeout(resolve, 1000));
           waited++;
         }
       }
       if (!isPlayingRef.current) {
-        console.log("[Cat Wash] Calling startReading() directly");
+        console.log("[Cat Wash] Calling startReading() - numPages=" + numPagesRef.current + " extractedText=" + (extractedTextRef.current ? extractedTextRef.current.length + " chars" : "empty"));
         startReading();
       }
     };
@@ -723,6 +737,7 @@ export default function PDFReaderPage() {
     setCurrentFileName(file.name);
     setCurrentPage(1);
     setNumPages(0);
+    numPagesRef.current = 0;
     setExtractedText('');
     setIsPlaying(false);
     setIsPaused(false);
@@ -742,6 +757,7 @@ export default function PDFReaderPage() {
 
   const onDocumentLoadSuccess = async ({ numPages: pages }: { numPages: number }) => {
     setNumPages(pages);
+    numPagesRef.current = pages;
     setCurrentPage(1);
     
     const key = getFileKey();
