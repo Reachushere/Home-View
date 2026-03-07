@@ -1978,7 +1978,7 @@ export default function PDFReaderPage() {
                         data-testid={`checkbox-chunk-${idx}`}
                       />
                       <button
-                        className={`p-1 rounded-full transition-colors mt-[18px] border border-white ${isActive ? 'bg-white/20 hover:bg-white/30' : 'bg-transparent hover:bg-white/10'}`}
+                        className={`p-1.5 rounded-full transition-colors mt-[18px] border-2 border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'}`}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
