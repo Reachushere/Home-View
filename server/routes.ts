@@ -378,6 +378,12 @@ function cleanTextForTTS(text: string): string {
     .replace(/\btabs?\s*:/gi, '')
     .replace(/\bexpand\s+all\b/gi, '')
     .replace(/\bcollapse\s+all\b/gi, '')
+    .replace(/\(expanded\)/gi, '')
+    .replace(/\(collapsed\)/gi, '')
+    .replace(/\(selected\)/gi, '')
+    .replace(/\(unselected\)/gi, '')
+    .replace(/\(active\)/gi, '')
+    .replace(/\(inactive\)/gi, '')
     .replace(/\bTab\b/g, '')
     .replace(/\btab\b/g, '');
 
