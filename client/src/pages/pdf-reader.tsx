@@ -1875,9 +1875,9 @@ export default function PDFReaderPage() {
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Speed</span>
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
-                data-testid="button-speed-down"
-              >−</button>
+                onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
+                data-testid="button-speed-up"
+              >+</button>
               <input
                 type="range"
                 min="0.5"
@@ -1891,9 +1891,9 @@ export default function PDFReaderPage() {
               />
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
-                data-testid="button-speed-up"
-              >+</button>
+                onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
+                data-testid="button-speed-down"
+              >−</button>
               <span className="text-sm text-white font-semibold min-w-[40px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
             </div>
 
@@ -1901,9 +1901,9 @@ export default function PDFReaderPage() {
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
-                data-testid="button-volume-down"
-              >−</button>
+                onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
+                data-testid="button-volume-up"
+              >+</button>
               <input
                 type="range"
                 min="0"
@@ -1917,9 +1917,9 @@ export default function PDFReaderPage() {
               />
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
-                data-testid="button-volume-up"
-              >+</button>
+                onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
+                data-testid="button-volume-down"
+              >−</button>
               <Volume2 className="h-5 w-5 text-white" />
             </div>
           </div>
