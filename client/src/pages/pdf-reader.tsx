@@ -1494,14 +1494,6 @@ export default function PDFReaderPage() {
               <Search className="h-4 w-4 text-white" />
             </button>
             <button
-              className="p-1.5 rounded hover:bg-white/20 transition-colors"
-              onClick={jumpToUnlistened}
-              data-testid="button-jump-unlistened"
-              title="Jump to first unlistened chunk"
-            >
-              <SkipForward className="h-4 w-4 text-white" />
-            </button>
-            <button
               className={`p-1.5 rounded hover:bg-white/20 transition-colors ${isEditingText ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
               data-testid="button-edit-tts-text"
               onClick={() => {
