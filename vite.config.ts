@@ -1,12 +1,35 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+
+function babelLetConstToVar(): Plugin {
+  return {
+    name: 'babel-let-const-to-var',
+    apply: 'build',
+    enforce: 'post',
+    async renderChunk(code) {
+      const babel = await import("@babel/core");
+      const result = babel.transformSync(code, {
+        configFile: false,
+        babelrc: false,
+        compact: true,
+        plugins: ['@babel/plugin-transform-block-scoping'],
+        sourceType: 'module',
+      });
+      if (result?.code) {
+        return { code: result.code.replace(/\blet /g, 'var ').replace(/\bconst /g, 'var '), map: null };
+      }
+      return null;
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
+    babelLetConstToVar(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
@@ -34,7 +57,13 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    target: 'es2015',
+    target: false as any,
+    minify: 'terser',
+    terserOptions: {
+      ecma: 5,
+      compress: { ecma: 5 },
+      format: { ecma: 5 },
+    },
   },
   server: {
     fs: {
