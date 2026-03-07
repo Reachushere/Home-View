@@ -1653,17 +1653,17 @@ export default function PDFReaderPage() {
       </div>
 
       <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '10px 20px 14px 20px' }}>
-        <div className="rounded-2xl overflow-hidden mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '800px', width: '100%' }}>
+        <div className="rounded-2xl overflow-hidden mx-auto" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.9)', maxWidth: '800px', width: '100%' }}>
           <div className="flex items-center justify-center gap-2 pt-3 pb-1">
-            <span className="text-xs text-white">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+            <span className="text-xs text-gray-600">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
           </div>
           <div className="flex items-center justify-center gap-6 px-8 pb-4">
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
-              <SkipBack className="h-7 w-7 text-white" />
+            <button className="p-4 rounded-full hover:bg-black/5 disabled:opacity-30" onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+              <SkipBack className="h-7 w-7 text-gray-700" />
             </button>
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
-              <SkipForward className="h-7 w-7 text-white" />
+            <button className="p-4 rounded-full hover:bg-black/5 disabled:opacity-30" onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+              <SkipForward className="h-7 w-7 text-gray-700" />
             </button>
 
             <div className="flex items-center gap-[3px] h-10" data-testid="sound-waves-left">
@@ -1683,46 +1683,46 @@ export default function PDFReaderPage() {
               <div className="flex items-center gap-4">
                 {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                   <button
-                    className="p-3 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                    className="p-3 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-30"
                     onClick={resumeFromLast}
                     disabled={isLoading || numPages === 0}
                     title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
                     data-testid="button-resume"
                   >
-                    {isLoading ? <Loader2 className="h-7 w-7 text-white animate-spin" /> : <RotateCcw className="h-7 w-7 text-white" />}
+                    {isLoading ? <Loader2 className="h-7 w-7 text-gray-700 animate-spin" /> : <RotateCcw className="h-7 w-7 text-gray-700" />}
                   </button>
                 )}
                 <button
-                  className="p-5 rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                  className="p-5 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-30"
                   onClick={startReading}
                   disabled={isLoading || numPages === 0}
                   data-testid="button-play"
                 >
-                  {isLoading ? <Loader2 className="h-9 w-9 text-gray-900 animate-spin" /> : <Play className="h-9 w-9 text-gray-900 fill-gray-900 ml-0.5" />}
+                  {isLoading ? <Loader2 className="h-9 w-9 text-white animate-spin" /> : <Play className="h-9 w-9 text-white fill-white ml-0.5" />}
                 </button>
               </div>
             ) : isPaused ? (
-              <button className="p-5 rounded-full bg-white hover:bg-white/90" onClick={resumeReading} data-testid="button-resume-play">
-                <Play className="h-9 w-9 text-gray-900 fill-gray-900 ml-0.5" />
+              <button className="p-5 rounded-full bg-gray-800 hover:bg-gray-700" onClick={resumeReading} data-testid="button-resume-play">
+                <Play className="h-9 w-9 text-white fill-white ml-0.5" />
               </button>
             ) : (
-              <button className="p-5 rounded-full bg-white hover:bg-white/90" onClick={pauseReading} data-testid="button-pause">
-                <Pause className="h-9 w-9 text-gray-900" />
+              <button className="p-5 rounded-full bg-gray-800 hover:bg-gray-700" onClick={pauseReading} data-testid="button-pause">
+                <Pause className="h-9 w-9 text-white" />
               </button>
             )}
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-              <RotateCcw className="h-5 w-5 text-white" />
-              <span className="text-xs text-white font-medium">15s</span>
+            <button className="p-4 rounded-full hover:bg-black/5 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+              <RotateCcw className="h-5 w-5 text-gray-700" />
+              <span className="text-xs text-gray-700 font-medium">15s</span>
             </button>
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-              <span className="text-xs text-white font-medium">15s</span>
-              <RotateCw className="h-5 w-5 text-white" />
+            <button className="p-4 rounded-full hover:bg-black/5 disabled:opacity-30 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+              <span className="text-xs text-gray-700 font-medium">15s</span>
+              <RotateCw className="h-5 w-5 text-gray-700" />
             </button>
 
-            <button className="p-4 rounded-full hover:bg-white/10 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
-              <Square className="h-7 w-7 text-white fill-white" />
+            <button className="p-4 rounded-full hover:bg-black/5 disabled:opacity-30" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+              <Square className="h-7 w-7 text-gray-700 fill-gray-700" />
             </button>
 
             <div className="flex items-center gap-[3px] h-10" data-testid="sound-waves-right">
@@ -1768,10 +1768,10 @@ export default function PDFReaderPage() {
             return (
               <div className="px-6 pb-2" data-testid="progress-all-files">
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[9px] text-white/70">All Files ({allFiles.length})</span>
-                  <span className="text-[9px] text-white/70">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
+                  <span className="text-[9px] text-gray-500">All Files ({allFiles.length})</span>
+                  <span className="text-[9px] text-gray-500">{totalFilesComplete}/{allFiles.length} ({folderPct}%)</span>
                 </div>
-                <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
+                <div className="bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div className="bg-green-400 h-full transition-all duration-300 rounded-full" style={{ width: `${folderPct}%` }} />
                 </div>
               </div>
