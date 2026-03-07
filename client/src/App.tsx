@@ -16,21 +16,22 @@ import OneDrivePage from "@/pages/onedrive";
 
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
-  const isFireTablet = typeof navigator !== 'undefined' && 
+  const isSilk = typeof navigator !== 'undefined' && 
     (/\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent));
 
   const requestFullscreen = useCallback(() => {
-    if (requested || !isFireTablet) return;
+    if (requested || !isSilk) return;
     if (document.fullscreenElement) { setRequested(true); return; }
     const el = document.documentElement as any;
     const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (fn) {
       fn.call(el).then(() => setRequested(true)).catch(() => {});
     }
-  }, [requested, isFireTablet]);
+  }, [requested, isSilk]);
 
   useEffect(() => {
-    if (!isFireTablet || requested) return;
+    if (!isSilk || requested) return;
+    requestFullscreen();
     const handler = () => requestFullscreen();
     document.addEventListener('click', handler, { once: true });
     document.addEventListener('touchstart', handler, { once: true });
@@ -38,7 +39,7 @@ function useAutoFullscreen() {
       document.removeEventListener('click', handler);
       document.removeEventListener('touchstart', handler);
     };
-  }, [isFireTablet, requested, requestFullscreen]);
+  }, [isSilk, requested, requestFullscreen]);
 }
 
 function Router() {
