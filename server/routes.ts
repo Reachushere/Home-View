@@ -4355,6 +4355,8 @@ document.body.removeChild(a);
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
+      const today = new Date();
+
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
