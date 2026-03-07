@@ -28,7 +28,11 @@ import {
   Cast,
   Monitor,
   Speaker,
-  Headphones
+  Headphones,
+  Search,
+  Replace,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 import tmuBgPath from "@assets/TMU2_1772841380363.png";
@@ -137,6 +141,12 @@ export default function PDFReaderPage() {
   const [chunksList, setChunksList] = useState<string[]>([]);
   const [isEditingText, setIsEditingText] = useState(false);
   const [editableText, setEditableText] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchMatchIndex, setSearchMatchIndex] = useState(0);
+  const [showReplace, setShowReplace] = useState(false);
+  const [replaceText, setReplaceText] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [showFlickMenu, setShowFlickMenu] = useState(false);
   const [flickDeviceGroups, setFlickDeviceGroups] = useState<Array<{room: string; icon: string; devices: Array<{id: string; name: string; entityId: string; type: string; canDisplay: boolean; room: string}>}>>([]);
   const [isFlicking, setIsFlicking] = useState(false);
@@ -471,6 +481,18 @@ export default function PDFReaderPage() {
   };
 
   const chunkProgress = totalChunks > 0 ? Math.round((checkedChunks.size / totalChunks) * 100) : 0;
+
+  const searchMatchCount = (() => {
+    if (searchQuery.trim().length < 2) return 0;
+    const q = searchQuery.toLowerCase().trim();
+    let count = 0;
+    for (const chunk of chunksList) {
+      let pos = 0;
+      const lower = chunk.toLowerCase();
+      while ((pos = lower.indexOf(q, pos)) !== -1) { count++; pos += 1; }
+    }
+    return count;
+  })();
 
   // Switch to a different file
   const switchToFile = (file: {name: string; downloadUrl: string; path: string}) => {
@@ -1279,9 +1301,120 @@ export default function PDFReaderPage() {
 
       <div className="flex-1 flex relative overflow-hidden min-h-0" style={{ zIndex: 2 }}>
         <div className="flex-1 lg:w-1/2 overflow-auto" style={{ background: 'rgba(0,0,0,0.4)' }}>
-          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
-            <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
-            <span className="text-[10px] text-white/40">{checkedChunks.size}/{totalChunks} chunks</span>
+          <div className="sticky top-0 z-20" style={{ background: 'rgba(0,10,30,0.8)', backdropFilter: 'blur(10px)' }}>
+            <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/10">
+              <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-white/40">{checkedChunks.size}/{totalChunks} chunks</span>
+                <button className={`p-1 rounded hover:bg-white/10 ${searchOpen ? 'bg-white/10' : ''}`} onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 100); }} data-testid="button-toggle-search">
+                  <Search className="h-3.5 w-3.5 text-white/50" />
+                </button>
+              </div>
+            </div>
+            {searchOpen && (
+              <div className="px-3 py-2 border-b border-white/10 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <button className="flex-shrink-0" onClick={() => setShowReplace(prev => !prev)} data-testid="button-toggle-replace">
+                    {showReplace ? <ChevronDown className="h-3.5 w-3.5 text-white/40" /> : <ChevronRight className="h-3.5 w-3.5 text-white/40" />}
+                  </button>
+                  <Search className="h-3.5 w-3.5 text-white/40 flex-shrink-0" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setSearchMatchIndex(0); }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (e.shiftKey) setSearchMatchIndex(prev => Math.max(0, prev - 1));
+                        else setSearchMatchIndex(prev => prev < searchMatchCount - 1 ? prev + 1 : 0);
+                      }
+                      if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery(""); setSearchMatchIndex(0); setShowReplace(false); setReplaceText(""); }
+                    }}
+                    placeholder="Find..."
+                    className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-white/30"
+                    data-testid="input-search"
+                  />
+                  {searchQuery.trim().length >= 2 && (
+                    <span className="text-[10px] text-white/40 whitespace-nowrap">
+                      {searchMatchCount > 0 ? `${Math.min(searchMatchIndex + 1, searchMatchCount)}/${searchMatchCount}` : '0/0'}
+                    </span>
+                  )}
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white/40" onClick={() => setSearchMatchIndex(prev => Math.max(0, prev - 1))} data-testid="button-search-prev">
+                    <ChevronUp className="h-3 w-3" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white/40" onClick={() => setSearchMatchIndex(prev => prev < searchMatchCount - 1 ? prev + 1 : 0)} data-testid="button-search-next">
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-5 w-5 text-white/40" onClick={() => { setSearchOpen(false); setSearchQuery(""); setSearchMatchIndex(0); setShowReplace(false); setReplaceText(""); }} data-testid="button-search-close">
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                {showReplace && (
+                  <div className="flex items-center gap-2 pl-[22px]">
+                    <Replace className="h-3.5 w-3.5 text-white/40 flex-shrink-0" />
+                    <input
+                      type="text"
+                      value={replaceText}
+                      onChange={(e) => setReplaceText(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Escape') { setShowReplace(false); setReplaceText(""); } }}
+                      placeholder="Replace with..."
+                      className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-white/30"
+                      data-testid="input-replace"
+                    />
+                    <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-blue-400 hover:text-blue-300" data-testid="button-replace-one"
+                      disabled={searchMatchCount === 0 || searchQuery.trim().length < 2}
+                      onClick={() => {
+                        if (searchQuery.trim().length < 2 || searchMatchCount === 0) return;
+                        const q = searchQuery.trim();
+                        const qLower = q.toLowerCase();
+                        let globalIdx = 0;
+                        const newChunks = chunksList.map(chunk => {
+                          let result = '';
+                          let lower = chunk.toLowerCase();
+                          let lastPos = 0;
+                          let pos = lower.indexOf(qLower, lastPos);
+                          while (pos !== -1) {
+                            if (globalIdx === searchMatchIndex) {
+                              result += chunk.slice(lastPos, pos) + replaceText;
+                              lastPos = pos + q.length;
+                              const newText = result + chunk.slice(lastPos);
+                              const remaining = chunksList.map((c, i) => i === chunksList.indexOf(chunk) ? newText : c);
+                              const fullText = remaining.join('\n\n');
+                              setExtractedText(fullText);
+                              const rechunked = chunkText(fullText);
+                              chunksRef.current = rechunked;
+                              setChunksList(rechunked);
+                              setTotalChunks(rechunked.length);
+                              if (searchMatchIndex >= searchMatchCount - 1) setSearchMatchIndex(Math.max(0, searchMatchCount - 2));
+                              return;
+                            }
+                            result += chunk.slice(lastPos, pos + q.length);
+                            lastPos = pos + q.length;
+                            globalIdx++;
+                            pos = lower.indexOf(qLower, lastPos);
+                          }
+                          return undefined;
+                        });
+                      }}
+                    >Replace</Button>
+                    <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-amber-400 hover:text-amber-300" data-testid="button-replace-all"
+                      disabled={searchMatchCount === 0 || searchQuery.trim().length < 2}
+                      onClick={() => {
+                        if (searchQuery.trim().length < 2 || searchMatchCount === 0) return;
+                        const q = searchQuery.trim();
+                        const fullText = extractedText.split(q).join(replaceText);
+                        setExtractedText(fullText);
+                        const rechunked = chunkText(fullText);
+                        chunksRef.current = rechunked;
+                        setChunksList(rechunked);
+                        setTotalChunks(rechunked.length);
+                        setSearchMatchIndex(0);
+                      }}
+                    >Replace All</Button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {isEditingText && (
@@ -1400,6 +1533,24 @@ export default function PDFReaderPage() {
                               {word}{" "}
                             </span>
                           ))
+                        ) : searchQuery.trim().length >= 2 ? (
+                          (() => {
+                            const q = searchQuery.trim();
+                            const qLower = q.toLowerCase();
+                            const parts: Array<{text: string; isMatch: boolean}> = [];
+                            let remaining = chunk;
+                            while (remaining.length > 0) {
+                              const idx = remaining.toLowerCase().indexOf(qLower);
+                              if (idx === -1) { parts.push({text: remaining, isMatch: false}); break; }
+                              if (idx > 0) parts.push({text: remaining.slice(0, idx), isMatch: false});
+                              parts.push({text: remaining.slice(idx, idx + q.length), isMatch: true});
+                              remaining = remaining.slice(idx + q.length);
+                            }
+                            return parts.map((p, pi) => p.isMatch
+                              ? <mark key={pi} className="bg-yellow-400/80 text-black rounded px-0.5">{p.text}</mark>
+                              : <span key={pi}>{p.text}</span>
+                            );
+                          })()
                         ) : (
                           chunk
                         )}
