@@ -4428,21 +4428,22 @@ document.body.removeChild(a);
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on all display devices ===
-      // Set pending tablet command so tablets already on our app (in Silk) auto-navigate
+      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+
+      // Set pending tablet command for the master tablet (autoplay)
       await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
 
       const deviceResults: Record<string, string> = {};
 
-      // Fire Tablets (browser_mod.javascript opens Silk if HA app is in foreground)
-      const fireTablets = [
-        { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'], mediaPlayer: 'media_player.tablet_cat' },
-        { name: 'tablet_catn', browserIds: ['02392750-18703322'], mediaPlayer: 'media_player.tablet_catn' },
-      ];
+      // Master tablet (tablet_cat_wall) plays audio via Bluetooth to Echo
+      const masterTablet = { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'], mediaPlayer: 'media_player.tablet_cat' };
+      const masterOpened = await openUrlOnFireDevice(haUrl, masterTablet.browserIds, readerUrl, masterTablet.name);
+      deviceResults[masterTablet.name] = masterOpened ? 'browser_mod' : 'no_method_succeeded';
 
-      await Promise.all(fireTablets.map(async (device) => {
-        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, readerUrl, device.name);
-        deviceResults[device.name] = opened ? 'browser_mod' : 'no_method_succeeded';
-      }));
+      // Follower tablet (tablet_catn) shows PDF with word highlighting but no audio
+      const followerTablet = { name: 'tablet_catn', browserIds: ['02392750-18703322'], mediaPlayer: 'media_player.tablet_catn' };
+      const followerOpened = await openUrlOnFireDevice(haUrl, followerTablet.browserIds, followerUrl, followerTablet.name);
+      deviceResults[followerTablet.name] = followerOpened ? 'browser_mod (follower)' : 'no_method_succeeded';
 
       // Samsung TV via Fire Stick (home theatre pair) - turn on Fire Stick first (HDMI-CEC turns on TV)
       try {
