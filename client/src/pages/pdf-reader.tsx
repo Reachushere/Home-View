@@ -1959,53 +1959,55 @@ export default function PDFReaderPage() {
                           : `linear-gradient(180deg, ${waveColor} 0%, ${waveColor}99 100%)`,
                       }}
                     >
-                      <div
-                        onClick={() => toggleChunkChecked(idx)}
-                        className="cursor-pointer flex items-center justify-center"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '1px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
-                        data-testid={`checkbox-chunk-${idx}`}
-                      >
-                        {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
+                      <div className="sticky flex flex-col items-center pt-2" style={{ top: '12px', zIndex: 3 }}>
+                        <div
+                          onClick={() => toggleChunkChecked(idx)}
+                          className="cursor-pointer flex items-center justify-center"
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '1px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
+                          data-testid={`checkbox-chunk-${idx}`}
+                        >
+                          {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
+                        </div>
+                        <button
+                          className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
+                          onClick={() => {
+                            const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
+                            if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setSearchOpen(true);
+                            setTimeout(() => searchInputRef.current?.focus(), 100);
+                          }}
+                          data-testid={`button-chunk-search-${idx}`}
+                          title="Search in text"
+                        >
+                          <Search className="h-4 w-4 text-white" />
+                        </button>
+                        <button
+                          className={`rounded-full transition-colors mt-[23px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
+                          onClick={() => {
+                            if (isActive && !isPaused) {
+                              pauseReading();
+                            } else if (isActive && isPaused) {
+                              resumeReading();
+                            } else {
+                              if (audioRef.current) audioRef.current.pause();
+                              setIsPlaying(true);
+                              isPlayingRef.current = true;
+                              setIsPaused(false);
+                              isPausedRef.current = false;
+                              playNextChunk(idx);
+                            }
+                          }}
+                          data-testid={`button-chunk-play-${idx}`}
+                        >
+                          {isActive && !isPaused ? (
+                            <Pause className="h-3 w-3 text-white" />
+                          ) : (
+                            <Play className="h-3 w-3 text-white ml-px" />
+                          )}
+                        </button>
                       </div>
-                      <button
-                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
-                        onClick={() => {
-                          const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
-                          if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          setSearchOpen(true);
-                          setTimeout(() => searchInputRef.current?.focus(), 100);
-                        }}
-                        data-testid={`button-chunk-search-${idx}`}
-                        title="Search in text"
-                      >
-                        <Search className="h-4 w-4 text-white" />
-                      </button>
-                      <button
-                        className={`rounded-full transition-colors mt-[23px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
-                        onClick={() => {
-                          if (isActive && !isPaused) {
-                            pauseReading();
-                          } else if (isActive && isPaused) {
-                            resumeReading();
-                          } else {
-                            if (audioRef.current) audioRef.current.pause();
-                            setIsPlaying(true);
-                            isPlayingRef.current = true;
-                            setIsPaused(false);
-                            isPausedRef.current = false;
-                            playNextChunk(idx);
-                          }
-                        }}
-                        data-testid={`button-chunk-play-${idx}`}
-                      >
-                        {isActive && !isPaused ? (
-                          <Pause className="h-3 w-3 text-white" />
-                        ) : (
-                          <Play className="h-3 w-3 text-white ml-px" />
-                        )}
-                      </button>
                       <div className="flex-1" />
                       <div className="sticky flex flex-col items-center gap-3 pb-3" style={{ bottom: '12px' }}>
                         <button
