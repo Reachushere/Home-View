@@ -623,19 +623,22 @@ export default function PDFReaderPage() {
   };
 
   useEffect(() => {
-    if (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0) {
+    const canAutoplay = catWashFollow
+      ? (autoplayParam && !autoplayTriggered && pdfUrl)
+      : (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0);
+    if (canAutoplay) {
       setAutoplayTriggered(true);
       const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
       try { sessionStorage.setItem(key, 'true'); } catch {}
       const doAutoplay = async () => {
         await unlockAudio();
-        console.log("[Autoplay] Starting playback - numPages=" + numPages);
+        console.log("[Autoplay] Starting playback - catWashFollow=" + catWashFollow + " numPages=" + numPages);
         startReading();
       };
-      const delay = setTimeout(doAutoplay, 500);
+      const delay = setTimeout(doAutoplay, catWashFollow ? 2000 : 500);
       return () => clearTimeout(delay);
     }
-  }, [autoplayParam, autoplayTriggered, pdfUrl, numPages]);
+  }, [autoplayParam, autoplayTriggered, pdfUrl, numPages, catWashFollow]);
 
   const loadCheckedChunks = (key: string): Set<number> => {
     const saved = localStorage.getItem(`checkedChunks_${key}`);
