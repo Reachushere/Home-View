@@ -2180,7 +2180,7 @@ export default function PDFReaderPage() {
       )}
 
       {!followOnly && <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '5px 20px 14px 20px' }}>
-        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
+        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
           <div className="relative px-8 pb-5" style={{ overflow: 'visible' }}>
             <div className="flex items-end justify-center" style={{ overflow: 'visible' }}>
               {!isPlaying ? (
