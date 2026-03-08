@@ -2294,7 +2294,7 @@ export default function PDFReaderPage() {
 
           <div className="flex items-center justify-between px-8 pb-4">
             <div className="flex items-center gap-3" data-testid="voice-selector">
-              <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Voice</span>
+              <span className="text-xs text-white font-medium uppercase tracking-wide">Voice</span>
               <select
                 value={voice}
                 onChange={(e) => { const v = e.target.value as Voice; setVoice(v); voiceRef.current = v; localStorage.setItem('pdf-reader-voice', v); }}
@@ -2316,7 +2316,7 @@ export default function PDFReaderPage() {
             </div>
 
             <div className="flex items-center gap-3" data-testid="speed-control">
-              <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Speed</span>
+              <span className="text-xs text-white font-medium uppercase tracking-wide">Speed</span>
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
@@ -2342,7 +2342,7 @@ export default function PDFReaderPage() {
             </div>
 
             <div className="flex items-center gap-3" data-testid="volume-control">
-              <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
+              <span className="text-xs text-white font-medium uppercase tracking-wide">Volume</span>
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
                 onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
