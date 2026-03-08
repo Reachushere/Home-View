@@ -2012,8 +2012,8 @@ export default function PDFReaderPage() {
                         )}
                       </button>
                       <button
-                        className="rounded-full transition-colors mt-2 bg-white/15 hover:bg-white/25 border-2 border-white"
-                        style={{ padding: '4px' }}
+                        className="transition-colors mt-[18px] hover:bg-white/25 flex items-center justify-center"
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
                           if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2023,11 +2023,11 @@ export default function PDFReaderPage() {
                         data-testid={`button-chunk-search-${idx}`}
                         title="Search in text"
                       >
-                        <Search className="h-3 w-3 text-white" />
+                        <Search className="h-4 w-4 text-white" />
                       </button>
                       <button
-                        className="rounded-full transition-colors mt-2 bg-white/15 hover:bg-white/25 border-2 border-white"
-                        style={{ padding: '4px' }}
+                        className="transition-colors mt-[18px] hover:bg-white/25 flex items-center justify-center"
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           setEditingChunkIndex(idx);
                           setEditableChunkText(chunk);
@@ -2035,7 +2035,7 @@ export default function PDFReaderPage() {
                         data-testid={`button-chunk-edit-${idx}`}
                         title="Edit chunk"
                       >
-                        <Pencil className="h-3 w-3 text-white" />
+                        <Pencil className="h-4 w-4 text-white" />
                       </button>
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3">
