@@ -1731,9 +1731,6 @@ export default function PDFReaderPage() {
               <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] text-white/40">{checkedChunks.size}/{totalChunks} chunks</span>
-                <button className={`p-1 rounded hover:bg-white/10 ${searchOpen ? 'bg-white/10' : ''}`} onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 100); }} data-testid="button-toggle-search">
-                  <Search className="h-3.5 w-3.5 text-white/50" />
-                </button>
               </div>
             </div>
             {searchOpen && (
@@ -1980,6 +1977,20 @@ export default function PDFReaderPage() {
                         {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
                       </button>
                       <button
+                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
+                        onClick={() => {
+                          const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
+                          if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          setSearchOpen(true);
+                          setTimeout(() => searchInputRef.current?.focus(), 100);
+                        }}
+                        data-testid={`button-chunk-search-${idx}`}
+                        title="Search in text"
+                      >
+                        <Search className="h-4 w-4 text-white" />
+                      </button>
+                      <button
                         className={`rounded-full transition-colors mt-[23px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
@@ -2004,34 +2015,22 @@ export default function PDFReaderPage() {
                           <Play className="h-3 w-3 text-white ml-px" />
                         )}
                       </button>
-                      <button
-                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
-                        onClick={() => {
-                          const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
-                          if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          setSearchOpen(true);
-                          setTimeout(() => searchInputRef.current?.focus(), 100);
-                        }}
-                        data-testid={`button-chunk-search-${idx}`}
-                        title="Search in text"
-                      >
-                        <Search className="h-4 w-4 text-white" />
-                      </button>
-                      <button
-                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
-                        onClick={() => {
-                          setEditingChunkIndex(idx);
-                          setEditableChunkText(chunk);
-                        }}
-                        data-testid={`button-chunk-edit-${idx}`}
-                        title="Edit chunk"
-                      >
-                        <Pencil className="h-4 w-4 text-white" />
-                      </button>
                     </div>
-                    <div className="flex-1 min-w-0 p-4 pl-3">
+                    <div className="flex-1 min-w-0 p-4 pl-3 relative">
+                      {editingChunkIndex !== idx && (
+                        <button
+                          className="absolute top-2 right-2 transition-colors hover:bg-white/25 flex items-center justify-center rounded"
+                          style={{ width: '20px', height: '20px', padding: 0, zIndex: 2 }}
+                          onClick={() => {
+                            setEditingChunkIndex(idx);
+                            setEditableChunkText(chunk);
+                          }}
+                          data-testid={`button-chunk-edit-${idx}`}
+                          title="Edit chunk"
+                        >
+                          <Pencil className="h-3.5 w-3.5 text-white/50 hover:text-white" />
+                        </button>
+                      )}
                       {editingChunkIndex === idx ? (
                         <div className="relative">
                           <textarea
