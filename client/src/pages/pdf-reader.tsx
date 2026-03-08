@@ -2047,6 +2047,18 @@ export default function PDFReaderPage() {
                       >
                         <Search className="h-3 w-3 text-white" />
                       </button>
+                      <button
+                        className="rounded-full transition-colors mt-2 bg-white/15 hover:bg-white/25 border-2 border-white"
+                        style={{ padding: '4px' }}
+                        onClick={() => {
+                          setEditingChunkIndex(idx);
+                          setEditableChunkText(chunk);
+                        }}
+                        data-testid={`button-chunk-edit-${idx}`}
+                        title="Edit chunk"
+                      >
+                        <Pencil className="h-3 w-3 text-white" />
+                      </button>
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3">
                       {editingChunkIndex === idx ? (
