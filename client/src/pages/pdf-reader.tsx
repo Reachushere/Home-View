@@ -104,6 +104,7 @@ export default function PDFReaderPage() {
   const followOnly = urlParams.get("followOnly") === "true";
   const [autoplayTriggered, setAutoplayTriggered] = useState(() => {
     if (!autoplayParam) return false;
+    if (catWashFollow) return false;
     const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
     return sessionStorage.getItem(key) === 'true';
   });
