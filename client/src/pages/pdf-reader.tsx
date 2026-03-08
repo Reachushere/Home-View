@@ -1975,14 +1975,14 @@ export default function PDFReaderPage() {
                           : `linear-gradient(180deg, ${waveColor} 0%, ${waveColor}99 100%)`,
                       }}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleChunkChecked(idx)}
-                        className="rounded cursor-pointer appearance-none relative"
-                        style={{ WebkitAppearance: 'none', MozAppearance: 'none', width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '2px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
+                      <div
+                        onClick={() => toggleChunkChecked(idx)}
+                        className="cursor-pointer flex items-center justify-center"
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '2px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
                         data-testid={`checkbox-chunk-${idx}`}
-                      />
+                      >
+                        {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
+                      </div>
                       <button
                         className={`p-1.5 rounded-full transition-colors mt-[18px] border-2 border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'}`}
                         onClick={() => {
