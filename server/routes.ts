@@ -3903,7 +3903,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       
       // Filter for unlistened files from current week
