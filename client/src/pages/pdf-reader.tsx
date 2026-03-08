@@ -2223,6 +2223,7 @@ export default function PDFReaderPage() {
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
                       className="p-5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                      style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                       onClick={resumeFromLast}
                       disabled={isLoading || numPages === 0}
                       title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
