@@ -620,6 +620,12 @@ export async function registerRoutes(
     res.json({ ok: true });
   });
 
+  app.post('/api/debug-beacon', (req, res) => {
+    const { step, data } = req.body || {};
+    console.log(`[DEBUG-BEACON] ${step}: ${JSON.stringify(data || {})}`);
+    res.json({ ok: true });
+  });
+
   // GET /api/tasks
   app.get(api.tasks.list.path, async (req, res) => {
     const weekNumber = req.query.weekNumber ? Number(req.query.weekNumber) : undefined;

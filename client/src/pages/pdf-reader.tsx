@@ -622,17 +622,24 @@ export default function PDFReaderPage() {
     return `onedrive_${btoa(url).slice(0, 40)}`;
   };
 
+  const beacon = (step: string, data?: any) => {
+    if (!catWashFollow) return;
+    fetch("/api/debug-beacon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ step, data }) }).catch(() => {});
+  };
+
   useEffect(() => {
     const canAutoplay = catWashFollow
       ? (autoplayParam && !autoplayTriggered && pdfUrl)
       : (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0);
     if (canAutoplay) {
       setAutoplayTriggered(true);
+      beacon("autoplay-triggered", { catWashFollow, numPages, pdfUrl: !!pdfUrl, fileId });
       const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
       try { sessionStorage.setItem(key, 'true'); } catch {}
       const doAutoplay = async () => {
+        beacon("autoplay-unlocking-audio");
         await unlockAudio();
-        console.log("[Autoplay] Starting playback - catWashFollow=" + catWashFollow + " numPages=" + numPages);
+        beacon("autoplay-calling-startReading");
         startReading();
       };
       const delay = setTimeout(doAutoplay, catWashFollow ? 2000 : 500);
@@ -955,7 +962,9 @@ export default function PDFReaderPage() {
   const speakerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const playTTS = async (text: string, retryCount = 0): Promise<boolean> => {
+    beacon("playTTS-enter", { textLen: text?.length || 0, retry: retryCount, isPlaying: isPlayingRef.current });
     if (!isPlayingRef.current) {
+      beacon("playTTS-aborted-not-playing");
       console.log('[TTS] playTTS aborted — not playing');
       return false;
     }
@@ -1015,6 +1024,7 @@ export default function PDFReaderPage() {
           console.log('[TTS] Stopped during blob read — aborting playback');
           return false;
         }
+        beacon("playTTS-blob-received", { size: audioBlob.size });
         console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
         audioUrl = URL.createObjectURL(audioBlob);
       }
@@ -1041,13 +1051,16 @@ export default function PDFReaderPage() {
           console.log('[TTS] Stopped before play — aborting');
           return false;
         }
+        beacon("playTTS-calling-play");
         await audioRef.current.play();
         audioRef.current.playbackRate = playbackSpeedRef.current;
         audioRef.current.volume = volumeRef.current;
+        beacon("playTTS-playing-success");
         console.log(`[TTS] Playing: speed=${audioRef.current.playbackRate}, vol=${audioRef.current.volume}`);
       }
       return true;
-    } catch (error) {
+    } catch (error: any) {
+      beacon("playTTS-ERROR", { msg: error?.message || String(error), retry: retryCount });
       if (!isPlayingRef.current) return false;
       console.error(`[TTS] Error (attempt ${retryCount + 1}):`, error);
       if (retryCount < 2 && isPlayingRef.current) {
@@ -1089,16 +1102,20 @@ export default function PDFReaderPage() {
   };
 
   const startReading = async () => {
-    // Mark this file as listened when playback starts
+    beacon("startReading-begin", { fileId });
     markCurrentFileListened();
     
     let textToRead = extractedTextRef.current || extractedText;
+    beacon("startReading-cached-text", { hasText: !!textToRead, len: textToRead?.length || 0 });
     
     if (!textToRead) {
+      beacon("startReading-extracting");
       textToRead = await extractAllText();
+      beacon("startReading-extracted", { len: textToRead?.length || 0 });
     }
     
     if (!textToRead && fileId) {
+      beacon("startReading-server-fallback");
       console.log("[TTS] Client-side extraction failed, trying server-side extraction for file", fileId);
       try {
         const resp = await fetch(`/api/files/${fileId}/text`);
@@ -1116,6 +1133,7 @@ export default function PDFReaderPage() {
     }
 
     if (!textToRead) {
+      beacon("startReading-NO-TEXT");
       toast({
         title: "No text found",
         description: "Could not extract text from this PDF. Make sure the PDF is loaded.",
@@ -1125,6 +1143,7 @@ export default function PDFReaderPage() {
     }
 
     const newChunks = chunkText(textToRead);
+    beacon("startReading-chunked", { numChunks: newChunks.length, resumeChunkParam });
     chunksRef.current = newChunks;
     setChunksList(newChunks);
     setTotalChunks(newChunks.length);
@@ -1140,6 +1159,7 @@ export default function PDFReaderPage() {
     const key = getFileKey();
     setCheckedChunks(loadCheckedChunks(key));
     
+    beacon("startReading-calling-playNextChunk", { startChunk, isPlaying: isPlayingRef.current });
     playNextChunk(startChunk);
   };
 
@@ -1166,10 +1186,12 @@ export default function PDFReaderPage() {
   };
 
   const playNextChunk = async (index: number) => {
+    beacon("playNextChunk-enter", { index, chunksLen: chunksRef.current.length, isPlaying: isPlayingRef.current });
     if (index > 0) {
       markChunkChecked(index - 1);
     }
     if (!isPlayingRef.current) {
+      beacon("playNextChunk-aborted-not-playing");
       console.log(`[TTS] playNextChunk aborted — not playing`);
       return;
     }
