@@ -1971,7 +1971,7 @@ export default function PDFReaderPage() {
                         {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
                       </div>
                       <button
-                        className="transition-colors mt-[18px] hover:bg-white/25 flex items-center justify-center"
+                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => setIsFullPage(!isFullPage)}
                         data-testid={`button-chunk-fullpage-${idx}`}
@@ -1980,7 +1980,7 @@ export default function PDFReaderPage() {
                         {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
                       </button>
                       <button
-                        className={`rounded-full transition-colors mt-[18px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
+                        className={`rounded-full transition-colors mt-[23px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           if (isActive && !isPaused) {
@@ -2005,7 +2005,7 @@ export default function PDFReaderPage() {
                         )}
                       </button>
                       <button
-                        className="transition-colors mt-[18px] hover:bg-white/25 flex items-center justify-center"
+                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
@@ -2019,7 +2019,7 @@ export default function PDFReaderPage() {
                         <Search className="h-4 w-4 text-white" />
                       </button>
                       <button
-                        className="transition-colors mt-[18px] hover:bg-white/25 flex items-center justify-center"
+                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           setEditingChunkIndex(idx);
