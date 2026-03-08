@@ -4431,7 +4431,9 @@ document.body.removeChild(a);
       ]);
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
+        console.log(`[Cat Wash] Week calc: semStart=${semesterSettings.semesterStartDate}, rwStart=${semesterSettings.readingWeekStart}, today=${today.toISOString()}`);
         currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        console.log(`[Cat Wash] Calculated week: ${currentWeekNumber}`);
       }
       const cppaModule = allFiles.find((f: any) => {
         if (f.listened) return false;
