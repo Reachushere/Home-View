@@ -403,80 +403,35 @@ export default function PDFReaderPage() {
       .catch(() => {});
   }, []);
 
-  const catWashAutoStarted = useRef(() => {
-    const key = `catWashAutoStarted_${fileId}_${resumeChunkParam}`;
-    return sessionStorage.getItem(key) === 'true';
-  });
-
-  useEffect(() => {
-    if (!catWashFollow || !autoplayParam) return;
-    const started = typeof catWashAutoStarted.current === 'function' ? catWashAutoStarted.current() : catWashAutoStarted.current;
-    if (started) return;
-    if (isPlayingRef.current) return;
-    if (!pdfUrl && !oneDriveUrl) return;
-
-    catWashAutoStarted.current = true;
-    try { sessionStorage.setItem(`catWashAutoStarted_${fileId}_${resumeChunkParam}`, 'true'); } catch {}
-    console.log("[Cat Wash] Auto-starting TTS playback with audio unlock");
-
-    const unlockAudio = async () => {
-      try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-        if (AudioCtx) {
-          const ctx = new AudioCtx();
-          const buf = ctx.createBuffer(1, 1, 22050);
-          const src = ctx.createBufferSource();
-          src.buffer = buf;
-          src.connect(ctx.destination);
-          src.start(0);
-          if (ctx.state === 'suspended') await ctx.resume();
-          console.log("[Cat Wash] AudioContext unlocked:", ctx.state);
-        }
-        if (audioRef.current) {
-          audioRef.current.muted = true;
-          audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
-          await audioRef.current.play().catch(() => {});
-          audioRef.current.pause();
-          audioRef.current.muted = false;
-          audioRef.current.src = "";
-          console.log("[Cat Wash] Audio element unlocked");
-        }
-      } catch (e) {
-        console.log("[Cat Wash] Audio unlock attempt:", e);
+  const unlockAudioRef = useRef(false);
+  const unlockAudio = async () => {
+    if (unlockAudioRef.current) return;
+    unlockAudioRef.current = true;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        const buf = ctx.createBuffer(1, 1, 22050);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(ctx.destination);
+        src.start(0);
+        if (ctx.state === 'suspended') await ctx.resume();
+        console.log("[Autoplay] AudioContext unlocked:", ctx.state);
       }
-    };
-
-    const startCatWashPlayback = async () => {
-      await unlockAudio();
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      let waited = 0;
-      while (waited < 30) {
-        if (numPagesRef.current > 0) {
-          console.log("[Cat Wash] PDF loaded with " + numPagesRef.current + " pages after " + waited + "s");
-          break;
-        }
-        console.log("[Cat Wash] Waiting for PDF to load... (" + waited + "s)");
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        waited++;
+      if (audioRef.current) {
+        audioRef.current.muted = true;
+        audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+        await audioRef.current.play().catch(() => {});
+        audioRef.current.pause();
+        audioRef.current.muted = false;
+        audioRef.current.src = "";
+        console.log("[Autoplay] Audio element unlocked");
       }
-      if (numPagesRef.current === 0) {
-        console.log("[Cat Wash] PDF never loaded after 30s, trying startReading anyway");
-      }
-      if (!extractedTextRef.current) {
-        waited = 0;
-        while (!extractedTextRef.current && waited < 20) {
-          console.log("[Cat Wash] Waiting for text extraction... (" + waited + "s)");
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          waited++;
-        }
-      }
-      if (!isPlayingRef.current) {
-        console.log("[Cat Wash] Calling startReading() - numPages=" + numPagesRef.current + " extractedText=" + (extractedTextRef.current ? extractedTextRef.current.length + " chars" : "empty"));
-        startReading();
-      }
-    };
-    startCatWashPlayback();
-  }, [catWashFollow, autoplayParam, pdfUrl, oneDriveUrl]);
+    } catch (e) {
+      console.log("[Autoplay] Audio unlock attempt:", e);
+    }
+  };
 
   useEffect(() => {
     if (!followOnly && !(catWashFollow && !autoplayParam)) return;
@@ -671,9 +626,12 @@ export default function PDFReaderPage() {
       setAutoplayTriggered(true);
       const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
       try { sessionStorage.setItem(key, 'true'); } catch {}
-      const delay = setTimeout(() => {
+      const doAutoplay = async () => {
+        await unlockAudio();
+        console.log("[Autoplay] Starting playback - numPages=" + numPages);
         startReading();
-      }, 500);
+      };
+      const delay = setTimeout(doAutoplay, 500);
       return () => clearTimeout(delay);
     }
   }, [autoplayParam, autoplayTriggered, pdfUrl, numPages]);
