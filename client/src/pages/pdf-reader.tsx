@@ -1948,7 +1948,7 @@ export default function PDFReaderPage() {
                 return (
                   <div
                     key={idx}
-                    className={`flex gap-0 rounded-xl transition-colors border overflow-hidden ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
+                    className={`flex gap-0 rounded-xl transition-colors border ${isActive ? 'bg-white/10 border-white/20' : 'border-white/5 hover:bg-white/5 hover:border-white/10'}`}
                     data-testid={`chunk-row-${idx}`}
                   >
                     <div
