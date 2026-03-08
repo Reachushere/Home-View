@@ -2135,7 +2135,7 @@ export default function PDFReaderPage() {
         <div className={`${isFullPage ? 'hidden' : 'hidden lg:flex'} lg:w-[45%] flex-col border-l border-white/10`} style={{ background: 'rgba(0,0,0,0.3)' }}>
           <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
             <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Original PDF</span>
-            <div className="flex items-center gap-1" style={{ marginRight: '4px' }}>
+            <div className="flex items-center gap-1" style={{ marginRight: '13px' }}>
               <Button variant="ghost" size="icon" className="h-6 w-6 text-white/60 hover:text-white" onClick={goToPreviousPage} disabled={currentPage <= 1}>
                 <ChevronLeft className="h-3.5 w-3.5" />
               </Button>
