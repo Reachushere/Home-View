@@ -3836,7 +3836,7 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
@@ -4431,7 +4431,7 @@ document.body.removeChild(a);
       ]);
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate));
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
       const cppaModule = allFiles.find((f: any) => {
         if (f.listened) return false;

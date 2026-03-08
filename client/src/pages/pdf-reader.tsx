@@ -408,30 +408,34 @@ export default function PDFReaderPage() {
   const unlockAudio = async () => {
     if (unlockAudioRef.current) return;
     unlockAudioRef.current = true;
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioCtx) {
-        const ctx = new AudioCtx();
-        const buf = ctx.createBuffer(1, 1, 22050);
-        const src = ctx.createBufferSource();
-        src.buffer = buf;
-        src.connect(ctx.destination);
-        src.start(0);
-        if (ctx.state === 'suspended') await ctx.resume();
-        console.log("[Autoplay] AudioContext unlocked:", ctx.state);
+    const timeout = new Promise<void>(r => setTimeout(r, 3000));
+    const unlock = (async () => {
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          if (ctx.state === 'suspended') await ctx.resume();
+          console.log("[Autoplay] AudioContext unlocked:", ctx.state);
+        }
+        if (audioRef.current) {
+          audioRef.current.muted = true;
+          audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+          await audioRef.current.play().catch(() => {});
+          audioRef.current.pause();
+          audioRef.current.muted = false;
+          audioRef.current.src = "";
+          console.log("[Autoplay] Audio element unlocked");
+        }
+      } catch (e) {
+        console.log("[Autoplay] Audio unlock attempt:", e);
       }
-      if (audioRef.current) {
-        audioRef.current.muted = true;
-        audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
-        await audioRef.current.play().catch(() => {});
-        audioRef.current.pause();
-        audioRef.current.muted = false;
-        audioRef.current.src = "";
-        console.log("[Autoplay] Audio element unlocked");
-      }
-    } catch (e) {
-      console.log("[Autoplay] Audio unlock attempt:", e);
-    }
+    })();
+    await Promise.race([unlock, timeout]);
   };
 
   useEffect(() => {
