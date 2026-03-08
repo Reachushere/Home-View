@@ -2180,8 +2180,8 @@ export default function PDFReaderPage() {
                 <div className="flex-1 flex items-center justify-between" style={{ marginTop: '4px' }}>
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
-                    <div style={{ width: '100px', marginLeft: '10px' }}>
-                      <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                    <div style={{ width: '130px', marginLeft: '10px' }}>
+                      <div className="h-2 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
                         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${chunkProgress}%`, background: waveColor }} />
                       </div>
                     </div>
