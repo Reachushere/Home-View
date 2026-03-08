@@ -2033,6 +2033,20 @@ export default function PDFReaderPage() {
                           <Play className="h-3 w-3 text-white ml-px" />
                         )}
                       </button>
+                      <button
+                        className="rounded-full transition-colors mt-2 bg-white/15 hover:bg-white/25 border-2 border-white"
+                        style={{ padding: '4px' }}
+                        onClick={() => {
+                          const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
+                          if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          setSearchOpen(true);
+                          setTimeout(() => searchInputRef.current?.focus(), 100);
+                        }}
+                        data-testid={`button-chunk-search-${idx}`}
+                        title="Search in text"
+                      >
+                        <Search className="h-3 w-3 text-white" />
+                      </button>
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3">
                       {editingChunkIndex === idx ? (
