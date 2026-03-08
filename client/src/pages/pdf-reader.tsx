@@ -1674,14 +1674,6 @@ export default function PDFReaderPage() {
           })()}
 
           <div className="ml-auto flex items-center gap-2" style={{ marginRight: '-1px' }}>
-            <button
-              className="p-1.5 rounded hover:bg-white/20 transition-colors"
-              onClick={() => setIsFullPage(!isFullPage)}
-              data-testid="button-fullpage"
-              title={isFullPage ? "Exit full page" : "Full page reader"}
-            >
-              {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
-            </button>
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
             <span className="text-[13px] text-white">Speaker:</span>
             <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
@@ -1973,11 +1965,20 @@ export default function PDFReaderPage() {
                       <div
                         onClick={() => toggleChunkChecked(idx)}
                         className="cursor-pointer flex items-center justify-center"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '2px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', border: '1px solid white', backgroundColor: isChecked ? 'white' : 'transparent', borderRadius: '4px', marginTop: '9px' }}
                         data-testid={`checkbox-chunk-${idx}`}
                       >
                         {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
                       </div>
+                      <button
+                        className="transition-colors mt-[18px] hover:bg-white/25 flex items-center justify-center"
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
+                        onClick={() => setIsFullPage(!isFullPage)}
+                        data-testid={`button-chunk-fullpage-${idx}`}
+                        title={isFullPage ? "Exit full page" : "Full page reader"}
+                      >
+                        {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
+                      </button>
                       <button
                         className={`rounded-full transition-colors mt-[18px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
