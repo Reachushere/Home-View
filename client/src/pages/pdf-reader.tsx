@@ -102,7 +102,11 @@ export default function PDFReaderPage() {
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
   const followOnly = urlParams.get("followOnly") === "true";
-  const [autoplayTriggered, setAutoplayTriggered] = useState(false);
+  const [autoplayTriggered, setAutoplayTriggered] = useState(() => {
+    if (!autoplayParam) return false;
+    const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
+    return sessionStorage.getItem(key) === 'true';
+  });
 
   useEffect(() => {
     const myId = Date.now().toString() + Math.random().toString(36).slice(2);
@@ -399,15 +403,20 @@ export default function PDFReaderPage() {
       .catch(() => {});
   }, []);
 
-  const catWashAutoStarted = useRef(false);
+  const catWashAutoStarted = useRef(() => {
+    const key = `catWashAutoStarted_${fileId}_${resumeChunkParam}`;
+    return sessionStorage.getItem(key) === 'true';
+  });
 
   useEffect(() => {
     if (!catWashFollow || !autoplayParam) return;
-    if (catWashAutoStarted.current) return;
+    const started = typeof catWashAutoStarted.current === 'function' ? catWashAutoStarted.current() : catWashAutoStarted.current;
+    if (started) return;
     if (isPlayingRef.current) return;
     if (!pdfUrl && !oneDriveUrl) return;
 
     catWashAutoStarted.current = true;
+    try { sessionStorage.setItem(`catWashAutoStarted_${fileId}_${resumeChunkParam}`, 'true'); } catch {}
     console.log("[Cat Wash] Auto-starting TTS playback with audio unlock");
 
     const unlockAudio = async () => {
@@ -660,6 +669,8 @@ export default function PDFReaderPage() {
   useEffect(() => {
     if (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0) {
       setAutoplayTriggered(true);
+      const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
+      try { sessionStorage.setItem(key, 'true'); } catch {}
       const delay = setTimeout(() => {
         startReading();
       }, 500);
