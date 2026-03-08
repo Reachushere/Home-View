@@ -1602,7 +1602,7 @@ export default function PDFReaderPage() {
                     <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
                       if (canGoPrev) window.location.href = `/pdf-reader/${relatedFiles[currentIndex - 1].id}`;
                     }} disabled={!canGoPrev} data-testid="button-prev-file">
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-4 w-4" strokeWidth={3} />
                     </Button>
                     <span className="text-[11px] text-white min-w-[40px] text-center">
                       {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
@@ -1610,7 +1610,7 @@ export default function PDFReaderPage() {
                     <Button size="icon" variant="ghost" className="h-6 w-6 text-white hover:bg-white/20 disabled:opacity-30" onClick={() => {
                       if (canGoNext) window.location.href = `/pdf-reader/${relatedFiles[currentIndex + 1].id}`;
                     }} disabled={!canGoNext} data-testid="button-next-file">
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" strokeWidth={3} />
                     </Button>
                   </div>
 
@@ -1652,7 +1652,7 @@ export default function PDFReaderPage() {
                       const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
                       if (i > 0) switchToFile(allFiles[i - 1]);
                     }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) <= 0} data-testid="button-prev-onedrive">
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-4 w-4" strokeWidth={3} />
                     </Button>
                     <span className="text-[9px] text-white min-w-[40px] text-center">
                       {(() => { const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl); return i >= 0 ? `${i + 1}/${allFiles.length}` : '-'; })()}
@@ -1661,7 +1661,7 @@ export default function PDFReaderPage() {
                       const i = allFiles.findIndex(af => af.downloadUrl === currentFileUrl);
                       if (i < allFiles.length - 1) switchToFile(allFiles[i + 1]);
                     }} disabled={allFiles.findIndex(af => af.downloadUrl === currentFileUrl) >= allFiles.length - 1} data-testid="button-next-onedrive">
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" strokeWidth={3} />
                     </Button>
                   </div>
                 </>
