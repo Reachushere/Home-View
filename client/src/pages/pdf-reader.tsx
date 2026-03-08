@@ -2251,19 +2251,7 @@ export default function PDFReaderPage() {
               )}
             </div>
 
-            <div className="absolute left-8 flex items-end gap-2" style={{ bottom: '10px' }}>
-              <div className="flex items-center gap-2" style={{ alignSelf: 'flex-end' }}>
-                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-                  <RotateCcw className="h-5 w-5 text-white" />
-                  <span className="text-xs text-white font-medium">15s</span>
-                </button>
-                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" style={{ marginLeft: '25px' }} onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-                  <span className="text-xs text-white font-medium">15s</span>
-                  <RotateCw className="h-5 w-5 text-white" />
-                </button>
-              </div>
-            </div>
-            <div className="absolute flex items-end" style={{ bottom: '25px', left: '280px' }}>
+            <div className="absolute flex items-end" style={{ bottom: '25px', left: '32px' }}>
               <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
                 {waveBarHeights.map((val, i) => {
                   const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
@@ -2280,6 +2268,19 @@ export default function PDFReaderPage() {
                     }} />
                   );
                 })}
+              </div>
+            </div>
+
+            <div className="absolute flex items-end gap-2" style={{ bottom: '10px', left: '280px' }}>
+              <div className="flex items-center gap-2" style={{ alignSelf: 'flex-end' }}>
+                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
+                  <RotateCcw className="h-5 w-5 text-white" />
+                  <span className="text-xs text-white font-medium">15s</span>
+                </button>
+                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" style={{ marginLeft: '25px' }} onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+                  <span className="text-xs text-white font-medium">15s</span>
+                  <RotateCw className="h-5 w-5 text-white" />
+                </button>
               </div>
             </div>
 

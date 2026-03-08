@@ -50,6 +50,8 @@ window.onunhandledrejection = function(event) {
 let knownVersion: string | null = null;
 async function checkVersion() {
   try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('followOnly') === 'true') return;
     const resp = await originalFetch('/api/version');
     if (resp.ok) {
       const data = await resp.json();
