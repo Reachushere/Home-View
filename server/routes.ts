@@ -3830,7 +3830,7 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
       }
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
@@ -3892,7 +3892,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
       }
       
       // Filter for unlistened files from current week
@@ -4402,7 +4402,7 @@ document.body.removeChild(a);
       ]);
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate));
       }
       const cppaModule = allFiles.find((f: any) => {
         if (f.listened) return false;
@@ -4567,7 +4567,7 @@ document.body.removeChild(a);
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate));
       }
 
       // Find CPPA module for current week that hasn't been fully listened to
@@ -4870,7 +4870,7 @@ document.body.removeChild(a);
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
       }
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
@@ -5082,7 +5082,7 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
       }
       
       // Sync OneDrive files for current week
@@ -5394,7 +5394,7 @@ document.body.removeChild(a);
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
       }
       
       // Get all files
@@ -6109,7 +6109,7 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate));
       }
       
       console.log(`Kitchen trigger: Current week is ${currentWeekNumber}`);
