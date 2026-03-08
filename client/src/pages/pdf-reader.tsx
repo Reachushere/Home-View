@@ -2010,7 +2010,7 @@ export default function PDFReaderPage() {
                         </button>
                         <button
                           className="transition-colors hover:bg-white/25 flex items-center justify-center"
-                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, marginTop: '300px' }}
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, marginTop: '320px' }}
                           onClick={() => {
                             setEditingChunkIndex(idx);
                             setEditableChunkText(chunk);
