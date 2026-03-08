@@ -665,11 +665,7 @@ export default function PDFReaderPage() {
     if (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0) {
       setAutoplayTriggered(true);
       const delay = setTimeout(() => {
-        if (file?.lastChunkIndex && file.lastChunkIndex > 0) {
-          resumeFromLast();
-        } else {
-          startReading();
-        }
+        startReading();
       }, 500);
       return () => clearTimeout(delay);
     }
