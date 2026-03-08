@@ -1111,7 +1111,32 @@ export default function PDFReaderPage() {
     playNextChunk(startChunk);
   };
 
+  const markChunkChecked = (idx: number) => {
+    const key = getFileKey();
+    setCheckedChunks(prev => {
+      if (prev.has(idx)) return prev;
+      const newChecked = new Set(prev);
+      newChecked.add(idx);
+      saveCheckedChunks(key, newChecked, totalChunks);
+      if (fileId) {
+        fetch(`/api/files/${fileId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkedChunks: JSON.stringify(Array.from(newChecked)),
+            totalChunks,
+            lastChunkIndex: Math.max(...Array.from(newChecked), 0),
+          }),
+        }).catch(() => {});
+      }
+      return newChecked;
+    });
+  };
+
   const playNextChunk = async (index: number) => {
+    if (index > 0) {
+      markChunkChecked(index - 1);
+    }
     if (!isPlayingRef.current) {
       console.log(`[TTS] playNextChunk aborted — not playing`);
       return;
@@ -2157,21 +2182,26 @@ export default function PDFReaderPage() {
                 <div className="flex-1 flex items-center justify-between" style={{ marginTop: '4px' }}>
                   <div className="flex items-center gap-3">
                     <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed</span>
-                    {checkedChunks.size < totalChunks && (
-                      <button
-                        className="text-[11px] text-white/70 hover:text-white underline"
-                        onClick={() => {
-                          const firstUnlistened = Array.from({ length: totalChunks }, (_, i) => i).find(i => !checkedChunks.has(i));
-                          if (firstUnlistened !== undefined) {
-                            const el = document.querySelector(`[data-testid="chunk-row-${firstUnlistened}"]`);
-                            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          }
-                        }}
-                        data-testid="button-jump-unlistened"
-                      >Jump to Unlistened</button>
-                    )}
+                    <div className="flex items-center gap-2" style={{ minWidth: '100px', maxWidth: '160px', flex: 1 }}>
+                      <div className="h-1.5 rounded-full flex-1" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${chunkProgress}%`, background: waveColor }} />
+                      </div>
+                      <span className="text-[10px] text-white/70 font-medium">{chunkProgress}%</span>
+                    </div>
                   </div>
-                  <span className="text-[11px] text-white font-bold">{chunkProgress}%</span>
+                  {checkedChunks.size < totalChunks && (
+                    <button
+                      className="text-[11px] text-white/70 hover:text-white underline"
+                      onClick={() => {
+                        const firstUnlistened = Array.from({ length: totalChunks }, (_, i) => i).find(i => !checkedChunks.has(i));
+                        if (firstUnlistened !== undefined) {
+                          const el = document.querySelector(`[data-testid="chunk-row-${firstUnlistened}"]`);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }}
+                      data-testid="button-jump-unlistened"
+                    >Jump to Unlistened</button>
+                  )}
                 </div>
               </div>
             </div>
