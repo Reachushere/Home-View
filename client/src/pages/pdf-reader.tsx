@@ -102,12 +102,11 @@ export default function PDFReaderPage() {
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
   const followOnly = urlParams.get("followOnly") === "true";
-  const [autoplayTriggered, setAutoplayTriggered] = useState(() => {
-    if (!autoplayParam) return false;
-    if (catWashFollow) return false;
-    const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
-    return sessionStorage.getItem(key) === 'true';
-  });
+  const autoplayTriggeredRef = useRef(
+    !autoplayParam ? false :
+    catWashFollow ? false :
+    sessionStorage.getItem(`autoplay_consumed_${fileId}_${resumeChunkParam}`) === 'true'
+  );
 
   useEffect(() => {
     const myId = Date.now().toString() + Math.random().toString(36).slice(2);
@@ -632,8 +631,8 @@ export default function PDFReaderPage() {
   };
 
   useEffect(() => {
-    if (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0) {
-      setAutoplayTriggered(true);
+    if (autoplayParam && !autoplayTriggeredRef.current && pdfUrl && numPages > 0) {
+      autoplayTriggeredRef.current = true;
       beacon("autoplay-triggered", { catWashFollow, numPages, pdfUrl: !!pdfUrl, fileId });
       const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
       try { sessionStorage.setItem(key, 'true'); } catch {}
@@ -643,10 +642,9 @@ export default function PDFReaderPage() {
         beacon("autoplay-calling-startReading");
         startReading();
       };
-      const delay = setTimeout(doAutoplay, 500);
-      return () => clearTimeout(delay);
+      doAutoplay();
     }
-  }, [autoplayParam, autoplayTriggered, pdfUrl, numPages]);
+  }, [autoplayParam, pdfUrl, numPages]);
 
   const loadCheckedChunks = (key: string): Set<number> => {
     const saved = localStorage.getItem(`checkedChunks_${key}`);
