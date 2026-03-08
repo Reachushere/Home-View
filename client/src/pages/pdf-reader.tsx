@@ -2339,7 +2339,7 @@ export default function PDFReaderPage() {
                 onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
-              <span className="text-sm text-white font-semibold min-w-[40px] text-center" data-testid="text-speed">{playbackSpeed}x</span>
+              <span className="text-sm text-white font-semibold min-w-[40px] text-center" style={{ marginLeft: '-2px' }} data-testid="text-speed">{playbackSpeed}x</span>
             </div>
 
             <div className="flex items-center gap-3" data-testid="volume-control">
