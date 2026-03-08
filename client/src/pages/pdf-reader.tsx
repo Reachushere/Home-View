@@ -1683,28 +1683,6 @@ export default function PDFReaderPage() {
               <Search className="h-4 w-4 text-white" />
             </button>
             <button
-              className={`p-1.5 rounded hover:bg-white/20 transition-colors ${isEditingText ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
-              data-testid="button-edit-tts-text"
-              onClick={() => {
-                if (isEditingText) {
-                  setIsEditingText(false);
-                  setEditableText(extractedText);
-                } else {
-                  if (isPlaying) stopReading();
-                  if (extractedText) {
-                    setEditableText(extractedText);
-                    setIsEditingText(true);
-                  } else {
-                    toast({ title: "No text yet", description: "Wait for the PDF text to finish loading, then try again." });
-                  }
-                }
-              }}
-              disabled={isPreloading}
-              title="Edit text"
-            >
-              <Pencil className="h-4 w-4 text-white" />
-            </button>
-            <button
               className="p-1.5 rounded hover:bg-white/20 transition-colors"
               onClick={() => setIsFullPage(!isFullPage)}
               data-testid="button-fullpage"
