@@ -1970,15 +1970,6 @@ export default function PDFReaderPage() {
                       <button
                         className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
-                        onClick={() => setIsFullPage(!isFullPage)}
-                        data-testid={`button-chunk-fullpage-${idx}`}
-                        title={isFullPage ? "Exit full page" : "Full page reader"}
-                      >
-                        {isFullPage ? <Minimize2 className="h-4 w-4 text-white" /> : <Maximize2 className="h-4 w-4 text-white" />}
-                      </button>
-                      <button
-                        className="transition-colors mt-[23px] hover:bg-white/25 flex items-center justify-center"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           const chunkEl = document.querySelector(`[data-testid="chunk-row-${idx}"]`);
                           if (chunkEl) chunkEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2018,18 +2009,29 @@ export default function PDFReaderPage() {
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3 relative">
                       {editingChunkIndex !== idx && (
-                        <button
-                          className="absolute top-2 right-2 transition-colors hover:bg-white/25 flex items-center justify-center rounded"
-                          style={{ width: '20px', height: '20px', padding: 0, zIndex: 2 }}
-                          onClick={() => {
-                            setEditingChunkIndex(idx);
-                            setEditableChunkText(chunk);
-                          }}
-                          data-testid={`button-chunk-edit-${idx}`}
-                          title="Edit chunk"
-                        >
-                          <Pencil className="h-3.5 w-3.5 text-white/50 hover:text-white" />
-                        </button>
+                        <div className="absolute top-2 right-2 flex items-center gap-1.5" style={{ zIndex: 2 }}>
+                          <button
+                            className="transition-colors hover:bg-white/25 flex items-center justify-center rounded"
+                            style={{ width: '20px', height: '20px', padding: 0 }}
+                            onClick={() => setIsFullPage(!isFullPage)}
+                            data-testid={`button-chunk-fullpage-${idx}`}
+                            title={isFullPage ? "Exit full page" : "Full page reader"}
+                          >
+                            {isFullPage ? <Minimize2 className="h-3.5 w-3.5 text-white/50 hover:text-white" /> : <Maximize2 className="h-3.5 w-3.5 text-white/50 hover:text-white" />}
+                          </button>
+                          <button
+                            className="transition-colors hover:bg-white/25 flex items-center justify-center rounded"
+                            style={{ width: '20px', height: '20px', padding: 0 }}
+                            onClick={() => {
+                              setEditingChunkIndex(idx);
+                              setEditableChunkText(chunk);
+                            }}
+                            data-testid={`button-chunk-edit-${idx}`}
+                            title="Edit chunk"
+                          >
+                            <Pencil className="h-3.5 w-3.5 text-white/50 hover:text-white" />
+                          </button>
+                        </div>
                       )}
                       {editingChunkIndex === idx ? (
                         <div className="relative">
