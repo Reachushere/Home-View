@@ -4427,7 +4427,7 @@ document.body.removeChild(a);
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on all display devices (in parallel) ===
-      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&followOnly=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
       const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
 
       const deviceResults: Record<string, string> = {};
@@ -4616,7 +4616,7 @@ document.body.removeChild(a);
         estimatedChunkDuration: 0,
       };
 
-      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&followOnly=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       const deviceResults: Record<string, string> = {};
 
@@ -4704,6 +4704,22 @@ document.body.removeChild(a);
       }
 
       await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
+
+      // Close Silk on the secondary tablet (tablet_catn)
+      if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          await fetch(`${haUrl}/api/services/browser_mod/javascript`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ browser_id: '02392750-18703322', code: 'window.close();' }),
+          });
+          console.log(`[Cat Wash Stop Webhook] Sent close command to tablet_catn via browser_mod`);
+        } catch (e: any) {
+          console.log(`[Cat Wash Stop Webhook] Failed to close Silk on tablet_catn: ${e.message}`);
+        }
+      }
+
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
 
