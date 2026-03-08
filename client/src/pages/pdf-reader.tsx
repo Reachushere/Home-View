@@ -1701,7 +1701,7 @@ export default function PDFReaderPage() {
             </Select>
             {flickDeviceGroups.length > 0 && (
               <div className="relative">
-                <Button size="icon" variant="ghost" className={`text-white overflow-visible p-0 ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`} data-testid="button-flick-cast" onClick={() => setShowFlickMenu(!showFlickMenu)} disabled={isFlicking} title="Flick to another device" style={{ height: '30px', width: '30px', minHeight: '30px', minWidth: '30px' }}>
+                <Button size="icon" variant="ghost" className={`text-white overflow-visible p-0 ${showFlickMenu ? 'ring-2 ring-blue-400 rounded-md' : ''}`} data-testid="button-flick-cast" onClick={() => setShowFlickMenu(!showFlickMenu)} disabled={isFlicking} title="Flick to another device" style={{ height: '30px', width: '30px', minHeight: '30px', minWidth: '30px', marginLeft: '5px' }}>
                   {isFlicking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Cast style={{ height: '23px', width: '23px' }} />}
                 </Button>
                 {showFlickMenu && (
