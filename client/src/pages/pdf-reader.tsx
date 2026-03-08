@@ -2009,7 +2009,7 @@ export default function PDFReaderPage() {
                         {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
                       </div>
                       <button
-                        className={`p-1.5 rounded-full transition-colors mt-[18px] border-2 border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'}`}
+                        className={`p-1.5 rounded-full transition-colors mt-[17px] border-2 border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'}`}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
