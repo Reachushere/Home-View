@@ -826,8 +826,36 @@ export default function PDFReaderPage() {
   };
 
   const extractAllText = async (): Promise<string> => {
-    const currentNumPages = numPagesRef.current || numPages;
-    if (!pdfUrl || currentNumPages === 0) return "";
+    let currentNumPages = numPagesRef.current || numPages;
+    if (!pdfUrl) return "";
+    
+    if (currentNumPages === 0 && catWashFollow) {
+      console.log("[TTS] catWashFollow: waiting for PDF to load...");
+      for (let i = 0; i < 30; i++) {
+        await new Promise(r => setTimeout(r, 500));
+        currentNumPages = numPagesRef.current || numPages;
+        if (currentNumPages > 0) {
+          console.log("[TTS] PDF loaded with " + currentNumPages + " pages after " + ((i+1)*500) + "ms");
+          break;
+        }
+      }
+      if (currentNumPages === 0) {
+        console.log("[TTS] catWashFollow: PDF still not loaded, trying direct pdfjs load...");
+        try {
+          const loadingTask = pdfjs.getDocument(pdfUrl);
+          const pdf = await loadingTask.promise;
+          pdfDocRef.current = pdf;
+          currentNumPages = pdf.numPages;
+          numPagesRef.current = currentNumPages;
+          console.log("[TTS] Direct pdfjs load succeeded: " + currentNumPages + " pages");
+        } catch (e) {
+          console.error("[TTS] Direct pdfjs load failed:", e);
+          return "";
+        }
+      }
+    }
+    
+    if (currentNumPages === 0) return "";
     
     if (extractedTextRef.current) return extractedTextRef.current;
     if (extractedText) return extractedText;
