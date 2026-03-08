@@ -2346,9 +2346,9 @@ export default function PDFReaderPage() {
               <span className="text-xs text-white/50 font-medium uppercase tracking-wide">Volume</span>
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
-                data-testid="button-volume-up"
-              >+</button>
+                onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
+                data-testid="button-volume-down"
+              >−</button>
               <input
                 type="range"
                 min="0"
@@ -2362,9 +2362,9 @@ export default function PDFReaderPage() {
               />
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
-                data-testid="button-volume-down"
-              >−</button>
+                onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
+                data-testid="button-volume-up"
+              >+</button>
               <Volume2 className="h-5 w-5 text-white" />
             </div>
 
