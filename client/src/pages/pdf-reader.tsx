@@ -2036,7 +2036,7 @@ export default function PDFReaderPage() {
                         </button>
                         <button
                           className="transition-colors hover:bg-white/25 flex items-center justify-center"
-                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, marginTop: '355px' }}
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, marginTop: '365px' }}
                           onClick={() => {
                             setEditingChunkIndex(idx);
                             setEditableChunkText(chunk);
@@ -2216,6 +2216,14 @@ export default function PDFReaderPage() {
                         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${chunkProgress}%`, background: waveColor }} />
                       </div>
                     </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-white/80 hover:text-white hover:bg-white/20" onClick={() => { if (currentChunk > 0) { setCurrentChunk(currentChunk - 1); const el = document.querySelector(`[data-testid="chunk-row-${currentChunk - 1}"]`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }} disabled={currentChunk <= 0} data-testid="button-chunk-prev-header">
+                      <ChevronLeft className="h-5 w-5" strokeWidth={3} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-white/80 hover:text-white hover:bg-white/20" onClick={() => { if (currentChunk < totalChunks - 1) { setCurrentChunk(currentChunk + 1); const el = document.querySelector(`[data-testid="chunk-row-${currentChunk + 1}"]`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }} disabled={currentChunk >= totalChunks - 1} data-testid="button-chunk-next-header">
+                      <ChevronRight className="h-5 w-5" strokeWidth={3} />
+                    </Button>
                   </div>
                   {checkedChunks.size < totalChunks && (
                     <button
