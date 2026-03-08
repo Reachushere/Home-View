@@ -2007,18 +2007,29 @@ export default function PDFReaderPage() {
                         )}
                       </button>
                       <div className="flex-1" />
-                      <button
-                        className="transition-colors hover:bg-white/25 flex items-center justify-center sticky pb-3"
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, bottom: '12px' }}
-                        onClick={() => {
-                          setEditingChunkIndex(idx);
-                          setEditableChunkText(chunk);
-                        }}
-                        data-testid={`button-chunk-edit-${idx}`}
-                        title="Edit chunk"
-                      >
-                        <Pencil className="h-4 w-4 text-white" strokeWidth={2.5} />
-                      </button>
+                      <div className="sticky flex flex-col items-center gap-3 pb-3" style={{ bottom: '12px' }}>
+                        <button
+                          className="transition-colors hover:bg-white/25 flex items-center justify-center"
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
+                          onClick={() => setIsFullPage(!isFullPage)}
+                          data-testid={`button-chunk-fullpage-${idx}`}
+                          title={isFullPage ? "Exit full page" : "Full page reader"}
+                        >
+                          {isFullPage ? <Minimize2 className="h-4 w-4 text-white" strokeWidth={2.5} /> : <Maximize2 className="h-4 w-4 text-white" strokeWidth={2.5} />}
+                        </button>
+                        <button
+                          className="transition-colors hover:bg-white/25 flex items-center justify-center"
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
+                          onClick={() => {
+                            setEditingChunkIndex(idx);
+                            setEditableChunkText(chunk);
+                          }}
+                          data-testid={`button-chunk-edit-${idx}`}
+                          title="Edit chunk"
+                        >
+                          <Pencil className="h-4 w-4 text-white" strokeWidth={2.5} />
+                        </button>
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3 relative">
                       {editingChunkIndex !== idx && (
@@ -2253,7 +2264,7 @@ export default function PDFReaderPage() {
                   <RotateCcw className="h-5 w-5 text-white" />
                   <span className="text-xs text-white font-medium">15s</span>
                 </button>
-                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
+                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" style={{ marginLeft: '10px' }} onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
                   <span className="text-xs text-white font-medium">15s</span>
                   <RotateCw className="h-5 w-5 text-white" />
                 </button>
