@@ -1080,6 +1080,10 @@ export default function PDFReaderPage() {
     
     if (clampedIndex !== currentWordIndex) {
       setCurrentWordIndex(clampedIndex);
+      if (clampedIndex % 3 === 0 || clampedIndex === chunkWords.length - 1) {
+        const activeWord = document.querySelector(`[data-word-index="${clampedIndex}"]`);
+        if (activeWord) activeWord.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       if (catWashFollow && fileId && clampedIndex !== lastReportedWordRef.current) {
         lastReportedWordRef.current = clampedIndex;
         fetch("/api/cat-wash/update-progress", {
@@ -1198,6 +1202,11 @@ export default function PDFReaderPage() {
     playingAttentionPromptRef.current = false;
     console.log(`[TTS] Playing chunk ${index + 1}/${chunksRef.current.length}`);
 
+    setTimeout(() => {
+      const chunkRow = document.querySelector(`[data-testid="chunk-row-${index}"]`);
+      if (chunkRow) chunkRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+
     if (index + 1 < chunksRef.current.length && !ttsPreloadCache.current[index + 1]) {
       const nextText = chunksRef.current[index + 1];
       const nextVoice = voiceRef.current || voice;
@@ -1228,16 +1237,7 @@ export default function PDFReaderPage() {
     const chunk = currentChunkRef.current;
     console.log(`[TTS] Audio ended: isPlaying=${playing}, isPaused=${paused}, currentChunk=${chunk}, attentionPrompt=${playingAttentionPromptRef.current}`);
     if (playing && !paused) {
-      if (playingAttentionPromptRef.current) {
-        playingAttentionPromptRef.current = false;
-        playNextChunk(chunk + 1);
-      } else if (chunk < chunksRef.current.length - 1) {
-        playingAttentionPromptRef.current = true;
-        console.log(`[TTS] Playing attention prompt after chunk ${chunk + 1}`);
-        await playTTS("Bryn, are you paying attention?");
-      } else {
-        playNextChunk(chunk + 1);
-      }
+      playNextChunk(chunk + 1);
     }
   };
 
@@ -2079,6 +2079,7 @@ export default function PDFReaderPage() {
                           chunkWords.map((word, wIdx) => (
                             <span
                               key={wIdx}
+                              data-word-index={wIdx}
                               className={`${
                                 wIdx === currentWordIndex
                                   ? "bg-red-500 text-white font-semibold px-0.5 rounded"
