@@ -1981,7 +1981,7 @@ export default function PDFReaderPage() {
                           data-testid={`button-chunk-search-${idx}`}
                           title="Search in text"
                         >
-                          <Search className="text-white" style={{ width: '17px', height: '17px' }} />
+                          <Search className="text-white" style={{ width: '18px', height: '18px' }} />
                         </button>
                         <button
                           className={`rounded-full transition-colors mt-[23px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
