@@ -2257,7 +2257,7 @@ export default function PDFReaderPage() {
                 </button>
               </div>
             </div>
-            <div className="absolute flex items-end" style={{ bottom: '30px', left: '280px' }}>
+            <div className="absolute flex items-end" style={{ bottom: '25px', left: '280px' }}>
               <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
                 {waveBarHeights.map((val, i) => {
                   const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
