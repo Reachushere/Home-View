@@ -4461,6 +4461,10 @@ document.body.removeChild(a);
 
       const deviceResults: Record<string, string> = {};
 
+      // Set tablet-nav command as reliable fallback (tablets poll this every 3s)
+      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
+      console.log(`[Cat Wash] tablet-nav set for master: ${readerUrl}`);
+
       const [masterResult, followerResult, tvResult] = await Promise.allSettled([
         openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
         openUrlOnFireDevice(haUrl, ['02392750-18703322'], followerUrl, 'tablet_catn'),

@@ -628,10 +628,7 @@ export default function PDFReaderPage() {
   };
 
   useEffect(() => {
-    const canAutoplay = catWashFollow
-      ? (autoplayParam && !autoplayTriggered && pdfUrl)
-      : (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0);
-    if (canAutoplay) {
+    if (autoplayParam && !autoplayTriggered && pdfUrl && numPages > 0) {
       setAutoplayTriggered(true);
       beacon("autoplay-triggered", { catWashFollow, numPages, pdfUrl: !!pdfUrl, fileId });
       const key = `autoplay_consumed_${fileId}_${resumeChunkParam}`;
@@ -642,10 +639,10 @@ export default function PDFReaderPage() {
         beacon("autoplay-calling-startReading");
         startReading();
       };
-      const delay = setTimeout(doAutoplay, catWashFollow ? 2000 : 500);
+      const delay = setTimeout(doAutoplay, 500);
       return () => clearTimeout(delay);
     }
-  }, [autoplayParam, autoplayTriggered, pdfUrl, numPages, catWashFollow]);
+  }, [autoplayParam, autoplayTriggered, pdfUrl, numPages]);
 
   const loadCheckedChunks = (key: string): Set<number> => {
     const saved = localStorage.getItem(`checkedChunks_${key}`);
