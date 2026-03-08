@@ -2180,13 +2180,12 @@ export default function PDFReaderPage() {
                   data-testid="checkbox-progress-all"
                 />
                 <div className="flex-1 flex items-center justify-between" style={{ marginTop: '4px' }}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed</span>
-                    <div className="flex items-center gap-2" style={{ minWidth: '100px', maxWidth: '160px', flex: 1 }}>
-                      <div className="h-1.5 rounded-full flex-1" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+                    <div style={{ width: '100px' }}>
+                      <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
                         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${chunkProgress}%`, background: waveColor }} />
                       </div>
-                      <span className="text-[10px] text-white/70 font-medium">{chunkProgress}%</span>
                     </div>
                   </div>
                   {checkedChunks.size < totalChunks && (
