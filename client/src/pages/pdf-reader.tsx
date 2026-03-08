@@ -1987,8 +1987,8 @@ export default function PDFReaderPage() {
                         {isChecked && <Check className="h-4 w-4 text-gray-900" strokeWidth={3} />}
                       </div>
                       <button
-                        className={`rounded-full transition-colors mt-[18px] border-2 border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'}`}
-                        style={{ padding: '5px' }}
+                        className={`rounded-full transition-colors mt-[18px] border-2 border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
+                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                         onClick={() => {
                           if (isActive && !isPaused) {
                             pauseReading();
