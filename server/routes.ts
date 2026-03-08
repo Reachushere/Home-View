@@ -4185,7 +4185,7 @@ document.body.removeChild(a);
         body: JSON.stringify({ entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }),
       });
       console.log(`[Cat Wash] Fire Stick ${entityId} WAKEUP sent`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick WAKEUP failed: ${e.message}`);
     }
@@ -4197,7 +4197,7 @@ document.body.removeChild(a);
         body: JSON.stringify({ entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }),
       });
       console.log(`[Cat Wash] Fire Stick ${entityId} force-stopped Silk`);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 500));
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick force-stop Silk failed: ${e.message}`);
     }
@@ -4396,15 +4396,14 @@ document.body.removeChild(a);
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
-      // Get current week number
-      const semesterSettings = await storage.getActiveSemesterSettings();
+      const [semesterSettings, allFiles] = await Promise.all([
+        storage.getActiveSemesterSettings(),
+        storage.getFiles(),
+      ]);
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
         currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
       }
-
-      // Find CPPA module for current week (same logic as cat-lights)
-      const allFiles = await storage.getFiles();
       const cppaModule = allFiles.find((f: any) => {
         if (f.listened) return false;
         const weekMatch = f.folder?.match(/week-(\d+)/i);
@@ -4427,54 +4426,41 @@ document.body.removeChild(a);
 
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
-      // === STEP 2: Open PDF reader on all display devices ===
+      // === STEP 2: Open PDF reader on all display devices (in parallel) ===
       const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
 
-      // Set pending tablet command for the master tablet (autoplay)
       await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
 
       const deviceResults: Record<string, string> = {};
 
-      // Master tablet (tablet_cat_wall) plays audio via Bluetooth to Echo
-      const masterTablet = { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'], mediaPlayer: 'media_player.tablet_cat' };
-      const masterOpened = await openUrlOnFireDevice(haUrl, masterTablet.browserIds, readerUrl, masterTablet.name);
-      deviceResults[masterTablet.name] = masterOpened ? 'browser_mod' : 'no_method_succeeded';
+      const [masterResult, followerResult, tvResult] = await Promise.allSettled([
+        openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
+        openUrlOnFireDevice(haUrl, ['02392750-18703322'], followerUrl, 'tablet_catn'),
+        (async () => {
+          const [fireStickRes, tvRes] = await Promise.allSettled([
+            fetch(`${haUrl}/api/services/media_player/turn_on`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+            }),
+            fetch(`${haUrl}/api/services/media_player/turn_on`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
+            }),
+          ]);
+          console.log(`[Cat Wash] Fire Stick turn_on: ${fireStickRes.status === 'fulfilled' ? fireStickRes.value.status : 'failed'}`);
+          console.log(`[Cat Wash] Samsung TV turn_on: ${tvRes.status === 'fulfilled' ? tvRes.value.status : 'failed'}`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log(`[Cat Wash] TV follow URL: ${tvFollowUrl}`);
+          return openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
+        })(),
+      ]);
 
-      // Follower tablet (tablet_catn) shows PDF with word highlighting but no audio
-      const followerTablet = { name: 'tablet_catn', browserIds: ['02392750-18703322'], mediaPlayer: 'media_player.tablet_catn' };
-      const followerOpened = await openUrlOnFireDevice(haUrl, followerTablet.browserIds, followerUrl, followerTablet.name);
-      deviceResults[followerTablet.name] = followerOpened ? 'browser_mod (follower)' : 'no_method_succeeded';
-
-      // Samsung TV via Fire Stick (home theatre pair) - turn on Fire Stick first (HDMI-CEC turns on TV)
-      try {
-        // Step 1: Turn on Fire Stick (triggers HDMI-CEC to turn on TV since they're paired as home theatre)
-        const fireStickTurnOn = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-        });
-        console.log(`[Cat Wash] Fire Stick turn_on (home theatre → TV via CEC): ${fireStickTurnOn.status}`);
-
-        // Also send TV turn_on as backup
-        const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
-        });
-        console.log(`[Cat Wash] Samsung TV turn_on (backup): ${turnOnResp.status}`);
-
-        // Brief delay for TV to wake up
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
-        // Step 2: Open follow-only URL on Fire Stick (TV shows text/highlighting, no audio)
-        const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
-        console.log(`[Cat Wash] TV follow URL: ${tvFollowUrl}`);
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
-      } catch (e: any) {
-        console.log(`[Cat Wash] Samsung TV/Fire Stick error: ${e.message}`);
-        deviceResults['samsung_tv'] = 'error';
-      }
+      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'no_method_succeeded';
+      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'browser_mod (follower)' : 'no_method_succeeded';
+      deviceResults['samsung_tv'] = tvResult.status === 'fulfilled' && tvResult.value ? 'adb:fire_stick' : 'failed';
 
       console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
 

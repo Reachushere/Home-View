@@ -670,7 +670,7 @@ export default function PDFReaderPage() {
         } else {
           startReading();
         }
-      }, 2000);
+      }, 500);
       return () => clearTimeout(delay);
     }
   }, [autoplayParam, autoplayTriggered, pdfUrl, numPages]);
