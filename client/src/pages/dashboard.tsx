@@ -362,6 +362,8 @@ export default function Dashboard() {
   const [calendarTop, setCalendarTop] = useState(252); // Default offset
   const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
   const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
+  const [calendarReduction, setCalendarReduction] = useState(0); // Pixels to reduce calendar from left (1.5x Tuesday col width)
+  const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedFiles');
@@ -6385,6 +6387,15 @@ export default function Dashboard() {
         setCalendarTop(rect.top + window.scrollY);
         setCalendarRight(window.innerWidth - rect.right);
         setCalendarLeft(rect.left);
+        const unreducedWidth = rect.width + calendarReduction;
+        const frSpace = unreducedWidth - gridSizes.timeColumnWidth - gridSizes.moduleColumnWidth;
+        const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
+        const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
+        const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
+        const reduction = Math.round(1.5 * tuesdayPixelWidth);
+        setCalendarReduction(reduction);
+        const origLeft = rect.left - Math.max(0, calendarReduction - 1);
+        setOriginalCalendarLeft(origLeft);
       }
       if (clockContainerRef.current) {
         setClockWidth(clockContainerRef.current.offsetWidth);
@@ -6432,7 +6443,7 @@ export default function Dashboard() {
       observer.disconnect();
       cancelAnimationFrame(rafId);
     };
-  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, gridSizes.allDayRowHeight]);
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, gridSizes.allDayRowHeight, calendarReduction]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
@@ -14561,7 +14572,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 68px)', height: 'calc(100% - 10px)', marginTop: '4px', marginLeft: '2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 10px)', marginTop: '4px', marginLeft: `${calendarReduction > 0 ? calendarReduction - 1 : 2}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -17856,6 +17867,100 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
+        {/* Coming Up box - positioned to the left of the calendar in the reduction gap */}
+        <section
+          className={`rounded-[12px] overflow-hidden flex flex-col fixed ${draggedBox === 'today' ? 'opacity-50' : ''}`}
+          style={{
+            zIndex: 35,
+            left: `${originalCalendarLeft - 15}px`,
+            right: `${calendarLeft - 15 - 5}px`,
+            bottom: '20px',
+            height: '175px',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+            backdropFilter: 'blur(40px)',
+            WebkitBackdropFilter: 'blur(40px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.5)',
+            borderTop: '1px solid rgba(255,255,255,0.7)',
+            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
+            pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
+            transition: 'opacity 0.2s ease',
+            paddingBottom: '5px'
+          }}
+          data-testid="section-coming-up"
+          onDragOver={(e) => handleBoxDragOver(e, 'today')}
+        >
+          <div style={{ padding: '6px 8px', backgroundColor: colorSettings.headerBar }}>
+            <h4
+              className="text-xs font-normal flex items-center justify-between text-white"
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+            >
+              <span style={{ whiteSpace: 'nowrap' }}>Coming Up (<span style={{ color: 'rgb(255, 0, 0)' }}>{dueTodayTasks.length}</span>)</span>
+              <div className="calendar-icon-shimmer" style={{ width: '20px', height: '22px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+                <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '7px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '13px' }}>{format(new Date(), 'd')}</div>
+              </div>
+            </h4>
+          </div>
+          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '4px', paddingBottom: '0px', overflowY: dueTodayTasks.length >= 4 ? 'auto' : 'hidden' }}>
+            {isLoading ? (
+              <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+            ) : dueTodayTasks.length === 0 ? (
+              <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due today</div>
+            ) : (
+              <div className="flex flex-col gap-0.5">
+                {dueTodayTasks.slice(0, 5).map((task) => {
+                  const progressBarWidth = getProgressBarWidth(task);
+                  const progressColor = getProgressColor(task, 'today');
+                  const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
+                  const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
+                  return (
+                    <div key={task.id} data-box-task-id={task.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: '2px', marginBottom: '1px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <div style={{ width: '14px', flexShrink: 0 }}>
+                          {task.type !== 'class' ? (
+                            <input
+                              type="checkbox"
+                              checked={task.isCompleted ?? false}
+                              onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                              className="h-3 w-3 rounded-sm cursor-pointer"
+                              style={{ accentColor: getCourseColor(task.courseName) }}
+                              data-today-checkbox={task.id}
+                              data-testid={`checkbox-task-${task.id}`}
+                            />
+                          ) : <div className="h-3 w-3" />}
+                        </div>
+                        <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
+                          <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                          <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                        </div>
+                        <button
+                          className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                          onClick={() => setEditingTask(task)}
+                          data-testid={`task-link-${task.id}`}
+                          style={{ textAlign: 'left' }}
+                        >
+                          {task.title}
+                        </button>
+                        <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                          {daysUntil}d
+                        </span>
+                      </div>
+                      <div className="text-[8px] text-white/50 truncate" style={{ marginLeft: '51px', marginTop: '-1px', lineHeight: '1.2' }}>
+                        {courseName}
+                      </div>
+                    </div>
+                  );
+                })}
+                {dueTodayTasks.length > 5 && (
+                  <div className="text-xs text-white/50 text-center">+{dueTodayTasks.length - 5} more</div>
+                )}
+              </div>
+            )}
+            <div className="flex-1 flex flex-col" />
+          </div>
+        </section>
+
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 items-stretch fixed" style={{ zIndex: 35, left: `${calendarLeft - 15}px`, right: `${calendarRight - 15}px`, bottom: '20px', height: '175px', opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1, pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto', transition: 'opacity 0.2s ease' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
@@ -17979,124 +18084,6 @@ export default function Dashboard() {
               )}
               </>
               )}
-            </div>
-          </section>
-
-          {/* Due Today - CSS Box */}
-          <section 
-            className={`flex-1 min-w-0 rounded-[12px] overflow-hidden flex flex-col min-h-[109px] sm:min-h-[149px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ 
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-              backdropFilter: 'blur(40px)',
-              WebkitBackdropFilter: 'blur(40px)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.5)',
-              borderTop: '1px solid rgba(255,255,255,0.7)',
-              order: boxOrder.indexOf('today') + 1, 
-              marginLeft: '0px', 
-              marginRight: '0px',
-              paddingBottom: '5px'
-            }} 
-            data-testid="section-due-today"
-            onDragOver={(e) => handleBoxDragOver(e, 'today')}
-          >
-            <div 
-              style={{ 
-                padding: '6px 12px',
-                backgroundColor: colorSettings.headerBar
-              }}
-            >
-              <h4 
-                className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
-                draggable
-                onDragStart={() => handleBoxDragStart('today')}
-                onDragEnd={handleBoxDragEnd}
-              >
-                <div className="grid grid-cols-3 gap-[2px]" style={{ flexShrink: 0 }}>
-                  {[...Array(9)].map((_, i) => (
-                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
-                  ))}
-                </div>
-                <span className="flex-1 ml-2" style={{ whiteSpace: 'nowrap' }}>Today (<span style={{ color: 'rgb(255, 0, 0)' }}>{dueTodayTasks.length}</span>)</span><span className="text-[11px]" style={{ color: 'rgb(255, 0, 0)', marginRight: '6px' }}>{format(new Date(), 'EEE, MMMM d')}</span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, minWidth: '24px' }}>
-                  <div className="calendar-icon-shimmer" style={{ width: '24px', height: '26px', borderRadius: '3px', border: '1.5px solid white', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '6px', fontWeight: 700, color: 'white', lineHeight: '9px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
-                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#333', lineHeight: '15px' }}>{format(new Date(), 'd')}</div>
-                  </div>
-                </div>
-              </h4>
-            </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
-              {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
-              ) : dueTodayTasks.length === 0 ? (
-                <div style={{ position: 'relative', minHeight: '80px' }}>
-                  {/* Headers row for empty state */}
-                  <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
-                  </div>
-                  {/* Empty state message - centered in body */}
-                  <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due today</div>
-                </div>
-              ) : isMobile ? (
-                <div className="flex flex-col gap-2">
-                  {dueTodayTasks.slice(0, 5).map((task) => (
-                    <div key={task.id} className="flex items-center gap-3 py-2 px-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                      <input 
-                        type="checkbox" 
-                        className="h-5 w-5 rounded-sm border-2 border-white/50 flex-shrink-0" 
-                        disabled
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm text-white truncate">{task.title}</div>
-                        <div className="text-xs text-white">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
-                      </div>
-                      <div className="text-xs text-green-400 flex-shrink-0">
-                        {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
-                      </div>
-                    </div>
-                  ))}
-                  {dueTodayTasks.length > 5 && (
-                    <div className="text-xs text-white/50 text-center">+{dueTodayTasks.length - 5} more</div>
-                  )}
-                </div>
-              ) : (
-                <>
-              {/* Headers row - uses HEADER_POS */}
-              <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
-                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
-                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
-                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
-                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
-                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
-                <span className="text-[8px] text-white font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
-              </div>
-              {/* Task rows - all use HEADER_POS */}
-              {dueTodayTasks.slice(0, 3).map((task, idx) => (
-              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-                <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" checked={task.isCompleted ?? false} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" style={{ accentColor: (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; const c = coursesData.courses.find(co => co.name?.split(' - ')[0]?.toUpperCase() === cc); return c?.color || '#888'; })() }} data-today-checkbox={task.id} />
-                </div>
-                <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '6px', width: '44px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'today'), opacity: 0.9 }} />
-                </div>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '9px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: 'white' }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '0px', fontSize: '9px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
-                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '9px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '9px', lineHeight: '1', color: getProgressColor(task, 'today'), textAlign: 'right' }}>{task.dueDate ? `${differenceInCalendarDays(new Date(task.dueDate), new Date())}d` : ''}</span>
-              </div>
-              ))}
-                </>
-              )}
-              <div className="flex-1 flex flex-col" />
             </div>
           </section>
 
