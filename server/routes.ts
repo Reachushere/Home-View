@@ -4430,8 +4430,6 @@ document.body.removeChild(a);
       const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
       const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
 
-      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
-
       const deviceResults: Record<string, string> = {};
 
       const [masterResult, followerResult, tvResult] = await Promise.allSettled([
@@ -4618,19 +4616,16 @@ document.body.removeChild(a);
         estimatedChunkDuration: 0,
       };
 
-      // Open PDF reader on tablets — set pending nav for Silk-based polling + try browser_mod for HA-based tablets
-      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
+      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       const deviceResults: Record<string, string> = {};
-      const fireTablets = [
-        { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
-        { name: 'tablet_catn', browserIds: ['02392750-18703322'] },
-      ];
 
-      await Promise.all(fireTablets.map(async (device) => {
-        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, readerUrl, device.name);
-        deviceResults[device.name] = opened ? 'silk_intent' : 'pending_nav';
-      }));
+      const [masterResult, followerResult] = await Promise.allSettled([
+        openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
+        openUrlOnFireDevice(haUrl, ['02392750-18703322'], followerUrl, 'tablet_catn'),
+      ]);
+      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'silk_intent' : 'pending_nav';
+      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'silk_intent (follower)' : 'pending_nav';
 
       // Also try Samsung TV via Fire Stick (home theatre pair)
       try {

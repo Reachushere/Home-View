@@ -1237,7 +1237,16 @@ export default function PDFReaderPage() {
     const chunk = currentChunkRef.current;
     console.log(`[TTS] Audio ended: isPlaying=${playing}, isPaused=${paused}, currentChunk=${chunk}, attentionPrompt=${playingAttentionPromptRef.current}`);
     if (playing && !paused) {
-      playNextChunk(chunk + 1);
+      if (playingAttentionPromptRef.current) {
+        playingAttentionPromptRef.current = false;
+        playNextChunk(chunk + 1);
+      } else if (chunk < chunksRef.current.length - 1) {
+        playingAttentionPromptRef.current = true;
+        console.log(`[TTS] Playing attention prompt after chunk ${chunk + 1}`);
+        await playTTS("Bryn, are you paying attention?");
+      } else {
+        playNextChunk(chunk + 1);
+      }
     }
   };
 
