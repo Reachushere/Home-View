@@ -93,11 +93,11 @@ export default function PDFReaderPage() {
   const fileId = params?.fileId && params.fileId !== "onedrive" ? parseInt(params.fileId) : null;
   
   const urlParams = new URLSearchParams(window.location.search);
-  const oneDriveUrl = urlParams.get("url");
+  const oneDriveUrl = urlParams.get("oneDriveUrl") || urlParams.get("url");
   const oneDriveName = urlParams.get("name");
   const filesParam = urlParams.get("files");
   const courseParam = urlParams.get("course");
-  const autoplayParam = urlParams.get("autoplay") === "true";
+  const autoplayParam = urlParams.get("autoplay") === "true" || urlParams.get("autoplay") === "1";
   const speakerParam = urlParams.get("speaker");
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
