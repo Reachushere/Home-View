@@ -2007,12 +2007,24 @@ export default function PDFReaderPage() {
                             <Play className="h-3 w-3 text-white ml-px" />
                           )}
                         </button>
+                        <button
+                          className="transition-colors hover:bg-white/25 flex items-center justify-center"
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, marginTop: '150px' }}
+                          onClick={() => {
+                            setEditingChunkIndex(idx);
+                            setEditableChunkText(chunk);
+                          }}
+                          data-testid={`button-chunk-edit-${idx}`}
+                          title="Edit chunk"
+                        >
+                          <Pencil className="h-4 w-4 text-white" strokeWidth={3} />
+                        </button>
                       </div>
                       <div className="flex-1" />
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3 relative">
                       {editingChunkIndex !== idx && (
-                        <div className="absolute top-2 right-2 flex items-center gap-1.5" style={{ zIndex: 2 }}>
+                        <div className="absolute right-2" style={{ top: '-2px', zIndex: 2 }}>
                           <button
                             className="transition-colors hover:bg-white/25 flex items-center justify-center rounded"
                             style={{ width: '20px', height: '20px', padding: 0 }}
@@ -2021,18 +2033,6 @@ export default function PDFReaderPage() {
                             title={isFullPage ? "Exit full page" : "Full page reader"}
                           >
                             {isFullPage ? <Minimize2 className="h-4 w-4 text-white/60 hover:text-white" strokeWidth={3} /> : <Maximize2 className="h-4 w-4 text-white/60 hover:text-white" strokeWidth={3} />}
-                          </button>
-                          <button
-                            className="transition-colors hover:bg-white/25 flex items-center justify-center rounded"
-                            style={{ width: '20px', height: '20px', padding: 0 }}
-                            onClick={() => {
-                              setEditingChunkIndex(idx);
-                              setEditableChunkText(chunk);
-                            }}
-                            data-testid={`button-chunk-edit-${idx}`}
-                            title="Edit chunk"
-                          >
-                            <Pencil className="h-4 w-4 text-white/60 hover:text-white" strokeWidth={3} />
                           </button>
                         </div>
                       )}
