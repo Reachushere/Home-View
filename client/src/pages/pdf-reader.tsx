@@ -77,18 +77,14 @@ const SPEAKERS = [
   { id: "media_player.queen_bedroom", name: "Queen Bedroom" },
 ];
 
-type Voice = "alloy" | "ash" | "coral" | "echo" | "fable" | "nova" | "onyx" | "sage" | "shimmer";
+type Voice = "alloy" | "ash" | "echo" | "fable" | "onyx";
 
 const VOICE_LABELS: Record<Voice, string> = {
   alloy: "Alloy - English (Neutral)",
   ash: "Ash - English (Male, Warm)",
-  coral: "Coral - English (Female, Warm)",
   echo: "Echo - English (Male, Clear)",
   fable: "Fable - English (Male, British)",
-  nova: "Nova - English (Female, Friendly)",
   onyx: "Onyx - English (Male, Deep)",
-  sage: "Sage - English (Female, Calm)",
-  shimmer: "Shimmer - English (Female, Bright)",
 };
 
 export default function PDFReaderPage() {
@@ -202,7 +198,7 @@ export default function PDFReaderPage() {
   const [totalChunks, setTotalChunks] = useState(0);
   const [voice, setVoice] = useState<Voice>(() => {
     const saved = localStorage.getItem('pdf-reader-voice');
-    return (saved && ["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"].includes(saved) ? saved : "ash") as Voice;
+    return (saved && ["alloy","ash","echo","fable","onyx"].includes(saved) ? saved : "ash") as Voice;
   });
   const [isFullPage, setIsFullPage] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
@@ -2306,7 +2302,7 @@ export default function PDFReaderPage() {
                 className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[280px]"
                 data-testid="select-voice"
               >
-                {(["alloy","ash","coral","echo","fable","nova","onyx","sage","shimmer"] as Voice[]).map(v => (
+                {(["alloy","ash","echo","fable","onyx"] as Voice[]).map(v => (
                   <option key={v} value={v} className="bg-gray-900 text-white">{VOICE_LABELS[v]}</option>
                 ))}
               </select>
