@@ -471,23 +471,25 @@ export default function PDFReaderPage() {
   useEffect(() => {
     const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
     if (!isFireDevice) return;
+    const isFireTV = /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
+    const deviceRole = (() => { try { return localStorage.getItem('tabletDeviceRole'); } catch { return null; } })() || (isFireTV ? 'tv' : (followOnly ? 'follower' : 'master'));
     const saved = lastNavTimestamp.current;
     lastNavTimestamp.current = typeof saved === 'function' ? saved() : saved;
     const interval = setInterval(async () => {
       try {
-        const resp = await fetch('/api/tablet-nav');
+        const resp = await fetch(`/api/tablet-nav?device=${deviceRole}`);
         const data = await resp.json();
         if (data.timestamp <= lastNavTimestamp.current) return;
         if (Date.now() - data.timestamp > 30000) return;
         if (data.action === 'navigate' && data.url) {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
-          fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp }) }).catch(() => {});
+          fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
           window.location.href = data.url;
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
-          fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp }) }).catch(() => {});
+          fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
           window.location.href = '/';
         }
       } catch {}

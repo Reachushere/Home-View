@@ -3801,28 +3801,30 @@ export async function registerRoutes(
   let kitchenPlaybackActive = false;
   let kitchenPlaybackAbortController: AbortController | null = null;
 
-  let pendingTabletCommand: { action: string; url?: string; timestamp: number } | null = null;
+  const pendingTabletCommands: Record<string, { action: string; url?: string; timestamp: number }> = {};
 
   const DEPLOYED_APP_URL = "https://home-view--bkh416.replit.app";
 
-  async function setTabletCommand(cmd: { action: string; url?: string; timestamp: number }, propagate = true) {
-    pendingTabletCommand = cmd;
+  async function setTabletCommand(cmd: { action: string; url?: string; timestamp: number }, propagate = true, device = 'master') {
+    pendingTabletCommands[device] = cmd;
     if (propagate) {
       try {
-        await fetch(`${DEPLOYED_APP_URL}/api/tablet-nav/set?auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}`, {
+        await fetch(`${DEPLOYED_APP_URL}/api/tablet-nav/set?auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}&device=${device}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cmd),
         });
       } catch (e: any) {
-        console.log(`[Tablet Nav] Failed to propagate to deployed: ${e.message}`);
+        console.log(`[Tablet Nav] Failed to propagate ${device} to deployed: ${e.message}`);
       }
     }
   }
 
-  app.get("/api/tablet-nav", (_req, res) => {
-    if (pendingTabletCommand && Date.now() - pendingTabletCommand.timestamp < 30000) {
-      return res.json(pendingTabletCommand);
+  app.get("/api/tablet-nav", (req, res) => {
+    const device = (req.query.device as string) || 'master';
+    const cmd = pendingTabletCommands[device];
+    if (cmd && Date.now() - cmd.timestamp < 30000) {
+      return res.json(cmd);
     }
     res.json({ action: null });
   });
@@ -3849,10 +3851,12 @@ export async function registerRoutes(
   });
 
   app.post("/api/tablet-nav/ack", (req, res) => {
-    const { timestamp } = req.body;
-    if (pendingTabletCommand && pendingTabletCommand.timestamp === timestamp) {
-      pendingTabletCommand = null;
-      console.log("[Tablet Nav] Command acknowledged and cleared");
+    const { timestamp, device } = req.body;
+    const deviceKey = device || 'master';
+    const cmd = pendingTabletCommands[deviceKey];
+    if (cmd && cmd.timestamp === timestamp) {
+      delete pendingTabletCommands[deviceKey];
+      console.log(`[Tablet Nav] Command acknowledged and cleared for ${deviceKey}`);
     }
     res.json({ ok: true });
   });
@@ -3862,10 +3866,11 @@ export async function registerRoutes(
     if (authParam !== (process.env.SITE_PASSWORD || '')) {
       return res.status(401).json({ error: "Unauthorized" });
     }
+    const deviceParam = (req.query.device as string) || 'master';
     const { action, url, timestamp } = req.body;
     if (action) {
-      pendingTabletCommand = { action, url, timestamp: timestamp || Date.now() };
-      console.log(`[Tablet Nav] Command set: ${action} ${url || ''}`);
+      pendingTabletCommands[deviceParam] = { action, url, timestamp: timestamp || Date.now() };
+      console.log(`[Tablet Nav] Command set for ${deviceParam}: ${action} ${url || ''}`);
     }
     res.json({ ok: true });
   });
@@ -4463,9 +4468,16 @@ document.body.removeChild(a);
 
       const deviceResults: Record<string, string> = {};
 
-      // Set tablet-nav command as reliable fallback (tablets poll this every 3s)
-      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() });
-      console.log(`[Cat Wash] tablet-nav set for master: ${readerUrl}`);
+      const navTimestamp = Date.now();
+      await Promise.all([
+        setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: navTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'navigate', url: followerUrl, timestamp: navTimestamp }, true, 'follower'),
+        setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: navTimestamp }, true, 'tv'),
+      ]);
+      console.log(`[Cat Wash] tablet-nav set for all devices`);
+      console.log(`[Cat Wash] master: ${readerUrl}`);
+      console.log(`[Cat Wash] follower: ${followerUrl}`);
+      console.log(`[Cat Wash] tv: ${tvFollowUrl}`);
 
       const [masterResult, followerResult, tvResult] = await Promise.allSettled([
         openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
@@ -4491,9 +4503,9 @@ document.body.removeChild(a);
         })(),
       ]);
 
-      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'no_method_succeeded';
-      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'browser_mod (follower)' : 'no_method_succeeded';
-      deviceResults['samsung_tv'] = tvResult.status === 'fulfilled' && tvResult.value ? 'adb:fire_stick' : 'failed';
+      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
+      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'browser_mod (follower)' : 'tablet-nav';
+      deviceResults['samsung_tv'] = tvResult.status === 'fulfilled' && tvResult.value ? 'adb:fire_stick' : 'tablet-nav';
 
       console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
 
@@ -4652,15 +4664,24 @@ document.body.removeChild(a);
       };
 
       const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&followOnly=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
 
       const deviceResults: Record<string, string> = {};
+
+      const lightsNavTimestamp = Date.now();
+      await Promise.all([
+        setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'navigate', url: followerUrl, timestamp: lightsNavTimestamp }, true, 'follower'),
+        setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
+      ]);
+      console.log(`[Cat Lights] tablet-nav set for all devices`);
 
       const [masterResult, followerResult] = await Promise.allSettled([
         openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
         openUrlOnFireDevice(haUrl, ['02392750-18703322'], followerUrl, 'tablet_catn'),
       ]);
-      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'silk_intent' : 'pending_nav';
-      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'silk_intent (follower)' : 'pending_nav';
+      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
+      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'browser_mod (follower)' : 'tablet-nav';
 
       // Also try Samsung TV via Fire Stick (home theatre pair)
       try {
@@ -4738,7 +4759,12 @@ document.body.removeChild(a);
         stopped.push("ttsSession");
       }
 
-      await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
+      const stopTimestamp = Date.now();
+      await Promise.all([
+        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'follower'),
+        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
+      ]);
 
       // Close Silk on the secondary tablet (tablet_catn)
       if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
@@ -4800,8 +4826,13 @@ document.body.removeChild(a);
       // Build new URL with speaker param and resume chunk
       const newReaderUrl = `${appUrl}/pdf-reader/${currentFileId}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(newSpeaker)}&resumeChunk=${currentChunk}&auth=${authParam}`;
 
-      // Re-open on tablets with the new speaker parameter
-      await setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: Date.now() });
+      const skipTimestamp = Date.now();
+      const newFollowerUrl = newReaderUrl.replace('autoplay=true', 'autoplay=false').replace('catWashFollow=true', 'catWashFollow=true&followOnly=true');
+      await Promise.all([
+        setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: skipTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'navigate', url: newFollowerUrl, timestamp: skipTimestamp }, true, 'follower'),
+        setTabletCommand({ action: 'navigate', url: newFollowerUrl, timestamp: skipTimestamp }, true, 'tv'),
+      ]);
 
       const tabletDevices = [
         { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
@@ -4966,7 +4997,12 @@ document.body.removeChild(a);
     // Stopping the tablets (by clearing server state) is sufficient.
     // Sending media_stop to Echo entities causes Alexa to speak confirmations.
 
-    await setTabletCommand({ action: 'go_home', timestamp: Date.now() });
+    const stopTs = Date.now();
+    await Promise.all([
+      setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'master'),
+      setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'follower'),
+      setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'tv'),
+    ]);
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
     res.json({ stopped: true, stoppedItems: stopped });
   });
