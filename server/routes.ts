@@ -4143,7 +4143,7 @@ export async function registerRoutes(
     const intentUri = `intent://${urlObj.host}${urlObj.pathname}${urlObj.search}#Intent;scheme=https;package=com.amazon.cloud9;launchFlags=0x14008000;end`;
 
     const bustUrl = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
-    const directNavCode = `window.location.href = '${bustUrl}';`;
+    const directNavCode = `window.location.replace('${bustUrl}');`;
 
     const intentCode = `
 var a = document.createElement('a');
