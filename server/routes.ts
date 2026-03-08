@@ -4139,9 +4139,12 @@ export async function registerRoutes(
     const results: string[] = [];
 
     const urlObj = new URL(url);
+    const navigatePath = `${urlObj.pathname}${urlObj.search}`;
     const intentUri = `intent://${urlObj.host}${urlObj.pathname}${urlObj.search}#Intent;scheme=https;package=com.amazon.cloud9;launchFlags=0x14008000;end`;
 
-    const jsCode = `
+    const directNavCode = `window.location.href = '${url}';`;
+
+    const intentCode = `
 var a = document.createElement('a');
 a.href = '${intentUri}';
 a.style.display = 'none';
@@ -4155,18 +4158,37 @@ document.body.removeChild(a);
         const resp = await fetch(`${haUrl}/api/services/browser_mod/javascript`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ browser_id: browserId, code: jsCode }),
+          body: JSON.stringify({ browser_id: browserId, code: directNavCode }),
+        });
+        const body = await resp.text();
+        console.log(`[Device] ${deviceName} → browser_mod.javascript/direct_nav (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
+        if (resp.ok) {
+          results.push(`${browserId}:direct_nav:${resp.status}`);
+          console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true (direct nav)`);
+          return true;
+        }
+        results.push(`${browserId}:direct_nav:${resp.status}`);
+      } catch (e: any) {
+        console.log(`[Device] ${deviceName} → browser_mod.javascript/direct_nav (${browserId}) ERROR: ${e.message}`);
+        results.push(`${browserId}:direct_nav:error`);
+      }
+
+      try {
+        const resp = await fetch(`${haUrl}/api/services/browser_mod/javascript`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ browser_id: browserId, code: intentCode }),
         });
         const body = await resp.text();
         console.log(`[Device] ${deviceName} → browser_mod.javascript/silk_intent (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
         if (resp.ok) {
           results.push(`${browserId}:silk_intent:${resp.status}`);
-          console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true`);
+          console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true (intent fallback)`);
           return true;
         }
         results.push(`${browserId}:silk_intent:${resp.status}`);
       } catch (e: any) {
-        console.log(`[Device] ${deviceName} → browser_mod.javascript (${browserId}) ERROR: ${e.message}`);
+        console.log(`[Device] ${deviceName} → browser_mod.javascript/silk_intent (${browserId}) ERROR: ${e.message}`);
         results.push(`${browserId}:silk_intent:error`);
       }
     }
