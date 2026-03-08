@@ -2210,11 +2210,11 @@ export default function PDFReaderPage() {
           <div className="relative px-8 pb-5" style={{ overflow: 'visible' }}>
             <div className="flex items-end justify-center" style={{ overflow: 'visible' }}>
               {!isPlaying ? (
-                <div className="flex items-center gap-5" style={{ marginTop: '-30px' }}>
+                <div className="flex items-center" style={{ marginTop: '-30px', gap: '10px' }}>
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
-                      className="p-5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
-                      style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
+                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                      style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                       onClick={resumeFromLast}
                       disabled={isLoading || numPages === 0}
                       title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
