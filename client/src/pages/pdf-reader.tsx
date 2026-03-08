@@ -2009,7 +2009,7 @@ export default function PDFReaderPage() {
                     </div>
                     <div className="flex-1 min-w-0 p-4 pl-3 relative">
                       {editingChunkIndex !== idx && (
-                        <div className="absolute top-2 right-2 flex items-center gap-1.5" style={{ zIndex: 2 }}>
+                        <div className="absolute flex items-center gap-1.5" style={{ top: '-2px', right: '6px', zIndex: 2 }}>
                           <button
                             className="transition-colors hover:bg-white/25 flex items-center justify-center rounded"
                             style={{ width: '20px', height: '20px', padding: 0 }}
@@ -2017,7 +2017,7 @@ export default function PDFReaderPage() {
                             data-testid={`button-chunk-fullpage-${idx}`}
                             title={isFullPage ? "Exit full page" : "Full page reader"}
                           >
-                            {isFullPage ? <Minimize2 className="h-3.5 w-3.5 text-white/50 hover:text-white" /> : <Maximize2 className="h-3.5 w-3.5 text-white/50 hover:text-white" />}
+                            {isFullPage ? <Minimize2 className="h-4 w-4 text-white/60 hover:text-white" strokeWidth={2.5} /> : <Maximize2 className="h-4 w-4 text-white/60 hover:text-white" strokeWidth={2.5} />}
                           </button>
                           <button
                             className="transition-colors hover:bg-white/25 flex items-center justify-center rounded"
@@ -2029,7 +2029,7 @@ export default function PDFReaderPage() {
                             data-testid={`button-chunk-edit-${idx}`}
                             title="Edit chunk"
                           >
-                            <Pencil className="h-3.5 w-3.5 text-white/50 hover:text-white" />
+                            <Pencil className="h-4 w-4 text-white/60 hover:text-white" strokeWidth={2.5} />
                           </button>
                         </div>
                       )}
