@@ -15839,6 +15839,7 @@ export default function Dashboard() {
                       const adAttachmentPdf = !adModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
                       const adRefLinkPdf = !adModuleFile && !adAttachmentPdf && task.referenceLink ? task.referenceLink : null;
                       const adPdfUrl = adModuleFile?.objectPath || adAttachmentPdf || adRefLinkPdf || null;
+                      const adPdfFileId = adModuleFile?.id || null;
                       return (
                         <div
                           key={task.id}
@@ -15892,7 +15893,7 @@ export default function Dashboard() {
                                 alt="Open PDF"
                                 className="shrink-0"
                                 style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                onClick={(e) => { e.stopPropagation(); window.open(`/pdf-reader/${encodeURIComponent(adPdfUrl)}`, '_blank'); }}
+                                onClick={(e) => { e.stopPropagation(); window.open(adPdfFileId ? `/pdf-reader/${adPdfFileId}?autoplay=1` : `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(adPdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); }}
                                 data-testid={`pdf-icon-allday-${task.id}`}
                               />
                             )}
@@ -15981,6 +15982,7 @@ export default function Dashboard() {
                       const ad2AttachmentPdf = !ad2ModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
                       const ad2RefLinkPdf = !ad2ModuleFile && !ad2AttachmentPdf && task.referenceLink ? task.referenceLink : null;
                       const ad2PdfUrl = ad2ModuleFile?.objectPath || ad2AttachmentPdf || ad2RefLinkPdf || null;
+                      const ad2PdfFileId = ad2ModuleFile?.id || null;
                       return (
                         <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
                           <div
@@ -16003,7 +16005,7 @@ export default function Dashboard() {
                                 alt="Open PDF"
                                 className="shrink-0"
                                 style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                onClick={(e) => { e.stopPropagation(); window.open(`/pdf-reader/${encodeURIComponent(ad2PdfUrl)}`, '_blank'); }}
+                                onClick={(e) => { e.stopPropagation(); window.open(ad2PdfFileId ? `/pdf-reader/${ad2PdfFileId}?autoplay=1` : `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(ad2PdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); }}
                                 data-testid={`pdf-icon-allday2-${task.id}`}
                               />
                             )}
