@@ -2188,7 +2188,7 @@ export default function PDFReaderPage() {
                   </div>
                   {checkedChunks.size < totalChunks && (
                     <button
-                      className="text-[11px] text-white/70 hover:text-white underline"
+                      className="text-[12px] text-white/70 hover:text-white underline font-semibold"
                       onClick={() => {
                         const firstUnlistened = Array.from({ length: totalChunks }, (_, i) => i).find(i => !checkedChunks.has(i));
                         if (firstUnlistened !== undefined) {
