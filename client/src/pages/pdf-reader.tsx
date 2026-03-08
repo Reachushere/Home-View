@@ -2211,7 +2211,7 @@ export default function PDFReaderPage() {
           <div className="relative px-8 pb-5" style={{ overflow: 'visible' }}>
             <div className="flex items-end justify-center" style={{ overflow: 'visible' }}>
               {!isPlaying ? (
-                <div className="flex items-center" style={{ marginTop: '-30px', gap: '10px' }}>
+                <div className="flex items-center" style={{ marginTop: '-30px', gap: '30px' }}>
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
                       className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
