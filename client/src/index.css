@@ -1941,3 +1941,26 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+[data-testid="section-coming-up"] input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 1.5px solid white;
+  border-radius: 2px;
+  position: relative;
+}
+[data-testid="section-coming-up"] input[type="checkbox"]:checked {
+  background: white;
+}
+[data-testid="section-coming-up"] input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 2.5px;
+  top: 0.5px;
+  width: 4px;
+  height: 7px;
+  border: solid #000;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
