@@ -17466,7 +17466,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1 }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, marginLeft: '-4px' }}>
           <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 10px)', marginTop: '3px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
