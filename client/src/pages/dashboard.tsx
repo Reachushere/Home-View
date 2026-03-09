@@ -18426,8 +18426,13 @@ export default function Dashboard() {
                               const dueDate = startOfDay(new Date(task.dueDate));
                               const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
                               const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                              const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
-                              const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
+                              const weeks: Date[] = [];
+                              let ws = todayWeekStart;
+                              while (ws <= dueWeekStart) {
+                                weeks.push(ws);
+                                ws = addDays(ws, 7);
+                              }
+                              if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                               return (
                                 <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
@@ -18559,8 +18564,13 @@ export default function Dashboard() {
                               const dueDate = startOfDay(new Date(task.dueDate));
                               const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
                               const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                              const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
-                              const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
+                              const weeks: Date[] = [];
+                              let ws = todayWeekStart;
+                              while (ws <= dueWeekStart) {
+                                weeks.push(ws);
+                                ws = addDays(ws, 7);
+                              }
+                              if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                               return (
                                 <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
@@ -18699,8 +18709,13 @@ export default function Dashboard() {
                               const dueDate = startOfDay(new Date(task.dueDate));
                               const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
                               const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                              const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
-                              const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
+                              const weeks: Date[] = [];
+                              let ws = todayWeekStart;
+                              while (ws <= dueWeekStart) {
+                                weeks.push(ws);
+                                ws = addDays(ws, 7);
+                              }
+                              if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                               return (
                                 <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
