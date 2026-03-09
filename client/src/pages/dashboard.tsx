@@ -6433,10 +6433,10 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // 3 to 21 Day Schedule: tasks due 3-21 days from today (excludes today and tomorrow)
-  const threeDaysOut = startOfDay(addDays(today, 3));
+  // 2 to 21 Day Schedule: tasks due 2-21 days from today (excludes today and tomorrow)
+  const twoDaysOut = startOfDay(addDays(today, 2));
   const tenDaysOut = startOfDay(addDays(today, 21));
-  const thisWeekStart = threeDaysOut;
+  const thisWeekStart = twoDaysOut;
   const thisWeekEnd = tenDaysOut;
   const dueThisWeekTasks = (() => {
     return allTasks.filter(t => {
@@ -6444,7 +6444,7 @@ export default function Dashboard() {
       if (isCASL101Finished(t)) return false;
       if (!t.dueDate) return false;
       const dueDateStart = startOfDay(new Date(t.dueDate));
-      return dueDateStart >= threeDaysOut && dueDateStart <= tenDaysOut;
+      return dueDateStart >= twoDaysOut && dueDateStart <= tenDaysOut;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
 
