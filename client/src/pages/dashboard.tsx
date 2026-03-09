@@ -6463,10 +6463,10 @@ export default function Dashboard() {
     return true;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // Next 2 Weeks: tasks due from the coming Saturday through 2 weeks after that (ends Friday)
+  // Next 3 Weeks: tasks due from the coming Saturday through end of Friday 2 weeks later (Mar 14-27)
   const daysUntilSaturday = todayDow <= 6 ? (6 - todayDow) : 0;
   const nextSaturday = startOfDay(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
-  const threeWeeksEnd = startOfDay(addDays(nextSaturday, 20));
+  const threeWeeksEnd = startOfDay(addDays(nextSaturday, 13));
   threeWeeksEnd.setHours(23, 59, 59, 999);
   const thisWeekStart = nextSaturday;
   const thisWeekEnd = threeWeeksEnd;
