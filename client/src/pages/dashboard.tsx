@@ -18137,10 +18137,10 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 67px)' }}>
-                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
-                                <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '4px' }}>
+                                <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                               <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
@@ -18234,10 +18234,10 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 67px)' }}>
-                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
-                                <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '4px' }}>
+                                <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                               <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
@@ -18338,10 +18338,10 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 67px)' }}>
-                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
-                                <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '4px' }}>
+                                <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                               <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
