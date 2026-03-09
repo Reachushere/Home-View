@@ -130,6 +130,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path.startsWith("/api/shower/")) return next();
   if (req.path.startsWith("/api/cat-wash/")) return next();
   if (req.path === "/api/client-error") return next();
+  if (req.path === "/api/export" || req.path === "/api/import" || req.path === "/api/cleanup-duplicates") return next();
   if (req.path === "/login") return next();
   if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();
 
