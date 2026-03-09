@@ -8130,6 +8130,71 @@ document.body.removeChild(a);
   });
 
   // GET /api/calendar/events - Fetch events from both Google accounts
+  app.get("/api/calendar/upcoming-events", async (req, res) => {
+    try {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const end = new Date(start.getTime() + 28 * 24 * 60 * 60 * 1000);
+
+      let primaryEvents: any[] = [];
+      try {
+        primaryEvents = await listEvents(start, end);
+      } catch (err) {
+        console.error("Failed to fetch primary upcoming events:", err);
+      }
+
+      let secondAccountEvents: any[] = [];
+      try {
+        const secondStatus = await isSecondAccountConnected();
+        if (secondStatus.connected) {
+          secondAccountEvents = await getEventsFromSecondAccount(start, end);
+        }
+      } catch (err) {
+        console.error("Failed to fetch second account upcoming events:", err);
+      }
+
+      const allEvents = [...primaryEvents, ...secondAccountEvents];
+
+      const tasks = await storage.getTasks({});
+      const syncedEventIds = new Set([
+        ...tasks.map(t => t.calendarEventId).filter(Boolean),
+        ...tasks.map(t => t.secondAccountCalendarEventId).filter(Boolean),
+        ...tasks.map(t => t.secondAccountPrepEventId).filter(Boolean),
+        ...tasks.map(t => t.prepCalendarEventId).filter(Boolean),
+        ...tasks.map(t => t.secondaryCalendarEventId).filter(Boolean),
+      ]);
+
+      const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
+
+      const formattedEvents = externalEvents.map(event => {
+        const isAllDay = !event.start?.dateTime;
+        let startDate = event.start?.dateTime || event.start?.date;
+        let endDate = event.end?.dateTime || event.end?.date;
+        if (isAllDay && startDate && !startDate.includes('T')) {
+          startDate = `${startDate}T12:00:00`;
+        }
+        if (isAllDay && endDate && !endDate.includes('T')) {
+          endDate = `${endDate}T12:00:00`;
+        }
+        return {
+          id: event.id,
+          title: event.summary || 'Untitled Event',
+          description: event.description || '',
+          startDate,
+          endDate,
+          isAllDay,
+          htmlLink: event.htmlLink,
+          source: 'google',
+        };
+      });
+
+      res.json(formattedEvents);
+    } catch (error) {
+      console.error("Fetch upcoming calendar events error:", error);
+      res.status(500).json({ error: "Failed to fetch upcoming calendar events" });
+    }
+  });
+
   app.get("/api/calendar/events", async (req, res) => {
     try {
       const activeSemester = await storage.getActiveSemesterSettings();
