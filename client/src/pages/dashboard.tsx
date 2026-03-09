@@ -18886,7 +18886,7 @@ export default function Dashboard() {
                               })}
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-10px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px' }}>
                                 <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
                                   <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
@@ -18905,7 +18905,7 @@ export default function Dashboard() {
                                         const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} style={{
-                                            width: '15px', height: '15px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
