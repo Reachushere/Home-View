@@ -18670,7 +18670,37 @@ export default function Dashboard() {
                 }} />
               );
             })();
-            return [cppaLeftBg, cfnfLeftBg, ...courseProgressDataRef.current.map((pd, idx) => {
+            const caslIdx = courseProgressDataRef.current.findIndex(p => p?.courseCode === 'CASL101');
+            const caslLeftBg = (() => {
+              if (cppaIdx < 0 || caslIdx < 0 || !courseRowRects[cppaIdx]) return null;
+              const cppaTop = courseRowRects[cppaIdx].top - upcomingTop;
+              const nextIdx = cppaIdx + 1;
+              const bottomRow = courseRowRects[nextIdx];
+              const cppaBoxHeight = bottomRow
+                ? (bottomRow.top - upcomingTop) - cppaTop
+                : courseRowRects[cppaIdx].height;
+              const caslData = courseProgressDataRef.current[caslIdx];
+              const leftWidth = (() => {
+                if (homeworkSpacerRef.current && homeworkSectionRef.current) {
+                  const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
+                  const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
+                  return `${spacerRect.left - sectionRect.left}px`;
+                }
+                return '70px';
+              })();
+              return (
+                <div key="casl-left-bg" style={{
+                  position: 'absolute',
+                  top: `${cppaTop + cppaBoxHeight * 2}px`,
+                  left: 0,
+                  width: leftWidth,
+                  height: `${cppaBoxHeight}px`,
+                  background: caslData?.progressBg || 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
+                  zIndex: 39,
+                }} />
+              );
+            })();
+            return [cppaLeftBg, cfnfLeftBg, caslLeftBg, ...courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
