@@ -18073,28 +18073,15 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
-                                {cfp.moduleP.hasFiles && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                      {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                    </div>
-                                    <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
-                                  </div>
-                                )}
-                                {cfp.readingP.hasFiles && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                      {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                    </div>
-                                    <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
-                                  </div>
-                                )}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '30px' }}>
+                              <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                            )}
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', marginTop: '1px' }}>
+                                {daysUntil}d
+                              </span>
+                            </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
@@ -18105,13 +18092,28 @@ export default function Dashboard() {
                                 >
                                   {task.title}
                                 </button>
-                                <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
-                                  <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white', flexShrink: 0 }}>
-                                  {daysUntil}d
-                                </span>
+                                {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
+                                    {cfp.moduleP.hasFiles && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                        <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                          {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                        </div>
+                                        <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                      </div>
+                                    )}
+                                    {cfp.readingP.hasFiles && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                        <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                          {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
+                                        </div>
+                                        <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
                                 {courseName}
@@ -18147,28 +18149,15 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
-                                {cfp.moduleP.hasFiles && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                      {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                    </div>
-                                    <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
-                                  </div>
-                                )}
-                                {cfp.readingP.hasFiles && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                      {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                    </div>
-                                    <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
-                                  </div>
-                                )}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '30px' }}>
+                              <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                            )}
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', marginTop: '1px' }}>
+                                {daysUntil}d
+                              </span>
+                            </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
@@ -18179,13 +18168,28 @@ export default function Dashboard() {
                                 >
                                   {task.title}
                                 </button>
-                                <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
-                                  <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white', flexShrink: 0 }}>
-                                  {daysUntil}d
-                                </span>
+                                {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
+                                    {cfp.moduleP.hasFiles && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                        <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                          {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                        </div>
+                                        <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                      </div>
+                                    )}
+                                    {cfp.readingP.hasFiles && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                        <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                          {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
+                                        </div>
+                                        <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
                                 {courseName}
@@ -18228,28 +18232,15 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
-                                {cfp.moduleP.hasFiles && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                      {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                    </div>
-                                    <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
-                                  </div>
-                                )}
-                                {cfp.readingP.hasFiles && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                      {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                    </div>
-                                    <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
-                                  </div>
-                                )}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '30px' }}>
+                              <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                            )}
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', marginTop: '1px' }}>
+                                {daysUntil}d
+                              </span>
+                            </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
@@ -18260,13 +18251,28 @@ export default function Dashboard() {
                                 >
                                   {task.title}
                                 </button>
-                                <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
-                                  <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white', flexShrink: 0 }}>
-                                  {daysUntil}d
-                                </span>
+                                {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
+                                    {cfp.moduleP.hasFiles && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                        <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                          {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                        </div>
+                                        <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                      </div>
+                                    )}
+                                    {cfp.readingP.hasFiles && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                        <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                          {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
+                                        </div>
+                                        <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
                                 {courseName}
