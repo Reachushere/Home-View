@@ -18841,14 +18841,15 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              {group.tasks.map((task) => {
+                              {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                                const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
@@ -19012,15 +19013,16 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              {group.tasks.map((task) => {
+                              {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                                 const gc = getCourseGradientColors(taskCourseCode);
+                                const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
@@ -19199,8 +19201,9 @@ export default function Dashboard() {
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                                 const gc = getCourseGradientColors(taskCourseCode);
+                                const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
