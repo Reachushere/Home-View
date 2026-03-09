@@ -19191,7 +19191,7 @@ export default function Dashboard() {
                     onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'; }}
                     onClick={() => {
-                      const form = document.querySelector('[data-task-form]') as HTMLFormElement;
+                      const form = document.querySelector('[data-edit-task-form]') as HTMLFormElement;
                       if (form) form.requestSubmit();
                     }}
                     data-testid="button-update-task-header"
@@ -22011,7 +22011,7 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3" data-task-form>
+    <form onSubmit={handleSubmit} className="space-y-3" data-task-form {...(task ? { 'data-edit-task-form': true } : {})}>
       <div className="grid grid-cols-2 gap-5">
         {/* Left Column */}
         <div className="space-y-3">
