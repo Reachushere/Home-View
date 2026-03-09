@@ -17596,70 +17596,38 @@ export default function Dashboard() {
             return '#888888';
           };
 
-          const SwipeableTaskRow = ({ task, children, onDelete, onReschedule }: { task: any, children: any, onDelete: () => void, onReschedule: () => void }) => {
-            const [swipeX, setSwipeX] = useState(0);
-            const [startX, setStartX] = useState(0);
-            const [isSwiping, setIsSwiping] = useState(false);
-            const rowRef = useRef<HTMLDivElement>(null);
-            const rowWidth = rowRef.current?.offsetWidth || 150;
-            const maxSwipe = rowWidth / 3;
-            return (
-              <div ref={rowRef} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}>
-                {swipeX > 0 && (
-                  <div
-                    style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(swipeX, maxSwipe)}px`, background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px' }}
-                    onClick={(e) => { e.stopPropagation(); setSwipeX(0); onDelete(); }}
-                    data-testid={`swipe-delete-${task.id}`}
-                  >
-                    <span className="text-white text-[8px] font-bold">Delete</span>
-                  </div>
-                )}
-                {swipeX < 0 && (
-                  <div
-                    style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: `${Math.min(Math.abs(swipeX), maxSwipe)}px`, background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0' }}
-                    onClick={(e) => { e.stopPropagation(); setSwipeX(0); onReschedule(); }}
-                    data-testid={`swipe-reschedule-${task.id}`}
-                  >
-                    <span className="text-white text-[8px] font-bold">Reschedule</span>
-                  </div>
-                )}
-                <div
-                  style={{ transform: `translateX(${swipeX}px)`, transition: isSwiping ? 'none' : 'transform 0.2s ease-out', position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'pan-y' }}
-                  onTouchStart={(e) => { setStartX(e.touches[0].clientX); setIsSwiping(true); }}
-                  onTouchMove={(e) => {
-                    if (!isSwiping) return;
-                    const diff = e.touches[0].clientX - startX;
-                    setSwipeX(Math.max(-maxSwipe, Math.min(maxSwipe, diff)));
-                  }}
-                  onTouchEnd={() => {
-                    setIsSwiping(false);
-                    if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
-                    else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
-                  }}
-                  onMouseDown={(e) => { e.preventDefault(); setStartX(e.clientX); setIsSwiping(true); }}
-                  onMouseMove={(e) => {
-                    if (!isSwiping) return;
-                    e.preventDefault();
-                    const diff = e.clientX - startX;
-                    setSwipeX(Math.max(-maxSwipe, Math.min(maxSwipe, diff)));
-                  }}
-                  onMouseUp={() => {
-                    setIsSwiping(false);
-                    if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
-                    else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
-                  }}
-                  onMouseLeave={() => {
-                    if (isSwiping) {
-                      setIsSwiping(false);
-                      if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
-                      else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
-                    }
-                  }}
-                >
-                  {children}
-                </div>
-              </div>
-            );
+          const swipeableRow = (rowEl: HTMLDivElement, contentEl: HTMLDivElement, deleteEl: HTMLDivElement, rescheduleEl: HTMLDivElement) => {
+            let startX = 0;
+            let currentX = 0;
+            let swiping = false;
+            const getMax = () => (rowEl.offsetWidth || 150) / 3;
+            const update = () => {
+              const mx = getMax();
+              const clamped = Math.max(-mx, Math.min(mx, currentX));
+              currentX = clamped;
+              contentEl.style.transform = `translateX(${clamped}px)`;
+              contentEl.style.transition = swiping ? 'none' : 'transform 0.2s ease-out';
+              deleteEl.style.width = clamped > 0 ? `${clamped}px` : '0px';
+              deleteEl.style.display = clamped > 0 ? 'flex' : 'none';
+              rescheduleEl.style.width = clamped < 0 ? `${Math.abs(clamped)}px` : '0px';
+              rescheduleEl.style.display = clamped < 0 ? 'flex' : 'none';
+            };
+            const end = () => {
+              if (!swiping) return;
+              swiping = false;
+              const mx = getMax();
+              if (Math.abs(currentX) < mx * 0.4) currentX = 0;
+              else currentX = currentX > 0 ? mx : -mx;
+              update();
+            };
+            contentEl.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; swiping = true; }, { passive: true });
+            contentEl.addEventListener('touchmove', (e) => { if (!swiping) return; currentX = e.touches[0].clientX - startX; update(); }, { passive: true });
+            contentEl.addEventListener('touchend', end);
+            contentEl.addEventListener('mousedown', (e) => { e.preventDefault(); startX = e.clientX; swiping = true; });
+            contentEl.addEventListener('mousemove', (e) => { if (!swiping) return; e.preventDefault(); currentX = e.clientX - startX; update(); });
+            contentEl.addEventListener('mouseup', end);
+            contentEl.addEventListener('mouseleave', end);
+            return { reset: () => { currentX = 0; swiping = false; update(); } };
           };
 
           const calcCourseFileProgress = (courseCode: string) => {
@@ -18072,7 +18040,27 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
+                        <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                          ref={(rowEl) => {
+                            if (!rowEl || rowEl.dataset.swipeInit) return;
+                            rowEl.dataset.swipeInit = '1';
+                            const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                            const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                            const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                            if (delEl && resEl && contentEl) {
+                              const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                              delEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); deleteTaskWithUndo(task.id); });
+                              resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                            }
+                          }}
+                        >
+                          <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                            <span className="text-white text-[8px] font-bold">Delete</span>
+                          </div>
+                          <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                            <span className="text-white text-[8px] font-bold">Reschedule</span>
+                          </div>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
@@ -18121,7 +18109,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                           </div>
-                        </SwipeableTaskRow>
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
@@ -18148,7 +18137,27 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
+                        <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                          ref={(rowEl) => {
+                            if (!rowEl || rowEl.dataset.swipeInit) return;
+                            rowEl.dataset.swipeInit = '1';
+                            const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                            const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                            const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                            if (delEl && resEl && contentEl) {
+                              const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                              delEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); deleteTaskWithUndo(task.id); });
+                              resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                            }
+                          }}
+                        >
+                          <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                            <span className="text-white text-[8px] font-bold">Delete</span>
+                          </div>
+                          <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                            <span className="text-white text-[8px] font-bold">Reschedule</span>
+                          </div>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
@@ -18197,7 +18206,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                           </div>
-                        </SwipeableTaskRow>
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
@@ -18231,7 +18241,27 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
+                        <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                          ref={(rowEl) => {
+                            if (!rowEl || rowEl.dataset.swipeInit) return;
+                            rowEl.dataset.swipeInit = '1';
+                            const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                            const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                            const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                            if (delEl && resEl && contentEl) {
+                              const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                              delEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); deleteTaskWithUndo(task.id); });
+                              resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                            }
+                          }}
+                        >
+                          <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                            <span className="text-white text-[8px] font-bold">Delete</span>
+                          </div>
+                          <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                            <span className="text-white text-[8px] font-bold">Reschedule</span>
+                          </div>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
@@ -18280,7 +18310,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                           </div>
-                        </SwipeableTaskRow>
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
