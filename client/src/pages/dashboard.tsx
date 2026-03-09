@@ -10538,11 +10538,11 @@ export default function Dashboard() {
       {/* Share Button - fixed position, beside date */}
       {isAdmin && (
         <>
-          <div style={{ position: 'fixed', right: `${calendarRight + 260}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+          <div style={{ position: 'fixed', right: `${calendarRight + 46}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
           <Share 
             className="text-white/80 cursor-pointer hover:text-white"
             strokeWidth={2.5}
-            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight + 270}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight + 28}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={generateShareLink}
             data-testid="button-share-main"
           />
@@ -17961,7 +17961,7 @@ export default function Dashboard() {
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom - 1}px`,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.0) 100%)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
