@@ -18817,128 +18817,163 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 3-21 days</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
-                    {dueThisWeekTasks.map((task) => {
-                      const progressBarWidth = getProgressBarWidth(task);
-                      const progressColor = getProgressColor(task, 'thisweek');
-                      const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
-                      const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
-                      const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                      const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
-                      return (
-                        <div key={task.id} className={daysUntil <= 1 ? 'animate-pulse-urgent' : ''} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
-                          ref={(rowEl) => {
-                            if (!rowEl || rowEl.dataset.swipeInit) return;
-                            rowEl.dataset.swipeInit = '1';
-                            const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
-                            const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
-                            const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
-                            if (delEl && resEl && contentEl) {
-                              const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
-                              delEl.addEventListener('click', (e) => { e.stopPropagation(); if (window.confirm(`Delete "${task.title}"?`)) { ctrl.reset(); deleteTaskWithUndo(task.id); } else { ctrl.reset(); } });
-                              resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
-                            }
-                          }}
-                        >
-                          <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
-                            <span className="text-white text-[9px] font-bold">Delete</span>
-                          </div>
-                          <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
-                            <span className="text-white text-[9px] font-bold">Reschedule</span>
-                          </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '10px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '6px' }}>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                              <div>
-                                <button
-                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none w-full"
-                                  onClick={() => setEditingTask(task)}
-                                  data-testid={`task-link-week-${task.id}`}
-                                  data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
-                                >
-                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
-                                </button>
-                                <div className="text-[9px] text-white/50" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                                  {(() => { const gc = getCourseGradientColors(taskCourseCode); return <span style={{ display: 'inline-block', width: '7px', height: '7px', minWidth: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${gc.start} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
-                                </div>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
-                                  {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                                </span>
-                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '45px' }}>
-                                  <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                </div>
-                              </div>
-                              {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
-                                  {cfp.moduleP.hasFiles && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
-                                        {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                      </div>
-                                      <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                    {(() => {
+                      const today = startOfDay(new Date());
+                      const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                      const getCalKey = (task: any) => {
+                        const dueDate = startOfDay(new Date(task.dueDate));
+                        const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                        const weeks: Date[] = [];
+                        let ws = todayWeekStart;
+                        while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
+                        if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
+                        return weeks.map(w => w.toISOString()).join('|');
+                      };
+                      const groups: { key: string; tasks: typeof dueThisWeekTasks; weeks: Date[] }[] = [];
+                      const groupMap = new Map<string, number>();
+                      dueThisWeekTasks.forEach(task => {
+                        const key = getCalKey(task);
+                        if (groupMap.has(key)) {
+                          groups[groupMap.get(key)!].tasks.push(task);
+                        } else {
+                          const dueDate = startOfDay(new Date(task.dueDate));
+                          const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                          const weeks: Date[] = [];
+                          let ws = todayWeekStart;
+                          while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
+                          if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
+                          groupMap.set(key, groups.length);
+                          groups.push({ key, tasks: [task], weeks });
+                        }
+                      });
+                      return groups.map((group) => {
+                        const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                        return (
+                          <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              {group.tasks.map((task) => {
+                                const progressColor = getProgressColor(task, 'thisweek');
+                                const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
+                                const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
+                                const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                                const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                                const gc = getCourseGradientColors(taskCourseCode);
+                                return (
+                                  <div key={task.id} className={daysUntil <= 1 ? 'animate-pulse-urgent' : ''} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                                    ref={(rowEl) => {
+                                      if (!rowEl || rowEl.dataset.swipeInit) return;
+                                      rowEl.dataset.swipeInit = '1';
+                                      const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                                      const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                                      const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                                      if (delEl && resEl && contentEl) {
+                                        const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                                        delEl.addEventListener('click', (e) => { e.stopPropagation(); if (window.confirm(`Delete "${task.title}"?`)) { ctrl.reset(); deleteTaskWithUndo(task.id); } else { ctrl.reset(); } });
+                                        resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                                      }
+                                    }}
+                                  >
+                                    <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Delete</span>
                                     </div>
-                                  )}
-                                  {cfp.readingP.hasFiles && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
-                                        {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                      </div>
-                                      <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            {(() => {
-                              const today = startOfDay(new Date());
-                              const dueDate = startOfDay(new Date(task.dueDate));
-                              const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-                              const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                              const weeks: Date[] = [];
-                              let ws = todayWeekStart;
-                              while (ws <= dueWeekStart) {
-                                weeks.push(ws);
-                                ws = addDays(ws, 7);
-                              }
-                              if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                              return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', marginTop: '-3px' }} data-testid={`mini-cal-${task.id}`}>
-                                  {weeks.map((weekStart, wi) => {
-                                    const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                    return (
-                                      <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                        {days.map((d, di) => {
-                                          const isToday = isSameDay(d, today);
-                                          const isDue = isSameDay(d, dueDate);
-                                          return (
-                                            <div key={di} style={{
-                                              width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                              color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
-                                              backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
-                                              border: isDue && !isToday ? '1px solid #ef4444' : 'none',
-                                            }}>
-                                              {d.getDate()}
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '10px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                      <div data-box-task-id={task.id}>
+                                        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                          <div>
+                                            <button
+                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              onClick={() => setEditingTask(task)}
+                                              data-testid={`task-link-week-${task.id}`}
+                                              data-upcoming-task-name
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: gc.start }}
+                                            >
+                                              {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                            </button>
+                                            <div className="text-[9px] text-white/50" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                              {(() => { return <span style={{ display: 'inline-block', width: '7px', height: '7px', minWidth: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${gc.start} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
                                             </div>
-                                          );
-                                        })}
+                                          </div>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
+                                            <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
+                                              {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
+                                            </span>
+                                            <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '5px' }}>
+                                              <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                            </div>
+                                          </div>
+                                          {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                            <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
+                                              {cfp.moduleP.hasFiles && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                  <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                                  <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
+                                                    {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                                  </div>
+                                                  <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                                </div>
+                                              )}
+                                              {cfp.readingP.hasFiles && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                  <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                                  <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
+                                                    {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
+                                                  </div>
+                                                  <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            })()}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '12px', marginRight: '-2px' }}>
+                                <svg width="12" height="100%" viewBox="0 0 12 100" preserveAspectRatio="none" style={{ height: '100%' }}>
+                                  <path d="M 1,2 Q 7,2 7,15 L 7,42 Q 7,50 11,50 Q 7,50 7,58 L 7,85 Q 7,98 1,98" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
+                            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }} data-testid={`mini-cal-group-${group.key}`}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                {group.weeks.map((weekStart, wi) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isDue = !!dueMatch;
+                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).start : '';
+                                        return (
+                                          <div key={di} style={{
+                                            width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
+                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                          }}>
+                                            {d.getDate()}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
                           </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </>
