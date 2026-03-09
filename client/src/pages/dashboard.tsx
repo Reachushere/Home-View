@@ -9734,7 +9734,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: '20px',
           right: '20px',
-          transform: `translateY(${isTopPillOpen ? '-1px' : '-73px'})`,
+          transform: `translateY(${isTopPillOpen ? '9px' : '-73px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
