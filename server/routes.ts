@@ -4777,7 +4777,27 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] tv: ${tvFollowUrl}`);
 
       const [masterResult, tvResult] = await Promise.allSettled([
-        openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
+        (async () => {
+          const browserModOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall');
+          if (!browserModOpened) {
+            console.log(`[Cat Wash] browser_mod failed for tablet, trying notify/command_webview fallbacks`);
+          }
+          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
+          for (const svc of notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
+              });
+              console.log(`[Cat Wash] notify/${svc} command_webview: ${resp.status}`);
+              if (resp.ok) break;
+            } catch (e: any) {
+              console.log(`[Cat Wash] notify/${svc} command_webview ERROR: ${e.message}`);
+            }
+          }
+          return browserModOpened;
+        })(),
         (async () => {
           const [fireStickRes, tvRes] = await Promise.allSettled([
             fetch(`${haUrl}/api/services/media_player/turn_on`, {
