@@ -4142,10 +4142,10 @@ export async function registerRoutes(
       return res.status(401).json({ error: "Unauthorized" });
     }
     const deviceParam = (req.query.device as string) || 'master';
-    const { action, url, timestamp } = req.body;
+    const { action, url, goodbyeText, timestamp } = req.body;
     if (action) {
-      pendingTabletCommands[deviceParam] = { action, url, timestamp: timestamp || Date.now() };
-      console.log(`[Tablet Nav] Command set for ${deviceParam}: ${action} ${url || ''}`);
+      pendingTabletCommands[deviceParam] = { action, url, goodbyeText, timestamp: timestamp || Date.now() };
+      console.log(`[Tablet Nav] Command set for ${deviceParam}: ${action} ${url || ''} ${goodbyeText ? '(has goodbye)' : ''}`);
     }
     res.json({ ok: true });
   });
@@ -4821,8 +4821,9 @@ document.body.removeChild(a);
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Wash] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
-      const resumeFromChunk = cppaModule.lastChunkIndex || 0;
-      console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (PDF reader handles text extraction, filters, TTS)`);
+      const savedChunk = cppaModule.lastChunkIndex || 0;
+      const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
+      console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
 
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
@@ -5043,9 +5044,10 @@ document.body.removeChild(a);
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
-      // Resume from saved progress if available
-      const resumeFromChunk = cppaModule.lastChunkIndex || 0;
-      console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (PDF reader handles text extraction, filters, TTS)`);
+      // Resume from saved progress if available (start 1 chunk earlier for context)
+      const savedChunkLights = cppaModule.lastChunkIndex || 0;
+      const resumeFromChunk = Math.max(0, savedChunkLights > 0 ? savedChunkLights - 1 : 0);
+      console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunkLights}, starting 1 earlier)`);
 
       // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
