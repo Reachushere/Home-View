@@ -9564,7 +9564,7 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <div className="fixed flex items-center" style={{ left: '16px', top: '5px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed flex items-center" style={{ left: '19px', top: '5px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '35px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
@@ -15343,7 +15343,6 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
                     })();
                     const handlePlayFiles = async (fileType: 'module' | 'reading') => {
-                      const newWindow = window.open('about:blank', '_blank');
                       setIsLoadingOneDriveFiles(true);
                       const courseId = courseCode.toLowerCase();
                       const basePath = `/School/1. TMU/Courses/2026/Winter`;
@@ -15354,7 +15353,7 @@ export default function Dashboard() {
                         const matchedFolder = baseFolders.find((f: any) => 
                           f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
                         );
-                        if (!matchedFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
+                        if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
                         const coursePath = matchedFolder.path;
                         const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
                         const courseFolders = await courseResponse.json();
@@ -15396,25 +15395,14 @@ export default function Dashboard() {
                                   : (firstFile.objectPath?.startsWith('http')
                                     ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
                                     : `/pdf-reader/${firstFile.id}?autoplay=1`);
-                                if (newWindow) {
-                                  try { newWindow.location.href = url; } catch { newWindow.location.replace(url); }
-                                } else { window.location.href = url; }
-                              } else {
-                                if (newWindow) newWindow.close();
+                                window.location.href = url;
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
-                            } else {
-                              if (newWindow) newWindow.close();
                             }
-                          } else {
-                            if (newWindow) newWindow.close();
                           }
-                        } else {
-                          if (newWindow) newWindow.close();
                         }
                       } catch (error) {
-                        if (newWindow) newWindow.close();
                         console.error(`Error fetching ${fileType} files:`, error);
                         try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton ${fileType} error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
                       } finally {
@@ -18082,7 +18070,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: 0, top: '5px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '8px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18104,7 +18092,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '1px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18179,7 +18167,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: 0, top: '5px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '8px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18201,7 +18189,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '1px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18283,7 +18271,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: 0, top: '5px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '8px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18305,7 +18293,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '1px' }}>
                                 {courseName}
                               </div>
                             </div>
