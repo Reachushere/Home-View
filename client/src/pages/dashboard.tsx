@@ -17874,8 +17874,8 @@ export default function Dashboard() {
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
-            left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2}px`,
+            left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3}px`,
             top: `${calendarTop + 8 + 2}px`,
             bottom: `${calendarBottom - 8}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
