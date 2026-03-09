@@ -18901,7 +18901,7 @@ export default function Dashboard() {
                                         const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} style={{
-                                            width: '16px', height: '16px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            width: '15px', height: '15px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
