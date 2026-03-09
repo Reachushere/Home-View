@@ -9881,7 +9881,7 @@ export default function Dashboard() {
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Hamburger Menu */}
-          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { setIsHamburgerOpen(open); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }}>
+          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } setIsHamburgerOpen(open); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }} modal={false}>
             <DropdownMenuTrigger asChild>
               <div 
                 className="pill-button-hover"
@@ -9902,12 +9902,13 @@ export default function Dashboard() {
                 }}
                 data-testid="button-hamburger-menu"
                 title="Menu"
-                onMouseEnter={() => setIsHamburgerOpen(true)}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsHamburgerOpen(prev => !prev); if (!isHamburgerOpen) triggerButtonGlow('hamburger'); }}
+                onMouseEnter={() => { if (!('ontouchstart' in window)) setIsHamburgerOpen(true); }}
               >
                 <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
+            <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { if (!('ontouchstart' in window)) { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); } }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
               <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => setIsProfileDialogOpen(true)}>
                 <User className="h-3.5 w-3.5 mr-2" />
                 Profile Settings
