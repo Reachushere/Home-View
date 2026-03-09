@@ -18603,7 +18603,7 @@ export default function Dashboard() {
               className="text-xs font-normal flex items-center text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
             >
-              <span style={{ whiteSpace: 'nowrap' }}>Upcoming Homework and Progress</span>
+              <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
               <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2} style={{ marginLeft: '3px' }} />
             </h4>
             <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-28px' }} />
