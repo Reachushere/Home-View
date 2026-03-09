@@ -6522,7 +6522,7 @@ export default function Dashboard() {
       // Calculate scroll position to show the entire current hour row at the top
       let scrollPosition = 0;
       for (let h = calStartHour; h < currentHour && h < 24; h++) {
-        scrollPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+        scrollPosition += getEffectiveRowHeight(h);
       }
       
       calendarScrollRef.current.scrollTop = Math.max(0, scrollPosition);
@@ -6837,6 +6837,19 @@ export default function Dashboard() {
     });
   };
   
+  const getEffectiveRowHeight = (h: number) => {
+    const base = gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+    const isNight = h >= 22 || h <= 5;
+    if (!isNight) return base;
+    const hasTasks = weekDays.some(day => {
+      const ht = getTasksForHour(day, h);
+      const ct = getContinuingTasksForHour(day, h);
+      const ce = getCalendarEventsForHour(day, h);
+      return ht.length > 0 || ct.length > 0 || ce.length > 0;
+    });
+    return hasTasks ? base : Math.round(base / 2);
+  };
+
   // Get all-day Google Calendar events for a day (only conflicting events)
   const getAllDayCalendarEvents = (day: Date) => {
     const now = new Date();
@@ -14596,10 +14609,10 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-5px', 
+              top: '0px', 
               left: `${-(calendarReduction - 3) - 8}px`, 
               right: '-15px', 
-              bottom: '-23px', 
+              bottom: '0px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
@@ -16007,7 +16020,15 @@ export default function Dashboard() {
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
-                  const rowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
+                  const isNightHour = hour >= 22 || hour <= 5;
+                  const nightHourHasTasks = isNightHour && weekDays.some(day => {
+                    const ht = getTasksForHour(day, hour);
+                    const ct = getContinuingTasksForHour(day, hour);
+                    const ce = getCalendarEventsForHour(day, hour);
+                    return ht.length > 0 || ct.length > 0 || ce.length > 0;
+                  });
+                  const baseRowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
+                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.round(baseRowHeight / 2) : baseRowHeight;
                   return (
                   <div 
                     key={hour} 
@@ -16073,11 +16094,11 @@ export default function Dashboard() {
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-400 dark:border-gray-500`}
                             style={{ top: '0' }}
                           />}
-                          {/* Half-hour dotted line */}
-                          <div 
+                          {/* Half-hour dotted line - hidden for compact night hours */}
+                          {!(isNightHour && !nightHourHasTasks) && <div 
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300 dark:border-gray-400`}
                             style={{ top: '50%' }}
-                          />
+                          />}
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
                           {hourTasks.filter(task => {
                             // Skip multi-hour tasks - they're rendered at scroll container level
@@ -16265,8 +16286,8 @@ export default function Dashboard() {
                         >
                           {/* Hour boundary dotted line */}
                           <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-400`} style={{ top: '0' }} />
-                          {/* Half-hour dotted line */}
-                          <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300`} style={{ top: '50%' }} />
+                          {/* Half-hour dotted line - hidden for compact night hours */}
+                          {!(isNightHour && !nightHourHasTasks) && <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300`} style={{ top: '50%' }} />}
                           {/* Render tasks for this hour */}
                           {hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
@@ -16331,19 +16352,19 @@ export default function Dashboard() {
                   const calendarStartHour = 0;
                   let topPx = 0;
                   for (let h = calendarStartHour; h < startHour; h++) {
-                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    topPx += getEffectiveRowHeight(h);
                   }
                   
-                  const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
+                  const startHourHeight = getEffectiveRowHeight(startHour);
                   topPx += (startMin / 60) * startHourHeight;
                   
                   let heightPx = 0;
                   heightPx += ((60 - startMin) / 60) * startHourHeight;
                   for (let h = startHour + 1; h < endHour; h++) {
-                    heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    heightPx += getEffectiveRowHeight(h);
                   }
                   if (endHour > startHour) {
-                    const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
+                    const endHourHeight = getEffectiveRowHeight(endHour);
                     heightPx += (endMin / 60) * endHourHeight;
                   }
                   
@@ -16447,9 +16468,9 @@ export default function Dashboard() {
                   
                   let topPosition = 0;
                   for (let h = calStartHour; h < currentHour; h++) {
-                    topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    topPosition += getEffectiveRowHeight(h);
                   }
-                  const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
+                  const currentRowHeight = getEffectiveRowHeight(currentHour);
                   topPosition += (currentMinutes / 60) * currentRowHeight;
                   
                   const isTodayInView = weekDays.some(d => isSameDay(d, now));
@@ -16669,9 +16690,9 @@ export default function Dashboard() {
                   const getTopPx = (hour: number, min: number) => {
                     let px = 0;
                     for (let h = calStartHour; h < hour; h++) {
-                      px += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                      px += getEffectiveRowHeight(h);
                     }
-                    px += (min / 60) * (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
+                    px += (min / 60) * getEffectiveRowHeight(hour);
                     return px;
                   };
                   
@@ -17893,7 +17914,7 @@ export default function Dashboard() {
             left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1}px`,
             top: `${calendarTop + 8 + 2}px`,
-            bottom: `${calendarBottom - 6 - 2}px`,
+            bottom: `${calendarBottom - 6 - 2 - 2}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
