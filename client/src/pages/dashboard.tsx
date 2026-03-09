@@ -16564,6 +16564,7 @@ export default function Dashboard() {
                       const cellDateStr = format(day, "yyyy-MM-dd");
                       const cellShift = localShiftMap[cellDateStr];
                       const isNightShiftSleepHour = cellShift === 'night' && hour >= 10 && hour <= 16;
+                      const nightSleepColor = '#7E6280';
                       const prevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
                       const prevDayShift = localShiftMap[prevDayStr];
                       const isDayShiftSleepHour = (cellShift === 'day' && hour >= 22) || (prevDayShift === 'day' && hour <= 4);
@@ -16575,7 +16576,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isSleepHour ? '#CABDCC' : (isToday || isCurrentHour ? '#e4ecf5' : '#faf8f5'),
+                            backgroundColor: isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? '#CABDCC' : (isToday || isCurrentHour ? '#e4ecf5' : '#faf8f5')),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
@@ -16843,12 +16844,11 @@ export default function Dashboard() {
                       const satPrevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
                       const satPrevDayShift = localShiftMap[satPrevDayStr];
                       const isSatDayShiftSleepHour = (satShift === 'day' && hour >= 22) || (satPrevDayShift === 'day' && hour <= 4);
-                      const isSatSleepHour = isSatNightSleepHour || isSatDayShiftSleepHour;
                       return (
                         <div 
                           className={`border-l relative p-0.5`}
                           style={{ 
-                            backgroundColor: isSatSleepHour ? '#CABDCC' : (isSatToday || isCurrentHour ? '#e4ecf5' : '#faf8f5'),
+                            backgroundColor: isSatNightSleepHour ? '#7E6280' : (isSatDayShiftSleepHour ? '#CABDCC' : (isSatToday || isCurrentHour ? '#e4ecf5' : '#faf8f5')),
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
