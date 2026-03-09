@@ -18605,7 +18605,7 @@ export default function Dashboard() {
                                 </button>
                                 <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                                  {taskCourseCode && (() => { const gc = getCourseGradientColors(taskCourseCode); const circleStart = taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : gc.start; return <span style={{ display: 'block', width: '7px', height: '7px', minWidth: '7px', minHeight: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${circleStart} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
+
                                 </div>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
@@ -18704,7 +18704,7 @@ export default function Dashboard() {
                                 </button>
                                 <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                                  {taskCourseCode && (() => { const gc = getCourseGradientColors(taskCourseCode); const circleStart = taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : gc.start; return <span style={{ display: 'block', width: '7px', height: '7px', minWidth: '7px', minHeight: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${circleStart} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
+
                                 </div>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
@@ -18844,7 +18844,6 @@ export default function Dashboard() {
                                             </button>
                                             <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                                              {taskCourseCode && (() => { const circleStart = taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : gc.start; return <span style={{ display: 'block', width: '7px', height: '7px', minWidth: '7px', minHeight: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${circleStart} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
                                             </div>
                                           </div>
                                           <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
