@@ -18075,13 +18075,20 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          <div style={{ padding: '6px 8px', backgroundColor: colorSettings.headerBar }}>
+          <div style={{ padding: '6px 8px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center' }}>
             <h4
-              className="text-xs font-normal flex items-center justify-between text-white"
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+              className="text-xs font-normal flex items-center text-white"
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", width: '50%' }}
             >
               <span style={{ whiteSpace: 'nowrap' }}>Upcoming</span>
             </h4>
+            <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
+            <div
+              className="text-xs font-normal text-white"
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", width: '50%', textAlign: 'right' }}
+            >
+              {format(new Date(), 'EEEE, MMMM d, yyyy')}
+            </div>
           </div>
           <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '2px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
             {isLoading ? (
