@@ -482,6 +482,10 @@ export default function Dashboard() {
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const { isReadOnly, isAdmin } = useAccessMode();
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
+  const [dismissedCalendarEvents, setDismissedCalendarEvents] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('dismissedCalendarEvents');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
   const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
@@ -887,6 +891,16 @@ export default function Dashboard() {
   };
   
   // Dismiss partner popup for 4 hours
+  const toggleDismissCalendarEvent = (eventId: string) => {
+    setDismissedCalendarEvents(prev => {
+      const next = new Set(prev);
+      if (next.has(eventId)) next.delete(eventId);
+      else next.add(eventId);
+      localStorage.setItem('dismissedCalendarEvents', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
   const handleDismissPartnerPopup = () => {
     const dismissUntil = Date.now() + 4 * 60 * 60 * 1000; // 4 hours
     setPartnerAwayDismissedUntil(dismissUntil);
@@ -16531,13 +16545,10 @@ export default function Dashboard() {
                             );
                           })}
                           {/* Google Calendar Events */}
-                          {hourCalendarEvents.map((event, eventIdx) => (
-                            <a
+                          {hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id)).map((event, eventIdx) => (
+                            <div
                               key={event.id}
-                              href={event.htmlLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="absolute rounded pt-0.5 px-0.5 pb-0 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500 cursor-pointer"
+                              className={`absolute rounded pt-0.5 px-0.5 pb-0 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500`}
                               style={{
                                 top: '2px',
                                 left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
@@ -16549,15 +16560,20 @@ export default function Dashboard() {
                               data-testid={`gcal-event-${event.id}`}
                             >
                               <div className="flex items-center gap-0.5">
-                                <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                                <div className="text-[8px] font-bold truncate text-black">
+                                <Checkbox
+                                  checked={false}
+                                  onCheckedChange={() => toggleDismissCalendarEvent(event.id)}
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  data-testid={`checkbox-gcal-${event.id}`}
+                                />
+                                <a href={event.htmlLink} target="_blank" rel="noopener noreferrer" className="text-[8px] font-bold truncate text-black cursor-pointer hover:underline flex-1" onClick={(e) => e.stopPropagation()}>
                                   {event.title}
-                                </div>
+                                </a>
                               </div>
-                              <div className="text-[8px] mt-0.5 mb-3 ml-4 text-muted-foreground">
+                              <div className="text-[8px] mt-0.5 mb-3 ml-[18px] text-muted-foreground">
                                 {format(new Date(event.startDate), "h:mm a")}
                               </div>
-                            </a>
+                            </div>
                           ))}
                         </div>
                       );
