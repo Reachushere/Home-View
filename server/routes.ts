@@ -4384,7 +4384,8 @@ document.body.removeChild(a);
     }
     // Method 1: Use androidtv.adb_command to launch Silk with URL
     try {
-      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${url}" com.amazon.cloud9`;
+      const escapedUrl = url.replace(/&/g, '\\&');
+      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${escapedUrl}' com.amazon.cloud9`;
       const resp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },

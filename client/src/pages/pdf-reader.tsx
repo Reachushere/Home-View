@@ -1065,10 +1065,11 @@ export default function PDFReaderPage() {
       }
       if (catWashFollow && fileId && clampedIndex !== lastReportedWordRef.current) {
         lastReportedWordRef.current = clampedIndex;
+        const currentChunkWords = chunksRef.current[currentChunkRef.current]?.split(/\s+/).filter((w: string) => w.length > 0) || [];
         fetch("/api/cat-wash/update-progress", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileId, wordIndex: clampedIndex }),
+          body: JSON.stringify({ fileId, chunkIndex: currentChunkRef.current, totalChunks: chunksRef.current.length, words: currentChunkWords, wordIndex: clampedIndex, chunkText: chunksRef.current[currentChunkRef.current] }),
         }).catch(() => {});
       }
     }
@@ -1916,7 +1917,7 @@ export default function PDFReaderPage() {
                 <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex) / followState.totalChunks) * 100)}%` }} />
               </div>
               <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="follow-text-display">
-                {followState.words.length > 0 && (
+                {followState.words.length > 0 ? (
                   <p className="text-2xl leading-relaxed">
                     {followState.words.map((word, idx) => (
                       <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-bold px-1 rounded" : idx < followState.estimatedWordIndex ? "text-white/25" : "text-white/90"} transition-colors duration-75`}>
@@ -1924,6 +1925,10 @@ export default function PDFReaderPage() {
                       </span>
                     ))}
                   </p>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <span className="text-lg text-white/40 animate-pulse">Loading text from master tablet...</span>
+                  </div>
                 )}
               </div>
             </div>
