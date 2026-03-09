@@ -374,6 +374,8 @@ export default function Dashboard() {
   const todayTaskCountRef = useRef(0);
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
   const calendarBorderRef = useRef<HTMLDivElement>(null);
+  const homeworkSpacerRef = useRef<HTMLDivElement>(null);
+  const homeworkSectionRef = useRef<HTMLElement>(null);
   const [calendarBorderTop, setCalendarBorderTop] = useState(0);
   const clockContainerRef = useRef<HTMLDivElement>(null);
   const [clockWidth, setClockWidth] = useState(0);
@@ -18569,6 +18571,7 @@ export default function Dashboard() {
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
         {/* Coming Up box - positioned to the left of the calendar in the reduction gap */}
         <section
+          ref={homeworkSectionRef}
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
@@ -18593,7 +18596,7 @@ export default function Dashboard() {
               <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2} style={{ marginRight: '3px' }} />
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
-            <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-70px' }} />
+            <div ref={homeworkSpacerRef} style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-70px' }} />
             <div
               className="text-[10px] font-normal text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}
@@ -18624,7 +18627,14 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
                     right: 0,
-                    width: 'calc(100% - 70px)',
+                    width: (() => {
+                      if (homeworkSpacerRef.current && homeworkSectionRef.current) {
+                        const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
+                        const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
+                        return `${sectionRect.right - spacerRect.left}px`;
+                      }
+                      return 'calc(100% - 70px)';
+                    })(),
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
