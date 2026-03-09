@@ -16561,6 +16561,9 @@ export default function Dashboard() {
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
+                      const cellDateStr = format(day, "yyyy-MM-dd");
+                      const cellShift = localShiftMap[cellDateStr];
+                      const isNightShiftSleepHour = cellShift === 'night' && hour >= 10 && hour <= 16;
                       return (
                         <div 
                           key={dayIdx} 
@@ -16568,7 +16571,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday || isCurrentHour ? '#e4ecf5' : '#faf8f5',
+                            backgroundColor: isNightShiftSleepHour ? '#CABDCC' : (isToday || isCurrentHour ? '#e4ecf5' : '#faf8f5'),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
@@ -16830,11 +16833,14 @@ export default function Dashboard() {
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
+                      const satDateStr = format(day, "yyyy-MM-dd");
+                      const satShift = localShiftMap[satDateStr];
+                      const isSatNightSleepHour = satShift === 'night' && hour >= 10 && hour <= 16;
                       return (
                         <div 
                           className={`border-l relative p-0.5`}
                           style={{ 
-                            backgroundColor: isSatToday || isCurrentHour ? '#e4ecf5' : '#faf8f5',
+                            backgroundColor: isSatNightSleepHour ? '#CABDCC' : (isSatToday || isCurrentHour ? '#e4ecf5' : '#faf8f5'),
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
