@@ -18078,15 +18078,15 @@ export default function Dashboard() {
               <>
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 8px 0' }}>
-                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>Today</span>
-                  <span className="text-[10px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueTodayTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>Today</span>
+                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueTodayTasks.length})</span>
                   <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
-                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
-                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
+                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
                   </div>
                 </div>
                 {dueTodayTasks.length === 0 ? (
-                  <div className="text-[9px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task) => {
@@ -18112,17 +18112,17 @@ export default function Dashboard() {
                           }}
                         >
                           <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
-                            <span className="text-white text-[8px] font-bold">Delete</span>
+                            <span className="text-white text-[9px] font-bold">Delete</span>
                           </div>
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
-                            <span className="text-white text-[8px] font-bold">Reschedule</span>
+                            <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                             <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
-                                  className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
@@ -18134,26 +18134,26 @@ export default function Dashboard() {
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
                                         <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                         </div>
-                                        <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                        <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
                                       </div>
                                     )}
                                     {cfp.readingP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
                                         <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                         </div>
-                                        <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                        <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
                                       </div>
                                     )}
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
+                              <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18162,7 +18162,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
                               </span>
                             </div>
@@ -18176,15 +18176,15 @@ export default function Dashboard() {
 
                 {/* Tomorrow Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>Tomorrow</span>
-                  <span className="text-[10px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueTomorrowTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>Tomorrow</span>
+                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueTomorrowTasks.length})</span>
                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
-                    <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
-                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
+                    <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
+                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
                   </div>
                 </div>
                 {dueTomorrowTasks.length === 0 ? (
-                  <div className="text-[9px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due tomorrow</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due tomorrow</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {dueTomorrowTasks.map((task) => {
@@ -18210,17 +18210,17 @@ export default function Dashboard() {
                           }}
                         >
                           <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
-                            <span className="text-white text-[8px] font-bold">Delete</span>
+                            <span className="text-white text-[9px] font-bold">Delete</span>
                           </div>
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
-                            <span className="text-white text-[8px] font-bold">Reschedule</span>
+                            <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                             <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
-                                  className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-tomorrow-${task.id}`}
                                   data-upcoming-task-name
@@ -18232,26 +18232,26 @@ export default function Dashboard() {
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
                                         <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                         </div>
-                                        <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                        <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
                                       </div>
                                     )}
                                     {cfp.readingP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
                                         <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                         </div>
-                                        <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                        <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
                                       </div>
                                     )}
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
+                              <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18260,7 +18260,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
                               </span>
                             </div>
@@ -18274,22 +18274,22 @@ export default function Dashboard() {
 
                 {/* 2-21 Days Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>2-21 Days</span>
-                  <span className="text-[10px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueThisWeekTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>2-21 Days</span>
+                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 2), 'd')}</div>
+                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 2), 'd')}</div>
                     </div>
-                    <span style={{ fontSize: '5px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekEnd, 'd')}</div>
+                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekEnd, 'd')}</div>
                     </div>
                   </div>
                 </div>
                 {dueThisWeekTasks.length === 0 ? (
-                  <div className="text-[9px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2-21 days</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2-21 days</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {dueThisWeekTasks.map((task) => {
@@ -18315,17 +18315,17 @@ export default function Dashboard() {
                           }}
                         >
                           <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
-                            <span className="text-white text-[8px] font-bold">Delete</span>
+                            <span className="text-white text-[9px] font-bold">Delete</span>
                           </div>
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
-                            <span className="text-white text-[8px] font-bold">Reschedule</span>
+                            <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                             <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
-                                  className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-week-${task.id}`}
                                   data-upcoming-task-name
@@ -18337,26 +18337,26 @@ export default function Dashboard() {
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
                                         <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                         </div>
-                                        <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                        <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
                                       </div>
                                     )}
                                     {cfp.readingP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
                                         <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                         </div>
-                                        <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                        <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
                                       </div>
                                     )}
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
+                              <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18365,7 +18365,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
                               </span>
                             </div>
