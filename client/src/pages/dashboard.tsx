@@ -18593,9 +18593,14 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
-                  <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
-                    <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
-                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
+                    <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
+                    </div>
+                    <span style={{ fontSize: '6px', color: 'transparent', lineHeight: 1 }}>&#9654;</span>
+                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid transparent', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    </div>
                   </div>
                 </div>
                 {dueTodayTasks.length === 0 ? (
