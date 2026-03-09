@@ -9678,7 +9678,7 @@ export default function Dashboard() {
             className="font-raleway"
             style={{
               position: 'fixed',
-              top: '22px',
+              top: '25px',
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
