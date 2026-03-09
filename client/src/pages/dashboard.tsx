@@ -6870,12 +6870,12 @@ export default function Dashboard() {
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
-      // Use eventStartTime if set, otherwise use dueDate hour
       if (t.eventStartTime) {
         const [startHour] = t.eventStartTime.split(':').map(Number);
         return startHour === hour;
       }
-      return getETHours(dueDate) === hour;
+      const etH = parseInt(dueDate.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10);
+      return etH === hour;
     });
   };
   
