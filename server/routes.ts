@@ -8092,7 +8092,13 @@ document.body.removeChild(a);
           if (announcedReminders.has(reminderKey)) continue;
           
           if (isQuietHours) {
-            console.log(`[Alexa Reminder] Quiet hours (shift: ${shiftType}) but task has explicit reminder — announcing anyway: ${task.title}`);
+            const schoolTypes = ['class', 'reading', 'module', 'essay', 'project', 'discussion', 'poll', 'exam', 'quiz'];
+            const isSchoolTask = task.courseName || schoolTypes.includes(task.type);
+            if (!isSchoolTask) {
+              console.log(`[Alexa Reminder] Quiet hours (shift: ${shiftType}) — skipping non-school task: ${task.title}`);
+              continue;
+            }
+            console.log(`[Alexa Reminder] Quiet hours (shift: ${shiftType}) but school task — announcing anyway: ${task.title}`);
           }
           
           announcedReminders.add(reminderKey);
