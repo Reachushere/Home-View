@@ -4719,6 +4719,28 @@ document.body.removeChild(a);
           catWashPlaybackState = null;
         } else {
           console.log(`[Cat Wash] Already playing: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} - skipping`);
+          
+          const haUrlSkip = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          try {
+            const [fireStickSkip, tvSkip] = await Promise.allSettled([
+              fetch(`${haUrlSkip}/api/services/media_player/turn_on`, {
+                method: 'POST', headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+              }),
+              fetch(`${haUrlSkip}/api/services/media_player/turn_on`, {
+                method: 'POST', headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
+              }),
+            ]);
+            console.log(`[Cat Wash] Skipped but ensuring TV on - Fire Stick: ${fireStickSkip.status === 'fulfilled' ? fireStickSkip.value.status : 'failed'}, TV: ${tvSkip.status === 'fulfilled' ? tvSkip.value.status : 'failed'}`);
+            if (currentTvFollowUrl) {
+              await openUrlOnFireStick(haUrlSkip, 'media_player.fire_tv_172_24_0_88', currentTvFollowUrl);
+              console.log(`[Cat Wash] Re-sent TV follow URL: ${currentTvFollowUrl}`);
+            }
+          } catch (e: any) {
+            console.log(`[Cat Wash] Error ensuring TV on during skip: ${e.message}`);
+          }
+          
           return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
         }
       }
