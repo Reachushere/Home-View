@@ -16384,8 +16384,8 @@ export default function Dashboard() {
                                 className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""}`}
                                 style={{
                                   top: `${topOffset}px`,
-                                  left: `calc(${taskIdx * columnWidth}% + 1px)`,
-                                  width: `calc(${columnWidth}% - 2px)`,
+                                  left: `calc(${taskIdx * columnWidth}% + 2px)`,
+                                  width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
                                   zIndex: 43,
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
