@@ -18183,17 +18183,17 @@ export default function Dashboard() {
                               const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
                               const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
                               return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
                                     const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                     return (
-                                      <div key={wi} style={{ display: 'flex', gap: '1px' }}>
+                                      <div key={wi} style={{ display: 'flex', gap: '2px' }}>
                                         {days.map((d, di) => {
                                           const isToday = isSameDay(d, today);
                                           const isDue = isSameDay(d, dueDate);
                                           return (
                                             <div key={di} style={{
-                                              width: '10px', height: '10px', borderRadius: '2px', fontSize: '6px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              width: '14px', height: '14px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                                               color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                               backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
@@ -18315,17 +18315,17 @@ export default function Dashboard() {
                               const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
                               const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
                               return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
                                     const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                     return (
-                                      <div key={wi} style={{ display: 'flex', gap: '1px' }}>
+                                      <div key={wi} style={{ display: 'flex', gap: '2px' }}>
                                         {days.map((d, di) => {
                                           const isToday = isSameDay(d, today);
                                           const isDue = isSameDay(d, dueDate);
                                           return (
                                             <div key={di} style={{
-                                              width: '10px', height: '10px', borderRadius: '2px', fontSize: '6px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              width: '14px', height: '14px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                                               color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                               backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
@@ -18454,17 +18454,17 @@ export default function Dashboard() {
                               const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
                               const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
                               return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
                                     const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                     return (
-                                      <div key={wi} style={{ display: 'flex', gap: '1px' }}>
+                                      <div key={wi} style={{ display: 'flex', gap: '2px' }}>
                                         {days.map((d, di) => {
                                           const isToday = isSameDay(d, today);
                                           const isDue = isSameDay(d, dueDate);
                                           return (
                                             <div key={di} style={{
-                                              width: '10px', height: '10px', borderRadius: '2px', fontSize: '6px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              width: '14px', height: '14px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                                               color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                               backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
