@@ -14618,10 +14618,10 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-5px', 
+              top: '-4px', 
               left: `${-(calendarReduction - 3) - 8}px`, 
               right: '-15px', 
-              bottom: '-20px', 
+              bottom: '-19px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
