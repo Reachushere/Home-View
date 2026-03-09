@@ -18556,7 +18556,7 @@ export default function Dashboard() {
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom - 1}px`,
-            background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 88%, white) 100%)`,
+            background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
@@ -18635,7 +18635,7 @@ export default function Dashboard() {
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                             <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                              <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d</span>
                               <div style={{ width: '100%', position: 'relative', height: '3px' }}>
                                 <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
@@ -18758,7 +18758,7 @@ export default function Dashboard() {
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                                         <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', marginLeft: '-3px' }}>
-                                          <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d</span>
                                           <div style={{ width: '100%', position: 'relative', height: '3px' }}>
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
@@ -18931,7 +18931,7 @@ export default function Dashboard() {
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                                         <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', marginLeft: '-3px' }}>
-                                          <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d</span>
                                           <div style={{ width: '100%', position: 'relative', height: '3px' }}>
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
