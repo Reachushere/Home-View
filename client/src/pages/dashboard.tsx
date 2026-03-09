@@ -18551,7 +18551,7 @@ export default function Dashboard() {
             ) : (
               <>
                 {/* Today Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 8px 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Today</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
