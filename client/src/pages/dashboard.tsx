@@ -13871,7 +13871,7 @@ export default function Dashboard() {
                     
                     {/* Header Bar Colour */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-xs whitespace-nowrap flex-1">Summary Box Headers</Label>
+                      <Label className="text-xs whitespace-nowrap flex-1">Upcoming Header, Date, and Time Label Background</Label>
                       <input
                         type="text"
                         className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
@@ -22608,7 +22608,7 @@ function TaskForm({
                   {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002 }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
+              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002, maxHeight: '70vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                 <div className="p-3">
                   <CalendarPicker
                     mode="single"
@@ -22618,6 +22618,16 @@ function TaskForm({
                         setTempDate(date);
                       }
                     }}
+                    defaultMonth={new Date()}
+                    numberOfMonths={(() => {
+                      const now = new Date();
+                      const dueDate = tempDate || (formData.dueDate ? new Date(formData.dueDate) : null);
+                      if (!dueDate) return 1;
+                      const nowMonth = now.getFullYear() * 12 + now.getMonth();
+                      const dueMonth = dueDate.getFullYear() * 12 + dueDate.getMonth();
+                      return Math.min(Math.max(1, dueMonth - nowMonth + 1), 4);
+                    })()}
+                    classNames={{ months: "flex flex-col space-y-4" }}
                   />
                   <div className="border-t pt-3 mt-3">
                     <Label className="text-sm font-medium">Time</Label>
