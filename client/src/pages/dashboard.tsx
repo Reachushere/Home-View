@@ -18381,31 +18381,24 @@ export default function Dashboard() {
                   </div>
                   {/* Handle 1 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 2: Progress bar */}
-                  <div style={{ width: '44px', flexShrink: 0, position: 'relative' }}>
-                    {/* Background track */}
-                    <div 
-                      className="rounded-full"
-                      style={{ 
-                        width: '44px', 
-                        height: '3px', 
-                        backgroundColor: 'transparent'
-                      }}
-                    />
-                    {/* Progress fill */}
-                    <div 
-                      className="rounded-full transition-all duration-300"
-                      style={{ 
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: `${progressBarWidth}px`, 
-                        height: '3px', 
-                        backgroundColor: progressColor,
-                        opacity: 0.9
-                      }}
-                      title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
-                    />
+                  {/* Col 2: Days label + progress bar */}
+                  <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                    <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                    <div style={{ width: '100%', position: 'relative', height: '3px' }}>
+                      <div 
+                        className="rounded-full transition-all duration-300"
+                        style={{ 
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: `${Math.min(progressBarWidth, 30)}px`, 
+                          height: '3px', 
+                          backgroundColor: progressColor,
+                          opacity: 0.9
+                        }}
+                        title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
+                      />
+                    </div>
                   </div>
                   {/* Handle 2 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
@@ -18454,13 +18447,6 @@ export default function Dashboard() {
                   </span>
                   {/* Handle 6 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 7: Days */}
-                  <span 
-                    className="text-[10px] font-medium whitespace-nowrap"
-                    style={{ color: 'white' }}
-                  >
-                    {daysUntil}d
-                  </span>
                 </div>
                 {attachments.length > 0 && (
                   <div className="mt-0.5 space-y-0.5">
