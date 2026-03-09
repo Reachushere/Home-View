@@ -18057,7 +18057,7 @@ export default function Dashboard() {
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '15px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
                               <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
@@ -18154,7 +18154,7 @@ export default function Dashboard() {
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '15px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
                               <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
@@ -18258,7 +18258,7 @@ export default function Dashboard() {
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '15px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
                               <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
