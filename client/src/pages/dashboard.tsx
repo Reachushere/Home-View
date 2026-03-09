@@ -9732,9 +9732,9 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: '15px',
-          right: '15px',
-          transform: `translateY(${isTopPillOpen ? '9px' : '-63px'})`,
+          left: '20px',
+          right: '20px',
+          transform: `translateY(${isTopPillOpen ? '4px' : '-68px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
@@ -11351,7 +11351,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '3px', right: `${calendarRight - 15}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '1px', right: `${calendarRight - 15}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
