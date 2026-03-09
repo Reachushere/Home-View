@@ -4467,12 +4467,16 @@ document.body.removeChild(a);
         });
         const body = await resp.text();
         console.log(`[Device] ${deviceName} → browser_mod.javascript/direct_nav (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
-        if (resp.ok) {
+        const bodyEmpty = body.trim() === '[]' || body.trim() === '';
+        if (resp.ok && !bodyEmpty) {
           results.push(`${browserId}:direct_nav:${resp.status}`);
           console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true (direct nav)`);
           return true;
         }
-        results.push(`${browserId}:direct_nav:${resp.status}`);
+        if (bodyEmpty) {
+          console.log(`[Device] ${deviceName} → browser_mod returned empty (browser not connected)`);
+        }
+        results.push(`${browserId}:direct_nav:${resp.status}:${bodyEmpty ? 'no_browser' : 'ok'}`);
       } catch (e: any) {
         console.log(`[Device] ${deviceName} → browser_mod.javascript/direct_nav (${browserId}) ERROR: ${e.message}`);
         results.push(`${browserId}:direct_nav:error`);
@@ -4486,12 +4490,13 @@ document.body.removeChild(a);
         });
         const body = await resp.text();
         console.log(`[Device] ${deviceName} → browser_mod.javascript/silk_intent (${browserId}): ${resp.status} body=${body.substring(0, 200)}`);
-        if (resp.ok) {
+        const bodyEmpty = body.trim() === '[]' || body.trim() === '';
+        if (resp.ok && !bodyEmpty) {
           results.push(`${browserId}:silk_intent:${resp.status}`);
           console.log(`[Device] ${deviceName} results: [${results.join(', ')}] success=true (intent fallback)`);
           return true;
         }
-        results.push(`${browserId}:silk_intent:${resp.status}`);
+        results.push(`${browserId}:silk_intent:${resp.status}:${bodyEmpty ? 'no_browser' : 'ok'}`);
       } catch (e: any) {
         console.log(`[Device] ${deviceName} → browser_mod.javascript/silk_intent (${browserId}) ERROR: ${e.message}`);
         results.push(`${browserId}:silk_intent:error`);
