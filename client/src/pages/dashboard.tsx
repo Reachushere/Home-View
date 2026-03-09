@@ -18825,8 +18825,8 @@ export default function Dashboard() {
                                         const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
                                         const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
                                         return (
-                                          <div key={di} style={{ width: '8px', height: '8px', borderRadius: '1px', fontSize: '5px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isToday ? '#000' : isDue ? '#fff' : 'rgba(255,255,255,0.5)', backgroundColor: isToday ? '#fff' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.1)', border: isToday ? '1px solid rgba(255,255,255,0.8)' : 'none' }}>
-                                            {format(d, 'd')}
+                                          <div key={di} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.5)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.08)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }}>
+                                            {d.getDate()}
                                           </div>
                                         );
                                       })}
