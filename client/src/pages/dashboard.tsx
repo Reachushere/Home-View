@@ -18137,7 +18137,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
-                                  {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || '')} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
                                 <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                   {courseName}
@@ -18269,7 +18269,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
-                                  {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || '')} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
                                 <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                   {courseName}
@@ -18408,7 +18408,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
-                                  {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || '')} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
                                 <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                   {courseName}
