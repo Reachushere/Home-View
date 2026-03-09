@@ -11502,7 +11502,7 @@ export default function Dashboard() {
       )}
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
-      <div className="fixed z-50 flex items-end justify-between gap-2" style={{ top: `${(calendarWrapperRef.current?.getBoundingClientRect().top ?? calendarTop) - 28}px`, left: '8px', right: `${calendarRight - 8}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-between gap-2" style={{ top: `${(calendarWrapperRef.current?.getBoundingClientRect().top ?? calendarTop) - 28}px`, left: '13px', right: `${calendarRight - 8}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1" style={{ marginLeft: '0px' }}>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
