@@ -17596,6 +17596,71 @@ export default function Dashboard() {
             return '#888888';
           };
 
+          const SwipeableTaskRow = ({ task, children, onDelete, onReschedule }: { task: any, children: any, onDelete: () => void, onReschedule: () => void }) => {
+            const [swipeX, setSwipeX] = useState(0);
+            const [startX, setStartX] = useState(0);
+            const [isSwiping, setIsSwiping] = useState(false);
+            const rowRef = useRef<HTMLDivElement>(null);
+            const rowWidth = rowRef.current?.offsetWidth || 150;
+            const maxSwipe = rowWidth / 3;
+            return (
+              <div ref={rowRef} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}>
+                {swipeX > 0 && (
+                  <div
+                    style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(swipeX, maxSwipe)}px`, background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px' }}
+                    onClick={(e) => { e.stopPropagation(); setSwipeX(0); onReschedule(); }}
+                    data-testid={`swipe-reschedule-${task.id}`}
+                  >
+                    <span className="text-white text-[8px] font-bold">Reschedule</span>
+                  </div>
+                )}
+                {swipeX < 0 && (
+                  <div
+                    style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: `${Math.min(Math.abs(swipeX), maxSwipe)}px`, background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0' }}
+                    onClick={(e) => { e.stopPropagation(); setSwipeX(0); onDelete(); }}
+                    data-testid={`swipe-delete-${task.id}`}
+                  >
+                    <span className="text-white text-[8px] font-bold">Delete</span>
+                  </div>
+                )}
+                <div
+                  style={{ transform: `translateX(${swipeX}px)`, transition: isSwiping ? 'none' : 'transform 0.2s ease-out', position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px' }}
+                  onTouchStart={(e) => { setStartX(e.touches[0].clientX); setIsSwiping(true); }}
+                  onTouchMove={(e) => {
+                    if (!isSwiping) return;
+                    const diff = e.touches[0].clientX - startX;
+                    setSwipeX(Math.max(-maxSwipe, Math.min(maxSwipe, diff)));
+                  }}
+                  onTouchEnd={() => {
+                    setIsSwiping(false);
+                    if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
+                    else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
+                  }}
+                  onMouseDown={(e) => { setStartX(e.clientX); setIsSwiping(true); }}
+                  onMouseMove={(e) => {
+                    if (!isSwiping) return;
+                    const diff = e.clientX - startX;
+                    setSwipeX(Math.max(-maxSwipe, Math.min(maxSwipe, diff)));
+                  }}
+                  onMouseUp={() => {
+                    setIsSwiping(false);
+                    if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
+                    else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
+                  }}
+                  onMouseLeave={() => {
+                    if (isSwiping) {
+                      setIsSwiping(false);
+                      if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
+                      else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
+                    }
+                  }}
+                >
+                  {children}
+                </div>
+              </div>
+            );
+          };
+
           const calcCourseFileProgress = (courseCode: string) => {
             const courseCodeLower = courseCode.toLowerCase();
             const moduleFolderKey = `week-${selectedWeek}-${courseCodeLower}-module`;
@@ -17961,12 +18026,11 @@ export default function Dashboard() {
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom - 1}px`,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.0) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.0) 50%, rgba(255,255,255,0.0) 100%)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.5)',
-            borderTop: '1px solid rgba(255,255,255,0.7)',
+            border: '1px solid white',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
             transition: 'opacity 0.2s ease'
@@ -17987,7 +18051,7 @@ export default function Dashboard() {
             ) : (
               <>
                 {/* Today Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 2px 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 5px 0' }}>
                   <span className="text-[10px] font-semibold" style={{ color: 'white' }}>Today</span>
                   <span className="text-[10px] font-semibold" style={{ color: 'rgb(255, 0, 0)' }}>({dueTodayTasks.length})</span>
                   <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
@@ -18007,71 +18071,61 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <div key={task.id} data-box-task-id={task.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: '2px', marginBottom: '1px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <div style={{ width: '14px', flexShrink: 0 }}>
-                              {task.type !== 'class' ? (
-                                <input
-                                  type="checkbox"
-                                  checked={task.isCompleted ?? false}
-                                  onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                                  className="h-3 w-3 rounded-sm cursor-pointer"
-                                  style={{ accentColor: getCourseColor(task.courseName) }}
-                                  data-testid={`checkbox-today-${task.id}`}
-                                />
-                              ) : <div className="h-3 w-3" />}
-                            </div>
-                            <button
-                              className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
-                              onClick={() => setEditingTask(task)}
-                              data-testid={`task-link-today-${task.id}`}
-                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
-                            >
-                              {task.title}
-                            </button>
-                            <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
-                              <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                            </div>
-                            <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
-                              {daysUntil}d
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '17px', marginTop: '1px' }}>
-                            <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', flex: 1, minWidth: 0 }}>
-                              {courseName}
-                            </div>
+                        <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
                                 {cfp.moduleP.hasFiles && (
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[7px] text-white/60 font-medium">M</span>
-                                    <div style={{ width: '24px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                       {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                     </div>
-                                    <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                    <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
                                   </div>
                                 )}
                                 {cfp.readingP.hasFiles && (
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[7px] text-white/60 font-medium">R</span>
-                                    <div style={{ width: '24px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                       {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                     </div>
-                                    <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
                                   </div>
                                 )}
                               </div>
                             )}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                <button
+                                  className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  onClick={() => setEditingTask(task)}
+                                  data-testid={`task-link-today-${task.id}`}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
+                                >
+                                  {task.title}
+                                </button>
+                                <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
+                                  <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                </div>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                                  {daysUntil}d
+                                </span>
+                              </div>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
+                                {courseName}
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </SwipeableTaskRow>
                       );
                     })}
                   </div>
                 )}
 
                 {/* Tomorrow Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 2px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 5px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
                   <span className="text-[10px] font-semibold" style={{ color: 'white' }}>Tomorrow</span>
                   <span className="text-[10px] font-semibold" style={{ color: 'rgb(255, 165, 0)' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
@@ -18091,71 +18145,61 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <div key={task.id} data-box-task-id={task.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: '2px', marginBottom: '1px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <div style={{ width: '14px', flexShrink: 0 }}>
-                              {task.type !== 'class' ? (
-                                <input
-                                  type="checkbox"
-                                  checked={task.isCompleted ?? false}
-                                  onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                                  className="h-3 w-3 rounded-sm cursor-pointer"
-                                  style={{ accentColor: getCourseColor(task.courseName) }}
-                                  data-testid={`checkbox-tomorrow-${task.id}`}
-                                />
-                              ) : <div className="h-3 w-3" />}
-                            </div>
-                            <button
-                              className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
-                              onClick={() => setEditingTask(task)}
-                              data-testid={`task-link-tomorrow-${task.id}`}
-                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
-                            >
-                              {task.title}
-                            </button>
-                            <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
-                              <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                            </div>
-                            <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
-                              {daysUntil}d
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '17px', marginTop: '1px' }}>
-                            <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', flex: 1, minWidth: 0 }}>
-                              {courseName}
-                            </div>
+                        <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
                                 {cfp.moduleP.hasFiles && (
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[7px] text-white/60 font-medium">M</span>
-                                    <div style={{ width: '24px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                       {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                     </div>
-                                    <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                    <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
                                   </div>
                                 )}
                                 {cfp.readingP.hasFiles && (
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[7px] text-white/60 font-medium">R</span>
-                                    <div style={{ width: '24px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                       {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                     </div>
-                                    <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
                                   </div>
                                 )}
                               </div>
                             )}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                <button
+                                  className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  onClick={() => setEditingTask(task)}
+                                  data-testid={`task-link-tomorrow-${task.id}`}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
+                                >
+                                  {task.title}
+                                </button>
+                                <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
+                                  <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                </div>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                                  {daysUntil}d
+                                </span>
+                              </div>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
+                                {courseName}
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </SwipeableTaskRow>
                       );
                     })}
                   </div>
                 )}
 
                 {/* 2-10 Days Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 2px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 5px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
                   <span className="text-[10px] font-semibold" style={{ color: 'white' }}>2-10 Days</span>
                   <span className="text-[10px] font-semibold" style={{ color: 'rgb(0, 200, 0)' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
@@ -18182,64 +18226,54 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <div key={task.id} data-box-task-id={task.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: '2px', marginBottom: '1px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <div style={{ width: '14px', flexShrink: 0 }}>
-                              {task.type !== 'class' ? (
-                                <input
-                                  type="checkbox"
-                                  checked={task.isCompleted ?? false}
-                                  onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                                  className="h-3 w-3 rounded-sm cursor-pointer"
-                                  style={{ accentColor: getCourseColor(task.courseName) }}
-                                  data-testid={`checkbox-week-${task.id}`}
-                                />
-                              ) : <div className="h-3 w-3" />}
-                            </div>
-                            <button
-                              className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
-                              onClick={() => setEditingTask(task)}
-                              data-testid={`task-link-week-${task.id}`}
-                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
-                            >
-                              {task.title}
-                            </button>
-                            <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
-                              <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                            </div>
-                            <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
-                              {daysUntil}d
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '17px', marginTop: '1px' }}>
-                            <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', flex: 1, minWidth: 0 }}>
-                              {courseName}
-                            </div>
+                        <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
                                 {cfp.moduleP.hasFiles && (
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[7px] text-white/60 font-medium">M</span>
-                                    <div style={{ width: '24px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                       {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                     </div>
-                                    <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                    <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
                                   </div>
                                 )}
                                 {cfp.readingP.hasFiles && (
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <span className="text-[7px] text-white/60 font-medium">R</span>
-                                    <div style={{ width: '24px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+                                    <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                       {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                     </div>
-                                    <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
                                   </div>
                                 )}
                               </div>
                             )}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                <button
+                                  className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  onClick={() => setEditingTask(task)}
+                                  data-testid={`task-link-week-${task.id}`}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
+                                >
+                                  {task.title}
+                                </button>
+                                <div style={{ width: '34px', flexShrink: 0, position: 'relative' }}>
+                                  <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                </div>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                                  {daysUntil}d
+                                </span>
+                              </div>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '1px' }}>
+                                {courseName}
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </SwipeableTaskRow>
                       );
                     })}
                   </div>
