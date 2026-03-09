@@ -2773,19 +2773,16 @@ export default function Dashboard() {
     const measure = () => {
       const els = document.querySelectorAll('[data-upcoming-task-name]');
       if (!els.length) return;
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
       let max = 0;
       els.forEach(el => {
-        const style = window.getComputedStyle(el);
-        ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-        const w = ctx.measureText(el.textContent || '').width;
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const w = range.getBoundingClientRect().width;
         if (w > max) max = w;
       });
       if (max > 0) setMaxTaskNameWidth(Math.ceil(max));
     };
-    requestAnimationFrame(measure);
+    requestAnimationFrame(() => setTimeout(measure, 50));
   }, [allTasks, selectedWeek]);
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
