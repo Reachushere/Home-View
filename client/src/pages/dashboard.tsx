@@ -18645,89 +18645,155 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks this week</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
-                    {dueTomorrowTasks.map((task) => {
-                      const progressBarWidth = getProgressBarWidth(task);
-                      const progressColor = getProgressColor(task, 'tomorrow');
-                      const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
-                      const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
-                      const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                      const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
-                      return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.6)', marginBottom: '1px' }}
-                          ref={(rowEl) => {
-                            if (!rowEl || rowEl.dataset.swipeInit) return;
-                            rowEl.dataset.swipeInit = '1';
-                            const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
-                            const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
-                            const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
-                            if (delEl && resEl && contentEl) {
-                              const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
-                              delEl.addEventListener('click', (e) => { e.stopPropagation(); if (window.confirm(`Delete "${task.title}"?`)) { ctrl.reset(); deleteTaskWithUndo(task.id); } else { ctrl.reset(); } });
-                              resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
-                            }
-                          }}
-                        >
-                          <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
-                            <span className="text-white text-[9px] font-bold">Delete</span>
-                          </div>
-                          <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
-                            <span className="text-white text-[9px] font-bold">Reschedule</span>
-                          </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                            <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
-                              <div style={{ width: '100%', position: 'relative', height: '3px' }}>
-                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                    {(() => {
+                      const today = startOfDay(new Date());
+                      const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                      const getCalKey = (task: typeof dueTomorrowTasks[0]) => {
+                        const dueDate = startOfDay(new Date(task.dueDate));
+                        const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                        const weeks: Date[] = [];
+                        let ws = todayWeekStart;
+                        while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
+                        if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
+                        return weeks.map(w => w.toISOString()).join('|');
+                      };
+                      const groups: { key: string; tasks: typeof dueTomorrowTasks; weeks: Date[] }[] = [];
+                      const groupMap = new Map<string, number>();
+                      dueTomorrowTasks.forEach(task => {
+                        const key = getCalKey(task);
+                        if (groupMap.has(key)) {
+                          groups[groupMap.get(key)!].tasks.push(task);
+                        } else {
+                          const dueDate = startOfDay(new Date(task.dueDate));
+                          const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                          const weeks: Date[] = [];
+                          let ws = todayWeekStart;
+                          while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
+                          if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
+                          groupMap.set(key, groups.length);
+                          groups.push({ key, tasks: [task], weeks });
+                        }
+                      });
+                      return groups.map((group) => {
+                        const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                        return (
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', borderBottom: '1px solid rgba(255,255,255,0.6)', marginBottom: '1px' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              {group.tasks.map((task) => {
+                                const progressColor = getProgressColor(task, 'tomorrow');
+                                const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
+                                const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
+                                const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                                const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                                return (
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden' }}
+                                    ref={(rowEl) => {
+                                      if (!rowEl || rowEl.dataset.swipeInit) return;
+                                      rowEl.dataset.swipeInit = '1';
+                                      const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                                      const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                                      const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                                      if (delEl && resEl && contentEl) {
+                                        const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                                        delEl.addEventListener('click', (e) => { e.stopPropagation(); if (window.confirm(`Delete "${task.title}"?`)) { ctrl.reset(); deleteTaskWithUndo(task.id); } else { ctrl.reset(); } });
+                                        resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                                      }
+                                    }}
+                                  >
+                                    <div data-swipe-delete data-testid={`swipe-delete-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Delete</span>
+                                    </div>
+                                    <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Reschedule</span>
+                                    </div>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                      <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                        <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', marginLeft: '-3px' }}>
+                                          <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <div style={{ width: '100%', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          </div>
+                                        </div>
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                          <div>
+                                            <button
+                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              onClick={() => setEditingTask(task)}
+                                              data-testid={`task-link-tomorrow-${task.id}`}
+                                              data-upcoming-task-name
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).start }}
+                                            >
+                                              {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                            </button>
+                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                            </div>
+                                          </div>
+                                          {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                            <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', flexWrap: 'nowrap' }}>
+                                              {cfp.moduleP.hasFiles && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                                                  <span className="text-[9px] text-white font-medium">M</span>
+                                                  <div style={{ width: '55px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                                    {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                                  </div>
+                                                  <span className="text-[9px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                                </div>
+                                              )}
+                                              {cfp.readingP.hasFiles && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                                                  <span className="text-[9px] text-white font-medium">R</span>
+                                                  <div style={{ width: '55px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                                    {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
+                                                  </div>
+                                                  <span className="text-[9px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch' }}>
+                                <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
+                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-11px' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                {group.weeks.map((weekStart, wi) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const isDue = dueDates.some(dd => isSameDay(d, dd.date));
+                                        const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
+                                        return (
+                                          <div key={di} style={{ width: '8px', height: '8px', borderRadius: '1px', fontSize: '5px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isToday ? '#000' : isDue ? '#fff' : 'rgba(255,255,255,0.5)', backgroundColor: isToday ? '#fff' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.1)', border: isToday ? '1px solid rgba(255,255,255,0.8)' : 'none' }}>
+                                            {format(d, 'd')}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                              <div>
-                                <button
-                                  className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
-                                  onClick={() => setEditingTask(task)}
-                                  data-testid={`task-link-tomorrow-${task.id}`}
-                                  data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).start }}
-                                >
-                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
-                                </button>
-                                <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                                </div>
-                              </div>
-                              {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '2px', marginRight: '0px' }}>
-                                  {cfp.moduleP.hasFiles && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                      <span className="text-[9px] text-white font-medium" style={{ width: '9px', flexShrink: 0 }}>M</span>
-                                      <div style={{ flex: 1, height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
-                                        {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                      </div>
-                                      <span className="text-[9px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right' }}>{cfp.moduleP.percent}%</span>
-                                    </div>
-                                  )}
-                                  {cfp.readingP.hasFiles && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                      <span className="text-[9px] text-white font-medium" style={{ width: '9px', flexShrink: 0 }}>R</span>
-                                      <div style={{ flex: 1, height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
-                                        {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                      </div>
-                                      <span className="text-[9px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right' }}>{cfp.readingP.percent}%</span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
                           </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 )}
-
-                {/* Next 3 Weeks Section */}
+                {/* Next 2 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Next 2 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
