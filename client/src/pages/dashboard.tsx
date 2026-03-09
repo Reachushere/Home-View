@@ -10567,7 +10567,7 @@ export default function Dashboard() {
         gap: '9px',
         paddingLeft: '9px',
         paddingRight: '7px',
-        borderRadius: '0 0 6px 6px',
+        borderRadius: '6px',
         background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
         backdropFilter: 'blur(40px)',
         WebkitBackdropFilter: 'blur(40px)',
