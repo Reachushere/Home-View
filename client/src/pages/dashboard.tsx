@@ -18481,31 +18481,6 @@ export default function Dashboard() {
           };
 
           // Render a single task row
-          const renderCalendarEvents = (events: CalendarEvent[]) => {
-            if (events.length === 0) return null;
-            return events.map((event) => {
-              const eventStart = new Date(event.startDate);
-              const timeStr = event.isAllDay ? 'All day' : format(eventStart, 'h:mm a');
-              const daysUntil = differenceInCalendarDays(startOfDay(eventStart), startOfDay(new Date()));
-              return (
-                <div key={event.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '7px' }}>
-                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                    <div style={{ width: '38px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px', marginLeft: '-3px' }}>
-                      <span className="text-[8px] font-medium" style={{ color: '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
-                      <div style={{ width: '100%', position: 'relative', height: '3px' }}>
-                        <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: '#60a5fa', opacity: 0.9 }} />
-                      </div>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                      <span className="text-[11px] truncate" style={{ color: '#60a5fa', fontWeight: 400 }}>{event.title}</span>
-                      <span className="text-[9px] text-white" style={{ lineHeight: '1.2' }}>{timeStr}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            });
-          };
-
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
             const attachments = parseAttachments(task.attachments);
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
@@ -18726,7 +18701,7 @@ export default function Dashboard() {
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length + upcomingEventsToday.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
@@ -18734,11 +18709,10 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                {dueTodayTasks.length === 0 && upcomingEventsToday.length === 0 ? (
+                {dueTodayTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
-                    {renderCalendarEvents(upcomingEventsToday)}
                     {dueTodayTasks.map((task) => {
                       const progressBarWidth = getProgressBarWidth(task);
                       const progressColor = getProgressColor(task, 'today');
@@ -18812,7 +18786,7 @@ export default function Dashboard() {
                 {/* This Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This Week</span>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length + upcomingEventsThisWeek.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
@@ -18825,11 +18799,10 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                {dueTomorrowTasks.length === 0 && upcomingEventsThisWeek.length === 0 ? (
+                {dueTomorrowTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks this week</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
-                    {renderCalendarEvents(upcomingEventsThisWeek)}
                     {(() => {
                       const today = startOfDay(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -18985,7 +18958,7 @@ export default function Dashboard() {
                 {/* Next 2 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next 3 Weeks</span>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length + upcomingEventsNextWeeks.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
@@ -18998,11 +18971,10 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                {dueThisWeekTasks.length === 0 && upcomingEventsNextWeeks.length === 0 ? (
+                {dueThisWeekTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in next 3 weeks</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
-                    {renderCalendarEvents(upcomingEventsNextWeeks)}
                     {(() => {
                       const today = startOfDay(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
