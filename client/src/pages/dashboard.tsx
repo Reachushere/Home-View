@@ -13853,7 +13853,7 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="px-4 pb-3 pt-0 overflow-y-auto flex-1" style={{ marginTop: '-4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="px-4 pb-3 pt-0 overflow-y-auto flex-1" style={{ marginTop: '-4px', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
               <div className="grid grid-cols-2 gap-3">
                 {/* Left Column */}
                 <div className="flex flex-col gap-3 justify-between">
