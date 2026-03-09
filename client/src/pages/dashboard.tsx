@@ -10513,48 +10513,64 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Share Button - fixed position */}
+      {/* Share Button - fixed position, beside date */}
       {isAdmin && (
-        <Share 
-          className="text-white/80 cursor-pointer hover:text-white"
-          strokeWidth={2.5}
-          style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight + 382}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-          onClick={generateShareLink}
-          data-testid="button-share-main"
-        />
+        <>
+          <div style={{ position: 'fixed', right: `${calendarRight + 275}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+          <Share 
+            className="text-white/80 cursor-pointer hover:text-white"
+            strokeWidth={2.5}
+            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight + 285}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            onClick={generateShareLink}
+            data-testid="button-share-main"
+          />
+        </>
       )}
-
-      {/* Separator between share and timer numbers */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 370}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
-
-      {/* Pomodoro Timer Numbers - fixed position */}
-      <div ref={clockContainerRef} className={`flex ${
-        pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
-        pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-      }`} style={{ position: 'fixed', right: `${calendarRight + 304}px`, bottom: 'auto', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'baseline', top: '7px', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-        <span className="text-white" style={{ fontSize: '12px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '52px', display: 'inline-block', lineHeight: '1.25' }}>{formatPomodoroTime(pomodoroTime)}</span>
-      </div>
-
-      {/* Pomodoro Controls - fixed position */}
-      <div className="flex items-center gap-[14px]" style={{ position: 'fixed', right: `${calendarRight + 228}px`, top: '5px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
-        <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-          {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
-        </button>
-        <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-          <RotateCcw className="h-[13px] w-[13px] text-white" strokeWidth={2.5} />
-        </button>
-        <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-          <SkipForward className="h-[13px] w-[13px] text-white" strokeWidth={2.5} />
-        </button>
-      </div>
-
-      {/* Separator between controls and date */}
-      <div style={{ position: 'fixed', right: `${calendarRight + 211}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
 
       {/* Date - fixed position */}
       <span className="text-[12px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 58}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
+
+      {/* Timer bar - rectangle below date/time */}
+      <div style={{
+        position: 'fixed',
+        right: `${calendarRight - 11}px`,
+        top: '22px',
+        height: '16px',
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: '8px',
+        paddingLeft: '8px',
+        paddingRight: '6px',
+        borderRadius: '0 0 6px 6px',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+        backdropFilter: 'blur(40px)',
+        WebkitBackdropFilter: 'blur(40px)',
+        opacity: isTopPillOpen ? 0 : 1,
+        transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
+        pointerEvents: isTopPillOpen ? 'none' : 'auto',
+      }} data-testid="timer-bar">
+        <div ref={clockContainerRef} className={`flex ${
+          pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
+          pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
+        }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+          <span className="text-white" style={{ fontSize: '10px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '42px', display: 'inline-block', lineHeight: '1' }}>{formatPomodoroTime(pomodoroTime)}</span>
+        </div>
+        <div className="flex items-center gap-[6px]">
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+            {pomodoroRunning ? <Pause className="h-[10px] w-[10px] text-white" strokeWidth={2.5} /> : <Play className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />}
+          </button>
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+            <RotateCcw className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />
+          </button>
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+            <SkipForward className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
 
       {/* Time - fixed position */}
       <div style={{ position: 'fixed', right: `${calendarRight - 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
