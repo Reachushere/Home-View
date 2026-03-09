@@ -15963,7 +15963,7 @@ export default function Dashboard() {
                       const cId = courseCode.toLowerCase();
                       if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                       if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
-                      if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                      if (cId === 'casl101') return 'linear-gradient(180deg, rgba(151, 75, 138, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
                       const rgb = hexToRgb(courseHexColor);
                       const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                       const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
@@ -18653,10 +18653,10 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '8px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
-                        <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                        <div className="flex flex-col gap-[2px]" style={{ width: '68px', flexShrink: 0 }}>
                           <div className="flex items-center gap-[3px]">
-                            <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Module</span>
+                            <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                             {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                               <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
                                 {pd.moduleUnread}
@@ -18670,22 +18670,23 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '8px' }}>{pd.moduleP.percent}%</span>
+                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.moduleP.percent}%</span>
                             </div>
                           ) : (
                             <span className="text-[8px] text-white leading-none">N/A</span>
                           )}
                         </div>
+                        <div style={{ flex: 1 }} />
                         {pd.moduleP.hasFiles && (
                           <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
                             <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
                           </div>
                         )}
                       </div>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '8px', paddingRight: '6px', overflow: 'hidden' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
-                        <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'hidden' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                        <div className="flex flex-col gap-[2px]" style={{ width: '68px', flexShrink: 0 }}>
                           <div className="flex items-center gap-[3px]">
-                            <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Reading</span>
+                            <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                             {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                               <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
                                 {pd.readingUnread}
@@ -18699,12 +18700,13 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '8px' }}>{pd.readingP.percent}%</span>
+                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.readingP.percent}%</span>
                             </div>
                           ) : (
                             <span className="text-[8px] text-white leading-none">N/A</span>
                           )}
                         </div>
+                        <div style={{ flex: 1 }} />
                         {pd.readingP.hasFiles && (
                           <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
                             <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
