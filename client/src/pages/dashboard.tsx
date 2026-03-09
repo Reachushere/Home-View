@@ -18162,7 +18162,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
                               </span>
                             </div>
@@ -18260,7 +18260,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
                               </span>
                             </div>
@@ -18365,7 +18365,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
                                 {daysUntil}d
                               </span>
                             </div>
