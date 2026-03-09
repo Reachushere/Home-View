@@ -16563,15 +16563,26 @@ export default function Dashboard() {
                           />
                           {isToday && isCurrentHour && !hasAnyTasks && (() => {
                             const now = new Date();
+                            const getTaskTime = (t: any) => {
+                              if (t.eventStartTime) {
+                                const [h, m] = t.eventStartTime.split(':').map(Number);
+                                const d = new Date(t.dueDate);
+                                const local = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m);
+                                return local.getTime();
+                              }
+                              return new Date(t.dueDate).getTime();
+                            };
                             const nextTask = allTasks
-                              .filter(t => !t.isCompleted && new Date(t.dueDate) > now)
-                              .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
+                              .filter(t => !t.isCompleted && getTaskTime(t) > now.getTime())
+                              .sort((a, b) => getTaskTime(a) - getTaskTime(b))[0];
                             if (!nextTask) return null;
-                            const hoursUntil = Math.round((new Date(nextTask.dueDate).getTime() - now.getTime()) / (1000 * 60 * 60));
+                            const msUntil = getTaskTime(nextTask) - now.getTime();
+                            const hoursUntil = msUntil / (1000 * 60 * 60);
+                            const displayTime = hoursUntil < 1 ? `${Math.round(hoursUntil * 60)}m` : hoursUntil % 1 >= 0.25 && hoursUntil < 24 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`;
                             return (
                               <div className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none" data-testid="hours-until-next-task">
                                 <span style={{ fontSize: '8px', color: 'rgba(0,0,0,0.7)', fontWeight: 700, letterSpacing: '0.2px', textAlign: 'center', lineHeight: '1.2' }}>
-                                  {hoursUntil}h until<br/>next task due
+                                  {displayTime} until<br/>next task due
                                 </span>
                               </div>
                             );
