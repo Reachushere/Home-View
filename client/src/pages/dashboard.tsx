@@ -18610,7 +18610,37 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            return courseProgressDataRef.current.map((pd, idx) => {
+            const cppaIdx = courseProgressDataRef.current.findIndex(p => p?.courseCode === 'CPPA122');
+            const cppaLeftBg = (() => {
+              if (cppaIdx < 0 || !courseRowRects[cppaIdx]) return null;
+              const cppaTop = courseRowRects[cppaIdx].top - upcomingTop;
+              const nextIdx = cppaIdx + 1;
+              const bottomRow = courseRowRects[nextIdx];
+              const totalHeight = bottomRow
+                ? (bottomRow.top + bottomRow.height - upcomingTop) - cppaTop
+                : courseRowRects[cppaIdx].height;
+              const cppaData = courseProgressDataRef.current[cppaIdx];
+              const leftWidth = (() => {
+                if (homeworkSpacerRef.current && homeworkSectionRef.current) {
+                  const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
+                  const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
+                  return `${spacerRect.left - sectionRect.left}px`;
+                }
+                return '70px';
+              })();
+              return (
+                <div key="cppa-left-bg" style={{
+                  position: 'absolute',
+                  top: `${cppaTop}px`,
+                  left: 0,
+                  width: leftWidth,
+                  height: `${totalHeight}px`,
+                  background: cppaData?.progressBg || 'linear-gradient(180deg, #0F5004 0%, #47B045 100%)',
+                  zIndex: 39,
+                }} />
+              );
+            })();
+            return [cppaLeftBg, ...courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
@@ -18709,7 +18739,7 @@ export default function Dashboard() {
                   )}
                 </div>
               );
-            });
+            })];
           })()}
           <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
