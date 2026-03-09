@@ -1251,7 +1251,7 @@ export default function Dashboard() {
       todayColumnBlinkSpeed: parsed.todayColumnBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       allDayFilesBlinkSpeed: parsed.allDayFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
-      buttonSpacing: parsed.buttonSpacing ?? 0,
+      buttonSpacing: parsed.buttonSpacing ?? 34,
       mediaControlSpacing: parsed.mediaControlSpacing ?? 16,
       showArrows: parsed.showArrows ?? true,
       tallPillButtonSpacing: parsed.tallPillButtonSpacing ?? 0,
