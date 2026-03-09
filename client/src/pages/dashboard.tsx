@@ -263,6 +263,19 @@ function getPointerXY(e: React.MouseEvent | React.TouchEvent | MouseEvent | Touc
   return { clientX: (e as MouseEvent).clientX, clientY: (e as MouseEvent).clientY };
 }
 
+function toET(date: Date): Date {
+  const s = date.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+  return new Date(s);
+}
+
+function getETHours(date: Date): number {
+  return toET(date).getHours();
+}
+
+function getETMinutes(date: Date): number {
+  return toET(date).getMinutes();
+}
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -6862,7 +6875,7 @@ export default function Dashboard() {
         const [startHour] = t.eventStartTime.split(':').map(Number);
         return startHour === hour;
       }
-      return dueDate.getHours() === hour;
+      return getETHours(dueDate) === hour;
     });
   };
   
@@ -6942,8 +6955,8 @@ export default function Dashboard() {
       
       // For tasks without specific times, check if event is on same day at same hour
       if (isSameDay(eventStart, taskDue)) {
-        const taskHour = taskDue.getHours();
-        const eventHour = eventStart.getHours();
+        const taskHour = getETHours(taskDue);
+        const eventHour = getETHours(eventStart);
         // Consider conflict if within same hour or adjacent hours
         return Math.abs(taskHour - eventHour) <= 1;
       }
@@ -6963,7 +6976,7 @@ export default function Dashboard() {
       if (eventEndDate < now) return false;
       // Only show events that conflict with tasks
       if (!eventConflictsWithTask(e)) return false;
-      return isSameDay(eventDate, day) && eventDate.getHours() === hour;
+      return isSameDay(eventDate, day) && getETHours(eventDate) === hour;
     });
   };
   
@@ -7003,7 +7016,7 @@ export default function Dashboard() {
       if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
-      const isMidnight = dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
+      const isMidnight = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
       return isSameDay(dueDate, day) && isMidnight;
     });
   };
@@ -16642,7 +16655,7 @@ export default function Dashboard() {
                                 taskHeight = Math.max(20, taskHeight);
                               }
                             } else {
-                              const dueMin = new Date(task.dueDate).getMinutes();
+                              const dueMin = getETMinutes(new Date(task.dueDate));
                               if (dueMin > 0) {
                                 topOffset = (dueMin / 60) * rowHeight;
                                 taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
@@ -16816,7 +16829,7 @@ export default function Dashboard() {
                                 taskHeight = Math.max(20, taskHeight);
                               }
                             } else {
-                              const dueMin = new Date(task.dueDate).getMinutes();
+                              const dueMin = getETMinutes(new Date(task.dueDate));
                               if (dueMin > 0) {
                                 topOffset = (dueMin / 60) * rowHeight;
                                 taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
@@ -17080,10 +17093,10 @@ export default function Dashboard() {
                   if (t.eventStartTime) {
                     [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
                   } else {
-                    taskHour = dueDate.getHours();
-                    taskMin = dueDate.getMinutes();
+                    taskHour = getETHours(dueDate);
+                    taskMin = getETMinutes(dueDate);
                   }
-                  const taskDate = new Date(dueDate);
+                  const taskDate = toET(new Date(dueDate));
                   taskDate.setHours(taskHour, taskMin, 0, 0);
                   const taskTimestamp = taskDate.getTime();
                   if (taskTimestamp > nowTimestamp && taskTimestamp < earliestPrepTime) {
@@ -17189,10 +17202,10 @@ export default function Dashboard() {
                   if (t.eventStartTime) {
                     [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
                   } else {
-                    taskHour = dueDate.getHours();
-                    taskMin = dueDate.getMinutes();
+                    taskHour = getETHours(dueDate);
+                    taskMin = getETMinutes(dueDate);
                   }
-                  const taskDate = new Date(dueDate);
+                  const taskDate = toET(new Date(dueDate));
                   taskDate.setHours(taskHour, taskMin, 0, 0);
                   const taskTimestamp = taskDate.getTime();
                   if (taskTimestamp > nowTimestamp && taskTimestamp < earliestTaskTime) {
@@ -22558,13 +22571,13 @@ function TaskForm({
   });
   const [tempHour, setTempHour] = useState(() => {
     if (formData.dueDate) {
-      return new Date(formData.dueDate).getHours().toString().padStart(2, '0');
+      return getETHours(new Date(formData.dueDate)).toString().padStart(2, '0');
     }
     return "18";
   });
   const [tempMinute, setTempMinute] = useState(() => {
     if (formData.dueDate) {
-      return new Date(formData.dueDate).getMinutes().toString().padStart(2, '0');
+      return getETMinutes(new Date(formData.dueDate)).toString().padStart(2, '0');
     }
     return "00";
   });

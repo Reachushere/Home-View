@@ -8211,7 +8211,8 @@ document.body.removeChild(a);
         // Only announce reminders for tasks with an explicit scheduled time
         // (eventStartTime set, or due time is not midnight — meaning user set a specific time)
         const dueDate = new Date(task.dueDate);
-        const hasDueTime = dueDate.getHours() !== 0 || dueDate.getMinutes() !== 0;
+        const dueDateET = new Date(dueDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+        const hasDueTime = dueDateET.getHours() !== 0 || dueDateET.getMinutes() !== 0;
         if (!task.eventStartTime && !hasDueTime) continue;
         
         // Only use non-default reminders (skip the schema defaults of 30 and 120)
