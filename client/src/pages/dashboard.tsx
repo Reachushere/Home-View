@@ -18176,7 +18176,7 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', minHeight: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
                               <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, position: 'relative', height: '4px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -18274,7 +18274,7 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', minHeight: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
                               <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, position: 'relative', height: '4px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -18379,7 +18379,7 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', minHeight: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
                               <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, position: 'relative', height: '4px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
