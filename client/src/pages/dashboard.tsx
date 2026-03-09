@@ -18073,14 +18073,14 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '30px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                                {daysUntil}d
+                              </span>
                               <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
                                 <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', marginTop: '1px' }}>
-                                {daysUntil}d
-                              </span>
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -18149,14 +18149,14 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '30px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                                {daysUntil}d
+                              </span>
                               <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
                                 <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', marginTop: '1px' }}>
-                                {daysUntil}d
-                              </span>
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -18232,14 +18232,14 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '30px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                                {daysUntil}d
+                              </span>
                               <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
                                 <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', marginTop: '1px' }}>
-                                {daysUntil}d
-                              </span>
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
