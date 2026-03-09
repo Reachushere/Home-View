@@ -10608,6 +10608,9 @@ export default function Dashboard() {
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
           <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
+        <div style={{ position: 'absolute', left: '50%', top: '10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <LayoutGrid className="h-[11px] w-[11px] text-white/70" strokeWidth={2.5} />
+        </div>
       </div>
 
       {/* Share Button - fixed position, beside date */}
@@ -18097,8 +18100,8 @@ export default function Dashboard() {
               <>
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 8px 0' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>Today</span>
-                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueTodayTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Today</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#000000' }}>({dueTodayTasks.length})</span>
                   <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
                     <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
@@ -18147,7 +18150,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
                                 >
-                                  {task.title}
+                                  {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title}` : task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
@@ -18195,8 +18198,8 @@ export default function Dashboard() {
 
                 {/* Tomorrow Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>Tomorrow</span>
-                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueTomorrowTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Tomorrow</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#000000' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
@@ -18245,7 +18248,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
                                 >
-                                  {task.title}
+                                  {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title}` : task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
@@ -18293,8 +18296,8 @@ export default function Dashboard() {
 
                 {/* 3-21 Days Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>3-21 Days</span>
-                  <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueThisWeekTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>3-21 Days</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#000000' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
@@ -18350,7 +18353,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
                                 >
-                                  {task.title}
+                                  {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title}` : task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
