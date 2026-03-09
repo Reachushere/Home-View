@@ -18673,6 +18673,7 @@ export default function Dashboard() {
                   </div>
                 )}
 
+                <div style={{ flex: 1 }} />
                 {/* This Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This Week</span>
