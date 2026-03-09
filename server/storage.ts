@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -65,6 +65,11 @@ export interface IStorage {
   createAccessToken(token: InsertAccessToken): Promise<AccessToken>;
   updateAccessToken(id: number, updates: Partial<InsertAccessToken>): Promise<AccessToken>;
   deleteAccessToken(id: number): Promise<void>;
+  getShiftSchedule(): Promise<ShiftScheduleEntry[]>;
+  getShiftForDate(date: string): Promise<ShiftScheduleEntry | undefined>;
+  setShiftDay(date: string, shiftType: string): Promise<ShiftScheduleEntry>;
+  setShiftBulk(entries: InsertShiftScheduleEntry[]): Promise<void>;
+  deleteShiftDay(date: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -492,6 +497,58 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAccessToken(id: number): Promise<void> {
     await db.delete(accessTokens).where(eq(accessTokens.id, id));
+  }
+
+  async getShiftSchedule(): Promise<ShiftScheduleEntry[]> {
+    return await db.select().from(shiftSchedule);
+  }
+
+  async getShiftForDate(date: string): Promise<ShiftScheduleEntry | undefined> {
+    const [found] = await db.select().from(shiftSchedule).where(eq(shiftSchedule.date, date));
+    return found;
+  }
+
+  async setShiftDay(date: string, shiftType: string): Promise<ShiftScheduleEntry> {
+    const existing = await this.getShiftForDate(date);
+    if (existing) {
+      if (shiftType === "off") {
+        await db.delete(shiftSchedule).where(eq(shiftSchedule.date, date));
+        return { ...existing, shiftType: "off" };
+      }
+      const [updated] = await db.update(shiftSchedule).set({ shiftType }).where(eq(shiftSchedule.date, date)).returning();
+      return updated;
+    }
+    if (shiftType === "off") {
+      return { id: 0, date, shiftType: "off" };
+    }
+    const [created] = await db.insert(shiftSchedule).values({ date, shiftType }).returning();
+    return created;
+  }
+
+  async setShiftBulk(entries: InsertShiftScheduleEntry[]): Promise<void> {
+    if (entries.length === 0) return;
+    const toInsert = entries.filter(e => e.shiftType !== "off");
+    const toDelete = entries.filter(e => e.shiftType === "off").map(e => e.date);
+
+    if (toDelete.length > 0) {
+      for (const date of toDelete) {
+        await db.delete(shiftSchedule).where(eq(shiftSchedule.date, date));
+      }
+    }
+    if (toInsert.length > 0) {
+      for (const entry of toInsert) {
+        const existing = await this.getShiftForDate(entry.date);
+        if (existing) {
+          await db.update(shiftSchedule).set({ shiftType: entry.shiftType }).where(eq(shiftSchedule.date, entry.date));
+        } else {
+          await db.insert(shiftSchedule).values(entry);
+        }
+      }
+    }
+  }
+
+  async deleteShiftDay(date: string): Promise<void> {
+    await db.delete(shiftSchedule).where(eq(shiftSchedule.date, date));
   }
 }
 

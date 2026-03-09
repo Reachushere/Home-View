@@ -5576,6 +5576,51 @@ export default function Dashboard() {
     return saved !== null ? JSON.parse(saved) : false;
   });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
+  const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
+  const [shiftScheduleYear, setShiftScheduleYear] = useState(new Date().getFullYear());
+  const [localShiftMap, setLocalShiftMap] = useState<Record<string, string>>({});
+  const [shiftDirty, setShiftDirty] = useState(false);
+
+  const { data: shiftScheduleData } = useQuery<{ id: number; date: string; shiftType: string }[]>({
+    queryKey: ['/api/shift-schedule'],
+    enabled: isCalendarSettingsOpen,
+  });
+
+  useEffect(() => {
+    if (shiftScheduleData) {
+      const map: Record<string, string> = {};
+      for (const entry of shiftScheduleData) {
+        map[entry.date] = entry.shiftType;
+      }
+      setLocalShiftMap(map);
+      setShiftDirty(false);
+    }
+  }, [shiftScheduleData]);
+
+  const saveShiftScheduleMutation = useMutation({
+    mutationFn: async ({ shiftMap, previousData }: { shiftMap: Record<string, string>; previousData?: { date: string; shiftType: string }[] }) => {
+      const bulk = Object.entries(shiftMap).map(([date, shiftType]) => ({ date, shiftType }));
+      if (previousData) {
+        for (const entry of previousData) {
+          if (!(entry.date in shiftMap)) {
+            bulk.push({ date: entry.date, shiftType: 'off' });
+          }
+        }
+      }
+      const res = await fetch('/api/shift-schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bulk }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/shift-schedule'] });
+      setShiftDirty(false);
+      toast({ title: "Shift schedule saved" });
+    },
+  });
   
   // Fetch available Google calendars
   const { data: availableCalendars } = useQuery<{ id: string; summary: string; primary: boolean }[]>({
@@ -14536,7 +14581,7 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className="max-w-md border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white" style={{ background: 'linear-gradient(to bottom right, rgba(120,120,130,0.95), rgba(30,30,35,0.90), rgba(110,110,120,0.95))', backdropFilter: 'blur(19px)', WebkitBackdropFilter: 'blur(19px)', paddingTop: '30px', paddingBottom: '30px' }}>
+            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300`} style={{ background: 'linear-gradient(to bottom right, rgba(120,120,130,0.95), rgba(30,30,35,0.90), rgba(110,110,120,0.95))', backdropFilter: 'blur(19px)', WebkitBackdropFilter: 'blur(19px)', paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
               <DialogHeader>
                 <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
@@ -14635,6 +14680,145 @@ export default function Dashboard() {
                       data-testid="toggle-show-allday-row"
                     />
                   </div>
+                </div>
+
+                {/* Partner Shift Schedule */}
+                <div className="border rounded-lg p-3 space-y-2">
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => setShiftScheduleOpen(!shiftScheduleOpen)} data-testid="toggle-shift-schedule">
+                    <div>
+                      <div className="border-b border-primary inline-block -mt-1 pb-0">
+                        <Label className="text-sm font-medium cursor-pointer">Partner Shift Schedule</Label>
+                        <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Set day/night shifts to adjust quiet hours</span>
+                      </div>
+                    </div>
+                    <span className="text-xs">{shiftScheduleOpen ? '▼' : '▶'}</span>
+                  </div>
+                  {shiftScheduleOpen && (() => {
+                    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+                    const cycleShift = (dateStr: string) => {
+                      const current = localShiftMap[dateStr] || 'off';
+                      const next = current === 'off' ? 'day' : current === 'day' ? 'night' : 'off';
+                      setLocalShiftMap(prev => {
+                        const updated = { ...prev };
+                        if (next === 'off') delete updated[dateStr];
+                        else updated[dateStr] = next;
+                        return updated;
+                      });
+                      setShiftDirty(true);
+                    };
+
+                    const getShiftColor = (type: string | undefined) => {
+                      if (type === 'day') return { bg: 'rgba(250, 204, 21, 0.7)', border: 'rgba(250, 204, 21, 0.9)', text: '#000' };
+                      if (type === 'night') return { bg: 'rgba(139, 92, 246, 0.7)', border: 'rgba(139, 92, 246, 0.9)', text: '#fff' };
+                      return { bg: 'transparent', border: 'rgba(255,255,255,0.15)', text: 'rgba(255,255,255,0.4)' };
+                    };
+
+                    const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+                    const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
+
+                    const dayCounts = { day: 0, night: 0 };
+                    Object.entries(localShiftMap).forEach(([date, type]) => {
+                      if (date.startsWith(String(shiftScheduleYear)) && (type === 'day' || type === 'night')) {
+                        dayCounts[type]++;
+                      }
+                    });
+
+                    return (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-white hover:bg-white/10" onClick={() => setShiftScheduleYear(y => y - 1)} data-testid="button-shift-prev-year">‹</Button>
+                            <span className="text-sm font-medium w-12 text-center">{shiftScheduleYear}</span>
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-white hover:bg-white/10" onClick={() => setShiftScheduleYear(y => y + 1)} data-testid="button-shift-next-year">›</Button>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: 'rgba(250, 204, 21, 0.7)' }}/> Day ({dayCounts.day})</span>
+                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: 'rgba(139, 92, 246, 0.7)' }}/> Night ({dayCounts.night})</span>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Click a day to cycle: off → <span style={{ color: 'rgb(250,204,21)' }}>day</span> → <span style={{ color: 'rgb(139,92,246)' }}>night</span> → off
+                        </div>
+                        <div className="grid grid-cols-4 gap-2" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                          {MONTHS.map((monthName, monthIdx) => {
+                            const daysInMonth = getDaysInMonth(shiftScheduleYear, monthIdx);
+                            const firstDay = getFirstDayOfMonth(shiftScheduleYear, monthIdx);
+                            const cells: JSX.Element[] = [];
+                            for (let i = 0; i < firstDay; i++) {
+                              cells.push(<div key={`empty-${i}`} className="w-full" style={{ aspectRatio: '1' }}/>);
+                            }
+                            for (let d = 1; d <= daysInMonth; d++) {
+                              const dateStr = `${shiftScheduleYear}-${String(monthIdx + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                              const shiftType = localShiftMap[dateStr];
+                              const colors = getShiftColor(shiftType);
+                              cells.push(
+                                <div
+                                  key={d}
+                                  onClick={() => cycleShift(dateStr)}
+                                  className="w-full flex items-center justify-center cursor-pointer rounded-sm text-[9px] font-medium select-none hover:opacity-80"
+                                  style={{ aspectRatio: '1', background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text }}
+                                  title={`${monthName} ${d}: ${shiftType || 'off'}`}
+                                  data-testid={`shift-day-${dateStr}`}
+                                >
+                                  {d}
+                                </div>
+                              );
+                            }
+                            return (
+                              <div key={monthIdx} className="space-y-0.5">
+                                <div className="text-[10px] font-semibold text-center" style={{ color: 'rgba(255,255,255,0.7)' }}>{monthName}</div>
+                                <div className="grid grid-cols-7 gap-px">
+                                  {DAY_LABELS.map((dl, i) => (
+                                    <div key={i} className="text-[7px] text-center" style={{ color: 'rgba(255,255,255,0.35)' }}>{dl}</div>
+                                  ))}
+                                  {cells}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="flex items-center justify-between pt-1">
+                          <div className="flex gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs"
+                              onClick={() => {
+                                setLocalShiftMap(prev => {
+                                  const updated = { ...prev };
+                                  Object.keys(updated).forEach(k => {
+                                    if (k.startsWith(String(shiftScheduleYear))) delete updated[k];
+                                  });
+                                  return updated;
+                                });
+                                setShiftDirty(true);
+                              }}
+                              data-testid="button-clear-shifts"
+                            >
+                              Clear Year
+                            </Button>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs"
+                            disabled={!shiftDirty || saveShiftScheduleMutation.isPending}
+                            onClick={() => saveShiftScheduleMutation.mutate({ shiftMap: localShiftMap, previousData: shiftScheduleData })}
+                            data-testid="button-save-shifts"
+                          >
+                            {saveShiftScheduleMutation.isPending ? 'Saving...' : 'Save Schedule'}
+                          </Button>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
+                          <p><strong>Day shift</strong> (7:30a–7:30p): Quiet hours 10pm–5am</p>
+                          <p><strong>Night shift</strong> (7:30p–7:30a): Quiet hours 10am–5pm</p>
+                          <p><strong>No shift set:</strong> Quiet hours 10pm–8am (default)</p>
+                          <p className="italic">Calendar task reminders always announce, even during quiet hours.</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </DialogContent>

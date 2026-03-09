@@ -447,5 +447,18 @@ export const appState = pgTable("app_state", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const SHIFT_TYPES = ["day", "night", "off"] as const;
+export type ShiftType = typeof SHIFT_TYPES[number];
+
+export const shiftSchedule = pgTable("shift_schedule", {
+  id: serial("id").primaryKey(),
+  date: text("date").notNull().unique(),
+  shiftType: text("shift_type").notNull().default("off"),
+});
+
+export const insertShiftScheduleSchema = createInsertSchema(shiftSchedule).omit({ id: true });
+export type ShiftScheduleEntry = typeof shiftSchedule.$inferSelect;
+export type InsertShiftScheduleEntry = z.infer<typeof insertShiftScheduleSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

@@ -1178,6 +1178,54 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/shift-schedule", async (_req, res) => {
+    try {
+      const schedule = await storage.getShiftSchedule();
+      res.json(schedule);
+    } catch (err) {
+      console.error("Error fetching shift schedule:", err);
+      res.status(500).json({ error: "Failed to fetch shift schedule" });
+    }
+  });
+
+  app.post("/api/shift-schedule", async (req, res) => {
+    try {
+      const validShiftTypes = ['day', 'night', 'off'];
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      const { date, shiftType, bulk } = req.body;
+      if (bulk && Array.isArray(bulk)) {
+        const validatedBulk = bulk.filter((e: any) =>
+          typeof e.date === 'string' && dateRegex.test(e.date) &&
+          typeof e.shiftType === 'string' && validShiftTypes.includes(e.shiftType)
+        );
+        await storage.setShiftBulk(validatedBulk);
+        const schedule = await storage.getShiftSchedule();
+        return res.json(schedule);
+      }
+      if (!date || !shiftType) {
+        return res.status(400).json({ error: "date and shiftType required" });
+      }
+      if (!dateRegex.test(date) || !validShiftTypes.includes(shiftType)) {
+        return res.status(400).json({ error: "Invalid date format (YYYY-MM-DD) or shiftType (day/night/off)" });
+      }
+      const result = await storage.setShiftDay(date, shiftType);
+      res.json(result);
+    } catch (err) {
+      console.error("Error setting shift schedule:", err);
+      res.status(500).json({ error: "Failed to set shift schedule" });
+    }
+  });
+
+  app.delete("/api/shift-schedule/:date", async (req, res) => {
+    try {
+      await storage.deleteShiftDay(req.params.date);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting shift day:", err);
+      res.status(500).json({ error: "Failed to delete shift day" });
+    }
+  });
+
   // POST /api/tasks/auto-create-file-tasks - Auto-create tasks for module/reading files without corresponding tasks
   app.post("/api/tasks/auto-create-file-tasks", async (req, res) => {
     try {
@@ -8033,8 +8081,18 @@ document.body.removeChild(a);
       const torontoNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
       const currentHour = torontoNow.getHours();
       
-      // Quiet hours: no announcements between 10 PM and 8 AM
-      if (currentHour >= 22 || currentHour < 8) return;
+      const todayStr = `${torontoNow.getFullYear()}-${String(torontoNow.getMonth() + 1).padStart(2, '0')}-${String(torontoNow.getDate()).padStart(2, '0')}`;
+      const todayShift = await storage.getShiftForDate(todayStr);
+      const shiftType = todayShift?.shiftType || 'none';
+      
+      let isQuietHours = false;
+      if (shiftType === 'night') {
+        isQuietHours = currentHour >= 10 && currentHour < 17;
+      } else if (shiftType === 'day') {
+        isQuietHours = currentHour >= 22 || currentHour < 5;
+      } else {
+        isQuietHours = currentHour >= 22 || currentHour < 8;
+      }
       
       const allTasks = await storage.getTasks();
       
@@ -8072,6 +8130,10 @@ document.body.removeChild(a);
           
           const reminderKey = `${task.id}-${reminderMinutes}-${dueDate.toISOString()}`;
           if (announcedReminders.has(reminderKey)) continue;
+          
+          if (isQuietHours) {
+            console.log(`[Alexa Reminder] Quiet hours (shift: ${shiftType}) but task has explicit reminder — announcing anyway: ${task.title}`);
+          }
           
           announcedReminders.add(reminderKey);
           
