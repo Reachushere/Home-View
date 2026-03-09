@@ -18691,7 +18691,7 @@ export default function Dashboard() {
               return (
                 <div key="casl-left-bg" style={{
                   position: 'absolute',
-                  top: `${cppaTop + cppaBoxHeight * 2}px`,
+                  top: `${cppaTop + cppaBoxHeight * 2 - 1}px`,
                   left: 0,
                   width: leftWidth,
                   height: `${cppaBoxHeight}px`,
