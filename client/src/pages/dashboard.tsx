@@ -10497,7 +10497,7 @@ export default function Dashboard() {
           position: 'fixed',
           left: '50%',
           transform: 'translateX(-50%)',
-          top: '-7px',
+          top: '-8px',
           width: '84px',
           height: '25px',
           cursor: 'pointer',
@@ -10521,7 +10521,7 @@ export default function Dashboard() {
           position: 'fixed',
           left: '50%',
           transform: 'translateX(-50%)',
-          top: '-8px',
+          top: '-9px',
           width: '84px',
           height: '25px',
           pointerEvents: 'none',
@@ -11351,7 +11351,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '1px', right: `${calendarRight - 15}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '3px', right: `${calendarRight - 15}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -16790,7 +16790,7 @@ export default function Dashboard() {
           </div>
           {/* Set Default - attached below calendar glass box */}
           {!isTodoFlyoutOpen && (
-            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '-17px', right: '9px' }}>
+            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '-16px', right: '9px' }}>
               <input
                 type="checkbox"
                 checked={showDeviceSaved}
