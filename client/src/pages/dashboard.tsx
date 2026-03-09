@@ -18810,7 +18810,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-week-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: gc.start }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : gc.start }}
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                             </button>
