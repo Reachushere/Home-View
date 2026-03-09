@@ -18611,8 +18611,7 @@ export default function Dashboard() {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
-              const courseNudge = pd.courseCode === 'CFNF400' ? -1 : pd.courseCode === 'CASL101' ? 2 : 0;
-              const offsetFromUpcoming = rowTop - upcomingTop + courseNudge;
+              const offsetFromUpcoming = rowTop - upcomingTop;
               const getProgressColor = (percent: number) => {
                 if (percent === 100) return '#22c55e';
                 if (percent > 0) return '#f97316';
@@ -18633,6 +18632,7 @@ export default function Dashboard() {
                     flexDirection: 'column',
                     overflow: 'visible',
                     borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                    transform: pd.courseCode === 'CFNF400' ? 'translateY(-1px)' : pd.courseCode === 'CASL101' ? 'translateY(-4px)' : undefined,
                   }}
                 >
                   {pd.hasNoData ? (
