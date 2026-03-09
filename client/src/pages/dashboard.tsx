@@ -15323,12 +15323,6 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {shiftForDay && shiftForDay !== 'off' && (
-                      <div className="absolute inset-0 pointer-events-none" style={{ 
-                        background: shiftForDay === 'day' ? 'rgba(151, 75, 138, 0.2)' : 'rgba(139, 92, 246, 0.2)',
-                        borderBottom: `3px solid ${shiftForDay === 'day' ? 'rgba(151, 75, 138, 0.8)' : 'rgba(139, 92, 246, 0.8)'}` 
-                      }} />
-                    )}
                     {shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
                     {shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                     <div className="flex items-center gap-1.5">
@@ -15373,12 +15367,6 @@ export default function Dashboard() {
                     style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {satShiftForDay && satShiftForDay !== 'off' && (
-                      <div className="absolute inset-0 pointer-events-none" style={{ 
-                        background: satShiftForDay === 'day' ? 'rgba(151, 75, 138, 0.2)' : 'rgba(139, 92, 246, 0.2)',
-                        borderBottom: `3px solid ${satShiftForDay === 'day' ? 'rgba(151, 75, 138, 0.8)' : 'rgba(139, 92, 246, 0.8)'}` 
-                      }} />
-                    )}
                     {satShiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
                     {satShiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
