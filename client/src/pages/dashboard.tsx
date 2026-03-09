@@ -15172,7 +15172,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="relative"
+                                className="relative w-full"
                               >
                                 {!isFirstPrepDay && (
                                   <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '0px', boxShadow: `0 0 0 0.3px ${course.darkColor}` }} />
@@ -15547,7 +15547,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="relative"
+                                className="relative w-full"
                               >
                                 {!isFirstPrepDay && (
                                   <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
