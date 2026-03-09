@@ -16751,16 +16751,20 @@ export default function Dashboard() {
                             );
                           })}
                           {/* Google Calendar Events */}
-                          {visibleCalendarEvents.map((event, eventIdx) => (
+                          {visibleCalendarEvents.map((event, eventIdx) => {
+                            const eventMin = getETMinutes(new Date(event.startDate));
+                            const calTopOffset = eventMin > 0 ? (eventMin / 60) * rowHeight : 2;
+                            const calMaxHeight = Math.min(40, rowHeight - calTopOffset - 2);
+                            return (
                             <div
                               key={event.id}
                               className={`absolute rounded pt-0.5 px-0.5 pb-0 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500`}
                               style={{
-                                top: '2px',
+                                top: `${calTopOffset}px`,
                                 left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
                                 width: `calc(${columnWidth}% - 4px)`,
-                                height: `${Math.min(40, rowHeight - 4)}px`,
-                                maxHeight: `${Math.min(40, rowHeight - 4)}px`,
+                                height: `${Math.max(20, calMaxHeight)}px`,
+                                maxHeight: `${Math.max(20, calMaxHeight)}px`,
                                 zIndex: 1
                               }}
                               data-testid={`gcal-event-${event.id}`}
@@ -16780,7 +16784,8 @@ export default function Dashboard() {
                                 {format(new Date(event.startDate), "h:mm a")}
                               </div>
                             </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       );
                     })}
