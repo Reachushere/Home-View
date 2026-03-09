@@ -15516,7 +15516,7 @@ export default function Dashboard() {
                                 </div>
                                 {moduleP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
-                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                       {moduleP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                       )}
@@ -15551,7 +15551,7 @@ export default function Dashboard() {
                                 </div>
                                 {readingP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
-                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                       {readingP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                       )}
@@ -18177,7 +18177,7 @@ export default function Dashboard() {
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
                                         {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                       </div>
                                       <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
@@ -18186,7 +18186,7 @@ export default function Dashboard() {
                                   {cfp.readingP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
                                         {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                       </div>
                                       <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
@@ -18309,7 +18309,7 @@ export default function Dashboard() {
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
                                         {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                       </div>
                                       <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
@@ -18318,7 +18318,7 @@ export default function Dashboard() {
                                   {cfp.readingP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
                                         {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                       </div>
                                       <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
@@ -18448,7 +18448,7 @@ export default function Dashboard() {
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
                                         {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                       </div>
                                       <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
@@ -18457,7 +18457,7 @@ export default function Dashboard() {
                                   {cfp.readingP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden', flexShrink: 0 }}>
                                         {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                       </div>
                                       <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
