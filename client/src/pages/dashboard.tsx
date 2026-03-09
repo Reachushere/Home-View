@@ -360,6 +360,7 @@ export default function Dashboard() {
   const courseRowsRef = useRef<HTMLDivElement>(null);
   const allDayRowRef = useRef<HTMLDivElement>(null);
   const [calendarTop, setCalendarTop] = useState(252); // Default offset
+  const [calendarBottom, setCalendarBottom] = useState(0); // Bottom edge of calendar wrapper
   const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
   const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
   const [calendarReduction, setCalendarReduction] = useState(0); // Pixels to reduce calendar from left (1.5x Tuesday col width)
@@ -6385,6 +6386,7 @@ export default function Dashboard() {
       if (calendarWrapperRef.current) {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
         setCalendarTop(rect.top + window.scrollY);
+        setCalendarBottom(window.innerHeight - rect.bottom);
         setCalendarRight(window.innerWidth - rect.right);
         setCalendarLeft(rect.left);
         const unreducedWidth = rect.width + calendarReduction;
@@ -14579,7 +14581,7 @@ export default function Dashboard() {
             className="absolute pointer-events-none"
             style={{ 
               top: '-5px', 
-              left: '-15px', 
+              left: `${-(calendarReduction - 1) - 2}px`, 
               right: '-15px', 
               bottom: '-27px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
@@ -17872,10 +17874,10 @@ export default function Dashboard() {
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
-            left: `${originalCalendarLeft - 15}px`,
-            width: `${calendarReduction + 10}px`,
-            top: '55px',
-            bottom: '25px',
+            left: `${originalCalendarLeft - 15 + 20}px`,
+            width: `${calendarReduction + 10 - 20}px`,
+            top: `${calendarTop}px`,
+            bottom: `${calendarBottom}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
