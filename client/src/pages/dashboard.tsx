@@ -10667,11 +10667,11 @@ export default function Dashboard() {
       {/* Settings Panel Popup - Certificate Tracking Only */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
-          className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden" 
-          style={{ width: '420px', maxWidth: '95vw', height: '85vh' }}
+          className="overflow-hidden flex flex-col text-[11px] border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] p-0 [&>button.absolute]:hidden" 
+          style={{ width: '420px', maxWidth: '95vw', height: '85vh', background: 'linear-gradient(135deg, rgba(30,41,59,0.97) 0%, rgba(15,23,42,0.95) 50%, rgba(30,41,59,0.97) 100%)' }}
         >
           {/* Header bar matching flyouts */}
-          <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ background: 'rgba(15,23,42,0.5)' }}>
             <div className="flex items-center gap-2">
               <Settings className="h-3 w-3 text-white" />
               <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
