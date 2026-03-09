@@ -14646,7 +14646,7 @@ export default function Dashboard() {
                     };
 
                     const getShiftColor = (type: string | undefined) => {
-                      if (type === 'day') return { bg: '#974B8A', border: 'rgba(151, 75, 138, 0.9)', text: '#fff' };
+                      if (type === 'day') return { bg: '#fcfdc9', border: 'rgba(200, 200, 100, 0.9)', text: '#000' };
                       if (type === 'night') return { bg: 'rgba(139, 92, 246, 0.7)', border: 'rgba(139, 92, 246, 0.9)', text: '#fff' };
                       return { bg: 'transparent', border: 'rgba(255,255,255,0.15)', text: 'rgba(255,255,255,0.4)' };
                     };
@@ -14670,7 +14670,7 @@ export default function Dashboard() {
                             <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-white hover:bg-white/10" onClick={() => setShiftScheduleYear(y => y + 1)} data-testid="button-shift-next-year">›</Button>
                           </div>
                           <div className="flex items-center gap-2 text-xs">
-                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: '#974B8A' }}/> Day ({dayCounts.day})</span>
+                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: '#fcfdc9' }}/> Day ({dayCounts.day})</span>
                             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: 'rgba(139, 92, 246, 0.7)' }}/> Night ({dayCounts.night})</span>
                           </div>
                         </div>
@@ -14696,7 +14696,7 @@ export default function Dashboard() {
                                   data-testid={`shift-cell-${dateStr}`}
                                 >
                                   {day}
-                                  {shift === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-yellow-300" fill="currentColor" strokeWidth={1.5} />}
+                                  {shift === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
                                   {shift === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" fill="currentColor" strokeWidth={1.5} />}
                                 </button>
                               );
@@ -14934,7 +14934,7 @@ export default function Dashboard() {
                     };
 
                     const getShiftColor = (type: string | undefined) => {
-                      if (type === 'day') return { bg: '#974B8A', border: 'rgba(151, 75, 138, 0.9)', text: '#fff' };
+                      if (type === 'day') return { bg: '#fcfdc9', border: 'rgba(200, 200, 100, 0.9)', text: '#000' };
                       if (type === 'night') return { bg: 'rgba(139, 92, 246, 0.7)', border: 'rgba(139, 92, 246, 0.9)', text: '#fff' };
                       return { bg: 'transparent', border: 'rgba(255,255,255,0.15)', text: 'rgba(255,255,255,0.4)' };
                     };
@@ -14958,12 +14958,12 @@ export default function Dashboard() {
                             <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-white hover:bg-white/10" onClick={() => setShiftScheduleYear(y => y + 1)} data-testid="button-shift-next-year">›</Button>
                           </div>
                           <div className="flex items-center gap-2 text-xs">
-                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: '#974B8A' }}/> Day ({dayCounts.day})</span>
+                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: '#fcfdc9' }}/> Day ({dayCounts.day})</span>
                             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ background: 'rgba(139, 92, 246, 0.7)' }}/> Night ({dayCounts.night})</span>
                           </div>
                         </div>
                         <div className="text-xs text-muted-foreground mb-1">
-                          Click a day to cycle: off → <span style={{ color: '#974B8A' }}>day</span> → <span style={{ color: 'rgb(139,92,246)' }}>night</span> → off
+                          Click a day to cycle: off → <span style={{ color: '#b8a800' }}>day</span> → <span style={{ color: 'rgb(139,92,246)' }}>night</span> → off
                         </div>
                         <div className="grid grid-cols-4 gap-2" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                           {MONTHS.map((monthName, monthIdx) => {
@@ -14987,7 +14987,7 @@ export default function Dashboard() {
                                   data-testid={`shift-day-${dateStr}`}
                                 >
                                   {d}
-                                  {shiftType === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-yellow-300" fill="currentColor" strokeWidth={1.5} />}
+                                  {shiftType === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
                                   {shiftType === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" fill="currentColor" strokeWidth={1.5} />}
                                 </div>
                               );
