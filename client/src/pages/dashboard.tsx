@@ -18444,7 +18444,7 @@ export default function Dashboard() {
                                           const isDue = isSameDay(d, dueDate);
                                           return (
                                             <div key={di} style={{
-                                              width: '14px', height: '14px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                                               color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                               backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
@@ -18582,7 +18582,7 @@ export default function Dashboard() {
                                           const isDue = isSameDay(d, dueDate);
                                           return (
                                             <div key={di} style={{
-                                              width: '14px', height: '14px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                                               color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                               backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
@@ -18727,7 +18727,7 @@ export default function Dashboard() {
                                           const isDue = isSameDay(d, dueDate);
                                           return (
                                             <div key={di} style={{
-                                              width: '14px', height: '14px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                                               color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
                                               backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
