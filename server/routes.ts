@@ -1254,7 +1254,14 @@ export async function registerRoutes(
       if (!activeSemester) {
         return res.status(404).json({ error: "No active semester settings found" });
       }
-      const updated = await storage.updateSemesterSettings(activeSemester.id, req.body);
+      const dateFields = ['semesterStartDate', 'semesterEndDate', 'course1StartDate', 'course1EndDate', 'course2StartDate', 'course2EndDate', 'course3StartDate', 'course3EndDate', 'readingWeekStart', 'createdAt'];
+      const body = { ...req.body };
+      for (const field of dateFields) {
+        if (body[field] && typeof body[field] === 'string') {
+          body[field] = new Date(body[field]);
+        }
+      }
+      const updated = await storage.updateSemesterSettings(activeSemester.id, body);
       res.json(updated);
     } catch (err) {
       console.error("Error updating semester settings:", err);
@@ -1394,7 +1401,7 @@ export async function registerRoutes(
           title,
           type: "module",
           courseName: courseFullName,
-          dueDate: friday.toISOString(),
+          dueDate: friday,
           weekNumber,
           priority: "medium",
           description: "",
