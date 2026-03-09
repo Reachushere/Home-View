@@ -18143,7 +18143,7 @@ export default function Dashboard() {
                                   {courseName}
                                 </div>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : undefined }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
                                 <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
@@ -18153,7 +18153,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : undefined }}>
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18275,7 +18275,7 @@ export default function Dashboard() {
                                   {courseName}
                                 </div>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : undefined }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
                                 <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
@@ -18285,7 +18285,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : undefined }}>
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18414,7 +18414,7 @@ export default function Dashboard() {
                                   {courseName}
                                 </div>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : undefined }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
                                 <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
@@ -18424,7 +18424,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : undefined }}>
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
