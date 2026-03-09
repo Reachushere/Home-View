@@ -18434,7 +18434,7 @@ export default function Dashboard() {
                               }
                               if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                               return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', marginTop: '-3px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
                                     const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                     return (
@@ -18572,7 +18572,7 @@ export default function Dashboard() {
                               }
                               if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                               return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', marginTop: '-3px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
                                     const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                     return (
@@ -18717,7 +18717,7 @@ export default function Dashboard() {
                               }
                               if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                               return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', marginTop: '-3px' }} data-testid={`mini-cal-${task.id}`}>
                                   {weeks.map((weekStart, wi) => {
                                     const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                     return (
