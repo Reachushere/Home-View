@@ -18611,7 +18611,7 @@ export default function Dashboard() {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
-              const courseNudge = pd.courseCode === 'CFNF400' ? -1 : pd.courseCode === 'CASL101' ? -2 : 0;
+              const courseNudge = pd.courseCode === 'CFNF400' ? -1 : pd.courseCode === 'CASL101' ? 2 : 0;
               const offsetFromUpcoming = rowTop - upcomingTop + courseNudge;
               const getProgressColor = (percent: number) => {
                 if (percent === 100) return '#22c55e';
