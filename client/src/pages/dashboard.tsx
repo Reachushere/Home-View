@@ -18174,7 +18174,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: colorSettings.headerBar }}>
+                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                 {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                               </span>
                               <div style={{ flex: 1, position: 'relative', height: '4px' }}>
@@ -18272,7 +18272,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: colorSettings.headerBar }}>
+                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                 {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                               </span>
                               <div style={{ flex: 1, position: 'relative', height: '4px' }}>
@@ -18377,7 +18377,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: colorSettings.headerBar }}>
+                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                 {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                               </span>
                               <div style={{ flex: 1, position: 'relative', height: '4px' }}>
