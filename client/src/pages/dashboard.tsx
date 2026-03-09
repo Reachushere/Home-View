@@ -18549,7 +18549,7 @@ export default function Dashboard() {
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
         {/* Coming Up box - positioned to the left of the calendar in the reduction gap */}
         <section
-          className="rounded-[12px] overflow-hidden flex flex-col fixed"
+          className="overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
             left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
@@ -18557,7 +18557,6 @@ export default function Dashboard() {
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom - 1}px`,
             background: `linear-gradient(0deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`,
-            border: '1px solid white',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
             transition: 'opacity 0.2s ease'
