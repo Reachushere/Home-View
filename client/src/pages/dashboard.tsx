@@ -15163,7 +15163,25 @@ export default function Dashboard() {
                     })()}
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
-                  {weekDays.slice(0, 6).map((day, dayIdx) => {
+                  {(() => {
+                    const cwWeekStart = startOfDay(weekDays[0]);
+                    const cwWeekEnd = startOfDay(addDays(weekDays[5], 1));
+                    const courseWeekTasks = (allTasks?.filter(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      if (taskDueDate >= cwWeekStart && taskDueDate < cwWeekEnd) return true;
+                      if (task.startDate) {
+                        const taskStartDate = startOfDay(new Date(task.startDate));
+                        if (taskStartDate < cwWeekEnd && taskDueDate >= cwWeekStart) return true;
+                      }
+                      return false;
+                    }) || []).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+                    const taskSlotMap = new Map<number, number>();
+                    courseWeekTasks.forEach((t, idx) => taskSlotMap.set(t.id, idx));
+                    const totalSlots = courseWeekTasks.length;
+
+                    return weekDays.slice(0, 6).map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
                     const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
                     const cellDate = startOfDay(day);
@@ -15187,10 +15205,9 @@ export default function Dashboard() {
                     const rgb = hexToRgb(course.label);
                     const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                     
-                    const allItems: { task: typeof dueTasks[0], isPrep: boolean }[] = [
-                      ...prepTasks.map(t => ({ task: t, isPrep: true })).sort((a, b) => a.task.id - b.task.id),
-                      ...dueTasks.map(t => ({ task: t, isPrep: false })).sort((a, b) => a.task.id - b.task.id),
-                    ];
+                    const slottedItems: ({ task: typeof dueTasks[0], isPrep: boolean } | null)[] = Array(totalSlots).fill(null);
+                    dueTasks.forEach(t => { const slot = taskSlotMap.get(t.id); if (slot !== undefined) slottedItems[slot] = { task: t, isPrep: false }; });
+                    prepTasks.forEach(t => { const slot = taskSlotMap.get(t.id); if (slot !== undefined && slottedItems[slot] === null) slottedItems[slot] = { task: t, isPrep: true }; });
                     
                     return (
                       <div 
@@ -15210,7 +15227,10 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {allItems.map((item, itemIdx) => {
+                        {slottedItems.map((item, itemIdx) => {
+                          if (!item) {
+                            return <div key={`empty-${itemIdx}`} style={{ minHeight: '18px' }} />;
+                          }
                           const task = item.task;
                           const today = startOfDay(new Date());
                           const tomorrow = addDays(today, 1);
@@ -15331,7 +15351,8 @@ export default function Dashboard() {
                         })}
                       </div>
                     );
-                  })}
+                    });
+                  })()}
                   {/* Progress column - half-width black with M/R/O bars */}
                   {(() => {
                     const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
