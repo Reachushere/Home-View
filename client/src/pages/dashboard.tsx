@@ -18070,7 +18070,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '8px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '4px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18167,7 +18167,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '8px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '4px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18271,7 +18271,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '8px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '4px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
