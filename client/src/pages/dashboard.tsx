@@ -386,6 +386,20 @@ export default function Dashboard() {
   const [calendarReduction, setCalendarReduction] = useState(0); // Pixels to reduce calendar from left (1.5x Tuesday col width)
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
+  const courseRowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [courseRowRects, setCourseRowRects] = useState<{top: number; height: number}[]>([]);
+  const courseProgressDataRef = useRef<Array<{
+    courseCode: string;
+    progressBg: string;
+    moduleP: {percent: number; hasFiles: boolean};
+    readingP: {percent: number; hasFiles: boolean};
+    moduleUnread: number;
+    readingUnread: number;
+    hasNoData: boolean;
+    handlePlayModule: () => void;
+    handlePlayReading: () => void;
+  }>>([]);
+  const [courseProgressTick, setCourseProgressTick] = useState(0);
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedFiles');
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -6634,6 +6648,11 @@ export default function Dashboard() {
       if (courseRowsRef.current) {
         const rect = courseRowsRef.current.getBoundingClientRect();
         setCourseRowsTop(rect.top + window.scrollY);
+        const newRects = courseRowRefs.current.filter(Boolean).map(el => {
+          const r = el!.getBoundingClientRect();
+          return { top: r.top, height: r.height };
+        });
+        setCourseRowRects(newRects);
       }
       // Track all day row height and update gridSizes if it has grown
       if (allDayRowRef.current) {
@@ -15665,7 +15684,7 @@ export default function Dashboard() {
                 // Use pre-computed max height so all course rows are the same height
                 
                 return (
-                <div key={course.name} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
+                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -16035,90 +16054,22 @@ export default function Dashboard() {
                         setIsLoadingOneDriveFiles(false);
                       }
                     };
+                    if (courseProgressDataRef.current.length <= courseIdx) {
+                      courseProgressDataRef.current.length = courseIdx + 1;
+                    }
+                    courseProgressDataRef.current[courseIdx] = {
+                      courseCode,
+                      progressBg,
+                      moduleP,
+                      readingP,
+                      moduleUnread,
+                      readingUnread,
+                      hasNoData,
+                      handlePlayModule: () => handlePlayFiles('module'),
+                      handlePlayReading: () => handlePlayFiles('reading'),
+                    };
                     return (
-                      <div 
-                        className="flex flex-col"
-                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '0px', overflow: 'hidden', boxShadow: 'inset 1px 0 0 0 rgba(255,255,255,0.1)', minWidth: 0 }}
-                      >
-                        {hasNoData ? (
-                          <div className="flex-1 flex items-center justify-center">
-                            <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '2px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden', height: '28px' }} onClick={() => handlePlayFiles('module')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}>
-                              <div className="flex-1 flex flex-col gap-[2px] min-w-0">
-                                <div className="flex items-center gap-[3px]">
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Module</span>
-                                  {moduleUnread > 0 && moduleP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
-                                      {moduleUnread}
-                                    </div>
-                                  )}
-                                </div>
-                                {moduleP.hasFiles ? (
-                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '14px' }}>
-                                    <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                                      {moduleP.percent > 0 && (
-                                        <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
-                                      )}
-                                    </div>
-                                    <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
-                                  </div>
-                                ) : (
-                                  <span className="text-[8px] text-white leading-none">N/A</span>
-                                )}
-                              </div>
-                              {moduleP.hasFiles && (
-                              <div
-                                className="flex-shrink-0 relative cursor-pointer"
-                                data-testid={`play-module-${courseCode.toLowerCase()}`}
-                                title={`Play ${courseCode} module`}
-                                onClick={(e) => { e.stopPropagation(); handlePlayFiles('module'); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('module'); }}
-                              >
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
-                              </div>
-                              )}
-                            </div>
-                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '2px', overflow: 'hidden', height: '28px' }} onClick={() => handlePlayFiles('reading')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}>
-                              <div className="flex-1 flex flex-col gap-[2px] min-w-0">
-                                <div className="flex items-center gap-[3px]">
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Reading</span>
-                                  {readingUnread > 0 && readingP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
-                                      {readingUnread}
-                                    </div>
-                                  )}
-                                </div>
-                                {readingP.hasFiles ? (
-                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '14px' }}>
-                                    <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                                      {readingP.percent > 0 && (
-                                        <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
-                                      )}
-                                    </div>
-                                    <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
-                                  </div>
-                                ) : (
-                                  <span className="text-[8px] text-white leading-none">N/A</span>
-                                )}
-                              </div>
-                              {readingP.hasFiles && (
-                              <div
-                                className="flex-shrink-0 relative cursor-pointer"
-                                data-testid={`play-reading-${courseCode.toLowerCase()}`}
-                                title={`Play ${courseCode} reading`}
-                                onClick={(e) => { e.stopPropagation(); handlePlayFiles('reading'); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('reading'); }}
-                              >
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
-                              </div>
-                              )}
-                            </div>
-                          </>
-                        )}
-                      </div>
+                      <div style={{ gridColumn: progressGridCol, minWidth: 0 }} />
                     );
                   })()}
                   {/* Saturday column cell */}
@@ -18678,7 +18629,7 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          <div style={{ padding: '6px 8px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center' }}>
+          <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center' }}>
             <h4
               className="text-xs font-normal flex items-center text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
@@ -18697,6 +18648,105 @@ export default function Dashboard() {
               <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
             </div>
           </div>
+          {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
+            const upcomingTop = calendarBorderTop || (calendarTop + 15);
+            return courseProgressDataRef.current.map((pd, idx) => {
+              if (!pd || !courseRowRects[idx]) return null;
+              const rowTop = courseRowRects[idx].top;
+              const rowHeight = courseRowRects[idx].height;
+              const offsetFromUpcoming = rowTop - upcomingTop;
+              const getProgressColor = (percent: number) => {
+                if (percent === 100) return '#22c55e';
+                if (percent > 0) return '#f97316';
+                return '#ef4444';
+              };
+              return (
+                <div
+                  key={pd.courseCode}
+                  style={{
+                    position: 'absolute',
+                    top: `${offsetFromUpcoming}px`,
+                    left: 0,
+                    right: 0,
+                    height: `${rowHeight}px`,
+                    background: pd.progressBg,
+                    zIndex: 40,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                    borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                  }}
+                >
+                  {pd.hasNoData ? (
+                    <div className="flex-1 flex items-center justify-center">
+                      <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '8px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                        <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                          <div className="flex items-center gap-[3px]">
+                            <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Module</span>
+                            {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
+                              <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
+                                {pd.moduleUnread}
+                              </div>
+                            )}
+                          </div>
+                          {pd.moduleP.hasFiles ? (
+                            <div className="flex items-center gap-[3px]">
+                              <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                                {pd.moduleP.percent > 0 && (
+                                  <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
+                                )}
+                              </div>
+                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.moduleP.percent}%</span>
+                            </div>
+                          ) : (
+                            <span className="text-[8px] text-white leading-none">N/A</span>
+                          )}
+                        </div>
+                        {pd.moduleP.hasFiles && (
+                          <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
+                            <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '8px', paddingRight: '6px', overflow: 'hidden' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                        <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+                          <div className="flex items-center gap-[3px]">
+                            <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Reading</span>
+                            {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
+                              <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginTop: '-1px' }}>
+                                {pd.readingUnread}
+                              </div>
+                            )}
+                          </div>
+                          {pd.readingP.hasFiles ? (
+                            <div className="flex items-center gap-[3px]">
+                              <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                                {pd.readingP.percent > 0 && (
+                                  <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
+                                )}
+                              </div>
+                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.readingP.percent}%</span>
+                            </div>
+                          ) : (
+                            <span className="text-[8px] text-white leading-none">N/A</span>
+                          )}
+                        </div>
+                        {pd.readingP.hasFiles && (
+                          <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
+                            <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            });
+          })()}
           <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '2px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
