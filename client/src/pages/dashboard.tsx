@@ -18591,7 +18591,7 @@ export default function Dashboard() {
               <>
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Today</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
                     <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
@@ -18673,7 +18673,7 @@ export default function Dashboard() {
 
                 {/* This Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', marginTop: '1px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>This Week</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This Week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -18841,7 +18841,7 @@ export default function Dashboard() {
                 )}
                 {/* Next 2 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Next 3 Weeks</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next 3 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
