@@ -1600,7 +1600,7 @@ export default function Dashboard() {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions for 7 days (Sun-Sat)
-      progressColumnWidth: 0.75, // homework progress column
+      progressColumnWidth: 0.87, // homework progress column
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
@@ -1614,7 +1614,7 @@ export default function Dashboard() {
         parsed.dayColumnWidths = [...oldWidths.slice(0, 6), oldWidths[7]];
       }
       parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
-      parsed.progressColumnWidth = 0.75;
+      parsed.progressColumnWidth = 0.87;
     };
     
     // Check for device-specific saved settings first
@@ -6622,7 +6622,7 @@ export default function Dashboard() {
         const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
-        const reduction = Math.round(1.5 * tuesdayPixelWidth);
+        const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
         setCalendarReduction(reduction);
         const origLeft = rect.left - Math.max(0, calendarReduction - 3);
         setOriginalCalendarLeft(origLeft);
@@ -18958,7 +18958,6 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
-                <div style={{ flex: 1 }} />
                 {/* Next Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
@@ -19137,7 +19136,6 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
-                <div style={{ flex: 1 }} />
                 {/* 2 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>2 Weeks</span>

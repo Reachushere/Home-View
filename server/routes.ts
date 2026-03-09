@@ -1752,10 +1752,19 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/files/recently-prepared (must be before :id route)
+  app.get("/api/files/recently-prepared", async (_req, res) => {
+    res.json({ files: (globalThis as any).__recentlyPreparedFiles || [] });
+  });
+
   // GET /api/files/:id - Get single file
   app.get("/api/files/:id", async (req, res) => {
     try {
-      const file = await storage.getFile(Number(req.params.id));
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid file ID" });
+      }
+      const file = await storage.getFile(id);
       if (!file) {
         return res.status(404).json({ error: "File not found" });
       }
@@ -7476,6 +7485,7 @@ document.body.removeChild(a);
   });
 
   const recentlyPreparedFiles: { id: number; name: string; folder: string; totalChunks: number; textLength: number; preparedAt: string }[] = [];
+  (globalThis as any).__recentlyPreparedFiles = recentlyPreparedFiles;
 
   app.post("/api/files/monitor-sync", async (req, res) => {
     try {
