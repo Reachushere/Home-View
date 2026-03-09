@@ -18071,7 +18071,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px', position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18082,7 +18082,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', flexShrink: 0, width: '50px', marginLeft: 'auto', paddingLeft: '4px', alignSelf: 'center', marginTop: '5px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: 0, top: '5px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18168,7 +18168,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px', position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18179,7 +18179,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', flexShrink: 0, width: '50px', marginLeft: 'auto', paddingLeft: '4px', alignSelf: 'center', marginTop: '5px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: 0, top: '5px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18272,7 +18272,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px', position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18283,7 +18283,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', flexShrink: 0, width: '50px', marginLeft: 'auto', paddingLeft: '4px', alignSelf: 'center', marginTop: '5px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: 0, top: '5px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
