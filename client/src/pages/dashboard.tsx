@@ -18732,7 +18732,7 @@ export default function Dashboard() {
                     flexDirection: 'column',
                     overflow: 'visible',
                     borderBottom: '0.5px solid rgba(255,255,255,0.2)',
-                    transform: pd.courseCode === 'CFNF400' ? 'translateY(-1px)' : pd.courseCode === 'CASL101' ? 'translateY(-4px)' : undefined,
+                    transform: pd.courseCode === 'CFNF400' ? 'translateY(-1px)' : pd.courseCode === 'CASL101' ? 'translateY(0px)' : undefined,
                   }}
                 >
                   {pd.hasNoData ? (
