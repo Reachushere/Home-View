@@ -5,6 +5,23 @@ import { db } from "./db";
 import { appState } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
+function getEasternNow(): Date {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+}
+
+function getEasternDateStr(date: Date): string {
+  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' });
+  const parts = fmt.formatToParts(date);
+  const y = parts.find(p => p.type === 'year')!.value;
+  const m = parts.find(p => p.type === 'month')!.value;
+  const d = parts.find(p => p.type === 'day')!.value;
+  return `${y}-${m}-${d}`;
+}
+
+function getEasternHour(date: Date): number {
+  return parseInt(date.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
+}
+
 const sentReminders = new Set<string>();
 
 const DAILY_DIGEST_HOUR = 7;
@@ -75,7 +92,7 @@ export async function checkReminders() {
   try {
     await loadSentReminders();
     const allTasks = await storage.getTasks({ showCompleted: false });
-    const now = new Date();
+    const now = getEasternNow();
     lastCheckTime = now;
     let stateChanged = false;
 
@@ -177,9 +194,10 @@ export async function checkReminders() {
 export async function checkDailyDigest() {
   try {
     const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
+    const todayStr = getEasternDateStr(now);
+    const easternHour = getEasternHour(now);
 
-    if (now.getHours() < DAILY_DIGEST_HOUR) return;
+    if (easternHour < DAILY_DIGEST_HOUR) return;
 
     const lastDigestDate = await getAppState("last_digest_date");
     if (lastDigestDate === todayStr) return;
@@ -223,7 +241,7 @@ export async function checkDailyDigest() {
       const isTravelling = getIsTravellingMode();
       if (!isTravelling) {
         const taskList = upcomingTasks.map(t => t.title).join(", ");
-        const hour = new Date().getHours();
+        const hour = getEasternHour(new Date());
         const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
         const voiceMsg = `${greeting}. You have ${upcomingTasks.length} task${upcomingTasks.length !== 1 ? 's' : ''} due soon: ${taskList}.`;
         const echoResult = await sendEchoVoiceAnnouncement(voiceMsg);
