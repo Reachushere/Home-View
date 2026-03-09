@@ -14574,7 +14574,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 10px)', marginTop: '4px', marginLeft: `${calendarReduction > 0 ? calendarReduction - 3 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 14px)', marginTop: '4px', marginLeft: `${calendarReduction > 0 ? calendarReduction - 3 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -14583,7 +14583,7 @@ export default function Dashboard() {
               top: '-5px', 
               left: `${-(calendarReduction - 3) - 8}px`, 
               right: '-15px', 
-              bottom: '-27px', 
+              bottom: '-23px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
@@ -17877,7 +17877,7 @@ export default function Dashboard() {
             left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1}px`,
             top: `${calendarTop + 8 + 2}px`,
-            bottom: `${calendarBottom - 10}px`,
+            bottom: `${calendarBottom - 6}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
