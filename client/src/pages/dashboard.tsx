@@ -6466,7 +6466,7 @@ export default function Dashboard() {
   // Next 2 Weeks: tasks due from the coming Saturday through 2 weeks after that (ends Friday)
   const daysUntilSaturday = todayDow <= 6 ? (6 - todayDow) : 0;
   const nextSaturday = startOfDay(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
-  const threeWeeksEnd = startOfDay(addDays(nextSaturday, 13));
+  const threeWeeksEnd = startOfDay(addDays(nextSaturday, 20));
   threeWeeksEnd.setHours(23, 59, 59, 999);
   const thisWeekStart = nextSaturday;
   const thisWeekEnd = threeWeeksEnd;
