@@ -18612,45 +18612,6 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            {(() => {
-                              const today = startOfDay(new Date());
-                              const dueDate = startOfDay(new Date(task.dueDate));
-                              const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-                              const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                              const weeks: Date[] = [];
-                              let ws = todayWeekStart;
-                              while (ws <= dueWeekStart) {
-                                weeks.push(ws);
-                                ws = addDays(ws, 7);
-                              }
-                              if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                              return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', marginTop: '-3px' }} data-testid={`mini-cal-${task.id}`}>
-                                  {weeks.map((weekStart, wi) => {
-                                    const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                    return (
-                                      <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                        {days.map((d, di) => {
-                                          const isToday = isSameDay(d, today);
-                                          const isDue = isSameDay(d, dueDate);
-                                          return (
-                                            <div key={di} style={{
-                                              width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                              color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
-                                              backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
-                                              border: isDue && !isToday ? '1px solid #ef4444' : 'none',
-                                            }}>
-                                              {d.getDate()}
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            })()}
                           </div>
                           </div>
                         </div>
@@ -18750,45 +18711,6 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            {(() => {
-                              const today = startOfDay(new Date());
-                              const dueDate = startOfDay(new Date(task.dueDate));
-                              const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-                              const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                              const weeks: Date[] = [];
-                              let ws = todayWeekStart;
-                              while (ws <= dueWeekStart) {
-                                weeks.push(ws);
-                                ws = addDays(ws, 7);
-                              }
-                              if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                              return (
-                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', marginTop: '-3px' }} data-testid={`mini-cal-${task.id}`}>
-                                  {weeks.map((weekStart, wi) => {
-                                    const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                    return (
-                                      <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                        {days.map((d, di) => {
-                                          const isToday = isSameDay(d, today);
-                                          const isDue = isSameDay(d, dueDate);
-                                          return (
-                                            <div key={di} style={{
-                                              width: '17px', height: '17px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                              color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
-                                              backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
-                                              border: isDue && !isToday ? '1px solid #ef4444' : 'none',
-                                            }}>
-                                              {d.getDate()}
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            })()}
                           </div>
                           </div>
                         </div>
