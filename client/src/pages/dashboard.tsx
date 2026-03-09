@@ -16131,7 +16131,7 @@ export default function Dashboard() {
                             onTouchEnd={handleTouchEnd}
                             onTouchMove={handleTouchMove}
                           >
-                            {!isCASL101Task(task) && (
+                            {(
                               <Checkbox
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -16253,9 +16253,7 @@ export default function Dashboard() {
                             style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
                             onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
                           >
-                            {!isCASL101Task(task) && (
-                              <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
-                            )}
+                            <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
                             <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
                             {task.referenceLink && (
                               <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
@@ -16518,14 +16516,12 @@ export default function Dashboard() {
                               >
                                 {/* Red shimmer swipe for due today tasks */}
                                 <div className={`flex items-center gap-1.5 px-0.5 pt-0.5 pb-0 ${isDueToday ? "silver-shimmer-header" : ""}`}>
-                                  {!isCASL101Task(task) && (
-                                    <Checkbox
+                                  <Checkbox
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                       className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                       data-testid={`checkbox-time-${task.id}`}
                                     />
-                                  )}
                                   <div 
                                     onClick={() => setEditingTask(task)}
                                     className={`text-[8px] font-normal truncate cursor-pointer flex-1 ${
@@ -16651,9 +16647,7 @@ export default function Dashboard() {
                                 data-testid={`sat-time-task-${task.id}`}
                               >
                                 <div className="flex items-center gap-1 px-0.5 py-1">
-                                  {!isCASL101Task(task) && (
-                                    <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black" data-testid={`checkbox-sat-${task.id}`} />
-                                  )}
+                                  <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black" data-testid={`checkbox-sat-${task.id}`} />
                                   <span className="text-[8px] font-normal text-black truncate">{task.title}</span>
                                   {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-sat-${task.id}`} /> : null; })()}
                                 </div>
@@ -16757,14 +16751,12 @@ export default function Dashboard() {
                     >
                       {/* Red shimmer swipe for due today tasks */}
                       <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
-                        {!isCASL101Task(task) && (
-                          <Checkbox
+                        <Checkbox
                             checked={task.isCompleted || false}
                             onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                             className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                             onClick={(e) => e.stopPropagation()}
                           />
-                        )}
                         <span 
                           onClick={() => setEditingTask(task)}
                           className={`text-[9px] leading-tight font-normal line-clamp-2 cursor-pointer flex-1 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
@@ -18154,8 +18146,7 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-25px', gap: '0px' }}>
                   {/* Col 1: Checkbox */}
                   <div style={{ width: '16px', flexShrink: 0 }}>
-                    {!isCASL101Task(task) ? (
-                      <input
+                    <input
                         type="checkbox"
                         checked={task.isCompleted ?? false}
                         onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
@@ -18171,9 +18162,6 @@ export default function Dashboard() {
                         {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
                         {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
                       />
-                    ) : (
-                      <div className="h-3.5 w-3.5" />
-                    )}
                   </div>
                   {/* Handle 1 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
