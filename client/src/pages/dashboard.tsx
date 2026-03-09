@@ -18069,11 +18069,11 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                        <div style={{ width: '27px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                         </div>
                                         <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
@@ -18082,7 +18082,7 @@ export default function Dashboard() {
                                     {cfp.readingP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                        <div style={{ width: '27px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                         </div>
                                         <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
@@ -18095,7 +18095,7 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 62px)' }}>
                               <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -18166,11 +18166,11 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                        <div style={{ width: '27px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                         </div>
                                         <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
@@ -18179,7 +18179,7 @@ export default function Dashboard() {
                                     {cfp.readingP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                        <div style={{ width: '27px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                         </div>
                                         <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
@@ -18192,7 +18192,7 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 62px)' }}>
                               <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -18270,11 +18270,11 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', width: '50px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                        <div style={{ width: '27px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                         </div>
                                         <span className="text-[6px] font-bold text-white">{cfp.moduleP.percent}%</span>
@@ -18283,7 +18283,7 @@ export default function Dashboard() {
                                     {cfp.readingP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                        <div style={{ width: '27px', height: '3px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
                                           {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                         </div>
                                         <span className="text-[6px] font-bold text-white">{cfp.readingP.percent}%</span>
@@ -18296,7 +18296,7 @@ export default function Dashboard() {
                                 {courseName}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: 'calc(100% - 62px)' }}>
                               <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
