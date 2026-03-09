@@ -18670,7 +18670,6 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.moduleP.percent}%</span>
                             </div>
                           ) : (
                             <span className="text-[8px] text-white leading-none">N/A</span>
@@ -18678,9 +18677,12 @@ export default function Dashboard() {
                         </div>
                         <div style={{ flex: 1 }} />
                         {pd.moduleP.hasFiles && (
-                          <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                            <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
-                          </div>
+                          <>
+                            <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '10px' }}>{pd.moduleP.percent}%</span>
+                            <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
+                              <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                            </div>
+                          </>
                         )}
                       </div>
                       <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'hidden' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
@@ -18700,7 +18702,6 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.readingP.percent}%</span>
                             </div>
                           ) : (
                             <span className="text-[8px] text-white leading-none">N/A</span>
@@ -18708,9 +18709,12 @@ export default function Dashboard() {
                         </div>
                         <div style={{ flex: 1 }} />
                         {pd.readingP.hasFiles && (
-                          <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                            <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
-                          </div>
+                          <>
+                            <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '10px' }}>{pd.readingP.percent}%</span>
+                            <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
+                              <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                            </div>
+                          </>
                         )}
                       </div>
                     </>
@@ -18981,7 +18985,6 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
-                <div style={{ flex: 1 }} />
                 {/* Next Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
