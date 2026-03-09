@@ -18643,7 +18643,7 @@ export default function Dashboard() {
                     zIndex: 40,
                     display: 'flex',
                     flexDirection: 'column',
-                    overflow: 'hidden',
+                    overflow: 'visible',
                     borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   }}
                 >
@@ -18653,14 +18653,14 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '12px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden', background: pd.progressBg }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '12px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', background: pd.progressBg }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         <div style={{ flex: 1 }} />
                         {!pd.moduleP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '35px' }}>
+                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '5px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
@@ -18680,14 +18680,14 @@ export default function Dashboard() {
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'hidden', background: pd.progressBg }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'visible', background: pd.progressBg }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         <div style={{ flex: 1 }} />
                         {!pd.readingP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
                         {pd.readingP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px' }}>
+                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '5px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
@@ -18988,7 +18988,7 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '-43px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueNextWeekTasks.length})</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-3px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
                       <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(nextSaturday, 'd')}</div>
@@ -19167,7 +19167,7 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '-5px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>2 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-15px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-9px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
                       <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
