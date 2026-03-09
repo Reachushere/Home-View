@@ -18083,7 +18083,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '2px' }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18159,7 +18159,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '2px' }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18242,7 +18242,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '2px' }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
