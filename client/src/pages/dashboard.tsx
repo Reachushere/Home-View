@@ -17961,7 +17961,7 @@ export default function Dashboard() {
                   {/* Col 7: Days */}
                   <span 
                     className="text-[10px] font-medium whitespace-nowrap"
-                    style={{ color: progressColor }}
+                    style={{ color: 'white' }}
                   >
                     {daysUntil}d
                   </span>
@@ -18109,7 +18109,7 @@ export default function Dashboard() {
                                   <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white', flexShrink: 0 }}>
                                   {daysUntil}d
                                 </span>
                               </div>
@@ -18183,7 +18183,7 @@ export default function Dashboard() {
                                   <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white', flexShrink: 0 }}>
                                   {daysUntil}d
                                 </span>
                               </div>
@@ -18264,7 +18264,7 @@ export default function Dashboard() {
                                   <div className="rounded-full" style={{ width: '34px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(34, progressBarWidth)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor, flexShrink: 0 }}>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: 'white', flexShrink: 0 }}>
                                   {daysUntil}d
                                 </span>
                               </div>
