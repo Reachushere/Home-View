@@ -18938,7 +18938,7 @@ export default function Dashboard() {
                             {group.tasks.length > 1 && (
                               <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px' }}>
                                 <svg width="16" height="100%" viewBox="0 0 16 100" preserveAspectRatio="none" style={{ height: '100%' }}>
-                                  <path d="M 1,2 Q 7,2 7,15 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,85 Q 7,98 1,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                  <path d="M 7,2 Q 7,2 7,15 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,85 Q 7,98 7,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
                               </div>
                             )}
