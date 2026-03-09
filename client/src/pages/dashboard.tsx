@@ -18542,7 +18542,7 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <div key={task.id} className={daysUntil <= 1 ? 'animate-pulse-urgent' : ''} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
                           ref={(rowEl) => {
                             if (!rowEl || rowEl.dataset.swipeInit) return;
                             rowEl.dataset.swipeInit = '1';
@@ -18680,7 +18680,7 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <div key={task.id} className={daysUntil <= 1 ? 'animate-pulse-urgent' : ''} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
                           ref={(rowEl) => {
                             if (!rowEl || rowEl.dataset.swipeInit) return;
                             rowEl.dataset.swipeInit = '1';
@@ -18859,7 +18859,7 @@ export default function Dashboard() {
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                                 const gc = getCourseGradientColors(taskCourseCode);
                                 return (
-                                  <div key={task.id} className={daysUntil <= 1 ? 'animate-pulse-urgent' : ''} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
