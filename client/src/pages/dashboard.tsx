@@ -18084,7 +18084,7 @@ export default function Dashboard() {
             </h4>
             <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
             <div
-              className="text-xs font-normal text-white"
+              className="text-[10px] font-normal text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", width: '50%', textAlign: 'right' }}
             >
               {format(new Date(), 'EEEE, MMMM d, yyyy')}
