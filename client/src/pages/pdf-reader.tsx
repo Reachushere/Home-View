@@ -1147,6 +1147,37 @@ export default function PDFReaderPage() {
     isPausedRef.current = false;
     
     beacon("startReading-calling-playNextChunk", { startChunk, isPlaying: isPlayingRef.current, checkedCount: mergedChecked.size });
+
+    if (catWashFollow && file) {
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+      const folder = file.folder || '';
+      const weekMatch = folder.match(/week-(\d+)/i);
+      const weekNum = weekMatch ? weekMatch[1] : null;
+      const isModule = folder.toLowerCase().includes('module');
+      const courseMatch = folder.match(/(?:cppa|cfnf|casl|csoc|cphl)\d*/i);
+      const courseCode = courseMatch ? courseMatch[0].toUpperCase() : '';
+      const raw = file.displayName || file.originalName || '';
+      const cleanName = raw.replace(/\.pdf$/i, '').replace(/,\s*(Module|Reading)\s*\d+[-_,\s]*/i, ', ').replace(/[-_]\s*Introduction/i, '').replace(/\s+/g, ' ').trim();
+
+      let introText: string;
+      if (isModule && weekNum) {
+        introText = `${greeting} Bryn. I will now read the ${courseCode} module for week ${weekNum}.`;
+      } else if (weekNum) {
+        introText = `${greeting} Bryn. I will now read the ${courseCode} reading file: ${cleanName}.`;
+      } else {
+        introText = `${greeting} Bryn. I will now read: ${cleanName}.`;
+      }
+
+      if (startChunk > 0) {
+        introText += ` Resuming from chunk ${startChunk + 1}.`;
+      }
+
+      console.log(`[TTS] Playing intro: ${introText}`);
+      await playTTS(introText);
+      if (!isPlayingRef.current) return;
+    }
+
     playNextChunk(startChunk);
   };
 
