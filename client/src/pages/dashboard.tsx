@@ -10558,7 +10558,7 @@ export default function Dashboard() {
       <div style={{
         position: 'fixed',
         right: `${calendarRight - 11}px`,
-        top: '22px',
+        top: '27px',
         height: '16px',
         zIndex: 100,
         display: 'flex',
