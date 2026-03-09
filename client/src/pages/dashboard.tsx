@@ -16371,7 +16371,7 @@ export default function Dashboard() {
                             const hoursUntil = Math.round((new Date(nextTask.dueDate).getTime() - now.getTime()) / (1000 * 60 * 60));
                             return (
                               <div className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none" data-testid="hours-until-next-task">
-                                <span style={{ fontSize: '8px', color: hoursUntil <= 24 ? '#dc2626' : 'rgba(0,0,0,0.4)', fontWeight: hoursUntil <= 24 ? 700 : 500, letterSpacing: '0.2px', textAlign: 'center', lineHeight: '1.2' }}>
+                                <span style={{ fontSize: '8px', color: hoursUntil <= 24 ? '#dc2626' : 'rgba(0,0,0,0.4)', fontWeight: 700, letterSpacing: '0.2px', textAlign: 'center', lineHeight: '1.2' }}>
                                   {hoursUntil}h until<br/>next task due
                                 </span>
                               </div>
