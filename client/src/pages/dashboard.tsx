@@ -6438,43 +6438,45 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // Due Tomorrow: all tasks due tomorrow
-  // Also include module/reading tasks where tomorrow falls within the prep period
+  // This Week: tasks due from tomorrow through end of Friday (school week ends Friday 11:59pm)
+  const todayDow = today.getDay();
+  const daysUntilFriday = todayDow <= 5 ? (5 - todayDow) : (5 + 7 - todayDow);
+  const thisWeekFriday = startOfDay(addDays(today, daysUntilFriday));
+  const thisWeekFridayEnd = new Date(thisWeekFriday);
+  thisWeekFridayEnd.setHours(23, 59, 59, 999);
   const dueTomorrowTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
+    if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
-    
-    // Check if task is due tomorrow
-    if (isSameDay(new Date(t.dueDate), tomorrow)) return true;
-    
-    // Check if tomorrow falls within the task's planning/prep period (module/reading only)
+    const dueDate = new Date(t.dueDate);
+    const dueDateLocal = startOfDay(dueDate);
+    if (dueDateLocal <= startOfDay(today)) return false;
+    if (dueDate > thisWeekFridayEnd) return false;
+    if (isSameDay(dueDate, today)) return false;
     if (t.startDate && (t.type === 'module' || t.type === 'reading' || t.type === 'Module' || t.type === 'Reading')) {
       const taskStartDate = startOfDay(new Date(t.startDate));
-      const taskDueDate = startOfDay(new Date(t.dueDate));
-      const tomorrowStart = startOfDay(tomorrow);
-      
-      // If tomorrow falls within the task's planning period, include it as prep task
-      if (taskStartDate <= tomorrowStart && tomorrowStart < taskDueDate) {
-        return true;
+      const taskDueDate = startOfDay(dueDate);
+      if (taskStartDate <= startOfDay(today) && startOfDay(today) < taskDueDate) {
+        return false;
       }
     }
-    
-    return false;
+    return true;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // 2 to 21 Day Schedule: tasks due 2-21 days from today (excludes today and tomorrow)
-  const twoDaysOut = startOfDay(addDays(today, 2));
-  const tenDaysOut = startOfDay(addDays(today, 21));
-  const thisWeekStart = twoDaysOut;
-  const thisWeekEnd = tenDaysOut;
+  // Next 3 Weeks: tasks due from the coming Saturday through 3 weeks after that
+  const daysUntilSaturday = todayDow <= 6 ? (6 - todayDow) : 0;
+  const nextSaturday = startOfDay(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
+  const threeWeeksEnd = startOfDay(addDays(nextSaturday, 20));
+  threeWeeksEnd.setHours(23, 59, 59, 999);
+  const thisWeekStart = nextSaturday;
+  const thisWeekEnd = threeWeeksEnd;
   const dueThisWeekTasks = (() => {
     return allTasks.filter(t => {
       if (t.isMissed || t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (!t.dueDate) return false;
-      const dueDateStart = startOfDay(new Date(t.dueDate));
-      return dueDateStart >= twoDaysOut && dueDateStart <= tenDaysOut;
+      const dueDate = new Date(t.dueDate);
+      return dueDate >= nextSaturday && dueDate <= threeWeeksEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
 
@@ -18637,17 +18639,24 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {/* Tomorrow Section */}
+                {/* This Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', marginTop: '1px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Tomorrow</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>This Week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
-                  <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
-                    <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
-                    <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
+                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
+                    </div>
+                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekFriday, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekFriday, 'd')}</div>
+                    </div>
                   </div>
                 </div>
                 {dueTomorrowTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due tomorrow</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks this week</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {dueTomorrowTasks.map((task) => {
@@ -18736,24 +18745,24 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {/* 3-21 Days Section */}
+                {/* Next 3 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>3-21 Days</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Next 3 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 2), 'd')}</div>
+                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(nextSaturday, 'd')}</div>
                     </div>
                     <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekEnd, 'd')}</div>
+                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
                     </div>
                   </div>
                 </div>
                 {dueThisWeekTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 3-21 days</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in next 3 weeks</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {(() => {
