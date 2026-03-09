@@ -18670,7 +18670,7 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.moduleP.percent}%</span>
+                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '8px' }}>{pd.moduleP.percent}%</span>
                             </div>
                           ) : (
                             <span className="text-[8px] text-white leading-none">N/A</span>
@@ -18699,7 +18699,7 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{pd.readingP.percent}%</span>
+                              <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '8px' }}>{pd.readingP.percent}%</span>
                             </div>
                           ) : (
                             <span className="text-[8px] text-white leading-none">N/A</span>
