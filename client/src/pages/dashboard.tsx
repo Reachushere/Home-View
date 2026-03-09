@@ -284,6 +284,7 @@ export default function Dashboard() {
   const [newTaskType, setNewTaskType] = useState<string>("module");
   const [initialStartTime, setInitialStartTime] = useState<string>("");
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [isAddChooserOpen, setIsAddChooserOpen] = useState(false);
   const [showQuickAddCloseConfirm, setShowQuickAddCloseConfirm] = useState(false);
   const [quickAddStep, setQuickAddStep] = useState(0);
   const [quickAddData, setQuickAddData] = useState({
@@ -11610,7 +11611,7 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
-      {/* Left binder tab - Add Task */}
+      {/* Left binder tab - Add */}
       <div
         className="fixed z-[59] cursor-pointer left-tab-bounce"
         style={{
@@ -11620,12 +11621,10 @@ export default function Dashboard() {
           pointerEvents: 'auto',
         }}
         onClick={() => {
-          setQuickAddStep(0);
-          setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
-          setIsQuickAddOpen(true);
+          setIsAddChooserOpen(true);
         }}
         data-testid="left-add-task-tab"
-        title="Add Task"
+        title="Add"
       >
         <svg width="25" height="84" viewBox="0 0 25 84" style={{ display: 'block' }}>
           <path d="M0,0 L0,84 L9,84 Q9,75 15,75 L16,75 Q25,75 25,63 L25,21 Q25,9 16,9 L15,9 Q9,9 9,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
@@ -12200,6 +12199,55 @@ export default function Dashboard() {
             </section>
           </div>
           
+
+          {/* Add Chooser Dialog */}
+          {isAddChooserOpen && (
+            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => setIsAddChooserOpen(false)}>
+              <div
+                className="rounded-xl w-[320px] overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-2xl"
+                style={{
+                  fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15)' }}>
+                  <span className="text-[12px] font-normal text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>WHAT WOULD YOU LIKE TO ADD?</span>
+                </div>
+                <div className="flex flex-col gap-3 p-6">
+                  <Button
+                    variant="outline"
+                    className="w-full border !border-white/40 text-white hover:text-white hover:!border-white hover:bg-white/10 transition-all duration-200 h-12 text-[14px] font-medium"
+                    style={{ boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)' }}
+                    onClick={() => {
+                      setIsAddChooserOpen(false);
+                      setQuickAddStep(0);
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                      setIsQuickAddOpen(true);
+                    }}
+                    data-testid="button-chooser-add-task"
+                  >
+                    + Add Task
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border !border-white/40 text-white hover:text-white hover:!border-white hover:bg-white/10 transition-all duration-200 h-12 text-[14px] font-medium"
+                    style={{ boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)' }}
+                    onClick={() => {
+                      setIsAddChooserOpen(false);
+                      setEditingProject(null);
+                      setProjectWizardStep(0);
+                      setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' });
+                      setProjectDialogOpen(true);
+                    }}
+                    data-testid="button-chooser-add-project"
+                  >
+                    + Add Project
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
