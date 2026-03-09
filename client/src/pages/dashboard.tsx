@@ -18100,7 +18100,7 @@ export default function Dashboard() {
                           key={idx}
                           className={`p-1 border-r border-b border-border last:border-r-0 relative cursor-pointer`}
                           style={{
-                            backgroundColor: monthDayShift === 'day' ? '#fcfdc9' : monthDayShift === 'night' ? 'rgba(139, 92, 246, 0.18)' : undefined
+                            backgroundColor: monthDayShift === 'day' ? '#fcfdc9' : monthDayShift === 'night' ? '#fde5ff' : undefined
                           }}
                           onClick={() => {
                             const weekInfo = weeks.find(w => {
