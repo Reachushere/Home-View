@@ -18073,7 +18073,7 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
@@ -18082,7 +18082,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '2px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18093,7 +18093,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px', marginTop: '3px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18149,7 +18149,7 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
@@ -18158,7 +18158,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '2px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18169,7 +18169,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px', marginTop: '3px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
@@ -18232,7 +18232,7 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
@@ -18241,7 +18241,7 @@ export default function Dashboard() {
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '2px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18252,7 +18252,7 @@ export default function Dashboard() {
                                   {task.title}
                                 </button>
                                 {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0, width: '42px', marginTop: '3px' }}>
                                     {cfp.moduleP.hasFiles && (
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                         <span className="text-[6px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
