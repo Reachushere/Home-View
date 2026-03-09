@@ -3984,9 +3984,9 @@ export async function registerRoutes(
     try {
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
-      }
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
         return res.json({ found: false, weekNumber: currentWeekNumber });
@@ -4048,10 +4048,9 @@ export async function registerRoutes(
       // Get current week number from semester settings
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      
-      if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
-      }
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
       
       // Filter for unlistened files from current week
       const unlistenedFiles = allFiles.filter(f => {
@@ -4577,11 +4576,11 @@ document.body.removeChild(a);
         storage.getFiles(),
       ]);
       let currentWeekNumber = 1;
-      if (semesterSettings?.semesterStartDate) {
-        console.log(`[Cat Wash] Week calc: semStart=${semesterSettings.semesterStartDate}, rwStart=${semesterSettings.readingWeekStart}, today=${today.toISOString()}`);
-        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
-        console.log(`[Cat Wash] Calculated week: ${currentWeekNumber}`);
-      }
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      console.log(`[Cat Wash] Week calc: semStart=${semStart.toISOString()}, rwStart=${rwStart.toISOString()}, today=${today.toISOString()}`);
+      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+      console.log(`[Cat Wash] Calculated week: ${currentWeekNumber}`);
       const cppaModule = allFiles.find((f: any) => {
         if (f.listened) return false;
         const weekMatch = f.folder?.match(/week-(\d+)/i);
@@ -4750,9 +4749,9 @@ document.body.removeChild(a);
       // Get current week number
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(today, new Date(semesterSettings.semesterStartDate));
-      }
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
       // Find CPPA module for current week that hasn't been fully listened to
       const allFiles = await storage.getFiles();
@@ -5044,9 +5043,9 @@ document.body.removeChild(a);
 
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
-      }
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
       if (nextFile) {

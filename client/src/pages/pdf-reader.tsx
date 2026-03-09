@@ -1121,19 +1121,32 @@ export default function PDFReaderPage() {
     chunksRef.current = newChunks;
     setChunksList(newChunks);
     setTotalChunks(newChunks.length);
-    const startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
+    const key = getFileKey();
+    let serverChecked = new Set<number>();
+    if (file?.checkedChunks) {
+      try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+    }
+    const localChecked = loadCheckedChunks(key);
+    const mergedChecked = serverChecked.size > localChecked.size ? serverChecked : localChecked;
+    setCheckedChunks(mergedChecked);
+    let startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
+    if (catWashFollow && mergedChecked.size > 0) {
+      const firstUnchecked = newChunks.findIndex((_, idx) => !mergedChecked.has(idx));
+      if (firstUnchecked >= 0 && firstUnchecked > startChunk) {
+        startChunk = firstUnchecked;
+        console.log(`[TTS] Cat wash: skipping ${mergedChecked.size} checked chunks, starting at chunk ${startChunk}`);
+      }
+    }
     if (startChunk > 0) {
-      console.log(`[TTS] Resuming from chunk ${startChunk} (via resumeChunk URL param)`);
+      console.log(`[TTS] Resuming from chunk ${startChunk}`);
     }
     setCurrentChunk(startChunk);
     setIsPlaying(true);
     isPlayingRef.current = true;
     setIsPaused(false);
     isPausedRef.current = false;
-    const key = getFileKey();
-    setCheckedChunks(loadCheckedChunks(key));
     
-    beacon("startReading-calling-playNextChunk", { startChunk, isPlaying: isPlayingRef.current });
+    beacon("startReading-calling-playNextChunk", { startChunk, isPlaying: isPlayingRef.current, checkedCount: mergedChecked.size });
     playNextChunk(startChunk);
   };
 
