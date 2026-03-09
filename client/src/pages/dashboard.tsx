@@ -14633,7 +14633,7 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
+                    <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -14646,7 +14646,7 @@ export default function Dashboard() {
               return (
                 <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
                   {isSatToday && (
-                    <div className={`absolute left-px right-px flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
+                    <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
                     </div>
                   )}
@@ -14856,7 +14856,7 @@ export default function Dashboard() {
                             }}
                           >
                             {/* Course name column */}
-                            <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white" style={{ background: course.label }}>
+                            <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white" style={{ background: course.label, overflow: 'hidden', minWidth: 0 }}>
                               {taskIdx === 0 ? course.name : ''}
                             </div>
                             
@@ -14991,10 +14991,10 @@ export default function Dashboard() {
                               );
                             })}
                             
-                            {/* Progress column - empty with black background */}
-                            <div style={{ backgroundColor: '#000000', gridColumn: progressGridCol }} />
+                            {/* Progress column - empty with header background */}
+                            <div style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, minWidth: 0 }} />
                             {/* Saturday column - always course bg */}
-                            <div style={{ backgroundColor: course.bg, gridColumn: afterProgressGridCol }} />
+                            <div style={{ backgroundColor: course.bg, gridColumn: afterProgressGridCol, minWidth: 0 }} />
                           </div>
                         );
                       })}
@@ -15021,7 +15021,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd` }}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
@@ -15095,7 +15095,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'visible' }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -15382,7 +15382,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="flex flex-col"
-                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '4px', overflow: 'visible', boxShadow: 'inset 1px 0 0 0 rgba(255,255,255,0.1)' }}
+                        style={{ background: progressBg, gridColumn: progressGridCol, paddingLeft: '0px', paddingRight: '0px', overflow: 'hidden', boxShadow: 'inset 1px 0 0 0 rgba(255,255,255,0.1)', minWidth: 0 }}
                       >
                         {hasNoData ? (
                           <div className="flex-1 flex items-center justify-center">
@@ -15390,7 +15390,7 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <>
-                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', height: '28px' }} onClick={() => handlePlayFiles('module')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}>
+                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '2px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden', height: '28px' }} onClick={() => handlePlayFiles('module')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('module'); }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
                                 <div className="flex items-center gap-[3px]">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Module</span>
@@ -15407,7 +15407,7 @@ export default function Dashboard() {
                                         <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '10px' }}>{moduleP.percent}%</span>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '2px' }}>{moduleP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
@@ -15425,7 +15425,7 @@ export default function Dashboard() {
                               </div>
                               )}
                             </div>
-                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', overflow: 'visible', height: '28px' }} onClick={() => handlePlayFiles('reading')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}>
+                            <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '2px', overflow: 'hidden', height: '28px' }} onClick={() => handlePlayFiles('reading')} onTouchEnd={(e) => { e.preventDefault(); handlePlayFiles('reading'); }}>
                               <div className="flex-1 flex flex-col gap-[2px] min-w-0">
                                 <div className="flex items-center gap-[3px]">
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '40px', display: 'inline-block' }}>Reading</span>
@@ -15442,7 +15442,7 @@ export default function Dashboard() {
                                         <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '10px' }}>{readingP.percent}%</span>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '2px' }}>{readingP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
@@ -15492,8 +15492,8 @@ export default function Dashboard() {
                     ];
                     return (
                       <div 
-                        className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd` }}
+                        className="border-l border-border/50 relative overflow-hidden flex flex-col gap-0.5 pt-0.5"
+                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
@@ -15686,7 +15686,7 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    <div style={{ backgroundColor: '#000000', gridColumn: progressGridCol, border: 'none' }} />
+                    <div style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, border: 'none', minWidth: 0 }} />
                     {weekDays[6] && (() => {
                       const day = weekDays[6];
                       const cellDate = startOfDay(day);
@@ -15752,10 +15752,10 @@ export default function Dashboard() {
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             {showAllDayRow && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/60 relative border-b border-border/50" style={{ backgroundColor: '#000000' }}>
+              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/60 relative border-b border-border/50" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: '#000000' }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {/* Day cells - Sun-Fri */}
               {weekDays.slice(0, 6).map((day, dayIdx) => {
                 const allDayTasks = getAllDayTasks(day);
@@ -15898,10 +15898,10 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Progress column - half-width, black background */}
+              {/* Progress column - half-width */}
               <div 
                 className="border-l border-border/50 relative"
-                style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
+                style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, minWidth: 0 }}
               />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
@@ -16221,10 +16221,10 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Progress column - half-width, black background */}
+                    {/* Progress column - half-width */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
+                      style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, minWidth: 0 }}
                     />
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
