@@ -18401,7 +18401,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
-                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Week's" : `Week ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
                                 <div className="text-[9px] text-white/50" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden', flexWrap: 'nowrap' }}>
                                   <span className="truncate" style={{ minWidth: 0, flex: '1 1 0%' }}>{courseName}</span>
@@ -18539,7 +18539,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
-                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Week's" : `Week ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
                                 <div className="text-[9px] text-white/50" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden', flexWrap: 'nowrap' }}>
                                   <span className="truncate" style={{ minWidth: 0, flex: '1 1 0%' }}>{courseName}</span>
@@ -18684,7 +18684,7 @@ export default function Dashboard() {
                                   data-upcoming-task-name
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
-                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Week's" : `Week ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                  {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
                                 <div className="text-[9px] text-white/50" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden', flexWrap: 'nowrap' }}>
                                   <span className="truncate" style={{ minWidth: 0, flex: '1 1 0%' }}>{courseName}</span>
