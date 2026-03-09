@@ -231,7 +231,7 @@ export default function PDFReaderPage() {
   const selectedSpeakerRef = useRef("browser_tts");
   const [binauralEnabled, setBinauralEnabled] = useState(() => {
     const saved = localStorage.getItem('pdf-reader-binaural');
-    return saved !== null ? saved === 'true' : true;
+    return saved !== null ? saved === 'true' : false;
   });
   const [binauralVolume, setBinauralVolume] = useState(() => {
     const saved = localStorage.getItem('pdf-reader-binaural-volume');
