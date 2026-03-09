@@ -1566,7 +1566,7 @@ export default function PDFReaderPage() {
     } else {
       stopBinauralBeats();
     }
-    return () => {};
+    return () => { stopBinauralBeats(); };
   }, [binauralEnabled, isPlaying, isPaused]);
 
   useEffect(() => {
@@ -1576,13 +1576,9 @@ export default function PDFReaderPage() {
   useEffect(() => {
     localStorage.setItem('pdf-reader-binaural-volume', String(binauralVolume));
     if (binauralGainRef.current) {
-      binauralGainRef.current.gain.value = binauralVolume;
+      try { binauralGainRef.current.gain.value = binauralVolume; } catch {}
     }
   }, [binauralVolume]);
-
-  useEffect(() => {
-    return () => { stopBinauralBeats(); };
-  }, []);
 
   const getTimeEstimate = () => {
     if (totalChunks === 0 || !chunksRef.current.length) return null;
@@ -2386,7 +2382,7 @@ export default function PDFReaderPage() {
                 />
                 <div className="flex-1 flex items-center justify-between" style={{ marginTop: '4px' }}>
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%){(() => { const est = getTimeEstimate(); return est ? ` · ${est.remaining} remaining` : ''; })()}</span>
+                    <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%){(() => { try { const est = getTimeEstimate(); return est ? ` · ${est.remaining} remaining` : ''; } catch { return ''; } })()}</span>
                     <div style={{ width: '130px', marginLeft: '10px' }}>
                       <div className="h-2 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
                         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${chunkProgress}%`, background: waveColor }} />
