@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AccessGate } from "@/components/access-gate";
-import { DevPostIt } from "@/components/dev-post-it";
+
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import FilesPage from "@/pages/files";
@@ -77,12 +77,6 @@ function Router() {
   );
 }
 
-function ConditionalPostIt() {
-  const [location] = useLocation();
-  if (location !== "/") return null;
-  return <DevPostIt />;
-}
-
 function App() {
   useAutoFullscreen();
   return (
@@ -90,7 +84,6 @@ function App() {
       <TooltipProvider>
         <AccessGate>
           <Toaster />
-          <ConditionalPostIt />
           <Router />
         </AccessGate>
       </TooltipProvider>
