@@ -87,6 +87,7 @@ const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
+const NEST_SPEAKER_ENTITY = "media_player.nestaudio6787";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
 interface FlickDevice {
