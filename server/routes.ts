@@ -4954,9 +4954,9 @@ document.body.removeChild(a);
       const masterOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], newReaderUrl, 'tablet_cat_wall');
       deviceResults['tablet_cat_wall'] = masterOpened ? 'silk_intent' : 'pending_nav';
 
-      // Also re-open on Samsung TV
+      // Also re-open on Samsung TV with follower URL
       try {
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', newReaderUrl);
+        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', newFollowerUrl);
         deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
         console.log(`[Cat Wash Dry] Samsung TV error: ${e.message}`);
