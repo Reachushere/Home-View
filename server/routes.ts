@@ -4022,6 +4022,16 @@ export async function registerRoutes(
     res.json({ ok: true });
   });
 
+  let currentTvFollowUrl: string | null = null;
+
+  app.get("/api/cat-wash/tv-follow", (_req, res) => {
+    if (currentTvFollowUrl) {
+      console.log(`[Cat Wash TV] Redirecting to: ${currentTvFollowUrl}`);
+      return res.redirect(currentTvFollowUrl);
+    }
+    res.status(404).send('<html><body style="background:#0a0a1a;color:white;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><h2>No active playback</h2></body></html>');
+  });
+
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
@@ -4381,10 +4391,14 @@ document.body.removeChild(a);
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick force-stop Silk failed: ${e.message}`);
     }
-    // Method 1: Use androidtv.adb_command to launch Silk with URL
+    currentTvFollowUrl = url;
+    const appUrl = "https://home-view--bkh416.replit.app";
+    const redirectUrl = `${appUrl}/api/cat-wash/tv-follow`;
+    console.log(`[Cat Wash] TV redirect URL stored. Opening simple redirect: ${redirectUrl}`);
+    console.log(`[Cat Wash] TV will redirect to: ${url}`);
+    // Method 1: Use androidtv.adb_command with simple redirect URL (no query params to break)
     try {
-      const escapedUrl = url.replace(/&/g, '\\&');
-      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${escapedUrl}' com.amazon.cloud9`;
+      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${redirectUrl}" com.amazon.cloud9`;
       const resp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -4395,12 +4409,12 @@ document.body.removeChild(a);
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick adb_command failed: ${e.message}`);
     }
-    // Method 2: media_player.play_media with url type
+    // Method 2: media_player.play_media with redirect url
     try {
       const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: entityId, media_content_id: url, media_content_type: 'url' }),
+        body: JSON.stringify({ entity_id: entityId, media_content_id: redirectUrl, media_content_type: 'url' }),
       });
       console.log(`[Cat Wash] Fire Stick ${entityId} play_media url: ${resp.status}`);
       if (resp.ok) return true;
@@ -4865,10 +4879,13 @@ document.body.removeChild(a);
 
       const stopped: string[] = [];
 
+      let fileName = '';
+
       if (catWashPlaybackActive && catWashPlaybackState) {
         const savedFileId = catWashPlaybackState.fileId;
         const savedChunk = catWashPlaybackState.chunkIndex;
-        console.log(`[Cat Wash Stop Webhook] Stopping playback - file ${savedFileId} (${catWashPlaybackState.fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
+        fileName = catWashPlaybackState.fileName || '';
+        console.log(`[Cat Wash Stop Webhook] Stopping playback - file ${savedFileId} (${fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
 
         if (savedFileId && savedChunk > 0) {
           try {
@@ -4879,7 +4896,7 @@ document.body.removeChild(a);
           }
         }
 
-        stopped.push(`playback:${catWashPlaybackState.fileName}`);
+        stopped.push(`playback:${fileName}`);
         catWashPlaybackActive = false;
         catWashPlaybackStartedAt = null;
         catWashPlaybackState = null;
@@ -4889,6 +4906,28 @@ document.body.removeChild(a);
         console.log(`[Cat Wash Stop Webhook] Stopping active TTS session`);
         stopTTSSession("Toothbrush started running - stopping playback");
         stopped.push("ttsSession");
+      }
+
+      if (fileName && HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
+        const cleanName = fileName.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
+        const goodbyeText = `Stop. ${cleanName}. File position saved. See you next time Bryn.`;
+        console.log(`[Cat Wash Stop Webhook] Playing goodbye TTS: ${goodbyeText}`);
+        try {
+          const audioPath = await generateAndSaveTTSAudio(goodbyeText, `goodbye-${Date.now()}`);
+          const appUrl = "https://home-view--bkh416.replit.app";
+          const fullAudioUrl = `${appUrl}${audioPath}`;
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const echoEntity = "media_player.echo_cat_left_am";
+          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: echoEntity, media_content_id: fullAudioUrl, media_content_type: "music" }),
+          });
+          console.log(`[Cat Wash Stop Webhook] Goodbye TTS play_media: ${playResp.status}`);
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        } catch (e: any) {
+          console.log(`[Cat Wash Stop Webhook] Goodbye TTS failed: ${e.message}`);
+        }
       }
 
       const stopTimestamp = Date.now();

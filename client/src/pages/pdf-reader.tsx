@@ -1328,10 +1328,6 @@ export default function PDFReaderPage() {
 
   const stopReading = async () => {
     console.log('[TTS] Stopping');
-    setIsPlaying(false);
-    isPlayingRef.current = false;
-    setIsPaused(false);
-    isPausedRef.current = false;
     if (speakerTimerRef.current) {
       clearTimeout(speakerTimerRef.current);
       speakerTimerRef.current = null;
@@ -1342,8 +1338,7 @@ export default function PDFReaderPage() {
       audioRef.current.removeAttribute('src');
       audioRef.current.load();
     }
-    
-    // Save progress to database if this is a stored file (not OneDrive)
+
     if (fileId && currentChunk > 0) {
       try {
         await fetch(`/api/files/${fileId}`, {
@@ -1358,6 +1353,37 @@ export default function PDFReaderPage() {
         console.error('Failed to save progress:', e);
       }
     }
+
+    if (catWashFollow && file) {
+      const raw = file.displayName || file.originalName || 'this file';
+      const cleanName = raw.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
+      const goodbyeText = `Stop. ${cleanName}. File position saved. See you next time Bryn.`;
+      console.log(`[TTS] Playing goodbye: ${goodbyeText}`);
+      try {
+        const response = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: goodbyeText, voice }),
+        });
+        if (response.ok) {
+          const blob = await response.blob();
+          const goodbyeUrl = URL.createObjectURL(blob);
+          await new Promise<void>((resolve) => {
+            const goodbyeAudio = new Audio(goodbyeUrl);
+            goodbyeAudio.onended = () => { URL.revokeObjectURL(goodbyeUrl); resolve(); };
+            goodbyeAudio.onerror = () => { URL.revokeObjectURL(goodbyeUrl); resolve(); };
+            goodbyeAudio.play().catch(() => resolve());
+          });
+        }
+      } catch (e) {
+        console.error('[TTS] Goodbye TTS failed:', e);
+      }
+    }
+
+    setIsPlaying(false);
+    isPlayingRef.current = false;
+    setIsPaused(false);
+    isPausedRef.current = false;
 
     if (catWashFollow || speakerParam) {
       try {
