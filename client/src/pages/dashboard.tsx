@@ -9747,8 +9747,10 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
         onMouseLeave={() => {
+          if (isHamburgerOpen) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpen) return;
             closeTopPill();
           }, 1800);
         }}
@@ -9772,7 +9774,7 @@ export default function Dashboard() {
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Hamburger Menu */}
-          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { setIsHamburgerOpen(open); if (open) triggerButtonGlow('hamburger'); }}>
+          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { setIsHamburgerOpen(open); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }}>
             <DropdownMenuTrigger asChild>
               <div 
                 className="pill-button-hover"
@@ -18005,7 +18007,7 @@ export default function Dashboard() {
               className="text-xs font-normal flex items-center justify-between text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
             >
-              <span style={{ whiteSpace: 'nowrap' }}>Coming Up</span>
+              <span style={{ whiteSpace: 'nowrap' }}>Upcoming</span>
             </h4>
           </div>
           <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '2px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
