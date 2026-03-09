@@ -4625,7 +4625,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-wash-stop"],
+      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door"],
     });
   });
 
@@ -5012,14 +5012,20 @@ document.body.removeChild(a);
 
       const today = new Date();
 
-      const dayOfWeek = today.getDay();
-      if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3) {
-        console.log(`[Cat Lights] Day of week is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]} — only triggers Wednesday-Friday`);
-        return res.json({ action: "skipped", reason: `Only triggers Wednesday-Friday (today is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]})` });
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      const isSpingSummer = semesterSettings?.semesterType === 'spring_summer';
+
+      if (!isSpingSummer) {
+        const dayOfWeek = today.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3) {
+          console.log(`[Cat Lights] Day of week is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]} — only triggers Wednesday-Friday`);
+          return res.json({ action: "skipped", reason: `Only triggers Wednesday-Friday (today is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]})` });
+        }
+      } else {
+        console.log(`[Cat Lights] Spring/Summer semester — lights automation active every day`);
       }
 
       // Get current week number
-      const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
@@ -5191,6 +5197,82 @@ document.body.removeChild(a);
     } catch (error: any) {
       console.error("[Cat Wash Stop Webhook] Error:", error);
       res.status(500).json({ error: "Failed to handle stop webhook", details: error.message });
+    }
+  });
+
+  // POST /api/webhook/cat-door - Triggered when cat washroom door opens
+  // Stops playback and saves progress (same as toothbrush stop)
+  app.post("/api/webhook/cat-door", async (req, res) => {
+    try {
+      const rawNewState = req.body?.new_state;
+      const doorState = req.body?.state || (typeof rawNewState === 'string' ? rawNewState : rawNewState?.state) || 'unknown';
+      console.log(`[Cat Door] ====== WEBHOOK TRIGGERED ======`);
+      console.log(`[Cat Door] Timestamp: ${new Date().toISOString()}`);
+      console.log(`[Cat Door] Door state: ${doorState}`);
+
+      if (doorState !== 'on' && doorState !== 'open') {
+        console.log(`[Cat Door] Door not opened (state: ${doorState}) — ignoring`);
+        return res.json({ action: "ignored", reason: `Door state is ${doorState}, not open` });
+      }
+
+      if (!catWashPlaybackActive && !currentTTSSession) {
+        console.log("[Cat Door] No active playback — ignoring");
+        return res.json({ action: "ignored", reason: "No active playback" });
+      }
+
+      const stopped: string[] = [];
+      let fileName = '';
+
+      if (catWashPlaybackActive && catWashPlaybackState) {
+        const savedFileId = catWashPlaybackState.fileId;
+        const savedChunk = catWashPlaybackState.chunkIndex;
+        fileName = catWashPlaybackState.fileName || '';
+        console.log(`[Cat Door] Stopping playback - file ${savedFileId} (${fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
+
+        if (savedFileId && savedChunk > 0) {
+          try {
+            await storage.updateFile(savedFileId, { lastChunkIndex: savedChunk });
+            console.log(`[Cat Door] Saved progress: chunk ${savedChunk}`);
+          } catch (e: any) {
+            console.log(`[Cat Door] Failed to save progress: ${e.message}`);
+          }
+        }
+
+        stopped.push(`playback:${fileName}`);
+        catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
+        catWashPlaybackState = null;
+        currentTvFollowUrl = null;
+        currentTabletReaderUrl = null;
+      }
+
+      if (currentTTSSession) {
+        console.log(`[Cat Door] Stopping active TTS session`);
+        stopTTSSession("Door opened - stopping playback");
+        stopped.push("ttsSession");
+      }
+
+      stopToothbrushPolling();
+
+      let goodbyeText = '';
+      if (fileName) {
+        const cleanName = fileName.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
+        goodbyeText = `Stopping. ${cleanName}. File position saved. See you next time Bryn.`;
+      }
+
+      const stopTimestamp = Date.now();
+      await Promise.all([
+        setTabletCommand({ action: 'stop_playback', goodbyeText, timestamp: stopTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
+      ]);
+      console.log(`[Cat Door] Sent stop_playback to tablet and go_home to TV`);
+
+      console.log(`[Cat Door] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
+      res.json({ action: "stopped", trigger: "door_opened", stoppedItems: stopped });
+
+    } catch (error: any) {
+      console.error("[Cat Door] Error:", error);
+      res.status(500).json({ error: "Failed to handle door webhook", details: error.message });
     }
   });
 
