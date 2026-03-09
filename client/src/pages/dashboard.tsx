@@ -18393,7 +18393,7 @@ export default function Dashboard() {
                                 <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
-                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '15px' }}>
+                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '45px' }}>
                                   <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
@@ -18526,7 +18526,7 @@ export default function Dashboard() {
                                 <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
-                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '15px' }}>
+                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '45px' }}>
                                   <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
@@ -18666,7 +18666,7 @@ export default function Dashboard() {
                                 <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
-                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '15px' }}>
+                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '45px' }}>
                                   <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
