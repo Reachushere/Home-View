@@ -16332,9 +16332,10 @@ export default function Dashboard() {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
+                      const visibleCalendarEvents = hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id));
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDay(day, new Date());
-                      const totalItems = hourTasks.length + hourCalendarEvents.length;
+                      const totalItems = hourTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       return (
@@ -16545,7 +16546,7 @@ export default function Dashboard() {
                             );
                           })}
                           {/* Google Calendar Events */}
-                          {hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id)).map((event, eventIdx) => (
+                          {visibleCalendarEvents.map((event, eventIdx) => (
                             <div
                               key={event.id}
                               className={`absolute rounded pt-0.5 px-0.5 pb-0 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500`}
