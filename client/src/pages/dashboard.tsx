@@ -18665,7 +18665,7 @@ export default function Dashboard() {
                           </div>
                           {pd.moduleP.hasFiles ? (
                             <div className="flex items-center gap-[3px]">
-                              <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                              <div className="rounded-full overflow-hidden" style={{ width: '60px', height: '10px', backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                 {pd.moduleP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
@@ -18697,7 +18697,7 @@ export default function Dashboard() {
                           </div>
                           {pd.readingP.hasFiles ? (
                             <div className="flex items-center gap-[3px]">
-                              <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                              <div className="rounded-full overflow-hidden" style={{ width: '60px', height: '10px', backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                 {pd.readingP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
@@ -18949,8 +18949,8 @@ export default function Dashboard() {
                               })}
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginBottom: '37px' }}>
-                                <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
+                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginBottom: '37px' }}>
+                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 20px)', overflow: 'visible' }}>
                                   <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
                               </div>
