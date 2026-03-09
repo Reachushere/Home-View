@@ -15703,7 +15703,7 @@ export default function Dashboard() {
                                 </div>
                                 {moduleP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
-                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                                    <div className="flex-1 h-[7px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                       {moduleP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                       )}
@@ -15738,7 +15738,7 @@ export default function Dashboard() {
                                 </div>
                                 {readingP.hasFiles ? (
                                   <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
-                                    <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                                    <div className="flex-1 h-[7px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                       {readingP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                       )}
