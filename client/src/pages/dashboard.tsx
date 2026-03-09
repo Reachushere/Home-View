@@ -18661,7 +18661,7 @@ export default function Dashboard() {
               return (
                 <div key="cfnf-left-bg" style={{
                   position: 'absolute',
-                  top: `${cppaTop + cppaBoxHeight}px`,
+                  top: `${cppaTop + cppaBoxHeight - 1}px`,
                   left: 0,
                   width: leftWidth,
                   height: `${cppaBoxHeight}px`,
