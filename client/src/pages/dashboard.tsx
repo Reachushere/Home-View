@@ -2000,6 +2000,7 @@ export default function Dashboard() {
 
   // Generate grid template columns based on sizes
   // dayColumnWidths has 7 entries (Sun-Sat), progress column inserted after lastSchoolDayIndex
+  const DAY_COL_LEFT_REDUCTION = 10;
   const getGridTemplateColumns = () => {
     const beforeProgress = gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).map(w => `${w}fr`).join(' ');
     const afterProgress = gridSizes.dayColumnWidths.slice(lastSchoolDayIndex + 1).map(w => `${w}fr`).join(' ');
@@ -15319,7 +15320,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
+                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined, paddingLeft: `${DAY_COL_LEFT_REDUCTION}px` }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {shiftForDay && shiftForDay !== 'off' && (
@@ -15369,7 +15370,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { gridColumn: afterProgressGridCol, paddingLeft: `${DAY_COL_LEFT_REDUCTION}px` } : { backgroundColor: colorSettings.headerBar, gridColumn: afterProgressGridCol, paddingLeft: `${DAY_COL_LEFT_REDUCTION}px` }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {satShiftForDay && satShiftForDay !== 'off' && (
@@ -15754,7 +15755,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}
+                        style={{ backgroundColor: cellBgColor, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -16148,7 +16149,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
+                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
@@ -16300,7 +16301,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px' }}
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -16359,7 +16360,7 @@ export default function Dashboard() {
                       return (
                         <div
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isSatOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: '2px 2px 2px 4px', gridColumn: afterProgressGridCol }}
+                          style={{ backgroundColor: isSatOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: afterProgressGridCol }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -16423,6 +16424,7 @@ export default function Dashboard() {
                     className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0 ${isSameDay(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
                       backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5',
+                      paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -16567,7 +16569,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-b border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: afterProgressGridCol }}
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: afterProgressGridCol, paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px` }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -16690,7 +16692,8 @@ export default function Dashboard() {
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             backgroundColor: (isToday || isCurrentHour) ? '#e4ecf5' : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? '#fde5ff' : '#faf8f5'),
-                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
+                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
+                            paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -16966,7 +16969,8 @@ export default function Dashboard() {
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
                             gridColumn: afterProgressGridCol,
-                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined
+                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
+                            paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
                         >
                           {/* Hour boundary dotted line */}
