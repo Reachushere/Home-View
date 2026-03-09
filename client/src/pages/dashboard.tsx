@@ -18723,7 +18723,7 @@ export default function Dashboard() {
               );
             });
           })()}
-          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '14px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '14px', paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none' }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
