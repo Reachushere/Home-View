@@ -15756,7 +15756,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
-                        style={{ backgroundColor: cellBgColor, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
