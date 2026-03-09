@@ -8426,15 +8426,13 @@ export default function Dashboard() {
             const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
             const cId = courseCodeFromFolder?.toLowerCase() || '';
             const playerHeaderGradient = (() => {
-              if (cId === 'cppa122') return 'linear-gradient(0deg, rgb(71, 176, 69) 0%, rgb(15, 80, 4) 100%)';
-              if (cId === 'cfnf400') return 'linear-gradient(180deg, rgb(222, 24, 100) 0%, rgb(250, 103, 179) 100%)';
-              if (cId === 'casl101') return 'linear-gradient(180deg, rgb(80, 4, 66) 0%, rgb(176, 69, 162) 100%)';
               if (courseCodeFromFolder) {
-                const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCodeFromFolder)?.color || '#6b7280';
-                const rgb = hexToRgb(courseHex);
-                const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
-                const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
-                return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
+                const courseSettingsMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCodeFromFolder);
+                if (courseSettingsMatch) {
+                  const startColor = courseSettingsMatch.color;
+                  const endColor = courseSettingsMatch.colorEnd || courseSettingsMatch.color;
+                  return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
+                }
               }
               return 'linear-gradient(to br, rgba(31,41,55,0.95), rgba(0,0,0,0.9), rgba(17,24,39,0.95))';
             })();
@@ -8529,13 +8527,11 @@ export default function Dashboard() {
             const barFolderParts = previewFile?.folder?.split('-') || [];
             const barCourseCode = barFolderParts[2]?.toUpperCase() || '';
             const barCourseBg = (() => {
-              if (barCourseCode === 'CPPA122') return 'linear-gradient(90deg, rgba(15,80,4,0.92) 0%, rgba(71,176,69,0.85) 100%)';
-              if (barCourseCode === 'CFNF400') return 'linear-gradient(90deg, rgba(140,10,60,0.92) 0%, rgba(222,24,100,0.85) 100%)';
-              if (barCourseCode === 'CASL101') return 'linear-gradient(90deg, rgba(80,4,66,0.92) 0%, rgba(176,69,162,0.85) 100%)';
-              const courseHex = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === barCourseCode)?.color;
-              if (courseHex) {
-                const rgb = hexToRgb(courseHex);
-                return `linear-gradient(90deg, rgba(${Math.max(0,rgb.r-40)},${Math.max(0,rgb.g-40)},${Math.max(0,rgb.b-40)},0.92) 0%, rgba(${rgb.r},${rgb.g},${rgb.b},0.85) 100%)`;
+              const barCourseMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === barCourseCode);
+              if (barCourseMatch) {
+                const startColor = barCourseMatch.color;
+                const endColor = barCourseMatch.colorEnd || barCourseMatch.color;
+                return `linear-gradient(90deg, ${startColor} 0%, ${endColor} 100%)`;
               }
               return 'linear-gradient(90deg, rgba(31,41,55,0.92) 0%, rgba(55,65,81,0.85) 100%)';
             })();
@@ -9892,7 +9888,7 @@ export default function Dashboard() {
         if (nextPrep) {
           const prepCourseCode = nextPrep.courseName ? nextPrep.courseName.split(' - ')[0] : '';
           const prepCourse = prepCourseCode ? coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === prepCourseCode.toUpperCase()) : null;
-          prepCourseColor = prepCourseCode.toUpperCase() === 'CASL101' ? '#B045A2' : prepCourseCode.toUpperCase() === 'CPPA122' ? '#47B045' : (prepCourse?.color || '');
+          prepCourseColor = prepCourse?.colorEnd || prepCourse?.color || '';
           const prepCourseName = prepCourse?.name?.split(' - ')[1] || prepCourseCode;
           prepTaskName = prepCourseName ? `${prepCourseName} ${nextPrep.title}` : nextPrep.title;
           if (nextPrep.prepDaysLeft > 0) {
@@ -15427,17 +15423,11 @@ export default function Dashboard() {
                   name: courseName, 
                   bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
                   label: (() => {
-                    if (courseName === 'CPPA122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
-                    if (courseName === 'CFNF400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
-                    if (courseName === 'CASL101') return 'linear-gradient(180deg, rgb(151, 75, 138) 0%, rgb(176, 69, 162) 100%)';
-                    const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
-                    const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
-                    return `linear-gradient(180deg, rgb(${dR}, ${dG}, ${dB}) 0%, rgb(${lR}, ${lG}, ${lB}) 100%)`;
+                    const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
+                    const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
+                    return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                   })(),
-                  darkColor: (() => {
-                    if (courseName === 'CPPA122') return '#0F5004';
-                    if (courseName === 'CFNF400') return '#DE1864';
-                    if (courseName === 'CASL101') return '#974B8A';
+                  darkColor: courseData.color || (() => {
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
@@ -15954,20 +15944,17 @@ export default function Dashboard() {
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
                     const hasNoData = courseCode === 'CASL101' ? false : (!moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles);
-                    const courseHexColor = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode)?.color || '#6b7280';
+                    const courseMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                    const courseHexColor = courseMatch?.color || '#6b7280';
+                    const courseHexColorEnd = courseMatch?.colorEnd;
                     const moduleFolderCount = fileCounts[moduleFolderKey];
                     const readingFolderCount = fileCounts[readingFolderKey];
                     const moduleUnread = moduleFolderCount?.unlistened || 0;
                     const readingUnread = readingFolderCount?.unlistened || 0;
                     const progressBg = (() => {
-                      const cId = courseCode.toLowerCase();
-                      if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
-                      if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
-                      if (cId === 'casl101') return 'linear-gradient(180deg, rgb(151, 75, 138) 0%, rgb(176, 69, 162) 100%)';
-                      const rgb = hexToRgb(courseHexColor);
-                      const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
-                      const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
-                      return `linear-gradient(180deg, rgb(${dR}, ${dG}, ${dB}) 0%, rgb(${lR}, ${lG}, ${lB}) 100%)`;
+                      const startColor = courseHexColor;
+                      const endColor = courseHexColorEnd || courseHexColor;
+                      return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = async (fileType: 'module' | 'reading') => {
                       setIsLoadingOneDriveFiles(true);
