@@ -14663,7 +14663,7 @@ export default function Dashboard() {
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-              <div className="flex items-center justify-center relative" style={{ backgroundColor: '#000000' }}>
+              <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
@@ -14680,7 +14680,7 @@ export default function Dashboard() {
                   data-testid="time-column-resize-handle"
                 />
               </div>
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: '#000000' }} />}
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {/* Sun-Fri day headers (indices 0-5) */}
               {weekDays.slice(0, 6).map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
@@ -14693,7 +14693,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? undefined : '#000000', animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
+                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -14715,7 +14715,7 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: '#000000', gridColumn: progressGridCol }}
+                style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol }}
               >
                 <div className="flex items-center justify-center gap-1">
                   <span className="text-[10px] font-medium tracking-wide text-white/60 uppercase leading-tight text-center">Homework<br/><span className="mt-1 block">Progress</span></span>
@@ -14733,7 +14733,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: '#000000', gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
@@ -15998,10 +15998,10 @@ export default function Dashboard() {
                     className={`grid relative group/row flex-shrink-0`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
                   >
-                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : '#000000'), color: isCurrentHour ? 'white' : 'rgba(255,255,255,0.6)', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined }}>
+                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: isCurrentHour ? 'white' : 'rgba(255,255,255,0.6)', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : '#000000' }} data-testid="module-column-cell" />}
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : colorSettings.headerBar }} data-testid="module-column-cell" />}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
