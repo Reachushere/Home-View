@@ -16588,8 +16588,8 @@ export default function Dashboard() {
                         >
                           {/* Hour boundary dotted line */}
                           <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-400`} style={{ top: '0' }} />
-                          {/* Half-hour dotted line - hidden for compact night hours */}
-                          {!(isNightHour && !nightHourHasTasks) && <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300`} style={{ top: '50%' }} />}
+                          {/* Half-hour dotted line - hidden for compact night hours and current time intersection */}
+                          {!(isNightHour && !nightHourHasTasks) && !(isSatToday && isCurrentHour) && <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300`} style={{ top: '50%' }} />}
                           {/* Render tasks for this hour */}
                           {hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
