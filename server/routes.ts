@@ -2753,11 +2753,20 @@ export async function registerRoutes(
   // PATCH /api/tasks/:id/reschedule
   app.patch(api.tasks.reschedule.path, async (req, res) => {
     const { dueDate, weekNumber } = req.body;
-    const task = await storage.updateTask(Number(req.params.id), { 
-      dueDate: new Date(dueDate),
+    const parsedDate = new Date(dueDate);
+    const etHour = parseInt(parsedDate.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
+    const etMin = parseInt(parsedDate.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
+    const hasTime = etHour !== 0 || etMin !== 0;
+    const eventStartTime = hasTime ? `${etHour.toString().padStart(2, '0')}:${etMin.toString().padStart(2, '0')}` : null;
+    const updateFields: Record<string, any> = { 
+      dueDate: parsedDate,
       weekNumber,
       isMissed: false
-    });
+    };
+    if (eventStartTime) {
+      updateFields.eventStartTime = eventStartTime;
+    }
+    const task = await storage.updateTask(Number(req.params.id), updateFields);
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
