@@ -18054,7 +18054,7 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[8px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '2px', paddingBottom: '3px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
@@ -18151,7 +18151,7 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[8px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '2px', paddingBottom: '3px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
@@ -18255,7 +18255,7 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[8px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '2px', paddingBottom: '3px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
