@@ -325,24 +325,6 @@ export default function Dashboard() {
   const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [maxTaskNameWidth, setMaxTaskNameWidth] = useState<number>(0);
-  useEffect(() => {
-    const measure = () => {
-      const els = document.querySelectorAll('[data-upcoming-task-name]');
-      if (!els.length) return;
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      let max = 0;
-      els.forEach(el => {
-        const style = window.getComputedStyle(el);
-        ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-        const w = ctx.measureText(el.textContent || '').width;
-        if (w > max) max = w;
-      });
-      if (max > 0) setMaxTaskNameWidth(Math.ceil(max));
-    };
-    requestAnimationFrame(measure);
-  }, [allTasks, selectedWeek]);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
   const [calendarHeight, setCalendarHeight] = useState(() => {
@@ -2787,6 +2769,24 @@ export default function Dashboard() {
     retry: 2,
     retryDelay: 1000,
   });
+  useEffect(() => {
+    const measure = () => {
+      const els = document.querySelectorAll('[data-upcoming-task-name]');
+      if (!els.length) return;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      let max = 0;
+      els.forEach(el => {
+        const style = window.getComputedStyle(el);
+        ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const w = ctx.measureText(el.textContent || '').width;
+        if (w > max) max = w;
+      });
+      if (max > 0) setMaxTaskNameWidth(Math.ceil(max));
+    };
+    requestAnimationFrame(measure);
+  }, [allTasks, selectedWeek]);
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
@@ -14640,7 +14640,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, paddingTop: '7px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 43, order: 1, paddingTop: '7px' }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -14681,10 +14681,10 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '4px', 
+              top: '0px', 
               left: `${-(calendarReduction - 3) - 8}px`, 
               right: '-15px', 
-              bottom: '-9px', 
+              bottom: '0px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
@@ -17517,7 +17517,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, marginLeft: '-4px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 43, order: 1, marginLeft: '-4px' }}>
           <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 10px)', marginTop: '3px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
