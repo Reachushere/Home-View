@@ -18288,9 +18288,9 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {/* 2-21 Days Section */}
+                {/* 3-21 Days Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>2-21 Days</span>
+                  <span className="text-[12px] font-semibold" style={{ color: colorSettings.headerBar }}>3-21 Days</span>
                   <span className="text-[11px] font-semibold" style={{ color: colorSettings.headerBar }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -18305,7 +18305,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {dueThisWeekTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2-21 days</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 3-21 days</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {dueThisWeekTasks.map((task) => {
