@@ -18057,17 +18057,8 @@ export default function Dashboard() {
                             <span className="text-white text-[8px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '15px', textAlign: 'right' }}>
-                                {daysUntil}d
-                              </span>
-                              <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '22px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px', position: 'relative' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                            <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18100,9 +18091,18 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '4px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
+                                <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              </div>
+                              <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                                {daysUntil}d
+                              </span>
                             </div>
                           </div>
                           </div>
@@ -18154,17 +18154,8 @@ export default function Dashboard() {
                             <span className="text-white text-[8px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '15px', textAlign: 'right' }}>
-                                {daysUntil}d
-                              </span>
-                              <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '22px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px', position: 'relative' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                            <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18197,9 +18188,18 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '4px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
+                                <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              </div>
+                              <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                                {daysUntil}d
+                              </span>
                             </div>
                           </div>
                           </div>
@@ -18258,17 +18258,8 @@ export default function Dashboard() {
                             <span className="text-white text-[8px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '15px', textAlign: 'right' }}>
-                                {daysUntil}d
-                              </span>
-                              <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '22px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px', position: 'relative' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                            <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <button
                                   className="text-[10px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
@@ -18301,9 +18292,18 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '4px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '3px' }}>
+                                <div className="rounded-full" style={{ width: '100%', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              </div>
+                              <span className="text-[7px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                                {daysUntil}d
+                              </span>
                             </div>
                           </div>
                           </div>
