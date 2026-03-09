@@ -19257,35 +19257,19 @@ export default function Dashboard() {
                                           </div>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <Checkbox
-                                              checked={task.isCompleted || false}
-                                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                              className="h-3 w-3 shrink-0 border-white/60 data-[state=checked]:bg-white data-[state=checked]:border-white"
-                                              data-testid={`checkbox-2w-${task.id}`}
-                                            />
-                                            <span
-                                              data-upcoming-task-name
-                                              data-testid={`upcoming-2w-task-${task.id}`}
+                                          <div>
+                                            <button
+                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
                                               onClick={() => setEditingTask(task)}
-                                              className="text-[11px] font-semibold truncate cursor-pointer hover:opacity-80"
-                                              style={{ color: '#ffffff', lineHeight: 1.2 }}
-                                            >{task.title}</span>
-                                          </div>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '16px' }}>
-                                            {task.courseName && (() => {
-                                              const cc = task.courseName.split(' - ')[0]?.toUpperCase() || '';
-                                              const gColors = getCourseGradientColors(cc);
-                                              return (
-                                                <span className="text-[8px] font-bold px-1 py-0.5 rounded" style={{ background: `linear-gradient(135deg, ${gColors.start}, ${gColors.end})`, color: '#fff' }}>{cc}</span>
-                                              );
-                                            })()}
-                                            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                              {task.type === 'discussion' ? 'Discussion' : task.type === 'module' ? 'Module' : task.type === 'Reading' ? 'Reading' : task.type === 'essay' ? 'Essay' : task.type}
-                                            </span>
-                                            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                                              {format(new Date(task.dueDate), 'EEE MMM d')}
-                                            </span>
+                                              data-testid={`upcoming-2w-task-${task.id}`}
+                                              data-upcoming-task-name
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : gc.end }}
+                                            >
+                                              {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                            </button>
+                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || ''}</span>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
