@@ -14683,7 +14683,7 @@ export default function Dashboard() {
               );
             })()}
           </div>
-          <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip' }}>
+          <div className="shadow-lg flex-1 min-h-0 border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
