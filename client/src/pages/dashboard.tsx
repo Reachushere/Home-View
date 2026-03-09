@@ -16361,6 +16361,21 @@ export default function Dashboard() {
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
+                          {isToday && isCurrentHour && !hasAnyTasks && (() => {
+                            const now = new Date();
+                            const nextTask = allTasks
+                              .filter(t => !t.isCompleted && new Date(t.dueDate) > now)
+                              .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
+                            if (!nextTask) return null;
+                            const hoursUntil = Math.round((new Date(nextTask.dueDate).getTime() - now.getTime()) / (1000 * 60 * 60));
+                            return (
+                              <div className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none" data-testid="hours-until-next-task">
+                                <span style={{ fontSize: '8px', color: hoursUntil <= 24 ? '#dc2626' : 'rgba(0,0,0,0.4)', fontWeight: hoursUntil <= 24 ? 700 : 500, letterSpacing: '0.2px', textAlign: 'center', lineHeight: '1.2' }}>
+                                  {hoursUntil}h until<br/>next task due
+                                </span>
+                              </div>
+                            );
+                          })()}
                           {/* Hour boundary dotted line - skip for 12pm since it has AM/PM separator */}
                           {hour !== 12 && <div 
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-400 dark:border-gray-500`}
