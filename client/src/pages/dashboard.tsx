@@ -17825,7 +17825,7 @@ export default function Dashboard() {
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
             if (boxType === 'today') return '#ef4444';
             if (boxType === 'tomorrow') return '#eab308';
-            return daysUntil <= 3 ? '#eab308' : '#22c55e';
+            return daysUntil < 3 ? '#eab308' : '#22c55e';
           };
 
           // Helper to format days display for Tomorrow box
