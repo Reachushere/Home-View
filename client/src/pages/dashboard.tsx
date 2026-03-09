@@ -8045,7 +8045,7 @@ export default function Dashboard() {
                 const weekNum = parts[1];
                 const course = parts[2]?.toUpperCase() || '';
                 const type = parts[3] || '';
-                const displayName = `Wk ${weekNum} - ${course} - ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                const displayName = `Week ${weekNum} - ${course} - ${type.charAt(0).toUpperCase() + type.slice(1)}`;
                 
                 return (
                   <div
