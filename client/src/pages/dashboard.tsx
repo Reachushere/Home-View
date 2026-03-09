@@ -22080,7 +22080,7 @@ function TaskForm({
                   {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002 }} onOpenAutoFocus={(e) => e.preventDefault()}>
+              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002 }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()}>
                 <div className="p-3">
                   <CalendarPicker
                     mode="single"
