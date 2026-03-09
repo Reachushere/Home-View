@@ -14694,7 +14694,7 @@ export default function Dashboard() {
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
+                <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '6px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-black/20 hover:bg-black/50"
