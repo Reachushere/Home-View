@@ -15429,10 +15429,10 @@ export default function Dashboard() {
                   label: (() => {
                     if (courseName === 'CPPA122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                     if (courseName === 'CFNF400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
-                    if (courseName === 'CASL101') return 'linear-gradient(180deg, rgba(151, 75, 138, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                    if (courseName === 'CASL101') return 'linear-gradient(180deg, rgb(151, 75, 138) 0%, rgb(176, 69, 162) 100%)';
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
-                    return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
+                    return `linear-gradient(180deg, rgb(${dR}, ${dG}, ${dB}) 0%, rgb(${lR}, ${lG}, ${lB}) 100%)`;
                   })(),
                   darkColor: (() => {
                     if (courseName === 'CPPA122') return '#0F5004';
@@ -15963,11 +15963,11 @@ export default function Dashboard() {
                       const cId = courseCode.toLowerCase();
                       if (cId === 'cppa122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                       if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
-                      if (cId === 'casl101') return 'linear-gradient(180deg, rgba(151, 75, 138, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                      if (cId === 'casl101') return 'linear-gradient(180deg, rgb(151, 75, 138) 0%, rgb(176, 69, 162) 100%)';
                       const rgb = hexToRgb(courseHexColor);
                       const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                       const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
-                      return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
+                      return `linear-gradient(180deg, rgb(${dR}, ${dG}, ${dB}) 0%, rgb(${lR}, ${lG}, ${lB}) 100%)`;
                     })();
                     const handlePlayFiles = async (fileType: 'module' | 'reading') => {
                       setIsLoadingOneDriveFiles(true);
