@@ -18073,13 +18073,13 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
-                              <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '20px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '20px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -18149,13 +18149,13 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
-                              <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '20px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '20px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -18232,13 +18232,13 @@ export default function Dashboard() {
                       return (
                         <SwipeableTaskRow key={task.id} task={task} onDelete={() => deleteTaskWithUndo(task.id)} onReschedule={() => setEditingTask(task)}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', flexShrink: 0, minWidth: '38px' }}>
+                              <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
-                              <div style={{ width: '24px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '24px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(24, progressBarWidth * 24 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '20px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '20px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
