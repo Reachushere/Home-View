@@ -22839,7 +22839,7 @@ function TaskForm({
                   {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002, maxHeight: '70vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
+              <PopoverContent className="w-auto p-0" align="start" side="top" style={{ zIndex: 10002, maxHeight: '50vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                 <div className="p-3">
                   {(() => {
                     const now = new Date();
@@ -22848,7 +22848,7 @@ function TaskForm({
                     const dueWeekEnd = dueDate ? endOfWeek(dueDate, { weekStartsOn: 0 }) : null;
                     const nowMonth = now.getFullYear() * 12 + now.getMonth();
                     const dueMonth = dueDate ? dueDate.getFullYear() * 12 + dueDate.getMonth() : nowMonth;
-                    const numMonths = Math.min(Math.max(1, dueMonth - nowMonth + 1), 4);
+                    const numMonths = Math.min(Math.max(1, dueMonth - nowMonth + 1), 2);
                     const weekRangeDays: Date[] = [];
                     if (dueDate && dueWeekEnd) {
                       let d = new Date(currentWeekStart);
