@@ -1629,6 +1629,7 @@ export default function Dashboard() {
   
   // Context menu state for right-click delete
   const [recurringDeleteTask, setRecurringDeleteTask] = useState<{ id: number; title: string; callback?: () => void } | null>(null);
+  const [recurringEditPending, setRecurringEditPending] = useState<{ taskId: number; title: string; payload: Record<string, unknown>; onSuccess: () => void } | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -19242,6 +19243,74 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
+        {/* Recurring Edit Confirmation Dialog */}
+        <Dialog open={!!recurringEditPending} onOpenChange={(open) => !open && setRecurringEditPending(null)}>
+          <DialogContent className="max-w-sm bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+            <DialogHeader>
+              <DialogTitle className="text-white text-sm">Edit Recurring Task</DialogTitle>
+            </DialogHeader>
+            <p className="text-white/80 text-xs">
+              "{recurringEditPending?.title}" is a recurring task. Apply changes to:
+            </p>
+            <div className="flex flex-col gap-2 pt-2">
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-all duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(255,255,255,0.6)',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
+                onClick={async () => {
+                  if (recurringEditPending) {
+                    await apiRequest("PATCH", `/api/tasks/${recurringEditPending.taskId}`, recurringEditPending.payload);
+                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                    queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+                    recurringEditPending.onSuccess();
+                    setRecurringEditPending(null);
+                    setEditingTask(null);
+                  }
+                }}
+                data-testid="button-edit-this-only"
+              >
+                This task only
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-all duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(59,130,246,0.6)',
+                  background: 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(59,130,246,0.4), inset 0 -1px 0 rgba(59,130,246,0.1)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0.22) 48%, rgba(59,130,246,0.1) 52%, rgba(59,130,246,0.3) 100%)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)'; }}
+                onClick={async () => {
+                  if (recurringEditPending) {
+                    const { dueDate, startDate, weekNumber, ...recurringFields } = recurringEditPending.payload as Record<string, unknown>;
+                    await apiRequest("PATCH", `/api/tasks/${recurringEditPending.taskId}/update-recurring`, recurringFields);
+                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                    queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+                    recurringEditPending.onSuccess();
+                    setRecurringEditPending(null);
+                    setEditingTask(null);
+                  }
+                }}
+                data-testid="button-edit-all-recurring"
+              >
+                All recurring tasks
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-all duration-200 text-xs hover:text-white/80"
+                onClick={() => setRecurringEditPending(null)}
+                data-testid="button-cancel-recurring-edit"
+              >
+                Cancel
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
           <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
@@ -19325,7 +19394,10 @@ export default function Dashboard() {
                 task={editingTask}
                 weekNumber={editingTask.weekNumber}
                 hideSubmitButton
-                onSuccess={() => setEditingTask(null)} 
+                onSuccess={() => setEditingTask(null)}
+                onRecurringEdit={(taskId, title, payload, onSuccessCb) => {
+                  setRecurringEditPending({ taskId, title, payload, onSuccess: onSuccessCb });
+                }}
               />
             )}
           </DialogContent>
@@ -21899,7 +21971,8 @@ function TaskForm({
   initialStartTime,
   initialEndTime,
   hideSubmitButton,
-  onSuccess 
+  onSuccess,
+  onRecurringEdit 
 }: { 
   task?: Task; 
   weekNumber: number;
@@ -21909,6 +21982,7 @@ function TaskForm({
   initialEndTime?: string;
   hideSubmitButton?: boolean;
   onSuccess: () => void;
+  onRecurringEdit?: (taskId: number, title: string, payload: Record<string, unknown>, onSuccess: () => void) => void;
 }) {
   const getDefaultDate = () => {
     if (task?.dueDate) return format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm");
@@ -22093,6 +22167,41 @@ function TaskForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (task && onRecurringEdit && ((task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId)) {
+      const data = formData;
+      const finalDueDate = new Date(data.dueDate);
+      let finalStartDate: Date | null = null;
+      if (data.startDate) {
+        finalStartDate = new Date(data.startDate);
+      } else if (data.prepDays > 0) {
+        finalStartDate = new Date(finalDueDate);
+        finalStartDate.setDate(finalStartDate.getDate() - data.prepDays);
+      }
+      const payload: Record<string, unknown> = {
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        courseName: data.courseName,
+        dueDate: finalDueDate.toISOString(),
+        eventStartTime: data.eventStartTime || null,
+        eventEndTime: data.eventEndTime || null,
+        reminder1: data.reminder1 || null,
+        reminder2: data.reminder2 || null,
+        reminder3: data.reminder3 || null,
+        reminder4: data.reminder4 || null,
+        priority: data.priority,
+        weekNumber: data.weekNumber,
+        referenceLink: data.referenceLink,
+        attachments: data.attachments,
+        repeatType: data.repeatType,
+        repeatInterval: data.repeatType === "custom" ? data.repeatInterval : null,
+        repeatIntervalUnit: data.repeatType === "custom" ? data.repeatIntervalUnit : null,
+        repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
+        startDate: finalStartDate ? finalStartDate.toISOString() : null,
+      };
+      onRecurringEdit(task.id, task.title, payload, onSuccess);
+      return;
+    }
     createMutation.mutate(formData);
   };
 

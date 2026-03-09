@@ -1052,6 +1052,40 @@ export async function registerRoutes(
     res.status(204).end();
   });
 
+  // PATCH /api/tasks/:id/update-recurring - Update all recurring siblings with same fields
+  app.patch("/api/tasks/:id/update-recurring", async (req, res) => {
+    try {
+      const taskId = Number(req.params.id);
+      const task = await storage.getTask(taskId);
+      if (!task) return res.status(404).json({ message: 'Task not found' });
+
+      const fields = req.body;
+      const parentId = task.parentTaskId || task.id;
+      const allSiblings = await storage.getChildTasks(parentId);
+      const parentTask = task.parentTaskId ? await storage.getTask(parentId) : task;
+
+      const tasksToUpdate: number[] = [taskId];
+      for (const sibling of allSiblings) {
+        if (sibling.id !== taskId) {
+          tasksToUpdate.push(sibling.id);
+        }
+      }
+      if (parentTask && parentTask.id !== taskId) {
+        tasksToUpdate.push(parentTask.id);
+      }
+
+      const uniqueIds = [...new Set(tasksToUpdate)];
+      for (const id of uniqueIds) {
+        await storage.updateTask(id, fields);
+      }
+
+      res.json({ updated: uniqueIds.length });
+    } catch (error) {
+      console.error("Error updating recurring tasks:", error);
+      res.status(500).json({ message: "Failed to update recurring tasks" });
+    }
+  });
+
   // PATCH /api/tasks/:id/complete
   app.patch(api.tasks.complete.path, async (req, res) => {
     const { isCompleted } = req.body;
