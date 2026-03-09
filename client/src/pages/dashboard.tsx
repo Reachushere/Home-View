@@ -18567,11 +18567,11 @@ export default function Dashboard() {
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
                               <div>
                                 <button
-                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none w-full"
+                                  className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).start }}
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
@@ -18666,11 +18666,11 @@ export default function Dashboard() {
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
                               <div>
                                 <button
-                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none w-full"
+                                  className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-tomorrow-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).start }}
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
