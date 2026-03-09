@@ -17912,7 +17912,7 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarTop + 8 + 2}px`,
             bottom: `${calendarBottom - 6 - 2 - 2}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
