@@ -4789,48 +4789,34 @@ document.body.removeChild(a);
 
       const [masterResult, tvResult] = await Promise.allSettled([
         (async () => {
-          const tabletEntity = 'media_player.tablet_cat';
-          const tabletRedirectUrl = `${appUrl}/api/cat-wash/tablet-redirect`;
+          const browserModOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall');
+          if (browserModOpened) {
+            console.log(`[Cat Wash] Tablet opened via browser_mod`);
+            return true;
+          }
+          console.log(`[Cat Wash] browser_mod failed for tablet, trying HA notification fallbacks`);
 
-          try {
-            await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }),
-            });
-            console.log(`[Cat Wash] Tablet WAKEUP sent`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch (e: any) {
-            console.log(`[Cat Wash] Tablet WAKEUP failed: ${e.message}`);
+          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
+          for (const svc of notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: "School Reading",
+                  message: "Opening PDF reader...",
+                  data: { clickAction: readerUrl, url: readerUrl, tag: "cat-wash-open", importance: "high", channel: "cat-wash" },
+                }),
+              });
+              console.log(`[Cat Wash] notify/${svc}: ${resp.status}`);
+              if (resp.ok) return true;
+            } catch (e: any) {
+              console.log(`[Cat Wash] notify/${svc} ERROR: ${e.message}`);
+            }
           }
 
-          try {
-            await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: tabletEntity, command: 'am force-stop com.amazon.cloud9' }),
-            });
-            console.log(`[Cat Wash] Tablet force-stopped Silk`);
-            await new Promise(resolve => setTimeout(resolve, 500));
-          } catch (e: any) {
-            console.log(`[Cat Wash] Tablet force-stop Silk failed: ${e.message}`);
-          }
-
-          try {
-            const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${tabletRedirectUrl}" com.amazon.cloud9`;
-            const resp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: tabletEntity, command: adbCmd }),
-            });
-            console.log(`[Cat Wash] Tablet adb_command open Silk: ${resp.status}`);
-            if (resp.ok) return true;
-          } catch (e: any) {
-            console.log(`[Cat Wash] Tablet adb_command failed: ${e.message}`);
-          }
-
-          console.log(`[Cat Wash] ADB failed for tablet, trying browser_mod fallback`);
-          return openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall');
+          console.log(`[Cat Wash] All tablet open methods failed, relying on tablet-nav polling`);
+          return false;
         })(),
         (async () => {
           const [fireStickRes, tvRes] = await Promise.allSettled([
