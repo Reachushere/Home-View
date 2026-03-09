@@ -4750,6 +4750,23 @@ document.body.removeChild(a);
 
       const deviceResults: Record<string, string> = {};
 
+      // === STEP 1B: Stop any currently playing Alexa routines/media on cat washroom Echos ===
+      const catEchoEntities = [
+        "media_player.echo_cat_left_am",
+        "media_player.echo_cat_right_am",
+        "media_player.echo_cat_washroom_middle",
+      ];
+      try {
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: catEchoEntities }),
+        });
+        console.log(`[Cat Wash] Stopped media on cat washroom Echos: ${catEchoEntities.join(', ')}`);
+      } catch (err: any) {
+        console.warn(`[Cat Wash] Failed to stop cat washroom Echos (non-fatal): ${err.message}`);
+      }
+
       const navTimestamp = Date.now();
       await Promise.all([
         setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: navTimestamp }, true, 'master'),
