@@ -2009,20 +2009,15 @@ export default function Dashboard() {
   })();
 
   // Progress column grid position (1-based, accounting for time column and optional module column)
-  const progressGridCol = (gridSizes.moduleColumnWidth > 0 ? 2 : 1) + lastSchoolDayIndex + 1 + 1;
-  const afterProgressGridCol = progressGridCol + 1;
+  const saturdayGridCol = (gridSizes.moduleColumnWidth > 0 ? 2 : 1) + lastSchoolDayIndex + 1 + 1;
 
-  // Generate grid template columns based on sizes
-  // dayColumnWidths has 7 entries (Sun-Sat), progress column inserted after lastSchoolDayIndex
   const DAY_COL_LEFT_REDUCTION = 10;
   const getGridTemplateColumns = () => {
-    const beforeProgress = gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).map(w => `${w}fr`).join(' ');
-    const afterProgress = gridSizes.dayColumnWidths.slice(lastSchoolDayIndex + 1).map(w => `${w}fr`).join(' ');
-    const progress = `${gridSizes.progressColumnWidth}fr`;
+    const allDays = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
     if (gridSizes.moduleColumnWidth > 0) {
-      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${beforeProgress} ${progress} ${afterProgress}`;
+      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${allDays}`;
     }
-    return `${gridSizes.timeColumnWidth}px ${beforeProgress} ${progress} ${afterProgress}`;
+    return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
 
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }>(() => {
@@ -15265,7 +15260,6 @@ export default function Dashboard() {
                 </div>
               );
             })}
-            <div style={{ minWidth: 0, gridColumn: progressGridCol }} /> {/* Progress column spacer */}
             {/* Saturday column - show reminder if Saturday is today */}
             {(() => {
               const satDay = weekDays[6];
@@ -15274,7 +15268,7 @@ export default function Dashboard() {
                 t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), satDay)
               );
               return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: afterProgressGridCol }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: saturdayGridCol }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
                   {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
                 </div>
               );
@@ -15296,11 +15290,10 @@ export default function Dashboard() {
                 </div>
               );
             })}
-            <div style={{ gridColumn: progressGridCol }} />
             {weekDays[6] && (() => {
               const isSatToday = isSameDay(weekDays[6], new Date());
               return (
-                <div style={{ gridColumn: afterProgressGridCol, position: 'relative' }}>
+                <div style={{ gridColumn: saturdayGridCol, position: 'relative' }}>
                   {isSatToday && (
                     <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
                       <span className="text-[10px] font-bold tracking-wide uppercase text-black">TODAY</span>
@@ -15312,7 +15305,7 @@ export default function Dashboard() {
           </div>
           <div ref={calendarBorderRef} className="shadow-lg flex-1 min-h-0 border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
+            <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
             
@@ -15354,8 +15347,8 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
-                    {shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
+                    {!isToday && shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
+                    {!isToday && shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
@@ -15373,15 +15366,6 @@ export default function Dashboard() {
                 );
               })}
               {/* Progress column header (half-width, between Fri and Sat) */}
-              <div 
-                className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol }}
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-[10px] font-medium tracking-wide text-white/60 uppercase leading-tight text-center">Homework<br/><span className="mt-1 block">Progress</span></span>
-                  <Paperclip className="h-4 w-4 text-white flex-shrink-0" strokeWidth={2} />
-                </div>
-              </div>
               {/* Saturday header */}
               {weekDays[6] && (() => {
                 const day = weekDays[6];
@@ -15395,7 +15379,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: afterProgressGridCol }}
+                    style={isTodaySaturday ? { gridColumn: saturdayGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: saturdayGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {satShiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
@@ -15655,10 +15639,8 @@ export default function Dashboard() {
                               );
                             })}
                             
-                            {/* Progress column - empty with header background */}
-                            <div style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, minWidth: 0 }} />
                             {/* Saturday column - always course bg */}
-                            <div style={{ backgroundColor: course.bg, gridColumn: afterProgressGridCol, minWidth: 0 }} />
+                            <div style={{ backgroundColor: course.bg, gridColumn: saturdayGridCol, minWidth: 0 }} />
                           </div>
                         );
                       })}
@@ -16068,9 +16050,7 @@ export default function Dashboard() {
                       handlePlayModule: () => handlePlayFiles('module'),
                       handlePlayReading: () => handlePlayFiles('reading'),
                     };
-                    return (
-                      <div style={{ gridColumn: progressGridCol, minWidth: 0 }} />
-                    );
+                    return null;
                   })()}
                   {/* Saturday column cell */}
                   {weekDays[6] && (() => {
@@ -16100,7 +16080,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: afterProgressGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
+                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
@@ -16294,7 +16274,6 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    <div style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, border: 'none', minWidth: 0 }} />
                     {weekDays[6] && (() => {
                       const day = weekDays[6];
                       const cellDate = startOfDay(day);
@@ -16311,7 +16290,7 @@ export default function Dashboard() {
                       return (
                         <div
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isSatOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: afterProgressGridCol }}
+                          style={{ backgroundColor: isSatOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -16507,11 +16486,6 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Progress column - half-width */}
-              <div 
-                className="border-l border-border/50 relative"
-                style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, minWidth: 0 }}
-              />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
                 const day = weekDays[6];
@@ -16520,7 +16494,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-b border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: afterProgressGridCol, paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px` }}
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: saturdayGridCol, paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px` }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -16891,11 +16865,6 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Progress column - half-width */}
-                    <div 
-                      className="border-l border-border/50"
-                      style={{ backgroundColor: colorSettings.headerBar, gridColumn: progressGridCol, minWidth: 0 }}
-                    />
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
                       const day = weekDays[6];
@@ -16919,7 +16888,7 @@ export default function Dashboard() {
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
-                            gridColumn: afterProgressGridCol,
+                            gridColumn: saturdayGridCol,
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
@@ -18634,7 +18603,8 @@ export default function Dashboard() {
               className="text-xs font-normal flex items-center text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
             >
-              <span style={{ whiteSpace: 'nowrap' }}>Upcoming</span>
+              <span style={{ whiteSpace: 'nowrap' }}>Upcoming Homework and Progress</span>
+              <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2} style={{ marginLeft: '3px' }} />
             </h4>
             <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-28px' }} />
             <div
@@ -18747,13 +18717,14 @@ export default function Dashboard() {
               );
             });
           })()}
-          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '2px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '14px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+                <div style={{ flex: 1 }} />
                 {/* Today Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
@@ -18836,7 +18807,6 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <div style={{ flex: 1 }} />
                 {/* This Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
@@ -18972,7 +18942,7 @@ export default function Dashboard() {
                               })}
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginBottom: '12px' }}>
                                 <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
                                   <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
@@ -19145,7 +19115,7 @@ export default function Dashboard() {
                               })}
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginBottom: '12px' }}>
                                 <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
                                   <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
@@ -19320,7 +19290,7 @@ export default function Dashboard() {
                               })}
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginBottom: '12px' }}>
                                 <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
                                   <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
