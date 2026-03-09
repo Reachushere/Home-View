@@ -18877,7 +18877,7 @@ export default function Dashboard() {
                               </div>
                             )}
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center' }} data-testid={`mini-cal-group-${group.key}`}>
-                              <span className="text-[7px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                              <span className="text-[8px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
