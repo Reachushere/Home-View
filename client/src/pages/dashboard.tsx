@@ -15443,13 +15443,13 @@ export default function Dashboard() {
                                   )}
                                 </div>
                                 {moduleP.hasFiles ? (
-                                  <div className="flex items-center gap-[3px]">
+                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
                                     <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
                                       {moduleP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '2px' }}>{moduleP.percent}%</span>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '-2px' }}>{moduleP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
@@ -15478,13 +15478,13 @@ export default function Dashboard() {
                                   )}
                                 </div>
                                 {readingP.hasFiles ? (
-                                  <div className="flex items-center gap-[3px]">
+                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
                                     <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
                                       {readingP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '2px' }}>{readingP.percent}%</span>
+                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '-2px' }}>{readingP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
