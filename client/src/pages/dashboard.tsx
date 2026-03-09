@@ -18359,7 +18359,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-18px', gap: '0px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-7px', gap: '0px' }}>
                   {/* Col 1: Checkbox */}
                   <div style={{ width: '16px', flexShrink: 0 }}>
                     <input
