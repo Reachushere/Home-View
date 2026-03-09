@@ -15251,7 +15251,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '0px', boxShadow: `0 0 0 0.3px ${course.darkColor}` }} />
                                 )}
                                 <div
-                                  className="flex items-center text-[9px] rounded border cursor-pointer relative"
+                                  className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
@@ -15626,7 +15626,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                                 )}
                                 <div
-                                  className="flex items-center text-[9px] rounded border cursor-pointer"
+                                  className="flex items-center text-[9px] rounded border cursor-pointer w-full"
                                   style={{ 
                                     backgroundColor: 'white',
                                     borderColor: course.darkColor,
