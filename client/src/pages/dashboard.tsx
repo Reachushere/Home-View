@@ -6509,22 +6509,34 @@ export default function Dashboard() {
     return true;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // Next 3 Weeks: tasks due from the coming Saturday through end of Friday 2 weeks later (Mar 14-27)
   const daysUntilSaturday = todayDow <= 6 ? (6 - todayDow) : 0;
   const nextSaturday = startOfDay(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
+  const nextWeekEnd = startOfDay(addDays(nextSaturday, 6));
+  nextWeekEnd.setHours(23, 59, 59, 999);
+  const twoWeeksStart = startOfDay(addDays(nextSaturday, 7));
   const threeWeeksEnd = startOfDay(addDays(nextSaturday, 13));
   threeWeeksEnd.setHours(23, 59, 59, 999);
   const thisWeekStart = nextSaturday;
   const thisWeekEnd = threeWeeksEnd;
-  const dueThisWeekTasks = (() => {
+  const dueNextWeekTasks = (() => {
     return allTasks.filter(t => {
       if (t.isMissed || t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (!t.dueDate) return false;
       const dueDate = new Date(t.dueDate);
-      return dueDate >= nextSaturday && dueDate <= threeWeeksEnd;
+      return dueDate >= nextSaturday && dueDate <= nextWeekEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
+  const dueTwoWeeksTasks = (() => {
+    return allTasks.filter(t => {
+      if (t.isMissed || t.isCompleted) return false;
+      if (isCASL101Finished(t)) return false;
+      if (!t.dueDate) return false;
+      const dueDate = new Date(t.dueDate);
+      return dueDate >= twoWeeksStart && dueDate <= threeWeeksEnd;
+    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  })();
+  const dueThisWeekTasks = [...dueNextWeekTasks, ...dueTwoWeeksTasks];
 
   const upcomingEventsToday = useMemo(() => {
     const now = new Date();
@@ -18777,7 +18789,7 @@ export default function Dashboard() {
                 <div style={{ flex: 1 }} />
                 {/* This Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This Week</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -18947,10 +18959,10 @@ export default function Dashboard() {
                   </div>
                 )}
                 <div style={{ flex: 1 }} />
-                {/* Next 2 Weeks Section */}
+                {/* Next Week Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next 3 Weeks</span>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueNextWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
@@ -18958,13 +18970,13 @@ export default function Dashboard() {
                     </div>
                     <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
+                      <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextWeekEnd, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(nextWeekEnd, 'd')}</div>
                     </div>
                   </div>
                 </div>
-                {dueThisWeekTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in next 3 weeks</div>
+                {dueNextWeekTasks.length === 0 ? (
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks next week</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {(() => {
@@ -18979,9 +18991,9 @@ export default function Dashboard() {
                         if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
                         return weeks.map(w => w.toISOString()).join('|');
                       };
-                      const groups: { key: string; tasks: typeof dueThisWeekTasks; weeks: Date[] }[] = [];
+                      const groups: { key: string; tasks: typeof dueNextWeekTasks; weeks: Date[] }[] = [];
                       const groupMap = new Map<string, number>();
-                      dueThisWeekTasks.forEach(task => {
+                      dueNextWeekTasks.forEach(task => {
                         const key = getCalKey(task);
                         if (groupMap.has(key)) {
                           groups[groupMap.get(key)!].tasks.push(task);
@@ -19089,6 +19101,181 @@ export default function Dashboard() {
                               </div>
                             )}
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-11px' }} data-testid={`mini-cal-group-${group.key}`}>
+                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
+                                {group.weeks.map((weekStart, wi) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isDue = !!dueMatch;
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        return (
+                                          <div key={di} style={{
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
+                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                          }}>
+                                            {d.getDate()}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                )}
+                <div style={{ flex: 1 }} />
+                {/* 2 Weeks Section */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>2 Weeks</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
+                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
+                    </div>
+                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
+                    </div>
+                  </div>
+                </div>
+                {dueTwoWeeksTasks.length === 0 ? (
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2 weeks</div>
+                ) : (
+                  <div className="flex flex-col gap-0.5">
+                    {(() => {
+                      const today = startOfDay(new Date());
+                      const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                      const getCalKey = (task: any) => {
+                        const dueDate = startOfDay(new Date(task.dueDate));
+                        const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                        const weeks: Date[] = [];
+                        let ws = todayWeekStart;
+                        while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
+                        if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
+                        return weeks.map(w => w.toISOString()).join('|');
+                      };
+                      const groups: { key: string; tasks: typeof dueTwoWeeksTasks; weeks: Date[] }[] = [];
+                      const groupMap = new Map<string, number>();
+                      dueTwoWeeksTasks.forEach(task => {
+                        const key = getCalKey(task);
+                        if (groupMap.has(key)) {
+                          groups[groupMap.get(key)!].tasks.push(task);
+                        } else {
+                          const dueDate = startOfDay(new Date(task.dueDate));
+                          const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                          const weeks: Date[] = [];
+                          let ws = todayWeekStart;
+                          while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
+                          if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
+                          groupMap.set(key, groups.length);
+                          groups.push({ key, tasks: [task], weeks });
+                        }
+                      });
+                      return groups.map(group => {
+                        const dueDates = group.tasks.map(t => {
+                          const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                          return { date: startOfDay(new Date(t.dueDate)), courseCode };
+                        });
+                        return (
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              {group.tasks.map((task, taskIdx) => {
+                                const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
+                                const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
+                                const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                                const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                                const gc = getCourseGradientColors(taskCourseCode);
+                                return (
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px' }}
+                                    ref={(rowEl) => {
+                                      if (!rowEl || rowEl.dataset.swipeInit) return;
+                                      rowEl.dataset.swipeInit = '1';
+                                      const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                                      const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                                      const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                                      if (delEl && resEl && contentEl) {
+                                        const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                                        delEl.addEventListener('click', (e) => { e.stopPropagation(); if (window.confirm(`Delete "${task.title}"?`)) { ctrl.reset(); deleteTaskWithUndo(task.id); } else { ctrl.reset(); } });
+                                        resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                                      }
+                                    }}
+                                  >
+                                    <div data-swipe-delete data-testid={`swipe-delete-2w-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Delete</span>
+                                    </div>
+                                    <div data-swipe-reschedule data-testid={`swipe-reschedule-2w-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Reschedule</span>
+                                    </div>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '7px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                      <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                        <div style={{ width: '38px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px', marginLeft: '-3px' }}>
+                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                                          <div style={{ width: '100%', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          </div>
+                                        </div>
+                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Checkbox
+                                              checked={task.isCompleted || false}
+                                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                              className="h-3 w-3 shrink-0 border-white/60 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                              data-testid={`checkbox-2w-${task.id}`}
+                                            />
+                                            <span
+                                              data-upcoming-task-name
+                                              data-testid={`upcoming-2w-task-${task.id}`}
+                                              onClick={() => setEditingTask(task)}
+                                              className="text-[11px] font-semibold truncate cursor-pointer hover:opacity-80"
+                                              style={{ color: '#ffffff', lineHeight: 1.2 }}
+                                            >{task.title}</span>
+                                          </div>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '16px' }}>
+                                            {task.courseName && (() => {
+                                              const cc = task.courseName.split(' - ')[0]?.toUpperCase() || '';
+                                              const gColors = getCourseGradientColors(cc);
+                                              return (
+                                                <span className="text-[8px] font-bold px-1 py-0.5 rounded" style={{ background: `linear-gradient(135deg, ${gColors.start}, ${gColors.end})`, color: '#fff' }}>{cc}</span>
+                                              );
+                                            })()}
+                                            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                                              {task.type === 'discussion' ? 'Discussion' : task.type === 'module' ? 'Module' : task.type === 'Reading' ? 'Reading' : task.type === 'essay' ? 'Essay' : task.type}
+                                            </span>
+                                            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                              {format(new Date(task.dueDate), 'EEE MMM d')}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch' }}>
+                                <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
+                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-11px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
