@@ -18613,6 +18613,15 @@ export default function Dashboard() {
                                   {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
                                 </span>
                               </div>
+                              {cfp && cfp.moduleP.hasFiles && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
+                                  <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px', flexShrink: 0 }}>M</span>
+                                  <div style={{ width: '20px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                    {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                  </div>
+                                  <span className="text-[7px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right' }}>{cfp.moduleP.percent}%</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                           </div>
