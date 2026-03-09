@@ -18617,7 +18617,7 @@ export default function Dashboard() {
               const nextIdx = cppaIdx + 1;
               const bottomRow = courseRowRects[nextIdx];
               const totalHeight = bottomRow
-                ? (bottomRow.top + bottomRow.height - upcomingTop) - cppaTop
+                ? (bottomRow.top - upcomingTop) - cppaTop
                 : courseRowRects[cppaIdx].height;
               const cppaData = courseProgressDataRef.current[cppaIdx];
               const leftWidth = (() => {
