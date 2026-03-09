@@ -18795,7 +18795,7 @@ export default function Dashboard() {
                 )}
                 {/* Next 2 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Next 2 Weeks</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Next 3 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -18810,7 +18810,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {dueThisWeekTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in next 2 weeks</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in next 3 weeks</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {(() => {
