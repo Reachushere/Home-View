@@ -1982,7 +1982,7 @@ export default function Dashboard() {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-      { name: 'CASL101 - American Sign Language', color: '#500442', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
@@ -15312,7 +15312,7 @@ export default function Dashboard() {
                   label: (() => {
                     if (courseName === 'CPPA122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                     if (courseName === 'CFNF400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
-                    if (courseName === 'CASL101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                    if (courseName === 'CASL101') return 'linear-gradient(180deg, rgba(151, 75, 138, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     const lR = Math.min(255, rgb.r + 100), lG = Math.min(255, rgb.g + 100), lB = Math.min(255, rgb.b + 100);
                     return `linear-gradient(180deg, rgba(${dR}, ${dG}, ${dB}, 0.88) 0%, rgba(${lR}, ${lG}, ${lB}, 0.78) 100%)`;
@@ -15320,7 +15320,7 @@ export default function Dashboard() {
                   darkColor: (() => {
                     if (courseName === 'CPPA122') return '#0F5004';
                     if (courseName === 'CFNF400') return '#DE1864';
-                    if (courseName === 'CASL101') return '#500442';
+                    if (courseName === 'CASL101') return '#974B8A';
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
