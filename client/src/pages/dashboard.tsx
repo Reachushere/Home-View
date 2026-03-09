@@ -17876,7 +17876,7 @@ export default function Dashboard() {
             zIndex: 35,
             left: `${originalCalendarLeft - 15 + 20 - 2}px`,
             width: `${calendarReduction + 10 - 20}px`,
-            top: `${calendarTop}px`,
+            top: `${calendarTop + 8}px`,
             bottom: `${calendarBottom}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
             backdropFilter: 'blur(40px)',
