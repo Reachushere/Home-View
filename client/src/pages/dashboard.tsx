@@ -9921,7 +9921,7 @@ export default function Dashboard() {
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsHamburgerOpen(prev => !prev); if (!isHamburgerOpen) triggerButtonGlow('hamburger'); }}
                 onMouseEnter={() => { if (!('ontouchstart' in window)) setIsHamburgerOpen(true); }}
               >
-                <Menu className="h-[18px] w-[18px]" strokeWidth={2.5} style={{ color: '#ffffff', marginTop: '2px' }} />
+                <Menu className="h-[18px] w-[18px]" strokeWidth={3.5} style={{ color: '#ffffff', marginTop: '2px', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.5))' }} />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { if (!('ontouchstart' in window)) { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); } }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
