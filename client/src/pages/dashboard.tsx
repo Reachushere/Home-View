@@ -18638,7 +18638,7 @@ export default function Dashboard() {
                 )}
 
                 {/* Tomorrow Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', marginTop: '3px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', marginTop: '1px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#000000' }}>Tomorrow</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
