@@ -533,29 +533,35 @@ export default function PDFReaderPage() {
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
           console.log('[TabletNav] Received stop_playback command');
-          if (isPlayingRef.current) {
-            stopReading();
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.src = '';
           }
-          if (data.goodbyeText && audioRef.current) {
+          isPlayingRef.current = false;
+          setIsPlaying(false);
+          if (data.goodbyeText) {
             try {
+              const goodbyeAudio = new Audio();
               const ttsResp = await fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: data.goodbyeText, voice: 'echo' }) });
               if (ttsResp.ok) {
                 const blob = await ttsResp.blob();
                 const url = URL.createObjectURL(blob);
-                audioRef.current.src = url;
-                audioRef.current.volume = 1;
-                audioRef.current.playbackRate = 1;
-                await audioRef.current.play();
+                goodbyeAudio.src = url;
+                goodbyeAudio.volume = 1;
+                goodbyeAudio.playbackRate = 1;
+                console.log('[TabletNav] Playing goodbye TTS...');
+                await goodbyeAudio.play();
                 await new Promise<void>(resolve => {
-                  audioRef.current!.onended = () => { URL.revokeObjectURL(url); resolve(); };
+                  goodbyeAudio.onended = () => { URL.revokeObjectURL(url); resolve(); };
                   setTimeout(() => { URL.revokeObjectURL(url); resolve(); }, 15000);
                 });
+                console.log('[TabletNav] Goodbye TTS finished');
               }
             } catch (e) {
               console.log('[TabletNav] Goodbye TTS failed:', e);
             }
           }
-          setTimeout(() => { window.location.href = '/'; }, 1000);
+          window.location.href = '/';
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}

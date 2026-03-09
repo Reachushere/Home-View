@@ -4076,11 +4076,11 @@ export async function registerRoutes(
   let kitchenPlaybackActive = false;
   let kitchenPlaybackAbortController: AbortController | null = null;
 
-  const pendingTabletCommands: Record<string, { action: string; url?: string; timestamp: number }> = {};
+  const pendingTabletCommands: Record<string, { action: string; url?: string; goodbyeText?: string; timestamp: number }> = {};
 
   const DEPLOYED_APP_URL = "https://home-view--bkh416.replit.app";
 
-  async function setTabletCommand(cmd: { action: string; url?: string; timestamp: number }, propagate = true, device = 'master') {
+  async function setTabletCommand(cmd: { action: string; url?: string; goodbyeText?: string; timestamp: number }, propagate = true, device = 'master') {
     pendingTabletCommands[device] = cmd;
     if (propagate) {
       try {
