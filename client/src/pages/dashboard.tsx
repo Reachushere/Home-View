@@ -2786,7 +2786,7 @@ export default function Dashboard() {
     const t2 = setTimeout(measure, 300);
     const t3 = setTimeout(measure, 800);
     return () => { clearTimeout(t2); clearTimeout(t3); };
-  }, [allTasks, selectedWeek, dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length]);
+  }, [allTasks, selectedWeek]);
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
@@ -10643,7 +10643,7 @@ export default function Dashboard() {
         paddingLeft: '9px',
         paddingRight: '7px',
         borderRadius: '6px',
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.6) 100%)',
         backdropFilter: 'blur(40px)',
         WebkitBackdropFilter: 'blur(40px)',
         opacity: isTopPillOpen ? 0 : 1,
