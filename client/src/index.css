@@ -1116,6 +1116,24 @@ button[role="combobox"] > span {
   animation: moon-glow 3s ease-in-out infinite;
 }
 
+@keyframes sun-spin-glow {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.5));
+    transform: rotate(0deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.9));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.5));
+    transform: rotate(360deg);
+  }
+}
+
+.animate-sun-glow {
+  animation: sun-spin-glow 8s linear infinite;
+}
+
 /* Task color pulse animation - pulses opacity on the task's background color */
 @keyframes pulse-task {
   0%, 100% {

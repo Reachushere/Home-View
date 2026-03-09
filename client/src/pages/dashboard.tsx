@@ -15215,7 +15215,7 @@ export default function Dashboard() {
                         borderBottom: `3px solid ${shiftForDay === 'day' ? 'rgba(250, 204, 21, 0.8)' : 'rgba(139, 92, 246, 0.8)'}` 
                       }} />
                     )}
-                    {shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 drop-shadow-sm" strokeWidth={2.5} />}
+                    {shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
                     {shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
@@ -15265,7 +15265,7 @@ export default function Dashboard() {
                         borderBottom: `3px solid ${satShiftForDay === 'day' ? 'rgba(250, 204, 21, 0.8)' : 'rgba(139, 92, 246, 0.8)'}` 
                       }} />
                     )}
-                    {satShiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 drop-shadow-sm" strokeWidth={2.5} />}
+                    {satShiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
                     {satShiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#FFFFFF' }}>NEW SCHOOL WEEK</div>
