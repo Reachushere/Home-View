@@ -4696,7 +4696,7 @@ document.body.removeChild(a);
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-        const likelyStale = msSinceStart > 5 * 60 * 1000 && chunkStillAtStart;
+        const likelyStale = msSinceStart > 2 * 60 * 1000 && chunkStillAtStart;
 
         if (likelyStale) {
           console.log(`[Cat Wash] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
@@ -5151,6 +5151,18 @@ document.body.removeChild(a);
 
   // GET /api/cat-wash/progress - Returns current playback state for the active session
   app.get("/api/cat-wash/progress", (_req, res) => {
+    if (catWashPlaybackActive && catWashPlaybackState && catWashPlaybackStartedAt) {
+      const msSinceStart = Date.now() - catWashPlaybackStartedAt.getTime();
+      const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
+      if (msSinceStart > 2 * 60 * 1000 && chunkStillAtStart) {
+        console.log(`[Cat Wash Progress] Auto-clearing stale state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
+        catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
+        catWashPlaybackState = null;
+        return res.json({ active: false });
+      }
+    }
+
     if (!catWashPlaybackActive || !catWashPlaybackState) {
       return res.json({ active: false });
     }
