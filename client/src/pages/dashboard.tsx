@@ -18065,7 +18065,7 @@ export default function Dashboard() {
               </div>
               {/* Day of Week Headers */}
               <div className="grid grid-cols-7 border-b border-border">
-                {["SAT", "SUN", "MON", "TUE", "WED", "THU", "FRI"].map((day) => (
+                {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
                   <div key={day} className="p-2 text-center text-xs font-bold text-muted-foreground border-r border-border last:border-r-0">
                     {day}
                   </div>
@@ -18075,8 +18075,8 @@ export default function Dashboard() {
               {(() => {
                 const monthStart = startOfMonth(currentMonth);
                 const monthEnd = endOfMonth(currentMonth);
-                const startDate = startOfWeek(monthStart, { weekStartsOn: 6 });
-                const endDate = endOfWeek(monthEnd, { weekStartsOn: 6 });
+                const startDate = startOfWeek(monthStart, { weekStartsOn: 0 });
+                const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
                 
                 const days: Date[] = [];
                 let d = startDate;
