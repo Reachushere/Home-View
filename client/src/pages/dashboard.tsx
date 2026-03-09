@@ -6969,7 +6969,7 @@ export default function Dashboard() {
   
   const getEffectiveRowHeight = (h: number) => {
     const base = gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-    const isNight = h >= 22 || h <= 5;
+    const isNight = h >= 21 || h <= 6;
     if (!isNight) return base;
     const hasTasks = weekDays.some(day => {
       const ht = getTasksForHour(day, h);
