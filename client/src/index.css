@@ -750,7 +750,9 @@ button[role="combobox"] > span {
   overflow: hidden;
 }
 
-.countdown-due-today * {
+.countdown-due-today *,
+.countdown-due-today .animate-zero-day-blink,
+.countdown-due-today .animate-zero-day-blink * {
   color: #ffffff !important;
 }
 
