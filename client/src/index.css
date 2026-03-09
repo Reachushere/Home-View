@@ -1110,10 +1110,10 @@ button[role="combobox"] > span {
 
 @keyframes pulse-urgent {
   0%, 100% {
-    background-color: rgba(239, 68, 68, 0);
+    opacity: 1;
   }
   50% {
-    background-color: rgba(239, 68, 68, 0.2);
+    opacity: 0.5;
   }
 }
 
