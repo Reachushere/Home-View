@@ -4455,12 +4455,6 @@ document.body.removeChild(a);
           notifyServices: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'],
           mediaPlayer: 'media_player.tablet_cat',
         },
-        {
-          name: 'tablet_catn',
-          browserIds: ['02392750-18703322'],
-          notifyServices: ['mobile_app_tablet_catn', 'mobile_app_tablet_cat2', 'mobile_app_tablet_catn_2'],
-          mediaPlayer: 'media_player.tablet_catn',
-        },
       ];
 
       const filteredTablets = targetDevice ? tablets.filter(t => t.name === targetDevice) : tablets;
@@ -4609,8 +4603,7 @@ document.body.removeChild(a);
 
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
-      // === STEP 2: Open PDF reader on all display devices (in parallel) ===
-      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&followOnly=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      // === STEP 2: Open PDF reader on master tablet and Samsung TV ===
       const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
 
       const deviceResults: Record<string, string> = {};
@@ -4618,17 +4611,14 @@ document.body.removeChild(a);
       const navTimestamp = Date.now();
       await Promise.all([
         setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: navTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: followerUrl, timestamp: navTimestamp }, true, 'follower'),
         setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: navTimestamp }, true, 'tv'),
       ]);
-      console.log(`[Cat Wash] tablet-nav set for all devices`);
+      console.log(`[Cat Wash] tablet-nav set for devices`);
       console.log(`[Cat Wash] master: ${readerUrl}`);
-      console.log(`[Cat Wash] follower: ${followerUrl}`);
       console.log(`[Cat Wash] tv: ${tvFollowUrl}`);
 
-      const [masterResult, followerResult, tvResult] = await Promise.allSettled([
+      const [masterResult, tvResult] = await Promise.allSettled([
         openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
-        openUrlOnFireDevice(haUrl, ['02392750-18703322'], followerUrl, 'tablet_catn'),
         (async () => {
           const [fireStickRes, tvRes] = await Promise.allSettled([
             fetch(`${haUrl}/api/services/media_player/turn_on`, {
@@ -4651,7 +4641,6 @@ document.body.removeChild(a);
       ]);
 
       deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
-      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'browser_mod (follower)' : 'tablet-nav';
       deviceResults['samsung_tv'] = tvResult.status === 'fulfilled' && tvResult.value ? 'adb:fire_stick' : 'tablet-nav';
 
       console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
@@ -4810,7 +4799,6 @@ document.body.removeChild(a);
         estimatedChunkDuration: 0,
       };
 
-      const followerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&followOnly=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
       const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
 
       const deviceResults: Record<string, string> = {};
@@ -4818,17 +4806,14 @@ document.body.removeChild(a);
       const lightsNavTimestamp = Date.now();
       await Promise.all([
         setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: followerUrl, timestamp: lightsNavTimestamp }, true, 'follower'),
         setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
       ]);
-      console.log(`[Cat Lights] tablet-nav set for all devices`);
+      console.log(`[Cat Lights] tablet-nav set for devices`);
 
-      const [masterResult, followerResult] = await Promise.allSettled([
+      const [masterResult] = await Promise.allSettled([
         openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
-        openUrlOnFireDevice(haUrl, ['02392750-18703322'], followerUrl, 'tablet_catn'),
       ]);
       deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
-      deviceResults['tablet_catn'] = followerResult.status === 'fulfilled' && followerResult.value ? 'browser_mod (follower)' : 'tablet-nav';
 
       // Also try Samsung TV via Fire Stick (home theatre pair)
       try {
@@ -4909,24 +4894,8 @@ document.body.removeChild(a);
       const stopTimestamp = Date.now();
       await Promise.all([
         setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'follower'),
         setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
       ]);
-
-      // Close Silk on the secondary tablet (tablet_catn)
-      if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
-        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        try {
-          await fetch(`${haUrl}/api/services/browser_mod/javascript`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ browser_id: '02392750-18703322', code: 'window.close();' }),
-          });
-          console.log(`[Cat Wash Stop Webhook] Sent close command to tablet_catn via browser_mod`);
-        } catch (e: any) {
-          console.log(`[Cat Wash Stop Webhook] Failed to close Silk on tablet_catn: ${e.message}`);
-        }
-      }
 
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
@@ -4977,21 +4946,13 @@ document.body.removeChild(a);
       const newFollowerUrl = newReaderUrl.replace('autoplay=true', 'autoplay=false').replace('catWashFollow=true', 'catWashFollow=true&followOnly=true');
       await Promise.all([
         setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: skipTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: newFollowerUrl, timestamp: skipTimestamp }, true, 'follower'),
         setTabletCommand({ action: 'navigate', url: newFollowerUrl, timestamp: skipTimestamp }, true, 'tv'),
       ]);
 
-      const tabletDevices = [
-        { name: 'tablet_cat_wall', browserIds: ['6507d68f-6563ca6c'] },
-        { name: 'tablet_catn', browserIds: ['02392750-18703322'] },
-      ];
-
       const deviceResults: Record<string, string> = {};
 
-      await Promise.all(tabletDevices.map(async (device) => {
-        const opened = await openUrlOnFireDevice(haUrl, device.browserIds, newReaderUrl, device.name);
-        deviceResults[device.name] = opened ? 'silk_intent' : 'pending_nav';
-      }));
+      const masterOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], newReaderUrl, 'tablet_cat_wall');
+      deviceResults['tablet_cat_wall'] = masterOpened ? 'silk_intent' : 'pending_nav';
 
       // Also re-open on Samsung TV
       try {
@@ -5147,7 +5108,6 @@ document.body.removeChild(a);
     const stopTs = Date.now();
     await Promise.all([
       setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'master'),
-      setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'follower'),
       setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'tv'),
     ]);
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
