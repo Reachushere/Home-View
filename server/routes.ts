@@ -8022,6 +8022,82 @@ document.body.removeChild(a);
   // Seed database with sample tasks
   await seedDatabase();
 
+  // Alexa Reminder Announcements - check every 60 seconds for tasks with reminders due
+  const announcedReminders = new Set<string>();
+  
+  setInterval(async () => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return;
+      
+      const now = new Date();
+      const torontoNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const currentHour = torontoNow.getHours();
+      
+      // Quiet hours: no announcements between 10 PM and 8 AM
+      if (currentHour >= 22 || currentHour < 8) return;
+      
+      const allTasks = await storage.getTasks();
+      
+      for (const task of allTasks) {
+        if (task.isCompleted || task.isMissed) continue;
+        if (!task.dueDate) continue;
+        
+        const dueDate = new Date(task.dueDate);
+        const reminders = [task.reminder1, task.reminder2, task.reminder3, task.reminder4].filter((r): r is number => r != null && r > 0);
+        
+        for (const reminderMinutes of reminders) {
+          const reminderTime = new Date(dueDate.getTime() - reminderMinutes * 60 * 1000);
+          const diffMs = reminderTime.getTime() - now.getTime();
+          
+          // Trigger if reminder is within the last 90 seconds (to catch it in the check interval)
+          if (diffMs > 0 || diffMs < -90000) continue;
+          
+          const reminderKey = `${task.id}-${reminderMinutes}-${dueDate.toISOString()}`;
+          if (announcedReminders.has(reminderKey)) continue;
+          
+          announcedReminders.add(reminderKey);
+          
+          // Build announcement message
+          let timeDesc: string;
+          if (reminderMinutes < 60) {
+            timeDesc = `${reminderMinutes} minute${reminderMinutes !== 1 ? 's' : ''}`;
+          } else {
+            const hours = Math.floor(reminderMinutes / 60);
+            const mins = reminderMinutes % 60;
+            timeDesc = `${hours} hour${hours !== 1 ? 's' : ''}${mins > 0 ? ` and ${mins} minutes` : ''}`;
+          }
+          
+          const coursePart = task.courseName ? ` for ${task.courseName.split(' - ')[0]}` : '';
+          const message = `Reminder: ${task.title}${coursePart} is due in ${timeDesc}.`;
+          
+          console.log(`[Alexa Reminder] Announcing: ${message}`);
+          
+          try {
+            await sendEchoVoiceAnnouncement(message);
+            console.log(`[Alexa Reminder] Announced successfully: ${task.title}`);
+          } catch (announceErr) {
+            console.error(`[Alexa Reminder] Failed to announce: ${task.title}`, announceErr);
+          }
+        }
+      }
+      
+      // Clean up old reminder keys (older than 24 hours)
+      const oneDayAgo = now.getTime() - 24 * 60 * 60 * 1000;
+      for (const key of announcedReminders) {
+        const dateStr = key.split('-').slice(2).join('-');
+        try {
+          if (new Date(dateStr).getTime() < oneDayAgo) {
+            announcedReminders.delete(key);
+          }
+        } catch {}
+      }
+    } catch (err) {
+      console.error('[Alexa Reminder] Error checking reminders:', err);
+    }
+  }, 60000); // Check every 60 seconds
+  
+  console.log('[Alexa Reminder] Reminder announcement system started (checking every 60s)');
+
   return httpServer;
 }
 

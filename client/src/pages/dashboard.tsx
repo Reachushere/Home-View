@@ -1170,6 +1170,7 @@ export default function Dashboard() {
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
+  const hamburgerCloseTimer = useRef<number | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
   });
@@ -6345,9 +6346,10 @@ export default function Dashboard() {
     // Check if task is due today
     if (isSameDay(new Date(t.dueDate), today)) return true;
     
-    // Check if this is a full-week MODULE task that spans today
+    // Check if this is a full-week MODULE/READING task that spans today
     // Full-week tasks have startDate and dueDate on different days (Sunday to Friday)
-    if (t.startDate) {
+    // Only apply for module/reading type tasks, not discussions or other types
+    if (t.startDate && (t.type === 'module' || t.type === 'reading' || t.type === 'Module' || t.type === 'Reading')) {
       const taskStartDate = startOfDay(new Date(t.startDate));
       const taskDueDate = startOfDay(new Date(t.dueDate));
       const todayStart = startOfDay(today);
@@ -6362,7 +6364,7 @@ export default function Dashboard() {
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
   // Due Tomorrow: all tasks due tomorrow
-  // Also include tasks where tomorrow falls within the prep period (startDate <= tomorrow <= dueDate)
+  // Also include module/reading tasks where tomorrow falls within the prep period
   const dueTomorrowTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
@@ -6371,8 +6373,8 @@ export default function Dashboard() {
     // Check if task is due tomorrow
     if (isSameDay(new Date(t.dueDate), tomorrow)) return true;
     
-    // Check if tomorrow falls within the task's planning/prep period
-    if (t.startDate) {
+    // Check if tomorrow falls within the task's planning/prep period (module/reading only)
+    if (t.startDate && (t.type === 'module' || t.type === 'reading' || t.type === 'Module' || t.type === 'Reading')) {
       const taskStartDate = startOfDay(new Date(t.startDate));
       const taskDueDate = startOfDay(new Date(t.dueDate));
       const tomorrowStart = startOfDay(tomorrow);
@@ -9860,7 +9862,7 @@ export default function Dashboard() {
                 <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" noAnimation onMouseLeave={() => setIsHamburgerOpen(false)}>
+            <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
               <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => setIsProfileDialogOpen(true)}>
                 <User className="h-3.5 w-3.5 mr-2" />
                 Profile Settings
@@ -16222,6 +16224,20 @@ export default function Dashboard() {
                               if (taskHeight > maxTaskHeight) {
                                 taskHeight = Math.max(20, maxTaskHeight);
                               }
+                            } else if (task.eventStartTime) {
+                              const [, startMin] = task.eventStartTime.split(':').map(Number);
+                              if (startMin > 0) {
+                                topOffset = (startMin / 60) * rowHeight;
+                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
+                                taskHeight = Math.max(20, taskHeight);
+                              }
+                            } else {
+                              const dueMin = new Date(task.dueDate).getMinutes();
+                              if (dueMin > 0) {
+                                topOffset = (dueMin / 60) * rowHeight;
+                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
+                                taskHeight = Math.max(20, taskHeight);
+                              }
                             }
                             
                             return (
@@ -16384,9 +16400,18 @@ export default function Dashboard() {
                             let topOffset = 2;
                             if (task.eventStartTime) {
                               const [, startMin] = task.eventStartTime.split(':').map(Number);
-                              topOffset = (startMin / 60) * rowHeight;
-                              taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
-                              taskHeight = Math.max(20, taskHeight);
+                              if (startMin > 0) {
+                                topOffset = (startMin / 60) * rowHeight;
+                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
+                                taskHeight = Math.max(20, taskHeight);
+                              }
+                            } else {
+                              const dueMin = new Date(task.dueDate).getMinutes();
+                              if (dueMin > 0) {
+                                topOffset = (dueMin / 60) * rowHeight;
+                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
+                                taskHeight = Math.max(20, taskHeight);
+                              }
                             }
                             return (
                               <div
