@@ -17587,7 +17587,9 @@ export default function Dashboard() {
           const swipeableRow = (rowEl: HTMLDivElement, contentEl: HTMLDivElement, deleteEl: HTMLDivElement, rescheduleEl: HTMLDivElement) => {
             let startX = 0;
             let currentX = 0;
+            let offsetX = 0;
             let swiping = false;
+            let moved = false;
             const getMax = () => (rowEl.offsetWidth || 150) / 3;
             const update = () => {
               const mx = getMax();
@@ -17600,22 +17602,26 @@ export default function Dashboard() {
               rescheduleEl.style.width = clamped < 0 ? `${Math.abs(clamped)}px` : '0px';
               rescheduleEl.style.display = clamped < 0 ? 'flex' : 'none';
             };
+            const reset = () => { currentX = 0; offsetX = 0; swiping = false; moved = false; update(); };
             const end = () => {
               if (!swiping) return;
               swiping = false;
               const mx = getMax();
-              if (Math.abs(currentX) < mx * 0.4) currentX = 0;
-              else currentX = currentX > 0 ? mx : -mx;
+              if (!moved || Math.abs(currentX) < mx * 0.4) { currentX = 0; offsetX = 0; }
+              else { currentX = currentX > 0 ? mx : -mx; offsetX = currentX; }
+              moved = false;
               update();
             };
-            contentEl.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; swiping = true; }, { passive: true });
-            contentEl.addEventListener('touchmove', (e) => { if (!swiping) return; currentX = e.touches[0].clientX - startX; update(); }, { passive: true });
-            contentEl.addEventListener('touchend', end);
-            contentEl.addEventListener('mousedown', (e) => { e.preventDefault(); startX = e.clientX; swiping = true; });
-            contentEl.addEventListener('mousemove', (e) => { if (!swiping) return; e.preventDefault(); currentX = e.clientX - startX; update(); });
-            contentEl.addEventListener('mouseup', end);
+            const onStart = (x: number) => { startX = x; swiping = true; moved = false; };
+            const onMove = (x: number) => { if (!swiping) return; const delta = x - startX; if (Math.abs(delta) > 2) moved = true; currentX = offsetX + delta; update(); };
+            contentEl.addEventListener('touchstart', (e) => { onStart(e.touches[0].clientX); }, { passive: true });
+            contentEl.addEventListener('touchmove', (e) => { onMove(e.touches[0].clientX); }, { passive: true });
+            contentEl.addEventListener('touchend', (e) => { if (!moved && offsetX !== 0) { reset(); e.preventDefault(); return; } end(); });
+            contentEl.addEventListener('mousedown', (e) => { e.preventDefault(); onStart(e.clientX); });
+            contentEl.addEventListener('mousemove', (e) => { if (!swiping) return; e.preventDefault(); onMove(e.clientX); });
+            contentEl.addEventListener('mouseup', (e) => { if (!moved && offsetX !== 0) { reset(); e.preventDefault(); return; } end(); });
             contentEl.addEventListener('mouseleave', end);
-            return { reset: () => { currentX = 0; swiping = false; update(); } };
+            return { reset };
           };
 
           const calcCourseFileProgress = (courseCode: string) => {
