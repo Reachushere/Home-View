@@ -4232,7 +4232,325 @@ export async function registerRoutes(
     estimatedChunkDuration: number;
     playbackMode?: 'tablet-bluetooth' | 'server-tts';
   } | null = null;
-  
+
+  let nestPlaybackAbort: (() => void) | null = null;
+
+  async function playOnNestSpeaker(audioUrl: string): Promise<number> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `https://home-view--bkh416.replit.app${audioUrl}`;
+    console.log(`[Nest] Playing audio: ${fullUrl}`);
+    const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music" }),
+    });
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error(`[Nest] play_media failed: ${resp.status} ${errText}`);
+      throw new Error(`play_media failed: ${resp.status}`);
+    }
+    return 0;
+  }
+
+  async function stopNestSpeaker(): Promise<void> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    try {
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+      });
+      console.log(`[Nest] Stopped playback`);
+    } catch (e: any) {
+      console.error(`[Nest] Error stopping: ${e.message}`);
+    }
+  }
+
+  async function getNestMediaState(): Promise<{ state: string; position?: number; duration?: number }> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    try {
+      const resp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        return {
+          state: data.state,
+          position: data.attributes?.media_position,
+          duration: data.attributes?.media_duration,
+        };
+      }
+    } catch {}
+    return { state: 'unknown' };
+  }
+
+  async function waitForNestPlaybackEnd(estimatedMs: number, sessionId: number): Promise<boolean> {
+    const startTime = Date.now();
+    const maxWait = estimatedMs + 30000;
+    await new Promise(r => setTimeout(r, Math.min(estimatedMs - 3000, 5000)));
+    while (Date.now() - startTime < maxWait) {
+      if (!catWashPlaybackActive || catWashSessionId !== sessionId) return false;
+      const state = await getNestMediaState();
+      if (state.state === 'idle' || state.state === 'off' || state.state === 'paused') {
+        console.log(`[Nest] Playback ended (state: ${state.state})`);
+        return true;
+      }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+    console.log(`[Nest] Timed out waiting for playback to end after ${Math.round((Date.now() - startTime) / 1000)}s`);
+    return true;
+  }
+
+  async function startNestChunkPlayback(
+    fileId: number,
+    fileName: string,
+    chunks: string[],
+    startChunk: number,
+    sessionId: number,
+    voice: string = "nova"
+  ) {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const appUrl = "https://home-view--bkh416.replit.app";
+    let aborted = false;
+    nestPlaybackAbort = () => { aborted = true; };
+
+    console.log(`[Nest Playback] Starting session ${sessionId}: "${fileName}" from chunk ${startChunk}/${chunks.length}`);
+
+    try {
+      await Promise.allSettled([
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: BATHROOM_ECHO_ENTITY }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: KITCHEN_ECHO_ENTITY }),
+        }),
+      ]);
+      console.log(`[Nest Playback] Stopped Echo devices`);
+
+      const cleanName = fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+      const introText = `Now reading: ${cleanName}`;
+      console.log(`[Nest Playback] Announcing: "${introText}"`);
+      const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`);
+      await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
+      const introWords = introText.split(/\s+/).length;
+      const introWaitMs = Math.max(3000, (introWords / 145) * 60 * 1000 + 1500);
+      await new Promise(r => setTimeout(r, introWaitMs));
+
+      let chunksPlayedSinceLastPrompt = 0;
+      const ATTENTION_INTERVAL = 5;
+
+      for (let i = startChunk; i < chunks.length; i++) {
+        if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
+          console.log(`[Nest Playback] Aborted at chunk ${i}`);
+          break;
+        }
+
+        if (catWashPlaybackState) {
+          catWashPlaybackState.chunkIndex = i;
+          catWashPlaybackState.chunkStartedAt = new Date();
+        }
+
+        if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL && i > startChunk + 2) {
+          console.log(`[Nest Playback] Attention prompt after ${chunksPlayedSinceLastPrompt} chunks`);
+          const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`);
+          await playOnNestSpeaker(`${appUrl}${promptPath}`);
+          await new Promise(r => setTimeout(r, 5000));
+          chunksPlayedSinceLastPrompt = 0;
+          if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) break;
+        }
+
+        const chunkText = chunks[i];
+        console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
+
+        try {
+          const audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`);
+          const wordCount = chunkText.split(/\s+/).length;
+          const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
+
+          if (catWashPlaybackState) {
+            catWashPlaybackState.estimatedChunkDuration = estimatedMs;
+          }
+
+          await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          console.log(`[Nest Playback] Playing chunk ${i + 1}, ~${Math.round(estimatedMs / 1000)}s`);
+
+          const completed = await waitForNestPlaybackEnd(estimatedMs, sessionId);
+          if (!completed) {
+            console.log(`[Nest Playback] Session ended during chunk ${i + 1}`);
+            break;
+          }
+
+          chunksPlayedSinceLastPrompt++;
+
+          if (fileId && i > 0) {
+            try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
+          }
+        } catch (chunkErr: any) {
+          console.error(`[Nest Playback] Error on chunk ${i + 1}: ${chunkErr.message}`);
+          await new Promise(r => setTimeout(r, 2000));
+        }
+      }
+
+      if (!aborted && catWashPlaybackActive && catWashSessionId === sessionId) {
+        console.log(`[Nest Playback] All chunks complete for "${fileName}"`);
+        try { await storage.updateFile(fileId, { listened: true, lastChunkIndex: chunks.length }); } catch {}
+
+        if (catWashPlaybackState) {
+          try {
+            const resp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/cat-wash/update-progress`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ fileId, completed: true }),
+            });
+            const data = await resp.json();
+            if (data.nextFile) {
+              console.log(`[Nest Playback] Auto-continuing to next file: ${data.nextFile.name}`);
+              const nextFiles = await storage.getFiles();
+              const nextFile = nextFiles.find((f: any) => f.id === data.nextFile.id);
+              if (nextFile) {
+                const nextText = await extractFileText(nextFile);
+                if (nextText) {
+                  const nextChunks = chunkTextForNest(nextText);
+                  startNestChunkPlayback(nextFile.id, nextFile.displayName || nextFile.originalName, nextChunks, 0, sessionId, voice);
+                  return;
+                }
+              }
+            }
+          } catch (e: any) {
+            console.error(`[Nest Playback] Error checking next file: ${e.message}`);
+          }
+        }
+
+        const completionPath = await generateAndSaveTTSAudio("All readings complete. Great job Bryn.", `nest-complete-${Date.now()}`);
+        await playOnNestSpeaker(`${appUrl}${completionPath}`);
+      }
+
+    } catch (err: any) {
+      console.error(`[Nest Playback] Fatal error: ${err.message}`);
+    } finally {
+      if (catWashSessionId === sessionId) {
+        catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
+        catWashPlaybackState = null;
+        nestPlaybackAbort = null;
+        stopToothbrushPolling();
+      }
+    }
+  }
+
+  function chunkTextForNest(text: string, maxLength: number = 4000): string[] {
+    const sentences = text.split(/(?<=[.!?])\s+/);
+    const chunks: string[] = [];
+    let current = '';
+    for (const sentence of sentences) {
+      if (current.length + sentence.length + 1 > maxLength && current.length > 0) {
+        chunks.push(current.trim());
+        current = '';
+      }
+      current += (current ? ' ' : '') + sentence;
+    }
+    if (current.trim()) chunks.push(current.trim());
+    return chunks.filter(c => c.length > 10);
+  }
+
+  async function extractFileText(file: any): Promise<string | null> {
+    try {
+      if (file.objectPath?.startsWith('/School/') || file.objectPath?.startsWith('/objects/')) {
+        const content = await getOneDriveFile(file.objectPath);
+        if (!content) return null;
+        const PdfParser = await getPdfParser();
+        const parsed = await PdfParser(content);
+        let textContent = '';
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.text) textContent = parsed.text;
+          else if ((parsed as any).pages && Array.isArray((parsed as any).pages)) {
+            textContent = (parsed as any).pages.map((p: any) => p.text || '').join('\n\n');
+          }
+        } else if (typeof parsed === 'string') {
+          textContent = parsed;
+        }
+        return cleanTextForTTS(textContent);
+      }
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      const buffer = await objectStorage.downloadObject(file.objectPath);
+      if (!buffer) return null;
+      const PdfParser = await getPdfParser();
+      const parsed = await PdfParser(buffer);
+      let textContent = '';
+      if (parsed && typeof parsed === 'object') {
+        if (parsed.text) textContent = parsed.text;
+        else if ((parsed as any).pages && Array.isArray((parsed as any).pages)) {
+          textContent = (parsed as any).pages.map((p: any) => p.text || '').join('\n\n');
+        }
+      } else if (typeof parsed === 'string') {
+        textContent = parsed;
+      }
+      return cleanTextForTTS(textContent);
+    } catch (e: any) {
+      console.error(`[ExtractText] Error: ${e.message}`);
+      return null;
+    }
+  }
+
+  async function stopNestPlaybackWithGoodbye(reason: string): Promise<void> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const appUrl = "https://home-view--bkh416.replit.app";
+
+    if (nestPlaybackAbort) {
+      nestPlaybackAbort();
+      nestPlaybackAbort = null;
+    }
+
+    await stopNestSpeaker();
+
+    let fileName = catWashPlaybackState?.fileName || '';
+    const savedFileId = catWashPlaybackState?.fileId;
+    const savedChunk = catWashPlaybackState?.chunkIndex || 0;
+
+    if (savedFileId && savedChunk > 0) {
+      try {
+        await storage.updateFile(savedFileId, { lastChunkIndex: savedChunk });
+        console.log(`[Nest Stop] Saved progress: file ${savedFileId}, chunk ${savedChunk}`);
+      } catch {}
+    }
+
+    const cleanName = fileName ? fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() : '';
+    const goodbyeText = cleanName
+      ? `Stopping. ${cleanName}. File position saved. See you next time Bryn.`
+      : `Stopping playback. See you next time Bryn.`;
+
+    console.log(`[Nest Stop] Reason: ${reason}. Goodbye: "${goodbyeText}"`);
+
+    try {
+      await new Promise(r => setTimeout(r, 1000));
+      const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-${Date.now()}`);
+      await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
+      const wordCount = goodbyeText.split(/\s+/).length;
+      await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 145) * 60 * 1000 + 1500)));
+    } catch (e: any) {
+      console.error(`[Nest Stop] Error playing goodbye: ${e.message}`);
+    }
+
+    catWashPlaybackActive = false;
+    catWashPlaybackStartedAt = null;
+    catWashPlaybackState = null;
+    nestPlaybackAbort = null;
+    currentTvFollowUrl = null;
+    currentTabletReaderUrl = null;
+    stopToothbrushPolling();
+
+    const stopTimestamp = Date.now();
+    await Promise.all([
+      setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: stopTimestamp }, true, 'master'),
+      setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
+    ]);
+  }
+
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
   app.get("/api/shower/next-reading", async (req, res) => {
     try {
@@ -4745,7 +5063,7 @@ document.body.removeChild(a);
       console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");
       console.log("[Cat Wash] Timestamp:", new Date().toISOString());
       console.log("[Cat Wash] Request body:", JSON.stringify(req.body));
-      console.log("[Cat Wash] Architecture: tablet-browser TTS → Bluetooth → Echo (NO alexa_media/AMP calls)");
+      console.log("[Cat Wash] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)");
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -4917,33 +5235,43 @@ document.body.removeChild(a);
 
       console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
 
-      // === STEP 3: Track playback state (tablet handles audio via Bluetooth → Echo) ===
-      // The tablet's PDF reader plays OpenAI TTS audio through its browser <audio> element.
-      // Audio goes from tablet → Bluetooth → Echo speaker. No server-side AMP calls needed.
-      // The server just tracks state so the progress/stop endpoints work.
+      // === STEP 3: Start server-side Nest speaker playback ===
       catWashSessionId++;
       const currentSession = catWashSessionId;
       if (catWashPlaybackActive) {
         console.log("[Cat Wash] Stopping previous playback session");
+        if (nestPlaybackAbort) nestPlaybackAbort();
       }
       catWashPlaybackActive = true;
       catWashPlaybackStartedAt = new Date();
       startToothbrushPolling();
+
+      const fileText = await extractFileText(cppaModule);
+      const fileChunks = fileText ? chunkTextForNest(fileText) : [];
+      const totalChunksCalc = fileChunks.length;
+
+      if (cppaModule.totalChunks !== totalChunksCalc && totalChunksCalc > 0) {
+        try { await storage.updateFile(cppaModule.id, { totalChunks: totalChunksCalc }); } catch {}
+      }
+
       catWashPlaybackState = {
         fileId: cppaModule.id,
         fileName,
         chunkIndex: resumeFromChunk,
-        totalChunks: cppaModule.totalChunks || 0,
-        chunks: [],
+        totalChunks: totalChunksCalc,
+        chunks: fileChunks,
         currentWords: [],
         wordIndex: 0,
         startedAt: new Date(),
         chunkStartedAt: new Date(),
         estimatedChunkDuration: 0,
+        playbackMode: 'server-tts',
       };
 
-      console.log(`[Cat Wash] Session ${currentSession}: tablet will handle TTS playback via Bluetooth → Echo`);
-      console.log(`[Cat Wash] Reader URL: ${readerUrl}`);
+      console.log(`[Cat Wash] Session ${currentSession}: Nest speaker playback, ${totalChunksCalc} chunks`);
+      console.log(`[Cat Wash] Reader URL (visual follow): ${readerUrl}`);
+
+      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentSession);
 
       res.json({
         action: "playing",
@@ -4951,9 +5279,9 @@ document.body.removeChild(a);
         resumeFromChunk,
         readerUrl,
         currentWeek: currentWeekNumber,
-        totalChunks: cppaModule.totalChunks || 0,
+        totalChunks: totalChunksCalc,
         devices: deviceResults,
-        playbackMode: "tablet-bluetooth",
+        playbackMode: "nest-speaker",
       });
 
     } catch (error: any) {
@@ -4974,7 +5302,7 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Timestamp: ${new Date().toISOString()}`);
       console.log(`[Cat Lights] Light state: ${lightState}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
-      console.log(`[Cat Lights] Architecture: tablet-browser TTS → Bluetooth → Echo (NO alexa_media/AMP calls)`);
+      console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -5059,25 +5387,36 @@ document.body.removeChild(a);
       // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
       const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
-      // Update session state
       catWashSessionId++;
+      const currentLightsSession = catWashSessionId;
       if (catWashPlaybackActive) {
         console.log("[Cat Lights] Stopping previous playback session");
+        if (nestPlaybackAbort) nestPlaybackAbort();
       }
       catWashPlaybackActive = true;
       catWashPlaybackStartedAt = new Date();
       startToothbrushPolling();
+
+      const fileText = await extractFileText(cppaModule);
+      const fileChunks = fileText ? chunkTextForNest(fileText) : [];
+      const totalChunksCalc = fileChunks.length;
+
+      if (cppaModule.totalChunks !== totalChunksCalc && totalChunksCalc > 0) {
+        try { await storage.updateFile(cppaModule.id, { totalChunks: totalChunksCalc }); } catch {}
+      }
+
       catWashPlaybackState = {
         fileId: cppaModule.id,
         fileName,
         chunkIndex: resumeFromChunk,
-        totalChunks: cppaModule.totalChunks || 0,
-        chunks: [],
+        totalChunks: totalChunksCalc,
+        chunks: fileChunks,
         currentWords: [],
         wordIndex: 0,
         startedAt: new Date(),
         chunkStartedAt: new Date(),
         estimatedChunkDuration: 0,
+        playbackMode: 'server-tts',
       };
 
       const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
@@ -5096,22 +5435,20 @@ document.body.removeChild(a);
       ]);
       deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
 
-      // Also try Samsung TV via Fire Stick (home theatre pair)
       try {
         const fireStickTurnOn = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
         });
-        console.log(`[Cat Lights] Fire Stick turn_on (home theatre → TV via CEC): ${fireStickTurnOn.status}`);
+        console.log(`[Cat Lights] Fire Stick turn_on: ${fireStickTurnOn.status}`);
         const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
         });
-        console.log(`[Cat Lights] Samsung TV turn_on (backup): ${turnOnResp.status}`);
+        console.log(`[Cat Lights] Samsung TV turn_on: ${turnOnResp.status}`);
         await new Promise(resolve => setTimeout(resolve, 5000));
-        const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
         const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
         deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
       } catch (e: any) {
@@ -5121,13 +5458,15 @@ document.body.removeChild(a);
 
       console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
 
+      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentLightsSession);
+
       res.json({
         action: "playing",
         file: { id: cppaModule.id, name: fileName },
         resumeFromChunk,
-        totalChunks: cppaModule.totalChunks || 0,
+        totalChunks: totalChunksCalc,
         devices: deviceResults,
-        playbackMode: "tablet-bluetooth",
+        playbackMode: "nest-speaker",
       });
 
     } catch (error: any) {
@@ -5145,30 +5484,11 @@ document.body.removeChild(a);
       console.log(`[Cat Wash Stop Webhook] Request body: ${JSON.stringify(req.body)}`);
 
       const stopped: string[] = [];
+      const fileName = catWashPlaybackState?.fileName || '';
 
-      let fileName = '';
-
-      if (catWashPlaybackActive && catWashPlaybackState) {
-        const savedFileId = catWashPlaybackState.fileId;
-        const savedChunk = catWashPlaybackState.chunkIndex;
-        fileName = catWashPlaybackState.fileName || '';
-        console.log(`[Cat Wash Stop Webhook] Stopping playback - file ${savedFileId} (${fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
-
-        if (savedFileId && savedChunk > 0) {
-          try {
-            await storage.updateFile(savedFileId, { lastChunkIndex: savedChunk });
-            console.log(`[Cat Wash Stop Webhook] Saved progress: chunk ${savedChunk}`);
-          } catch (e: any) {
-            console.log(`[Cat Wash Stop Webhook] Failed to save progress: ${e.message}`);
-          }
-        }
-
+      if (catWashPlaybackActive) {
         stopped.push(`playback:${fileName}`);
-        catWashPlaybackActive = false;
-        catWashPlaybackStartedAt = null;
-        catWashPlaybackState = null;
-        currentTvFollowUrl = null;
-        currentTabletReaderUrl = null;
+        await stopNestPlaybackWithGoodbye(req.body?.trigger || 'toothbrush');
       }
 
       if (currentTTSSession) {
@@ -5176,21 +5496,6 @@ document.body.removeChild(a);
         stopTTSSession("Toothbrush started running - stopping playback");
         stopped.push("ttsSession");
       }
-
-      stopToothbrushPolling();
-
-      let goodbyeText = '';
-      if (fileName) {
-        const cleanName = fileName.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
-        goodbyeText = `Stopping. ${cleanName}. File position saved. See you next time Bryn.`;
-      }
-
-      const stopTimestamp = Date.now();
-      await Promise.all([
-        setTabletCommand({ action: 'stop_playback', goodbyeText, timestamp: stopTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
-      ]);
-      console.log(`[Cat Wash Stop Webhook] Sent stop_playback to tablet (goodbye: ${goodbyeText ? 'yes' : 'no'}) and go_home to TV`);
 
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
@@ -5222,29 +5527,11 @@ document.body.removeChild(a);
       }
 
       const stopped: string[] = [];
-      let fileName = '';
+      const fileName = catWashPlaybackState?.fileName || '';
 
-      if (catWashPlaybackActive && catWashPlaybackState) {
-        const savedFileId = catWashPlaybackState.fileId;
-        const savedChunk = catWashPlaybackState.chunkIndex;
-        fileName = catWashPlaybackState.fileName || '';
-        console.log(`[Cat Door] Stopping playback - file ${savedFileId} (${fileName}), chunk ${savedChunk}/${catWashPlaybackState.totalChunks}`);
-
-        if (savedFileId && savedChunk > 0) {
-          try {
-            await storage.updateFile(savedFileId, { lastChunkIndex: savedChunk });
-            console.log(`[Cat Door] Saved progress: chunk ${savedChunk}`);
-          } catch (e: any) {
-            console.log(`[Cat Door] Failed to save progress: ${e.message}`);
-          }
-        }
-
+      if (catWashPlaybackActive) {
         stopped.push(`playback:${fileName}`);
-        catWashPlaybackActive = false;
-        catWashPlaybackStartedAt = null;
-        catWashPlaybackState = null;
-        currentTvFollowUrl = null;
-        currentTabletReaderUrl = null;
+        await stopNestPlaybackWithGoodbye('door_opened');
       }
 
       if (currentTTSSession) {
@@ -5252,21 +5539,6 @@ document.body.removeChild(a);
         stopTTSSession("Door opened - stopping playback");
         stopped.push("ttsSession");
       }
-
-      stopToothbrushPolling();
-
-      let goodbyeText = '';
-      if (fileName) {
-        const cleanName = fileName.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
-        goodbyeText = `Stopping. ${cleanName}. File position saved. See you next time Bryn.`;
-      }
-
-      const stopTimestamp = Date.now();
-      await Promise.all([
-        setTabletCommand({ action: 'stop_playback', goodbyeText, timestamp: stopTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
-      ]);
-      console.log(`[Cat Door] Sent stop_playback to tablet and go_home to TV`);
 
       console.log(`[Cat Door] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", trigger: "door_opened", stoppedItems: stopped });
