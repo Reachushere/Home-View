@@ -22613,25 +22613,39 @@ function TaskForm({
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002, maxHeight: '70vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                 <div className="p-3">
-                  <CalendarPicker
-                    mode="single"
-                    selected={tempDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        setTempDate(date);
+                  {(() => {
+                    const now = new Date();
+                    const dueDate = tempDate || (formData.dueDate ? new Date(formData.dueDate) : null);
+                    const currentWeekStart = startOfWeek(now, { weekStartsOn: 0 });
+                    const dueWeekEnd = dueDate ? endOfWeek(dueDate, { weekStartsOn: 0 }) : null;
+                    const nowMonth = now.getFullYear() * 12 + now.getMonth();
+                    const dueMonth = dueDate ? dueDate.getFullYear() * 12 + dueDate.getMonth() : nowMonth;
+                    const numMonths = Math.min(Math.max(1, dueMonth - nowMonth + 1), 4);
+                    const weekRangeDays: Date[] = [];
+                    if (dueDate && dueWeekEnd) {
+                      let d = new Date(currentWeekStart);
+                      while (d <= dueWeekEnd) {
+                        weekRangeDays.push(new Date(d));
+                        d = addDays(d, 1);
                       }
-                    }}
-                    defaultMonth={new Date()}
-                    numberOfMonths={(() => {
-                      const now = new Date();
-                      const dueDate = tempDate || (formData.dueDate ? new Date(formData.dueDate) : null);
-                      if (!dueDate) return 1;
-                      const nowMonth = now.getFullYear() * 12 + now.getMonth();
-                      const dueMonth = dueDate.getFullYear() * 12 + dueDate.getMonth();
-                      return Math.min(Math.max(1, dueMonth - nowMonth + 1), 4);
-                    })()}
-                    classNames={{ months: "flex flex-col space-y-4" }}
-                  />
+                    }
+                    return (
+                      <CalendarPicker
+                        mode="single"
+                        selected={tempDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setTempDate(date);
+                          }
+                        }}
+                        defaultMonth={now}
+                        numberOfMonths={numMonths}
+                        modifiers={{ weekRange: weekRangeDays }}
+                        modifiersStyles={{ weekRange: { backgroundColor: 'rgba(59, 130, 246, 0.12)', borderRadius: 0 } }}
+                        classNames={{ months: "flex flex-col space-y-4" }}
+                      />
+                    );
+                  })()}
                   <div className="border-t pt-3 mt-3">
                     <Label className="text-sm font-medium">Time</Label>
                     <div className="flex items-center gap-2 mt-2">
