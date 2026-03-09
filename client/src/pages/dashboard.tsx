@@ -18614,7 +18614,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '2px', marginRight: '45px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '2px', marginRight: '20px' }}>
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px', flexShrink: 0 }}>M</span>
@@ -18713,7 +18713,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '2px', marginRight: '45px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '2px', marginRight: '20px' }}>
                                   {cfp.moduleP.hasFiles && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px', flexShrink: 0 }}>M</span>
