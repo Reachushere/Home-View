@@ -2783,7 +2783,10 @@ export default function Dashboard() {
       if (max > 0) setMaxTaskNameWidth(Math.ceil(max));
     };
     requestAnimationFrame(() => setTimeout(measure, 50));
-  }, [allTasks, selectedWeek]);
+    const t2 = setTimeout(measure, 300);
+    const t3 = setTimeout(measure, 800);
+    return () => { clearTimeout(t2); clearTimeout(t3); };
+  }, [allTasks, selectedWeek, dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length]);
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
