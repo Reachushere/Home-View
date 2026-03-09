@@ -355,6 +355,8 @@ export default function Dashboard() {
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
+  const calendarBorderRef = useRef<HTMLDivElement>(null);
+  const [calendarBorderTop, setCalendarBorderTop] = useState(0);
   const clockContainerRef = useRef<HTMLDivElement>(null);
   const [clockWidth, setClockWidth] = useState(0);
   const courseRowsRef = useRef<HTMLDivElement>(null);
@@ -6389,6 +6391,10 @@ export default function Dashboard() {
         setCalendarBottom(window.innerHeight - rect.bottom);
         setCalendarRight(window.innerWidth - rect.right);
         setCalendarLeft(rect.left);
+        if (calendarBorderRef.current) {
+          const borderRect = calendarBorderRef.current.getBoundingClientRect();
+          setCalendarBorderTop(borderRect.top + window.scrollY);
+        }
         const unreducedWidth = rect.width + calendarReduction;
         const frSpace = unreducedWidth - gridSizes.timeColumnWidth - gridSizes.moduleColumnWidth;
         const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
@@ -14686,7 +14692,7 @@ export default function Dashboard() {
               );
             })()}
           </div>
-          <div className="shadow-lg flex-1 min-h-0 border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip' }}>
+          <div ref={calendarBorderRef} className="shadow-lg flex-1 min-h-0 border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
@@ -17916,7 +17922,7 @@ export default function Dashboard() {
             zIndex: 35,
             left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
-            top: `${calendarTop + 8 + 2}px`,
+            top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
             backdropFilter: 'blur(40px)',
