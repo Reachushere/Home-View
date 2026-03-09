@@ -270,6 +270,20 @@ app.use((req, res, next) => {
       startReminderScheduler();
       checkAndSwitchSemester();
       setInterval(checkAndSwitchSemester, 60 * 60 * 1000);
+
+      async function runFileMonitor() {
+        try {
+          const resp = await fetch(`http://localhost:${port}/api/files/monitor-sync`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          const data = await resp.json();
+          if (data.totalSynced > 0) {
+            console.log(`[File Monitor] Synced ${data.totalSynced} new Spring/Summer files`);
+          }
+        } catch (e: any) {
+          console.error("[File Monitor] Error:", e.message);
+        }
+      }
+      setTimeout(runFileMonitor, 10000);
+      setInterval(runFileMonitor, 5 * 60 * 1000);
     },
   );
 })();

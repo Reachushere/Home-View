@@ -7154,6 +7154,184 @@ document.body.removeChild(a);
     }
   });
 
+  const recentlyPreparedFiles: { id: number; name: string; folder: string; totalChunks: number; textLength: number; preparedAt: string }[] = [];
+
+  app.post("/api/files/monitor-sync", async (req, res) => {
+    try {
+      const { listOneDriveItems, getOneDriveFile } = await import("./onedrive");
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+
+      const allSemesters = await storage.getAllSemesterSettings();
+      const springSummer = allSemesters.find(s => s.semesterType === 'spring_summer' && s.semesterName?.includes('2026'));
+      if (!springSummer) {
+        return res.json({ success: true, message: 'No Spring/Summer 2026 semester found', synced: [] });
+      }
+
+      const courseCodes = [springSummer.course1Code, springSummer.course2Code, springSummer.course3Code].filter(Boolean);
+      const basePath = `/School/1. TMU/Courses/2026/Spring_Summer`;
+
+      const existingFiles = await storage.getFiles();
+      const existingFileKeys = new Set(
+        existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`)
+      );
+
+      let baseFolders: any[] = [];
+      try {
+        baseFolders = await listOneDriveItems(basePath);
+      } catch (e: any) {
+        return res.json({ success: true, message: 'OneDrive Spring_Summer folder not found yet', synced: [] });
+      }
+
+      const syncedFiles: any[] = [];
+      const errors: any[] = [];
+
+      for (const courseCode of courseCodes) {
+        try {
+          const matchedFolder = baseFolders.find((f: any) =>
+            f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
+          );
+          if (!matchedFolder) continue;
+
+          const coursePath = matchedFolder.path;
+          const weekFolders = await listOneDriveItems(coursePath);
+
+          for (const weekFolder of weekFolders) {
+            if (weekFolder.type !== 'folder') continue;
+            const weekMatch = weekFolder.name.match(/Week\s+(\d+)/i);
+            if (!weekMatch) continue;
+            const weekNum = parseInt(weekMatch[1], 10);
+
+            const weekContents = await listOneDriveItems(weekFolder.path);
+
+            for (const subfolder of weekContents) {
+              if (subfolder.type !== 'folder') continue;
+              const subName = subfolder.name.toLowerCase();
+              let type: string | null = null;
+              if (subName.includes('module')) type = 'module';
+              else if (subName.includes('reading')) type = 'reading';
+              if (!type) continue;
+
+              const folderName = `week-${weekNum}-${courseCode.toLowerCase()}-${type}`;
+              const subFiles = await listOneDriveItems(subfolder.path);
+
+              for (const file of subFiles) {
+                if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+
+                const fileKey = `${file.name}|||${folderName}`;
+                if (existingFileKeys.has(fileKey)) continue;
+
+                try {
+                  const downloadResponse = await fetch(file.downloadUrl);
+                  if (!downloadResponse.ok) {
+                    errors.push({ file: file.name, week: weekNum, error: 'Download failed' });
+                    continue;
+                  }
+
+                  const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+
+                  const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+                  const uploadResponse = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: fileBuffer,
+                    headers: { 'Content-Type': 'application/pdf' },
+                  });
+
+                  if (!uploadResponse.ok) {
+                    errors.push({ file: file.name, week: weekNum, error: 'Upload to storage failed' });
+                    continue;
+                  }
+
+                  const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+
+                  const newFile = await storage.createFile({
+                    originalName: file.name,
+                    displayName: file.name,
+                    objectPath,
+                    contentType: 'application/pdf',
+                    size: file.size,
+                    folder: folderName,
+                    listened: false,
+                  });
+
+                  existingFileKeys.add(fileKey);
+
+                  let textLength = 0;
+                  let totalChunks = 0;
+                  try {
+                    const PdfParser = await getPdfParser();
+                    const parsed = await PdfParser(fileBuffer);
+                    let textContent = '';
+                    if (parsed && typeof parsed === 'object') {
+                      if (parsed.text) textContent = parsed.text;
+                      else if ((parsed as any).pages && Array.isArray((parsed as any).pages)) {
+                        textContent = (parsed as any).pages.map((p: any) => p.text || '').join('\n\n');
+                      }
+                    } else if (typeof parsed === 'string') {
+                      textContent = parsed;
+                    }
+                    const cleaned = cleanTextForTTS(textContent);
+                    textLength = cleaned.length;
+                    totalChunks = Math.ceil(cleaned.length / CHUNK_SIZE);
+
+                    await storage.updateFile(newFile.id, { totalChunks });
+                  } catch (parseErr: any) {
+                    console.error(`[Monitor] Failed to extract text from ${file.name}:`, parseErr.message);
+                  }
+
+                  const preparedEntry = {
+                    id: newFile.id,
+                    name: file.name,
+                    folder: folderName,
+                    totalChunks,
+                    textLength,
+                    preparedAt: new Date().toISOString(),
+                  };
+                  recentlyPreparedFiles.push(preparedEntry);
+                  syncedFiles.push(preparedEntry);
+
+                  console.log(`[Monitor] Synced & prepared: ${file.name} -> ${folderName} (${totalChunks} chunks, ${textLength} chars)`);
+                } catch (fileErr: any) {
+                  errors.push({ file: file.name, week: weekNum, error: fileErr.message });
+                }
+              }
+            }
+          }
+        } catch (courseError: any) {
+          errors.push({ course: courseCode, error: courseError.message });
+        }
+      }
+
+      res.json({
+        success: true,
+        totalSynced: syncedFiles.length,
+        synced: syncedFiles,
+        errors: errors.length > 0 ? errors : undefined,
+      });
+    } catch (error: any) {
+      console.error("[Monitor] Error syncing Spring/Summer files:", error);
+      res.status(500).json({ error: "Failed to monitor Spring/Summer files", details: error.message });
+    }
+  });
+
+  app.get("/api/files/recently-prepared", async (_req, res) => {
+    res.json({ files: recentlyPreparedFiles });
+  });
+
+  app.post("/api/files/acknowledge-prepared", async (req, res) => {
+    const { fileIds } = req.body;
+    if (fileIds && Array.isArray(fileIds)) {
+      for (let i = recentlyPreparedFiles.length - 1; i >= 0; i--) {
+        if (fileIds.includes(recentlyPreparedFiles[i].id)) {
+          recentlyPreparedFiles.splice(i, 1);
+        }
+      }
+    } else {
+      recentlyPreparedFiles.length = 0;
+    }
+    res.json({ success: true });
+  });
+
   // POST /api/echo/tts - Send text-to-speech to Home Assistant Echo device
   app.post("/api/echo/tts", async (req, res) => {
     try {

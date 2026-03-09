@@ -553,6 +553,38 @@ export default function Dashboard() {
   const [renameFileId, setRenameFileId] = useState<number | null>(null);
   const [renameFileName, setRenameFileName] = useState<string>('');
   
+  const [preparedFilesDialog, setPreparedFilesDialog] = useState<{ id: number; name: string; folder: string; totalChunks: number; textLength: number; preparedAt: string }[]>([]);
+  const [showPreparedDialog, setShowPreparedDialog] = useState(false);
+
+  useEffect(() => {
+    const checkPreparedFiles = async () => {
+      try {
+        const res = await fetch('/api/files/recently-prepared');
+        const data = await res.json();
+        if (data.files && data.files.length > 0) {
+          setPreparedFilesDialog(data.files);
+          setShowPreparedDialog(true);
+        }
+      } catch {}
+    };
+    checkPreparedFiles();
+    const interval = setInterval(checkPreparedFiles, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const acknowledgePreparedFiles = async () => {
+    const fileIds = preparedFilesDialog.map(f => f.id);
+    try {
+      await fetch('/api/files/acknowledge-prepared', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileIds }),
+      });
+    } catch {}
+    setShowPreparedDialog(false);
+    setPreparedFilesDialog([]);
+  };
+
   // Partner away popup state - show when partner is at work
   const [showPartnerAwayPopup, setShowPartnerAwayPopup] = useState(false);
   const [isPartnerAway, setIsPartnerAway] = useState(false);
@@ -7297,6 +7329,50 @@ export default function Dashboard() {
               data-testid="button-play-kitchen-reading"
             >
               {isKitchenReadingLoading ? 'Starting...' : 'Yes, play readings'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPreparedDialog} onOpenChange={(open) => { if (!open) acknowledgePreparedFiles(); }}>
+        <DialogContent className="max-w-[400px] p-5 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white" data-testid="dialog-prepared-files">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base text-white">
+              <CheckCircle2 className="h-5 w-5 text-green-400" />
+              Files Uploaded & Player Ready
+            </DialogTitle>
+            <DialogDescription className="text-white/70 text-sm">
+              New files have been synced from OneDrive and prepared for the TTS player.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-3 max-h-[300px] overflow-y-auto">
+            {preparedFilesDialog.map((file) => {
+              const folderParts = file.folder.match(/week-(\d+)-(\w+)-(module|reading)/);
+              const weekNum = folderParts ? folderParts[1] : '?';
+              const courseCode = folderParts ? folderParts[2].toUpperCase() : file.folder;
+              const fileType = folderParts ? folderParts[3] : 'file';
+              return (
+                <div key={file.id} className="flex items-start gap-3 p-2 rounded-lg bg-white/5 border border-white/10" data-testid={`prepared-file-${file.id}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{file.name}</div>
+                    <div className="text-xs text-white/50 mt-0.5">
+                      {courseCode} - Week {weekNum} - {fileType.charAt(0).toUpperCase() + fileType.slice(1)}
+                    </div>
+                    <div className="text-xs text-green-400/80 mt-0.5">
+                      {file.totalChunks} chunks ready ({Math.round(file.textLength / 1000)}k chars extracted)
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white w-full"
+              onClick={acknowledgePreparedFiles}
+              data-testid="button-acknowledge-prepared"
+            >
+              OK
             </Button>
           </DialogFooter>
         </DialogContent>
