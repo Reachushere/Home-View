@@ -14389,7 +14389,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* TTS Highlighting Settings */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-8px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-6px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Fine-tune word highlighting</span>
@@ -14465,7 +14465,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Data Sync Section */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-8px' }}>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-6px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Data Sync</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Push to or pull from the published app</span>
@@ -14568,7 +14568,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Column Spacing */}
-                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-9px' }}>
+                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-7px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Column Spacing</Label>
                     <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Reset the column widths in the summary boxes</span>
