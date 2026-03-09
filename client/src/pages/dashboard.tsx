@@ -10642,9 +10642,9 @@ export default function Dashboard() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        gap: '9px',
-        paddingLeft: '9px',
-        paddingRight: '7px',
+        gap: '14px',
+        paddingLeft: '11px',
+        paddingRight: '9px',
         borderRadius: '6px',
         background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.6) 100%)',
         backdropFilter: 'blur(40px)',
@@ -10659,7 +10659,7 @@ export default function Dashboard() {
         }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
           <span className="text-white" style={{ fontSize: '12px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '47px', display: 'inline-block', lineHeight: '1' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
-        <div className="flex items-center gap-[7px]">
+        <div className="flex items-center gap-[10px]">
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
             {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
           </button>
