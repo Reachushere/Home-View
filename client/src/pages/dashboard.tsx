@@ -6338,9 +6338,9 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // 3 to 10 Day Schedule: tasks due 3-10 days from today (excludes today and tomorrow)
+  // 3 to 21 Day Schedule: tasks due 3-21 days from today (excludes today and tomorrow)
   const threeDaysOut = startOfDay(addDays(today, 3));
-  const tenDaysOut = startOfDay(addDays(today, 10));
+  const tenDaysOut = startOfDay(addDays(today, 21));
   const thisWeekStart = threeDaysOut;
   const thisWeekEnd = tenDaysOut;
   const dueThisWeekTasks = (() => {
@@ -18209,9 +18209,9 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {/* 2-10 Days Section */}
+                {/* 2-21 Days Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <span className="text-[11px] font-semibold" style={{ color: 'white' }}>2-10 Days</span>
+                  <span className="text-[11px] font-semibold" style={{ color: 'white' }}>2-21 Days</span>
                   <span className="text-[10px] font-semibold" style={{ color: 'white' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -18226,7 +18226,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {dueThisWeekTasks.length === 0 ? (
-                  <div className="text-[9px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2-10 days</div>
+                  <div className="text-[9px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2-21 days</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {dueThisWeekTasks.map((task) => {
