@@ -19126,7 +19126,7 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '5px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-4px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
@@ -19285,7 +19285,7 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
