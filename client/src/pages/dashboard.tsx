@@ -18948,7 +18948,7 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-11px' }}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginBottom: '37px' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 One week
                               </span>
@@ -19121,7 +19121,7 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-11px' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginBottom: '22px' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
@@ -19159,6 +19159,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 2 Weeks Section */}
+                <div style={{ flex: 1 }} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>2 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
@@ -19296,7 +19297,7 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-11px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
