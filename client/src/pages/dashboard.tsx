@@ -10550,7 +10550,7 @@ export default function Dashboard() {
       )}
 
       {/* Date - fixed position */}
-      <span className="text-[12px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 58 + 125}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+      <span className="text-[12px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 58}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
 
