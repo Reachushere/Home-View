@@ -9633,8 +9633,8 @@ export default function Dashboard() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              left: `${calendarLeft - 15 - 15}px`,
-              right: `${calendarRight - 15 + 15}px`,
+              left: '0px',
+              right: '0px',
             }}
             data-testid="next-task-countdown"
           >
@@ -9761,49 +9761,7 @@ export default function Dashboard() {
           pointerEvents: 'none',
         }} />
         
-        {/* Down arrow at bottom center */}
-        <div
-          style={{
-            position: 'fixed',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            top: '0px',
-            width: '84px',
-            height: '25px',
-            cursor: 'pointer',
-            pointerEvents: 'auto',
-            zIndex: 111,
-          }}
-          onClick={() => {
-            openTopPill();
-            if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-            topPillTimeoutRef.current = setTimeout(() => {
-              closeTopPill();
-            }, 1800);
-          }}
-          onMouseEnter={() => {
-            openTopPill();
-            if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          }}
-        />
-        <div
-          style={{
-            position: 'fixed',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            top: '-1px',
-            width: '84px',
-            height: '25px',
-            pointerEvents: 'none',
-            opacity: isTopPillOpen ? 0 : 0.9,
-            transition: 'opacity 0.3s ease-in-out',
-            zIndex: 110,
-          }}
-        >
-          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
-            <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          </svg>
-        </div>
+        {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -10525,6 +10483,50 @@ export default function Dashboard() {
           <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }}>+ Add Task</Button>
 
         </div>
+      </div>
+
+      {/* Top pill tab - centered to page, outside pill container to avoid transform issues */}
+      <div
+        style={{
+          position: 'fixed',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: '0px',
+          width: '84px',
+          height: '25px',
+          cursor: 'pointer',
+          pointerEvents: 'auto',
+          zIndex: 111,
+        }}
+        onClick={() => {
+          openTopPill();
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          topPillTimeoutRef.current = setTimeout(() => {
+            closeTopPill();
+          }, 1800);
+        }}
+        onMouseEnter={() => {
+          openTopPill();
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: '-1px',
+          width: '84px',
+          height: '25px',
+          pointerEvents: 'none',
+          opacity: isTopPillOpen ? 0 : 0.9,
+          transition: 'opacity 0.3s ease-in-out',
+          zIndex: 110,
+        }}
+      >
+        <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+          <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        </svg>
       </div>
 
       {/* Share Button - fixed position, beside date */}
