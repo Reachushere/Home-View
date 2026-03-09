@@ -19172,8 +19172,8 @@ export default function Dashboard() {
         </Dialog>
 
         {/* Edit Dialog */}
-        <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-          <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} className="max-w-[95vw] sm:max-w-[900px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal">
+        <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT' || active.closest('[data-radix-popper-content-wrapper]'))) return; setEditingTask(null); } }} modal={false}>
+          <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal">
             <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <div className="flex items-center gap-2">
                 <Pencil className="h-3 w-3 text-white" />
@@ -22080,7 +22080,7 @@ function TaskForm({
                   {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002 }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()}>
+              <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 10002 }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                 <div className="p-3">
                   <CalendarPicker
                     mode="single"
