@@ -5118,15 +5118,19 @@ document.body.removeChild(a);
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-        const likelyStale = msSinceStart > 2 * 60 * 1000 && chunkStillAtStart;
+        const msSinceChunkStart = catWashPlaybackState.chunkStartedAt ? Date.now() - catWashPlaybackState.chunkStartedAt.getTime() : 0;
+        const chunkStuck = msSinceChunkStart > 3 * 60 * 1000;
+        const isTabletDriven = catWashPlaybackState.playbackMode !== 'server-tts';
+        const likelyStale = (msSinceStart > 2 * 60 * 1000 && chunkStillAtStart) || chunkStuck || isTabletDriven;
 
         if (likelyStale) {
-          console.log(`[Cat Wash] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
+          console.log(`[Cat Wash] Clearing stale/tablet playback state (started ${Math.round(msSinceStart / 1000)}s ago, chunk ${catWashPlaybackState.chunkIndex}, chunkAge=${Math.round(msSinceChunkStart / 1000)}s, mode=${catWashPlaybackState.playbackMode || 'unknown'})`);
+          if (nestPlaybackAbort) nestPlaybackAbort();
           catWashPlaybackActive = false;
           catWashPlaybackStartedAt = null;
           catWashPlaybackState = null;
         } else {
-          console.log(`[Cat Wash] Already playing: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} - skipping`);
+          console.log(`[Cat Wash] Already playing via Nest: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} (chunkAge=${Math.round(msSinceChunkStart / 1000)}s) - skipping`);
           
           const haUrlSkip = HOME_ASSISTANT_URL.replace(/\/$/, '');
           try {
@@ -5188,10 +5192,10 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
       console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
 
-      // === STEP 2: Open PDF reader on master tablet and Samsung TV ===
-      const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
+      // === STEP 2: Open PDF reader on master tablet and Samsung TV (visual follow only, Nest handles audio) ===
+      const tvFollowUrl = readerUrl;
 
       const deviceResults: Record<string, string> = {};
 
@@ -5428,8 +5432,8 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunkLights > 0 ? savedChunkLights - 1 : 0);
       console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunkLights}, starting 1 earlier)`);
 
-      // Build reader URL with autoplay - tablet browser plays TTS audio via Bluetooth → Echo
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      // Build reader URL - visual follow only, Nest handles audio
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
 
       catWashSessionId++;
       const currentLightsSession = catWashSessionId;
@@ -5463,7 +5467,7 @@ document.body.removeChild(a);
         playbackMode: 'server-tts',
       };
 
-      const tvFollowUrl = readerUrl.replace('autoplay=true', 'autoplay=false') + '&followOnly=true';
+      const tvFollowUrl = readerUrl;
 
       const deviceResults: Record<string, string> = {};
 
