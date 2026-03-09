@@ -18092,13 +18092,16 @@ export default function Dashboard() {
                       const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
                       const isToday = isSameDay(day, new Date());
                       const dayTasks = allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+                      const monthDayStr = format(day, "yyyy-MM-dd");
+                      const monthDayShift = localShiftMap[monthDayStr];
                       
                       return (
                         <div
                           key={idx}
-                          className={`p-1 border-r border-b border-border last:border-r-0 ${
-                            "bg-card"
-                          }`}
+                          className={`p-1 border-r border-b border-border last:border-r-0 relative cursor-pointer`}
+                          style={{
+                            backgroundColor: monthDayShift === 'day' ? '#fcfdc9' : monthDayShift === 'night' ? 'rgba(139, 92, 246, 0.18)' : undefined
+                          }}
                           onClick={() => {
                             const weekInfo = weeks.find(w => {
                               const wStart = new Date(w.startDate);
@@ -18111,6 +18114,8 @@ export default function Dashboard() {
                             }
                           }}
                         >
+                          {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
+                          {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                           <div className={`text-xs font-bold mb-1 ${
                             isToday ? "text-[#5979CC]" : "text-foreground"
                           }`}>
