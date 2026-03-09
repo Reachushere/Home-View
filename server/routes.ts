@@ -1127,7 +1127,10 @@ export async function registerRoutes(
       const task = await storage.getTask(taskId);
       if (!task) return res.status(404).json({ message: 'Task not found' });
 
-      const fields = req.body;
+      const fields = { ...req.body };
+      if (fields.dueDate && typeof fields.dueDate === 'string') fields.dueDate = new Date(fields.dueDate);
+      if (fields.startDate && typeof fields.startDate === 'string') fields.startDate = new Date(fields.startDate);
+      if (fields.completedAt && typeof fields.completedAt === 'string') fields.completedAt = new Date(fields.completedAt);
       const parentId = task.parentTaskId || task.id;
       const allSiblings = await storage.getChildTasks(parentId);
       const parentTask = task.parentTaskId ? await storage.getTask(parentId) : task;
@@ -1160,7 +1163,7 @@ export async function registerRoutes(
           const siblingDueDate = siblingTask?.dueDate ? new Date(siblingTask.dueDate) : null;
           if (siblingDueDate && !isNaN(siblingDueDate.getTime())) {
             const siblingStartDate = new Date(siblingDueDate.getTime() - prepDuration);
-            const siblingFields = { ...fields, startDate: siblingStartDate.toISOString() };
+            const siblingFields = { ...fields, startDate: siblingStartDate };
             delete siblingFields.dueDate;
             await storage.updateTask(id, siblingFields);
           } else {
