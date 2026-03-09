@@ -18216,7 +18216,7 @@ export default function Dashboard() {
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
                       <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 2), 'd')}</div>
                     </div>
-                    <span style={{ fontSize: '5px', color: 'rgb(0, 200, 0)', lineHeight: 1 }}>&#9654;</span>
+                    <span style={{ fontSize: '5px', color: 'white', lineHeight: 1 }}>&#9654;</span>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekEnd, 'MMM').toUpperCase()}</div>
                       <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekEnd, 'd')}</div>
