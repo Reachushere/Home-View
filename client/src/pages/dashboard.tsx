@@ -15425,7 +15425,7 @@ export default function Dashboard() {
                 const rgb = hexToRgb(courseData.color);
                 const course = { 
                   name: courseName, 
-                  bg: courseName === 'CASL101' ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.24)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
+                  bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
                   label: (() => {
                     if (courseName === 'CPPA122') return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                     if (courseName === 'CFNF400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
@@ -18815,7 +18815,7 @@ export default function Dashboard() {
                 )}
 
                 {/* This Week Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
