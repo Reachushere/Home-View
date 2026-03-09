@@ -18016,7 +18016,7 @@ export default function Dashboard() {
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 8px 0' }}>
                   <span className="text-[11px] font-semibold" style={{ color: 'white' }}>Today</span>
-                  <span className="text-[10px] font-semibold" style={{ color: 'rgb(255, 0, 0)' }}>({dueTodayTasks.length})</span>
+                  <span className="text-[10px] font-semibold" style={{ color: 'white' }}>({dueTodayTasks.length})</span>
                   <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
                     <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
@@ -18113,7 +18113,7 @@ export default function Dashboard() {
                 {/* Tomorrow Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
                   <span className="text-[11px] font-semibold" style={{ color: 'white' }}>Tomorrow</span>
-                  <span className="text-[10px] font-semibold" style={{ color: 'rgb(255, 165, 0)' }}>({dueTomorrowTasks.length})</span>
+                  <span className="text-[10px] font-semibold" style={{ color: 'white' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: 'auto' }}>
                     <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
                     <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '8px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
@@ -18210,7 +18210,7 @@ export default function Dashboard() {
                 {/* 2-10 Days Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
                   <span className="text-[11px] font-semibold" style={{ color: 'white' }}>2-10 Days</span>
-                  <span className="text-[10px] font-semibold" style={{ color: 'rgb(0, 200, 0)' }}>({dueThisWeekTasks.length})</span>
+                  <span className="text-[10px] font-semibold" style={{ color: 'white' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0 }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '4px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 2), 'MMM').toUpperCase()}</div>
