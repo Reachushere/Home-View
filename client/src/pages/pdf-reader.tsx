@@ -536,7 +536,26 @@ export default function PDFReaderPage() {
           if (isPlayingRef.current) {
             stopReading();
           }
-          setTimeout(() => { window.location.href = '/'; }, 2000);
+          if (data.goodbyeText && audioRef.current) {
+            try {
+              const ttsResp = await fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: data.goodbyeText, voice: 'echo' }) });
+              if (ttsResp.ok) {
+                const blob = await ttsResp.blob();
+                const url = URL.createObjectURL(blob);
+                audioRef.current.src = url;
+                audioRef.current.volume = 1;
+                audioRef.current.playbackRate = 1;
+                await audioRef.current.play();
+                await new Promise<void>(resolve => {
+                  audioRef.current!.onended = () => { URL.revokeObjectURL(url); resolve(); };
+                  setTimeout(() => { URL.revokeObjectURL(url); resolve(); }, 15000);
+                });
+              }
+            } catch (e) {
+              console.log('[TabletNav] Goodbye TTS failed:', e);
+            }
+          }
+          setTimeout(() => { window.location.href = '/'; }, 1000);
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
@@ -1352,7 +1371,7 @@ export default function PDFReaderPage() {
       if (playingAttentionPromptRef.current) {
         playingAttentionPromptRef.current = false;
         playNextChunk(chunk + 1);
-      } else if (chunk < chunksRef.current.length - 1) {
+      } else if (chunk >= 4 && chunk < chunksRef.current.length - 1 && (chunk + 1) % 5 === 0) {
         playingAttentionPromptRef.current = true;
         console.log(`[TTS] Playing attention prompt after chunk ${chunk + 1}`);
         await playTTS("Bryn, are you paying attention?");

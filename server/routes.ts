@@ -5170,12 +5170,18 @@ document.body.removeChild(a);
 
       stopToothbrushPolling();
 
+      let goodbyeText = '';
+      if (fileName) {
+        const cleanName = fileName.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
+        goodbyeText = `Stopping. ${cleanName}. File position saved. See you next time Bryn.`;
+      }
+
       const stopTimestamp = Date.now();
       await Promise.all([
-        setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'stop_playback', goodbyeText, timestamp: stopTimestamp }, true, 'master'),
         setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
       ]);
-      console.log(`[Cat Wash Stop Webhook] Sent stop_playback to tablet and go_home to TV`);
+      console.log(`[Cat Wash Stop Webhook] Sent stop_playback to tablet (goodbye: ${goodbyeText ? 'yes' : 'no'}) and go_home to TV`);
 
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
