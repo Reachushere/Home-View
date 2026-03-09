@@ -18815,7 +18815,7 @@ export default function Dashboard() {
                 )}
 
                 {/* This Week Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '35px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
@@ -19122,13 +19122,13 @@ export default function Dashboard() {
                               })}
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '22px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-13px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '12px' }}>
                                 <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
                                   <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '5px', marginBottom: '22px' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '5px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
