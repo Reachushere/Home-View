@@ -18639,7 +18639,7 @@ export default function Dashboard() {
                     left: 0,
                     right: 0,
                     height: `${rowHeight}px`,
-                    background: pd.progressBg,
+                    background: 'transparent',
                     zIndex: 40,
                     display: 'flex',
                     flexDirection: 'column',
@@ -18653,7 +18653,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'hidden', background: pd.progressBg }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         <div className="flex flex-col gap-[2px]" style={{ width: '68px', flexShrink: 0 }}>
                           <div className="flex items-center gap-[3px]">
                             <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
@@ -18685,7 +18685,7 @@ export default function Dashboard() {
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'hidden' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'hidden', background: pd.progressBg }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         <div className="flex flex-col gap-[2px]" style={{ width: '68px', flexShrink: 0 }}>
                           <div className="flex items-center gap-[3px]">
                             <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
