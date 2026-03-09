@@ -15390,11 +15390,15 @@ export default function Dashboard() {
                               }));
                               const firstFile = ensuredFiles[0];
                               if (firstFile) {
-                                const isOneDrive = firstFile.objectPath?.startsWith('http');
-                                const url = isOneDrive
-                                  ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
-                                  : `/pdf-reader/${firstFile.id}?autoplay=1`;
-                                if (newWindow) { newWindow.location.href = url; } else { window.location.href = url; }
+                                const hasDbId = typeof firstFile.id === 'number' && firstFile.id > 0;
+                                const url = hasDbId
+                                  ? `/pdf-reader/${firstFile.id}?autoplay=1`
+                                  : (firstFile.objectPath?.startsWith('http')
+                                    ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
+                                    : `/pdf-reader/${firstFile.id}?autoplay=1`);
+                                if (newWindow) {
+                                  try { newWindow.location.href = url; } catch { newWindow.location.replace(url); }
+                                } else { window.location.href = url; }
                               } else {
                                 if (newWindow) newWindow.close();
                               }
@@ -15459,7 +15463,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('module'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('module'); }}
                               >
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '19px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                               )}
                             </div>
@@ -15494,7 +15498,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('reading'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('reading'); }}
                               >
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '21px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '19px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                               )}
                             </div>
