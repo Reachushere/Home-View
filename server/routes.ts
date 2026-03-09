@@ -876,6 +876,74 @@ export async function registerRoutes(
         }
       }
       
+      // If repeatType changed from "none" to something else, generate recurring instances
+      if (existingTask && (!existingTask.repeatType || existingTask.repeatType === "none") && task.repeatType && task.repeatType !== "none") {
+        try {
+          const activeSemester = await storage.getActiveSemesterSettings();
+          const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
+          
+          const repeatDates = generateRepeatDates(
+            task.dueDate,
+            task.repeatType as RepeatType,
+            task.repeatEndDate,
+            task.repeatInterval ?? undefined,
+            task.repeatIntervalUnit as RepeatIntervalUnit | undefined
+          );
+          
+          let prepDuration = 0;
+          if (task.startDate) {
+            prepDuration = task.dueDate.getTime() - task.startDate.getTime();
+          }
+          
+          for (const repeatDueDate of repeatDates) {
+            const childStartDate = prepDuration > 0 
+              ? new Date(repeatDueDate.getTime() - prepDuration) 
+              : null;
+            
+            const childTask: InsertTask = {
+              title: task.title,
+              description: task.description,
+              type: task.type,
+              courseName: task.courseName,
+              startDate: childStartDate,
+              dueDate: repeatDueDate,
+              eventStartTime: task.eventStartTime,
+              eventEndTime: task.eventEndTime,
+              reminder1: task.reminder1,
+              reminder2: task.reminder2,
+              reminder3: task.reminder3,
+              reminder4: task.reminder4,
+              weekNumber: getWeekNumber(repeatDueDate, semesterStart, activeSemester?.readingWeekStart),
+              priority: task.priority,
+              notes: task.notes,
+              referenceLink: task.referenceLink,
+              attachments: task.attachments,
+              repeatType: "none",
+              parentTaskId: task.id,
+            };
+            
+            try {
+              const createdChild = await storage.createTask(childTask);
+              const childEvent = await createCalendarEvent({
+                id: createdChild.id,
+                title: createdChild.title,
+                description: createdChild.description,
+                dueDate: createdChild.dueDate,
+                courseName: createdChild.courseName,
+              });
+              await storage.updateTask(createdChild.id, {
+                calendarEventId: childEvent.id,
+                calendarProvider: "google",
+              });
+            } catch (childErr) {
+              console.error("Failed to create recurring child from PATCH:", childErr);
+            }
+          }
+        } catch (recurErr) {
+          console.error("Error generating recurring instances from PATCH:", recurErr);
+        }
+      }
+      
       // Handle prep calendar event changes
       // If startDate was removed (had prep days, now has 0), delete prep events
       if (existingTask?.startDate && !task.startDate) {
@@ -1074,9 +1142,36 @@ export async function registerRoutes(
         tasksToUpdate.push(parentTask.id);
       }
 
+      // Calculate prep duration from the edited task so we can apply it relatively
+      // to each sibling's own dueDate
+      let prepDuration = 0;
+      if (fields.startDate && fields.dueDate) {
+        prepDuration = new Date(fields.dueDate).getTime() - new Date(fields.startDate).getTime();
+      } else if (fields.startDate && task.dueDate) {
+        prepDuration = task.dueDate.getTime() - new Date(fields.startDate).getTime();
+      }
+
       const uniqueIds = [...new Set(tasksToUpdate)];
       for (const id of uniqueIds) {
-        await storage.updateTask(id, fields);
+        if (id === taskId) {
+          // The edited task gets exact fields
+          await storage.updateTask(id, fields);
+        } else if (prepDuration > 0 && (fields.startDate !== undefined)) {
+          // For siblings, calculate startDate relative to their own dueDate
+          const siblingTask = allSiblings.find(s => s.id === id) || (parentTask?.id === id ? parentTask : null);
+          const siblingDueDate = siblingTask?.dueDate;
+          if (siblingDueDate) {
+            const siblingStartDate = new Date(siblingDueDate.getTime() - prepDuration);
+            const siblingFields = { ...fields, startDate: siblingStartDate.toISOString() };
+            // Don't change sibling's dueDate
+            delete siblingFields.dueDate;
+            await storage.updateTask(id, siblingFields);
+          } else {
+            await storage.updateTask(id, fields);
+          }
+        } else {
+          await storage.updateTask(id, fields);
+        }
       }
 
       res.json({ updated: uniqueIds.length });
