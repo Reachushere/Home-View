@@ -18539,6 +18539,10 @@ export default function Dashboard() {
             >
               {format(new Date(), 'EEEE, MMMM d, yyyy')}
             </div>
+            <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: '6px' }}>
+              <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
+              <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
+            </div>
           </div>
           <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '2px', paddingBottom: '4px', overflowY: 'auto', scrollbarWidth: 'none' }}>
             {isLoading ? (
