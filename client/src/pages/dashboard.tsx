@@ -18584,8 +18584,14 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '10px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '6px' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'flex-start' }}>
+                            <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', paddingTop: '2px' }}>
+                              <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                              <div style={{ width: '100%', position: 'relative', height: '3px' }}>
+                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              </div>
+                            </div>
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
                               <div>
                                 <button
@@ -18599,13 +18605,7 @@ export default function Dashboard() {
                                 </button>
                                 <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-
                                 </div>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: '#ffffff' }}>
-                                  {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                                </span>
                               </div>
                               {cfp && cfp.moduleP.hasFiles && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
@@ -18673,8 +18673,14 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '10px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '6px' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'flex-start' }}>
+                            <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', paddingTop: '2px' }}>
+                              <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                              <div style={{ width: '100%', position: 'relative', height: '3px' }}>
+                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              </div>
+                            </div>
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
                               <div>
                                 <button
@@ -18688,16 +18694,6 @@ export default function Dashboard() {
                                 </button>
                                 <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-
-                                </div>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: '#ffffff' }}>
-                                  {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                                </span>
-                                <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '0px' }}>
-                                  <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
@@ -18813,9 +18809,15 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '10px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                                      <div data-box-task-id={task.id}>
-                                        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                      <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'flex-start' }}>
+                                        <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', paddingTop: '2px' }}>
+                                          <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <div style={{ width: '100%', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 30), 30)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          </div>
+                                        </div>
+                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                           <div>
                                             <button
                                               className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -18828,15 +18830,6 @@ export default function Dashboard() {
                                             </button>
                                             <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                                            </div>
-                                          </div>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
-                                            <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: '#ffffff' }}>
-                                              {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                                            </span>
-                                            <div style={{ flex: 1, position: 'relative', height: '4px', marginRight: '5px' }}>
-                                              <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
