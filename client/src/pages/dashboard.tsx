@@ -10592,6 +10592,7 @@ export default function Dashboard() {
           </div>
 
           {/* Home Assistant (moved from bottom pill) */}
+          {isAdmin && (
           <div 
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -10612,6 +10613,7 @@ export default function Dashboard() {
               <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
             </svg>
           </div>
+          )}
 
           {/* Projects Button */}
           <Button 
