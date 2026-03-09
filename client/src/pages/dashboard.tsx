@@ -18723,7 +18723,17 @@ export default function Dashboard() {
               );
             });
           })()}
-          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: '14px', paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: (() => {
+            const upcomingTop = calendarBorderTop || (calendarTop + 15);
+            if (courseRowRects.length > 0) {
+              const lastRect = courseRowRects[courseRowRects.length - 1];
+              if (lastRect) {
+                const lastBottom = lastRect.top + lastRect.height - upcomingTop;
+                return `${lastBottom + 4}px`;
+              }
+            }
+            return '14px';
+          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none' }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
