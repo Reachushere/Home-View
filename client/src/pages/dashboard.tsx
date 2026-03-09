@@ -11502,7 +11502,7 @@ export default function Dashboard() {
       )}
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
-      <div className="fixed z-50 flex items-end justify-between gap-2" style={{ top: `${(calendarWrapperRef.current?.getBoundingClientRect().top ?? calendarTop) - 28}px`, left: '18px', right: `${calendarRight - 8}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-between gap-2" style={{ top: `${(calendarWrapperRef.current?.getBoundingClientRect().top ?? calendarTop) - 28}px`, left: '23px', right: `${calendarRight - 8}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1" style={{ marginLeft: '0px' }}>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
@@ -18875,7 +18875,7 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-6px' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '6px', alignSelf: 'center', marginTop: '-9px' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[8px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
