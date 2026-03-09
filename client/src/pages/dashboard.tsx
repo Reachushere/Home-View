@@ -18874,7 +18874,10 @@ export default function Dashboard() {
                                 </svg>
                               </div>
                             )}
-                            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', marginLeft: '6px' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '6px' }} data-testid={`mini-cal-group-${group.key}`}>
+                              <span className="text-[7px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                              </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart, wi) => {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
