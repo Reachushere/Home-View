@@ -18078,14 +18078,14 @@ export default function Dashboard() {
           <div style={{ padding: '6px 8px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center' }}>
             <h4
               className="text-xs font-normal flex items-center text-white"
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", width: '50%' }}
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
             >
               <span style={{ whiteSpace: 'nowrap' }}>Upcoming</span>
             </h4>
-            <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
+            <div style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px' }} />
             <div
               className="text-[10px] font-normal text-white"
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", width: '50%', textAlign: 'right' }}
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}
             >
               {format(new Date(), 'EEEE, MMMM d, yyyy')}
             </div>
