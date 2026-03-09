@@ -18,6 +18,7 @@ export interface IStorage {
   updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string }): Promise<FileRecord>;
   deleteFile(id: number): Promise<void>;
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
+  getAllSemesterSettings(): Promise<SemesterSettings[]>;
   createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
   updateSemesterSettings(id: number, updates: Partial<SemesterSettings>): Promise<SemesterSettings>;
   getSecondGoogleAccount(): Promise<SecondGoogleAccount | undefined>;
@@ -225,6 +226,13 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(semesterSettings.createdAt))
       .limit(1);
     return settings;
+  }
+
+  async getAllSemesterSettings(): Promise<SemesterSettings[]> {
+    return db
+      .select()
+      .from(semesterSettings)
+      .orderBy(semesterSettings.semesterStartDate);
   }
 
   async createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings> {

@@ -3,8 +3,36 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { startReminderScheduler } from "./reminderScheduler";
+import { storage } from "./storage";
 import crypto from "crypto";
 import cookieParser from "cookie-parser";
+
+async function checkAndSwitchSemester() {
+  try {
+    const active = await storage.getActiveSemesterSettings();
+    if (!active || !active.semesterEndDate) return;
+
+    const now = new Date();
+    const endDate = new Date(active.semesterEndDate);
+
+    if (now > endDate) {
+      const allSemesters = await storage.getAllSemesterSettings();
+      const nextSemester = allSemesters
+        .filter(s => !s.isActive && new Date(s.semesterStartDate) > endDate)
+        .sort((a, b) => new Date(a.semesterStartDate).getTime() - new Date(b.semesterStartDate).getTime())[0];
+
+      if (nextSemester) {
+        await storage.updateSemesterSettings(active.id, { isActive: false });
+        await storage.updateSemesterSettings(nextSemester.id, { isActive: true });
+        console.log(`[Semester Switch] Switched from "${active.semesterName}" to "${nextSemester.semesterName}"`);
+      } else {
+        console.log(`[Semester Switch] "${active.semesterName}" has ended but no next semester found`);
+      }
+    }
+  } catch (err) {
+    console.error("[Semester Switch] Error checking semester:", err);
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -240,6 +268,8 @@ app.use((req, res, next) => {
     () => {
       log(`serving on port ${port}`);
       startReminderScheduler();
+      checkAndSwitchSemester();
+      setInterval(checkAndSwitchSemester, 60 * 60 * 1000);
     },
   );
 })();
