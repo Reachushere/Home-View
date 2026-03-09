@@ -18726,7 +18726,7 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', borderBottom: '1px solid rgba(255,255,255,0.6)', marginBottom: '1px' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
@@ -18847,7 +18847,7 @@ export default function Dashboard() {
                 )}
                 <div style={{ flex: 1 }} />
                 {/* Next 2 Weeks Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', marginTop: '0px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next 3 Weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueThisWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
