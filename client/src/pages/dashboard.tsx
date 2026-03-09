@@ -10608,7 +10608,7 @@ export default function Dashboard() {
             data-testid="button-projects"
             onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
           >
-            + Projects
+            + Project
           </Button>
 
           {/* Quick Add Button */}
