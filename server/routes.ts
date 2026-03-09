@@ -4807,14 +4807,13 @@ document.body.removeChild(a);
               const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  title: "School Reading",
-                  message: "Opening PDF reader...",
-                  data: { clickAction: readerUrl, url: readerUrl, tag: "cat-wash-open", importance: "high", channel: "cat-wash" },
-                }),
+                body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
               });
-              console.log(`[Cat Wash] notify/${svc}: ${resp.status}`);
-              if (resp.ok) return true;
+              console.log(`[Cat Wash] notify/${svc} command_webview: ${resp.status}`);
+              if (resp.ok) {
+                console.log(`[Cat Wash] Tablet opened via HA companion app (${svc})`);
+                return true;
+              }
             } catch (e: any) {
               console.log(`[Cat Wash] notify/${svc} ERROR: ${e.message}`);
             }
