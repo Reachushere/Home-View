@@ -141,6 +141,8 @@ import {
   Monitor,
   Speaker,
   Headphones,
+  Sun as SunIcon,
+  Moon as MoonIcon,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -5617,7 +5619,6 @@ export default function Dashboard() {
 
   const { data: shiftScheduleData } = useQuery<{ id: number; date: string; shiftType: string }[]>({
     queryKey: ['/api/shift-schedule'],
-    enabled: isCalendarSettingsOpen,
   });
 
   useEffect(() => {
@@ -15199,6 +15200,8 @@ export default function Dashboard() {
                 const hasTodayTasks = isToday && allTasks.some(t => 
                   !t.isCompleted && isSameDay(new Date(t.dueDate), day)
                 );
+                const shiftDateStr = format(day, "yyyy-MM-dd");
+                const shiftForDay = localShiftMap[shiftDateStr];
                 return (
                   <div 
                     key={idx} 
@@ -15206,6 +15209,8 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {shiftForDay === 'day' && <SunIcon className="absolute top-1 left-1 h-3 w-3 text-yellow-400" strokeWidth={2.5} />}
+                    {shiftForDay === 'night' && <MoonIcon className="absolute top-1 left-1 h-3 w-3 text-purple-400" strokeWidth={2.5} />}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
@@ -15240,12 +15245,16 @@ export default function Dashboard() {
                 const hasTodayTasks = isTodaySaturday && allTasks.some(t => 
                   !t.isCompleted && isSameDay(new Date(t.dueDate), day)
                 );
+                const satShiftDateStr = format(day, "yyyy-MM-dd");
+                const satShiftForDay = localShiftMap[satShiftDateStr];
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={isTodaySaturday ? { gridColumn: afterProgressGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: afterProgressGridCol }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {satShiftForDay === 'day' && <SunIcon className="absolute top-1 left-1 h-3 w-3 text-yellow-400" strokeWidth={2.5} />}
+                    {satShiftForDay === 'night' && <MoonIcon className="absolute top-1 left-1 h-3 w-3 text-purple-400" strokeWidth={2.5} />}
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#FFFFFF' }}>NEW SCHOOL WEEK</div>
                     )}
