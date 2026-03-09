@@ -1108,6 +1108,19 @@ button[role="combobox"] > span {
   animation: pulse-task 1s ease-in-out infinite;
 }
 
+@keyframes pulse-urgent {
+  0%, 100% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.animate-pulse-urgent {
+  animation: pulse-urgent 2s ease-in-out infinite;
+}
+
 .working-indicator .circle:nth-child(1) { animation-delay: 0s; }
 .working-indicator .circle:nth-child(2) { animation-delay: 0.1s; }
 .working-indicator .circle:nth-child(3) { animation-delay: 0.2s; }
