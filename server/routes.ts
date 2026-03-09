@@ -7,7 +7,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
@@ -1141,6 +1141,71 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error updating professor emails:", err);
       res.status(500).json({ error: "Failed to update professor emails" });
+    }
+  });
+
+  // POST /api/tasks/auto-create-file-tasks - Auto-create tasks for module/reading files without corresponding tasks
+  app.post("/api/tasks/auto-create-file-tasks", async (req, res) => {
+    try {
+      const { weekNumber } = req.body;
+      if (!weekNumber) return res.status(400).json({ error: "weekNumber required" });
+
+      const activeSemester = await storage.getActiveSemesterSettings();
+      const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
+      const readingWeekStart = activeSemester?.readingWeekStart || null;
+      const weekDates = getWeekDates(weekNumber, semesterStart, readingWeekStart);
+
+      const friday = new Date(weekDates.start);
+      friday.setDate(friday.getDate() + 6);
+      friday.setHours(12, 0, 0, 0);
+
+      const allFiles = await storage.getFiles();
+      const allTasks = await storage.getTasks({ weekNumber });
+
+      const created: any[] = [];
+
+      for (const course of COURSES) {
+        const courseCode = course.code.toLowerCase();
+        const courseFullName = `${course.code} - ${course.name}`;
+        const moduleFolderKey = `week-${weekNumber}-${courseCode}-module`;
+        const readingFolderKey = `week-${weekNumber}-${courseCode}-reading`;
+
+        const hasModuleFiles = allFiles.some(f => f.folder === moduleFolderKey);
+        const hasReadingFiles = allFiles.some(f => f.folder === readingFolderKey);
+
+        if (!hasModuleFiles && !hasReadingFiles) continue;
+
+        const courseTasksForWeek = allTasks.filter(t => {
+          const taskCourse = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+          return taskCourse === course.code.toUpperCase();
+        });
+
+        if (courseTasksForWeek.length > 0) continue;
+
+        const title = hasModuleFiles && hasReadingFiles
+          ? "Module & Reading Files Due"
+          : hasModuleFiles
+            ? "Module Reading Due"
+            : "Reading Files Due";
+
+        const newTask = await storage.createTask({
+          title,
+          type: "module",
+          courseName: courseFullName,
+          dueDate: friday.toISOString(),
+          weekNumber,
+          priority: "medium",
+          description: "",
+          isCompleted: false,
+        } as InsertTask);
+
+        created.push(newTask);
+      }
+
+      res.json({ created, count: created.length });
+    } catch (err) {
+      console.error("Error auto-creating file tasks:", err);
+      res.status(500).json({ error: "Failed to auto-create file tasks" });
     }
   });
 
