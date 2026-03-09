@@ -14588,8 +14588,8 @@ export default function Dashboard() {
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
               borderRadius: '12px',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              borderTop: '1.5px solid rgba(255,255,255,0.55)',
+              border: '1px solid rgba(255,255,255,0.35)',
+              borderTop: '1px solid rgba(255,255,255,0.55)',
               boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
             }}
           />
