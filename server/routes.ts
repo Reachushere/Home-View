@@ -4900,6 +4900,7 @@ document.body.removeChild(a);
         catWashPlaybackActive = false;
         catWashPlaybackStartedAt = null;
         catWashPlaybackState = null;
+        currentTvFollowUrl = null;
       }
 
       if (currentTTSSession) {
@@ -5133,16 +5134,13 @@ document.body.removeChild(a);
     catWashPlaybackActive = false;
     catWashPlaybackStartedAt = null;
     catWashPlaybackState = null;
+    currentTvFollowUrl = null;
 
     if (currentTTSSession) {
       console.log(`[Cat Wash Stop] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
       stopTTSSession("Force stopped via cat-wash/stop");
       stopped.push("ttsSession");
     }
-
-    // NO Alexa Media Player (AMP) calls to Echo devices — audio plays via tablet Bluetooth.
-    // Stopping the tablets (by clearing server state) is sufficient.
-    // Sending media_stop to Echo entities causes Alexa to speak confirmations.
 
     const stopTs = Date.now();
     await Promise.all([

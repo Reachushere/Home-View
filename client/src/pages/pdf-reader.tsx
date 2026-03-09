@@ -229,6 +229,18 @@ export default function PDFReaderPage() {
   const [isFlicking, setIsFlicking] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState("browser_tts");
   const selectedSpeakerRef = useRef("browser_tts");
+  const [binauralEnabled, setBinauralEnabled] = useState(() => {
+    const saved = localStorage.getItem('pdf-reader-binaural');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [binauralVolume, setBinauralVolume] = useState(() => {
+    const saved = localStorage.getItem('pdf-reader-binaural-volume');
+    return saved ? parseFloat(saved) : 0.15;
+  });
+  const binauralContextRef = useRef<AudioContext | null>(null);
+  const binauralGainRef = useRef<GainNode | null>(null);
+  const binauralOscLRef = useRef<OscillatorNode | null>(null);
+  const binauralOscRRef = useRef<OscillatorNode | null>(null);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -1504,6 +1516,95 @@ export default function PDFReaderPage() {
     }
   }, [volume]);
 
+  const startBinauralBeats = () => {
+    if (binauralContextRef.current) return;
+    try {
+      const ctx = new AudioContext();
+      if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = binauralVolume;
+      const merger = ctx.createChannelMerger(2);
+      const oscL = ctx.createOscillator();
+      oscL.type = 'sine';
+      oscL.frequency.value = 200;
+      const oscR = ctx.createOscillator();
+      oscR.type = 'sine';
+      oscR.frequency.value = 210;
+      const gainL = ctx.createGain();
+      gainL.gain.value = 1;
+      const gainR = ctx.createGain();
+      gainR.gain.value = 1;
+      oscL.connect(gainL);
+      gainL.connect(merger, 0, 0);
+      oscR.connect(gainR);
+      gainR.connect(merger, 0, 1);
+      merger.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      oscL.start();
+      oscR.start();
+      binauralContextRef.current = ctx;
+      binauralGainRef.current = gainNode;
+      binauralOscLRef.current = oscL;
+      binauralOscRRef.current = oscR;
+      console.log('[Binaural] Started: 200Hz L / 210Hz R = 10Hz alpha beat');
+    } catch (e) {
+      console.error('[Binaural] Failed to start:', e);
+    }
+  };
+
+  const stopBinauralBeats = () => {
+    if (binauralOscLRef.current) { try { binauralOscLRef.current.stop(); } catch {} binauralOscLRef.current = null; }
+    if (binauralOscRRef.current) { try { binauralOscRRef.current.stop(); } catch {} binauralOscRRef.current = null; }
+    if (binauralContextRef.current) { binauralContextRef.current.close().catch(() => {}); binauralContextRef.current = null; }
+    binauralGainRef.current = null;
+    console.log('[Binaural] Stopped');
+  };
+
+  useEffect(() => {
+    if (binauralEnabled && isPlaying && !isPaused) {
+      startBinauralBeats();
+    } else {
+      stopBinauralBeats();
+    }
+    return () => {};
+  }, [binauralEnabled, isPlaying, isPaused]);
+
+  useEffect(() => {
+    localStorage.setItem('pdf-reader-binaural', String(binauralEnabled));
+  }, [binauralEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('pdf-reader-binaural-volume', String(binauralVolume));
+    if (binauralGainRef.current) {
+      binauralGainRef.current.gain.value = binauralVolume;
+    }
+  }, [binauralVolume]);
+
+  useEffect(() => {
+    return () => { stopBinauralBeats(); };
+  }, []);
+
+  const getTimeEstimate = () => {
+    if (totalChunks === 0 || !chunksRef.current.length) return null;
+    const uncheckedChunks = Array.from({ length: totalChunks }, (_, i) => i).filter(i => !checkedChunks.has(i));
+    if (uncheckedChunks.length === 0) return { remaining: '0m', total: '0m', remainingChunks: 0 };
+    let totalWords = 0;
+    let remainingWords = 0;
+    for (let i = 0; i < chunksRef.current.length; i++) {
+      const wordCount = chunksRef.current[i].split(/\s+/).filter(w => w.length > 0).length;
+      totalWords += wordCount;
+      if (!checkedChunks.has(i)) remainingWords += wordCount;
+    }
+    const wordsPerMinute = 150 * playbackSpeed;
+    const totalMinutes = Math.ceil(totalWords / wordsPerMinute);
+    const remainingMinutes = Math.ceil(remainingWords / wordsPerMinute);
+    const formatTime = (mins: number) => {
+      if (mins >= 60) return `${Math.floor(mins / 60)}h ${mins % 60}m`;
+      return `${mins}m`;
+    };
+    return { remaining: formatTime(remainingMinutes), total: formatTime(totalMinutes), remainingChunks: uncheckedChunks.length };
+  };
+
   useEffect(() => {
     let lastHeights = new Array(20).fill(0);
     const updateWaveBars = () => {
@@ -2285,7 +2386,7 @@ export default function PDFReaderPage() {
                 />
                 <div className="flex-1 flex items-center justify-between" style={{ marginTop: '4px' }}>
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%)</span>
+                    <span className="text-[11px] text-white font-medium">{checkedChunks.size} / {totalChunks} Chunks Completed ({chunkProgress}%){(() => { const est = getTimeEstimate(); return est ? ` · ${est.remaining} remaining` : ''; })()}</span>
                     <div style={{ width: '130px', marginLeft: '10px' }}>
                       <div className="h-2 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
                         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${chunkProgress}%`, background: waveColor }} />
@@ -2480,6 +2581,31 @@ export default function PDFReaderPage() {
                 data-testid="button-volume-up"
               >+</button>
               <Volume2 className="h-5 w-5 text-white" />
+            </div>
+
+            <div className="flex items-center gap-3" data-testid="binaural-control">
+              <button
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium uppercase tracking-wide transition-colors border ${binauralEnabled ? 'bg-purple-600/60 border-purple-400/50 text-white' : 'bg-white/5 border-white/20 text-white/50'}`}
+                onClick={() => setBinauralEnabled(!binauralEnabled)}
+                data-testid="button-binaural-toggle"
+                title="Binaural beats: 10Hz alpha waves for focus (requires headphones/stereo)"
+              >
+                {binauralEnabled ? '🧠 Focus' : '🧠 Off'}
+              </button>
+              {binauralEnabled && (
+                <input
+                  type="range"
+                  min="0.02"
+                  max="0.4"
+                  step="0.02"
+                  value={binauralVolume}
+                  onChange={(e) => setBinauralVolume(parseFloat(e.target.value))}
+                  className="w-16 h-[3px] cursor-pointer"
+                  style={{ accentColor: '#a855f7' }}
+                  data-testid="slider-binaural-volume"
+                  title={`Binaural volume: ${Math.round(binauralVolume * 100)}%`}
+                />
+              )}
             </div>
 
             <button
