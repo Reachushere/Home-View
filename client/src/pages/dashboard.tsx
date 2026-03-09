@@ -18389,7 +18389,7 @@ export default function Dashboard() {
                       style={{ 
                         width: '44px', 
                         height: '3px', 
-                        backgroundColor: 'rgba(255,255,255,0.15)'
+                        backgroundColor: 'transparent'
                       }}
                     />
                     {/* Progress fill */}
