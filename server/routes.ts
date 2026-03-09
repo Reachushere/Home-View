@@ -8051,10 +8051,20 @@ document.body.removeChild(a);
       // Import semester settings
       if (semester) {
         const existing = await storage.getActiveSemesterSettings();
+        const { id, createdAt, ...semesterData } = semester;
+        if (semesterData.semesterStartDate) semesterData.semesterStartDate = new Date(semesterData.semesterStartDate);
+        if (semesterData.semesterEndDate) semesterData.semesterEndDate = new Date(semesterData.semesterEndDate);
+        if (semesterData.readingWeekStart) semesterData.readingWeekStart = new Date(semesterData.readingWeekStart);
+        if (semesterData.course1StartDate) semesterData.course1StartDate = new Date(semesterData.course1StartDate);
+        if (semesterData.course1EndDate) semesterData.course1EndDate = new Date(semesterData.course1EndDate);
+        if (semesterData.course2StartDate) semesterData.course2StartDate = new Date(semesterData.course2StartDate);
+        if (semesterData.course2EndDate) semesterData.course2EndDate = new Date(semesterData.course2EndDate);
+        if (semesterData.course3StartDate) semesterData.course3StartDate = new Date(semesterData.course3StartDate);
+        if (semesterData.course3EndDate) semesterData.course3EndDate = new Date(semesterData.course3EndDate);
         if (existing) {
-          await storage.updateSemesterSettings(existing.id, semester);
+          await storage.updateSemesterSettings(existing.id, semesterData);
         } else {
-          await storage.createSemesterSettings(semester);
+          await storage.createSemesterSettings(semesterData);
         }
         imported.semester = true;
       }
