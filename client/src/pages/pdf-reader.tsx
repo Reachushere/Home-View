@@ -416,11 +416,10 @@ export default function PDFReaderPage() {
   }, []);
 
   const unlockAudioRef = useRef(false);
+  const audioUnlockedRef = useRef(false);
   const unlockAudio = async () => {
-    if (unlockAudioRef.current) return;
-    unlockAudioRef.current = true;
-    const timeout = new Promise<void>(r => setTimeout(r, 3000));
-    const unlock = (async () => {
+    if (audioUnlockedRef.current) return;
+    const tryUnlock = async () => {
       try {
         const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioCtx) {
@@ -431,23 +430,54 @@ export default function PDFReaderPage() {
           src.connect(ctx.destination);
           src.start(0);
           if (ctx.state === 'suspended') await ctx.resume();
-          console.log("[Autoplay] AudioContext unlocked:", ctx.state);
+          console.log("[Autoplay] AudioContext state:", ctx.state);
         }
         if (audioRef.current) {
           audioRef.current.muted = true;
           audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
-          await audioRef.current.play().catch(() => {});
+          await audioRef.current.play();
           audioRef.current.pause();
           audioRef.current.muted = false;
           audioRef.current.src = "";
+          audioUnlockedRef.current = true;
           console.log("[Autoplay] Audio element unlocked");
         }
       } catch (e) {
         console.log("[Autoplay] Audio unlock attempt:", e);
       }
-    })();
-    await Promise.race([unlock, timeout]);
+    };
+    await tryUnlock();
+    if (!audioUnlockedRef.current) {
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      document.dispatchEvent(new TouchEvent('touchend', { bubbles: true }));
+      await new Promise(r => setTimeout(r, 100));
+      await tryUnlock();
+    }
   };
+
+  useEffect(() => {
+    if (!autoplayParam) return;
+    const tapToUnlock = async () => {
+      await unlockAudio();
+      if (audioUnlockedRef.current) {
+        document.removeEventListener('click', tapToUnlock);
+        document.removeEventListener('touchend', tapToUnlock);
+      }
+    };
+    document.addEventListener('click', tapToUnlock, { once: true });
+    document.addEventListener('touchend', tapToUnlock, { once: true });
+
+    const retryInterval = setInterval(async () => {
+      if (audioUnlockedRef.current) { clearInterval(retryInterval); return; }
+      await unlockAudio();
+    }, 1000);
+    setTimeout(() => clearInterval(retryInterval), 15000);
+    return () => {
+      clearInterval(retryInterval);
+      document.removeEventListener('click', tapToUnlock);
+      document.removeEventListener('touchend', tapToUnlock);
+    };
+  }, [autoplayParam]);
 
   useEffect(() => {
     if (!followOnly && !(catWashFollow && !autoplayParam)) return;
@@ -1048,10 +1078,13 @@ export default function PDFReaderPage() {
       beacon("playTTS-ERROR", { msg: error?.message || String(error), retry: retryCount });
       if (!isPlayingRef.current) return false;
       console.error(`[TTS] Error (attempt ${retryCount + 1}):`, error);
-      if (retryCount < 2 && isPlayingRef.current) {
-        console.log(`[TTS] Retrying in 2 seconds...`);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+      if (retryCount < 5 && isPlayingRef.current) {
+        const delay = retryCount < 2 ? 2000 : 3000;
+        console.log(`[TTS] Retrying in ${delay/1000}s (attempt ${retryCount + 2}/6)...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
         if (!isPlayingRef.current) return false;
+        audioUnlockedRef.current = false;
+        await unlockAudio();
         return playTTS(text, retryCount + 1);
       }
       return false;
