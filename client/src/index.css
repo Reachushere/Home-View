@@ -353,6 +353,11 @@ button[role="combobox"] > span {
   isolation: isolate;
 }
 
+.animate-blink-no-sweep {
+  animation: blink 2s ease-in-out infinite;
+  z-index: 10;
+}
+
 .animate-blink::before {
   content: '';
   position: absolute;
