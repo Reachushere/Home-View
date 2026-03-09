@@ -18092,7 +18092,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '1px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18189,7 +18189,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '1px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
                             </div>
@@ -18293,7 +18293,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '1px' }}>
+                              <div className="text-[8px] text-white/50 truncate" style={{ lineHeight: '1.2', marginTop: '-1px', paddingTop: '2px' }}>
                                 {courseName}
                               </div>
                             </div>
