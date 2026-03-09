@@ -1159,23 +1159,41 @@ export async function registerRoutes(
       for (const id of uniqueIds) {
         if (id === taskId) {
           await storage.updateTask(id, fields);
-        } else if (prepDuration > 0 && (fields.startDate !== undefined)) {
+        } else {
           const siblingTask = allSiblings.find(s => s.id === id) || (parentTask?.id === id ? parentTask : null);
           const siblingDueDate = siblingTask?.dueDate ? new Date(siblingTask.dueDate) : null;
+          const siblingFields = { ...fields };
+
           if (siblingDueDate && !isNaN(siblingDueDate.getTime())) {
-            const siblingStartDate = new Date(siblingDueDate.getTime() - prepDuration);
-            const siblingFields = { ...fields, startDate: siblingStartDate };
-            delete siblingFields.dueDate;
-            await storage.updateTask(id, siblingFields);
-          } else {
-            const siblingFields = { ...fields };
+            if (fields.eventStartTime && typeof fields.eventStartTime === 'string' && fields.eventStartTime.includes(':')) {
+              const [newHour, newMin] = (fields.eventStartTime as string).split(':').map(Number);
+              const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' });
+              const parts = fmt.formatToParts(siblingDueDate);
+              const yy = Number(parts.find(p => p.type === 'year')!.value);
+              const mm = Number(parts.find(p => p.type === 'month')!.value);
+              const dd = Number(parts.find(p => p.type === 'day')!.value);
+              const etDateStr = `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}T${String(newHour).padStart(2,'0')}:${String(newMin).padStart(2,'0')}:00`;
+              const probe = new Date(etDateStr + 'Z');
+              const probeETHour = parseInt(probe.toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false }), 10) % 24;
+              const offsetHours = probeETHour - probe.getUTCHours();
+              const utcDate = new Date(probe.getTime() - offsetHours * 3600000);
+              siblingFields.dueDate = utcDate;
+            }
+
+            if (prepDuration > 0 && (fields.startDate !== undefined)) {
+              const dueDateForPrep = siblingFields.dueDate ? new Date(siblingFields.dueDate as Date) : siblingDueDate;
+              siblingFields.startDate = new Date(dueDateForPrep.getTime() - prepDuration);
+            } else {
+              delete siblingFields.startDate;
+            }
+          }
+
+          delete siblingFields.weekNumber;
+          if (!(fields.eventStartTime && typeof fields.eventStartTime === 'string' && fields.eventStartTime.includes(':'))) {
             delete siblingFields.dueDate;
             delete siblingFields.startDate;
-            await storage.updateTask(id, siblingFields);
           }
-        } else {
-          const siblingFields = { ...fields };
-          delete siblingFields.dueDate;
+          if (!siblingFields.dueDate) delete siblingFields.dueDate;
           await storage.updateTask(id, siblingFields);
         }
       }

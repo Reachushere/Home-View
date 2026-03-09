@@ -19805,7 +19805,7 @@ export default function Dashboard() {
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)'; }}
                 onClick={async () => {
                   if (recurringEditPending) {
-                    const { dueDate, startDate, weekNumber, ...recurringFields } = recurringEditPending.payload as Record<string, unknown>;
+                    const { weekNumber, ...recurringFields } = recurringEditPending.payload as Record<string, unknown>;
                     await apiRequest("PATCH", `/api/tasks/${recurringEditPending.taskId}/update-recurring`, recurringFields);
                     queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
                     queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
