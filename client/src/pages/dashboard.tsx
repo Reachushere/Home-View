@@ -16382,8 +16382,8 @@ export default function Dashboard() {
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-400 dark:border-gray-500`}
                             style={{ top: '0' }}
                           />}
-                          {/* Half-hour dotted line - hidden for compact night hours */}
-                          {!(isNightHour && !nightHourHasTasks) && <div 
+                          {/* Half-hour dotted line - hidden for compact night hours and current time intersection */}
+                          {!(isNightHour && !nightHourHasTasks) && !(isToday && isCurrentHour) && <div 
                             className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300 dark:border-gray-400`}
                             style={{ top: '50%' }}
                           />}
