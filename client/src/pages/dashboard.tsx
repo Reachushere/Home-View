@@ -18078,9 +18078,9 @@ export default function Dashboard() {
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
-                              <div style={{ width: '20px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '20px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '22px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
@@ -18154,9 +18154,9 @@ export default function Dashboard() {
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
-                              <div style={{ width: '20px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '20px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '22px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
@@ -18237,9 +18237,9 @@ export default function Dashboard() {
                               <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: 'white', minWidth: '12px', textAlign: 'right' }}>
                                 {daysUntil}d
                               </span>
-                              <div style={{ width: '20px', flexShrink: 0, position: 'relative' }}>
-                                <div className="rounded-full" style={{ width: '20px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(20, progressBarWidth * 20 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '22px', flexShrink: 0, position: 'relative' }}>
+                                <div className="rounded-full" style={{ width: '22px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(22, progressBarWidth * 22 / 34)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0, paddingLeft: '4px' }}>
