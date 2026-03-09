@@ -18623,8 +18623,8 @@ export default function Dashboard() {
                   style={{
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
-                    left: 0,
                     right: 0,
+                    width: 'calc(100% - 70px)',
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
