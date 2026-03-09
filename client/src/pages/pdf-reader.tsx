@@ -528,6 +528,15 @@ export default function PDFReaderPage() {
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
           window.location.href = data.url;
+        } else if (data.action === 'stop_playback') {
+          lastNavTimestamp.current = data.timestamp;
+          try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
+          fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
+          console.log('[TabletNav] Received stop_playback command');
+          if (isPlayingRef.current) {
+            stopReading();
+          }
+          setTimeout(() => { window.location.href = '/'; }, 2000);
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}

@@ -4173,6 +4173,51 @@ export async function registerRoutes(
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
   let catWashPlaybackStartedAt: Date | null = null;
+  let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
+
+  const startToothbrushPolling = () => {
+    if (toothbrushPollInterval) clearInterval(toothbrushPollInterval);
+    console.log(`[Toothbrush] Starting polling for sensor.toothbrush_bryn_toothbrush_state`);
+    toothbrushPollInterval = setInterval(async () => {
+      if (!catWashPlaybackActive) {
+        console.log(`[Toothbrush] Playback no longer active, stopping poll`);
+        if (toothbrushPollInterval) { clearInterval(toothbrushPollInterval); toothbrushPollInterval = null; }
+        return;
+      }
+      try {
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const resp = await fetch(`${haUrl}/api/states/sensor.toothbrush_bryn_toothbrush_state`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.state === 'running') {
+            console.log(`[Toothbrush] State changed to RUNNING — stopping cat wash playback`);
+            if (toothbrushPollInterval) { clearInterval(toothbrushPollInterval); toothbrushPollInterval = null; }
+            
+            const fakeReq = { body: { trigger: 'toothbrush_poll' } } as any;
+            const fakeRes = { json: (d: any) => console.log(`[Toothbrush] Stop result:`, JSON.stringify(d)), status: (code: number) => ({ json: (d: any) => console.log(`[Toothbrush] Stop error ${code}:`, JSON.stringify(d)) }) } as any;
+            try {
+              const stopUrl = `http://localhost:${process.env.PORT || 5000}/api/webhook/cat-wash-stop`;
+              await fetch(stopUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trigger: 'toothbrush_poll' }) });
+            } catch (e: any) {
+              console.log(`[Toothbrush] Error calling stop endpoint: ${e.message}`);
+            }
+          }
+        }
+      } catch (e: any) {
+        console.log(`[Toothbrush] Poll error: ${e.message}`);
+      }
+    }, 3000);
+  };
+
+  const stopToothbrushPolling = () => {
+    if (toothbrushPollInterval) {
+      clearInterval(toothbrushPollInterval);
+      toothbrushPollInterval = null;
+      console.log(`[Toothbrush] Polling stopped`);
+    }
+  };
   let catWashPlaybackState: {
     fileId: number;
     fileName: string;
@@ -4881,6 +4926,7 @@ document.body.removeChild(a);
       }
       catWashPlaybackActive = true;
       catWashPlaybackStartedAt = new Date();
+      startToothbrushPolling();
       catWashPlaybackState = {
         fileId: cppaModule.id,
         fileName,
@@ -5011,6 +5057,7 @@ document.body.removeChild(a);
       }
       catWashPlaybackActive = true;
       catWashPlaybackStartedAt = new Date();
+      startToothbrushPolling();
       catWashPlaybackState = {
         fileId: cppaModule.id,
         fileName,
@@ -5121,33 +5168,14 @@ document.body.removeChild(a);
         stopped.push("ttsSession");
       }
 
-      if (fileName && HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
-        const cleanName = fileName.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
-        const goodbyeText = `Stop. ${cleanName}. File position saved. See you next time Bryn.`;
-        console.log(`[Cat Wash Stop Webhook] Playing goodbye TTS: ${goodbyeText}`);
-        try {
-          const audioPath = await generateAndSaveTTSAudio(goodbyeText, `goodbye-${Date.now()}`);
-          const appUrl = "https://home-view--bkh416.replit.app";
-          const fullAudioUrl = `${appUrl}${audioPath}`;
-          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-          const echoEntity = "media_player.echo_cat_left_am";
-          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: echoEntity, media_content_id: fullAudioUrl, media_content_type: "music" }),
-          });
-          console.log(`[Cat Wash Stop Webhook] Goodbye TTS play_media: ${playResp.status}`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
-        } catch (e: any) {
-          console.log(`[Cat Wash Stop Webhook] Goodbye TTS failed: ${e.message}`);
-        }
-      }
+      stopToothbrushPolling();
 
       const stopTimestamp = Date.now();
       await Promise.all([
-        setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'master'),
         setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
       ]);
+      console.log(`[Cat Wash Stop Webhook] Sent stop_playback to tablet and go_home to TV`);
 
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
@@ -5281,6 +5309,7 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] Re-activating playback state from tablet progress report (fileId=${fileId})`);
       catWashPlaybackActive = true;
       catWashPlaybackStartedAt = new Date();
+      startToothbrushPolling();
       const file = await storage.getFile(fileId);
       catWashPlaybackState = {
         fileId,
@@ -5360,6 +5389,7 @@ document.body.removeChild(a);
     catWashPlaybackState = null;
     currentTvFollowUrl = null;
     currentTabletReaderUrl = null;
+    stopToothbrushPolling();
 
     if (currentTTSSession) {
       console.log(`[Cat Wash Stop] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
@@ -5369,7 +5399,7 @@ document.body.removeChild(a);
 
     const stopTs = Date.now();
     await Promise.all([
-      setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'master'),
+      setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'master'),
       setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'tv'),
     ]);
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
