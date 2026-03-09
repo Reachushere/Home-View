@@ -1211,16 +1211,16 @@ export async function registerRoutes(
 
         const courseTasksForWeek = allTasks.filter(t => {
           const taskCourse = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
-          return taskCourse === course.code.toUpperCase();
+          return taskCourse === course.code.toUpperCase() && (t.type === 'module' || t.type === 'reading');
         });
 
         if (courseTasksForWeek.length > 0) continue;
 
         const title = hasModuleFiles && hasReadingFiles
-          ? "Module & Reading Files Due"
+          ? "Module & Reading"
           : hasModuleFiles
-            ? "Module Reading Due"
-            : "Reading Files Due";
+            ? "Module"
+            : "Reading";
 
         const newTask = await storage.createTask({
           title,
