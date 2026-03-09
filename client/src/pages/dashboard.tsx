@@ -15702,7 +15702,8 @@ export default function Dashboard() {
               {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
               {(() => {
                 const otherTasks = allTasks?.filter(task => {
-                  if (task.type !== 'other') return false;
+                  if (task.type !== 'other' && task.type !== 'meeting') return false;
+                  if (task.type === 'meeting' && task.courseName) return false;
                   if (task.isCompleted) return false;
                   const taskDueDate = startOfDay(new Date(task.dueDate));
                   const weekStart = startOfDay(weekDays[0]);
