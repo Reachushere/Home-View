@@ -18660,7 +18660,7 @@ export default function Dashboard() {
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '5px' }}>
+                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '35px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
@@ -18687,7 +18687,7 @@ export default function Dashboard() {
                         )}
                         {pd.readingP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '5px' }}>
+                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '35px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
