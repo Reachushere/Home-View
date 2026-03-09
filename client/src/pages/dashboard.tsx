@@ -18116,54 +18116,88 @@ export default function Dashboard() {
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                            <div style={{ position: 'relative' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '6px' }}>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                              <div>
                                 <button
-                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none w-full"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
                                   {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title}` : task.title}
                                 </button>
-                                {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
-                                    {cfp.moduleP.hasFiles && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                          {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                        </div>
-                                        <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
+                                  {courseName}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
+                                  {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
+                                </span>
+                                <div style={{ flex: 1, position: 'relative', height: '4px' }}>
+                                  <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                </div>
+                              </div>
+                              {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
+                                  {cfp.moduleP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                       </div>
-                                    )}
-                                    {cfp.readingP.hasFiles && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                          {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                        </div>
-                                        <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                      <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                    </div>
+                                  )}
+                                  {cfp.readingP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                       </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
-                                {courseName}
-                              </div>
+                                      <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
-                                {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                              </span>
-                              <div style={{ flex: 1, position: 'relative', height: '4px' }}>
-                                <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
+                            {(() => {
+                              const today = startOfDay(new Date());
+                              const dueDate = startOfDay(new Date(task.dueDate));
+                              const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                              const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                              const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
+                              const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
+                              return (
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                  {weeks.map((weekStart, wi) => {
+                                    const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                    return (
+                                      <div key={wi} style={{ display: 'flex', gap: '1px' }}>
+                                        {days.map((d, di) => {
+                                          const isToday = isSameDay(d, today);
+                                          const isDue = isSameDay(d, dueDate);
+                                          return (
+                                            <div key={di} style={{
+                                              width: '10px', height: '10px', borderRadius: '2px', fontSize: '6px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                              color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
+                                              backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
+                                              border: isDue && !isToday ? '1px solid #ef4444' : 'none',
+                                            }}>
+                                              {d.getDate()}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })()}
                           </div>
                           </div>
                         </div>
@@ -18214,54 +18248,88 @@ export default function Dashboard() {
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                            <div style={{ position: 'relative' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '6px' }}>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                              <div>
                                 <button
-                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none w-full"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-tomorrow-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
                                   {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title}` : task.title}
                                 </button>
-                                {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
-                                    {cfp.moduleP.hasFiles && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                          {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                        </div>
-                                        <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
+                                  {courseName}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
+                                  {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
+                                </span>
+                                <div style={{ flex: 1, position: 'relative', height: '4px' }}>
+                                  <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                </div>
+                              </div>
+                              {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
+                                  {cfp.moduleP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                       </div>
-                                    )}
-                                    {cfp.readingP.hasFiles && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                          {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                        </div>
-                                        <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                      <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                    </div>
+                                  )}
+                                  {cfp.readingP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                       </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
-                                {courseName}
-                              </div>
+                                      <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
-                                {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                              </span>
-                              <div style={{ flex: 1, position: 'relative', height: '4px' }}>
-                                <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
+                            {(() => {
+                              const today = startOfDay(new Date());
+                              const dueDate = startOfDay(new Date(task.dueDate));
+                              const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                              const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                              const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
+                              const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
+                              return (
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                  {weeks.map((weekStart, wi) => {
+                                    const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                    return (
+                                      <div key={wi} style={{ display: 'flex', gap: '1px' }}>
+                                        {days.map((d, di) => {
+                                          const isToday = isSameDay(d, today);
+                                          const isDue = isSameDay(d, dueDate);
+                                          return (
+                                            <div key={di} style={{
+                                              width: '10px', height: '10px', borderRadius: '2px', fontSize: '6px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                              color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
+                                              backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
+                                              border: isDue && !isToday ? '1px solid #ef4444' : 'none',
+                                            }}>
+                                              {d.getDate()}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })()}
                           </div>
                           </div>
                         </div>
@@ -18319,54 +18387,88 @@ export default function Dashboard() {
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                            <div style={{ position: 'relative' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '6px' }}>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                              <div>
                                 <button
-                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none flex-1 min-w-0"
+                                  className="text-[11px] text-white truncate hover:underline cursor-pointer leading-none w-full"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-week-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400 }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block' }}
                                 >
                                   {task.weekNumber && (task.type === 'discussion' || /discussion/i.test(task.title)) ? `Week ${task.weekNumber} ${task.title}` : task.title}
                                 </button>
-                                {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '58px', position: 'absolute' as const, right: '-2px', top: '1px' }}>
-                                    {cfp.moduleP.hasFiles && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
-                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                          {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                        </div>
-                                        <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
+                                  {courseName}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', minHeight: '8px' }}>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
+                                  {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
+                                </span>
+                                <div style={{ flex: 1, position: 'relative', height: '4px' }}>
+                                  <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                </div>
+                              </div>
+                              {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px' }}>
+                                  {cfp.moduleP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>M</span>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                       </div>
-                                    )}
-                                    {cfp.readingP.hasFiles && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
-                                        <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
-                                          {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
-                                        </div>
-                                        <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                      <span className="text-[7px] font-bold text-white">{cfp.moduleP.percent}%</span>
+                                    </div>
+                                  )}
+                                  {cfp.readingP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <span className="text-[7px] text-white/60 font-medium" style={{ width: '7px' }}>R</span>
+                                      <div style={{ width: '35px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                        {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
                                       </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px' }}>
-                                {courseName}
-                              </div>
+                                      <span className="text-[7px] font-bold text-white">{cfp.readingP.percent}%</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', width: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', maxWidth: 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: progressColor }}>
-                                {daysUntil} {daysUntil === 1 ? 'day' : 'days'}
-                              </span>
-                              <div style={{ flex: 1, position: 'relative', height: '4px' }}>
-                                <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
+                            {(() => {
+                              const today = startOfDay(new Date());
+                              const dueDate = startOfDay(new Date(task.dueDate));
+                              const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                              const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
+                              const sameWeek = isSameDay(todayWeekStart, dueWeekStart);
+                              const weeks = sameWeek ? [todayWeekStart] : [todayWeekStart, dueWeekStart];
+                              return (
+                                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', paddingTop: '1px' }} data-testid={`mini-cal-${task.id}`}>
+                                  {weeks.map((weekStart, wi) => {
+                                    const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                    return (
+                                      <div key={wi} style={{ display: 'flex', gap: '1px' }}>
+                                        {days.map((d, di) => {
+                                          const isToday = isSameDay(d, today);
+                                          const isDue = isSameDay(d, dueDate);
+                                          return (
+                                            <div key={di} style={{
+                                              width: '10px', height: '10px', borderRadius: '2px', fontSize: '6px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                              color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
+                                              backgroundColor: isToday ? '#ef4444' : isDue ? '#dc2626' : 'rgba(255,255,255,0.08)',
+                                              border: isDue && !isToday ? '1px solid #ef4444' : 'none',
+                                            }}>
+                                              {d.getDate()}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })()}
                           </div>
                           </div>
                         </div>
