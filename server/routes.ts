@@ -1148,29 +1148,31 @@ export async function registerRoutes(
       if (fields.startDate && fields.dueDate) {
         prepDuration = new Date(fields.dueDate).getTime() - new Date(fields.startDate).getTime();
       } else if (fields.startDate && task.dueDate) {
-        prepDuration = task.dueDate.getTime() - new Date(fields.startDate).getTime();
+        prepDuration = new Date(task.dueDate).getTime() - new Date(fields.startDate).getTime();
       }
 
       const uniqueIds = [...new Set(tasksToUpdate)];
       for (const id of uniqueIds) {
         if (id === taskId) {
-          // The edited task gets exact fields
           await storage.updateTask(id, fields);
         } else if (prepDuration > 0 && (fields.startDate !== undefined)) {
-          // For siblings, calculate startDate relative to their own dueDate
           const siblingTask = allSiblings.find(s => s.id === id) || (parentTask?.id === id ? parentTask : null);
-          const siblingDueDate = siblingTask?.dueDate;
-          if (siblingDueDate) {
+          const siblingDueDate = siblingTask?.dueDate ? new Date(siblingTask.dueDate) : null;
+          if (siblingDueDate && !isNaN(siblingDueDate.getTime())) {
             const siblingStartDate = new Date(siblingDueDate.getTime() - prepDuration);
             const siblingFields = { ...fields, startDate: siblingStartDate.toISOString() };
-            // Don't change sibling's dueDate
             delete siblingFields.dueDate;
             await storage.updateTask(id, siblingFields);
           } else {
-            await storage.updateTask(id, fields);
+            const siblingFields = { ...fields };
+            delete siblingFields.dueDate;
+            delete siblingFields.startDate;
+            await storage.updateTask(id, siblingFields);
           }
         } else {
-          await storage.updateTask(id, fields);
+          const siblingFields = { ...fields };
+          delete siblingFields.dueDate;
+          await storage.updateTask(id, siblingFields);
         }
       }
 

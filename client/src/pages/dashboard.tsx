@@ -15718,13 +15718,13 @@ export default function Dashboard() {
                                   )}
                                 </div>
                                 {moduleP.hasFiles ? (
-                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
+                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '14px' }}>
                                     <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                       {moduleP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '-2px' }}>{moduleP.percent}%</span>
+                                    <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{moduleP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
@@ -15738,7 +15738,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('module'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('module'); }}
                               >
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '19px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                               )}
                             </div>
@@ -15753,13 +15753,13 @@ export default function Dashboard() {
                                   )}
                                 </div>
                                 {readingP.hasFiles ? (
-                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '4px' }}>
+                                  <div className="flex items-center gap-[3px]" style={{ marginRight: '14px' }}>
                                     <div className="flex-1 h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                                       {readingP.percent > 0 && (
                                         <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                       )}
                                     </div>
-                                    <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '-2px' }}>{readingP.percent}%</span>
+                                    <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white">{readingP.percent}%</span>
                                   </div>
                                 ) : (
                                   <span className="text-[8px] text-white leading-none">N/A</span>
@@ -15773,7 +15773,7 @@ export default function Dashboard() {
                                 onClick={(e) => { e.stopPropagation(); handlePlayFiles('reading'); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handlePlayFiles('reading'); }}
                               >
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '19px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                               )}
                             </div>
@@ -16309,7 +16309,7 @@ export default function Dashboard() {
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
-                  const isNightHour = hour >= 22 || hour <= 5;
+                  const isNightHour = hour >= 21 || hour <= 6;
                   const nightHourHasTasks = isNightHour && weekDays.some(day => {
                     const ht = getTasksForHour(day, hour);
                     const ct = getContinuingTasksForHour(day, hour);
