@@ -114,6 +114,24 @@ export async function getOneDriveFileContent(itemId: string) {
   }
 }
 
+export async function createOneDriveFolder(parentPath: string, folderName: string): Promise<any> {
+  const client = await getOneDriveClient();
+  try {
+    const response = await client.api(`/me/drive/root:${parentPath}:/children`).post({
+      name: folderName,
+      folder: {},
+      '@microsoft.graph.conflictBehavior': 'fail'
+    });
+    return { id: response.id, name: response.name, created: true };
+  } catch (error: any) {
+    if (error.statusCode === 409 || error.code === 'nameAlreadyExists') {
+      return { name: folderName, created: false, exists: true };
+    }
+    console.error(`Error creating folder "${folderName}" in "${parentPath}":`, error.message || error);
+    throw error;
+  }
+}
+
 // Search for files
 export async function searchOneDriveFiles(query: string) {
   const client = await getOneDriveClient();

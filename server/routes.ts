@@ -16,7 +16,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { getSchedulerStatus } from "./reminderScheduler";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -2464,6 +2464,50 @@ export async function registerRoutes(
     } catch (err: any) {
       console.error("Error searching OneDrive:", err);
       res.status(500).json({ error: err.message || "Failed to search OneDrive" });
+    }
+  });
+
+  app.post("/api/onedrive/create-semester-folders", async (req, res) => {
+    try {
+      const { semesterName, semesterFolder, year, courses, numWeeks } = req.body;
+      if (!semesterFolder || !year || !courses || !numWeeks) {
+        return res.status(400).json({ error: "Missing required fields: semesterFolder, year, courses, numWeeks" });
+      }
+
+      const basePath = `/School/1. TMU/Courses/${year}`;
+      const results: any[] = [];
+
+      const semFolderResult = await createOneDriveFolder(basePath, semesterFolder);
+      results.push({ path: `${basePath}/${semesterFolder}`, ...semFolderResult });
+      const semPath = `${basePath}/${semesterFolder}`;
+
+      for (const course of courses) {
+        const courseFolderName = `${course.code} - ${course.name}`;
+        const courseResult = await createOneDriveFolder(semPath, courseFolderName);
+        results.push({ path: `${semPath}/${courseFolderName}`, ...courseResult });
+        const coursePath = `${semPath}/${courseFolderName}`;
+
+        for (let week = 1; week <= numWeeks; week++) {
+          const weekFolderName = `Week ${week}`;
+          const weekResult = await createOneDriveFolder(coursePath, weekFolderName);
+          results.push({ path: `${coursePath}/${weekFolderName}`, ...weekResult });
+          const weekPath = `${coursePath}/${weekFolderName}`;
+
+          const moduleResult = await createOneDriveFolder(weekPath, "Module");
+          results.push({ path: `${weekPath}/Module`, ...moduleResult });
+
+          const readingResult = await createOneDriveFolder(weekPath, "Reading");
+          results.push({ path: `${weekPath}/Reading`, ...readingResult });
+        }
+      }
+
+      const created = results.filter(r => r.created).length;
+      const existed = results.filter(r => r.exists).length;
+      console.log(`[OneDrive] Created ${created} folders, ${existed} already existed for ${semesterName || semesterFolder}`);
+      res.json({ success: true, created, existed, total: results.length, details: results });
+    } catch (err: any) {
+      console.error("Error creating semester folders:", err);
+      res.status(500).json({ error: err.message || "Failed to create semester folders" });
     }
   });
 
