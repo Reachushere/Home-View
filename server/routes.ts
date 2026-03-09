@@ -8293,6 +8293,17 @@ document.body.removeChild(a);
   
   console.log('[Alexa Reminder] Reminder announcement system started (checking every 60s)');
 
+  // One-time fix: CFNF Module 8 (file id=28) incorrectly marked as listened on production
+  try {
+    const file28 = await storage.getFile(28);
+    if (file28 && file28.listened === true && file28.displayName?.includes('Module 8')) {
+      await storage.updateFile(28, { listened: false });
+      console.log('[Startup Fix] Corrected CFNF Module 8 (file 28) listened=false');
+    }
+  } catch (e) {
+    // Ignore if file doesn't exist on this environment
+  }
+
   return httpServer;
 }
 
