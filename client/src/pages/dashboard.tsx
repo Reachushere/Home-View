@@ -18384,8 +18384,8 @@ export default function Dashboard() {
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Week's" : `Week ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
-                                <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  {courseName}
+                                <div className="text-[9px] text-white/50" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                                  <span className="truncate" style={{ minWidth: 0 }}>{courseName}</span>
                                   {(() => { const gc = getCourseGradientColors(taskCourseCode); return <span style={{ display: 'inline-block', width: '7px', height: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${gc.start} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
                                 </div>
                               </div>
@@ -18522,8 +18522,8 @@ export default function Dashboard() {
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Week's" : `Week ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
-                                <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  {courseName}
+                                <div className="text-[9px] text-white/50" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                                  <span className="truncate" style={{ minWidth: 0 }}>{courseName}</span>
                                   {(() => { const gc = getCourseGradientColors(taskCourseCode); return <span style={{ display: 'inline-block', width: '7px', height: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${gc.start} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
                                 </div>
                               </div>
@@ -18667,8 +18667,8 @@ export default function Dashboard() {
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Week's" : `Week ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
-                                <div className="text-[9px] text-white/50 truncate" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  {courseName}
+                                <div className="text-[9px] text-white/50" style={{ lineHeight: '1.2', paddingTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                                  <span className="truncate" style={{ minWidth: 0 }}>{courseName}</span>
                                   {(() => { const gc = getCourseGradientColors(taskCourseCode); return <span style={{ display: 'inline-block', width: '7px', height: '7px', borderRadius: '50%', background: `linear-gradient(180deg, ${gc.start} 0%, ${gc.end} 100%)`, flexShrink: 0 }} />; })()}
                                 </div>
                               </div>
