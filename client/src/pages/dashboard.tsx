@@ -17607,24 +17607,24 @@ export default function Dashboard() {
               <div ref={rowRef} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '1px' }}>
                 {swipeX > 0 && (
                   <div
-                    style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(swipeX, maxSwipe)}px`, background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px' }}
-                    onClick={(e) => { e.stopPropagation(); setSwipeX(0); onReschedule(); }}
-                    data-testid={`swipe-reschedule-${task.id}`}
-                  >
-                    <span className="text-white text-[8px] font-bold">Reschedule</span>
-                  </div>
-                )}
-                {swipeX < 0 && (
-                  <div
-                    style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: `${Math.min(Math.abs(swipeX), maxSwipe)}px`, background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0' }}
+                    style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(swipeX, maxSwipe)}px`, background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px' }}
                     onClick={(e) => { e.stopPropagation(); setSwipeX(0); onDelete(); }}
                     data-testid={`swipe-delete-${task.id}`}
                   >
                     <span className="text-white text-[8px] font-bold">Delete</span>
                   </div>
                 )}
+                {swipeX < 0 && (
+                  <div
+                    style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: `${Math.min(Math.abs(swipeX), maxSwipe)}px`, background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0' }}
+                    onClick={(e) => { e.stopPropagation(); setSwipeX(0); onReschedule(); }}
+                    data-testid={`swipe-reschedule-${task.id}`}
+                  >
+                    <span className="text-white text-[8px] font-bold">Reschedule</span>
+                  </div>
+                )}
                 <div
-                  style={{ transform: `translateX(${swipeX}px)`, transition: isSwiping ? 'none' : 'transform 0.2s ease-out', position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px' }}
+                  style={{ transform: `translateX(${swipeX}px)`, transition: isSwiping ? 'none' : 'transform 0.2s ease-out', position: 'relative', zIndex: 2, background: 'transparent', paddingBottom: '2px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'pan-y' }}
                   onTouchStart={(e) => { setStartX(e.touches[0].clientX); setIsSwiping(true); }}
                   onTouchMove={(e) => {
                     if (!isSwiping) return;
@@ -17636,9 +17636,10 @@ export default function Dashboard() {
                     if (Math.abs(swipeX) < maxSwipe * 0.4) setSwipeX(0);
                     else setSwipeX(swipeX > 0 ? maxSwipe : -maxSwipe);
                   }}
-                  onMouseDown={(e) => { setStartX(e.clientX); setIsSwiping(true); }}
+                  onMouseDown={(e) => { e.preventDefault(); setStartX(e.clientX); setIsSwiping(true); }}
                   onMouseMove={(e) => {
                     if (!isSwiping) return;
+                    e.preventDefault();
                     const diff = e.clientX - startX;
                     setSwipeX(Math.max(-maxSwipe, Math.min(maxSwipe, diff)));
                   }}
