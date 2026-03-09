@@ -18735,7 +18735,7 @@ export default function Dashboard() {
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.6)', marginBottom: '1px' }}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
