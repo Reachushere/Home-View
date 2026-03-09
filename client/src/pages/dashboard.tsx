@@ -6389,6 +6389,18 @@ export default function Dashboard() {
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
 
+  const maxDaysUntil = useMemo(() => {
+    const allUpcoming = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
+    if (allUpcoming.length === 0) return 21;
+    let max = 0;
+    for (const t of allUpcoming) {
+      if (!t.dueDate) continue;
+      const d = differenceInCalendarDays(new Date(t.dueDate), new Date());
+      if (d > max) max = d;
+    }
+    return Math.max(max, 1);
+  }, [dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks]);
+
   // Measure first row positions after render for second row alignment
   // IMPORTANT: Does NOT depend on dueThisWeekTasks - positions only update on resize handle changes
   useEffect(() => {
@@ -18158,7 +18170,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '4px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, position: 'relative', height: '4px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
@@ -18256,7 +18268,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '4px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, position: 'relative', height: '4px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
@@ -18361,7 +18373,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingTop: '1px', maxWidth: maxTaskNameWidth > 0 ? `${maxTaskNameWidth}px` : 'calc(100% - 67px)', minHeight: '8px' }}>
-                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / 21) * 100))}%`, position: 'relative', height: '4px' }}>
+                              <div style={{ width: `${Math.max(8, Math.round((Math.max(0, daysUntil) / maxDaysUntil) * 100))}%`, position: 'relative', height: '4px' }}>
                                 <div className="rounded-full" style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                                 <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
