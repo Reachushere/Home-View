@@ -18729,6 +18729,7 @@ export default function Dashboard() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
                 <div style={{ flex: 1 }} />
+                <div style={{ height: '25px', flexShrink: 0 }} />
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
