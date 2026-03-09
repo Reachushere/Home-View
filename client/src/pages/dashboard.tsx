@@ -18640,7 +18640,37 @@ export default function Dashboard() {
                 }} />
               );
             })();
-            return [cppaLeftBg, ...courseProgressDataRef.current.map((pd, idx) => {
+            const cfnfIdx = courseProgressDataRef.current.findIndex(p => p?.courseCode === 'CFNF400');
+            const cfnfLeftBg = (() => {
+              if (cppaIdx < 0 || cfnfIdx < 0 || !courseRowRects[cppaIdx]) return null;
+              const cppaTop = courseRowRects[cppaIdx].top - upcomingTop;
+              const nextIdx = cppaIdx + 1;
+              const bottomRow = courseRowRects[nextIdx];
+              const cppaBoxHeight = bottomRow
+                ? (bottomRow.top - upcomingTop) - cppaTop
+                : courseRowRects[cppaIdx].height;
+              const cfnfData = courseProgressDataRef.current[cfnfIdx];
+              const leftWidth = (() => {
+                if (homeworkSpacerRef.current && homeworkSectionRef.current) {
+                  const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
+                  const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
+                  return `${spacerRect.left - sectionRect.left}px`;
+                }
+                return '70px';
+              })();
+              return (
+                <div key="cfnf-left-bg" style={{
+                  position: 'absolute',
+                  top: `${cppaTop + cppaBoxHeight}px`,
+                  left: 0,
+                  width: leftWidth,
+                  height: `${cppaBoxHeight}px`,
+                  background: cfnfData?.progressBg || 'linear-gradient(180deg, #4A0E8F 0%, #8B5CF6 100%)',
+                  zIndex: 39,
+                }} />
+              );
+            })();
+            return [cppaLeftBg, cfnfLeftBg, ...courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
