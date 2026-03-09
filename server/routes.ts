@@ -8314,6 +8314,17 @@ document.body.removeChild(a);
     // Ignore if file doesn't exist on this environment
   }
 
+  // One-time fix: Essay Assignment 1 (task id=23) lost eventStartTime during reschedule
+  try {
+    const task23 = await storage.getTask(23);
+    if (task23 && !task23.eventStartTime && task23.title === 'Essay Assignment 1') {
+      await storage.updateTask(23, { eventStartTime: '18:00' });
+      console.log('[Startup Fix] Restored Essay Assignment 1 (task 23) eventStartTime=18:00');
+    }
+  } catch (e) {
+    // Ignore if task doesn't exist on this environment
+  }
+
   return httpServer;
 }
 
