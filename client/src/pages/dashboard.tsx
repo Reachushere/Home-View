@@ -18653,14 +18653,14 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '12px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', background: pd.progressBg }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '12px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', background: pd.progressBg, position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         <div style={{ flex: 1 }} />
                         {!pd.moduleP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '35px' }}>
+                            <div className="flex items-center gap-[3px]" style={{ position: 'absolute', right: '30px', top: '0px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
@@ -18680,14 +18680,14 @@ export default function Dashboard() {
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'visible', background: pd.progressBg }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '6px', overflow: 'visible', background: pd.progressBg, position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         <div style={{ flex: 1 }} />
                         {!pd.readingP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
                         {pd.readingP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px] flex-shrink-0" style={{ marginTop: '-16px', marginRight: '5px', marginLeft: '35px' }}>
+                            <div className="flex items-center gap-[3px]" style={{ position: 'absolute', right: '30px', top: '0px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
