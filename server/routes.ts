@@ -8186,8 +8186,8 @@ document.body.removeChild(a);
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return;
       
       const now = new Date();
+      const currentHour = parseInt(now.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
       const torontoNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-      const currentHour = torontoNow.getHours();
       
       const todayStr = `${torontoNow.getFullYear()}-${String(torontoNow.getMonth() + 1).padStart(2, '0')}-${String(torontoNow.getDate()).padStart(2, '0')}`;
       const todayShift = await storage.getShiftForDate(todayStr);
@@ -8211,8 +8211,9 @@ document.body.removeChild(a);
         // Only announce reminders for tasks with an explicit scheduled time
         // (eventStartTime set, or due time is not midnight — meaning user set a specific time)
         const dueDate = new Date(task.dueDate);
-        const dueDateET = new Date(dueDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-        const hasDueTime = dueDateET.getHours() !== 0 || dueDateET.getMinutes() !== 0;
+        const dueDateETHour = parseInt(dueDate.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
+        const dueDateETMin = parseInt(dueDate.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
+        const hasDueTime = dueDateETHour !== 0 || dueDateETMin !== 0;
         if (!task.eventStartTime && !hasDueTime) continue;
         
         // Only use non-default reminders (skip the schema defaults of 30 and 120)

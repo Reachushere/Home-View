@@ -269,11 +269,11 @@ function toET(date: Date): Date {
 }
 
 function getETHours(date: Date): number {
-  return toET(date).getHours();
+  return parseInt(date.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
 }
 
 function getETMinutes(date: Date): number {
-  return toET(date).getMinutes();
+  return parseInt(date.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
 }
 
 export default function Dashboard() {
@@ -6874,8 +6874,7 @@ export default function Dashboard() {
         const [startHour] = t.eventStartTime.split(':').map(Number);
         return startHour === hour;
       }
-      const etH = parseInt(dueDate.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10);
-      return etH === hour;
+      return getETHours(dueDate) === hour;
     });
   };
   
