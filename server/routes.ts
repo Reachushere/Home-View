@@ -8042,8 +8042,26 @@ document.body.removeChild(a);
         if (task.isCompleted || task.isMissed) continue;
         if (!task.dueDate) continue;
         
+        // Only announce reminders for tasks with an explicit scheduled time
+        // (eventStartTime set, or due time is not midnight — meaning user set a specific time)
         const dueDate = new Date(task.dueDate);
-        const reminders = [task.reminder1, task.reminder2, task.reminder3, task.reminder4].filter((r): r is number => r != null && r > 0);
+        const hasDueTime = dueDate.getHours() !== 0 || dueDate.getMinutes() !== 0;
+        if (!task.eventStartTime && !hasDueTime) continue;
+        
+        // Only use non-default reminders (skip the schema defaults of 30 and 120)
+        // Include reminder3/4 which have no defaults, and reminder1/2 only if user changed them
+        const reminders: number[] = [];
+        if (task.reminder3 != null && task.reminder3 > 0) reminders.push(task.reminder3);
+        if (task.reminder4 != null && task.reminder4 > 0) reminders.push(task.reminder4);
+        if (task.reminder1 != null && task.reminder1 > 0 && task.reminder1 !== 30) reminders.push(task.reminder1);
+        if (task.reminder2 != null && task.reminder2 > 0 && task.reminder2 !== 120) reminders.push(task.reminder2);
+        // If user has explicitly set reminder3 or reminder4, also include the defaults
+        if (reminders.length > 0) {
+          if (task.reminder1 === 30) reminders.push(30);
+          if (task.reminder2 === 120) reminders.push(120);
+        }
+        
+        if (reminders.length === 0) continue;
         
         for (const reminderMinutes of reminders) {
           const reminderTime = new Date(dueDate.getTime() - reminderMinutes * 60 * 1000);
