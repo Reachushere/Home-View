@@ -9764,15 +9764,15 @@ export default function Dashboard() {
         {/* Down arrow at bottom center */}
         <div
           style={{
-            position: 'absolute',
+            position: 'fixed',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-18px',
-            width: '60px',
-            height: '18px',
+            top: '0px',
+            width: '84px',
+            height: '25px',
             cursor: 'pointer',
             pointerEvents: 'auto',
-            zIndex: 2,
+            zIndex: 111,
           }}
           onClick={() => {
             openTopPill();
@@ -9788,15 +9788,16 @@ export default function Dashboard() {
         />
         <div
           style={{
-            position: 'absolute',
+            position: 'fixed',
             left: '50%',
             transform: 'translateX(-50%)',
-            bottom: '-24px',
+            top: '-1px',
             width: '84px',
             height: '25px',
             pointerEvents: 'none',
             opacity: isTopPillOpen ? 0 : 0.9,
             transition: 'opacity 0.3s ease-in-out',
+            zIndex: 110,
           }}
         >
           <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
