@@ -11122,7 +11122,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Settings Panel Popup - Certificate Tracking Only */}
+      {/* Settings Panel Popup - Degree Tracking */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
           className="overflow-hidden flex flex-col text-[11px] border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] p-0 [&>button.absolute]:hidden" 
@@ -11133,7 +11133,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <Settings className="h-3 w-3 text-white" />
               <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                CERTIFICATE TRACKING
+                DEGREE TRACKING
               </h2>
             </div>
             <button 
@@ -11914,6 +11914,7 @@ export default function Dashboard() {
               >
                 {showRemainingList ? 'Hide' : 'Remaining'}
               </Button>
+              {!showRemainingList && (
               <Button 
                 type="button" 
                 variant="outline"
@@ -11932,6 +11933,7 @@ export default function Dashboard() {
               >
                 Save
               </Button>
+              )}
             </div>
           </div>
         </DialogContent>
