@@ -19193,7 +19193,7 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
@@ -19365,7 +19365,7 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
@@ -19547,7 +19547,7 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
@@ -19698,14 +19698,14 @@ export default function Dashboard() {
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
                                   const lastWeek = group.weeks[group.weeks.length - 1];
-                                  const weeksFromNow = Math.round((lastWeek.getTime() - startOfWeek(new Date(), { weekStartsOn: 0 }).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+                                  const weeksFromNow = Math.round((lastWeek.getTime() - startOfWeek(new Date(), { weekStartsOn: 0 }).getTime()) / (7 * 24 * 60 * 60 * 1000));
                                   const names = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
                                   return `${names[weeksFromNow - 1] || weeksFromNow} weeks`;
                                 })()}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
