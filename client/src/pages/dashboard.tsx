@@ -16632,7 +16632,7 @@ export default function Dashboard() {
                       const isYesterday = isSameDay(day, subDays(new Date(), 1));
                       const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
                       const isNightShiftSleepHour = cellShift === 'night' && hour >= 10 && hour <= 16;
-                      const nightSleepColor = 'rgba(88, 28, 135, 0.18)';
+                      const nightSleepColor = 'rgba(180, 180, 180, 0.22)';
                       const prevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
                       const prevDayShift = localShiftMap[prevDayStr];
                       const isDayShiftSleepHour = (cellShift === 'day' && hour >= 22) || (prevDayShift === 'day' && hour <= 4);
@@ -16644,7 +16644,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: (isToday || isCurrentHour) ? '#e4ecf5' : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
+                            backgroundColor: (isToday || isCurrentHour) ? '#e4ecf5' : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(180, 180, 180, 0.22)' : '#faf8f5'),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
