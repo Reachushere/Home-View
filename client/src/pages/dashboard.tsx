@@ -11976,7 +11976,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
+          <span className="text-[12px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
@@ -11987,7 +11987,7 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
+          <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
         <Button 
           variant="ghost"
