@@ -18706,7 +18706,7 @@ export default function Dashboard() {
                         left: `calc(${fixedLeft}px + (${frBefore} / ${totalFr}) * (100% - ${fixedLeft}px))`,
                         width: '0px',
                         height: `${rowHeight}px`,
-                        borderLeft: '1px solid rgba(0,0,0,0.1)',
+                        borderLeft: '1px dotted rgba(0,0,0,0.13)',
                         zIndex: 2,
                       }} />
                     );
