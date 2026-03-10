@@ -11050,11 +11050,11 @@ export default function Dashboard() {
       {/* Share Button - fixed position, beside time */}
       {isAdmin && (
         <>
-          <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 79 - 5 - 3}px`, top: '5px', zIndex: 100, width: '2px', height: '18px', background: 'rgba(255,255,255,0.5)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+          <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 79 - 5 - 3 + 3}px`, top: '5px', zIndex: 100, width: '2px', height: '18px', background: 'rgba(255,255,255,0.5)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
           <Share 
             className="text-white/80 cursor-pointer hover:text-white"
             strokeWidth={2.5}
-            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 98 - 5 - 3}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 98 - 5 - 3 + 3}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={generateShareLink}
             data-testid="button-share-main"
           />
@@ -11952,7 +11952,7 @@ export default function Dashboard() {
       
       {/* Set Default checkbox - right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '26px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 + 3}px` }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '26px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 + 3 + 3}px` }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
@@ -11967,14 +11967,14 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
       )}
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
-      <div className="fixed z-50 flex items-end justify-between gap-2" style={{ top: `${(calendarWrapperRef.current?.getBoundingClientRect().top ?? calendarTop) - 28}px`, left: '23px', right: `${calendarRight - 8}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-between gap-2" style={{ top: `${(calendarWrapperRef.current?.getBoundingClientRect().top ?? calendarTop) - 28}px`, left: '20px', right: `${calendarRight - 8}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1" style={{ marginLeft: '0px' }}>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
@@ -12516,7 +12516,7 @@ export default function Dashboard() {
       })}
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '31px', paddingRight: '0px', marginTop: '63px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '28px', paddingRight: '0px', marginTop: '63px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
@@ -18882,7 +18882,7 @@ export default function Dashboard() {
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
-            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4}px`,
+            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
