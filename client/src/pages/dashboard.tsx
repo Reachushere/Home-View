@@ -5885,6 +5885,7 @@ export default function Dashboard() {
   const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
   const [shiftScheduleYear, setShiftScheduleYear] = useState(new Date().getFullYear());
   const [localShiftMap, setLocalShiftMap] = useState<Record<string, string>>({});
+  const [sleepDisabledDays, setSleepDisabledDays] = useState<Set<string>>(new Set());
   const [shiftDirty, setShiftDirty] = useState(false);
 
   const { data: shiftScheduleData } = useQuery<{ id: number; date: string; shiftType: string }[]>({
@@ -6945,6 +6946,26 @@ export default function Dashboard() {
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
   const cfnf400Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length, missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length) * 64;
   const casl101Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length, missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length) * 64;
+
+  const scrollHomeworkToWeek = (weekNum: number) => {
+    if (!homeworkScrollRef.current) return;
+    const currentWeekNum = semesterSettings?.semesterStartDate
+      ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart)
+      : selectedWeek;
+    const diff = weekNum - currentWeekNum;
+    let sectionId = 'today';
+    if (diff === 0) sectionId = 'today';
+    else if (diff === 1) sectionId = 'thisweek';
+    else if (diff === 2) sectionId = 'nextweek';
+    else if (diff === 3) sectionId = 'twoweeks';
+    else if (diff >= 4) sectionId = 'threeweeks';
+    const el = homeworkScrollRef.current.querySelector(`[data-homework-section="${sectionId}"]`);
+    if (el) {
+      const scrollContainer = homeworkScrollRef.current;
+      const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
+      scrollContainer.scrollTo({ top: elTop, behavior: 'smooth' });
+    }
+  };
 
   // Weekly view - get the current selected week's days
   const selectedWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
@@ -12001,7 +12022,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-1" style={{ marginLeft: '0px' }}>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
-            onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+            onClick={() => { const newWeek = Math.max(1, selectedWeek - 1); setSelectedWeek(newWeek); scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-prev-week"
             data-date-nav
           >
@@ -12012,7 +12033,7 @@ export default function Dashboard() {
           </span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
-            onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+            onClick={() => { const newWeek = Math.min(13, selectedWeek + 1); setSelectedWeek(newWeek); scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-next-week"
             data-date-nav
           >
@@ -15674,8 +15695,8 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-sun-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); setSleepDisabledDays(prev => { const next = new Set(prev); if (next.has(shiftDateStr)) next.delete(shiftDateStr); else next.add(shiftDateStr); return next; }); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-moon-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); setSleepDisabledDays(prev => { const next = new Set(prev); if (next.has(shiftDateStr)) next.delete(shiftDateStr); else next.add(shiftDateStr); return next; }); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
@@ -16631,17 +16652,19 @@ export default function Dashboard() {
                       const cellDateStr = format(day, "yyyy-MM-dd");
                       const isYesterday = isSameDay(day, subDays(new Date(), 1));
                       const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
-                      const isNightShiftSleepHour = cellShift === 'night' && hour >= 10 && hour <= 16;
-                      const nightSleepColor = 'rgba(180, 180, 180, 0.22)';
+                      const sleepDisabledForDay = sleepDisabledDays.has(cellDateStr);
                       const prevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
                       const prevDayShift = localShiftMap[prevDayStr];
-                      const isDayShiftSleepHour = (cellShift === 'day' && hour >= 22) || (prevDayShift === 'day' && hour <= 4);
+                      const sleepDisabledForPrevDay = sleepDisabledDays.has(prevDayStr);
+                      const isNightShiftSleepHour = !sleepDisabledForDay && cellShift === 'night' && hour >= 10 && hour <= 16;
+                      const nightSleepColor = 'rgba(180, 180, 180, 0.22)';
+                      const isDayShiftSleepHour = (!sleepDisabledForDay && cellShift === 'day' && hour >= 22) || (!sleepDisabledForPrevDay && prevDayShift === 'day' && hour <= 4);
                       const isSleepHour = isNightShiftSleepHour || isDayShiftSleepHour;
                       const isFirstNightSleep = isNightShiftSleepHour && hour === 10;
                       const nightSleepCellCount = 7;
-                      const isFirstDayShiftEvening = cellShift === 'day' && hour === 22;
+                      const isFirstDayShiftEvening = !sleepDisabledForDay && cellShift === 'day' && hour === 22;
                       const dayShiftEveningCellCount = 2;
-                      const isFirstDayShiftMorning = prevDayShift === 'day' && hour === 0;
+                      const isFirstDayShiftMorning = !sleepDisabledForPrevDay && prevDayShift === 'day' && hour === 0;
                       const dayShiftMorningCellCount = 5;
                       const sleepLabelStart = isFirstNightSleep || isFirstDayShiftEvening || isFirstDayShiftMorning;
                       const sleepCellCount = isFirstNightSleep ? nightSleepCellCount : isFirstDayShiftEvening ? dayShiftEveningCellCount : isFirstDayShiftMorning ? dayShiftMorningCellCount : 0;
@@ -18671,71 +18694,61 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div style={{ display: 'flex', flex: 1 }}>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                          <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
-                            {!pd.moduleP.hasFiles && (
-                              <span className="text-[8px] text-white leading-none">N/A</span>
-                            )}
-                            {pd.moduleP.hasFiles && (
-                              <>
-                                <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
-                                  {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
-                                      {pd.moduleUnread}
-                                    </div>
-                                  )}
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                        {!pd.moduleP.hasFiles && (
+                          <span className="text-[8px] text-white leading-none">N/A</span>
+                        )}
+                        {pd.moduleP.hasFiles && (
+                          <>
+                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
+                              {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
+                                  {pd.moduleUnread}
                                 </div>
-                                <div className="flex items-center gap-[5px]">
-                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', minWidth: '60px', flex: 2 }}>
-                                    {pd.moduleP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
-                                    )}
-                                  </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.moduleP.percent}%</span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                          <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
-                            {!pd.readingP.hasFiles && (
-                              <span className="text-[8px] text-white leading-none">N/A</span>
-                            )}
-                            {pd.readingP.hasFiles && (
-                              <>
-                                <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
-                                  {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
-                                      {pd.readingUnread}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-[5px]">
-                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', minWidth: '60px', flex: 2 }}>
-                                    {pd.readingP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
-                                    )}
-                                  </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.readingP.percent}%</span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, gap: '6px', paddingRight: '2px' }}>
-                          {pd.moduleP.hasFiles && (
-                            <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                              <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                              )}
                             </div>
-                          )}
-                          {pd.readingP.hasFiles && (
-                            <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                              <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                            <div className="flex items-center gap-[5px]">
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', minWidth: '60px', flex: 2 }}>
+                                {pd.moduleP.percent > 0 && (
+                                  <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
+                                )}
+                              </div>
+                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.moduleP.percent}%</span>
+                              <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                              </div>
                             </div>
-                          )}
-                        </div>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                        {!pd.readingP.hasFiles && (
+                          <span className="text-[8px] text-white leading-none">N/A</span>
+                        )}
+                        {pd.readingP.hasFiles && (
+                          <>
+                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
+                              {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
+                                  {pd.readingUnread}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-[5px]">
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', minWidth: '60px', flex: 2 }}>
+                                {pd.readingP.percent > 0 && (
+                                  <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
+                                )}
+                              </div>
+                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.readingP.percent}%</span>
+                              <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </>
                   )}
@@ -18761,7 +18774,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.3)', margin: '0 0px', flexShrink: 0, position: 'sticky', top: 0, zIndex: 5 }} />
                 {/* Today Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
+                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
@@ -18847,7 +18860,7 @@ export default function Dashboard() {
                 )}
 
                 {/* This Week Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
+                <div data-homework-section="thisweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '5px' }}>
@@ -19023,7 +19036,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* Next Week Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px' }}>
+                <div data-homework-section="nextweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueNextWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-1px' }}>
@@ -19203,7 +19216,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 2 Weeks Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                <div data-homework-section="twoweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Two weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-9px' }}>
@@ -19363,7 +19376,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 3 Weeks and Beyond Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                <div data-homework-section="threeweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Three weeks +</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueBeyondTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
