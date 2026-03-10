@@ -80,6 +80,7 @@ interface WizardData {
   startDate: string;
   endDate: string;
   springSummerTerm: string;
+  zoomLink: string;
   tasks: WizardTask[];
 }
 
@@ -140,6 +141,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
     startDate: "",
     endDate: "",
     springSummerTerm: "full",
+    zoomLink: "",
     tasks: [],
   });
 
@@ -408,6 +410,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
       )}
 
       {data.deliveryMode === "virtual" && (
+        <>
         <div className="grid grid-cols-4 gap-2">
           <div>
             <Label className="text-[9px] text-white/60 mb-1 block">Day 1</Label>
@@ -455,6 +458,24 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
               data-testid="wizard-input-end-time"
             />
           </div>
+        </div>
+        <div>
+          <Label className="text-[9px] text-white/60 mb-1 block">Zoom Link</Label>
+          <Input
+            value={data.zoomLink}
+            onChange={(e) => updateField("zoomLink", e.target.value)}
+            placeholder="https://tmuni.zoom.us/j/..."
+            className="h-8 text-[10px] bg-white/10 border-white/20 text-white placeholder:text-white/30"
+            data-testid="wizard-input-zoom-link"
+          />
+        </div>
+        </>
+      )}
+
+      {data.deliveryMode === "online" && (
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2.5 text-[9px] text-blue-300">
+          <p className="font-medium mb-1">Online (Asynchronous)</p>
+          <p className="text-blue-300/70">Modules follow the weekly school calendar and change every Saturday. Module readings will be tracked through listening progress.</p>
         </div>
       )}
 
@@ -665,7 +686,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
             <div><span className="text-white/40">Professor:</span> <span className="text-white/80">{data.professorName || "Not set"}</span></div>
             <div><span className="text-white/40">Email:</span> <span className="text-white/80">{data.professorEmail || "Not set"}</span></div>
             <div><span className="text-white/40">Type:</span> <span className="text-white/80">{COURSE_TYPES.find(c => c.value === data.courseType)?.label || data.courseType}</span></div>
-            <div><span className="text-white/40">Delivery:</span> <span className="text-white/80">{data.deliveryMode || "Not set"}</span></div>
+            <div><span className="text-white/40">Delivery:</span> <span className="text-white/80">{data.deliveryMode === 'virtual' ? 'Virtual (Live Zoom)' : data.deliveryMode === 'online' ? 'Online (Async)' : 'Not set'}</span></div>
+            {data.deliveryMode === 'virtual' && data.zoomLink && <div className="col-span-2"><span className="text-white/40">Zoom:</span> <span className="text-white/80 break-all">{data.zoomLink}</span></div>}
             {data.startDate && <div><span className="text-white/40">Start:</span> <span className="text-white/80">{data.startDate}</span></div>}
             {data.endDate && <div><span className="text-white/40">End:</span> <span className="text-white/80">{data.endDate}</span></div>}
           </div>

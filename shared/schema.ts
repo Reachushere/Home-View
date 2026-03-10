@@ -101,8 +101,9 @@ export const semesterSettings = pgTable("semester_settings", {
   course1StartDate: timestamp("course1_start_date"),
   course1EndDate: timestamp("course1_end_date"),
   course1SpringSummerTerm: text("course1_spring_summer_term"),
-  course1CourseType: text("course1_course_type"), // core, open_elective, liberal_studies
-  course1FinalGrade: integer("course1_final_grade"), // Final grade percentage
+  course1CourseType: text("course1_course_type"),
+  course1ZoomLink: text("course1_zoom_link"),
+  course1FinalGrade: integer("course1_final_grade"),
   course1Completed: boolean("course1_completed").default(false),
   course2Code: text("course2_code").notNull(),
   course2Name: text("course2_name").notNull(),
@@ -118,6 +119,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course2EndDate: timestamp("course2_end_date"),
   course2SpringSummerTerm: text("course2_spring_summer_term"),
   course2CourseType: text("course2_course_type"),
+  course2ZoomLink: text("course2_zoom_link"),
   course2FinalGrade: integer("course2_final_grade"),
   course2Completed: boolean("course2_completed").default(false),
   course3Code: text("course3_code").notNull(),
@@ -134,6 +136,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course3EndDate: timestamp("course3_end_date"),
   course3SpringSummerTerm: text("course3_spring_summer_term"),
   course3CourseType: text("course3_course_type"),
+  course3ZoomLink: text("course3_zoom_link"),
   course3FinalGrade: integer("course3_final_grade"),
   course3Completed: boolean("course3_completed").default(false),
   secondaryCalendarId: text("secondary_calendar_id"),

@@ -1,0 +1,602 @@
+import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  X,
+  Plus,
+  Trash2,
+  BookOpen,
+  Video,
+  Globe,
+  Mail,
+  User,
+  Clock,
+  Calendar,
+  CheckCircle2,
+  ExternalLink,
+  GraduationCap,
+  FileText,
+  MessageSquare,
+  ClipboardCheck,
+  AlertCircle,
+} from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { TASK_TYPES, getWeekNumber } from "@shared/schema";
+import type { Task } from "@shared/schema";
+
+const TASK_TYPE_OPTIONS = [
+  { value: "reading", label: "Reading", icon: BookOpen },
+  { value: "essay", label: "Essay", icon: FileText },
+  { value: "exam", label: "Exam", icon: AlertCircle },
+  { value: "quiz", label: "Quiz", icon: ClipboardCheck },
+  { value: "discussion", label: "Discussion Post", icon: MessageSquare },
+  { value: "poll", label: "Review Poll", icon: ClipboardCheck },
+  { value: "project", label: "Project", icon: FileText },
+  { value: "module", label: "Module", icon: BookOpen },
+  { value: "class", label: "Class", icon: Video },
+  { value: "other", label: "Other", icon: FileText },
+];
+
+const REMINDER_PRESETS = [
+  { value: 0, label: "None" },
+  { value: 15, label: "15 min" },
+  { value: 30, label: "30 min" },
+  { value: 60, label: "1 hour" },
+  { value: 120, label: "2 hours" },
+  { value: 1440, label: "1 day" },
+  { value: 2880, label: "2 days" },
+  { value: 10080, label: "1 week" },
+];
+
+interface CourseInfo {
+  courseCode: string;
+  courseName: string;
+  fullName: string;
+  professor: string;
+  professorEmail: string;
+  color: string;
+  colorEnd?: string;
+  deliveryMode: string;
+  classDay: string;
+  classDay2?: string;
+  classTime: string;
+  classEndTime?: string;
+  zoomLink?: string;
+  courseType: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+interface CourseDetailDialogProps {
+  courseInfo: CourseInfo;
+  onClose: () => void;
+  semesterStart: Date;
+  readingWeekStart: Date | null;
+}
+
+interface NewTaskForm {
+  title: string;
+  type: string;
+  dueDate: string;
+  dueTime: string;
+  description: string;
+  reminder1: number;
+  reminder2: number;
+  reminder3: number;
+  reminder4: number;
+  gradeWeight: string;
+  gradeTotal: string;
+}
+
+function createEmptyTaskForm(): NewTaskForm {
+  return {
+    title: "",
+    type: "reading",
+    dueDate: "",
+    dueTime: "18:00",
+    description: "",
+    reminder1: 30,
+    reminder2: 120,
+    reminder3: 0,
+    reminder4: 0,
+    gradeWeight: "",
+    gradeTotal: "",
+  };
+}
+
+export function CourseDetailDialog({ courseInfo, onClose, semesterStart, readingWeekStart }: CourseDetailDialogProps) {
+  const { toast } = useToast();
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
+
+  const { data: allTasks = [] } = useQuery<Task[]>({
+    queryKey: ["/api/tasks"],
+  });
+
+  const courseTasks = useMemo(() => {
+    return allTasks
+      .filter((t) => t.courseName === courseInfo.fullName)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  }, [allTasks, courseInfo.fullName]);
+
+  const completedCount = courseTasks.filter((t) => t.isCompleted).length;
+  const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+
+  const createTaskMutation = useMutation({
+    mutationFn: async (taskData: Record<string, any>) => {
+      return apiRequest("POST", "/api/tasks", taskData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      setNewTask(createEmptyTaskForm());
+      setShowAddForm(false);
+      toast({ title: "Assignment added", description: "Task created and added to your calendar." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create task.", variant: "destructive" });
+    },
+  });
+
+  const toggleTaskMutation = useMutation({
+    mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
+      return apiRequest("PATCH", `/api/tasks/${id}`, { isCompleted });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/tasks/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({ title: "Deleted", description: "Assignment removed." });
+    },
+  });
+
+  const handleAddTask = () => {
+    if (!newTask.title.trim() || !newTask.dueDate) {
+      toast({ title: "Missing fields", description: "Title and due date are required.", variant: "destructive" });
+      return;
+    }
+
+    const dueDate = new Date(newTask.dueDate);
+    if (newTask.dueTime) {
+      const [h, m] = newTask.dueTime.split(":").map(Number);
+      dueDate.setHours(h, m, 0, 0);
+    } else {
+      dueDate.setHours(23, 59, 0, 0);
+    }
+
+    createTaskMutation.mutate({
+      title: newTask.title,
+      description: newTask.description || "",
+      type: newTask.type || "other",
+      courseName: courseInfo.fullName,
+      dueDate: dueDate.toISOString(),
+      priority: newTask.type === "exam" || newTask.type === "quiz" ? "high" : "medium",
+      weekNumber: getWeekNumber(dueDate, semesterStart, readingWeekStart),
+      reminder1: newTask.reminder1 || 30,
+      reminder2: newTask.reminder2 || 120,
+      reminder3: newTask.reminder3 || null,
+      reminder4: newTask.reminder4 || null,
+      gradeWeight: newTask.gradeWeight ? parseInt(newTask.gradeWeight) : null,
+      gradeTotal: newTask.gradeTotal ? parseInt(newTask.gradeTotal) : null,
+    });
+  };
+
+  const formatDate = (d: string | Date) => {
+    const date = new Date(d);
+    return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
+
+  const formatTime = (d: string | Date) => {
+    const date = new Date(d);
+    return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  };
+
+  const isOverdue = (d: string | Date) => new Date(d) < new Date() ;
+
+  const deliveryLabel = courseInfo.deliveryMode === "virtual" ? "Virtual (Live Zoom)" : courseInfo.deliveryMode === "online" ? "Online (Async)" : courseInfo.deliveryMode || "Not set";
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      data-testid="course-detail-overlay"
+    >
+      <div
+        className="flex flex-col text-white border border-white/25 shadow-xl rounded-lg overflow-hidden"
+        style={{
+          width: "480px",
+          maxWidth: "95vw",
+          height: "88vh",
+          background: "linear-gradient(135deg, rgba(30,41,59,0.98) 0%, rgba(15,23,42,0.96) 50%, rgba(30,41,59,0.98) 100%)",
+        }}
+        data-testid="course-detail-dialog"
+      >
+        <div
+          className="flex items-center justify-between px-4 py-3 border-b border-white/20 flex-shrink-0"
+          style={{
+            background: `linear-gradient(135deg, ${courseInfo.color} 0%, ${courseInfo.colorEnd || courseInfo.color} 100%)`,
+          }}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <GraduationCap className="h-4 w-4 text-white flex-shrink-0" />
+            <div className="min-w-0">
+              <h2
+                className="text-xs font-semibold text-white truncate"
+                style={{ textShadow: "0 1px 3px rgba(0,0,0,0.3)" }}
+                data-testid="text-course-title"
+              >
+                {courseInfo.courseCode} — {courseInfo.courseName}
+              </h2>
+              <div className="flex items-center gap-2 text-[9px] text-white/80 mt-0.5">
+                {courseInfo.deliveryMode === "virtual" ? (
+                  <span className="flex items-center gap-0.5"><Video className="h-2.5 w-2.5" /> Virtual</span>
+                ) : courseInfo.deliveryMode === "online" ? (
+                  <span className="flex items-center gap-0.5"><Globe className="h-2.5 w-2.5" /> Online</span>
+                ) : null}
+                {courseInfo.courseType && (
+                  <span className="bg-white/20 px-1.5 py-0.5 rounded text-[8px]">
+                    {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-white hover:text-white/80 transition-colors p-1 flex-shrink-0" data-testid="button-close-course-detail">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
+          <div className="p-3 border-b border-white/10 space-y-2">
+            <div className="grid grid-cols-2 gap-2 text-[10px]">
+              {courseInfo.professor && (
+                <div className="flex items-center gap-1.5">
+                  <User className="h-3 w-3 text-white/40" />
+                  <span className="text-white/60">Professor:</span>
+                  <span className="text-white/90">{courseInfo.professor}</span>
+                </div>
+              )}
+              {courseInfo.professorEmail && (
+                <div className="flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 text-white/40" />
+                  <a href={`mailto:${courseInfo.professorEmail}`} className="text-blue-300 hover:text-blue-200 underline" data-testid="link-professor-email">
+                    {courseInfo.professorEmail}
+                  </a>
+                </div>
+              )}
+              <div className="flex items-center gap-1.5">
+                {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white/40" /> : <Globe className="h-3 w-3 text-white/40" />}
+                <span className="text-white/60">Mode:</span>
+                <span className="text-white/90">{deliveryLabel}</span>
+              </div>
+              {courseInfo.deliveryMode === "virtual" && courseInfo.classDay && (
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-3 w-3 text-white/40" />
+                  <span className="text-white/60">Schedule:</span>
+                  <span className="text-white/90 capitalize">
+                    {courseInfo.classDay}{courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}
+                    {courseInfo.classTime ? ` ${courseInfo.classTime}` : ""}
+                    {courseInfo.classEndTime ? `–${courseInfo.classEndTime}` : ""}
+                  </span>
+                </div>
+              )}
+              {courseInfo.deliveryMode === "online" && (
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3 w-3 text-white/40" />
+                  <span className="text-white/60">Modules:</span>
+                  <span className="text-white/90">Weekly (change every Saturday)</span>
+                </div>
+              )}
+            </div>
+            {courseInfo.deliveryMode === "virtual" && courseInfo.zoomLink && (
+              <a
+                href={courseInfo.zoomLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-[10px] text-blue-300 hover:text-blue-200 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1.5"
+                data-testid="link-zoom"
+              >
+                <Video className="h-3 w-3" />
+                <span className="truncate">{courseInfo.zoomLink}</span>
+                <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
+              </a>
+            )}
+          </div>
+
+          <div className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-[11px] font-medium text-white/90">Assignments</h3>
+                <span className="text-[9px] text-white/50">
+                  {completedCount}/{courseTasks.length} done
+                  {totalWeight > 0 && ` · ${totalWeight}% weight`}
+                </span>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="h-6 px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                data-testid="button-add-assignment"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Add
+              </Button>
+            </div>
+
+            {totalWeight > 0 && (
+              <div className="mb-2">
+                <div className="flex items-center gap-2 text-[9px] mb-1">
+                  <span className="text-white/50">Grade Weight</span>
+                  <span className={`font-medium ${totalWeight === 100 ? "text-green-400" : totalWeight > 100 ? "text-red-400" : "text-amber-400"}`}>
+                    {totalWeight}%{totalWeight === 100 ? " ✓" : totalWeight > 100 ? " !" : ""}
+                  </span>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-1.5">
+                  <div
+                    className="h-1.5 rounded-full transition-all"
+                    style={{
+                      width: `${Math.min(totalWeight, 100)}%`,
+                      backgroundColor: totalWeight === 100 ? "#22c55e" : totalWeight > 100 ? "#ef4444" : "#f59e0b",
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {showAddForm && (
+              <div className="bg-white/5 border border-white/15 rounded-lg p-3 mb-3 space-y-2" data-testid="add-assignment-form">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Title *</Label>
+                    <Input
+                      value={newTask.title}
+                      onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                      placeholder="e.g. Midterm Exam"
+                      className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
+                      data-testid="input-task-title"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Type</Label>
+                    <select
+                      value={newTask.type}
+                      onChange={(e) => setNewTask({ ...newTask, type: e.target.value })}
+                      className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5"
+                      data-testid="select-task-type"
+                    >
+                      {TASK_TYPE_OPTIONS.map((t) => (
+                        <option key={t.value} value={t.value} className="bg-gray-800">{t.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Due Date *</Label>
+                    <Input
+                      type="date"
+                      value={newTask.dueDate}
+                      onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                      className="h-7 !text-[10px] !text-black"
+                      data-testid="input-task-due-date"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Due Time</Label>
+                    <Input
+                      type="time"
+                      value={newTask.dueTime}
+                      onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
+                      className="h-7 !text-[10px] !text-black"
+                      data-testid="input-task-due-time"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-[9px] text-white/50 mb-0.5 block">Description</Label>
+                  <Input
+                    value={newTask.description}
+                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                    placeholder="Optional description"
+                    className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
+                    data-testid="input-task-description"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Grade Weight (%)</Label>
+                    <Input
+                      type="number"
+                      value={newTask.gradeWeight}
+                      onChange={(e) => setNewTask({ ...newTask, gradeWeight: e.target.value })}
+                      placeholder="e.g. 20"
+                      className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
+                      data-testid="input-task-weight"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Total Points</Label>
+                    <Input
+                      type="number"
+                      value={newTask.gradeTotal}
+                      onChange={(e) => setNewTask({ ...newTask, gradeTotal: e.target.value })}
+                      placeholder="e.g. 100"
+                      className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
+                      data-testid="input-task-total"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 1</Label>
+                    <select
+                      value={newTask.reminder1}
+                      onChange={(e) => setNewTask({ ...newTask, reminder1: parseInt(e.target.value) })}
+                      className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5"
+                      data-testid="select-reminder-1"
+                    >
+                      {REMINDER_PRESETS.map((r) => (
+                        <option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 2</Label>
+                    <select
+                      value={newTask.reminder2}
+                      onChange={(e) => setNewTask({ ...newTask, reminder2: parseInt(e.target.value) })}
+                      className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5"
+                      data-testid="select-reminder-2"
+                    >
+                      {REMINDER_PRESETS.map((r) => (
+                        <option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 3</Label>
+                    <select
+                      value={newTask.reminder3}
+                      onChange={(e) => setNewTask({ ...newTask, reminder3: parseInt(e.target.value) })}
+                      className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5"
+                      data-testid="select-reminder-3"
+                    >
+                      {REMINDER_PRESETS.map((r) => (
+                        <option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 4</Label>
+                    <select
+                      value={newTask.reminder4}
+                      onChange={(e) => setNewTask({ ...newTask, reminder4: parseInt(e.target.value) })}
+                      className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5"
+                      data-testid="select-reminder-4"
+                    >
+                      {REMINDER_PRESETS.map((r) => (
+                        <option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => { setShowAddForm(false); setNewTask(createEmptyTaskForm()); }}
+                    className="h-7 text-[10px] text-white/60 hover:text-white hover:bg-white/10"
+                    data-testid="button-cancel-add"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleAddTask}
+                    disabled={createTaskMutation.isPending}
+                    className="h-7 text-[10px] bg-white/20 hover:bg-white/30 text-white"
+                    data-testid="button-save-assignment"
+                  >
+                    {createTaskMutation.isPending ? "Adding..." : "Add to Calendar"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {courseTasks.length === 0 && !showAddForm && (
+              <div className="text-center py-8 text-white/30 text-[10px]" data-testid="text-no-assignments">
+                <ClipboardCheck className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                <p>No assignments yet</p>
+                <p className="mt-1">Click "Add" to create your first assignment</p>
+              </div>
+            )}
+
+            <div className="space-y-1" data-testid="assignments-list">
+              {courseTasks.map((task) => {
+                const TypeIcon = TASK_TYPE_OPTIONS.find((t) => t.value === task.type)?.icon || FileText;
+                const overdue = !task.isCompleted && isOverdue(task.dueDate);
+                return (
+                  <div
+                    key={task.id}
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition-all ${
+                      task.isCompleted
+                        ? "bg-white/5 border-white/5 opacity-60"
+                        : overdue
+                        ? "bg-red-500/10 border-red-500/20"
+                        : "bg-white/5 border-white/10 hover:bg-white/8"
+                    }`}
+                    data-testid={`assignment-row-${task.id}`}
+                  >
+                    <button
+                      onClick={() => toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted })}
+                      className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
+                      }`}
+                      data-testid={`button-toggle-task-${task.id}`}
+                    >
+                      {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
+                    </button>
+                    <TypeIcon className="h-3 w-3 text-white/40 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className={`text-[10px] font-medium truncate ${task.isCompleted ? "line-through text-white/40" : "text-white/90"}`}>
+                        {task.title}
+                      </div>
+                      <div className="flex items-center gap-2 text-[8px] text-white/40">
+                        <span className={overdue ? "text-red-400" : ""}>
+                          {formatDate(task.dueDate)} {formatTime(task.dueDate)}
+                        </span>
+                        {task.gradeWeight && <span>{task.gradeWeight}%</span>}
+                        <span className="capitalize">{task.type}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => deleteTaskMutation.mutate(task.id)}
+                      className="flex-shrink-0 text-white/20 hover:text-red-400 transition-colors p-0.5"
+                      data-testid={`button-delete-task-${task.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex items-center justify-between flex-shrink-0">
+          <div className="text-[9px] text-white/50">
+            {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
+          </div>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent h-7 px-4 text-[10px]"
+            data-testid="button-close-course-detail-footer"
+          >
+            Close
+          </Button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}

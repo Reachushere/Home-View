@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
+import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -2343,6 +2344,11 @@ export default function Dashboard() {
   });
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
+  const [selectedCertCourse, setSelectedCertCourse] = useState<{
+    courseCode: string;
+    courseName: string;
+    certKey: string;
+  } | null>(null);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [todoItems, setTodoItems] = useState<string[]>([]);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
@@ -2642,6 +2648,143 @@ export default function Dashboard() {
     if (progress.completed === 0) return '#ef4444';
     if (progress.completed >= progress.total) return '#22c55e';
     return '#eab308';
+  };
+
+  const certCourseMap: Record<string, { code: string; name: string }> = {
+    PPA101: { code: 'PPA101', name: 'Canadian Public Administration I: Institutions' },
+    PPA102: { code: 'PPA102', name: 'Canadian Public Administration II: Processes' },
+    PPA125: { code: 'PPA125', name: 'Rights, Equity and the State' },
+    ELECTIVE1: { code: 'PPA120', name: 'Canadian Politics & Government' },
+    ELECTIVE2: { code: 'PPA121', name: 'Ontario Politics and Government' },
+    L1_PPA122: { code: 'PPA122', name: 'Local Politics and Government' },
+    L1_PPA124: { code: 'PPA124', name: 'Indigenous Politics and Government' },
+    LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective' },
+    OPEN1: { code: 'OPEN1', name: 'Open Elective 1' },
+    OPEN2: { code: 'OPEN2', name: 'Open Elective 2' },
+    L2_PPA211: { code: 'PPA211', name: 'Public Administration & Management' },
+    L2_PPA120: { code: 'PPA120', name: 'Canadian Politics & Government' },
+    L2_PPA121: { code: 'PPA121', name: 'Ontario Politics and Government' },
+    L2_PPA122: { code: 'PPA122', name: 'Local Politics and Government' },
+    L2_PPA124: { code: 'PPA124', name: 'Indigenous Politics and Government' },
+    L2_PPA235: { code: 'PPA235', name: 'Canada and Global Politics' },
+    L2_PPA303: { code: 'PPA303', name: 'Public Finance and Budgeting' },
+    L2_PPA319: { code: 'PPA319', name: 'Public Sector Human Resource Management' },
+    L2_LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective' },
+    L2_ECN1: { code: 'ECN101', name: 'Principles of Microeconomics' },
+    L2_ECN2: { code: 'ECN104', name: 'Introductory Microeconomics' },
+    L2_ECN3: { code: 'ECN110', name: 'The Economy and Society' },
+    L2_ECN4: { code: 'ECN201', name: 'Principles of Macroeconomics' },
+    L2_ECN5: { code: 'ECN204', name: 'Introductory Macroeconomics' },
+    L2_ECN6: { code: 'ECN210', name: 'Understanding Economics' },
+    L2_ECN7: { code: 'ECN220', name: 'Evolution of the Global Economy' },
+    L2_ECN8: { code: 'ECN320', name: 'Introduction to Financial Economics' },
+    L2_OPEN1: { code: 'L2OPEN1', name: 'Open Elective 1' },
+    L2_OPEN2: { code: 'L2OPEN2', name: 'Open Elective 2' },
+    L3_PPA333: { code: 'PPA333', name: 'Administrative Law' },
+    L3_PPA235: { code: 'PPA235', name: 'Canada and Global Politics' },
+    L3_PPA301: { code: 'PPA301', name: 'Introduction to Policy Analysis' },
+    L3_PPA303: { code: 'PPA303', name: 'Public Finance and Budgeting' },
+    L3_PPA319: { code: 'PPA319', name: 'Public Sector Human Resource Management' },
+    L3_PPA335: { code: 'PPA335', name: 'Planning and Policy in the City' },
+    L3_PPA401: { code: 'PPA401', name: 'Program Evaluation' },
+    L3_PPA402: { code: 'PPA402', name: 'Organizational Behaviour' },
+    L3_PPA403: { code: 'PPA403', name: 'Ethics in Public Administration' },
+    L3_PPA404: { code: 'PPA404', name: 'Strategic Management in Public Sector' },
+    L3_PPA411: { code: 'PPA411', name: 'Issues in Public Administration' },
+    L3_PPA414: { code: 'PPA414', name: 'Research Methods in Public Admin' },
+    L3_PPA425: { code: 'PPA425', name: 'Municipal Government and Politics' },
+    L3_PPA490: { code: 'PPA490', name: 'Special Topics in Public Administration' },
+    L3_PPA501: { code: 'PPA501', name: 'Comparative Public Administration' },
+    L3_PRACTICUM1: { code: 'PRAC1', name: 'Practicum 1' },
+    L3_PRACTICUM2: { code: 'PRAC2', name: 'Practicum 2' },
+    L3_POG1: { code: 'POG1', name: 'Politics & Governance Elective 1' },
+    L3_POG2: { code: 'POG2', name: 'Politics & Governance Elective 2' },
+    L3_POG3: { code: 'POG3', name: 'Politics & Governance Elective 3' },
+    L3_LIBERAL1: { code: 'LIB1', name: 'Liberal Studies 1' },
+    L3_LIBERAL2: { code: 'LIB2', name: 'Liberal Studies 2' },
+    L3_LIBERAL3: { code: 'LIB3', name: 'Liberal Studies 3' },
+    L3_LIBERAL4: { code: 'LIB4', name: 'Liberal Studies 4' },
+    L3_OPEN1: { code: 'L3OPEN1', name: 'Open Elective 1' },
+    L3_OPEN2: { code: 'L3OPEN2', name: 'Open Elective 2' },
+    L3_OPEN3: { code: 'L3OPEN3', name: 'Open Elective 3' },
+    L3_OPEN4: { code: 'L3OPEN4', name: 'Open Elective 4' },
+    L3_OPEN5: { code: 'L3OPEN5', name: 'Open Elective 5' },
+    L3_OPEN6: { code: 'L3OPEN6', name: 'Open Elective 6' },
+  };
+
+  const handleCertCourseClick = (certKey: string) => {
+    const info = certCourseMap[certKey];
+    if (!info) return;
+    const elective = openElectives[certKey];
+    const code = elective?.trim() ? elective.split(' ')[0] || info.code : info.code;
+    const name = elective?.trim() ? elective : info.name;
+    setSelectedCertCourse({ courseCode: code, courseName: name, certKey });
+  };
+
+  const buildCourseInfoForCert = () => {
+    if (!selectedCertCourse) return null;
+    const { courseCode, courseName, certKey } = selectedCertCourse;
+    const fullName = `${courseCode} - ${courseName}`;
+    const matchedCourse = coursesData.courses.find(c => {
+      const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
+      return cCode === courseCode.replace(/\s/g, '');
+    });
+
+    let deliveryMode = '';
+    let classDay = '';
+    let classDay2 = '';
+    let classTime = '';
+    let classEndTime = '';
+    let zoomLink = '';
+    let professor = matchedCourse?.professor || '';
+    let professorEmail = matchedCourse?.professorEmail || '';
+    let color = matchedCourse?.color || '#6366F1';
+    let colorEnd = (matchedCourse as any)?.colorEnd || '';
+    let courseType = '';
+
+    if (semesterSettings) {
+      for (let i = 1; i <= 3; i++) {
+        const prefix = `course${i}` as const;
+        const codeField = (semesterSettings as any)[`${prefix}Code`] || '';
+        if (codeField.replace(/\s/g, '') === courseCode.replace(/\s/g, '')) {
+          deliveryMode = (semesterSettings as any)[`${prefix}DeliveryMode`] || '';
+          classDay = (semesterSettings as any)[`${prefix}ClassDay`] || '';
+          classDay2 = (semesterSettings as any)[`${prefix}ClassDay2`] || '';
+          classTime = (semesterSettings as any)[`${prefix}ClassTime`] || '';
+          classEndTime = (semesterSettings as any)[`${prefix}ClassEndTime`] || '';
+          zoomLink = (semesterSettings as any)[`${prefix}ZoomLink`] || '';
+          courseType = (semesterSettings as any)[`${prefix}CourseType`] || '';
+          if (!professor) professor = (semesterSettings as any)[`${prefix}Professor`] || '';
+          if (!professorEmail) professorEmail = (semesterSettings as any)[`${prefix}ProfessorEmail`] || '';
+          break;
+        }
+      }
+    }
+
+    const certData = localStorage.getItem('certCourseData');
+    const savedData = certData ? JSON.parse(certData) : {};
+    const saved = savedData[certKey] || {};
+    if (saved.deliveryMode) deliveryMode = saved.deliveryMode;
+    if (saved.zoomLink) zoomLink = saved.zoomLink;
+    if (saved.professor) professor = saved.professor;
+    if (saved.professorEmail) professorEmail = saved.professorEmail;
+
+    return {
+      courseCode,
+      courseName,
+      fullName,
+      professor,
+      professorEmail,
+      color,
+      colorEnd,
+      deliveryMode,
+      classDay,
+      classDay2,
+      classTime,
+      classEndTime,
+      zoomLink,
+      courseType,
+    };
   };
 
   // Create jiggle sound using Web Audio API - only if Bluetooth/audio already connected
@@ -10968,7 +11111,7 @@ export default function Dashboard() {
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
           className="overflow-hidden flex flex-col text-[11px] border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] p-0 [&>button.absolute]:hidden" 
-          style={{ width: '420px', maxWidth: '95vw', height: '85vh', background: 'linear-gradient(135deg, rgba(30,41,59,0.97) 0%, rgba(15,23,42,0.95) 50%, rgba(30,41,59,0.97) 100%)' }}
+          style={{ width: '420px', maxWidth: '95vw', height: '92vh', background: 'linear-gradient(135deg, rgba(30,41,59,0.97) 0%, rgba(15,23,42,0.95) 50%, rgba(30,41,59,0.97) 100%)' }}
         >
           {/* Header bar matching flyouts */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ background: 'rgba(15,23,42,0.5)' }}>
@@ -10987,37 +11130,9 @@ export default function Dashboard() {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto space-y-4 p-2 pt-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {/* PAG Level Carousel */}
-            <div>
-              {/* Navigation with arrows and dots */}
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <button
-                  onClick={() => currentPagLevel > 1 && setCurrentPagLevel(currentPagLevel - 1)}
-                  className={`text-white text-lg font-bold px-2 py-0.5 rounded ${currentPagLevel > 1 ? 'hover:bg-white/20' : 'opacity-30 cursor-not-allowed'}`}
-                  disabled={currentPagLevel <= 1}
-                  data-testid="button-pag-prev"
-                >
-                  ←
-                </button>
-                {[1, 2, 3].map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setCurrentPagLevel(level)}
-                    className={`w-2.5 h-2.5 rounded-full transition-colors ${currentPagLevel === level ? 'bg-white' : 'bg-white/30 hover:bg-white/50'}`}
-                    data-testid={`button-pag-level-${level}`}
-                  />
-                ))}
-                <button
-                  onClick={() => currentPagLevel < 3 && setCurrentPagLevel(currentPagLevel + 1)}
-                  className={`text-white text-lg font-bold px-2 py-0.5 rounded ${currentPagLevel < 3 ? 'hover:bg-white/20' : 'opacity-30 cursor-not-allowed'}`}
-                  disabled={currentPagLevel >= 3}
-                  data-testid="button-pag-next"
-                >
-                  →
-                </button>
-              </div>
+            <div className="space-y-3">
               {/* Level I */}
-              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
+              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
@@ -11033,7 +11148,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
-                  <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('PPA101')} data-testid="cert-course-PPA101">Canadian Public Administration I: Institutions</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black [&_option]:!text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11047,7 +11162,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
-                  <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('PPA102')} data-testid="cert-course-PPA102">Canadian Public Administration II: Processes *</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11061,7 +11176,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
-                  <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('PPA125')} data-testid="cert-course-PPA125">(Formerly PPA521) Rights, Equity and the State</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11080,7 +11195,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} disabled={isCheckDisabled('ELECTIVE1')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
-                  <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('ELECTIVE1')} data-testid="cert-course-ELECTIVE1">Canadian Politics & Government **</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11093,7 +11208,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} disabled={isCheckDisabled('ELECTIVE2')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
-                  <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('ELECTIVE2')} data-testid="cert-course-ELECTIVE2">Ontario Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11106,7 +11221,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L1_PPA122'] || false} onChange={() => toggleCourse('L1_PPA122')} disabled={isCheckDisabled('L1_PPA122')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
-                  <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L1_PPA122')} data-testid="cert-course-L1_PPA122">Local Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L1_PPA122']?.grade || ''} onChange={(e) => updateGrade('L1_PPA122', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11119,7 +11234,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L1_PPA124'] || false} onChange={() => toggleCourse('L1_PPA124')} disabled={isCheckDisabled('L1_PPA124')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
-                  <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L1_PPA124')} data-testid="cert-course-L1_PPA124">Indigenous Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L1_PPA124']?.grade || ''} onChange={(e) => updateGrade('L1_PPA124', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11218,7 +11333,7 @@ export default function Dashboard() {
         </div>
 
               {/* Level II */}
-              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
+              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
@@ -11234,7 +11349,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
-                  <div className="flex-1 px-1 py-0.5">Public Policy</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211">Public Policy</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA211']?.grade || ''} onChange={(e) => updateGrade('L2_PPA211', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11253,7 +11368,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA120'] || false} onChange={() => toggleCourse('L2_PPA120')} disabled={isCheckDisabled('L2_PPA120')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
-                  <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA120')} data-testid="cert-course-L2_PPA120">Canadian Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA120']?.grade || ''} onChange={(e) => updateGrade('L2_PPA120', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11266,7 +11381,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA121'] || false} onChange={() => toggleCourse('L2_PPA121')} disabled={isCheckDisabled('L2_PPA121')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
-                  <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA121')} data-testid="cert-course-L2_PPA121">Ontario Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA121']?.grade || ''} onChange={(e) => updateGrade('L2_PPA121', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11279,7 +11394,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA122'] || false} onChange={() => toggleCourse('L2_PPA122')} disabled={isCheckDisabled('L2_PPA122')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
-                  <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA122')} data-testid="cert-course-L2_PPA122">Local Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA122']?.grade || ''} onChange={(e) => updateGrade('L2_PPA122', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11292,7 +11407,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA124'] || false} onChange={() => toggleCourse('L2_PPA124')} disabled={isCheckDisabled('L2_PPA124')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
-                  <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA124')} data-testid="cert-course-L2_PPA124">Indigenous Politics and Government</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA124']?.grade || ''} onChange={(e) => updateGrade('L2_PPA124', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11305,7 +11420,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA235'] || false} onChange={() => toggleCourse('L2_PPA235')} disabled={isCheckDisabled('L2_PPA235')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 235</div>
-                  <div className="flex-1 px-1 py-0.5">Theories of the State</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA235')} data-testid="cert-course-L2_PPA235">Theories of the State</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA235']?.grade || ''} onChange={(e) => updateGrade('L2_PPA235', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11318,7 +11433,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA303'] || false} onChange={() => toggleCourse('L2_PPA303')} disabled={isCheckDisabled('L2_PPA303')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 303</div>
-                  <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA303')} data-testid="cert-course-L2_PPA303">Public Budget Policy/Politics</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA303']?.grade || ''} onChange={(e) => updateGrade('L2_PPA303', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11331,7 +11446,7 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA319'] || false} onChange={() => toggleCourse('L2_PPA319')} disabled={isCheckDisabled('L2_PPA319')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 319</div>
-                  <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA319')} data-testid="cert-course-L2_PPA319">Politics of Work and Labour</div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA319']?.grade || ''} onChange={(e) => updateGrade('L2_PPA319', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -11385,7 +11500,7 @@ export default function Dashboard() {
                       { id: 'L2_ECN7', name: 'ECN 220 Evolution of the Global Economy' },
                       { id: 'L2_ECN8', name: 'ECN 320 Introduction to Financial Economics' },
                     ].map((ecn, i) => (
-                      <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`}>{ecn.name}</div>
+                      <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center cursor-pointer hover:underline ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}>{ecn.name}</div>
                     ))}
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
@@ -11464,7 +11579,7 @@ export default function Dashboard() {
         </div>
 
         {/* Level III */}
-              <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
+              <div className="rounded-md p-2 text-[9px] bg-white text-black">
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
@@ -11489,7 +11604,7 @@ export default function Dashboard() {
                       </td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Core Req</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">PPA 333</td>
-                      <td className="px-1 py-0.5 align-middle text-[9px]">Research Methods in Public Administration</td>
+                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333">Research Methods in Public Administration</td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
                           <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PPA333']?.grade || ''} onChange={(e) => updateGrade('L3_PPA333', e.target.value)}>
@@ -11534,7 +11649,7 @@ export default function Dashboard() {
                           </>
                         )}
                         <td className={`h-11 px-1 py-0.5 border-r border-black align-middle text-[9px]`}>{course.code}</td>
-                        <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.title}</td>
+                        <td className={`h-11 px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}>{course.title}</td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
                             <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[course.id]?.grade || ''} onChange={(e) => updateGrade(course.id, e.target.value)}>
@@ -11563,8 +11678,8 @@ export default function Dashboard() {
                     Select&nbsp;<span className="font-bold">ONE</span>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${courseRowClass('L3_PRACTICUM1')}`}>PPA 50A/B (Formerly PPA030) ***Practicum1</div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${courseRowClass('L3_PRACTICUM2')}`}>Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline ${courseRowClass('L3_PRACTICUM1')}`} onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline ${courseRowClass('L3_PRACTICUM2')}`} onClick={() => handleCertCourseClick('L3_PRACTICUM2')} data-testid="cert-course-L3_PRACTICUM2">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -11594,9 +11709,9 @@ export default function Dashboard() {
                     <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${checkedCourses['L3_POG1'] ? 'bg-gray-300 text-gray-500' : ''}`}>Any POG – 300 or 400 level courses</div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${checkedCourses['L3_POG2'] ? 'bg-gray-300 text-gray-500' : ''}`}>Any POG – 300 or 400 level courses</div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${checkedCourses['L3_POG3'] ? 'bg-gray-300 text-gray-500' : ''}`}>Any POG – 300 or 400 level courses</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline ${checkedCourses['L3_POG1'] ? 'bg-gray-300 text-gray-500' : ''}`} onClick={() => handleCertCourseClick('L3_POG1')} data-testid="cert-course-L3_POG1">Any POG – 300 or 400 level courses</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline ${checkedCourses['L3_POG2'] ? 'bg-gray-300 text-gray-500' : ''}`} onClick={() => handleCertCourseClick('L3_POG2')} data-testid="cert-course-L3_POG2">Any POG – 300 or 400 level courses</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline ${checkedCourses['L3_POG3'] ? 'bg-gray-300 text-gray-500' : ''}`} onClick={() => handleCertCourseClick('L3_POG3')} data-testid="cert-course-L3_POG3">Any POG – 300 or 400 level courses</div>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -11722,6 +11837,19 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {selectedCertCourse && (() => {
+        const info = buildCourseInfoForCert();
+        if (!info) return null;
+        return (
+          <CourseDetailDialog
+            courseInfo={info}
+            onClose={() => setSelectedCertCourse(null)}
+            semesterStart={semStart || new Date()}
+            readingWeekStart={readingWeekStart}
+          />
+        );
+      })()}
 
       
       {/* Set Default Layout Checkbox - moved to task boxes area */}
@@ -14026,6 +14154,7 @@ export default function Dashboard() {
                     [`${prefix}StartDate`]: wizardData.startDate ? new Date(wizardData.startDate).toISOString() : null,
                     [`${prefix}EndDate`]: wizardData.endDate ? new Date(wizardData.endDate).toISOString() : null,
                     [`${prefix}CourseType`]: wizardData.courseType || null,
+                    [`${prefix}ZoomLink`]: wizardData.zoomLink || null,
                   };
                   saveSemesterScheduleMutation.mutate(schedulePayload);
                 }
