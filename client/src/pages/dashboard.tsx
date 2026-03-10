@@ -19038,7 +19038,7 @@ export default function Dashboard() {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
-                return `${lastBottom}px`;
+                return `${lastBottom - 20}px`;
               }
             }
             return '14px';
