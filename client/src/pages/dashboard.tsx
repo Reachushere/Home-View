@@ -18895,7 +18895,7 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
+          <div style={{ padding: '0 8px', height: '37px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
