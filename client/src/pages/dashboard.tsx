@@ -14732,7 +14732,7 @@ export default function Dashboard() {
                       <input
                         type="range"
                         min="0"
-                        max="40"
+                        max="80"
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
