@@ -12031,7 +12031,7 @@ export default function Dashboard() {
         const pillW = (btnCount * (btnSize + btnGap)) + btnGap;
         const arrowH = 15;
         const r = 28;
-        const slideOffset = pillH + 4;
+        const slideOffset = pillH + 4 + 5;
         sidePillSlideOffset.current = slideOffset;
         
         const startAutoHide = () => {
