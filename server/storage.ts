@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -25,6 +25,10 @@ export interface IStorage {
   saveSecondGoogleAccount(account: InsertSecondGoogleAccount): Promise<SecondGoogleAccount>;
   updateSecondGoogleAccount(id: number, updates: Partial<SecondGoogleAccount>): Promise<SecondGoogleAccount>;
   deleteSecondGoogleAccount(): Promise<void>;
+  getThirdGoogleAccount(): Promise<ThirdGoogleAccount | undefined>;
+  saveThirdGoogleAccount(account: InsertThirdGoogleAccount): Promise<ThirdGoogleAccount>;
+  updateThirdGoogleAccount(id: number, updates: Partial<ThirdGoogleAccount>): Promise<ThirdGoogleAccount>;
+  deleteThirdGoogleAccount(): Promise<void>;
   getDeletedFolders(): Promise<DeletedFolder[]>;
   addDeletedFolder(folderId: string): Promise<DeletedFolder>;
   removeDeletedFolder(folderId: string): Promise<void>;
@@ -280,6 +284,34 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSecondGoogleAccount(): Promise<void> {
     await db.delete(secondGoogleAccount);
+  }
+
+  async getThirdGoogleAccount(): Promise<ThirdGoogleAccount | undefined> {
+    const [account] = await db
+      .select()
+      .from(thirdGoogleAccount)
+      .orderBy(desc(thirdGoogleAccount.createdAt))
+      .limit(1);
+    return account;
+  }
+
+  async saveThirdGoogleAccount(account: InsertThirdGoogleAccount): Promise<ThirdGoogleAccount> {
+    await db.delete(thirdGoogleAccount);
+    const [newAccount] = await db.insert(thirdGoogleAccount).values(account).returning();
+    return newAccount;
+  }
+
+  async updateThirdGoogleAccount(id: number, updates: Partial<ThirdGoogleAccount>): Promise<ThirdGoogleAccount> {
+    const [updated] = await db
+      .update(thirdGoogleAccount)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(thirdGoogleAccount.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteThirdGoogleAccount(): Promise<void> {
+    await db.delete(thirdGoogleAccount);
   }
 
   async getDeletedFolders(): Promise<DeletedFolder[]> {

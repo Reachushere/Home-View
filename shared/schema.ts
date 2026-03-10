@@ -164,6 +164,20 @@ export const insertSecondGoogleAccountSchema = createInsertSchema(secondGoogleAc
 export type SecondGoogleAccount = typeof secondGoogleAccount.$inferSelect;
 export type InsertSecondGoogleAccount = z.infer<typeof insertSecondGoogleAccountSchema>;
 
+export const thirdGoogleAccount = pgTable("third_google_account", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertThirdGoogleAccountSchema = createInsertSchema(thirdGoogleAccount).omit({ id: true, createdAt: true, updatedAt: true });
+export type ThirdGoogleAccount = typeof thirdGoogleAccount.$inferSelect;
+export type InsertThirdGoogleAccount = z.infer<typeof insertThirdGoogleAccountSchema>;
+
 export const files = pgTable("files", {
   id: serial("id").primaryKey(),
   originalName: text("original_name").notNull(),

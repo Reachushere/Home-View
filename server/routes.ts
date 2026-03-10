@@ -13,6 +13,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
+import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { getSchedulerStatus } from "./reminderScheduler";
@@ -2668,6 +2669,108 @@ export async function registerRoutes(
   });
 
   // ============= END SECOND GOOGLE ACCOUNT ROUTES =============
+
+  // ============= THIRD GOOGLE ACCOUNT ROUTES (CRCU - Partner Shifts) =============
+
+  app.get("/api/google/third-account/status", async (_req, res) => {
+    try {
+      const status = await isThirdAccountConnected();
+      res.json(status);
+    } catch (err) {
+      console.error("Third account status error:", err);
+      res.json({ connected: false, error: String(err) });
+    }
+  });
+
+  app.get("/api/google/third-account/auth", async (_req, res) => {
+    try {
+      const authUrl = getThirdAccountAuthUrl();
+      res.json({ authUrl });
+    } catch (err) {
+      console.error("Third account auth error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/google/third-account/callback", async (req, res) => {
+    try {
+      const code = req.query.code as string;
+      if (!code) {
+        return res.status(400).send('Missing authorization code');
+      }
+      
+      const account = await exchangeCodeForTokensThird(code);
+      
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head><title>Success</title></head>
+          <body>
+            <h1>CRCU Account Connected!</h1>
+            <p>Connected email: ${account.email}</p>
+            <p>You can close this window and return to the app.</p>
+            <script>
+              setTimeout(() => {
+                window.opener?.postMessage({ type: 'THIRD_ACCOUNT_CONNECTED', email: '${account.email}' }, '*');
+                window.close();
+              }, 1500);
+            </script>
+          </body>
+        </html>
+      `);
+    } catch (err) {
+      console.error("Third account callback error:", err);
+      res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+          <head><title>Error</title></head>
+          <body>
+            <h1>Connection Failed</h1>
+            <p>Error: ${String(err)}</p>
+            <p>Please close this window and try again.</p>
+          </body>
+        </html>
+      `);
+    }
+  });
+
+  app.delete("/api/google/third-account", async (_req, res) => {
+    try {
+      await disconnectThirdAccount();
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Third account disconnect error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/google/third-account/events", async (req, res) => {
+    try {
+      const calendarId = req.query.calendarId as string || 'primary';
+      const timeMin = new Date(req.query.timeMin as string || Date.now());
+      const timeMax = new Date(req.query.timeMax as string || Date.now() + 30 * 24 * 60 * 60 * 1000);
+      
+      const events = calendarId === 'primary' 
+        ? await getEventsFromThirdAccount(timeMin, timeMax)
+        : await getEventsFromThirdAccountCalendar(calendarId, timeMin, timeMax);
+      res.json(events);
+    } catch (err) {
+      console.error("Third account events error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/google/third-account/calendars", async (_req, res) => {
+    try {
+      const calendars = await listThirdAccountCalendars();
+      res.json(calendars);
+    } catch (err) {
+      console.error("Third account calendars error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  // ============= END THIRD GOOGLE ACCOUNT ROUTES =============
 
   // POST /api/tasks/:id/sync-calendar - Manually sync task to Google Calendar
   app.post("/api/tasks/:id/sync-calendar", async (req, res) => {
