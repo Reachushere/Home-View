@@ -11088,8 +11088,8 @@ export default function Dashboard() {
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 4}px`,
-        top: '27px',
-        height: '19px',
+        top: '34px',
+        height: '25px',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -11109,17 +11109,17 @@ export default function Dashboard() {
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
         }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-          <span className="text-white" style={{ fontSize: '12px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '47px', display: 'inline-block', lineHeight: '1' }}>{formatPomodoroTime(pomodoroTime)}</span>
+          <span className="text-white" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
-        <div className="flex items-center gap-[16px]">
+        <div className="flex items-center gap-[22px]">
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-            {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
+            {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-            <RotateCcw className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />
+            <RotateCcw className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-            <SkipForward className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />
+            <SkipForward className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
           </button>
         </div>
       </div>
