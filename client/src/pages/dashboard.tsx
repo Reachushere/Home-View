@@ -18823,7 +18823,7 @@ export default function Dashboard() {
               <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2} style={{ marginRight: '3px' }} />
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
-            <div ref={homeworkSpacerRef} style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-70px' }} />
+            <div ref={homeworkSpacerRef} style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-90px' }} />
             <div
               className="text-[10px] font-normal text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}
@@ -18837,97 +18837,37 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            const cppaIdx = courseProgressDataRef.current.findIndex(p => p?.courseCode === 'CPPA122');
-            const cppaLeftBg = (() => {
-              if (cppaIdx < 0 || !courseRowRects[cppaIdx]) return null;
-              const cppaTop = courseRowRects[cppaIdx].top - upcomingTop;
-              const nextIdx = cppaIdx + 1;
-              const bottomRow = courseRowRects[nextIdx];
-              const totalHeight = bottomRow
-                ? (bottomRow.top - upcomingTop) - cppaTop
-                : courseRowRects[cppaIdx].height;
-              const cppaData = courseProgressDataRef.current[cppaIdx];
-              const leftWidth = (() => {
-                if (homeworkSpacerRef.current && homeworkSectionRef.current) {
-                  const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
-                  const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
-                  return `${spacerRect.left - sectionRect.left}px`;
-                }
-                return '70px';
-              })();
+            const leftWidth = (() => {
+              if (homeworkSpacerRef.current && homeworkSectionRef.current) {
+                const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
+                const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
+                return `${spacerRect.left - sectionRect.left}px`;
+              }
+              return '70px';
+            })();
+            const leftBgs = courseProgressDataRef.current.map((pd, idx) => {
+              if (!pd || !courseRowRects[idx]) return null;
+              const rowTop = courseRowRects[idx].top - upcomingTop;
+              const rowHeight = courseRowRects[idx].height;
+              const halfHeight = rowHeight / 2;
               return (
-                <div key="cppa-left-bg" style={{
+                <div key={`${pd.courseCode}-left-bg`} style={{
                   position: 'absolute',
-                  top: `${cppaTop}px`,
+                  top: `${rowTop}px`,
                   left: 0,
                   width: leftWidth,
-                  height: `${totalHeight}px`,
-                  background: cppaData?.progressBg || 'linear-gradient(180deg, #0F5004 0%, #47B045 100%)',
+                  height: `${rowHeight}px`,
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
-                }} />
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}>
+                  <div style={{ height: `${halfHeight}px`, borderBottom: '0.5px solid rgba(255,255,255,0.15)' }} />
+                  <div style={{ height: `${halfHeight}px` }} />
+                </div>
               );
-            })();
-            const cfnfIdx = courseProgressDataRef.current.findIndex(p => p?.courseCode === 'CFNF400');
-            const cfnfLeftBg = (() => {
-              if (cppaIdx < 0 || cfnfIdx < 0 || !courseRowRects[cppaIdx]) return null;
-              const cppaTop = courseRowRects[cppaIdx].top - upcomingTop;
-              const nextIdx = cppaIdx + 1;
-              const bottomRow = courseRowRects[nextIdx];
-              const cppaBoxHeight = bottomRow
-                ? (bottomRow.top - upcomingTop) - cppaTop
-                : courseRowRects[cppaIdx].height;
-              const cfnfData = courseProgressDataRef.current[cfnfIdx];
-              const leftWidth = (() => {
-                if (homeworkSpacerRef.current && homeworkSectionRef.current) {
-                  const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
-                  const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
-                  return `${spacerRect.left - sectionRect.left}px`;
-                }
-                return '70px';
-              })();
-              return (
-                <div key="cfnf-left-bg" style={{
-                  position: 'absolute',
-                  top: `${cppaTop + cppaBoxHeight - 1}px`,
-                  left: 0,
-                  width: leftWidth,
-                  height: `${cppaBoxHeight}px`,
-                  background: cfnfData?.progressBg || 'linear-gradient(180deg, #4A0E8F 0%, #8B5CF6 100%)',
-                  zIndex: 39,
-                }} />
-              );
-            })();
-            const caslIdx = courseProgressDataRef.current.findIndex(p => p?.courseCode === 'CASL101');
-            const caslLeftBg = (() => {
-              if (cppaIdx < 0 || caslIdx < 0 || !courseRowRects[cppaIdx]) return null;
-              const cppaTop = courseRowRects[cppaIdx].top - upcomingTop;
-              const nextIdx = cppaIdx + 1;
-              const bottomRow = courseRowRects[nextIdx];
-              const cppaBoxHeight = bottomRow
-                ? (bottomRow.top - upcomingTop) - cppaTop
-                : courseRowRects[cppaIdx].height;
-              const caslData = courseProgressDataRef.current[caslIdx];
-              const leftWidth = (() => {
-                if (homeworkSpacerRef.current && homeworkSectionRef.current) {
-                  const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
-                  const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
-                  return `${spacerRect.left - sectionRect.left}px`;
-                }
-                return '70px';
-              })();
-              return (
-                <div key="casl-left-bg" style={{
-                  position: 'absolute',
-                  top: `${cppaTop + cppaBoxHeight * 2 - 1}px`,
-                  left: 0,
-                  width: leftWidth,
-                  height: `${cppaBoxHeight}px`,
-                  background: caslData?.progressBg || 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
-                  zIndex: 39,
-                }} />
-              );
-            })();
-            return [cppaLeftBg, cfnfLeftBg, caslLeftBg, ...courseProgressDataRef.current.map((pd, idx) => {
+            });
+            return [...leftBgs, ...courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
