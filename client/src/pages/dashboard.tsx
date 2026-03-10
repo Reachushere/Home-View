@@ -11070,18 +11070,15 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Share Button - fixed position, beside time */}
+      {/* Share Button - fixed position, bottom left */}
       {isAdmin && (
-        <>
-          <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 79 - 5 - 3 + 3 + 2}px`, top: '5px', zIndex: 100, width: '2px', height: '18px', background: 'rgba(255,255,255,0.5)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
-          <Share 
-            className="text-white/80 cursor-pointer hover:text-white"
-            strokeWidth={2.5}
-            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 98 - 5 - 3 + 3 + 2}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-            onClick={generateShareLink}
-            data-testid="button-share-main"
-          />
-        </>
+        <Share 
+          className="text-white/80 cursor-pointer hover:text-white"
+          strokeWidth={2.5}
+          style={{ height: '14px', width: '14px', position: 'fixed', left: '16px', bottom: '16px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          onClick={generateShareLink}
+          data-testid="button-share-main"
+        />
       )}
 
       {/* Timer bar - rectangle below time */}
@@ -11135,7 +11132,7 @@ export default function Dashboard() {
         <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
-        <span className="text-white" style={{ fontSize: '10px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
         </span>
         {profileData.travelTimezone && (
@@ -15589,7 +15586,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
-            style={{ bottom: '-39px', left: '-16px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: '-39px', left: '-19px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
