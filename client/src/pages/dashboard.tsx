@@ -15541,7 +15541,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '10px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '10px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -15565,7 +15565,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
-            style={{ bottom: '-40px', left: '-6px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: '-40px', left: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
