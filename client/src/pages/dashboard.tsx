@@ -377,6 +377,7 @@ export default function Dashboard() {
   const calendarBorderRef = useRef<HTMLDivElement>(null);
   const homeworkSpacerRef = useRef<HTMLDivElement>(null);
   const homeworkSectionRef = useRef<HTMLElement>(null);
+  const homeworkScrollRef = useRef<HTMLDivElement>(null);
   const [calendarBorderTop, setCalendarBorderTop] = useState(0);
   const clockContainerRef = useRef<HTMLDivElement>(null);
   const [clockWidth, setClockWidth] = useState(0);
@@ -18895,6 +18896,27 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          <div
+            className="absolute z-50 flex flex-col gap-1 cursor-pointer"
+            style={{ left: '3px', top: '50%', transform: 'translateY(-50%)' }}
+          >
+            <div
+              className="hover:bg-white/20 rounded-full flex items-center justify-center"
+              style={{ width: '14px', height: '14px' }}
+              onClick={() => homeworkScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+              data-testid="button-homework-scroll-top"
+            >
+              <ChevronUp style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.35)' }} />
+            </div>
+            <div
+              className="hover:bg-white/20 rounded-full flex items-center justify-center"
+              style={{ width: '14px', height: '14px' }}
+              onClick={() => homeworkScrollRef.current?.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' })}
+              data-testid="button-homework-scroll-bottom"
+            >
+              <ChevronDown style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.35)' }} />
+            </div>
+          </div>
           <div style={{ padding: '0 8px', height: '37px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-medium flex items-center text-white"
@@ -19043,7 +19065,7 @@ export default function Dashboard() {
               }
             }
             return '14px';
-          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative' }} ref={homeworkScrollRef}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
