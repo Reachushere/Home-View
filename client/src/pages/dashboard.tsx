@@ -18771,11 +18771,30 @@ export default function Dashboard() {
                         {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
                       />
                   </div>
-                  {/* Handle 1 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 2: Days label + progress bar */}
-                  <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', marginLeft: '-3px' }}>
-                    <span className="text-[8px] font-medium" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                  {/* Col 2: Task name + course name stacked */}
+                  <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                    <div className="flex items-center gap-1">
+                      <button 
+                        className="text-[12px] text-white font-bold truncate hover:underline cursor-pointer leading-none"
+                        onClick={() => setEditingTask(task)}
+                        data-testid={`task-link-${task.id}`}
+                        style={{ textAlign: 'left', flex: '1 1 0', minWidth: 0 }}
+                      >
+                        {task.title}
+                      </button>
+                      {task.referenceLink && (
+                        <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-box-${task.id}`}>
+                          <ExternalLink className="h-3 w-3 text-white/60 hover:text-white" />
+                        </a>
+                      )}
+                    </div>
+                    <span className="text-[9px] text-white/50 font-normal truncate leading-tight">{courseCode}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                  </div>
+                  <div style={{ width: '5px', flexShrink: 0 }} />
+                  {/* Col 3: Days count + progress bar */}
+                  <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                    <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
                     <div style={{ width: '100%', position: 'relative', height: '3px' }}>
                       <div 
                         className="rounded-full transition-all duration-300"
@@ -18792,52 +18811,6 @@ export default function Dashboard() {
                       />
                     </div>
                   </div>
-                  {/* Handle 2 spacer */}
-                  <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 3: Task name */}
-                  <div className="flex items-center gap-1" style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0 }}>
-                    <button 
-                      className="text-[12px] text-white font-bold truncate hover:underline cursor-pointer leading-none"
-                      onClick={() => setEditingTask(task)}
-                      data-testid={`task-link-${task.id}`}
-                      style={{ textAlign: 'left', flex: '1 1 0', minWidth: 0 }}
-                    >
-                      {task.title}
-                    </button>
-                    {task.referenceLink && (
-                      <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-box-${task.id}`}>
-                        <ExternalLink className="h-3 w-3 text-white/60 hover:text-white" />
-                      </a>
-                    )}
-                  </div>
-                  {/* Handle 3 spacer */}
-                  <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 4: Course code */}
-                  <div 
-                    className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate"
-                    style={{ width: `${taskColumnWidths.courseCode}px`, flexShrink: 0 }}
-                  >
-                    {courseCode}
-                  </div>
-                  {/* Handle 4 spacer */}
-                  <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 5: Course name */}
-                  <div 
-                    className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate"
-                    style={{ width: `${taskColumnWidths.courseName}px`, flexShrink: 0 }}
-                  >
-                    {courseFullName}
-                  </div>
-                  {/* Handle 5 spacer */}
-                  <div style={{ width: '3px', flexShrink: 0 }} />
-                  {/* Col 6: Due date */}
-                  <span 
-                    className="text-[10px] text-white whitespace-nowrap"
-                    style={{ width: `${taskColumnWidths.dueDate}px`, flexShrink: 0 }}
-                  >
-                    {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
-                  </span>
-                  {/* Handle 6 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
                 </div>
                 {attachments.length > 0 && (
@@ -19205,6 +19178,38 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginBottom: '37px' }}>
+                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                                One week
+                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                {group.weeks.map((weekStart: Date, wi: number) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const isDue = dueDates.some(dd => isSameDay(d, dd.date));
+                                        const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
+                                        return (
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.85)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.15)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
+                                            {d.getDate()}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginBottom: '37px' }}>
+                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 20px)', overflow: 'visible', transform: 'scaleX(-1)' }}>
+                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
@@ -19286,38 +19291,6 @@ export default function Dashboard() {
                                 );
                               })}
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-113px', alignSelf: 'stretch', marginBottom: '37px' }}>
-                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 20px)', overflow: 'visible' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
-                              </div>
-                            )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '14px', alignSelf: 'center', marginBottom: '37px' }}>
-                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                One week
-                              </span>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
-                                {group.weeks.map((weekStart, wi) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                  return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                      {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const isDue = dueDates.some(dd => isSameDay(d, dd.date));
-                                        const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
-                                        const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
-                                        return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.85)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.15)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
-                                            {d.getDate()}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
                           </div>
                         );
                       });
@@ -19377,6 +19350,44 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-4px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
+                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                {group.weeks.map((weekStart: Date, wi: number) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isDue = !!dueMatch;
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        return (
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
+                                            {d.getDate()}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '12px' }}>
+                                <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible', transform: 'scaleX(-1)' }}>
+                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
@@ -19459,44 +19470,6 @@ export default function Dashboard() {
                                 );
                               })}
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-113px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '12px' }}>
-                                <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
-                              </div>
-                            )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '14px', alignSelf: 'center', marginTop: '-4px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
-                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
-                              </span>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
-                                {group.weeks.map((weekStart, wi) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                  return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                      {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
-                                        const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
-                                        return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
-                                            {d.getDate()}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
                           </div>
                         );
                       });
@@ -19559,6 +19532,44 @@ export default function Dashboard() {
                         });
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                {group.weeks.map((weekStart: Date, wi: number) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isDue = !!dueMatch;
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        return (
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
+                                            {d.getDate()}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginBottom: '22px' }}>
+                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 15px)', overflow: 'visible', transform: 'scaleX(-1)' }}>
+                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -19618,44 +19629,6 @@ export default function Dashboard() {
                                 );
                               })}
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-113px', alignSelf: 'stretch', marginBottom: '22px' }}>
-                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 15px)', overflow: 'visible' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
-                              </div>
-                            )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '14px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
-                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
-                              </span>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
-                                {group.weeks.map((weekStart, wi) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                  return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                      {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
-                                        const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
-                                        return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
-                                            {d.getDate()}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
                           </div>
                         );
                       });
@@ -19712,6 +19685,44 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
+                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                                {group.weeks.length <= 3 ? `${group.weeks.length} week${group.weeks.length > 1 ? 's' : ''}` : `${group.weeks.length} weeks`}
+                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                {group.weeks.map((weekStart: Date, wi: number) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                      {days.map((d, di) => {
+                                        const isToday = isSameDay(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isDue = !!dueMatch;
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        return (
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
+                                            {d.getDate()}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginBottom: '22px' }}>
+                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 15px)', overflow: 'visible', transform: 'scaleX(-1)' }}>
+                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            )}
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
@@ -19742,44 +19753,6 @@ export default function Dashboard() {
                                   </div>
                                 );
                               })}
-                            </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginRight: '-2px', marginLeft: '-113px', alignSelf: 'stretch', marginBottom: '22px' }}>
-                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 15px)', overflow: 'visible' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
-                              </div>
-                            )}
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginLeft: '14px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
-                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length <= 3 ? `${group.weeks.length} week${group.weeks.length > 1 ? 's' : ''}` : `${group.weeks.length} weeks`}
-                              </span>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
-                                {group.weeks.map((weekStart, wi) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                  return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
-                                      {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
-                                        const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
-                                        return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
-                                            {d.getDate()}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })}
-                              </div>
                             </div>
                           </div>
                         );
