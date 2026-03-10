@@ -18955,7 +18955,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
                     left: 0,
-                    width: leftWidth,
+                    width: '33%',
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
