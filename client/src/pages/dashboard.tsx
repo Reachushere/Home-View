@@ -18743,6 +18743,8 @@ export default function Dashboard() {
                 className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${isZeroDaysTask ? 'animate-zero-day-blink' : shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink-no-sweep' : ''}`} 
                 data-box-task-id={task.id} 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
+                onMouseLeave={() => setHoveredCountdownTaskId(null)}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
