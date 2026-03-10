@@ -18920,7 +18920,7 @@ export default function Dashboard() {
                   position: 'absolute',
                   top: `${rowTop}px`,
                   right: 0,
-                  width: rightWidth,
+                  width: `calc(${rightWidth} / 4)`,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
