@@ -11991,7 +11991,7 @@ export default function Dashboard() {
         </div>
         <Button 
           variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight relative -top-[4px]"
+          className="!h-4 !min-h-0 px-1 text-[12px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight relative -top-[4px]"
           style={{ marginRight: '4px' }}
           onClick={() => {
             if (calendarView === "week") {
