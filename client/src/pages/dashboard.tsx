@@ -19039,7 +19039,7 @@ export default function Dashboard() {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
-                return `${lastBottom - 35}px`;
+                return `${lastBottom - 31}px`;
               }
             }
             return '14px';
