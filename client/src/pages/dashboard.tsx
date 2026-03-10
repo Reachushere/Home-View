@@ -18970,7 +18970,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', background: pd.progressBg }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         {!pd.moduleP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
@@ -18998,7 +18998,7 @@ export default function Dashboard() {
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible', background: pd.progressBg }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         {!pd.readingP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
