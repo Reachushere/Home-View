@@ -6857,7 +6857,7 @@ export default function Dashboard() {
         }
         const unreducedWidth = rect.width + calendarReduction;
         const frSpace = unreducedWidth - gridSizes.timeColumnWidth - gridSizes.moduleColumnWidth;
-        const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
+        const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
         const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
@@ -17335,8 +17335,8 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? (gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth) : gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
-                        width: `calc((${gridSizes.dayColumnWidths[dayIdx >= 6 ? 6 : dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0) + gridSizes.progressColumnWidth}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
+                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0) : gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
+                        width: `calc((${gridSizes.dayColumnWidths[dayIdx >= 6 ? 6 : dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
@@ -17399,8 +17399,8 @@ export default function Dashboard() {
                   const isTodayInView = weekDays.some(d => isSameDay(d, now));
                   const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
                   const isTodaySat = todayDayIdx === 6;
-                  const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
-                  const satPlusProgFr = gridSizes.dayColumnWidths[6] + gridSizes.progressColumnWidth;
+                  const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+                  const satFr = gridSizes.dayColumnWidths[6];
                   
                   return (
                     <div 
@@ -17409,7 +17409,7 @@ export default function Dashboard() {
                         top: `${topPosition}px`, 
                         right: isTodaySat 
                           ? '0px'
-                          : `calc((${satPlusProgFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
                       }}
                     >
                       <div 
@@ -17443,7 +17443,7 @@ export default function Dashboard() {
             const containerWidth = contentEl.clientWidth;
             const fixedLeftWidth = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
             const flexWidth = containerWidth - fixedLeftWidth;
-            const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
+            const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
             
             const getDayColumnCenter = (dIdx: number) => {
               let leftFr = 0;
