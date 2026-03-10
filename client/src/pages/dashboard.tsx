@@ -11984,20 +11984,6 @@ export default function Dashboard() {
           </div>
           <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
         </div>
-        <Button 
-          variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[12px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight relative -top-[4px]"
-          style={{ marginRight: '4px' }}
-          onClick={() => {
-            if (calendarView === "week") {
-              setCurrentMonth(new Date());
-            }
-            setCalendarView(calendarView === "month" ? "week" : "month");
-          }}
-          data-testid="button-month-view"
-        >
-          {calendarView === "month" ? "Week" : <span style={{ textDecoration: 'underline' }}>Month View</span>}
-        </Button>
       </div>
       
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
@@ -15561,6 +15547,22 @@ export default function Dashboard() {
               boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
             }}
           />
+
+          {/* Month View button - below glass backing, left-aligned */}
+          <Button
+            variant="ghost"
+            className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
+            style={{ bottom: '-24px', left: '-14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            onClick={() => {
+              if (calendarView === "week") {
+                setCurrentMonth(new Date());
+              }
+              setCalendarView(calendarView === "month" ? "week" : "month");
+            }}
+            data-testid="button-month-view"
+          >
+            {calendarView === "month" ? "Week View" : <span style={{ textDecoration: 'underline' }}>Month View</span>}
+          </Button>
           
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
