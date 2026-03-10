@@ -11952,7 +11952,7 @@ export default function Dashboard() {
       
       {/* Set Default checkbox - right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '20px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px` }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '23px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px` }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
@@ -11967,7 +11967,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '6px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -15565,7 +15565,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
-            style={{ bottom: '-24px', left: '-14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: '-28px', left: '-14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
