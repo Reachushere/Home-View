@@ -11047,26 +11047,21 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Share Button - fixed position, beside date */}
+      {/* Share Button - fixed position, beside time */}
       {isAdmin && (
         <>
-          <div style={{ position: 'fixed', right: `${calendarRight + 46 + 149}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+          <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 88}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
           <Share 
             className="text-white/80 cursor-pointer hover:text-white"
             strokeWidth={2.5}
-            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight + 28 + 177}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ height: '14px', width: '14px', position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 98}px`, top: '6px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={generateShareLink}
             data-testid="button-share-main"
           />
         </>
       )}
 
-      {/* Date - fixed position */}
-      <span className="text-[12px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
-        {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-      </span>
-
-      {/* Timer bar - rectangle below date/time */}
+      {/* Timer bar - rectangle below time */}
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 4}px`,
@@ -19044,7 +19039,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
