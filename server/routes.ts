@@ -4610,15 +4610,18 @@ export async function registerRoutes(
 
       if (!buffer) return null;
       const PdfParser = await getPdfParser();
-      const parsed = await PdfParser(buffer);
+      const parser = new PdfParser({ data: new Uint8Array(buffer) });
+      await parser.load();
+      const pdfText = await parser.getText();
       let textContent = '';
-      if (parsed && typeof parsed === 'object') {
-        if (parsed.text) textContent = parsed.text;
-        else if ((parsed as any).pages && Array.isArray((parsed as any).pages)) {
-          textContent = (parsed as any).pages.map((p: any) => p.text || '').join('\n\n');
+      if (pdfText && typeof pdfText === 'object') {
+        if (pdfText.pages && Array.isArray(pdfText.pages)) {
+          textContent = pdfText.pages.map((p: any) => p.text || '').join('\n\n');
+        } else if (pdfText.text) {
+          textContent = pdfText.text;
         }
-      } else if (typeof parsed === 'string') {
-        textContent = parsed;
+      } else if (typeof pdfText === 'string') {
+        textContent = pdfText;
       }
       console.log(`[ExtractText] Extracted ${textContent.length} chars from ${file.originalName}`);
       return cleanTextForTTS(textContent);
