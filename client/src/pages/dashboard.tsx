@@ -11345,6 +11345,7 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold whitespace-nowrap">{l1Progress.completed} / {l1Progress.total}</span>
               </div>
               </div>
+              </div>
 
               {/* Level II */}
               <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
@@ -11590,6 +11591,7 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold whitespace-nowrap">{l2Progress.completed} / {l2Progress.total}</span>
               </div>
               </div>
+              </div>
 
               {/* Level III */}
               <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black">
@@ -11814,6 +11816,7 @@ export default function Dashboard() {
                   <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
                 </div>
                 <span className="text-[8px] font-bold whitespace-nowrap">{l3Progress.completed} / {l3Progress.total}</span>
+              </div>
               </div>
               </div>
             </div>
@@ -15542,15 +15545,15 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: `${calendarReduction > 0 ? calendarReduction - 3 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '0px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
             className="absolute pointer-events-none"
             style={{ 
               top: '-4px', 
-              left: `${-(calendarReduction - 3) - 8}px`, 
-              right: '-15px', 
+              left: '-8px', 
+              right: `${-(calendarReduction - 3) - 15}px`, 
               bottom: '-16px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
@@ -18884,13 +18887,13 @@ export default function Dashboard() {
           
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
-        {/* Coming Up box - positioned to the left of the calendar in the reduction gap */}
+        {/* Coming Up box - positioned to the right of the calendar in the reduction gap */}
         <section
           ref={homeworkSectionRef}
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
-            left: `${originalCalendarLeft - 15 + 20 - 2 + 2 + 1 + 1}px`,
+            right: `${calendarRight - 15 + 20 - 2 + 2 + 1 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom - 1}px`,
