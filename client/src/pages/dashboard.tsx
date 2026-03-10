@@ -10112,7 +10112,7 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <div className="fixed flex items-center" style={{ left: '26px', top: '8px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed flex items-center" style={{ left: '25px', top: '8px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '42px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
@@ -11105,8 +11105,8 @@ export default function Dashboard() {
       {/* Timer bar - rectangle left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 18}px`,
-        top: '-1px',
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 27}px`,
+        top: '4px',
         height: '22px',
         zIndex: 100,
         display: 'flex',
