@@ -18608,20 +18608,31 @@ export default function Dashboard() {
               if (!pd || !courseRowRects[idx]) return [];
               const rowTop = courseRowRects[idx].top - upcomingTop;
               const rowHeight = courseRowRects[idx].height;
+              const halfHeight = rowHeight / 2;
               return [
-                <div key={`${pd.courseCode}-right-fill`} style={{
+                <div key={`${pd.courseCode}-module-bg`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: 0,
                   width: '33%',
-                  height: `${rowHeight}px`,
+                  height: `${halfHeight}px`,
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  zIndex: 39,
+                  borderBottom: '0.5px solid rgba(255,255,255,0.15)',
+                }} />,
+                <div key={`${pd.courseCode}-reading-bg`} style={{
+                  position: 'absolute',
+                  top: `${rowTop + halfHeight}px`,
+                  left: 0,
+                  width: '33%',
+                  height: `${halfHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
                 }} />,
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  left: leftWidth,
+                  left: '33%',
                   right: 0,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
