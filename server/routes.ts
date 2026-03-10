@@ -231,7 +231,7 @@ const CHARS_PER_SECOND = 13; // Conservative: let chunk finish before sending ne
 const CHUNK_SIZE = 2000; // Characters per TTS chunk
 
 // Helper to generate OpenAI TTS audio and save to object storage for playback
-async function generateAndSaveTTSAudio(text: string, fileId: string): Promise<string> {
+async function generateAndSaveTTSAudio(text: string, fileId: string, voice: string = "echo"): Promise<string> {
   const publicPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0]?.trim();
   if (!publicPath) {
     throw new Error("PUBLIC_OBJECT_SEARCH_PATHS not configured");
@@ -255,7 +255,7 @@ async function generateAndSaveTTSAudio(text: string, fileId: string): Promise<st
   console.log(`Generating OpenAI TTS for ${normalizedText.length} chars, file: ${fileId}`);
   
   // Generate audio using OpenAI TTS
-  const audioBuffer = await textToSpeech(normalizedText, "nova", "mp3");
+  const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3");
   
   // Save to object storage
   const audioFileName = `tts-audio/${fileId}-${Date.now()}.mp3`;
@@ -4377,6 +4377,37 @@ export async function registerRoutes(
     console.log(`[Nest Playback] Starting session ${sessionId}: "${fileName}" from chunk ${startChunk}/${chunks.length}`);
 
     try {
+      if (chunks.length === 0) {
+        console.log(`[Nest Playback] No chunks for "${fileName}" — text extraction failed, skipping to next file`);
+        try {
+          const resp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/cat-wash/update-progress`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileId, completed: true }),
+          });
+          const data = await resp.json();
+          if (data.nextFile) {
+            console.log(`[Nest Playback] Skipping to next file: ${data.nextFile.name}`);
+            const nextFiles = await storage.getFiles();
+            const nextFile = nextFiles.find((f: any) => f.id === data.nextFile.id);
+            if (nextFile) {
+              const nextText = await extractFileText(nextFile);
+              if (nextText) {
+                const nextChunks = chunkTextForNest(nextText);
+                startNestChunkPlayback(nextFile.id, nextFile.displayName || nextFile.originalName, nextChunks, 0, sessionId, voice);
+                return;
+              }
+            }
+          }
+        } catch (e: any) {
+          console.error(`[Nest Playback] Error skipping to next: ${e.message}`);
+        }
+        catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
+        catWashPlaybackState = null;
+        return;
+      }
+
       await Promise.allSettled([
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST',
@@ -4394,7 +4425,7 @@ export async function registerRoutes(
       const cleanName = fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
       const introText = `Now reading: ${cleanName}`;
       console.log(`[Nest Playback] Announcing: "${introText}"`);
-      const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`);
+      const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`, voice);
       await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
       const introWords = introText.split(/\s+/).length;
       const introWaitMs = Math.max(3000, (introWords / 145) * 60 * 1000 + 1500);
@@ -4416,7 +4447,7 @@ export async function registerRoutes(
 
         if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL && i > startChunk + 2) {
           console.log(`[Nest Playback] Attention prompt after ${chunksPlayedSinceLastPrompt} chunks`);
-          const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`);
+          const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`, voice);
           await playOnNestSpeaker(`${appUrl}${promptPath}`);
           await new Promise(r => setTimeout(r, 5000));
           chunksPlayedSinceLastPrompt = 0;
@@ -4427,7 +4458,7 @@ export async function registerRoutes(
         console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
 
         try {
-          const audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`);
+          const audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
           const wordCount = chunkText.split(/\s+/).length;
           const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
 
@@ -4485,7 +4516,7 @@ export async function registerRoutes(
           }
         }
 
-        const completionPath = await generateAndSaveTTSAudio("All readings complete. Great job Bryn.", `nest-complete-${Date.now()}`);
+        const completionPath = await generateAndSaveTTSAudio("All readings complete. Great job Bryn.", `nest-complete-${Date.now()}`, voice);
         await playOnNestSpeaker(`${appUrl}${completionPath}`);
       }
 
@@ -4588,7 +4619,7 @@ export async function registerRoutes(
 
     try {
       await new Promise(r => setTimeout(r, 1000));
-      const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-${Date.now()}`);
+      const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-${Date.now()}`, "echo");
       await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
       const wordCount = goodbyeText.split(/\s+/).length;
       await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 145) * 60 * 1000 + 1500)));
@@ -5335,7 +5366,7 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] Session ${currentSession}: Nest speaker playback, ${totalChunksCalc} chunks`);
       console.log(`[Cat Wash] Reader URL (visual follow): ${readerUrl}`);
 
-      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentSession);
+      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentSession, "echo");
 
       res.json({
         action: "playing",
@@ -5522,7 +5553,7 @@ document.body.removeChild(a);
 
       console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
 
-      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentLightsSession);
+      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentLightsSession, "echo");
 
       res.json({
         action: "playing",
