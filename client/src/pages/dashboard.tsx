@@ -19193,7 +19193,7 @@ export default function Dashboard() {
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const isDue = dueDates.some(dd => isSameDay(d, dd.date));
@@ -19357,13 +19357,13 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-4px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length === 1 ? 'Next week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                                Next week
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -19537,13 +19537,13 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length === 1 ? 'Two weeks' : group.weeks.length === 2 ? 'Three weeks' : group.weeks.length === 3 ? 'Four weeks' : `${['One','Two','Three','Four','Five','Six','Seven','Eight'][group.weeks.length - 1] || group.weeks.length} weeks`}
+                                Two weeks
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -19688,13 +19688,18 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {(['Three weeks', 'Four weeks', 'Five weeks', 'Six weeks', 'Seven weeks', 'Eight weeks'][group.weeks.length - 1]) || `${group.weeks.length} weeks`}
+                                {(() => {
+                                  const lastWeek = group.weeks[group.weeks.length - 1];
+                                  const weeksFromNow = Math.round((lastWeek.getTime() - startOfWeek(new Date(), { weekStartsOn: 0 }).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+                                  const names = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
+                                  return `${names[weeksFromNow - 1] || weeksFromNow} weeks`;
+                                })()}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
