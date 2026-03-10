@@ -4582,25 +4582,32 @@ export async function registerRoutes(
 
   async function extractFileText(file: any): Promise<string | null> {
     try {
-      if (file.objectPath?.startsWith('/School/') || file.objectPath?.startsWith('/objects/')) {
-        const content = await getOneDriveFile(file.objectPath);
-        if (!content) return null;
-        const PdfParser = await getPdfParser();
-        const parsed = await PdfParser(content);
-        let textContent = '';
-        if (parsed && typeof parsed === 'object') {
-          if (parsed.text) textContent = parsed.text;
-          else if ((parsed as any).pages && Array.isArray((parsed as any).pages)) {
-            textContent = (parsed as any).pages.map((p: any) => p.text || '').join('\n\n');
-          }
-        } else if (typeof parsed === 'string') {
-          textContent = parsed;
+      let buffer: Buffer | null = null;
+
+      if (file.objectPath?.startsWith('/School/')) {
+        console.log(`[ExtractText] Downloading from OneDrive path: ${file.objectPath}`);
+        const { getOneDriveClient } = await import("./onedrive");
+        const client = await getOneDriveClient();
+        const encodedPath = encodeURIComponent(file.objectPath).replace(/%2F/g, '/');
+        const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+        const downloadUrl = item['@microsoft.graph.downloadUrl'];
+        if (!downloadUrl) {
+          console.error(`[ExtractText] No download URL from OneDrive for: ${file.objectPath}`);
+          return null;
         }
-        return cleanTextForTTS(textContent);
+        const pdfResponse = await fetch(downloadUrl);
+        if (!pdfResponse.ok) {
+          console.error(`[ExtractText] OneDrive download failed: ${pdfResponse.status}`);
+          return null;
+        }
+        buffer = Buffer.from(await pdfResponse.arrayBuffer());
+        console.log(`[ExtractText] Downloaded ${buffer.length} bytes from OneDrive`);
+      } else {
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const objectStorage = new ObjectStorageService();
+        buffer = await objectStorage.downloadObject(file.objectPath);
       }
-      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-      const objectStorage = new ObjectStorageService();
-      const buffer = await objectStorage.downloadObject(file.objectPath);
+
       if (!buffer) return null;
       const PdfParser = await getPdfParser();
       const parsed = await PdfParser(buffer);
@@ -4613,9 +4620,10 @@ export async function registerRoutes(
       } else if (typeof parsed === 'string') {
         textContent = parsed;
       }
+      console.log(`[ExtractText] Extracted ${textContent.length} chars from ${file.originalName}`);
       return cleanTextForTTS(textContent);
     } catch (e: any) {
-      console.error(`[ExtractText] Error: ${e.message}`);
+      console.error(`[ExtractText] Error for ${file.originalName}: ${e.message}`);
       return null;
     }
   }
