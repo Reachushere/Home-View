@@ -20275,7 +20275,8 @@ export default function Dashboard() {
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
                 onClick={async () => {
                   if (recurringEditPending) {
-                    await apiRequest("PATCH", `/api/tasks/${recurringEditPending.taskId}`, recurringEditPending.payload);
+                    const { originalTitle, ...singlePayload } = recurringEditPending.payload as Record<string, unknown>;
+                    await apiRequest("PATCH", `/api/tasks/${recurringEditPending.taskId}`, singlePayload);
                     queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
                     queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
                     recurringEditPending.onSuccess();
@@ -23170,7 +23171,9 @@ function TaskForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (task && onRecurringEdit && ((task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId)) {
+    const isLinkedRecurring = task && ((task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId);
+    const hasSameTitleSiblings = task && !isLinkedRecurring && allTasks.filter(t => t.id !== task.id && t.title === task.title && t.courseName === task.courseName && !t.isCompleted).length > 0;
+    if (task && onRecurringEdit && (isLinkedRecurring || (hasSameTitleSiblings && formData.title !== task.title))) {
       const data = formData;
       const finalDueDate = new Date(data.dueDate);
       let finalStartDate: Date | null = null;
@@ -23202,6 +23205,9 @@ function TaskForm({
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
       };
+      if (hasSameTitleSiblings && !isLinkedRecurring) {
+        payload.originalTitle = task.title;
+      }
       onRecurringEdit(task.id, task.title, payload, onSuccess);
       return;
     }

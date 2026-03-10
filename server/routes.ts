@@ -1148,6 +1148,18 @@ export async function registerRoutes(
         tasksToUpdate.push(parentTask.id);
       }
 
+      if (tasksToUpdate.length <= 1 && fields.originalTitle && task.courseName) {
+        const allTasksList = await storage.getTasks();
+        for (const t of allTasksList) {
+          if (t.id !== taskId && t.title === fields.originalTitle && t.courseName === task.courseName) {
+            tasksToUpdate.push(t.id);
+          }
+        }
+        delete fields.originalTitle;
+      } else {
+        delete fields.originalTitle;
+      }
+
       // Calculate prep duration from the edited task so we can apply it relatively
       // to each sibling's own dueDate
       let prepDuration = 0;
