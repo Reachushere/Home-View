@@ -11096,7 +11096,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '14px', width: '14px', position: 'fixed', left: '12px', bottom: '21px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '14px', width: '14px', position: 'fixed', left: '8px', bottom: '16px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -12039,7 +12039,7 @@ export default function Dashboard() {
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}</span>
+          <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
         </div>
       </div>
       
@@ -15618,6 +15618,28 @@ export default function Dashboard() {
           >
             {calendarView === "month" ? "Week View" : <span style={{ textDecoration: 'underline' }}>Month View</span>}
           </Button>
+          <div
+            className="absolute"
+            style={{ bottom: '-39px', left: `${calendarView === "month" ? 52 : 60}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.4)' }} />
+            <Button
+              variant="ghost"
+              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight"
+              onClick={() => {
+                if (calendarView === "month") {
+                  setCurrentMonth(new Date());
+                } else {
+                  const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : 1;
+                  setSelectedWeek(cw);
+                  scrollHomeworkToWeek(cw);
+                }
+              }}
+              data-testid="button-current-view"
+            >
+              <span style={{ textDecoration: 'underline' }}>Current</span>
+            </Button>
+          </div>
           
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
@@ -16912,7 +16934,7 @@ export default function Dashboard() {
                                       task.isCompleted ? "text-gray-400 line-through" : "text-black"
                                     }`}
                                   >
-                                    {task.title}
+                                    {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                   </div>
                                   {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-time-${task.id}`} /> : null; })()}
                                 </div>
@@ -17065,7 +17087,7 @@ export default function Dashboard() {
                           onClick={() => setEditingTask(task)}
                           className={`text-[9px] leading-tight font-normal line-clamp-2 cursor-pointer flex-1 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
                         >
-                          {task.title}
+                          {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                         </span>
                         {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-multi-${task.id}`} /> : null; })()}
                       </div>
