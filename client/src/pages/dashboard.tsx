@@ -19072,6 +19072,8 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
                         <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px' }}
+                          onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
+                          onMouseLeave={() => setHoveredCountdownTaskId(null)}
                           ref={(rowEl) => {
                             if (!rowEl || rowEl.dataset.swipeInit) return;
                             rowEl.dataset.swipeInit = '1';
@@ -19225,6 +19227,8 @@ export default function Dashboard() {
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
                                   <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
+                                    onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
+                                    onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
@@ -19402,6 +19406,8 @@ export default function Dashboard() {
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
                                   <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
+                                    onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
+                                    onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
@@ -19581,6 +19587,8 @@ export default function Dashboard() {
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
                                   <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
+                                    onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
+                                    onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
                                       if (!rowEl || rowEl.dataset.swipeInit) return;
                                       rowEl.dataset.swipeInit = '1';
@@ -19734,7 +19742,7 @@ export default function Dashboard() {
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 return (
-                                  <div key={task.id} data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '17px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.1)' : 'none' }}>
+                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '4px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '17px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.1)' : 'none' }}>
                                     <div style={{ width: '42px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px', marginLeft: '-3px' }}>
                                       <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
                                       <div style={{ width: '100%', position: 'relative', height: '3px' }}>
