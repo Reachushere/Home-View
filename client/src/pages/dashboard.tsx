@@ -19317,7 +19317,7 @@ export default function Dashboard() {
                                         const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
                                         const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
                                         return (
-                                          <div key={di} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.85)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.15)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }}>
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.85)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.15)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
                                         );
@@ -19490,13 +19490,13 @@ export default function Dashboard() {
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
-                                          <div key={di} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }}>
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
                                         );
@@ -19649,13 +19649,13 @@ export default function Dashboard() {
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
-                                          <div key={di} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }}>
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
                                         );
@@ -19774,13 +19774,13 @@ export default function Dashboard() {
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
-                                          <div key={di} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }}>
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
                                         );
