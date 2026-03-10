@@ -15549,7 +15549,7 @@ export default function Dashboard() {
             style={{ 
               top: '-4px', 
               left: '-14px', 
-              right: `${-(calendarReduction - 3) - 15}px`, 
+              right: `${-(calendarReduction - 3) - 15 + 6}px`, 
               bottom: '-16px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               backdropFilter: 'blur(24px)',
