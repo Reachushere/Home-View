@@ -15549,7 +15549,7 @@ export default function Dashboard() {
             className="absolute pointer-events-none"
             style={{ 
               top: '-4px', 
-              left: '-10px', 
+              left: '-14px', 
               right: `${-(calendarReduction - 3) - 15}px`, 
               bottom: '-16px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
