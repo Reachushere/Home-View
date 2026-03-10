@@ -15223,7 +15223,6 @@ export default function Dashboard() {
                         <div className="text-xs text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
                           <p><strong>Day shift</strong> (7:30a–7:30p): Quiet hours 10pm–5am</p>
                           <p><strong>Night shift</strong> (7:30p–7:30a): Quiet hours 10am–5pm</p>
-                          <p><strong>No shift set:</strong> Quiet hours 10pm–8am (default)</p>
                           <p className="italic">Calendar task reminders always announce, even during quiet hours.</p>
                         </div>
                       </div>
@@ -15514,7 +15513,6 @@ export default function Dashboard() {
                         <div className="text-xs text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
                           <p><strong>Day shift</strong> (7:30a–7:30p): Quiet hours 10pm–5am</p>
                           <p><strong>Night shift</strong> (7:30p–7:30a): Quiet hours 10am–5pm</p>
-                          <p><strong>No shift set:</strong> Quiet hours 10pm–8am (default)</p>
                           <p className="italic">Calendar task reminders always announce, even during quiet hours.</p>
                         </div>
                       </div>
