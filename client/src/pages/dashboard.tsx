@@ -11098,7 +11098,7 @@ export default function Dashboard() {
         paddingLeft: '11px',
         paddingRight: '9px',
         borderRadius: '6px',
-        background: colorSettings.headerBar,
+        background: `color-mix(in srgb, ${colorSettings.headerBar} 70%, transparent)`,
         backdropFilter: 'blur(40px)',
         WebkitBackdropFilter: 'blur(40px)',
         opacity: isTopPillOpen ? 0 : 1,
@@ -11109,7 +11109,7 @@ export default function Dashboard() {
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
         }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-          <span className="text-white" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1' }}>{formatPomodoroTime(pomodoroTime)}</span>
+          <span className="text-white" style={{ fontSize: '12px', fontWeight: 500, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
         <div className="flex items-center gap-[22px]">
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
@@ -15604,7 +15604,7 @@ export default function Dashboard() {
           <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
-            {weekDays.slice(0, 6).map((day, idx) => {
+            {weekDays.map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               const todayHasTasks = isToday && allTasks.some(t => 
                 t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), day)
@@ -15615,25 +15615,12 @@ export default function Dashboard() {
                 </div>
               );
             })}
-            {/* Saturday column - show reminder if Saturday is today */}
-            {(() => {
-              const satDay = weekDays[6];
-              const isSatToday = satDay && isSameDay(satDay, new Date());
-              const satHasTasks = isSatToday && allTasks.some(t => 
-                t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), satDay)
-              );
-              return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: saturdayGridCol }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
-                  {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
-                </div>
-              );
-            })()}
           </div>
           {/* TODAY label - positioned above calendar card */}
           <div className="grid w-full pointer-events-none" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '0px', position: 'relative', zIndex: 60 }}>
             <div />
             {gridSizes.moduleColumnWidth > 0 && <div />}
-            {weekDays.slice(0, 6).map((day, idx) => {
+            {weekDays.map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               return (
                 <div key={idx} style={{ position: 'relative' }}>
@@ -15645,18 +15632,6 @@ export default function Dashboard() {
                 </div>
               );
             })}
-            {weekDays[6] && (() => {
-              const isSatToday = isSameDay(weekDays[6], new Date());
-              return (
-                <div style={{ gridColumn: saturdayGridCol, position: 'relative' }}>
-                  {isSatToday && (
-                    <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-normal tracking-wide text-black" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{format(weekDays[6], 'EEEE, MMMM d, yyyy')}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
           </div>
           <div ref={calendarBorderRef} className="shadow-lg flex-1 min-h-0 border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
@@ -15685,8 +15660,7 @@ export default function Dashboard() {
                 />
               </div>
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
-              {/* Sun-Fri day headers (indices 0-5) */}
-              {weekDays.slice(0, 6).map((day, idx) => {
+              {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
@@ -15708,7 +15682,7 @@ export default function Dashboard() {
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
-                    {idx < 5 && (
+                    {idx < 6 && (
                       <div
                         className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/20 hover:bg-white/50"
                         style={{ zIndex: 9999 }}
@@ -15720,35 +15694,6 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Progress column header (half-width, between Fri and Sat) */}
-              {/* Saturday header */}
-              {weekDays[6] && (() => {
-                const day = weekDays[6];
-                const dayName = format(day, "EEE").toUpperCase();
-                const dayNum = format(day, "d");
-                const hasTodayTasks = isTodaySaturday && allTasks.some(t => 
-                  !t.isCompleted && isSameDay(new Date(t.dueDate), day)
-                );
-                const satShiftDateStr = format(day, "yyyy-MM-dd");
-                const satShiftForDay = localShiftMap[satShiftDateStr];
-                return (
-                  <div 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={isTodaySaturday ? { gridColumn: saturdayGridCol } : { backgroundColor: colorSettings.headerBar, gridColumn: saturdayGridCol }}
-                    data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
-                  >
-                    {satShiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
-                    {satShiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
-                    {!isTodaySaturday && new Date().getDay() !== 6 && (
-                      <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#FFFFFF' }}>NEW SCHOOL WEEK</div>
-                    )}
-                    <div className="flex items-center gap-1.5">
-                      <div className={`text-[10px] font-medium tracking-wide ${isTodaySaturday && blinkSettings.todayColumnBlink ? 'animate-today-day-text' : ''}`} style={{ color: isTodaySaturday && blinkSettings.todayColumnBlink ? undefined : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
-                    </div>
-                  </div>
-                );
-              })()}
             </div>
             
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
@@ -15884,14 +15829,13 @@ export default function Dashboard() {
                             </div>
                             )}
                             
-                            {/* Sun-Fri columns (6 columns: index 0-5) - dynamic task starts from today */}
-                            {weekDays.slice(0, 6).map((day, dayIdx) => {
-                              const dayOfWeek = day.getDay(); // 0 = Sunday, 5 = Friday
+                            {weekDays.map((day, dayIdx) => {
+                              const dayOfWeek = day.getDay();
                               const isBeforeToday = dayOfWeek < currentDayOfWeek;
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = isActualToday ? colorSettings.headerBar : course.bg;
+                              const cellBg = isActualToday ? '#e4ecf5' : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -15988,8 +15932,6 @@ export default function Dashboard() {
                               );
                             })}
                             
-                            {/* Saturday column - always course bg */}
-                            <div style={{ backgroundColor: course.bg, gridColumn: saturdayGridCol, minWidth: 0 }} />
                           </div>
                         );
                       })}
@@ -16069,9 +16011,9 @@ export default function Dashboard() {
                     courseWeekTasks.forEach((t, idx) => taskSlotMap.set(t.id, idx));
                     const totalSlots = courseWeekTasks.length;
 
-                    return weekDays.slice(0, 6).map((day, dayIdx) => {
+                    return weekDays.map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
-                    const cellBgColor = isDayToday ? colorSettings.headerBar : course.bg;
+                    const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
                     const cellDate = startOfDay(day);
                     
                     const dueTasks = allTasks?.filter(task => {
@@ -16398,138 +16340,6 @@ export default function Dashboard() {
                     };
                     return null;
                   })()}
-                  {/* Saturday column cell */}
-                  {weekDays[6] && (() => {
-                    const day = weekDays[6];
-                    const isSatToday = isSameDay(day, new Date());
-                    const cellDate = startOfDay(day);
-                    const dueTasks = allTasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
-                      if (task.isCompleted) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
-                      return isSameDay(taskDueDate, cellDate);
-                    }) || [];
-                    const prepTasks = allTasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
-                      if (task.isCompleted) return false;
-                      if (!task.startDate) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
-                      const taskStartDate = startOfDay(new Date(task.startDate));
-                      return cellDate >= taskStartDate && cellDate < taskDueDate;
-                    }) || [];
-                    const rgb = hexToRgb(course.label);
-                    const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                    const allItems: { task: typeof dueTasks[0], isPrep: boolean }[] = [
-                      ...prepTasks.map(t => ({ task: t, isPrep: true })).sort((a, b) => a.task.id - b.task.id),
-                      ...dueTasks.map(t => ({ task: t, isPrep: false })).sort((a, b) => a.task.id - b.task.id),
-                    ];
-                    return (
-                      <div 
-                        className="border-l border-border/50 relative overflow-hidden flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? colorSettings.headerBar : course.bg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
-                      >
-                        {allItems.map((item, itemIdx) => {
-                          const task = item.task;
-                          const today = startOfDay(new Date());
-                          const tomorrow = addDays(today, 1);
-                          const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                          const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                          if (item.isPrep) {
-                            const prepStartDate = startOfDay(new Date(task.startDate!));
-                            const prepDueDate = startOfDay(new Date(task.dueDate));
-                            const satCellDate = startOfDay(day);
-                            const isFirstPrepDay = isSameDay(satCellDate, prepStartDate);
-                            const isLastPrepDay = isSameDay(addDays(satCellDate, 1), prepDueDate);
-                            const satPrepCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                            const satPrepCourseCodeLower = satPrepCourseCode.toLowerCase();
-                            const satPrepModuleFolder = `week-${task.weekNumber}-${satPrepCourseCodeLower}-module`;
-                            const satPrepModuleFile = weeklyFiles.find(f => f.folder === satPrepModuleFolder && f.objectPath);
-                            const satPrepPdfUrl = satPrepModuleFile?.objectPath || null;
-                            return (
-                              <div 
-                                key={`prep-${task.id}`}
-                                className="relative w-full"
-                              >
-                                {!isFirstPrepDay && (
-                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
-                                )}
-                                {!isLastPrepDay && (
-                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
-                                )}
-                                <div
-                                  className="flex items-center text-[9px] rounded border cursor-pointer w-full"
-                                  style={{ 
-                                    backgroundColor: 'white',
-                                    borderColor: course.darkColor,
-                                    overflow: 'hidden',
-                                    paddingRight: satPrepPdfUrl ? '30px' : undefined,
-                                  }}
-                                  onClick={() => setEditingTask(task)}
-                                  title={`Prep Day - ${task.title}`}
-                                >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
-                                  <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
-                                  {satPrepPdfUrl && (
-                                    <img
-                                      src={pdfIconPath}
-                                      alt="Open PDF"
-                                      style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
-                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (satPrepModuleFile) { window.open(`/pdf-reader/${satPrepModuleFile.id}`, '_blank'); } else if (satPrepPdfUrl.startsWith('http')) { window.open(satPrepPdfUrl, '_blank'); } else { const p = satPrepPdfUrl.startsWith('/') ? satPrepPdfUrl.slice(1) : encodeURIComponent(satPrepPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                                      data-testid={`pdf-icon-sat-prep-${task.id}`}
-                                    />
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          }
-                          const satDueCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                          const satDueCourseCodeLower = satDueCourseCode.toLowerCase();
-                          const satDueModuleFolder = `week-${task.weekNumber}-${satDueCourseCodeLower}-module`;
-                          const satDueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === satDueModuleFolder && f.objectPath) : null;
-                          const satDueAttachmentPdf = !satDueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                          const satDueRefLinkPdf = !satDueModuleFile && !satDueAttachmentPdf && task.referenceLink ? task.referenceLink : null;
-                          const satDuePdfUrl = satDueModuleFile?.objectPath || satDueAttachmentPdf || satDueRefLinkPdf || null;
-                          const satHasPrepDays = task.startDate && !isSameDay(startOfDay(new Date(task.startDate)), startOfDay(new Date(task.dueDate)));
-                          return (
-                            <div key={task.id} className="relative">
-                            {satHasPrepDays && (
-                              <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
-                            )}
-                            <div className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden', paddingRight: satDuePdfUrl ? '30px' : undefined }}
-                              onClick={() => setEditingTask(task)}
-                            >
-                              <Checkbox
-                                checked={task.isCompleted || false}
-                                onCheckedChange={(checked) => {
-                                  completeMutation.mutate({ id: task.id, isCompleted: !!checked });
-                                }}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                onClick={(e) => e.stopPropagation()}
-                                data-testid={`checkbox-sat-task-${task.id}`}
-                              />
-                              <span className={`truncate pl-px flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
-                              {task.referenceLink && (
-                                <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-sat-course-${task.id}`}>
-                                  <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
-                                </a>
-                              )}
-                              {satDuePdfUrl && (
-                                <img
-                                  src={pdfIconPath}
-                                  alt="Open PDF"
-                                  style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
-                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (satDueModuleFile) { window.open(`/pdf-reader/${satDueModuleFile.id}`, '_blank'); } else if (satDuePdfUrl.startsWith('http')) { window.open(satDuePdfUrl, '_blank'); } else { const p = satDuePdfUrl.startsWith('/') ? satDuePdfUrl.slice(1) : encodeURIComponent(satDuePdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                                  data-testid={`pdf-icon-sat-task-${task.id}`}
-                                />
-                              )}
-                            </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
                   {/* Course row resize handle */}
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -16566,7 +16376,7 @@ export default function Dashboard() {
                     {gridSizes.moduleColumnWidth > 0 && (
                       <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)' }} />
                     )}
-                    {weekDays.slice(0, 6).map((day, dayIdx) => {
+                    {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDay(day);
                       const isOtherToday = isSameDay(day, new Date());
                       const dayOtherTasks = otherTasks.filter(task => {
@@ -16582,7 +16392,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isOtherToday ? colorSettings.headerBar : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px` }}
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -16624,68 +16434,10 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {weekDays[6] && (() => {
-                      const day = weekDays[6];
-                      const cellDate = startOfDay(day);
-                      const isSatOtherToday = isSameDay(day, new Date());
-                      const dayOtherTasks = otherTasks.filter(task => {
-                        const taskDueDate = startOfDay(new Date(task.dueDate));
-                        if (isSameDay(taskDueDate, cellDate)) return true;
-                        if (task.startDate) {
-                          const taskStartDate = startOfDay(new Date(task.startDate));
-                          return cellDate >= taskStartDate && cellDate < taskDueDate;
-                        }
-                        return false;
-                      });
-                      return (
-                        <div
-                          className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isSatOtherToday ? colorSettings.headerBar : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol }}
-                          data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
-                        >
-                          {dayOtherTasks.map(task => {
-                            const today = startOfDay(new Date());
-                            const tomorrow = addDays(today, 1);
-                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                            return (
-                              <div
-                                key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
-                                style={{
-                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
-                                  borderColor: 'rgba(107, 114, 128, 0.5)',
-                                }}
-                                onClick={() => setEditingTask(task)}
-                                title={task.title}
-                                data-testid={`other-task-sat-${task.id}`}
-                              >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                  data-testid={`checkbox-other-sat-${task.id}`}
-                                />
-                                <span
-                                  className={`truncate font-bold text-black ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  {task.title}
-                                </span>
-                                {task.referenceLink && (
-                                  <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-sat-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
-                                  </a>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    })()}
                   </div>
                 ); })()}
               </div>
-                ); })()}
+              ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             {showAllDayRow && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
@@ -16693,8 +16445,7 @@ export default function Dashboard() {
                 ALL DAY
               </div>
               {gridSizes.moduleColumnWidth > 0 && <div className="border-b border-border/50" style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
-              {/* Day cells - Sun-Fri */}
-              {weekDays.slice(0, 6).map((day, dayIdx) => {
+              {weekDays.map((day, dayIdx) => {
                 const allDayTasks = getAllDayTasks(day);
                 const allDayEvents = getAllDayCalendarEvents(day);
                 
@@ -16836,78 +16587,6 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Saturday all-day cell */}
-              {weekDays[6] && (() => {
-                const day = weekDays[6];
-                const allDayTasks = getAllDayTasks(day);
-                const allDayEvents = getAllDayCalendarEvents(day);
-                return (
-                  <div 
-                    className="border-l border-b border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: saturdayGridCol, paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px` }}
-                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
-                  >
-                    {allDayTasks.map(task => {
-                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                      const colors = dynamicCourseColors[courseCode];
-                      const today = startOfDay(new Date());
-                      const tomorrow = addDays(today, 1);
-                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                      const ad2CourseCodeLower = courseCode.toLowerCase();
-                      const ad2ModuleFolderName = `week-${task.weekNumber}-${ad2CourseCodeLower}-module`;
-                      const ad2ModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === ad2ModuleFolderName && f.objectPath) : null;
-                      const ad2AttachmentPdf = !ad2ModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
-                      const ad2RefLinkPdf = !ad2ModuleFile && !ad2AttachmentPdf && task.referenceLink ? task.referenceLink : null;
-                      const ad2PdfUrl = ad2ModuleFile?.objectPath || ad2AttachmentPdf || ad2RefLinkPdf || null;
-                      const ad2PdfFileId = ad2ModuleFile?.id || null;
-                      return (
-                        <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
-                          <div
-                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                            style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
-                            onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
-                          >
-                            <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
-                            <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
-                            {task.referenceLink && (
-                              <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
-                                <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
-                              </a>
-                            )}
-                            {ad2PdfUrl && (
-                              <img
-                                src={pdfIconPath}
-                                alt="Open PDF"
-                                className="shrink-0"
-                                style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
-                                onClick={(e) => { e.stopPropagation(); window.open(ad2PdfFileId ? `/pdf-reader/${ad2PdfFileId}?autoplay=1` : `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(ad2PdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); }}
-                                data-testid={`pdf-icon-allday2-${task.id}`}
-                              />
-                            )}
-                            <button onClick={(e) => { e.stopPropagation(); deleteTaskWithUndo(task.id); }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {allDayEvents.map(event => (
-                      <a key={event.id} href={event.htmlLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0" data-testid={`all-day-gcal-${event.id}`}>
-                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
-                      </a>
-                    ))}
-                    {getProjectsForDay(day).map(project => {
-                      const isCompleted = project.status === 'completed';
-                      return (
-                        <RouterLink key={`project-${project.id}`} href="/projects" className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${isCompleted ? "text-gray-400" : "text-white"}`} style={{ background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)', borderColor: isCompleted ? '#6b7280' : '#4F46E5' }} data-testid={`calendar-project-${project.id}`}>
-                          <FolderOpen className="h-3 w-3 shrink-0" />
-                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>{project.name}</span>
-                        </RouterLink>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
               {/* ALL DAY row resize handle */}
               <div
                 className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -16941,7 +16620,7 @@ export default function Dashboard() {
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : colorSettings.headerBar }} data-testid="module-column-cell" />}
-                    {weekDays.slice(0, 6).map((day, dayIdx) => {
+                    {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
@@ -16967,7 +16646,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: (isToday || isCurrentHour) ? colorSettings.headerBar : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
+                            backgroundColor: (isToday || isCurrentHour) ? '#e4ecf5' : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
@@ -17221,93 +16900,6 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Saturday time slot cell */}
-                    {weekDays[6] && (() => {
-                      const day = weekDays[6];
-                      const isSatToday = isSameDay(day, new Date());
-                      const hourTasks = getTasksForHour(day, hour);
-                      const continuingTasks = getContinuingTasksForHour(day, hour);
-                      const hourCalendarEvents = getCalendarEventsForHour(day, hour);
-                      const totalItems = hourTasks.length + hourCalendarEvents.length;
-                      const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const satDateStr = format(day, "yyyy-MM-dd");
-                      const satShift = localShiftMap[satDateStr];
-                      const isSatNightSleepHour = satShift === 'night' && hour >= 10 && hour <= 16;
-                      const satPrevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
-                      const satPrevDayShift = localShiftMap[satPrevDayStr];
-                      const isSatDayShiftSleepHour = (satShift === 'day' && hour >= 22) || (satPrevDayShift === 'day' && hour <= 4);
-                      return (
-                        <div 
-                          className={`border-l relative p-0.5`}
-                          style={{ 
-                            backgroundColor: (isSatToday || isCurrentHour) ? colorSettings.headerBar : isSatNightSleepHour ? 'rgba(88, 28, 135, 0.18)' : (isSatDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
-                            borderLeftColor: 'rgba(0,0,0,0.15)',
-                            borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
-                            overflow: 'hidden',
-                            gridColumn: saturdayGridCol,
-                            borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
-                            paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
-                          }}
-                        >
-                          {/* Hour boundary dotted line */}
-                          <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-400`} style={{ top: '0' }} />
-                          {/* Half-hour dotted line - hidden for compact night hours and current time intersection */}
-                          {!(isNightHour && !nightHourHasTasks) && !(isSatToday && isCurrentHour) && <div className={`absolute left-0 right-0 border-t border-dotted z-[1] border-gray-300`} style={{ top: '50%' }} />}
-                          {/* Render tasks for this hour */}
-                          {hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).map((task, taskIdx) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = dynamicCourseColors[courseCode];
-                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), new Date());
-                            const columnWidth = 100 / Math.max(1, hourTasks.filter(t => !t.eventEndTime || t.eventStartTime === t.eventEndTime).length);
-                            let taskHeight = Math.min(40, rowHeight - 4);
-                            let topOffset = 2;
-                            if (task.eventStartTime) {
-                              const [, startMin] = task.eventStartTime.split(':').map(Number);
-                              if (startMin > 0) {
-                                topOffset = (startMin / 60) * rowHeight;
-                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
-                                taskHeight = Math.max(20, taskHeight);
-                              }
-                            } else {
-                              const dueMin = getETMinutes(new Date(task.dueDate));
-                              if (dueMin > 0) {
-                                topOffset = (dueMin / 60) * rowHeight;
-                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
-                                taskHeight = Math.max(20, taskHeight);
-                              }
-                            }
-                            return (
-                              <div
-                                key={task.id}
-                                onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task.id); }}
-                                onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
-                                onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-pointer rounded overflow-hidden ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""}`}
-                                style={{
-                                  top: `${topOffset}px`,
-                                  left: `calc(${taskIdx * columnWidth}% + 4px)`,
-                                  width: `calc(${columnWidth}% - 6px)`,
-                                  height: `${taskHeight}px`,
-                                  zIndex: 43,
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  border: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
-                                }}
-                                data-testid={`sat-time-task-${task.id}`}
-                              >
-                                <div className="flex items-center gap-1 px-0.5 py-1">
-                                  <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black" data-testid={`checkbox-sat-${task.id}`} />
-                                  <span className="text-[8px] font-normal text-black truncate">{task.title}</span>
-                                  {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(pdfUrl, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-sat-${task.id}`} /> : null; })()}
-                                </div>
-                                {task.eventStartTime && (
-                                  <div className="px-1 text-[7px] text-gray-600">{task.eventStartTime}{task.eventEndTime ? ` - ${task.eventEndTime}` : ''}</div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    })()}
                     {/* Individual time slot row resize handle */}
                     <div 
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -17382,8 +16974,8 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? gridSizes.dayColumnWidths.slice(0, 6).reduce((a, b) => a + b, 0) : gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
-                        width: `calc((${gridSizes.dayColumnWidths[dayIdx >= 6 ? 6 : dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
+                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
+                        width: `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
@@ -18906,7 +18498,7 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
