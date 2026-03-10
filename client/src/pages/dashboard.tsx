@@ -19200,7 +19200,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginBottom: '37px', paddingTop: '6px', paddingBottom: '26px' }}>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch' }}>
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
@@ -19376,7 +19376,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '12px', paddingTop: '6px', paddingBottom: '6px' }}>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch' }}>
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
@@ -19556,7 +19556,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginBottom: '22px', paddingTop: '6px', paddingBottom: '21px' }}>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch' }}>
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
@@ -19707,7 +19707,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginBottom: '22px', paddingTop: '6px', paddingBottom: '21px' }}>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch' }}>
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
