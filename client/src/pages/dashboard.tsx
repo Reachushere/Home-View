@@ -5891,6 +5891,28 @@ export default function Dashboard() {
     queryKey: ['/api/shift-schedule'],
   });
 
+  const [crcuSynced, setCrcuSynced] = useState(false);
+  useEffect(() => {
+    if (!crcuSynced) {
+      setCrcuSynced(true);
+      fetch('/api/google/third-account/status')
+        .then(r => r.json())
+        .then(status => {
+          if (status.connected) {
+            fetch('/api/google/third-account/sync-shifts', { method: 'POST' })
+              .then(r => r.json())
+              .then(result => {
+                if (result.synced > 0) {
+                  queryClient.invalidateQueries({ queryKey: ['/api/shift-schedule'] });
+                }
+              })
+              .catch(() => {});
+          }
+        })
+        .catch(() => {});
+    }
+  }, [crcuSynced]);
+
   useEffect(() => {
     if (shiftScheduleData) {
       const map: Record<string, string> = {};

@@ -2770,6 +2770,48 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/google/third-account/sync-shifts", async (req, res) => {
+    try {
+      const calendarId = 'family01331437021788124598@group.calendar.google.com';
+      const now = new Date();
+      const timeMin = new Date(now.getFullYear(), 0, 1);
+      const timeMax = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+      
+      const events = await getEventsFromThirdAccountCalendar(calendarId, timeMin, timeMax);
+      
+      const shiftEntries: { date: string; shiftType: string }[] = [];
+      
+      for (const event of events) {
+        const summary = (event.summary || '').toLowerCase();
+        if (!summary.includes('crcu')) continue;
+        
+        const startStr = event.start?.dateTime || event.start?.date;
+        if (!startStr) continue;
+        
+        const startDate = new Date(startStr);
+        const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+        
+        const hour = startDate.getHours();
+        const isNight = hour >= 18 || hour < 6 || summary.includes('🌙');
+        
+        shiftEntries.push({
+          date: dateStr,
+          shiftType: isNight ? 'night' : 'day',
+        });
+      }
+      
+      if (shiftEntries.length > 0) {
+        await storage.setShiftBulk(shiftEntries);
+      }
+      
+      const schedule = await storage.getShiftSchedule();
+      res.json({ synced: shiftEntries.length, schedule });
+    } catch (err) {
+      console.error("CRCU shift sync error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   // ============= END THIRD GOOGLE ACCOUNT ROUTES =============
 
   // POST /api/tasks/:id/sync-calendar - Manually sync task to Google Calendar
