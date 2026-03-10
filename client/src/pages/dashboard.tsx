@@ -19032,7 +19032,7 @@ export default function Dashboard() {
               );
             })];
           })()}
-          <div className="flex-1 px-2 flex flex-col" style={{ paddingTop: (() => {
+          <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
               const lastRect = courseRowRects[courseRowRects.length - 1];
