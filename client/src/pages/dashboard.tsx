@@ -18873,7 +18873,7 @@ export default function Dashboard() {
             right: `${calendarRight - calendarReduction + 3 + 7 - 6}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
-            bottom: `${calendarBottom - 1}px`,
+            bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
@@ -18910,27 +18910,42 @@ export default function Dashboard() {
               }
               return 'calc(100% - 70px)';
             })();
-            const rightBgs = courseProgressDataRef.current.map((pd, idx) => {
-              if (!pd || !courseRowRects[idx]) return null;
+            const rightBgs = courseProgressDataRef.current.flatMap((pd, idx) => {
+              if (!pd || !courseRowRects[idx]) return [];
               const rowTop = courseRowRects[idx].top - upcomingTop;
               const rowHeight = courseRowRects[idx].height;
               const halfHeight = rowHeight / 2;
-              return (
-                <div key={`${pd.courseCode}-right-bg`} style={{
+              return [
+                <div key={`${pd.courseCode}-right-stacked-top`} style={{
+                  position: 'absolute',
+                  top: `${rowTop}px`,
+                  right: `calc(${rightWidth} * 3 / 4)`,
+                  width: `calc(${rightWidth} / 4)`,
+                  height: `${halfHeight}px`,
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  zIndex: 39,
+                  borderBottom: '0.5px solid rgba(255,255,255,0.15)',
+                }} />,
+                <div key={`${pd.courseCode}-right-stacked-bottom`} style={{
+                  position: 'absolute',
+                  top: `${rowTop + halfHeight}px`,
+                  right: `calc(${rightWidth} * 3 / 4)`,
+                  width: `calc(${rightWidth} / 4)`,
+                  height: `${halfHeight}px`,
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  zIndex: 39,
+                }} />,
+                <div key={`${pd.courseCode}-right-fill`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   right: 0,
-                  width: `calc(${rightWidth} / 4)`,
+                  width: `calc(${rightWidth} * 3 / 4)`,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}>
-                  <div style={{ height: `${halfHeight}px`, borderBottom: '0.5px solid rgba(255,255,255,0.15)' }} />
-                  <div style={{ height: `${halfHeight}px` }} />
-                </div>
-              );
+                  borderLeft: '0.5px solid rgba(255,255,255,0.15)',
+                }} />,
+              ];
             });
             return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
