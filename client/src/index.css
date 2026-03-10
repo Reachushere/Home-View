@@ -1103,17 +1103,30 @@ button[role="combobox"] > span {
 
 @keyframes moon-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 2px rgba(167, 139, 250, 0.4));
-    opacity: 0.85;
+    filter: drop-shadow(0 0 2px rgba(167, 139, 250, 0.4)) drop-shadow(0 0 4px rgba(139, 92, 246, 0.2));
+    opacity: 0.8;
+    transform: scale(1) rotate(-8deg);
+  }
+  25% {
+    filter: drop-shadow(0 0 5px rgba(167, 139, 250, 0.7)) drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+    opacity: 0.95;
+    transform: scale(1.08) rotate(-2deg);
   }
   50% {
-    filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.9));
+    filter: drop-shadow(0 0 8px rgba(167, 139, 250, 1)) drop-shadow(0 0 16px rgba(139, 92, 246, 0.5));
     opacity: 1;
+    transform: scale(1.15) rotate(4deg);
+  }
+  75% {
+    filter: drop-shadow(0 0 5px rgba(167, 139, 250, 0.7)) drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+    opacity: 0.95;
+    transform: scale(1.08) rotate(0deg);
   }
 }
 
 .animate-moon-glow {
-  animation: moon-glow 3s ease-in-out infinite;
+  animation: moon-glow 4s ease-in-out infinite;
+  transform-origin: center center;
 }
 
 @keyframes sun-spin-glow {
