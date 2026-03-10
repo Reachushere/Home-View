@@ -11043,7 +11043,7 @@ export default function Dashboard() {
           <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
         <div style={{ position: 'absolute', left: '50%', top: '10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={1.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
+          <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
         </div>
       </div>
 
