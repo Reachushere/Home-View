@@ -16106,10 +16106,10 @@ export default function Dashboard() {
                                 className="relative w-full"
                               >
                                 {!isFirstPrepDay && (
-                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '0px', boxShadow: `0 0 0 0.3px ${course.darkColor}` }} />
+                                  <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                                 )}
                                 {!isLastPrepDay && (
-                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '3px', height: '0px', boxShadow: `0 0 0 0.3px ${course.darkColor}` }} />
+                                  <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                                 )}
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
@@ -16150,8 +16150,12 @@ export default function Dashboard() {
                           const dueAttachmentLink = !dueAttachmentUrl && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
                           const dueRefLinkPdf = !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
                           const dueModulePdfUrl = dueAttachmentUrl || dueRefLinkPdf || dueModuleFile?.objectPath || null;
+                          const hasPrepDays = task.startDate && !isSameDay(startOfDay(new Date(task.startDate)), startOfDay(new Date(task.dueDate)));
                           return (
                             <div key={task.id} className="relative" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
+                            {hasPrepDays && (
+                              <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                            )}
                             <div 
                               className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
@@ -16447,8 +16451,12 @@ export default function Dashboard() {
                           const satDueAttachmentPdf = !satDueModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
                           const satDueRefLinkPdf = !satDueModuleFile && !satDueAttachmentPdf && task.referenceLink ? task.referenceLink : null;
                           const satDuePdfUrl = satDueModuleFile?.objectPath || satDueAttachmentPdf || satDueRefLinkPdf || null;
+                          const satHasPrepDays = task.startDate && !isSameDay(startOfDay(new Date(task.startDate)), startOfDay(new Date(task.dueDate)));
                           return (
                             <div key={task.id} className="relative">
+                            {satHasPrepDays && (
+                              <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                            )}
                             <div className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                               style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : 'white', borderColor: task.isCompleted ? '#d1d5db' : course.darkColor, overflow: 'hidden', paddingRight: satDuePdfUrl ? '30px' : undefined }}
                               onClick={() => setEditingTask(task)}
