@@ -18914,36 +18914,15 @@ export default function Dashboard() {
               if (!pd || !courseRowRects[idx]) return [];
               const rowTop = courseRowRects[idx].top - upcomingTop;
               const rowHeight = courseRowRects[idx].height;
-              const halfHeight = rowHeight / 2;
               return [
-                <div key={`${pd.courseCode}-right-stacked-top`} style={{
-                  position: 'absolute',
-                  top: `${rowTop}px`,
-                  right: `calc(${rightWidth} * 3 / 4)`,
-                  width: `calc(${rightWidth} / 4)`,
-                  height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 39,
-                  borderBottom: '0.5px solid rgba(255,255,255,0.15)',
-                }} />,
-                <div key={`${pd.courseCode}-right-stacked-bottom`} style={{
-                  position: 'absolute',
-                  top: `${rowTop + halfHeight}px`,
-                  right: `calc(${rightWidth} * 3 / 4)`,
-                  width: `calc(${rightWidth} / 4)`,
-                  height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 39,
-                }} />,
                 <div key={`${pd.courseCode}-right-fill`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   right: 0,
-                  width: `calc(${rightWidth} * 3 / 4)`,
+                  left: 0,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
-                  borderLeft: '0.5px solid rgba(255,255,255,0.15)',
                 }} />,
               ];
             });
@@ -18964,7 +18943,8 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
                     left: 0,
-                    width: leftWidth,
+                    width: 'fit-content',
+                    maxWidth: '50%',
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
@@ -18972,7 +18952,6 @@ export default function Dashboard() {
                     flexDirection: 'column',
                     overflow: 'visible',
                     borderBottom: '0.5px solid rgba(255,255,255,0.2)',
-                    transform: pd.courseCode === 'CFNF400' ? 'translateY(0px)' : pd.courseCode === 'CASL101' ? 'translateY(0px)' : undefined,
                   }}
                 >
                   {pd.hasNoData ? (
