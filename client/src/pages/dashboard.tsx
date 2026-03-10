@@ -19314,7 +19314,7 @@ export default function Dashboard() {
                                         const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
                                         const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
                                         return (
-                                          <div key={di} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.5)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.08)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }}>
+                                          <div key={di} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.85)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.15)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }}>
                                             {d.getDate()}
                                           </div>
                                         );
@@ -19490,8 +19490,8 @@ export default function Dashboard() {
                                           <div key={di} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }}>
                                             {d.getDate()}
@@ -19649,8 +19649,8 @@ export default function Dashboard() {
                                           <div key={di} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }}>
                                             {d.getDate()}
@@ -19774,8 +19774,8 @@ export default function Dashboard() {
                                           <div key={di} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.5)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.08)',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }}>
                                             {d.getDate()}
