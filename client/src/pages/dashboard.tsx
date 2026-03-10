@@ -15607,7 +15607,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
-            style={{ bottom: '-39px', left: '-19px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: '-39px', left: '-12px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
