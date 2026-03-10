@@ -18982,13 +18982,13 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div className="flex items-center gap-[3px]">
-                              <div className="rounded-full overflow-hidden flex-1" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                            <div className="flex items-center gap-[5px]">
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.15)', minWidth: '60px', flex: 2 }}>
                                 {pd.moduleP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{pd.moduleP.percent}%</span>
+                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.moduleP.percent}%</span>
                               <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
                                 <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
@@ -19010,13 +19010,13 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div className="flex items-center gap-[3px]">
-                              <div className="rounded-full overflow-hidden flex-1" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                            <div className="flex items-center gap-[5px]">
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.15)', minWidth: '60px', flex: 2 }}>
                                 {pd.readingP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white">{pd.readingP.percent}%</span>
+                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.readingP.percent}%</span>
                               <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
                                 <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
