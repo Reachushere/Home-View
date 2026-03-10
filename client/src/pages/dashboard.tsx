@@ -16321,14 +16321,20 @@ export default function Dashboard() {
                                 } catch {}
                                 return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
                               }));
-                              const firstFile = ensuredFiles[0];
+                              const unlistenedFiles = ensuredFiles.filter(f => !f.listened);
+                              const firstFile = unlistenedFiles.length > 0 ? unlistenedFiles[0] : ensuredFiles[0];
                               if (firstFile) {
                                 const hasDbId = typeof firstFile.id === 'number' && firstFile.id > 0;
+                                const filesData = encodeURIComponent(JSON.stringify(ensuredFiles.map(f => ({
+                                  id: f.id,
+                                  name: f.displayName || f.originalName,
+                                  listened: f.listened || false,
+                                }))));
                                 const url = hasDbId
-                                  ? `/pdf-reader/${firstFile.id}?autoplay=1`
+                                  ? `/pdf-reader/${firstFile.id}?autoplay=1&course=${encodeURIComponent(courseCode)}&files=${filesData}`
                                   : (firstFile.objectPath?.startsWith('http')
-                                    ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1`
-                                    : `/pdf-reader/${firstFile.id}?autoplay=1`);
+                                    ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1&course=${encodeURIComponent(courseCode)}&files=${filesData}`
+                                    : `/pdf-reader/${firstFile.id}?autoplay=1&course=${encodeURIComponent(courseCode)}&files=${filesData}`);
                                 window.location.href = url;
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
