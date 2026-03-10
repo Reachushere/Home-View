@@ -18554,20 +18554,28 @@ export default function Dashboard() {
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '20px', height: '20px' }}
+              style={{ width: '26px', height: '26px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '20px', height: '20px' }}
+              style={{ width: '26px', height: '26px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronDown style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
             </div>
+          </div>
+          <div
+            className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
+            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px' }}
+            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
+            data-testid="button-homework-scroll-to-top"
+          >
+            <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
           </div>
           <div style={{ padding: '0 8px', height: '37px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
             <h4
