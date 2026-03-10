@@ -11043,7 +11043,7 @@ export default function Dashboard() {
           <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
         <div style={{ position: 'absolute', left: '50%', top: '10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={3} style={{ color: colorSettings.todayCurrentHourCellBackground, filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.5))' }} />
+          <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={1.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
         </div>
       </div>
 
@@ -12079,7 +12079,7 @@ export default function Dashboard() {
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
           <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <g transform="translate(34, 1)">
-            <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill={colorSettings.todayCurrentHourCellBackground} stroke={colorSettings.todayCurrentHourCellBackground} strokeWidth="0.5" strokeLinejoin="round" />
+            <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.5" strokeLinejoin="round" />
           </g>
         </svg>
       </a>
@@ -12100,7 +12100,7 @@ export default function Dashboard() {
       >
         <svg width="25" height="84" viewBox="0 0 25 84" style={{ display: 'block' }}>
           <path d="M0,0 L0,84 L9,84 Q9,75 15,75 L16,75 Q25,75 25,63 L25,21 Q25,9 16,9 L15,9 Q9,9 9,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          <text x="16" y="46" textAnchor="middle" fill={colorSettings.todayCurrentHourCellBackground} fontSize="16" fontWeight="bold">+</text>
+          <text x="16" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="normal">+</text>
         </svg>
       </div>
 
@@ -12122,10 +12122,10 @@ export default function Dashboard() {
         <svg width="25" height="84" viewBox="0 0 25 84" style={{ display: 'block' }}>
           <path d="M25,0 L25,84 L16,84 Q16,75 10,75 L9,75 Q0,75 0,63 L0,21 Q0,9 9,9 L10,9 Q16,9 16,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <g transform="translate(2, 36)">
-            <rect x="1" y="1" width="4" height="4" rx="0.5" fill={colorSettings.todayCurrentHourCellBackground} stroke={colorSettings.todayCurrentHourCellBackground} strokeWidth="0.5" />
-            <rect x="7" y="1" width="4" height="4" rx="0.5" fill={colorSettings.todayCurrentHourCellBackground} stroke={colorSettings.todayCurrentHourCellBackground} strokeWidth="0.5" />
-            <rect x="1" y="7" width="4" height="4" rx="0.5" fill={colorSettings.todayCurrentHourCellBackground} stroke={colorSettings.todayCurrentHourCellBackground} strokeWidth="0.5" />
-            <rect x="7" y="7" width="4" height="4" rx="0.5" fill={colorSettings.todayCurrentHourCellBackground} stroke={colorSettings.todayCurrentHourCellBackground} strokeWidth="0.5" />
+            <rect x="1" y="1" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+            <rect x="7" y="1" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+            <rect x="1" y="7" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+            <rect x="7" y="7" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
           </g>
         </svg>
       </div>
