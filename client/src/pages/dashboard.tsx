@@ -18886,11 +18886,11 @@ export default function Dashboard() {
           <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2, boxShadow: `0 2px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-normal flex items-center text-white"
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1, letterSpacing: '0.3px' }}
             >
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
-            <div ref={homeworkSpacerRef} style={{ width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent', flexShrink: 0, marginRight: '4px', marginLeft: '-90px' }} />
+            <div ref={homeworkSpacerRef} style={{ width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent', flexShrink: 0, marginRight: '4px', marginLeft: '0px' }} />
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
