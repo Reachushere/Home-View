@@ -18607,6 +18607,15 @@ export default function Dashboard() {
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
                 }} />,
+                <div key={`${pd.courseCode}-right-fill-ext`} style={{
+                  position: 'absolute',
+                  top: `${rowTop}px`,
+                  left: '33%',
+                  right: 0,
+                  height: `${rowHeight}px`,
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  zIndex: 39,
+                }} />,
               ];
             });
             return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
