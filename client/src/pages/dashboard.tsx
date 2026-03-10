@@ -14614,6 +14614,20 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
+                    {/* Gradient Toggle */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Gradient Background</Label>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors flex items-center ${colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
+                          onClick={() => colorSettings.mainBackgroundOverlay && setColorSettings(prev => ({ ...prev, mainBackgroundGradient: !prev.mainBackgroundGradient }))}
+                          data-testid="toggle-background-gradient"
+                        >
+                          <div className={`w-1.5 h-1.5 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay ? 'translate-x-3' : 'translate-x-0.5'}`} />
+                        </div>
+                      </div>
+                    </div>
+                    
                     {/* Main Background Colour - always visible */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Top (Lightest)' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
@@ -14650,20 +14664,6 @@ export default function Dashboard() {
                             onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
                             className="absolute opacity-0 w-0 h-0"
                           />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Gradient Toggle */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Gradient Background</Label>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors flex items-center ${colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
-                          onClick={() => colorSettings.mainBackgroundOverlay && setColorSettings(prev => ({ ...prev, mainBackgroundGradient: !prev.mainBackgroundGradient }))}
-                          data-testid="toggle-background-gradient"
-                        >
-                          <div className={`w-1.5 h-1.5 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundGradient && colorSettings.mainBackgroundOverlay ? 'translate-x-3' : 'translate-x-0.5'}`} />
                         </div>
                       </div>
                     </div>
