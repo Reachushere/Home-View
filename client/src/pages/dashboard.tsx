@@ -18929,8 +18929,8 @@ export default function Dashboard() {
                 <div key={`${pd.courseCode}-right-fill`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  left: 0,
-                  width: leftWidth,
+                  right: 0,
+                  width: '66%',
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
