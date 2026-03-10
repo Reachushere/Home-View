@@ -15891,7 +15891,7 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = isActualToday ? '#e4ecf5' : course.bg;
+                              const cellBg = isActualToday ? colorSettings.headerBar : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -16071,7 +16071,7 @@ export default function Dashboard() {
 
                     return weekDays.slice(0, 6).map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
-                    const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
+                    const cellBgColor = isDayToday ? colorSettings.headerBar : course.bg;
                     const cellDate = startOfDay(day);
                     
                     const dueTasks = allTasks?.filter(task => {
@@ -16426,7 +16426,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e4ecf5' : course.bg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
+                        style={{ backgroundColor: isSatToday ? colorSettings.headerBar : course.bg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol, borderBottom: isSatToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
@@ -16582,7 +16582,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px` }}
+                          style={{ backgroundColor: isOtherToday ? colorSettings.headerBar : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -16640,7 +16640,7 @@ export default function Dashboard() {
                       return (
                         <div
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-white/10"
-                          style={{ backgroundColor: isSatOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol }}
+                          style={{ backgroundColor: isSatOtherToday ? colorSettings.headerBar : 'rgba(107, 114, 128, 0.20)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, gridColumn: saturdayGridCol }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -16967,7 +16967,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: (isToday || isCurrentHour) ? '#e4ecf5' : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
+                            backgroundColor: (isToday || isCurrentHour) ? colorSettings.headerBar : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
@@ -17240,7 +17240,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l relative p-0.5`}
                           style={{ 
-                            backgroundColor: (isSatToday || isCurrentHour) ? '#e4ecf5' : isSatNightSleepHour ? 'rgba(88, 28, 135, 0.18)' : (isSatDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
+                            backgroundColor: (isSatToday || isCurrentHour) ? colorSettings.headerBar : isSatNightSleepHour ? 'rgba(88, 28, 135, 0.18)' : (isSatDayShiftSleepHour ? 'rgba(88, 28, 135, 0.18)' : '#faf8f5'),
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
