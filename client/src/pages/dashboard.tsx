@@ -18667,6 +18667,7 @@ export default function Dashboard() {
               );
             })];
           })()}
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.25)', margin: '0 8px', flexShrink: 0 }} />
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
@@ -18684,7 +18685,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
                     <div className="calendar-icon-shimmer" style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
