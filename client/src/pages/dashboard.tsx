@@ -15733,7 +15733,7 @@ export default function Dashboard() {
                             }}
                           >
                             {/* Course name column */}
-                            <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white" style={{ background: course.label, overflow: 'hidden', minWidth: 0 }}>
+                            <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
                               {taskIdx === 0 ? course.name : ''}
                             </div>
                             
@@ -15896,15 +15896,13 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
-                      // CPPA122: show all on one line, centered
                       if (code === 'CPPA122') {
                         return <span className="text-center"><span className="font-[785]">CPPA122</span> Local Politics and Government</span>;
                       }
-                      // CFNF400: show CFNF400, then Human, then Sexuality on separate lines
                       if (code === 'CFNF400') {
                         return (
                           <>
@@ -15914,7 +15912,6 @@ export default function Dashboard() {
                           </>
                         );
                       }
-                      // CASL101: show full name, centered
                       if (code === 'CASL101') {
                         return (
                           <>
@@ -15924,7 +15921,6 @@ export default function Dashboard() {
                           </>
                         );
                       }
-                      // Default: code on first line, then each word
                       const words = fullName.split(' ');
                       return (
                         <>
