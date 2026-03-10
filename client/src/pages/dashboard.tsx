@@ -15541,7 +15541,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '10px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '10px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
