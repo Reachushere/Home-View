@@ -19164,7 +19164,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 2 Weeks Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Two weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-9px' }}>
@@ -19324,7 +19324,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 3 Weeks and Beyond Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Three weeks +</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueBeyondTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
