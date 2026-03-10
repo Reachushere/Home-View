@@ -19195,7 +19195,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const isDue = dueDates.some(dd => isSameDay(d, dd.date));
@@ -19368,7 +19368,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -19551,7 +19551,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -19710,7 +19710,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
