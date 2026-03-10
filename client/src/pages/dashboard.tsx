@@ -14735,7 +14735,7 @@ export default function Dashboard() {
                       <input
                         type="range"
                         min="0"
-                        max="80"
+                        max={blinkSettings.buttonSpacing}
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
@@ -16743,7 +16743,7 @@ export default function Dashboard() {
                                   <span style={{ fontSize: '14px', color: 'rgba(90, 120, 180, 0.45)', fontWeight: 800, letterSpacing: '-0.5px' }}>
                                     {displayTime}
                                   </span>
-                                  <span style={{ fontSize: '8px', color: 'rgba(90, 120, 180, 0.35)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
+                                  <span style={{ fontSize: '8px', color: 'rgba(90, 120, 180, 0.45)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
                                     until next task due
                                   </span>
                                 </div>
