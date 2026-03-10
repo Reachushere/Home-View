@@ -75,6 +75,7 @@ export interface IStorage {
   setShiftDay(date: string, shiftType: string): Promise<ShiftScheduleEntry>;
   setShiftBulk(entries: InsertShiftScheduleEntry[]): Promise<void>;
   deleteShiftDay(date: string): Promise<void>;
+  clearAllShifts(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -589,6 +590,10 @@ export class DatabaseStorage implements IStorage {
 
   async deleteShiftDay(date: string): Promise<void> {
     await db.delete(shiftSchedule).where(eq(shiftSchedule.date, date));
+  }
+
+  async clearAllShifts(): Promise<void> {
+    await db.delete(shiftSchedule);
   }
 }
 

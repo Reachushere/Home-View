@@ -2775,7 +2775,7 @@ export async function registerRoutes(
       const calendarId = 'family01331437021788124598@group.calendar.google.com';
       const now = new Date();
       const timeMin = new Date(now.getFullYear(), 0, 1);
-      const timeMax = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+      const timeMax = new Date(now.getFullYear() + 1, 0, 31, 23, 59, 59);
       
       const events = await getEventsFromThirdAccountCalendar(calendarId, timeMin, timeMax);
       
@@ -2799,6 +2799,8 @@ export async function registerRoutes(
           shiftType: isNight ? 'night' : 'day',
         });
       }
+      
+      await storage.clearAllShifts();
       
       if (shiftEntries.length > 0) {
         await storage.setShiftBulk(shiftEntries);
