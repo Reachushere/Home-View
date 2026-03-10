@@ -19176,7 +19176,7 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginBottom: '37px' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                One week
+                                This week
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -19346,7 +19346,7 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-4px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                                {group.weeks.length === 1 ? 'Next week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -19470,7 +19470,7 @@ export default function Dashboard() {
                 )}
                 {/* 2 Weeks Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '-5px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>2 Weeks</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Two weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-9px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -19485,7 +19485,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {dueTwoWeeksTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in 2 weeks</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in two weeks</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {(() => {
@@ -19526,7 +19526,7 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length === 1 ? 'One week' : group.weeks.length === 2 ? 'Two weeks' : 'Three weeks'}
+                                {group.weeks.length === 1 ? 'Two weeks' : group.weeks.length === 2 ? 'Three weeks' : group.weeks.length === 3 ? 'Four weeks' : `${['One','Two','Three','Four','Five','Six','Seven','Eight'][group.weeks.length - 1] || group.weeks.length} weeks`}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -19627,7 +19627,7 @@ export default function Dashboard() {
                 )}
                 {/* 3 Weeks and Beyond Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '0px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>3 Weeks +</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Three weeks +</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueBeyondTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -19639,7 +19639,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {dueBeyondTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks beyond 2 weeks</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks beyond two weeks</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {(() => {
@@ -19677,7 +19677,7 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {group.weeks.length <= 3 ? `${group.weeks.length} week${group.weeks.length > 1 ? 's' : ''}` : `${group.weeks.length} weeks`}
+                                {(['Three weeks', 'Four weeks', 'Five weeks', 'Six weeks', 'Seven weeks', 'Eight weeks'][group.weeks.length - 1]) || `${group.weeks.length} weeks`}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
