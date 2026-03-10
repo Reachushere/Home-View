@@ -16637,6 +16637,14 @@ export default function Dashboard() {
                       const prevDayShift = localShiftMap[prevDayStr];
                       const isDayShiftSleepHour = (cellShift === 'day' && hour >= 22) || (prevDayShift === 'day' && hour <= 4);
                       const isSleepHour = isNightShiftSleepHour || isDayShiftSleepHour;
+                      const isFirstNightSleep = isNightShiftSleepHour && hour === 10;
+                      const nightSleepCellCount = 7;
+                      const isFirstDayShiftEvening = cellShift === 'day' && hour === 22;
+                      const dayShiftEveningCellCount = 2;
+                      const isFirstDayShiftMorning = prevDayShift === 'day' && hour === 0;
+                      const dayShiftMorningCellCount = 5;
+                      const sleepLabelStart = isFirstNightSleep || isFirstDayShiftEvening || isFirstDayShiftMorning;
+                      const sleepCellCount = isFirstNightSleep ? nightSleepCellCount : isFirstDayShiftEvening ? dayShiftEveningCellCount : isFirstDayShiftMorning ? dayShiftMorningCellCount : 0;
                       return (
                         <div 
                           key={dayIdx} 
@@ -16679,6 +16687,35 @@ export default function Dashboard() {
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
+                          {sleepLabelStart && !isToday && (
+                            <div style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              height: `${sleepCellCount * 100}%`,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              zIndex: 1,
+                              pointerEvents: 'none',
+                              overflow: 'visible'
+                            }}>
+                              <span style={{
+                                writingMode: 'vertical-rl',
+                                textOrientation: 'mixed',
+                                transform: 'rotate(180deg)',
+                                fontSize: sleepCellCount >= 5 ? '48px' : '28px',
+                                fontWeight: 900,
+                                letterSpacing: '8px',
+                                color: 'rgba(150, 150, 150, 0.12)',
+                                userSelect: 'none',
+                                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                                textTransform: 'uppercase',
+                                whiteSpace: 'nowrap'
+                              }}>SLEEP</span>
+                            </div>
+                          )}
                           {isToday && isCurrentHour && !hasAnyTasks && (() => {
                             const now = new Date();
                             const getTaskTime = (t: any) => {
@@ -18016,7 +18053,7 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <div className="relative" style={{ height: 'calc(100% + 5px)', marginTop: '8px' }}>
+          <div className="relative" style={{ height: 'calc(100% + 5px)', marginTop: '8px', marginLeft: '-15px', width: 'calc(100% + 30px)' }}>
             <div className="absolute inset-0 pointer-events-none z-[100]" style={{ border: '2px solid black', borderRadius: '16px' }} />
             <div className="overflow-hidden h-full" style={{ background: 'black', borderRadius: '16px' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
@@ -18683,6 +18720,7 @@ export default function Dashboard() {
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                <div style={{ height: '1px', background: 'rgba(255,255,255,0.3)', margin: '0 0px', flexShrink: 0, position: 'sticky', top: 0, zIndex: 5 }} />
                 {/* Today Section */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
