@@ -12100,7 +12100,7 @@ export default function Dashboard() {
       >
         <svg width="25" height="84" viewBox="0 0 25 84" style={{ display: 'block' }}>
           <path d="M0,0 L0,84 L9,84 Q9,75 15,75 L16,75 Q25,75 25,63 L25,21 Q25,9 16,9 L15,9 Q9,9 9,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          <text x="16" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="normal">+</text>
+          <text x="16" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="bold">+</text>
         </svg>
       </div>
 
