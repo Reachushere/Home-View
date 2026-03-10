@@ -18923,7 +18923,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, alignSelf: 'center' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -19065,7 +19065,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-4px', marginBottom: '12px' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Next week
                               </span>
@@ -19102,7 +19102,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, alignSelf: 'center' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -19248,7 +19248,7 @@ export default function Dashboard() {
                         });
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Two weeks
                               </span>
@@ -19285,7 +19285,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, alignSelf: 'center' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
@@ -19402,7 +19402,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', marginTop: '-9px', marginBottom: '22px' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
+                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
                                   const lastWeek = group.weeks[group.weeks.length - 1];
@@ -19442,7 +19442,7 @@ export default function Dashboard() {
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
                               <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                             </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ flex: 1, minWidth: 0, alignSelf: 'center' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
