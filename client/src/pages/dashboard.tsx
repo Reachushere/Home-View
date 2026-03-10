@@ -11105,7 +11105,7 @@ export default function Dashboard() {
       {/* Timer bar - rectangle left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 8}px`,
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 18}px`,
         top: '-1px',
         height: '22px',
         zIndex: 100,
