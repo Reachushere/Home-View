@@ -18883,7 +18883,7 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center' }}>
+          <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2, boxShadow: `0 2px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-normal flex items-center text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
