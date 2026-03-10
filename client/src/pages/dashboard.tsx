@@ -16083,7 +16083,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
+                        className="relative flex flex-col gap-0.5 pt-0.5"
                         style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'visible', minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -16098,6 +16098,7 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
+                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
                         {slottedItems.map((item, itemIdx) => {
                           if (!item) {
                             return <div key={`empty-${itemIdx}`} style={{ minHeight: '18px' }} />;
@@ -18694,25 +18695,6 @@ export default function Dashboard() {
                   zIndex: 1,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                 }} />,
-                ...(() => {
-                  const totalFr = gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0);
-                  const fixedLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
-                  return gridSizes.dayColumnWidths.map((_, di) => {
-                    const frBefore = gridSizes.dayColumnWidths.slice(0, di).reduce((a, b) => a + b, 0);
-                    return (
-                      <div key={`${pd.courseCode}-day-sep-${di}`} style={{
-                        position: 'absolute',
-                        top: `${rowTop}px`,
-                        left: `calc(${fixedLeft}px + (${frBefore} / ${totalFr}) * (100% - ${fixedLeft}px))`,
-                        width: '0px',
-                        height: `${rowHeight}px`,
-                        borderLeft: '1px solid hsl(var(--border) / 0.5)',
-                        zIndex: 2,
-                        pointerEvents: 'none',
-                      }} />
-                    );
-                  });
-                })(),
               ];
             });
             return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
