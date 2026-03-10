@@ -1793,6 +1793,15 @@ export default function PDFReaderPage() {
 
       <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
         <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
+          <button
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium uppercase tracking-wide transition-colors bg-white/10 border border-white/20 text-white hover:bg-white/20"
+            onClick={() => { window.location.href = '/'; }}
+            data-testid="button-exit-player"
+            title="Exit to main screen"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Exit
+          </button>
           {(() => {
             const isDbFile = !!fileId && !isOneDrive;
             const isModule = file?.folder?.includes('module');
@@ -2246,7 +2255,7 @@ export default function PDFReaderPage() {
                           data-testid={`button-chunk-search-${idx}`}
                           title="Search in text"
                         >
-                          <Search className="text-white" style={{ width: '18px', height: '18px' }} />
+                          <Search className="text-white" style={{ width: '20px', height: '20px' }} />
                         </button>
                         <button
                           className={`rounded-full transition-colors mt-[23px] border border-white ${isActive ? 'bg-white/30 hover:bg-white/40' : 'bg-white/15 hover:bg-white/25'} flex items-center justify-center`}
@@ -2273,9 +2282,11 @@ export default function PDFReaderPage() {
                             <Play className="h-3 w-3 text-white ml-px" />
                           )}
                         </button>
+                      </div>
+                      <div style={{ marginTop: '380px' }}>
                         <button
                           className="transition-colors hover:bg-white/25 flex items-center justify-center"
-                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0, marginTop: '365px' }}
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px', padding: 0 }}
                           onClick={() => {
                             setEditingChunkIndex(idx);
                             setEditableChunkText(chunk);
