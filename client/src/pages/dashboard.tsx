@@ -16708,7 +16708,7 @@ export default function Dashboard() {
                                 fontSize: sleepCellCount >= 5 ? '48px' : '28px',
                                 fontWeight: 900,
                                 letterSpacing: '8px',
-                                color: 'rgba(150, 150, 150, 0.12)',
+                                color: 'rgba(150, 150, 150, 0.07)',
                                 userSelect: 'none',
                                 fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                                 textTransform: 'uppercase',
