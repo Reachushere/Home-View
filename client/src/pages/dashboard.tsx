@@ -15095,7 +15095,7 @@ export default function Dashboard() {
                 
                 {/* Partner Shift Schedule - moved from secondary dialog */}
                 <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-7px' }}>
-                  <div className="flex items-center justify-between cursor-pointer" onClick={() => setShiftScheduleOpen(!shiftScheduleOpen)} data-testid="toggle-shift-schedule">
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !shiftScheduleOpen; setShiftScheduleOpen(opening); if (opening) { setTimeout(() => { const dialogs = document.querySelectorAll('[role="dialog"]'); dialogs.forEach(d => { if (d.scrollHeight > d.clientHeight) d.scrollTop = d.scrollHeight; }); }, 150); } }} data-testid="toggle-shift-schedule">
                     <div>
                       <div className="border-b border-primary inline-block -mt-1 pb-0">
                         <Label className="text-sm font-medium cursor-pointer">Partner Shift Schedule</Label>
@@ -15383,7 +15383,7 @@ export default function Dashboard() {
 
                 {/* Partner Shift Schedule */}
                 <div className="border rounded-lg p-3 space-y-2">
-                  <div className="flex items-center justify-between cursor-pointer" onClick={() => setShiftScheduleOpen(!shiftScheduleOpen)} data-testid="toggle-shift-schedule">
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !shiftScheduleOpen; setShiftScheduleOpen(opening); if (opening) { setTimeout(() => { const dialogs = document.querySelectorAll('[role="dialog"]'); dialogs.forEach(d => { if (d.scrollHeight > d.clientHeight) d.scrollTop = d.scrollHeight; }); }, 150); } }} data-testid="toggle-shift-schedule">
                     <div>
                       <div className="border-b border-primary inline-block -mt-1 pb-0">
                         <Label className="text-sm font-medium cursor-pointer">Partner Shift Schedule</Label>
