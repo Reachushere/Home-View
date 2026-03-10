@@ -18915,20 +18915,9 @@ export default function Dashboard() {
               className="text-xs font-normal flex items-center text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1 }}
             >
-              <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2} style={{ marginRight: '3px' }} />
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
             <div ref={homeworkSpacerRef} style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-90px' }} />
-            <div
-              className="text-[10px] font-normal text-white"
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}
-            >
-              {format(new Date(), 'EEEE, MMMM d, yyyy')}
-            </div>
-            <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 0, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0, marginLeft: '6px' }}>
-              <div style={{ background: 'rgb(255, 0, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(new Date(), 'MMM').toUpperCase()}</div>
-              <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(new Date(), 'd')}</div>
-            </div>
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
