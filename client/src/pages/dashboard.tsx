@@ -11952,7 +11952,7 @@ export default function Dashboard() {
       
       {/* Set Default checkbox - right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '25px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2}px` }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '25px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 + 3}px` }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
