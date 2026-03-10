@@ -11062,14 +11062,14 @@ export default function Dashboard() {
       )}
 
       {/* Date - fixed position */}
-      <span className="text-[12px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight + 58}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
+      <span className="text-[12px] text-white font-medium leading-tight" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4}px`, top: '7px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="text-date-display">
         {new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: displayTimezone }).format(currentTime)}
       </span>
 
       {/* Timer bar - rectangle below date/time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - 11}px`,
+        right: `${calendarRight - calendarReduction + 4}px`,
         top: '27px',
         height: '19px',
         zIndex: 100,
@@ -11107,7 +11107,7 @@ export default function Dashboard() {
       </div>
 
       {/* Time - fixed position */}
-      <div style={{ position: 'fixed', right: `${calendarRight - 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
         <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
@@ -18890,7 +18890,7 @@ export default function Dashboard() {
             >
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
-            <div ref={homeworkSpacerRef} style={{ width: '1px', height: '100%', minHeight: '14px', backgroundColor: 'rgba(255,255,255,0.6)', flexShrink: 0, marginRight: '4px', marginLeft: '-90px' }} />
+            <div ref={homeworkSpacerRef} style={{ width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent', flexShrink: 0, marginRight: '4px', marginLeft: '-90px' }} />
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
