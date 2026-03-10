@@ -16083,7 +16083,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
+                        className="relative flex flex-col gap-0.5 pt-0.5"
                         style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'visible', minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -18694,24 +18694,6 @@ export default function Dashboard() {
                   zIndex: 1,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                 }} />,
-                ...(() => {
-                  const totalFr = gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0);
-                  const fixedLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
-                  return gridSizes.dayColumnWidths.slice(0, -1).map((_, di) => {
-                    const frBefore = gridSizes.dayColumnWidths.slice(0, di + 1).reduce((a, b) => a + b, 0);
-                    return (
-                      <div key={`${pd.courseCode}-day-sep-${di}`} style={{
-                        position: 'absolute',
-                        top: `${rowTop}px`,
-                        left: `calc(${fixedLeft}px + (${frBefore} / ${totalFr}) * (100% - ${fixedLeft}px))`,
-                        width: '0px',
-                        height: `${rowHeight}px`,
-                        borderLeft: '1px dotted rgba(0,0,0,0.13)',
-                        zIndex: 2,
-                      }} />
-                    );
-                  });
-                })(),
               ];
             });
             return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
