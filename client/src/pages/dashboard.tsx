@@ -11952,7 +11952,7 @@ export default function Dashboard() {
       
       {/* Set Default checkbox - right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '23px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px` }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '25px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2}px` }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
@@ -11967,7 +11967,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -15541,7 +15541,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '10px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '10px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -15565,7 +15565,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
-            style={{ bottom: '-28px', left: '-14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: '-32px', left: '-14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -18882,7 +18882,7 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -19093,14 +19093,8 @@ export default function Dashboard() {
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '17px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                            <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px', marginLeft: '-3px' }}>
-                              <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                              <div style={{ width: '60px', position: 'relative', height: '3px' }}>
-                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                              </div>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                          <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                               <div>
                                 <button
                                   className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -19124,6 +19118,12 @@ export default function Dashboard() {
                                   <span className="text-[9px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right' }}>{cfp.moduleP.percent}%</span>
                                 </div>
                               )}
+                            </div>
+                            <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                              <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                              <div style={{ width: '60px', position: 'relative', height: '3px' }}>
+                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              </div>
                             </div>
                           </div>
                           </div>
@@ -19192,7 +19192,8 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                                  const isLastWeek = wi === group.weeks.length - 1;
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
@@ -19364,7 +19365,8 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                                  const isLastWeek = wi === group.weeks.length - 1;
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
@@ -19546,7 +19548,8 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                                  const isLastWeek = wi === group.weeks.length - 1;
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
@@ -19704,7 +19707,8 @@ export default function Dashboard() {
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                                  const isLastWeek = wi === group.weeks.length - 1;
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: wi > 0 ? '1px 2px' : undefined, borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
                                       {days.map((d, di) => {
