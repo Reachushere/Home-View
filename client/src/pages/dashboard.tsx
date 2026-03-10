@@ -11950,11 +11950,24 @@ export default function Dashboard() {
       
       {/* Set Default Layout Checkbox - moved to task boxes area */}
       
-      {/* Copyright - Right side of page, rotated */}
+      {/* Set Default checkbox - right-aligned with homework box */}
+      {!isTodoFlyoutOpen && (
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '20px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px` }}>
+          <input
+            type="checkbox"
+            checked={showDeviceSaved}
+            onChange={saveAsDeviceDefault}
+            className="w-[10px] h-[10px] rounded border-white/40 bg-transparent accent-green-500"
+            data-testid="checkbox-save-device-default"
+          />
+          {showDeviceSaved ? "Saved!" : "Set Default"}
+        </label>
+      )}
+      {/* Copyright - Right side of page, right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '6px', right: `${calendarRight - calendarReduction + 4}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '6px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -17712,19 +17725,7 @@ export default function Dashboard() {
             data-testid="calendar-height-resize-handle"
           />
           </div>
-          {/* Set Default - attached below calendar glass box */}
-          {!isTodoFlyoutOpen && (
-            <label className="absolute flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '-15px', right: '9px' }}>
-              <input
-                type="checkbox"
-                checked={showDeviceSaved}
-                onChange={saveAsDeviceDefault}
-                className="w-[10px] h-[10px] rounded border-white/40 bg-transparent accent-green-500"
-                data-testid="checkbox-save-device-default"
-              />
-              {showDeviceSaved ? "Saved!" : "Set Default"}
-            </label>
-          )}
+          {/* Set Default - fixed position, right-aligned with homework box */}
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
