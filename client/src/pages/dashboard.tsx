@@ -18552,7 +18552,7 @@ export default function Dashboard() {
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '20px', height: '20px' }}
-              onClick={() => homeworkScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
               <ChevronUp style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.35)' }} />
@@ -18560,7 +18560,7 @@ export default function Dashboard() {
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '20px', height: '20px' }}
-              onClick={() => homeworkScrollRef.current?.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' })}
+              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
               <ChevronDown style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.35)' }} />
