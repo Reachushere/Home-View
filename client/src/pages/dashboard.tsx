@@ -18701,7 +18701,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         {!pd.moduleP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
@@ -18722,14 +18722,14 @@ export default function Dashboard() {
                                 )}
                               </div>
                               <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.moduleP.percent}%</span>
-                              <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
                                 <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         {!pd.readingP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
@@ -18750,7 +18750,7 @@ export default function Dashboard() {
                                 )}
                               </div>
                               <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ marginLeft: '2px', marginRight: '2px' }}>{pd.readingP.percent}%</span>
-                              <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
                                 <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
