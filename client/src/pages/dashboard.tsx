@@ -15164,15 +15164,15 @@ export default function Dashboard() {
                               cells.push(
                                 <button
                                   key={day}
-                                  className="w-4 h-4 rounded-sm text-[7px] flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity relative"
+                                  className="w-4 h-4 rounded-sm text-[7px] flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity relative overflow-visible"
                                   style={{ background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text }}
                                   onClick={() => cycleShift(dateStr)}
                                   title={`${monthName} ${day}: ${shift || 'off'}`}
                                   data-testid={`shift-cell-${dateStr}`}
                                 >
                                   {day}
-                                  {shift === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-orange-500 drop-shadow-sm" fill="currentColor" strokeWidth={1.5} />}
-                                  {shift === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" fill="currentColor" strokeWidth={1.5} />}
+                                  {shift === 'day' && <SunIcon className="absolute -top-1 -right-1 h-3 w-3 text-orange-500 drop-shadow-[0_0_2px_rgba(249,115,22,0.8)]" style={{ zIndex: 5 }} fill="currentColor" strokeWidth={1.5} />}
+                                  {shift === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" style={{ zIndex: 5 }} fill="currentColor" strokeWidth={1.5} />}
                                 </button>
                               );
                             }
@@ -15456,14 +15456,14 @@ export default function Dashboard() {
                                 <div
                                   key={d}
                                   onClick={() => cycleShift(dateStr)}
-                                  className="w-full flex items-center justify-center cursor-pointer rounded-sm text-[9px] font-medium select-none hover:opacity-80 relative"
+                                  className="w-full flex items-center justify-center cursor-pointer rounded-sm text-[9px] font-medium select-none hover:opacity-80 relative overflow-visible"
                                   style={{ aspectRatio: '1', background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text }}
                                   title={`${monthName} ${d}: ${shiftType || 'off'}`}
                                   data-testid={`shift-day-${dateStr}`}
                                 >
                                   {d}
-                                  {shiftType === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-orange-500 drop-shadow-sm" fill="currentColor" strokeWidth={1.5} />}
-                                  {shiftType === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" fill="currentColor" strokeWidth={1.5} />}
+                                  {shiftType === 'day' && <SunIcon className="absolute -top-1 -right-1 h-3 w-3 text-orange-500 drop-shadow-[0_0_2px_rgba(249,115,22,0.8)]" style={{ zIndex: 5 }} fill="currentColor" strokeWidth={1.5} />}
+                                  {shiftType === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" style={{ zIndex: 5 }} fill="currentColor" strokeWidth={1.5} />}
                                 </div>
                               );
                             }
