@@ -15462,7 +15462,7 @@ export default function Dashboard() {
                                   data-testid={`shift-day-${dateStr}`}
                                 >
                                   {d}
-                                  {shiftType === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
+                                  {shiftType === 'day' && <SunIcon className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-orange-500 drop-shadow-sm" fill="currentColor" strokeWidth={1.5} />}
                                   {shiftType === 'night' && <MoonIcon className="absolute -top-0.5 -right-0.5 h-2 w-2 text-purple-300" fill="currentColor" strokeWidth={1.5} />}
                                 </div>
                               );
