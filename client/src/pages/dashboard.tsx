@@ -15616,7 +15616,7 @@ export default function Dashboard() {
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
                     <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide text-black" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
+                      <span className="text-[10px] font-normal tracking-wide text-black" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
                     </div>
                   )}
                 </div>
@@ -15628,7 +15628,7 @@ export default function Dashboard() {
                 <div style={{ gridColumn: saturdayGridCol, position: 'relative' }}>
                   {isSatToday && (
                     <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="text-[10px] font-bold tracking-wide text-black" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{format(weekDays[6], 'EEEE, MMMM d, yyyy')}</span>
+                      <span className="text-[10px] font-normal tracking-wide text-black" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{format(weekDays[6], 'EEEE, MMMM d, yyyy')}</span>
                     </div>
                   )}
                 </div>
