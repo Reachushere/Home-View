@@ -15565,7 +15565,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
-            style={{ bottom: '-32px', left: '-14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: '-35px', left: '-9px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -18881,7 +18881,7 @@ export default function Dashboard() {
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
-            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3}px`,
+            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
