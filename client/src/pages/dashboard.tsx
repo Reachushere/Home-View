@@ -18936,17 +18936,25 @@ export default function Dashboard() {
               }
               return '70px';
             })();
-            const leftBgs = courseProgressDataRef.current.map((pd, idx) => {
+            const rightWidth = (() => {
+              if (homeworkSpacerRef.current && homeworkSectionRef.current) {
+                const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
+                const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
+                return `${sectionRect.right - spacerRect.left}px`;
+              }
+              return 'calc(100% - 70px)';
+            })();
+            const rightBgs = courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top - upcomingTop;
               const rowHeight = courseRowRects[idx].height;
               const halfHeight = rowHeight / 2;
               return (
-                <div key={`${pd.courseCode}-left-bg`} style={{
+                <div key={`${pd.courseCode}-right-bg`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  left: 0,
-                  width: leftWidth,
+                  right: 0,
+                  width: rightWidth,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
@@ -18958,7 +18966,7 @@ export default function Dashboard() {
                 </div>
               );
             });
-            return [...leftBgs, ...courseProgressDataRef.current.map((pd, idx) => {
+            return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
@@ -18974,15 +18982,8 @@ export default function Dashboard() {
                   style={{
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
-                    right: 0,
-                    width: (() => {
-                      if (homeworkSpacerRef.current && homeworkSectionRef.current) {
-                        const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
-                        const sectionRect = homeworkSectionRef.current.getBoundingClientRect();
-                        return `${sectionRect.right - spacerRect.left}px`;
-                      }
-                      return 'calc(100% - 70px)';
-                    })(),
+                    left: 0,
+                    width: leftWidth,
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
@@ -18999,14 +19000,13 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '12px', paddingRight: '18px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', background: pd.progressBg, position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
-                        <div style={{ flex: 1 }} />
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', background: pd.progressBg, position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         {!pd.moduleP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px]" style={{ position: 'absolute', right: '76px', top: '0px' }}>
+                            <div className="flex items-center gap-[3px]" style={{ position: 'absolute', left: '4px', top: '0px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
@@ -19014,26 +19014,26 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
+                            <div style={{ flex: 1 }} />
                             <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: '60px', height: '10px', backgroundColor: 'rgba(255,255,255,0.15)', marginRight: '5px', marginTop: '16px' }}>
                               {pd.moduleP.percent > 0 && (
                                 <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                               )}
                             </div>
-                            <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '10px', marginTop: '16px' }}>{pd.moduleP.percent}%</span>
+                            <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '4px', marginTop: '16px' }}>{pd.moduleP.percent}%</span>
                             <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
                               <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
                             </div>
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '18px', overflow: 'visible', background: pd.progressBg, position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
-                        <div style={{ flex: 1 }} />
+                      <div className="flex-1 flex items-center gap-[3px] cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible', background: pd.progressBg, position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         {!pd.readingP.hasFiles && (
                           <span className="text-[8px] text-white leading-none">N/A</span>
                         )}
                         {pd.readingP.hasFiles && (
                           <>
-                            <div className="flex items-center gap-[3px]" style={{ position: 'absolute', right: '76px', top: '0px' }}>
+                            <div className="flex items-center gap-[3px]" style={{ position: 'absolute', left: '4px', top: '0px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
@@ -19041,12 +19041,13 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
+                            <div style={{ flex: 1 }} />
                             <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: '60px', height: '10px', backgroundColor: 'rgba(255,255,255,0.15)', marginRight: '5px', marginTop: '16px' }}>
                               {pd.readingP.percent > 0 && (
                                 <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                               )}
                             </div>
-                            <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '10px', marginTop: '16px' }}>{pd.readingP.percent}%</span>
+                            <span className="text-[11px] font-bold flex-shrink-0 leading-none text-white" style={{ marginRight: '4px', marginTop: '16px' }}>{pd.readingP.percent}%</span>
                             <div className="flex-shrink-0 relative cursor-pointer" data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
                               <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '17px', height: 'auto', display: 'block', marginLeft: '-2px', marginTop: '2px', marginBottom: '2px', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
                             </div>
