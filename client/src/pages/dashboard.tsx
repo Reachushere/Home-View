@@ -11967,7 +11967,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '4px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
