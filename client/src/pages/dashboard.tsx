@@ -11106,7 +11106,7 @@ export default function Dashboard() {
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33}px`,
-        top: '4px',
+        top: '5px',
         height: '22px',
         zIndex: 100,
         display: 'flex',
