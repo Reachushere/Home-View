@@ -18621,11 +18621,12 @@ export default function Dashboard() {
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  left: '33%',
+                  left: leftWidth,
                   right: 0,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
+                  borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                 }} />,
               ];
             });
