@@ -19120,10 +19120,10 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                            <div style={{ width: '61px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                               <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                              <div style={{ width: '60px', position: 'relative', height: '3px' }}>
-                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                              <div style={{ width: '53px', position: 'relative', height: '3px' }}>
+                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                           </div>
@@ -19289,10 +19289,10 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '61px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
-                                          <div style={{ width: '60px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          <div style={{ width: '53px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
                                       </div>
@@ -19469,10 +19469,10 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '61px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '60px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          <div style={{ width: '53px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
                                       </div>
@@ -19629,10 +19629,10 @@ export default function Dashboard() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '61px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '60px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          <div style={{ width: '53px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
                                       </div>
@@ -19760,10 +19760,10 @@ export default function Dashboard() {
                                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
                                       </div>
                                     </div>
-                                    <div style={{ width: '68px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                    <div style={{ width: '61px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                       <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
-                                      <div style={{ width: '60px', position: 'relative', height: '3px' }}>
-                                        <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 60), 60)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                      <div style={{ width: '53px', position: 'relative', height: '3px' }}>
+                                        <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                       </div>
                                     </div>
                                   </div>
