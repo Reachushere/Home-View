@@ -18894,7 +18894,7 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2, boxShadow: `0 2px 0 0 ${colorSettings.headerBar}` }}>
+          <div style={{ padding: '0 8px', height: '41px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-normal flex items-center text-white"
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", flex: 1, letterSpacing: '0.3px' }}
@@ -18929,8 +18929,8 @@ export default function Dashboard() {
                 <div key={`${pd.courseCode}-right-fill`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  right: 0,
                   left: 0,
+                  width: leftWidth,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 39,
@@ -18954,8 +18954,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
                     left: 0,
-                    width: 'fit-content',
-                    maxWidth: '50%',
+                    width: leftWidth,
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
