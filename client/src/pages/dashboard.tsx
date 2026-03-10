@@ -18478,7 +18478,7 @@ export default function Dashboard() {
                   </div>
                   <div style={{ width: '5px', flexShrink: 0 }} />
                   {/* Col 3: Days count + progress bar */}
-                  <div style={{ width: '30px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                  <div style={{ width: '36px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
                     <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
                     <div style={{ width: '100%', position: 'relative', height: '3px' }}>
                       <div 
@@ -18487,7 +18487,7 @@ export default function Dashboard() {
                           position: 'absolute',
                           top: 0,
                           left: 0,
-                          width: `${Math.min(progressBarWidth, 30)}px`, 
+                          width: `${Math.min(progressBarWidth, 36)}px`, 
                           height: '3px', 
                           backgroundColor: progressColor,
                           opacity: 0.9
@@ -18495,6 +18495,7 @@ export default function Dashboard() {
                         title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                       />
                     </div>
+                    <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                   </div>
                   <div style={{ width: '3px', flexShrink: 0 }} />
                 </div>
@@ -19219,7 +19220,7 @@ export default function Dashboard() {
                 <div data-homework-section="twoweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Two weeks</span>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-9px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '2px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
                       <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
