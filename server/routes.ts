@@ -4378,29 +4378,61 @@ export async function registerRoutes(
 
     try {
       if (chunks.length === 0) {
-        console.log(`[Nest Playback] No chunks for "${fileName}" — text extraction failed, skipping to next file`);
+        console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, marking listened and skipping`);
         try {
-          const resp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/cat-wash/update-progress`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileId, completed: true }),
+          await storage.updateFile(fileId, { listened: true });
+          console.log(`[Nest Playback] Marked file ${fileId} as listened (extraction failed)`);
+        } catch (e: any) {
+          console.error(`[Nest Playback] Failed to mark file ${fileId} listened: ${e.message}`);
+        }
+        try {
+          const allFiles = await storage.getFiles();
+          const semesterSettings = await storage.getActiveSemesterSettings();
+          const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
+          const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+          const currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
+
+          const unlistenedFiles = allFiles.filter((f: any) => {
+            if (f.listened || f.id === fileId) return false;
+            const weekMatch = f.folder?.match(/week-(\d+)/i);
+            if (weekMatch) return parseInt(weekMatch[1], 10) === currentWeekNumber;
+            return false;
           });
-          const data = await resp.json();
-          if (data.nextFile) {
-            console.log(`[Nest Playback] Skipping to next file: ${data.nextFile.name}`);
-            const nextFiles = await storage.getFiles();
-            const nextFile = nextFiles.find((f: any) => f.id === data.nextFile.id);
-            if (nextFile) {
-              const nextText = await extractFileText(nextFile);
-              if (nextText) {
-                const nextChunks = chunkTextForNest(nextText);
+
+          const isModule = (f: any) => f.folder?.toLowerCase().includes('module') || f.originalName?.toLowerCase().includes('module');
+          const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa') || f.originalName?.toLowerCase().includes('cppa');
+          const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModule(f));
+          const otherFiles = unlistenedFiles.filter((f: any) => !(isCPPA(f) && isModule(f)));
+          const orderedFiles = [...cppaModules, ...otherFiles];
+
+          if (orderedFiles.length > 0) {
+            const nextFile = orderedFiles[0];
+            console.log(`[Nest Playback] Skipping to next file: ${nextFile.displayName || nextFile.originalName} (id=${nextFile.id})`);
+            const nextText = await extractFileText(nextFile);
+            if (nextText) {
+              const nextChunks = chunkTextForNest(nextText);
+              if (nextChunks.length > 0) {
+                catWashPlaybackState = {
+                  fileId: nextFile.id,
+                  fileName: nextFile.displayName || nextFile.originalName,
+                  chunkIndex: 0,
+                  totalChunks: nextChunks.length,
+                  chunks: nextChunks,
+                  currentWords: [],
+                  wordIndex: 0,
+                  startedAt: new Date(),
+                  chunkStartedAt: new Date(),
+                };
                 startNestChunkPlayback(nextFile.id, nextFile.displayName || nextFile.originalName, nextChunks, 0, sessionId, voice);
                 return;
               }
             }
+            console.log(`[Nest Playback] Next file also has no extractable text, stopping`);
+          } else {
+            console.log(`[Nest Playback] No more unlistened files for week ${currentWeekNumber}`);
           }
         } catch (e: any) {
-          console.error(`[Nest Playback] Error skipping to next: ${e.message}`);
+          console.error(`[Nest Playback] Error finding next file: ${e.message}`);
         }
         catWashPlaybackActive = false;
         catWashPlaybackStartedAt = null;
