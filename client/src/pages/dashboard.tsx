@@ -18614,7 +18614,7 @@ export default function Dashboard() {
                   width: '33%',
                   height: `${halfHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 39,
+                  zIndex: 1,
                   borderBottom: '0.5px solid rgba(255,255,255,0.15)',
                 }} />,
                 <div key={`${pd.courseCode}-reading-bg`} style={{
@@ -18624,7 +18624,7 @@ export default function Dashboard() {
                   width: '33%',
                   height: `${halfHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 39,
+                  zIndex: 1,
                 }} />,
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
@@ -18633,7 +18633,7 @@ export default function Dashboard() {
                   right: 0,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 39,
+                  zIndex: 1,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                 }} />,
               ];
