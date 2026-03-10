@@ -15220,7 +15220,7 @@ export default function Dashboard() {
                             {saveShiftScheduleMutation.isPending ? 'Saving...' : 'Save Schedule'}
                           </Button>
                         </div>
-                        <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
+                        <div className="text-xs text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
                           <p><strong>Day shift</strong> (7:30a–7:30p): Quiet hours 10pm–5am</p>
                           <p><strong>Night shift</strong> (7:30p–7:30a): Quiet hours 10am–5pm</p>
                           <p><strong>No shift set:</strong> Quiet hours 10pm–8am (default)</p>
@@ -15511,7 +15511,7 @@ export default function Dashboard() {
                             {saveShiftScheduleMutation.isPending ? 'Saving...' : 'Save Schedule'}
                           </Button>
                         </div>
-                        <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
+                        <div className="text-xs text-muted-foreground space-y-0.5 pt-1 border-t border-white/10">
                           <p><strong>Day shift</strong> (7:30a–7:30p): Quiet hours 10pm–5am</p>
                           <p><strong>Night shift</strong> (7:30p–7:30a): Quiet hours 10am–5pm</p>
                           <p><strong>No shift set:</strong> Quiet hours 10pm–8am (default)</p>
