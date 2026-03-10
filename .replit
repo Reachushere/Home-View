@@ -45,3 +45,5 @@ integrations = ["javascript_object_storage:2.0.0", "google-calendar:1.0.0", "jav
 
 [userenv.shared]
 SITE_PASSWORD = "5747"
+GOOGLE_SECOND_ACCOUNT_CLIENT_ID = "690968796215-e99mfdjq952i2hnp97es9il6o3siiofg.apps.googleusercontent.com"
+GOOGLE_SECOND_ACCOUNT_CLIENT_SECRET = "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"
