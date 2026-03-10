@@ -4234,6 +4234,7 @@ export async function registerRoutes(
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
   let catWashPlaybackStartedAt: Date | null = null;
+  let catWashManuallyStoppedAt: Date | null = null;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
   const startToothbrushPolling = () => {
@@ -5205,6 +5206,15 @@ document.body.removeChild(a);
 
       const today = new Date();
 
+      if (catWashManuallyStoppedAt) {
+        const msSinceStopped = Date.now() - catWashManuallyStoppedAt.getTime();
+        if (msSinceStopped < 5 * 60 * 1000) {
+          console.log(`[Cat Wash] Manually stopped ${Math.round(msSinceStopped / 1000)}s ago — ignoring webhook (5min cooldown)`);
+          return res.json({ action: "skipped", reason: `Manually stopped ${Math.round(msSinceStopped / 1000)}s ago, cooldown active` });
+        }
+        catWashManuallyStoppedAt = null;
+      }
+
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
@@ -5888,6 +5898,7 @@ document.body.removeChild(a);
     catWashPlaybackActive = false;
     catWashPlaybackStartedAt = null;
     catWashPlaybackState = null;
+    catWashManuallyStoppedAt = new Date();
     currentTvFollowUrl = null;
     currentTabletReaderUrl = null;
     stopToothbrushPolling();
@@ -5896,6 +5907,25 @@ document.body.removeChild(a);
       console.log(`[Cat Wash Stop] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
       stopTTSSession("Force stopped via cat-wash/stop");
       stopped.push("ttsSession");
+    }
+
+    if (nestPlaybackAbort) {
+      nestPlaybackAbort();
+      nestPlaybackAbort = null;
+      stopped.push("nestPlaybackAbort");
+    }
+
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+      });
+      console.log(`[Cat Wash Stop] Sent media_stop to Nest speaker`);
+      stopped.push("nestSpeaker");
+    } catch (e: any) {
+      console.error(`[Cat Wash Stop] Failed to stop Nest speaker: ${e.message}`);
     }
 
     const stopTs = Date.now();
