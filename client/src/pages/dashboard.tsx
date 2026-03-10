@@ -11146,14 +11146,14 @@ export default function Dashboard() {
       </div>
 
       {/* Time - fixed position */}
-      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4}px`, top: '3px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
-        <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
-        <span className="text-white" style={{ fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
         </span>
         {profileData.travelTimezone && (
@@ -18694,6 +18694,24 @@ export default function Dashboard() {
                   zIndex: 1,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                 }} />,
+                ...(() => {
+                  const totalFr = gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0);
+                  const fixedLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+                  return gridSizes.dayColumnWidths.slice(0, -1).map((_, di) => {
+                    const frBefore = gridSizes.dayColumnWidths.slice(0, di + 1).reduce((a, b) => a + b, 0);
+                    return (
+                      <div key={`${pd.courseCode}-day-sep-${di}`} style={{
+                        position: 'absolute',
+                        top: `${rowTop}px`,
+                        left: `calc(${fixedLeft}px + (${frBefore} / ${totalFr}) * (100% - ${fixedLeft}px))`,
+                        width: '1px',
+                        height: `${rowHeight}px`,
+                        borderLeft: '1px dotted rgba(255,255,255,0.18)',
+                        zIndex: 2,
+                      }} />
+                    );
+                  });
+                })(),
               ];
             });
             return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
