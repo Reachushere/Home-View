@@ -6857,7 +6857,7 @@ export default function Dashboard() {
         }
         const unreducedWidth = rect.width + calendarReduction;
         const frSpace = unreducedWidth - gridSizes.timeColumnWidth - gridSizes.moduleColumnWidth;
-        const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+        const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
         const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
@@ -15547,7 +15547,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '6px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction}px` : ''})`, height: 'calc(100% - 28px)', marginTop: '12px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -18897,7 +18897,7 @@ export default function Dashboard() {
           className="rounded-[12px] overflow-hidden flex flex-col fixed"
           style={{
             zIndex: 35,
-            right: `${calendarRight - calendarReduction + 3 + 7}px`,
+            right: `${calendarRight - calendarReduction + 3 + 7 - 6}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom - 1}px`,
