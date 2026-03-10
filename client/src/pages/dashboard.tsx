@@ -11102,12 +11102,12 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Timer bar - rectangle below time */}
+      {/* Timer bar - rectangle left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4}px`,
-        top: '34px',
-        height: '25px',
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 8}px`,
+        top: '-1px',
+        height: '22px',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -15606,7 +15606,7 @@ export default function Dashboard() {
           {/* Month View button - below glass backing, left-aligned */}
           <Button
             variant="ghost"
-            className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight absolute"
+            className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight absolute"
             style={{ bottom: '-39px', left: '-12px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
@@ -15622,10 +15622,10 @@ export default function Dashboard() {
             className="absolute"
             style={{ bottom: '-39px', left: `${calendarView === "month" ? 52 : 60}px`, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.4)' }} />
+            <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.25)' }} />
             <Button
               variant="ghost"
-              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white border-0 leading-tight"
+              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
               onClick={() => {
                 if (calendarView === "month") {
                   setCurrentMonth(new Date());
