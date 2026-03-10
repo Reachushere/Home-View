@@ -16616,7 +16616,7 @@ export default function Dashboard() {
             </div>)}
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative flex flex-col" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', backgroundColor: '#faf8f5' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-hidden relative flex flex-col" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', backgroundColor: '#faf8f5' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -17392,12 +17392,18 @@ export default function Dashboard() {
           })()}
           {/* Calendar Height Resize Handle */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize z-50 hover:bg-blue-400/30 active:bg-blue-400/50"
+            className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize z-50"
             style={{ touchAction: 'none' }}
             onMouseDown={handleResizeStart}
             onTouchStart={handleResizeStart}
             data-testid="calendar-height-resize-handle"
-          />
+          >
+            <div style={{ position: 'absolute', left: '50%', bottom: '-2px', transform: 'translateX(-50%)', width: '36px', height: '14px', borderRadius: '0 0 8px 8px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)' }}>
+              <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            </div>
+          </div>
           </div>
           {/* Set Default - fixed position, right-aligned with homework box */}
           </div>
