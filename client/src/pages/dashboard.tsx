@@ -16979,8 +16979,8 @@ export default function Dashboard() {
                                   <span style={{ fontSize: '14px', color: '#000', fontWeight: 800, letterSpacing: '-0.5px', textShadow: '0 0 4px rgba(255,255,255,0.8)' }}>
                                     {displayTime}
                                   </span>
-                                  <span style={{ fontSize: '7px', color: 'rgba(0,0,0,0.55)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
-                                    until next due
+                                  <span style={{ fontSize: '8px', color: 'rgba(0,0,0,0.55)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
+                                    until next task due
                                   </span>
                                 </div>
                               </div>
