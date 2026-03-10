@@ -11050,7 +11050,7 @@ export default function Dashboard() {
       {/* Share Button - fixed position, beside time */}
       {isAdmin && (
         <>
-          <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 79 - 5}px`, top: '5px', zIndex: 100, width: '1.5px', height: '18px', background: 'rgba(255,255,255,0.35)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
+          <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4 + 79 - 5}px`, top: '5px', zIndex: 100, width: '2px', height: '18px', background: 'rgba(255,255,255,0.5)', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: 'none' }} />
           <Share 
             className="text-white/80 cursor-pointer hover:text-white"
             strokeWidth={2.5}
