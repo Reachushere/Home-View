@@ -16929,7 +16929,8 @@ export default function Dashboard() {
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       const cellDateStr = format(day, "yyyy-MM-dd");
-                      const cellShift = localShiftMap[cellDateStr];
+                      const isYesterday = isSameDay(day, subDays(new Date(), 1));
+                      const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
                       const isNightShiftSleepHour = cellShift === 'night' && hour >= 10 && hour <= 16;
                       const nightSleepColor = '#fde5ff';
                       const prevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
