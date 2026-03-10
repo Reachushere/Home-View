@@ -19204,10 +19204,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginBottom: '37px' }}>
-                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 20px)', overflow: 'visible', transform: 'scaleX(-1)' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginBottom: '37px', paddingTop: '6px', paddingBottom: '26px' }}>
+                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -19382,10 +19380,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '12px' }}>
-                                <svg width="22" height="100%" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: '100%', overflow: 'visible', transform: 'scaleX(-1)' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginTop: '5px', marginBottom: '12px', paddingTop: '6px', paddingBottom: '6px' }}>
+                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -19564,10 +19560,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginBottom: '22px' }}>
-                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 15px)', overflow: 'visible', transform: 'scaleX(-1)' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginBottom: '22px', paddingTop: '6px', paddingBottom: '21px' }}>
+                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -19717,10 +19711,8 @@ export default function Dashboard() {
                               </div>
                             </div>
                             {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0, width: '16px', marginLeft: '-2px', marginRight: '0px', alignSelf: 'stretch', marginBottom: '22px' }}>
-                                <svg width="22" viewBox="-6 0 22 100" preserveAspectRatio="none" style={{ height: 'calc(100% - 15px)', overflow: 'visible', transform: 'scaleX(-1)' }}>
-                                  <path d="M -5,2 L 3,2 Q 7,2 7,8 L 7,42 Q 7,50 15,50 Q 7,50 7,58 L 7,92 Q 7,98 3,98 L -5,98" fill="none" stroke="rgba(255,255,255,1)" strokeWidth="1.5" />
-                                </svg>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '0px', marginRight: '2px', alignSelf: 'stretch', marginBottom: '22px', paddingTop: '6px', paddingBottom: '21px' }}>
+                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
                             <div style={{ flex: 1, minWidth: 0 }}>
