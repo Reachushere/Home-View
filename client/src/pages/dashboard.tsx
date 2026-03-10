@@ -19611,7 +19611,7 @@ export default function Dashboard() {
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '17px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
-                                      <div data-box-task-id={task.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                      <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
                                           <div>
                                             <button
