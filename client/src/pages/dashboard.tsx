@@ -11098,7 +11098,7 @@ export default function Dashboard() {
         paddingLeft: '11px',
         paddingRight: '9px',
         borderRadius: '6px',
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.6) 100%)',
+        background: colorSettings.headerBar,
         backdropFilter: 'blur(40px)',
         WebkitBackdropFilter: 'blur(40px)',
         opacity: isTopPillOpen ? 0 : 1,
