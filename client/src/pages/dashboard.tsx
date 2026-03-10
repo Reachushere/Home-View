@@ -18923,7 +18923,7 @@ export default function Dashboard() {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
                                     <div key={wi} style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                      {wi > 0 && <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: `rgba(255,255,255,${0.06 + wi * 0.02})` }} />}
+                                      <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})` }} />
                                       <div style={{ position: 'relative', display: 'flex', gap: '2px', padding: '2px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
@@ -19098,7 +19098,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '3px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})` }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -19281,7 +19281,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '3px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})` }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -19440,7 +19440,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: wi > 0 ? '3px' : undefined, backgroundColor: wi > 0 ? `rgba(255,255,255,${0.06 + wi * 0.02})` : undefined }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '3px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})` }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
