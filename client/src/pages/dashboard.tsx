@@ -11126,7 +11126,7 @@ export default function Dashboard() {
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
           className="overflow-hidden flex flex-col text-[11px] border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] p-0 [&>button.absolute]:hidden" 
-          style={{ width: '420px', maxWidth: '95vw', height: '92vh', background: 'linear-gradient(135deg, rgba(30,41,59,0.97) 0%, rgba(15,23,42,0.95) 50%, rgba(30,41,59,0.97) 100%)' }}
+          style={{ width: '96vw', maxWidth: '96vw', height: '94vh', background: 'linear-gradient(135deg, rgba(30,41,59,0.97) 0%, rgba(15,23,42,0.95) 50%, rgba(30,41,59,0.97) 100%)' }}
         >
           {/* Header bar matching flyouts */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ background: 'rgba(15,23,42,0.5)' }}>
@@ -11144,10 +11144,10 @@ export default function Dashboard() {
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-4 p-2 pt-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <div className="space-y-3">
+          <div className="flex-1 overflow-y-auto p-2 pt-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex gap-3 items-start">
               {/* Level I */}
-              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
@@ -11345,10 +11345,9 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold whitespace-nowrap">{l1Progress.completed} / {l1Progress.total}</span>
               </div>
               </div>
-        </div>
 
               {/* Level II */}
-              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
@@ -11591,10 +11590,9 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold whitespace-nowrap">{l2Progress.completed} / {l2Progress.total}</span>
               </div>
               </div>
-        </div>
 
-        {/* Level III */}
-              <div className="rounded-md p-2 text-[9px] bg-white text-black">
+              {/* Level III */}
+              <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black">
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
@@ -11816,7 +11814,6 @@ export default function Dashboard() {
                   <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
                 </div>
                 <span className="text-[8px] font-bold whitespace-nowrap">{l3Progress.completed} / {l3Progress.total}</span>
-              </div>
               </div>
               </div>
             </div>
