@@ -11957,7 +11957,7 @@ export default function Dashboard() {
             type="checkbox"
             checked={showDeviceSaved}
             onChange={saveAsDeviceDefault}
-            className="w-[10px] h-[10px] rounded border-white/40 bg-transparent accent-green-500"
+            className="w-[8px] h-[8px] rounded border-white/40 bg-transparent accent-green-500"
             data-testid="checkbox-save-device-default"
           />
           {showDeviceSaved ? "Saved!" : "Set Default"}
