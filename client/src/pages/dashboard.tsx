@@ -15669,8 +15669,8 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isToday && shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
-                    {!isToday && shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
