@@ -1404,46 +1404,55 @@ button[role="combobox"] > span {
   }
   
   .checkbox-black {
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    width: 12px !important;
-    height: 12px !important;
-    min-width: 12px !important;
-    min-height: 12px !important;
-    border: 1.5px solid black !important;
-    border-radius: 2px !important;
-    background-color: white !important;
-    background-image: none !important;
+    all: unset;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 13px;
+    height: 13px;
+    min-width: 13px;
+    min-height: 13px;
+    max-width: 13px;
+    max-height: 13px;
+    border: 1.5px solid #333;
+    border-radius: 2px;
+    background: #fff;
     cursor: pointer;
     position: relative;
     flex-shrink: 0;
-    margin: 0;
-    padding: 0;
+    vertical-align: middle;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
-  
+
   .checkbox-black:checked {
-    background-color: #059669 !important;
-    border-color: #059669 !important;
+    background: #059669;
+    border-color: #059669;
   }
-  
-  .checkbox-black:checked::after {
+
+  .checkbox-black:checked::before {
     content: '';
+    display: block;
     position: absolute;
     left: 3px;
-    top: 0.5px;
-    width: 4px;
-    height: 7px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
+    top: 0px;
+    width: 5px;
+    height: 8px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
     transform: rotate(45deg);
   }
-  
+
   .checkbox-black:disabled {
-    opacity: 0.3;
+    opacity: 0.35;
     cursor: not-allowed;
-    background-color: #e5e7eb !important;
-    border-color: #d1d5db !important;
+    background: #e5e7eb;
+    border-color: #9ca3af;
+  }
+
+  .checkbox-black:disabled:checked {
+    background: #059669;
+    border-color: #059669;
+    opacity: 0.35;
   }
   
   /* Color input styling */
