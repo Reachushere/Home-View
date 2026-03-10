@@ -2575,6 +2575,75 @@ export default function Dashboard() {
   const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'ELECTIVE1', 'ELECTIVE2', 'LIBERAL', 'OPEN1', 'OPEN2']
     .every(id => checkedCourses[id]);
 
+  const certSections = {
+    L1: [
+      { required: 3, members: ['PPA101', 'PPA102', 'PPA125'] },
+      { required: 2, members: ['ELECTIVE1', 'ELECTIVE2', 'L1_PPA122', 'L1_PPA124'] },
+      { required: 1, members: ['LIBERAL'] },
+      { required: 2, members: ['OPEN1', 'OPEN2'] },
+    ],
+    L2: [
+      { required: 1, members: ['L2_PPA211'] },
+      { required: 3, members: ['L2_PPA120', 'L2_PPA121', 'L2_PPA122', 'L2_PPA124', 'L2_PPA235', 'L2_PPA303', 'L2_PPA319'] },
+      { required: 1, members: ['L2_LIBERAL'] },
+      { required: 1, members: ['L2_ECN1', 'L2_ECN2', 'L2_ECN3', 'L2_ECN4', 'L2_ECN5', 'L2_ECN6', 'L2_ECN7', 'L2_ECN8'] },
+      { required: 2, members: ['L2_OPEN1', 'L2_OPEN2'] },
+    ],
+    L3: [
+      { required: 1, members: ['L3_PPA333'] },
+      { required: 8, members: ['L3_PPA235', 'L3_PPA301', 'L3_PPA303', 'L3_PPA319', 'L3_PPA335', 'L3_PPA401', 'L3_PPA402', 'L3_PPA403', 'L3_PPA404', 'L3_PPA411', 'L3_PPA414', 'L3_PPA425', 'L3_PPA490', 'L3_PPA501'] },
+      { required: 1, members: ['L3_PRACTICUM1', 'L3_PRACTICUM2'] },
+      { required: 3, members: ['L3_POG1', 'L3_POG2', 'L3_POG3'] },
+      { required: 4, members: ['L3_LIBERAL1', 'L3_LIBERAL2', 'L3_LIBERAL3', 'L3_LIBERAL4'] },
+      { required: 6, members: ['L3_OPEN1', 'L3_OPEN2', 'L3_OPEN3', 'L3_OPEN4', 'L3_OPEN5', 'L3_OPEN6'] },
+    ],
+  };
+
+  const sectionCheckedCount = (members: string[]) => members.filter(m => checkedCourses[m]).length;
+
+  const getSectionForCourse = (courseId: string) => {
+    for (const sections of Object.values(certSections)) {
+      for (const section of sections) {
+        if (section.members.includes(courseId)) return section;
+      }
+    }
+    return null;
+  };
+
+  const isCourseGreyedOut = (courseId: string): boolean => {
+    if (checkedCourses[courseId]) return false;
+    const section = getSectionForCourse(courseId);
+    if (!section) return false;
+    return sectionCheckedCount(section.members) >= section.required;
+  };
+
+  const courseRowClass = (id: string) => (checkedCourses[id] || isCourseGreyedOut(id)) ? 'bg-gray-300 text-gray-500' : '';
+  const isCheckDisabled = (id: string) => isCourseGreyedOut(id);
+
+  const getLevelProgress = (level: 'L1' | 'L2' | 'L3') => {
+    let completed = 0;
+    let total = 0;
+    for (const section of certSections[level]) {
+      total += section.required;
+      completed += Math.min(sectionCheckedCount(section.members), section.required);
+    }
+    return { completed, total };
+  };
+
+  const l1Progress = getLevelProgress('L1');
+  const l2Progress = getLevelProgress('L2');
+  const l3Progress = getLevelProgress('L3');
+  const overallCertProgress = {
+    completed: l1Progress.completed + l2Progress.completed + l3Progress.completed,
+    total: l1Progress.total + l2Progress.total + l3Progress.total,
+  };
+
+  const getHeaderColor = (progress: { completed: number; total: number }) => {
+    if (progress.completed === 0) return '#ef4444';
+    if (progress.completed >= progress.total) return '#22c55e';
+    return '#eab308';
+  };
+
   // Create jiggle sound using Web Audio API - only if Bluetooth/audio already connected
   const playJiggleSound = useCallback(() => {
     try {
@@ -10950,9 +11019,9 @@ export default function Dashboard() {
               {/* Level I */}
               <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
               <div className="border-2 border-black">
-                <div className="flex border-b border-black">
-                  <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
+                <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
+                  <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
@@ -11006,9 +11075,9 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
                   <div className="w-12 border-l border-black"></div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('ELECTIVE1')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} disabled={isCheckDisabled('ELECTIVE1')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
@@ -11019,9 +11088,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('ELECTIVE2')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} disabled={isCheckDisabled('ELECTIVE2')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
@@ -11032,9 +11101,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L1_PPA122'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L1_PPA122')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L1_PPA122'] || false} onChange={() => toggleCourse('L1_PPA122')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L1_PPA122'] || false} onChange={() => toggleCourse('L1_PPA122')} disabled={isCheckDisabled('L1_PPA122')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
@@ -11045,9 +11114,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L1_PPA122']?.percent || ''} onChange={(e) => updatePercent('L1_PPA122', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L1_PPA124'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L1_PPA124')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L1_PPA124'] || false} onChange={() => toggleCourse('L1_PPA124')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L1_PPA124'] || false} onChange={() => toggleCourse('L1_PPA124')} disabled={isCheckDisabled('L1_PPA124')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
                   <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
@@ -11139,15 +11208,21 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+              <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                <div className="flex-1 bg-gray-200 rounded-full h-2.5">
+                  <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l1Progress.completed / l1Progress.total) * 100}%`, backgroundColor: getHeaderColor(l1Progress) }} />
+                </div>
+                <span className="text-[8px] font-bold whitespace-nowrap">{l1Progress.completed} / {l1Progress.total}</span>
+              </div>
               </div>
         </div>
 
               {/* Level II */}
               <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
               <div className="border-2 border-black">
-                <div className="flex border-b border-black">
-                  <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL II</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
+                <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
+                  <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DIPLOMA</div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
@@ -11173,9 +11248,9 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> from the following:</div>
                   <div className="w-12 border-l border-black"></div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA120'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA120')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA120'] || false} onChange={() => toggleCourse('L2_PPA120')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA120'] || false} onChange={() => toggleCourse('L2_PPA120')} disabled={isCheckDisabled('L2_PPA120')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
@@ -11186,9 +11261,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA120']?.percent || ''} onChange={(e) => updatePercent('L2_PPA120', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA121'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA121')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA121'] || false} onChange={() => toggleCourse('L2_PPA121')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA121'] || false} onChange={() => toggleCourse('L2_PPA121')} disabled={isCheckDisabled('L2_PPA121')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
@@ -11199,9 +11274,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA121']?.percent || ''} onChange={(e) => updatePercent('L2_PPA121', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA122'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA122')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA122'] || false} onChange={() => toggleCourse('L2_PPA122')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA122'] || false} onChange={() => toggleCourse('L2_PPA122')} disabled={isCheckDisabled('L2_PPA122')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
@@ -11212,9 +11287,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA122']?.percent || ''} onChange={(e) => updatePercent('L2_PPA122', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA124'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA124')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA124'] || false} onChange={() => toggleCourse('L2_PPA124')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA124'] || false} onChange={() => toggleCourse('L2_PPA124')} disabled={isCheckDisabled('L2_PPA124')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
                   <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
@@ -11225,9 +11300,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA124']?.percent || ''} onChange={(e) => updatePercent('L2_PPA124', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA235'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA235')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA235'] || false} onChange={() => toggleCourse('L2_PPA235')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA235'] || false} onChange={() => toggleCourse('L2_PPA235')} disabled={isCheckDisabled('L2_PPA235')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 235</div>
                   <div className="flex-1 px-1 py-0.5">Theories of the State</div>
@@ -11238,9 +11313,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA235']?.percent || ''} onChange={(e) => updatePercent('L2_PPA235', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA303'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA303')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA303'] || false} onChange={() => toggleCourse('L2_PPA303')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA303'] || false} onChange={() => toggleCourse('L2_PPA303')} disabled={isCheckDisabled('L2_PPA303')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 303</div>
                   <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
@@ -11251,9 +11326,9 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA303']?.percent || ''} onChange={(e) => updatePercent('L2_PPA303', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${checkedCourses['L2_PPA319'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA319')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA319'] || false} onChange={() => toggleCourse('L2_PPA319')} />
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_PPA319'] || false} onChange={() => toggleCourse('L2_PPA319')} disabled={isCheckDisabled('L2_PPA319')} />
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 319</div>
                   <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
@@ -11291,28 +11366,27 @@ export default function Dashboard() {
                 <div className="flex items-stretch">
                   <div className="w-5 border-r border-black flex flex-col">
                     <div className="h-7 border-b border-black"></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN1'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN1'] || false} onChange={() => toggleCourse('L2_ECN1')} /></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN2'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN2'] || false} onChange={() => toggleCourse('L2_ECN2')} /></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN3'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN3'] || false} onChange={() => toggleCourse('L2_ECN3')} /></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN4'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN4'] || false} onChange={() => toggleCourse('L2_ECN4')} /></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN5'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN5'] || false} onChange={() => toggleCourse('L2_ECN5')} /></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN6'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN6'] || false} onChange={() => toggleCourse('L2_ECN6')} /></div>
-                    <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['L2_ECN7'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN7'] || false} onChange={() => toggleCourse('L2_ECN7')} /></div>
-                    <div className={`h-9 flex items-center justify-center ${checkedCourses['L2_ECN8'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L2_ECN8'] || false} onChange={() => toggleCourse('L2_ECN8')} /></div>
+                    {['L2_ECN1','L2_ECN2','L2_ECN3','L2_ECN4','L2_ECN5','L2_ECN6','L2_ECN7','L2_ECN8'].map((cid, i) => (
+                      <div key={cid} className={`h-9 flex items-center justify-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses[cid] || false} onChange={() => toggleCourse(cid)} disabled={isCheckDisabled(cid)} /></div>
+                    ))}
                   </div>
                   <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                     <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
                   </div>
                   <div className="flex-1 flex flex-col">
                     <div className="h-7 px-1 text-[8px] leading-tight flex items-center border-b border-black"><span><b>CORE ELECTIVE: ONE</b> course required from the following:</span></div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN1'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN2'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN3'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN4'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN5'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN6'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center border-b border-black ${checkedCourses['L2_ECN7'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 220 Evolution of the Global Economy</div>
-                    <div className={`h-9 px-1 text-[8px] flex items-center ${checkedCourses['L2_ECN8'] ? 'bg-gray-300 text-gray-500' : ''}`}>ECN 320 Introduction to Financial Economics</div>
+                    {[
+                      { id: 'L2_ECN1', name: 'ECN 101 Principles of Microeconomics ** (Anti-req ECN104)' },
+                      { id: 'L2_ECN2', name: 'ECN 104 Introductory Microeconomics ** (Anti-req ECN110)' },
+                      { id: 'L2_ECN3', name: 'ECN 110 The Economy and Society ** (Anti-req ECN104)' },
+                      { id: 'L2_ECN4', name: 'ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)' },
+                      { id: 'L2_ECN5', name: 'ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)' },
+                      { id: 'L2_ECN6', name: 'ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
+                      { id: 'L2_ECN7', name: 'ECN 220 Evolution of the Global Economy' },
+                      { id: 'L2_ECN8', name: 'ECN 320 Introduction to Financial Economics' },
+                    ].map((ecn, i) => (
+                      <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`}>{ecn.name}</div>
+                    ))}
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
                     <div className="h-7 border-b border-black"></div>
@@ -11380,15 +11454,21 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+              <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                <div className="flex-1 bg-gray-200 rounded-full h-2.5">
+                  <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l2Progress.completed / l2Progress.total) * 100}%`, backgroundColor: getHeaderColor(l2Progress) }} />
+                </div>
+                <span className="text-[8px] font-bold whitespace-nowrap">{l2Progress.completed} / {l2Progress.total}</span>
+              </div>
               </div>
         </div>
 
         {/* Level III */}
               <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
               <div className="border-2 border-black">
-                <div className="flex border-b border-black">
-                  <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL III</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
+                <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
+                  <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DEGREE</div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
@@ -11435,14 +11515,14 @@ export default function Dashboard() {
                       { code: 'PPA 490', title: 'Public Admin Themes', id: 'L3_PPA490' },
                       { code: 'PPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
                     ].map((course, idx, arr) => (
-                      <tr key={course.code} className={`${idx < arr.length - 1 ? 'border-b border-black' : ''} ${checkedCourses[course.id] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                      <tr key={course.code} className={`${idx < arr.length - 1 ? 'border-b border-black' : ''} ${courseRowClass(course.id)}`}>
                         {idx === 0 && (
                           <>
                             <td rowSpan={14} className="px-0.5 py-0.5 border-r border-black text-center align-middle">
                               <div className="flex flex-col gap-0">
                                 {['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (
-                                  <div key={cid} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''} ${checkedCourses[cid] ? 'bg-gray-300' : ''}`}>
-                                    <input type="checkbox" className="checkbox-black" checked={checkedCourses[cid] || false} onChange={() => toggleCourse(cid)} />
+                                  <div key={cid} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}>
+                                    <input type="checkbox" className="checkbox-black" checked={checkedCourses[cid] || false} onChange={() => toggleCourse(cid)} disabled={isCheckDisabled(cid)} />
                                   </div>
                                 ))}
                               </div>
@@ -11476,15 +11556,15 @@ export default function Dashboard() {
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_PRACTICUM1'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L3_PRACTICUM1'] || false} onChange={() => toggleCourse('L3_PRACTICUM1')} /></div>
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_PRACTICUM2'] ? 'bg-gray-300' : ''}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L3_PRACTICUM2'] || false} onChange={() => toggleCourse('L3_PRACTICUM2')} /></div>
+                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM1')}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L3_PRACTICUM1'] || false} onChange={() => toggleCourse('L3_PRACTICUM1')} disabled={isCheckDisabled('L3_PRACTICUM1')} /></div>
+                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM2')}`}><input type="checkbox" className="checkbox-black" checked={checkedCourses['L3_PRACTICUM2'] || false} onChange={() => toggleCourse('L3_PRACTICUM2')} disabled={isCheckDisabled('L3_PRACTICUM2')} /></div>
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
                     Select&nbsp;<span className="font-bold">ONE</span>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${checkedCourses['L3_PRACTICUM1'] ? 'bg-gray-300 text-gray-500' : ''}`}>PPA 50A/B (Formerly PPA030) ***Practicum1</div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] ${checkedCourses['L3_PRACTICUM2'] ? 'bg-gray-300 text-gray-500' : ''}`}>Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] ${courseRowClass('L3_PRACTICUM1')}`}>PPA 50A/B (Formerly PPA030) ***Practicum1</div>
+                    <div className={`h-11 px-1 flex items-center text-[9px] ${courseRowClass('L3_PRACTICUM2')}`}>Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -11601,30 +11681,44 @@ export default function Dashboard() {
                     ))}
                   </div>
                 </div>
+              <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                <div className="flex-1 bg-gray-200 rounded-full h-2.5">
+                  <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
+                </div>
+                <span className="text-[8px] font-bold whitespace-nowrap">{l3Progress.completed} / {l3Progress.total}</span>
+              </div>
               </div>
               </div>
             </div>
           </div>
-          {/* Save button at bottom */}
-          <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex justify-end">
-            <Button 
-              type="button" 
-              variant="outline"
-              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
-              style={{
-                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                fontSize: '12px'
-              }}
-              onClick={() => {
-                localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
-                localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
-                toast({ title: "Settings saved", description: "Your progress has been saved." });
-                setIsSettingsPanelOpen(false);
-              }}
-              data-testid="button-save-settings-panel"
-            >
-              Save
-            </Button>
+          <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/70 font-medium whitespace-nowrap">OVERALL</span>
+              <div className="flex-1 bg-white/20 rounded-full h-3">
+                <div className="h-3 rounded-full transition-all duration-300" style={{ width: `${(overallCertProgress.completed / overallCertProgress.total) * 100}%`, backgroundColor: getHeaderColor(overallCertProgress) }} />
+              </div>
+              <span className="text-[10px] text-white font-bold whitespace-nowrap">{overallCertProgress.completed} / {overallCertProgress.total}</span>
+            </div>
+            <div className="flex justify-end">
+              <Button 
+                type="button" 
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
+                style={{
+                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                  fontSize: '12px'
+                }}
+                onClick={() => {
+                  localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
+                  localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
+                  toast({ title: "Settings saved", description: "Your progress has been saved." });
+                  setIsSettingsPanelOpen(false);
+                }}
+                data-testid="button-save-settings-panel"
+              >
+                Save
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
