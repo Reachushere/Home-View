@@ -16980,9 +16980,14 @@ export default function Dashboard() {
                             const displayTime = hoursUntil < 1 ? `${Math.round(hoursUntil * 60)}m` : hoursUntil % 1 >= 0.25 && hoursUntil < 24 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`;
                             return (
                               <div className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none" data-testid="hours-until-next-task">
-                                <span style={{ fontSize: '8px', color: 'rgba(0,0,0,0.7)', fontWeight: 700, letterSpacing: '0.2px', textAlign: 'center', lineHeight: '1.2' }}>
-                                  {displayTime} until<br/>next task due
-                                </span>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', lineHeight: '1' }}>
+                                  <span style={{ fontSize: '14px', color: '#000', fontWeight: 800, letterSpacing: '-0.5px', textShadow: '0 0 4px rgba(255,255,255,0.8)' }}>
+                                    {displayTime}
+                                  </span>
+                                  <span style={{ fontSize: '7px', color: 'rgba(0,0,0,0.55)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
+                                    until next due
+                                  </span>
+                                </div>
                               </div>
                             );
                           })()}
