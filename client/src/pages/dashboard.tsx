@@ -23727,6 +23727,10 @@ function TaskForm({
   onSuccess: () => void;
   onRecurringEdit?: (taskId: number, title: string, payload: Record<string, unknown>, onSuccess: () => void) => void;
 }) {
+  const { data: allTasks = [] } = useQuery<Task[]>({
+    queryKey: ["/api/tasks"],
+  });
+
   const getDefaultDate = () => {
     if (task?.dueDate) return format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm");
     if (initialDate) {
