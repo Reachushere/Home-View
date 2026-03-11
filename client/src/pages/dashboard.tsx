@@ -1293,6 +1293,12 @@ export default function Dashboard() {
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
   const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
+  const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
+  const [pastCourseProfessors, setPastCourseProfessors] = useState<Record<string, { professor: string; email: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem('pastCourseProfessors') || '{}'); } catch { return {}; }
+  });
+  const [editingSchoolCourseKey, setEditingSchoolCourseKey] = useState<string | null>(null);
+  const [editingSchoolCourseData, setEditingSchoolCourseData] = useState({ professor: '', email: '' });
   const [courseDisplayNames, setCourseDisplayNames] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('courseDisplayNames');
     if (saved) {
@@ -14220,7 +14226,7 @@ export default function Dashboard() {
               <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column - School & Semester Settings */}
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '3px' }}>
+                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
                 <SchoolForm 
                   key={isSchoolDialogOpen ? 'open' : 'closed'}
                   schoolData={schoolData}
@@ -14231,10 +14237,20 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-12px' }}>
+                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-9px' }}>
                 {/* Course Legend */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '7px' }}>
-                  <Label className="text-[10px] font-medium">Courses</Label>
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '10px' }}>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-medium">Courses</Label>
+                    <div
+                      className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsSchoolCoursesDialogOpen(true), 200); }}
+                      data-testid="button-past-courses"
+                    >
+                      <span className="text-[10px] text-white/70 font-medium">Past courses</span>
+                      <ChevronRight className="text-white/70" style={{ width: '12px', height: '12px' }} />
+                    </div>
+                  </div>
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
                     const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
@@ -14697,6 +14713,141 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* School Courses Dialog - All past + current courses */}
+          <Dialog open={isSchoolCoursesDialogOpen} onOpenChange={setIsSchoolCoursesDialogOpen}>
+            <DialogContent
+              className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
+              style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+            >
+              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-3 w-3 text-white" />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    SCHOOL COURSES
+                  </h2>
+                </div>
+                <button onClick={() => setIsSchoolCoursesDialogOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-school-courses">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none' }}>
+                {/* Current Courses */}
+                <div className="mb-4">
+                  <Label className="text-[11px] font-bold mb-2 block" style={{ letterSpacing: '0.05em' }}>Current Courses</Label>
+                  <div className="space-y-1.5">
+                    {coursesData.courses.filter(c => c.name.trim()).map((course, idx) => {
+                      const code = course.name.split(' - ')[0]?.trim();
+                      const name = course.name.split(' - ').slice(1).join(' - ').trim();
+                      return (
+                        <div key={`current-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: course.colorEnd ? `linear-gradient(135deg, ${course.color}44, ${course.colorEnd}44)` : `${course.color}33` }}
+                          onClick={() => {
+                            setIsSchoolCoursesDialogOpen(false);
+                            setOpenedCourseFromDegreeTracking(false);
+                            setSelectedCertCourse({ courseCode: code, courseName: name, certKey: code });
+                          }}
+                          data-testid={`school-course-current-${code}`}
+                        >
+                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: course.colorEnd ? `linear-gradient(to right, ${course.color}, ${course.colorEnd})` : course.color }} />
+                          <span className="text-[11px] font-bold">{code}</span>
+                          {name && <span className="text-[10px] text-white/70">{name}</span>}
+                          {course.professor && (
+                            <span className="text-[10px] text-white/60 underline ml-auto">{course.professor}</span>
+                          )}
+                          <ChevronRight className="text-white/40 flex-shrink-0" style={{ width: '12px', height: '12px' }} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                {/* Past Courses from Degree Tracker */}
+                <div>
+                  <Label className="text-[11px] font-bold mb-2 block" style={{ letterSpacing: '0.05em' }}>Past Courses</Label>
+                  <div className="space-y-1.5">
+                    {(() => {
+                      const currentCodes = coursesData.courses.filter(c => c.name.trim()).map(c => c.name.split(' - ')[0]?.trim().toUpperCase());
+                      const pastEntries: Array<{ certKey: string; code: string; name: string }> = [];
+                      Object.entries(checkedCourses).forEach(([certKey, isChecked]) => {
+                        if (!isChecked) return;
+                        const info = certCourseMap[certKey];
+                        if (!info) return;
+                        const elective = openElectives[certKey];
+                        const actualCode = elective?.trim() ? elective.split(' ')[0] : info.code;
+                        const actualName = elective?.trim() ? elective.split(' ').slice(1).join(' ') : info.name;
+                        if (currentCodes.includes(actualCode.toUpperCase())) return;
+                        if (pastEntries.some(p => p.code === actualCode)) return;
+                        pastEntries.push({ certKey, code: actualCode, name: actualName });
+                      });
+                      if (pastEntries.length === 0) return <div className="text-[10px] text-white/40 italic px-3">No past courses found. Check off completed courses in the Degree Tracker.</div>;
+                      return pastEntries.map((entry, idx) => {
+                        const profInfo = pastCourseProfessors[entry.code] || { professor: '', email: '' };
+                        return (
+                          <div key={`past-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: 'rgba(59,130,246,0.15)' }}
+                            onClick={() => {
+                              setIsSchoolCoursesDialogOpen(false);
+                              setOpenedCourseFromDegreeTracking(false);
+                              setSelectedCertCourse({ courseCode: entry.code, courseName: entry.name, certKey: entry.certKey });
+                            }}
+                            data-testid={`school-course-past-${entry.code}`}
+                          >
+                            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#3b82f6' }} />
+                            <span className="text-[11px] font-bold">{entry.code}</span>
+                            <span className="text-[10px] text-white/70">{entry.name}</span>
+                            {profInfo.professor && (
+                              <span className="text-[10px] text-white/60 underline ml-auto">{profInfo.professor}</span>
+                            )}
+                            <button
+                              className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingSchoolCourseKey(entry.code);
+                                setEditingSchoolCourseData({ professor: profInfo.professor, email: profInfo.email });
+                              }}
+                              data-testid={`button-edit-past-course-${entry.code}`}
+                            >
+                              <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" />
+                            </button>
+                            <ChevronRight className="text-white/40 flex-shrink-0" style={{ width: '12px', height: '12px' }} />
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              </div>
+              {/* Edit Past Course Professor Dialog */}
+              {editingSchoolCourseKey && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
+                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg p-4 w-[280px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="text-[11px] font-medium text-white">Edit Professor Info — {editingSchoolCourseKey}</h3>
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
+                        <input type="text" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.professor} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, professor: e.target.value }))} data-testid="input-edit-past-professor" />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
+                        <input type="email" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.email} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, email: e.target.value }))} data-testid="input-edit-past-email" />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <button className="px-3 py-1 text-[9px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors" onClick={() => setEditingSchoolCourseKey(null)} data-testid="button-cancel-edit-past">Cancel</button>
+                      <button className="px-3 py-1 text-[9px] bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors" onClick={() => {
+                        const updated = { ...pastCourseProfessors, [editingSchoolCourseKey]: { professor: editingSchoolCourseData.professor, email: editingSchoolCourseData.email } };
+                        setPastCourseProfessors(updated);
+                        localStorage.setItem('pastCourseProfessors', JSON.stringify(updated));
+                        setEditingSchoolCourseKey(null);
+                      }} data-testid="button-save-edit-past">Save</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+                <Button variant="outline" size="sm" className="text-[10px] border-white/30 hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
+                <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-save-school-courses">Save</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* New Course Dialog (opened from grad cap menu) */}
           <Dialog open={isNewCourseDialogOpen} onOpenChange={(open) => { if (!open) { newCourseDialogClosingRef.current = true; setIsNewCourseDialogOpen(false); setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300); } }}>
             <DialogContent 
@@ -22764,9 +22915,11 @@ function SchoolForm({
   
   return (
     <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
-      <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-5px' }}>
+      <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-2px' }}>
         <Label className="text-[10px] font-medium" style={{ fontSize: '11px', letterSpacing: '0.05em' }}>School Settings</Label>
-        <Label className="text-[10px] font-medium">School Logo</Label>
+        <div>
+          <Label className="text-[10px] font-medium">School Logo</Label>
+        </div>
         <div className="space-y-3">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
