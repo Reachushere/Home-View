@@ -16660,10 +16660,26 @@ export default function Dashboard() {
               })}
             </div>
             
-              {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
+              {/* Course Rows - Dynamic based on selected week */}
               {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}
               {(() => {
-                const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
+                const springSummerCourses = [
+                  { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-16' },
+                  { name: 'CSOC103 - How Society Works', color: '#D97706', colorEnd: '#FBBF24', professor: '', professorEmail: '', startDate: '2026-05-04', endDate: '2026-08-07' },
+                  { name: 'CHST501 - The American Civil War', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-22', endDate: '2026-08-10' },
+                ];
+                const currentWeekStart = weekDays[0];
+                const currentWeekEnd = weekDays[6];
+                const winterCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
+                const isAfterWinterSemester = selectedWeek > 13;
+                const activeSpringSummerCourses = springSummerCourses.filter(c => {
+                  const courseStart = new Date(c.startDate + 'T00:00:00');
+                  const courseEnd = new Date(c.endDate + 'T23:59:59');
+                  return currentWeekStart <= courseEnd && currentWeekEnd >= courseStart;
+                });
+                const filteredCourses = isAfterWinterSemester
+                  ? (activeSpringSummerCourses.length > 0 ? activeSpringSummerCourses : [])
+                  : winterCourses;
                 const minThreeTaskHeight = 3 * 20 + 4; // 64px minimum (3 tasks)
                 const maxCourseRowHeight = Math.max(minThreeTaskHeight, ...filteredCourses.map(cd => {
                   const cn = cd.name.split(' - ')[0].toUpperCase();

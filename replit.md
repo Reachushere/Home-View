@@ -117,6 +117,21 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **POG Dropdowns**: L3_POG1/2/3 use dropdowns from POG_COURSES array (300/400-level courses)
 - **GPA Box**: Level I GPA computed from TMU 4.33 scale; color-coded green (≥3.0), yellow (≥2.0), red (<2.0); shows letter grade equivalent
 
+### Dynamic Course Row Switching
+- **After Winter semester** (week 13+): Course rows stop showing CPPA122/CFNF400/CASL101 labels
+- **Spring/Summer courses** appear in rows based on their individual start/end dates:
+  - Row 1: CPHL110 (Philosophy of Religion) — May 5 – June 16, 2026
+  - Row 2: CSOC103 (How Society Works) — May 4 – Aug 7, 2026
+  - Row 3: CHST501 (The American Civil War) — June 22 – Aug 10, 2026
+- Course rows only show when the selected week overlaps with that course's active dates
+- Between semesters (gap weeks), rows are hidden
+
+### Google Calendar Events
+- **Pagination fix**: `listEvents()` in `googleCalendar.ts` now paginates through all results (was capped at 250)
+- **All events shown**: Removed aggressive "conflict filter" that only showed events overlapping with tasks — now all external Google Calendar events display on the calendar
+- **CPHL110 event ID**: `2v8mucs5978fa9qhkp4nr19qhg`
+- **CHST501 event ID**: `48n4he31ghvduje97n7mbipqrg`
+
 ### Future Semester Dates & Confirmation
 - **File**: `shared/semesterUtils.ts` — `FUTURE_SEMESTER_SCHEDULE` array with dates through Winter 2029
 - **Confirm Dialog**: Shows ~1 month before each new semester (based on `confirmMonth`), lets user verify/update dates
