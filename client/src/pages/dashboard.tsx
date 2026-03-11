@@ -16892,9 +16892,14 @@ export default function Dashboard() {
                 ];
                 const currentWeekStart = weekDays[0];
                 const currentWeekEnd = weekDays[6];
-                const winterCourses = coursesData.courses.filter(c => c.name);
+                const winterCourseNames = ['CPPA122', 'CFNF400', 'CASL101'];
+                const winterCourses = coursesData.courses.filter(c => c.name && winterCourseNames.some(wc => c.name.toUpperCase().startsWith(wc)));
+                const activeSpringSummerCourses = springSummerCourses.filter(c => {
+                  const courseStart = new Date(c.startDate + 'T00:00:00');
+                  return currentWeekEnd >= courseStart;
+                });
                 const allDisplayCourses = [...winterCourses];
-                for (const sc of springSummerCourses) {
+                for (const sc of activeSpringSummerCourses) {
                   const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
                   if (!alreadyExists) allDisplayCourses.push(sc);
                 }
