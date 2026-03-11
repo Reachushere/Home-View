@@ -19326,7 +19326,16 @@ export default function Dashboard() {
                         <div
                           key={t.id}
                           className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
-                          style={{ lineHeight: '1.3', transition: 'all 0.15s ease' }}
+                          style={{
+                            lineHeight: '1.3',
+                            transition: 'all 0.15s ease',
+                            transform: hoveredCountdownTaskId === t.id ? 'scale(1.08)' : undefined,
+                            background: hoveredCountdownTaskId === t.id ? 'rgba(255,255,255,0.15)' : undefined,
+                            borderRadius: hoveredCountdownTaskId === t.id ? '3px' : undefined,
+                            padding: hoveredCountdownTaskId === t.id ? '1px 4px' : undefined,
+                            boxShadow: hoveredCountdownTaskId === t.id ? '0 2px 8px rgba(0,0,0,0.3)' : undefined,
+                            zIndex: hoveredCountdownTaskId === t.id ? 10 : undefined,
+                          }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
                             const boxEl = document.querySelector(`[data-box-task-id="${t.id}"]`);
