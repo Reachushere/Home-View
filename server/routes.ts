@@ -4954,7 +4954,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`, voice);
       await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
       const introWords = introText.split(/\s+/).length;
-      const introWaitMs = Math.max(3000, (introWords / 145) * 60 * 1000 + 1500);
+      const introWaitMs = Math.max(3000, (introWords / 115) * 60 * 1000 + 1500);
       await new Promise(r => setTimeout(r, introWaitMs));
 
       let chunksPlayedSinceLastPrompt = 0;
@@ -4999,7 +4999,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         try {
           const audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
           const wordCount = chunkText.split(/\s+/).length;
-          const estimatedMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
+          const estimatedMs = Math.max(5000, (wordCount / 115) * 60 * 1000 + 2000);
 
           if (catWashPlaybackState) {
             catWashPlaybackState.estimatedChunkDuration = estimatedMs;
@@ -5073,6 +5073,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         catWashPlaybackState = null;
         nestPlaybackAbort = null;
         stopToothbrushPolling();
+        stopWordAdvancement();
       }
     }
   }
@@ -5193,7 +5194,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-${Date.now()}`, "echo");
       await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
       const wordCount = goodbyeText.split(/\s+/).length;
-      await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 145) * 60 * 1000 + 1500)));
+      await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 115) * 60 * 1000 + 1500)));
     } catch (e: any) {
       console.error(`[Nest Stop] Error playing goodbye: ${e.message}`);
     }
