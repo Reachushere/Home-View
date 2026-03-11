@@ -2159,11 +2159,11 @@ export default function PDFReaderPage() {
               <div className="bg-white/10 h-1 overflow-hidden">
                 <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex) / followState.totalChunks) * 100)}%` }} />
               </div>
-              <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="follow-text-display">
+              <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="follow-text-display" id="follow-scroll-container">
                 {followState.words.length > 0 ? (
                   <p className="text-2xl leading-relaxed">
                     {followState.words.map((word, idx) => (
-                      <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-bold px-1 rounded" : idx < followState.estimatedWordIndex ? "text-white/25" : "text-white/90"} transition-colors duration-75`}>
+                      <span key={idx} id={idx === followState.estimatedWordIndex ? "follow-active-word" : undefined} ref={idx === followState.estimatedWordIndex ? (el) => { if (el) { const container = document.getElementById('follow-scroll-container'); if (container) { const elRect = el.getBoundingClientRect(); const contRect = container.getBoundingClientRect(); const elCenter = elRect.top - contRect.top + container.scrollTop; container.scrollTo({ top: elCenter - contRect.height / 3, behavior: 'smooth' }); } } } : undefined} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-bold px-1 rounded" : idx < followState.estimatedWordIndex ? "text-white/25" : "text-white/90"} transition-colors duration-75`}>
                         {word}{" "}
                       </span>
                     ))}
@@ -2668,30 +2668,6 @@ export default function PDFReaderPage() {
               <Volume2 className="h-5 w-5 text-white" />
             </div>
 
-            <div className="flex items-center gap-3" data-testid="binaural-control">
-              <button
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium uppercase tracking-wide transition-colors border ${binauralEnabled ? 'bg-purple-600/60 border-purple-400/50 text-white' : 'bg-white/5 border-white/20 text-white/50'}`}
-                onClick={() => setBinauralEnabled(!binauralEnabled)}
-                data-testid="button-binaural-toggle"
-                title="Binaural beats: 10Hz alpha waves for focus (requires headphones/stereo)"
-              >
-                {binauralEnabled ? '🧠 Focus' : '🧠 Off'}
-              </button>
-              {binauralEnabled && (
-                <input
-                  type="range"
-                  min="0.02"
-                  max="0.4"
-                  step="0.02"
-                  value={binauralVolume}
-                  onChange={(e) => setBinauralVolume(parseFloat(e.target.value))}
-                  className="w-16 h-[3px] cursor-pointer"
-                  style={{ accentColor: '#a855f7' }}
-                  data-testid="slider-binaural-volume"
-                  title={`Binaural volume: ${Math.round(binauralVolume * 100)}%`}
-                />
-              )}
-            </div>
 
             <button
               className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors flex items-center gap-2"

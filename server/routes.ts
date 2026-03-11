@@ -4654,7 +4654,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         frame.src = targetUrl;
       } else if (data.action === 'stop_playback') {
         lastTs = data.timestamp || Date.now();
-        if (frame) frame.src = '${baseUrl}/?auth=5747';
         fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'tv'})}).catch(function(){});
       }
     }).catch(function(){});
@@ -4741,6 +4740,32 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   } | null = null;
 
   let nestPlaybackAbort: (() => void) | null = null;
+  let wordAdvanceInterval: ReturnType<typeof setInterval> | null = null;
+
+  function startWordAdvancement() {
+    stopWordAdvancement();
+    wordAdvanceInterval = setInterval(() => {
+      if (!catWashPlaybackState || !catWashPlaybackActive) {
+        stopWordAdvancement();
+        return;
+      }
+      const { currentWords, wordIndex, chunkStartedAt, estimatedChunkDuration } = catWashPlaybackState;
+      if (currentWords.length === 0) return;
+      const elapsed = Date.now() - chunkStartedAt.getTime();
+      const progress = Math.min(elapsed / estimatedChunkDuration, 1);
+      const newIndex = Math.min(Math.floor(progress * currentWords.length), currentWords.length - 1);
+      if (newIndex !== wordIndex) {
+        catWashPlaybackState.wordIndex = newIndex;
+      }
+    }, 200);
+  }
+
+  function stopWordAdvancement() {
+    if (wordAdvanceInterval) {
+      clearInterval(wordAdvanceInterval);
+      wordAdvanceInterval = null;
+    }
+  }
 
   async function playOnNestSpeaker(audioUrl: string): Promise<number> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
@@ -4981,6 +5006,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
 
           await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          startWordAdvancement();
           console.log(`[Nest Playback] Playing chunk ${i + 1}, ~${Math.round(estimatedMs / 1000)}s`);
 
           const completed = await waitForNestPlaybackEnd(estimatedMs, sessionId);
@@ -5179,6 +5205,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     currentTvFollowUrl = null;
     currentTabletReaderUrl = null;
     stopToothbrushPolling();
+    stopWordAdvancement();
 
     const stopTimestamp = Date.now();
     await Promise.all([
@@ -5834,7 +5861,7 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
       console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on master tablet (main reader) and Samsung TV (visual follow only) ===
       const tvFollowUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
@@ -5868,6 +5895,20 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] tv (direct): ${tvFollowUrl.substring(0, 100)}`);
 
       currentTabletReaderUrl = readerUrl;
+
+      // Wake up tablet and set brightness to max
+      try {
+        for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
+          await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
+          });
+        }
+        console.log(`[Cat Wash] Tablet wakeup + brightness max sent`);
+      } catch (e: any) {
+        console.log(`[Cat Wash] Tablet brightness error: ${e.message}`);
+      }
 
       const [masterResult, tvResult] = await Promise.allSettled([
         (async () => {
@@ -6600,8 +6641,29 @@ document.body.removeChild(a);
     const stopTs = Date.now();
     await Promise.all([
       setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'master'),
-      setTabletCommand({ action: 'go_home', timestamp: stopTs }, true, 'tv'),
+      setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'tv'),
     ]);
+
+    // Turn off the TV via Fire Stick + Samsung TV
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+      });
+      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+      });
+      console.log(`[Cat Wash Stop] TV turned off`);
+      stopped.push("tv");
+    } catch (e: any) {
+      console.log(`[Cat Wash Stop] TV turn off error: ${e.message}`);
+    }
+
+    stopWordAdvancement();
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
     res.json({ stopped: true, stoppedItems: stopped });
   });
