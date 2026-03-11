@@ -2787,6 +2787,7 @@ export default function Dashboard() {
   };
 
   const sectionCheckedCount = (members: string[]) => members.filter(m => checkedCourses[m] || inProgressCourses[m]).length;
+  const sectionCompletedCount = (members: string[]) => members.filter(m => checkedCourses[m]).length;
 
   const getSectionForCourse = (courseId: string) => {
     for (const sections of Object.values(certSections)) {
@@ -2797,34 +2798,55 @@ export default function Dashboard() {
     return null;
   };
 
-  const isCourseGreyedOut = (courseId: string): boolean => {
-    if (checkedCourses[courseId]) return false;
+  const l1ToL2Map: Record<string, string> = {
+    'L1_PPA120': 'L2_PPA120', 'L1_PPA121': 'L2_PPA121',
+    'L1_PPA122': 'L2_PPA122', 'L1_PPA124': 'L2_PPA124',
+  };
+
+  const isSectionFulfilledByCompleted = (courseId: string): boolean => {
     const section = getSectionForCourse(courseId);
     if (!section) return false;
-    return sectionCheckedCount(section.members) >= section.required;
+    return sectionCompletedCount(section.members) >= section.required;
+  };
+
+  const isCourseGreyedOut = (courseId: string): boolean => {
+    if (checkedCourses[courseId]) return false;
+    return isSectionFulfilledByCompleted(courseId);
+  };
+
+  const isL2InProgressFromL1 = (l2Id: string): boolean => {
+    const l1Entry = Object.entries(l1ToL2Map).find(([, v]) => v === l2Id);
+    if (!l1Entry) return false;
+    const l1Id = l1Entry[0];
+    return !!(inProgressCourses[l1Id] && isSectionFulfilledByCompleted(l1Id));
   };
 
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
-    if (inProgressCourses[id] || (courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
+    if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
+    if (inProgressCourses[id] || (courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
     return '';
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id);
 
-  const InProgressToggle = ({ id }: { id: string }) => (
+  const InProgressToggle = ({ id }: { id: string }) => {
+    const isActive = inProgressCourses[id] || isL2InProgressFromL1(id);
+    const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
+    return (
     <div
       className="absolute top-0 right-0 cursor-pointer flex items-center"
       style={{ padding: '1px 3px', fontSize: '7px', lineHeight: 1 }}
-      onClick={(e) => { e.stopPropagation(); toggleInProgress(id); }}
-      title={inProgressCourses[id] ? 'Mark not in progress' : 'Mark in progress'}
+      onClick={(e) => { e.stopPropagation(); if (!isAutoFromL1) toggleInProgress(id); }}
+      title={isAutoFromL1 ? 'In progress (from Level I)' : isActive ? 'Mark not in progress' : 'Mark in progress'}
       data-testid={`toggle-in-progress-${id}`}
     >
-      <div style={{ width: '20px', height: '11px', borderRadius: '6px', background: inProgressCourses[id] ? '#f59e0b' : 'rgba(0,0,0,0.15)', position: 'relative', transition: 'background 0.2s' }}>
-        <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '1px', left: inProgressCourses[id] ? '10px' : '1px', transition: 'left 0.2s', boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)' }} />
+      <div style={{ width: '20px', height: '11px', borderRadius: '6px', background: isActive ? '#f59e0b' : 'rgba(0,0,0,0.15)', position: 'relative', transition: 'background 0.2s' }}>
+        <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '1px', left: isActive ? '10px' : '1px', transition: 'left 0.2s', boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)' }} />
       </div>
     </div>
-  );
+    );
+  };
 
   const getLevelProgress = (level: 'L1' | 'L2' | 'L3') => {
     let completed = 0;
