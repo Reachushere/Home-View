@@ -5708,15 +5708,7 @@ document.body.removeChild(a);
 
       const dayOfWeek = torontoNow.getDay();
       const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek];
-      const isPromptDay = !isSpingSummer && (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3);
-
-      if (isPromptDay) {
-        console.log(`[Cat Lights] Day is ${dayName} — prompt day (Sat-Tue), will ask via HA Voice before playing`);
-      } else if (!isSpingSummer) {
-        console.log(`[Cat Lights] Day is ${dayName} — auto-play day (Wed-Fri)`);
-      } else {
-        console.log(`[Cat Lights] Spring/Summer semester — lights automation active every day`);
-      }
+      console.log(`[Cat Lights] Day is ${dayName} — will prompt via HA Voice before playing`);
 
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
@@ -5741,17 +5733,46 @@ document.body.removeChild(a);
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
-      if (isPromptDay) {
+      {
         const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
         const ttsMessage = `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start.`;
 
         try {
-          await Promise.all([
+          const [boolOffResp, boolOnResp] = await Promise.all([
             fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
             fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
-            fetch(`${haUrl}/api/services/tts/speak`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }) }),
           ]);
-          console.log(`[Cat Lights] Booleans set + TTS sent`);
+          console.log(`[Cat Lights] Booleans set: confirmed_off=${boolOffResp.status}, pending_on=${boolOnResp.status}`);
+
+          // Try tts.speak first (HA Cloud TTS → HA Voice media player)
+          const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+          });
+          const ttsBody = await ttsResp.text();
+          console.log(`[Cat Lights] tts.speak response: ${ttsResp.status} ${ttsBody.substring(0, 300)}`);
+
+          if (!ttsResp.ok) {
+            // Fallback: try tts.cloud_say (older HA Cloud TTS service name)
+            console.log(`[Cat Lights] tts.speak failed, trying tts.cloud_say fallback...`);
+            const fallback1 = await fetch(`${haUrl}/api/services/tts/cloud_say`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+            });
+            const fb1Body = await fallback1.text();
+            console.log(`[Cat Lights] tts.cloud_say response: ${fallback1.status} ${fb1Body.substring(0, 300)}`);
+
+            if (!fallback1.ok) {
+              // Fallback 2: try tts.google_translate_say
+              console.log(`[Cat Lights] tts.cloud_say failed, trying tts.google_translate_say fallback...`);
+              const fallback2 = await fetch(`${haUrl}/api/services/tts/google_translate_say`, {
+                method: 'POST', headers: haHeaders,
+                body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+              });
+              const fb2Body = await fallback2.text();
+              console.log(`[Cat Lights] tts.google_translate_say response: ${fallback2.status} ${fb2Body.substring(0, 300)}`);
+            }
+          }
         } catch (e: any) {
           console.error(`[Cat Lights] Failed to set booleans/TTS: ${e.message}`);
           return;
@@ -5813,7 +5834,7 @@ document.body.removeChild(a);
         }
       }
 
-      // === Confirmed (or auto-play day) — start playback ===
+      // === Confirmed — start playback ===
 
       // Resume from saved progress if available (start 1 chunk earlier for context)
       const savedChunkLights = cppaModule.lastChunkIndex || 0;
