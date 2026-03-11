@@ -1268,9 +1268,7 @@ export default function Dashboard() {
   }, [currentTime]);
 
     const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('checkedCourses');
-    if (saved) return JSON.parse(saved);
-    const defaults: Record<string, boolean> = {
+    const completedDefaults: Record<string, boolean> = {
       'PPA101': true,
       'PPA102': true,
       'PPA125': true,
@@ -1278,21 +1276,25 @@ export default function Dashboard() {
       'ELECTIVE2': true,
       'LIBERAL': true,
     };
-    localStorage.setItem('checkedCourses', JSON.stringify(defaults));
-    return defaults;
+    const saved = localStorage.getItem('checkedCourses');
+    const existing = saved ? JSON.parse(saved) : {};
+    const merged = { ...existing, ...completedDefaults };
+    localStorage.setItem('checkedCourses', JSON.stringify(merged));
+    return merged;
   });
   const [inProgressCourses, setInProgressCourses] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('inProgressCourses');
-    if (saved) return JSON.parse(saved);
-    const defaults: Record<string, boolean> = {
+    const ipDefaults: Record<string, boolean> = {
       'L1_PPA122': true,
       'OPEN1': true,
       'OPEN2': true,
       'L2_LIBERAL': true,
       'L2_OPEN1': true,
     };
-    localStorage.setItem('inProgressCourses', JSON.stringify(defaults));
-    return defaults;
+    const saved = localStorage.getItem('inProgressCourses');
+    const existing = saved ? JSON.parse(saved) : {};
+    const merged = { ...existing, ...ipDefaults };
+    localStorage.setItem('inProgressCourses', JSON.stringify(merged));
+    return merged;
   });
   const toggleInProgress = (courseId: string) => {
     setInProgressCourses(prev => {
@@ -1314,32 +1316,26 @@ export default function Dashboard() {
   const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
   const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
+    const courseInfoDefaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
+      'PPA101': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'PPA102': { professor: '', email: '', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'PPA125': { professor: '', email: '', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
+      'PPA120': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'PPA121': { professor: '', email: '', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
+      'CGCM738': { professor: '', email: '', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
+      'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+      'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+      'CPPA122': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+      'CPHL110': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
+      'CSOC103': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
+    };
     try {
       const saved = localStorage.getItem('pastCourseInfo');
-      if (saved) return JSON.parse(saved);
-      const old = localStorage.getItem('pastCourseProfessors');
-      if (old) {
-        const parsed = JSON.parse(old);
-        const migrated: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {};
-        Object.entries(parsed).forEach(([k, v]: [string, any]) => { migrated[k] = { professor: v.professor || '', email: v.email || '', grade: '', semester: '', credits: '1.00' }; });
-        return migrated;
-      }
-      const defaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
-        'PPA101': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
-        'PPA102': { professor: '', email: '', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
-        'PPA125': { professor: '', email: '', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
-        'PPA120': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
-        'PPA121': { professor: '', email: '', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
-        'CGCM738': { professor: '', email: '', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
-        'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
-        'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
-        'CPPA122': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
-        'CPHL110': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
-        'CSOC103': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
-      };
-      localStorage.setItem('pastCourseInfo', JSON.stringify(defaults));
-      return defaults;
-    } catch { return {}; }
+      const existing = saved ? JSON.parse(saved) : {};
+      const merged = { ...courseInfoDefaults, ...existing };
+      localStorage.setItem('pastCourseInfo', JSON.stringify(merged));
+      return merged;
+    } catch { return courseInfoDefaults; }
   });
   const [editingSchoolCourseKey, setEditingSchoolCourseKey] = useState<string | null>(null);
   const [editingSchoolCourseData, setEditingSchoolCourseData] = useState({ professor: '', email: '', grade: '', semester: '', credits: '1.00' });
@@ -2419,9 +2415,7 @@ export default function Dashboard() {
   ];
 
   const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
-    const saved = localStorage.getItem('courseGrades');
-    if (saved) return JSON.parse(saved);
-    const defaults: Record<string, { grade: string; percent: string }> = {
+    const completedGrades: Record<string, { grade: string; percent: string }> = {
       'PPA101': { grade: 'A-', percent: '3.670' },
       'PPA102': { grade: 'A', percent: '4.000' },
       'PPA125': { grade: 'A+', percent: '4.330' },
@@ -2429,22 +2423,26 @@ export default function Dashboard() {
       'ELECTIVE2': { grade: 'B+', percent: '3.330' },
       'LIBERAL': { grade: 'A-', percent: '3.670' },
     };
-    localStorage.setItem('courseGrades', JSON.stringify(defaults));
-    return defaults;
+    const saved = localStorage.getItem('courseGrades');
+    const existing = saved ? JSON.parse(saved) : {};
+    const merged = { ...existing, ...completedGrades };
+    localStorage.setItem('courseGrades', JSON.stringify(merged));
+    return merged;
   });
 
   const [openElectives, setOpenElectives] = useState<Record<string, string>>(() => {
-    const saved = localStorage.getItem('openElectives');
-    if (saved) return JSON.parse(saved);
-    const defaults: Record<string, string> = {
+    const electiveDefaults: Record<string, string> = {
       'LIBERAL': 'CGCM 738 Photoshopped! The Art of Image Retouching',
       'OPEN1': 'CASL 101 Intro to ASL I',
       'OPEN2': 'CFNF 400 Socl Context Human Sexuality',
       'L2_LIBERAL': 'CPHL 110 Philosophy of Religion I',
       'L2_OPEN1': 'CSOC 103 How Society Works',
     };
-    localStorage.setItem('openElectives', JSON.stringify(defaults));
-    return defaults;
+    const saved = localStorage.getItem('openElectives');
+    const existing = saved ? JSON.parse(saved) : {};
+    const merged = { ...existing, ...electiveDefaults };
+    localStorage.setItem('openElectives', JSON.stringify(merged));
+    return merged;
   });
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
