@@ -12292,100 +12292,99 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-white/70 font-medium whitespace-nowrap">OVERALL</span>
-              <div className="flex-1 bg-white/20 rounded-full h-3">
-                <div className="h-3 rounded-full transition-all duration-300" style={{ width: `${(overallCertProgress.completed / overallCertProgress.total) * 100}%`, backgroundColor: getHeaderColor(overallCertProgress) }} />
-              </div>
-              <span className="text-[10px] text-white font-bold whitespace-nowrap">{overallCertProgress.completed} / {overallCertProgress.total}</span>
-            </div>
-            {showRemainingList && (() => {
-              const remainingItems: { level: string; category: string; items: string[] }[] = [];
-              const addRemaining = (level: string, category: string, section: { required: number; members: string[] }) => {
-                const checked = section.members.filter(m => checkedCourses[m]);
-                const needed = section.required - checked.length;
-                if (needed <= 0) return;
-                const unchecked = section.members.filter(m => !checkedCourses[m]);
-                const names = unchecked.map(m => {
-                  const info = certCourseMap[m];
-                  const elective = openElectives[m];
-                  if (elective?.trim()) return elective;
-                  return info ? `${info.code} - ${info.name}` : m;
-                });
-                remainingItems.push({ level, category: `${category} (${needed} needed)`, items: names });
-              };
-              addRemaining('Certificate', 'Core Requirements', certSections.L1[0]);
-              addRemaining('Certificate', 'Core Electives (pick 2 of 4)', certSections.L1[1]);
-              addRemaining('Certificate', 'Liberal Studies', certSections.L1[2]);
-              addRemaining('Certificate', 'Open Electives', certSections.L1[3]);
-              addRemaining('Diploma', 'Core Requirement', certSections.L2[0]);
-              addRemaining('Diploma', 'Core Electives (pick 3 of 7)', certSections.L2[1]);
-              addRemaining('Diploma', 'Liberal Studies', certSections.L2[2]);
-              addRemaining('Diploma', 'Economics (pick 1 of 8)', certSections.L2[3]);
-              addRemaining('Diploma', 'Open Electives', certSections.L2[4]);
-              addRemaining('Degree', 'Required Professional (PPA333 + PPA 51)', certSections.L3[0]);
-              addRemaining('Degree', 'Required Professional (pick 8 of 14)', certSections.L3[1]);
-              addRemaining('Degree', 'Required Professional POG (pick 2)', certSections.L3[2]);
-              addRemaining('Degree', 'Liberal Studies', certSections.L3[3]);
-              addRemaining('Degree', 'PR Electives', certSections.L3[4]);
-              const totalRemaining = remainingItems.reduce((sum, g) => {
-                const match = g.category.match(/\((\d+) needed\)/);
-                return sum + (match ? parseInt(match[1]) : 0);
-              }, 0);
-              const levels = ['Certificate', 'Diploma', 'Degree'];
-              const levelColors: Record<string, string> = { Certificate: '#3b82f6', Diploma: '#a855f7', Degree: '#f59e0b' };
-              return (
-                <div className="mt-1 rounded-lg border border-white/20 bg-black/40 overflow-hidden" data-testid="remaining-list-panel">
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-white/10">
-                    <span className="text-[11px] font-bold text-white">Remaining Courses</span>
-                    <span className="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-0.5 rounded-full">{totalRemaining} total</span>
+          {(() => {
+            const remainingItems: { level: string; category: string; items: string[]; needed: number }[] = [];
+            const addRemaining = (level: string, category: string, section: { required: number; members: string[] }) => {
+              const checked = section.members.filter(m => checkedCourses[m]);
+              const needed = section.required - checked.length;
+              if (needed <= 0) return;
+              const unchecked = section.members.filter(m => !checkedCourses[m]);
+              const names = unchecked.map(m => {
+                const info = certCourseMap[m];
+                const elective = openElectives[m];
+                if (elective?.trim()) return elective;
+                return info ? `${info.code} - ${info.name}` : m;
+              });
+              remainingItems.push({ level, category, items: names, needed });
+            };
+            addRemaining('Certificate', 'Core Requirements', certSections.L1[0]);
+            addRemaining('Certificate', 'Core Electives (pick 2 of 4)', certSections.L1[1]);
+            addRemaining('Certificate', 'Liberal Studies', certSections.L1[2]);
+            addRemaining('Certificate', 'PR Electives', certSections.L1[3]);
+            addRemaining('Adv. Certificate', 'Core Requirement', certSections.L2[0]);
+            addRemaining('Adv. Certificate', 'Core Electives (pick 3 of 7)', certSections.L2[1]);
+            addRemaining('Adv. Certificate', 'Liberal Studies', certSections.L2[2]);
+            addRemaining('Adv. Certificate', 'Economics (pick 1 of 8)', certSections.L2[3]);
+            addRemaining('Adv. Certificate', 'PR Electives', certSections.L2[4]);
+            addRemaining('Degree', 'Required Professional (PPA333 + PPA 51)', certSections.L3[0]);
+            addRemaining('Degree', 'Required Professional (pick 8 of 14)', certSections.L3[1]);
+            addRemaining('Degree', 'Required Professional POG (pick 2)', certSections.L3[2]);
+            addRemaining('Degree', 'Liberal Studies (1 Table A + 3 Table B)', certSections.L3[3]);
+            addRemaining('Degree', 'PR Electives (7 from Table I)', certSections.L3[4]);
+            const totalRemaining = remainingItems.reduce((sum, g) => sum + g.needed, 0);
+            const levels = ['Certificate', 'Adv. Certificate', 'Degree'] as const;
+            const levelLabels: Record<string, string> = { 'Certificate': 'LEVEL I — CERTIFICATE', 'Adv. Certificate': 'LEVEL II — ADV. CERTIFICATE', 'Degree': 'LEVEL III — DEGREE' };
+            const levelColors: Record<string, string> = { 'Certificate': '#3b82f6', 'Adv. Certificate': '#a855f7', 'Degree': '#f59e0b' };
+            return (
+              <div className="border-t-2 border-white/30" data-testid="remaining-courses-section">
+                <div className="flex items-center justify-between px-4 py-2.5 bg-black/50">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[12px] font-bold text-white tracking-wide">REMAINING COURSES</span>
+                    <span className="text-[10px] font-bold text-white/80 bg-white/15 px-2.5 py-0.5 rounded-full">{totalRemaining} remaining</span>
                   </div>
-                  <div className="max-h-[300px] overflow-y-auto scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
-                    {remainingItems.length === 0 ? (
-                      <div className="px-3 py-4 text-center text-[10px] text-emerald-400 font-bold">All courses completed!</div>
-                    ) : (
-                      levels.map(level => {
-                        const levelItems = remainingItems.filter(r => r.level === level);
-                        if (levelItems.length === 0) return null;
-                        const levelNeeded = levelItems.reduce((s, g) => { const m = g.category.match(/\((\d+) needed\)/); return s + (m ? parseInt(m[1]) : 0); }, 0);
-                        return (
-                          <div key={level} className="border-b border-white/5 last:border-b-0">
-                            <div className="flex items-center gap-2 px-3 py-1.5" style={{ borderLeft: `3px solid ${levelColors[level]}` }}>
-                              <span className="text-[10px] font-bold text-white">{level === 'Certificate' ? 'LEVEL I — CERTIFICATE' : level === 'Diploma' ? 'LEVEL II — DIPLOMA' : 'LEVEL III — DEGREE'}</span>
-                              <span className="text-[9px] text-white/50 ml-auto">{levelNeeded} courses</span>
-                            </div>
-                            {levelItems.map((group, gi) => (
-                              <div key={gi} className="px-3 pb-1.5">
-                                <div className="text-[8px] text-white/50 font-semibold uppercase tracking-wider mb-0.5">{group.category}</div>
-                                {group.items.map((item, ii) => (
-                                  <div key={ii} className="text-[9px] text-white/80 pl-2 py-0.5 border-l border-white/10 ml-1 hover:text-white hover:border-white/30 transition-colors cursor-default">
-                                    {item}
-                                  </div>
-                                ))}
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })
-                    )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] text-white/70 font-medium">OVERALL</span>
+                    <div className="w-24 bg-white/20 rounded-full h-2.5">
+                      <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(overallCertProgress.completed / overallCertProgress.total) * 100}%`, backgroundColor: getHeaderColor(overallCertProgress) }} />
+                    </div>
+                    <span className="text-[10px] text-white font-bold">{overallCertProgress.completed}/{overallCertProgress.total}</span>
                   </div>
                 </div>
-              );
-            })()}
-            <div className="flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/60 hover:bg-transparent transition-all duration-200 h-8 px-4"
-                style={{ fontSize: '11px' }}
-                onClick={() => setShowRemainingList(!showRemainingList)}
-                data-testid="button-toggle-remaining"
-              >
-                {showRemainingList ? 'Hide' : 'Remaining'}
-              </Button>
-              {!showRemainingList && (
-              <div className="flex gap-2">
+                <div className="bg-black/30 max-h-[350px] overflow-y-auto scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+                  {totalRemaining === 0 ? (
+                    <div className="px-4 py-6 text-center">
+                      <span className="text-emerald-400 font-bold text-[13px]">All courses completed!</span>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-0 divide-x divide-white/10">
+                      {levels.map(level => {
+                        const levelItems = remainingItems.filter(r => r.level === level);
+                        const levelNeeded = levelItems.reduce((s, g) => s + g.needed, 0);
+                        const levelSections = level === 'Certificate' ? certSections.L1 : level === 'Adv. Certificate' ? certSections.L2 : certSections.L3;
+                        const levelTotal = levelSections.reduce((s, sec) => s + sec.required, 0);
+                        const levelDone = levelTotal - levelNeeded;
+                        return (
+                          <div key={level} className="flex flex-col">
+                            <div className="px-3 py-2 border-b border-white/10 flex items-center justify-between" style={{ borderTop: `3px solid ${levelColors[level]}` }}>
+                              <span className="text-[9px] font-bold text-white">{levelLabels[level]}</span>
+                              <span className="text-[8px] text-white/60 font-semibold">{levelDone}/{levelTotal}</span>
+                            </div>
+                            <div className="flex-1 px-2 py-1.5">
+                              {levelItems.length === 0 ? (
+                                <div className="text-[9px] text-emerald-400 font-semibold text-center py-3">Complete</div>
+                              ) : (
+                                levelItems.map((group, gi) => (
+                                  <div key={gi} className="mb-2 last:mb-0">
+                                    <div className="text-[7px] text-white/40 font-bold uppercase tracking-wider mb-0.5 px-1">{group.category} ({group.needed} needed)</div>
+                                    {group.items.map((item, ii) => (
+                                      <div key={ii} className="text-[8px] text-white/75 pl-2 py-[2px] border-l-2 ml-1 hover:text-white transition-colors cursor-default" style={{ borderColor: levelColors[level] + '60' }} data-testid={`remaining-item-${level}-${gi}-${ii}`}>
+                                        {item}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+          <div className="px-4 py-2.5 border-t border-white/20 bg-black/40 flex justify-end gap-2">
               <Button 
                 type="button" 
                 variant="outline"
@@ -12414,9 +12413,6 @@ export default function Dashboard() {
               >
                 Save
               </Button>
-              </div>
-              )}
-            </div>
           </div>
         </DialogContent>
       </Dialog>
