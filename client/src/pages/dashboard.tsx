@@ -20296,9 +20296,7 @@ export default function Dashboard() {
                                 <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
-                            {hwPdfUrl && (
-                              <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-${task.id}`} />
-                            )}
+                            
                           </div>
                           </div>
                         </div>
@@ -20477,9 +20475,7 @@ export default function Dashboard() {
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
-                                        {hwPdfUrl && (
-                                          <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-tw-${task.id}`} />
-                                        )}
+                                        
                                       </div>
                                     </div>
                                   </div>
@@ -20666,9 +20662,7 @@ export default function Dashboard() {
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
-                                        {hwPdfUrl && (
-                                          <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-nw-${task.id}`} />
-                                        )}
+                                        
                                       </div>
                                     </div>
                                   </div>
@@ -20835,9 +20829,7 @@ export default function Dashboard() {
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
-                                        {hwPdfUrl && (
-                                          <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-2w-${task.id}`} />
-                                        )}
+                                        
                                       </div>
                                     </div>
                                   </div>
@@ -20973,9 +20965,7 @@ export default function Dashboard() {
                                         <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                       </div>
                                     </div>
-                                    {hwPdfUrl && (
-                                      <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-3w-${task.id}`} />
-                                    )}
+                                    
                                   </div>
                                 );
                               })}
