@@ -15669,7 +15669,6 @@ export default function Dashboard() {
                               <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/50 whitespace-nowrap">{courseCertificateTypes[entry.code]}</span>
                             )}
                             <div className="flex items-center gap-2 ml-auto">
-                              {profInfo.grade && <span className="text-[10px] font-bold text-emerald-400">{profInfo.grade}</span>}
                               {profInfo.semester && <span className="text-[9px] text-white/50">{profInfo.semester}</span>}
                               {profInfo.professor && <span className="text-[10px] text-white/60 underline">{profInfo.professor}</span>}
                             </div>
@@ -15700,30 +15699,23 @@ export default function Dashboard() {
                     <div className="space-y-2">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Grade</label>
-                          <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.grade} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, grade: e.target.value }))} data-testid="select-edit-past-grade">
+                          <label className="text-[9px] text-white/60 block mb-0.5">Semester</label>
+                          <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.semester} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, semester: e.target.value }))} data-testid="select-edit-past-semester">
                             <option value="">--</option>
-                            {['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'].map(g => <option key={g} value={g}>{g}</option>)}
+                            <option value="Fall 2024">Fall 2024</option>
+                            <option value="Winter 2025">Winter 2025</option>
+                            <option value="Spring/Summer 2025">Spring/Summer 2025</option>
+                            <option value="Fall 2025">Fall 2025</option>
+                            <option value="Winter 2026">Winter 2026</option>
+                            <option value="Spring/Summer 2026">Spring/Summer 2026</option>
+                            <option value="Fall 2026">Fall 2026</option>
+                            <option value="Winter 2027">Winter 2027</option>
                           </select>
                         </div>
                         <div>
                           <label className="text-[9px] text-white/60 block mb-0.5">Credits</label>
                           <input type="text" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.credits} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, credits: e.target.value }))} data-testid="input-edit-past-credits" />
                         </div>
-                      </div>
-                      <div>
-                        <label className="text-[9px] text-white/60 block mb-0.5">Semester</label>
-                        <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.semester} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, semester: e.target.value }))} data-testid="select-edit-past-semester">
-                          <option value="">--</option>
-                          <option value="Fall 2024">Fall 2024</option>
-                          <option value="Winter 2025">Winter 2025</option>
-                          <option value="Spring/Summer 2025">Spring/Summer 2025</option>
-                          <option value="Fall 2025">Fall 2025</option>
-                          <option value="Winter 2026">Winter 2026</option>
-                          <option value="Spring/Summer 2026">Spring/Summer 2026</option>
-                          <option value="Fall 2026">Fall 2026</option>
-                          <option value="Winter 2027">Winter 2027</option>
-                        </select>
                       </div>
                       <div>
                         <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
