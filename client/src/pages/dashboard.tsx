@@ -20158,7 +20158,8 @@ export default function Dashboard() {
               if (lastRect) {
                 const upcomingTop = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTop;
-                const otherRowHeight = otherProgressTasks.length === 0 ? 24 : Math.max(24, otherProgressTasks.length * 20 + 4);
+                const calOtherRowHeight = gridSizes.courseRowHeight || 48;
+                const otherRowHeight = otherProgressTasks.length === 0 ? calOtherRowHeight : Math.max(calOtherRowHeight, otherProgressTasks.length * 20 + 4);
                 rows.push(
                   <div key="other-progress-bg" style={{
                     position: 'absolute',
