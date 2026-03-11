@@ -148,7 +148,7 @@ import {
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
-import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK, LINK_TYPES } from "@shared/schema";
+import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel } from "@shared/electiveCourses";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
@@ -3233,10 +3233,15 @@ export default function Dashboard() {
       });
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
+      } else {
+        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
+        const readingWeek = semesterSettings?.readingWeekStart || null;
+        const computedWeek = getWeekNumber(today, semStart, readingWeek);
+        setSelectedWeek(computedWeek);
       }
       lastAutoWeekDateRef.current = today.getDate();
     }
-  }, [weeks]);
+  }, [weeks, semesterSettings]);
 
   useEffect(() => {
     if (weeks.length === 0) return;
@@ -3253,9 +3258,14 @@ export default function Dashboard() {
       });
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
+      } else {
+        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
+        const readingWeek = semesterSettings?.readingWeekStart || null;
+        const computedWeek = getWeekNumber(currentTime, semStart, readingWeek);
+        setSelectedWeek(computedWeek);
       }
     }
-  }, [currentTime, weeks]);
+  }, [currentTime, weeks, semesterSettings]);
 
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -7313,8 +7323,15 @@ export default function Dashboard() {
     const [year, month, day] = datePart.split('-').map(Number);
     return new Date(year, month - 1, day, 12, 0, 0); // noon local time
   };
-  const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : new Date(2026, 0, 17, 12);
-  const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : new Date(2026, 0, 23, 12);
+  const computedWeekDates = useMemo(() => {
+    if (selectedWeekInfo) return null;
+    const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date(2026, 0, 10);
+    const readingWeek = semesterSettings?.readingWeekStart || null;
+    const { start, end } = getWeekDates(selectedWeek, semStart, readingWeek);
+    return { start, end };
+  }, [selectedWeek, selectedWeekInfo, semesterSettings]);
+  const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : computedWeekDates ? new Date(computedWeekDates.start.getFullYear(), computedWeekDates.start.getMonth(), computedWeekDates.start.getDate(), 12) : new Date(2026, 0, 17, 12);
+  const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : computedWeekDates ? new Date(computedWeekDates.end.getFullYear(), computedWeekDates.end.getMonth(), computedWeekDates.end.getDate(), 12) : new Date(2026, 0, 23, 12);
   
   // Generate weekdays for the weekly view
   // School week runs Saturday to Friday, but we display Sunday-Saturday visually
@@ -12648,7 +12665,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-1" style={{ marginLeft: '0px' }}>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
-            onClick={() => { const newWeek = Math.max(1, selectedWeek - 1); setSelectedWeek(newWeek); scrollHomeworkToWeek(newWeek); }}
+            onClick={() => { const newWeek = selectedWeek - 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-prev-week"
             data-date-nav
           >
@@ -12659,13 +12676,13 @@ export default function Dashboard() {
           </span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
-            onClick={() => { const newWeek = Math.min(13, selectedWeek + 1); setSelectedWeek(newWeek); scrollHomeworkToWeek(newWeek); }}
+            onClick={() => { const newWeek = selectedWeek + 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-next-week"
             data-date-nav
           >
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
+          <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginLeft: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
         </div>
       </div>
       
@@ -18426,7 +18443,7 @@ export default function Dashboard() {
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 hover:bg-white/20 rounded-md" 
-                      onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+                      onClick={() => setSelectedWeek(selectedWeek - 1)}
                       data-testid="button-weeks-flyout-prev-week"
                     >
                       <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
@@ -18440,7 +18457,7 @@ export default function Dashboard() {
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 hover:bg-white/20 rounded-md" 
-                      onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+                      onClick={() => setSelectedWeek(selectedWeek + 1)}
                       data-testid="button-weeks-flyout-next-week"
                     >
                       <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
