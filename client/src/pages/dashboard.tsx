@@ -19192,6 +19192,11 @@ export default function Dashboard() {
                                 Next week
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  ))}
+                                </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
@@ -19375,6 +19380,11 @@ export default function Dashboard() {
                                 Two weeks
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  ))}
+                                </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
@@ -19534,6 +19544,11 @@ export default function Dashboard() {
                                 })()}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  ))}
+                                </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
