@@ -16805,7 +16805,7 @@ export default function Dashboard() {
                             if (!nextTask) return null;
                             const msUntil = getTaskTime(nextTask) - now.getTime();
                             const hoursUntil = msUntil / (1000 * 60 * 60);
-                            const displayTime = hoursUntil < 1 ? `${Math.round(hoursUntil * 60)}m` : hoursUntil % 1 >= 0.25 && hoursUntil < 24 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`;
+                            const displayTime = hoursUntil < 1 ? `${Math.round(hoursUntil * 60)} min` : hoursUntil % 1 >= 0.25 && hoursUntil < 24 ? `${hoursUntil.toFixed(1)} hours` : `${Math.round(hoursUntil)} hours`;
                             return (
                               <div className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none" data-testid="hours-until-next-task">
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', lineHeight: '1' }}>
