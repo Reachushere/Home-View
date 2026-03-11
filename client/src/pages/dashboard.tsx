@@ -510,6 +510,8 @@ export default function Dashboard() {
   const [semesterChecklistItems, setSemesterChecklistItems] = useState<Array<{id: number; semesterSettingsId: number; courseCode: string; itemType: string; isChecked: boolean | null; checkedAt: string | null}>>([]);
   const [semesterChecklistId, setSemesterChecklistId] = useState<number | null>(null);
   const semesterChecklistShownRef = useRef(false);
+  const [checklistSnoozeValue, setChecklistSnoozeValue] = useState(30);
+  const [checklistSnoozeUnit, setChecklistSnoozeUnit] = useState<'minutes' | 'hours'>('minutes');
 
   const [showConfirmSemesterDialog, setShowConfirmSemesterDialog] = useState(false);
   const [upcomingSemester, setUpcomingSemester] = useState<FutureSemesterDates | null>(null);
@@ -3978,6 +3980,9 @@ export default function Dashboard() {
 
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
     const lastShownKey = `semChecklist_lastShown_${semesterSettings.id}`;
+    const snoozeUntilKey = `semChecklist_snoozeUntil_${semesterSettings.id}`;
+    const snoozeUntil = parseInt(localStorage.getItem(snoozeUntilKey) || '0', 10);
+    if (snoozeUntil && now.getTime() < snoozeUntil) return;
     const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
     const hoursSinceShown = (now.getTime() - lastShown) / (1000 * 60 * 60);
 
@@ -8195,9 +8200,50 @@ export default function Dashboard() {
               ));
             })()}
           </div>
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-4 flex flex-col gap-3 sm:flex-col">
+            <div className="flex items-center gap-2 w-full" data-testid="checklist-snooze-section">
+              <button
+                className="px-4 py-2 text-sm font-medium bg-amber-600 hover:bg-amber-500 text-white rounded transition-colors whitespace-nowrap"
+                onClick={() => {
+                  const ms = checklistSnoozeUnit === 'hours' ? checklistSnoozeValue * 60 * 60 * 1000 : checklistSnoozeValue * 60 * 1000;
+                  const until = Date.now() + ms;
+                  if (semesterSettings?.id) {
+                    localStorage.setItem(`semChecklist_snoozeUntil_${semesterSettings.id}`, String(until));
+                  }
+                  setShowSemesterChecklist(false);
+                  toast({ title: "Snoozed", description: `Checklist snoozed for ${checklistSnoozeValue} ${checklistSnoozeUnit}.` });
+                }}
+                data-testid="button-snooze-checklist"
+              >
+                Snooze
+              </button>
+              <select
+                value={checklistSnoozeValue}
+                onChange={e => setChecklistSnoozeValue(parseInt(e.target.value, 10))}
+                className="bg-white/10 border border-white/20 rounded px-2 py-2 text-sm text-white w-16 text-center"
+                data-testid="select-snooze-value"
+              >
+                {checklistSnoozeUnit === 'minutes'
+                  ? [15, 30, 45].map(v => <option key={v} value={v} className="text-black">{v}</option>)
+                  : [1, 2, 3, 4, 6, 8, 12, 24].map(v => <option key={v} value={v} className="text-black">{v}</option>)
+                }
+              </select>
+              <select
+                value={checklistSnoozeUnit}
+                onChange={e => {
+                  const unit = e.target.value as 'minutes' | 'hours';
+                  setChecklistSnoozeUnit(unit);
+                  setChecklistSnoozeValue(unit === 'minutes' ? 30 : 1);
+                }}
+                className="bg-white/10 border border-white/20 rounded px-2 py-2 text-sm text-white"
+                data-testid="select-snooze-unit"
+              >
+                <option value="minutes" className="text-black">minutes</option>
+                <option value="hours" className="text-black">hours</option>
+              </select>
+            </div>
             <button
-              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white/50 hover:text-white/80 transition-colors self-start"
               onClick={() => setShowSemesterChecklist(false)}
               data-testid="button-dismiss-checklist"
             >
