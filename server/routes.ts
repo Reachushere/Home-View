@@ -4429,7 +4429,8 @@ export async function registerRoutes(
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
-    const device = (req.query.device as string) || 'master';
+    const rawDevice = (req.query.device as string) || 'master';
+    const device = rawDevice === 'follower' ? 'master' : rawDevice;
     let cmd = pendingTabletCommands[device];
     let source = 'memory';
     if (!cmd) {
