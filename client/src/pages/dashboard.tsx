@@ -19347,8 +19347,6 @@ export default function Dashboard() {
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
-                            const boxEl = document.querySelector(`[data-box-task-id="${t.id}"]`);
-                            if (boxEl) boxEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                           }}
                           onMouseLeave={() => setHoveredCountdownTaskId(null)}
                           onClick={() => setEditingTask(t)}
