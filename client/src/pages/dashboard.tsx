@@ -20210,17 +20210,7 @@ export default function Dashboard() {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
-                const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
-                const nowDate = startOfDay(new Date());
-                const otherProgressTasks = (allTasks || []).filter(t => {
-                  if (t.isCompleted) return false;
-                  if (new Date(t.dueDate) < nowDate) return false;
-                  const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
-                  if (knownCourseCodes.includes(tc)) return false;
-                  return true;
-                });
-                const otherRowHeight = otherProgressTasks.length === 0 ? 24 : Math.max(24, otherProgressTasks.length * 20 + 4);
-                return `${lastBottom + otherRowHeight - 31}px`;
+                return `${lastBottom + 24 - 31}px`;
               }
             }
             return '14px';
