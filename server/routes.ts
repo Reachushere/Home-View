@@ -4446,6 +4446,7 @@ export async function registerRoutes(
   let catWashSessionId = 0;
   let catWashPlaybackStartedAt: Date | null = null;
   let catWashManuallyStoppedAt: Date | null = null;
+  let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
   const startToothbrushPolling = () => {
@@ -5290,7 +5291,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door"],
+      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door"],
     });
   });
 
@@ -5649,6 +5650,18 @@ document.body.removeChild(a);
     }
   });
 
+  app.post("/api/webhook/cat-lights-confirm", async (req, res) => {
+    console.log(`[Cat Lights Confirm] ====== CONFIRMATION RECEIVED ======`);
+    if (catLightsConfirmResolve) {
+      catLightsConfirmResolve(true);
+      catLightsConfirmResolve = null;
+      res.json({ action: "confirmed", message: "Module reading confirmed — starting playback" });
+    } else {
+      console.log(`[Cat Lights Confirm] No pending confirmation to resolve`);
+      res.json({ action: "ignored", reason: "No pending confirmation" });
+    }
+  });
+
   // POST /api/webhook/cat-lights - Triggered when light.cat_lights turns on/off
   // If the current week's CPPA module hasn't been fully listened to,
   // turning the light ON starts/resumes playback on Cat Wash speaker group, turning it OFF stops and saves progress.
@@ -5775,60 +5788,32 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
       {
-        const pollIntervalMs = 3000;
-        const maxPollMs = 65000;
-        const pollStart = Date.now();
-        let confirmed = false;
+        const maxWaitMs = 65000;
+        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation via /api/webhook/cat-lights-confirm ...`);
 
-        while (Date.now() - pollStart < maxPollMs) {
-          await new Promise(r => setTimeout(r, pollIntervalMs));
-          try {
-            const stateResp = await fetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, {
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-            });
-            if (stateResp.ok) {
-              const stateData = await stateResp.json();
-              if (stateData.state === 'on') {
-                confirmed = true;
-                console.log(`[Cat Lights] Confirmation received after ${Math.round((Date.now() - pollStart) / 1000)}s — starting playback`);
-                break;
-              }
-            }
-          } catch (e: any) {
-            console.log(`[Cat Lights] Poll error: ${e.message}`);
-          }
-
-          try {
-            const pendingResp = await fetch(`${haUrl}/api/states/${MODULE_READING_PENDING}`, {
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-            });
-            if (pendingResp.ok) {
-              const pendingData = await pendingResp.json();
-              if (pendingData.state === 'off') {
-                console.log(`[Cat Lights] Pending was turned off (timeout or declined) — skipping`);
-                break;
-              }
-            }
-          } catch {}
-        }
+        const confirmed = await new Promise<boolean>((resolve) => {
+          const timeout = setTimeout(() => {
+            catLightsConfirmResolve = null;
+            resolve(false);
+          }, maxWaitMs);
+          catLightsConfirmResolve = (value: boolean) => {
+            clearTimeout(timeout);
+            resolve(value);
+          };
+        });
 
         try {
-          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: MODULE_READING_PENDING }),
-          });
-          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }),
-          });
+          await Promise.all([
+            fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
+            fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
+          ]);
         } catch {}
 
         if (!confirmed) {
-          console.log(`[Cat Lights] No confirmation received after ${Math.round((Date.now() - pollStart) / 1000)}s — skipping playback`);
+          console.log(`[Cat Lights] No confirmation received — skipping playback`);
           return;
         }
+        console.log(`[Cat Lights] Confirmation received — starting playback`);
       }
 
       // === Confirmed — start playback ===
