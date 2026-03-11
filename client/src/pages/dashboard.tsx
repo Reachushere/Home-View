@@ -2652,8 +2652,8 @@ export default function Dashboard() {
       title={inProgressCourses[id] ? 'Mark not in progress' : 'Mark in progress'}
       data-testid={`toggle-in-progress-${id}`}
     >
-      <div style={{ width: '16px', height: '9px', borderRadius: '5px', background: inProgressCourses[id] ? '#f59e0b' : 'rgba(0,0,0,0.15)', position: 'relative', transition: 'background 0.2s' }}>
-        <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '1px', left: inProgressCourses[id] ? '8px' : '1px', transition: 'left 0.2s', boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)' }} />
+      <div style={{ width: '20px', height: '11px', borderRadius: '6px', background: inProgressCourses[id] ? '#f59e0b' : 'rgba(0,0,0,0.15)', position: 'relative', transition: 'background 0.2s' }}>
+        <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '1px', left: inProgressCourses[id] ? '10px' : '1px', transition: 'left 0.2s', boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)' }} />
       </div>
     </div>
   );
@@ -11243,7 +11243,7 @@ export default function Dashboard() {
           <div className="flex-1 overflow-hidden p-2 pt-1" style={{ color: '#000' }}>
             <div className="flex gap-3 items-stretch h-full">
               {/* Level I */}
-              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: 0 }}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
