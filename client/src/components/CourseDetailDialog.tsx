@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,7 @@ interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
   onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string }) => void;
+  onGradeCalculated?: (grade: string, percent: string) => void;
   semesterStart: Date;
   readingWeekStart: Date | null;
 }
@@ -93,6 +94,7 @@ interface NewTaskForm {
   reminder4: number;
   gradeWeight: string;
   gradeTotal: string;
+  gradeValue: string;
 }
 
 function createEmptyTaskForm(): NewTaskForm {
@@ -108,10 +110,25 @@ function createEmptyTaskForm(): NewTaskForm {
     reminder4: 0,
     gradeWeight: "",
     gradeTotal: "",
+    gradeValue: "",
   };
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, semesterStart, readingWeekStart }: CourseDetailDialogProps) {
+function percentToLetterGrade(pct: number): string {
+  if (pct >= 90) return 'A+';
+  if (pct >= 85) return 'A';
+  if (pct >= 80) return 'A-';
+  if (pct >= 77) return 'B+';
+  if (pct >= 73) return 'B';
+  if (pct >= 70) return 'B-';
+  if (pct >= 67) return 'C+';
+  if (pct >= 63) return 'C';
+  if (pct >= 60) return 'C-';
+  if (pct >= 50) return 'D';
+  return 'F';
+}
+
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, semesterStart, readingWeekStart }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -139,6 +156,34 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
 
   const completedCount = courseTasks.filter((t) => t.isCompleted).length;
   const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+
+  const gradeCalc = useMemo(() => {
+    const gradedTasks = courseTasks.filter(t => t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined);
+    if (gradedTasks.length === 0) return null;
+    let weightedSum = 0;
+    let weightedTotal = 0;
+    for (const t of gradedTasks) {
+      const pct = (t.gradeValue! / t.gradeTotal!) * 100;
+      weightedSum += pct * (t.gradeWeight! / 100);
+      weightedTotal += t.gradeWeight!;
+    }
+    const currentPercent = weightedTotal > 0 ? (weightedSum / weightedTotal) * 100 : 0;
+    const projectedPercent = weightedTotal > 0 ? weightedSum / (totalWeight > 0 ? totalWeight : weightedTotal) * 100 : 0;
+    return {
+      currentPercent: Math.round(currentPercent * 10) / 10,
+      projectedPercent: Math.round(projectedPercent * 10) / 10,
+      currentGrade: percentToLetterGrade(currentPercent),
+      projectedGrade: percentToLetterGrade(projectedPercent),
+      gradedWeight: weightedTotal,
+      gradedCount: gradedTasks.length,
+    };
+  }, [courseTasks, totalWeight]);
+
+  useEffect(() => {
+    if (gradeCalc && onGradeCalculated) {
+      onGradeCalculated(gradeCalc.currentGrade, String(gradeCalc.currentPercent));
+    }
+  }, [gradeCalc, onGradeCalculated]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: Record<string, any>) => {
@@ -174,6 +219,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
     },
   });
 
+  const updateGradeValueMutation = useMutation({
+    mutationFn: async ({ id, gradeValue }: { id: number; gradeValue: number | null }) => {
+      return apiRequest("PATCH", `/api/tasks/${id}`, { gradeValue });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
   const handleAddTask = () => {
     if (!newTask.title.trim() || !newTask.dueDate) {
       toast({ title: "Missing fields", description: "Title and due date are required.", variant: "destructive" });
@@ -202,6 +256,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
       reminder4: newTask.reminder4 || null,
       gradeWeight: newTask.gradeWeight ? parseInt(newTask.gradeWeight) : null,
       gradeTotal: newTask.gradeTotal ? parseInt(newTask.gradeTotal) : null,
+      gradeValue: newTask.gradeValue ? parseInt(newTask.gradeValue) : null,
     });
   };
 
@@ -544,7 +599,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div>
                     <Label className="text-[9px] text-white/50 mb-0.5 block">Grade Weight (%)</Label>
                     <Input
@@ -565,6 +620,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
                       placeholder="e.g. 100"
                       className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
                       data-testid="input-task-total"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/50 mb-0.5 block">Score Earned</Label>
+                    <Input
+                      type="number"
+                      value={newTask.gradeValue}
+                      onChange={(e) => setNewTask({ ...newTask, gradeValue: e.target.value })}
+                      placeholder="e.g. 85"
+                      className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
+                      data-testid="input-task-value"
                     />
                   </div>
                 </div>
@@ -693,9 +759,28 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
                           {formatDate(task.dueDate)} {formatTime(task.dueDate)}
                         </span>
                         {task.gradeWeight && <span>{task.gradeWeight}%</span>}
+                        {task.gradeTotal && (
+                          <span className={task.gradeValue !== null && task.gradeValue !== undefined ? 'text-emerald-400' : 'text-white/30'}>
+                            {task.gradeValue !== null && task.gradeValue !== undefined ? `${task.gradeValue}/${task.gradeTotal}` : `—/${task.gradeTotal}`}
+                          </span>
+                        )}
                         <span className="capitalize">{task.type}</span>
                       </div>
                     </div>
+                    {task.gradeTotal && (
+                      <input
+                        type="number"
+                        className="w-10 h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20 flex-shrink-0"
+                        placeholder="Score"
+                        value={task.gradeValue ?? ''}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          const val = e.target.value ? parseInt(e.target.value) : null;
+                          updateGradeValueMutation.mutate({ id: task.id, gradeValue: val });
+                        }}
+                        data-testid={`input-grade-value-${task.id}`}
+                      />
+                    )}
                     <button
                       onClick={() => deleteTaskMutation.mutate(task.id)}
                       className="flex-shrink-0 text-white/20 hover:text-red-400 transition-colors p-0.5"
@@ -708,6 +793,28 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, seme
               })}
             </div>
           </div>
+
+          {gradeCalc && (
+            <div className="mx-3 mb-3 p-3 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }} data-testid="grade-calculator-box">
+              <div className="flex items-center gap-2 mb-2">
+                <GraduationCap className="h-3.5 w-3.5 text-white/60" />
+                <span className="text-[10px] font-semibold text-white/80">Grade Calculator</span>
+                <span className="text-[8px] text-white/40 ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight}% of {totalWeight || gradeCalc.gradedWeight}% weight</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  <div className="text-[8px] text-white/40 mb-1">Current Grade</div>
+                  <div className="text-lg font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
+                  <div className="text-[9px] text-white/60" data-testid="text-current-percent">{gradeCalc.currentPercent}%</div>
+                </div>
+                <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  <div className="text-[8px] text-white/40 mb-1">Projected Final</div>
+                  <div className="text-lg font-bold text-white/70" data-testid="text-projected-grade">{gradeCalc.projectedGrade}</div>
+                  <div className="text-[9px] text-white/50" data-testid="text-projected-percent">{gradeCalc.projectedPercent}%</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>

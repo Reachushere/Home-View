@@ -2600,7 +2600,7 @@ export default function Dashboard() {
     ],
   };
 
-  const sectionCheckedCount = (members: string[]) => members.filter(m => checkedCourses[m]).length;
+  const sectionCheckedCount = (members: string[]) => members.filter(m => checkedCourses[m] || inProgressCourses[m]).length;
 
   const getSectionForCourse = (courseId: string) => {
     for (const sections of Object.values(certSections)) {
@@ -12065,6 +12065,11 @@ export default function Dashboard() {
               const savedData = certData ? JSON.parse(certData) : {};
               savedData[certKey] = { ...savedData[certKey], ...updates };
               localStorage.setItem('certCourseData', JSON.stringify(savedData));
+            }}
+            onGradeCalculated={(grade, percent) => {
+              const certKey = selectedCertCourse!.certKey;
+              updateGrade(certKey, grade);
+              updatePercent(certKey, percent);
             }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}
