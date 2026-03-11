@@ -2831,8 +2831,10 @@ export default function Dashboard() {
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id);
 
   const InProgressToggle = ({ id }: { id: string }) => {
-    const isActive = inProgressCourses[id] || isL2InProgressFromL1(id);
+    const greyedOut = isCourseGreyedOut(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
+    const isActive = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
+    if (greyedOut) return null;
     return (
     <div
       className="absolute top-0 right-0 cursor-pointer flex items-center"
