@@ -5650,11 +5650,12 @@ document.body.removeChild(a);
       }
 
       const today = new Date();
+      const torontoNow = new Date(today.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
 
       const semesterSettings = await storage.getActiveSemesterSettings();
       const isSpingSummer = semesterSettings?.semesterType === 'spring_summer';
 
-      const dayOfWeek = today.getDay();
+      const dayOfWeek = torontoNow.getDay();
       const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek];
       const isPromptDay = !isSpingSummer && (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3);
 
