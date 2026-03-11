@@ -5540,7 +5540,22 @@ document.body.removeChild(a);
         body: JSON.stringify({ entity_id: entityId, command: adbCmd }),
       });
       console.log(`[Cat Wash] Fire Stick ${entityId} adb_command: ${resp.status}`);
-      if (resp.ok) return true;
+      if (resp.ok) {
+        // Send DPAD_CENTER after delay to trigger fullscreen via click handler
+        setTimeout(async () => {
+          try {
+            await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }),
+            });
+            console.log(`[Cat Wash] Fire Stick ${entityId} sent DPAD_CENTER for fullscreen`);
+          } catch (e: any) {
+            console.log(`[Cat Wash] Fire Stick DPAD_CENTER failed: ${e.message}`);
+          }
+        }, 5000);
+        return true;
+      }
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick adb_command failed: ${e.message}`);
     }
