@@ -19322,9 +19322,9 @@ export default function Dashboard() {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
                         <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.3' }}>
-                          <span style={{ fontSize: '10px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400 }}>{t.title}</span>
-                          <span className="flex-shrink-0" style={{ fontSize: '9px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
+                          <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400 }}>{t.title}</span>
+                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
                         </div>
                       );
                     });
