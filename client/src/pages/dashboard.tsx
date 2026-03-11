@@ -11193,7 +11193,7 @@ export default function Dashboard() {
       {/* Settings Panel Popup - Degree Tracking */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
-          className="overflow-hidden flex flex-col text-[11px] text-black p-0 [&>button.absolute]:hidden" 
+          className="overflow-hidden flex flex-col text-[11px] p-0 [&>button.absolute]:hidden" 
           style={{ width: '96vw', maxWidth: '96vw', height: '94vh', background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
@@ -11211,7 +11211,7 @@ export default function Dashboard() {
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-2 pt-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="flex-1 overflow-y-auto p-2 pt-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', color: '#000' }}>
             <div className="flex gap-3 items-start">
               {/* Level I */}
               <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
@@ -11226,7 +11226,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
                   <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['PPA101'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['PPA101'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['PPA101'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('PPA101')}>{(checkedCourses['PPA101'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
@@ -11240,7 +11240,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
                   <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['PPA102'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['PPA102'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['PPA102'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('PPA102')}>{(checkedCourses['PPA102'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
@@ -11254,7 +11254,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
                   <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['PPA125'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['PPA125'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['PPA125'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('PPA125')}>{(checkedCourses['PPA125'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
@@ -11274,7 +11274,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('ELECTIVE1')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['ELECTIVE1'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('ELECTIVE1')) ? "default" : "pointer", opacity: (isCheckDisabled('ELECTIVE1')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('ELECTIVE1'))) { (() => {})(); } }}>{(checkedCourses['ELECTIVE1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['ELECTIVE1'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('ELECTIVE1')) ? "default" : "pointer", opacity: (isCheckDisabled('ELECTIVE1')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('ELECTIVE1'))) { toggleCourse('ELECTIVE1'); } }}>{(checkedCourses['ELECTIVE1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('ELECTIVE1')} data-testid="cert-course-ELECTIVE1">Canadian Politics & Government **</div>
@@ -11287,7 +11287,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('ELECTIVE2')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['ELECTIVE2'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('ELECTIVE2')) ? "default" : "pointer", opacity: (isCheckDisabled('ELECTIVE2')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('ELECTIVE2'))) { (() => {})(); } }}>{(checkedCourses['ELECTIVE2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['ELECTIVE2'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('ELECTIVE2')) ? "default" : "pointer", opacity: (isCheckDisabled('ELECTIVE2')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('ELECTIVE2'))) { toggleCourse('ELECTIVE2'); } }}>{(checkedCourses['ELECTIVE2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('ELECTIVE2')} data-testid="cert-course-ELECTIVE2">Ontario Politics and Government</div>
@@ -11300,7 +11300,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L1_PPA122')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L1_PPA122'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L1_PPA122')) ? "default" : "pointer", opacity: (isCheckDisabled('L1_PPA122')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L1_PPA122'))) { (() => {})(); } }}>{(checkedCourses['L1_PPA122'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L1_PPA122'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L1_PPA122')) ? "default" : "pointer", opacity: (isCheckDisabled('L1_PPA122')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L1_PPA122'))) { toggleCourse('L1_PPA122'); } }}>{(checkedCourses['L1_PPA122'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L1_PPA122')} data-testid="cert-course-L1_PPA122">Local Politics and Government</div>
@@ -11313,7 +11313,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L1_PPA124')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L1_PPA124'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L1_PPA124')) ? "default" : "pointer", opacity: (isCheckDisabled('L1_PPA124')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L1_PPA124'))) { (() => {})(); } }}>{(checkedCourses['L1_PPA124'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L1_PPA124'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L1_PPA124')) ? "default" : "pointer", opacity: (isCheckDisabled('L1_PPA124')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L1_PPA124'))) { toggleCourse('L1_PPA124'); } }}>{(checkedCourses['L1_PPA124'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L1_PPA124')} data-testid="cert-course-L1_PPA124">Indigenous Politics and Government</div>
@@ -11328,7 +11328,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black flex flex-col">
                     <div className="flex-1"></div>
                     <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-emerald-100' : ''}`}>
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['LIBERAL']?.trim())) { (() => {})(); } }}>{(checkedCourses['LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['LIBERAL']?.trim())) { toggleCourse('LIBERAL'); } }}>{(checkedCourses['LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col">
@@ -11357,10 +11357,10 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black flex flex-col">
                     <div className="flex-1"></div>
                     <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-emerald-100' : ''}`}>
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['OPEN1'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['OPEN1']?.trim()) ? "default" : "pointer", opacity: (!openElectives['OPEN1']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['OPEN1']?.trim())) { (() => {})(); } }}>{(checkedCourses['OPEN1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['OPEN1'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['OPEN1']?.trim()) ? "default" : "pointer", opacity: (!openElectives['OPEN1']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['OPEN1']?.trim())) { toggleCourse('OPEN1'); } }}>{(checkedCourses['OPEN1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-emerald-100' : ''}`}>
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['OPEN2']?.trim()) ? "default" : "pointer", opacity: (!openElectives['OPEN2']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['OPEN2']?.trim())) { (() => {})(); } }}>{(checkedCourses['OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['OPEN2']?.trim()) ? "default" : "pointer", opacity: (!openElectives['OPEN2']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['OPEN2']?.trim())) { toggleCourse('OPEN2'); } }}>{(checkedCourses['OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col">
@@ -11427,7 +11427,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${checkedCourses['L2_PPA211'] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
                   <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA211'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L2_PPA211'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA211'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_PPA211')}>{(checkedCourses['L2_PPA211'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
@@ -11447,7 +11447,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA120')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA120'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA120')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA120')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA120'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA120'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA120'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA120')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA120')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA120'))) { toggleCourse('L2_PPA120'); } }}>{(checkedCourses['L2_PPA120'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA120')} data-testid="cert-course-L2_PPA120">Canadian Politics and Government</div>
@@ -11460,7 +11460,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA121')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA121'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA121')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA121')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA121'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA121'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA121'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA121')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA121')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA121'))) { toggleCourse('L2_PPA121'); } }}>{(checkedCourses['L2_PPA121'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA121')} data-testid="cert-course-L2_PPA121">Ontario Politics and Government</div>
@@ -11473,7 +11473,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA122')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA122'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA122')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA122')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA122'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA122'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA122'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA122')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA122')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA122'))) { toggleCourse('L2_PPA122'); } }}>{(checkedCourses['L2_PPA122'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA122')} data-testid="cert-course-L2_PPA122">Local Politics and Government</div>
@@ -11486,7 +11486,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA124')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA124'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA124')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA124')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA124'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA124'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA124'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA124')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA124')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA124'))) { toggleCourse('L2_PPA124'); } }}>{(checkedCourses['L2_PPA124'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA124')} data-testid="cert-course-L2_PPA124">Indigenous Politics and Government</div>
@@ -11499,7 +11499,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA235')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA235'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA235')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA235')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA235'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA235'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA235'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA235')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA235')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA235'))) { toggleCourse('L2_PPA235'); } }}>{(checkedCourses['L2_PPA235'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 235</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA235')} data-testid="cert-course-L2_PPA235">Theories of the State</div>
@@ -11512,7 +11512,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA303')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA303'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA303')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA303')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA303'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA303'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA303'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA303')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA303')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA303'))) { toggleCourse('L2_PPA303'); } }}>{(checkedCourses['L2_PPA303'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 303</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA303')} data-testid="cert-course-L2_PPA303">Public Budget Policy/Politics</div>
@@ -11525,7 +11525,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA319')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA319'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA319')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA319')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA319'))) { (() => {})(); } }}>{(checkedCourses['L2_PPA319'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA319'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L2_PPA319')) ? "default" : "pointer", opacity: (isCheckDisabled('L2_PPA319')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L2_PPA319'))) { toggleCourse('L2_PPA319'); } }}>{(checkedCourses['L2_PPA319'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 319</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L2_PPA319')} data-testid="cert-course-L2_PPA319">Politics of Work and Labour</div>
@@ -11544,7 +11544,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex items-stretch ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L2_LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_LIBERAL')}>{(checkedCourses['L2_LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 border-r border-black h-11 flex items-start justify-center text-[8px] text-center px-0.5">
                     <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
@@ -11564,7 +11564,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black flex flex-col">
                     <div className="h-7 border-b border-black"></div>
                     {['L2_ECN1','L2_ECN2','L2_ECN3','L2_ECN4','L2_ECN5','L2_ECN6','L2_ECN7','L2_ECN8'].map((cid, i) => (
-                      <div key={cid} className={`h-9 flex items-center justify-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { (() => {})(); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                      <div key={cid} className={`h-9 flex items-center justify-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                     ))}
                   </div>
                   <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
@@ -11630,8 +11630,8 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-stretch">
                   <div className="w-5 border-r border-black flex flex-col">
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_OPEN1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L2_OPEN1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L2_OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_OPEN1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_OPEN1')}>{(checkedCourses['L2_OPEN1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_OPEN2')}>{(checkedCourses['L2_OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                   </div>
                   <div className="w-14 border-r border-black h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
                     <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</span>
@@ -11682,7 +11682,7 @@ export default function Dashboard() {
                   <tbody>
                     <tr className={`border-b border-black ${checkedCourses['L3_PPA333'] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
                       <td className="px-0.5 py-0.5 border-r border-black text-center align-middle">
-                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PPA333'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L3_PPA333'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PPA333'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_PPA333')}>{(checkedCourses['L3_PPA333'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                       </td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Core Req</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">PPA 333</td>
@@ -11719,7 +11719,7 @@ export default function Dashboard() {
                               <div className="flex flex-col gap-0">
                                 {['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (
                                   <div key={cid} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}>
-                                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { (() => {})(); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                                   </div>
                                 ))}
                               </div>
@@ -11753,8 +11753,8 @@ export default function Dashboard() {
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
-                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM1')}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM1'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L3_PRACTICUM1')) ? "default" : "pointer", opacity: (isCheckDisabled('L3_PRACTICUM1')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L3_PRACTICUM1'))) { (() => {})(); } }}>{(checkedCourses['L3_PRACTICUM1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM2')}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM2'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L3_PRACTICUM2')) ? "default" : "pointer", opacity: (isCheckDisabled('L3_PRACTICUM2')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L3_PRACTICUM2'))) { (() => {})(); } }}>{(checkedCourses['L3_PRACTICUM2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM1')}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM1'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L3_PRACTICUM1')) ? "default" : "pointer", opacity: (isCheckDisabled('L3_PRACTICUM1')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L3_PRACTICUM1'))) { toggleCourse('L3_PRACTICUM1'); } }}>{(checkedCourses['L3_PRACTICUM1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM2')}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM2'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L3_PRACTICUM2')) ? "default" : "pointer", opacity: (isCheckDisabled('L3_PRACTICUM2')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L3_PRACTICUM2'))) { toggleCourse('L3_PRACTICUM2'); } }}>{(checkedCourses['L3_PRACTICUM2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
                     Select&nbsp;<span className="font-bold">ONE</span>
@@ -11783,9 +11783,9 @@ export default function Dashboard() {
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG1'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L3_POG1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG2'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L3_POG2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG3'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG3'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { (() => {})(); }}>{(checkedCourses['L3_POG3'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG1'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG1')}>{(checkedCourses['L3_POG1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG2'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG2')}>{(checkedCourses['L3_POG2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
+                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG3'] ? 'bg-emerald-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG3'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG3')}>{(checkedCourses['L3_POG3'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                     <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
@@ -11821,7 +11821,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black flex flex-col">
                     {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map(cid => (
                       <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
-                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { (() => {})(); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                       </div>
                     ))}
                   </div>
@@ -11855,7 +11855,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black flex flex-col">
                     {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map(cid => (
                       <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
-                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { (() => {})(); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                       </div>
                     ))}
                   </div>
