@@ -4450,6 +4450,8 @@ export async function registerRoutes(
   let catWashPlaybackStartedAt: Date | null = null;
   let catWashManuallyStoppedAt: Date | null = null;
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
+  let catLightsLastPromptAt: number | null = null;
+  const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 10 * 60 * 1000;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
   const startToothbrushPolling = () => {
@@ -5782,9 +5784,16 @@ document.body.removeChild(a);
         return;
       }
 
+      if (catLightsLastPromptAt && (Date.now() - catLightsLastPromptAt) < CAT_LIGHTS_PROMPT_COOLDOWN_MS) {
+        const remainingSec = Math.round((CAT_LIGHTS_PROMPT_COOLDOWN_MS - (Date.now() - catLightsLastPromptAt)) / 1000);
+        console.log(`[Cat Lights] Prompt cooldown active — skipping (${remainingSec}s remaining)`);
+        return;
+      }
+
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
       const ttsMessage = `Would you like to listen to your module reading? Say yes or confirm on the dashboard to start.`;
 
+      catLightsLastPromptAt = Date.now();
       console.log(`[Cat Lights] Sending TTS prompt immediately...`);
       try {
         const [boolOffResp, boolOnResp, ttsResp] = await Promise.all([
