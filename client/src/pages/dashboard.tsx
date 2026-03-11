@@ -19956,7 +19956,7 @@ export default function Dashboard() {
                   left: '33%',
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
