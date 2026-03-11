@@ -1294,11 +1294,31 @@ export default function Dashboard() {
   const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
   const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
-  const [pastCourseProfessors, setPastCourseProfessors] = useState<Record<string, { professor: string; email: string }>>(() => {
-    try { return JSON.parse(localStorage.getItem('pastCourseProfessors') || '{}'); } catch { return {}; }
+  const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
+    try {
+      const saved = localStorage.getItem('pastCourseInfo');
+      if (saved) return JSON.parse(saved);
+      const old = localStorage.getItem('pastCourseProfessors');
+      if (old) {
+        const parsed = JSON.parse(old);
+        const migrated: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {};
+        Object.entries(parsed).forEach(([k, v]: [string, any]) => { migrated[k] = { professor: v.professor || '', email: v.email || '', grade: '', semester: '', credits: '1.00' }; });
+        return migrated;
+      }
+      const defaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
+        'PPA101': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+        'PPA102': { professor: '', email: '', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
+        'PPA125': { professor: '', email: '', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
+        'PPA120': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+        'PPA121': { professor: '', email: '', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
+        'CGCM738': { professor: '', email: '', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
+      };
+      localStorage.setItem('pastCourseInfo', JSON.stringify(defaults));
+      return defaults;
+    } catch { return {}; }
   });
   const [editingSchoolCourseKey, setEditingSchoolCourseKey] = useState<string | null>(null);
-  const [editingSchoolCourseData, setEditingSchoolCourseData] = useState({ professor: '', email: '' });
+  const [editingSchoolCourseData, setEditingSchoolCourseData] = useState({ professor: '', email: '', grade: '', semester: '', credits: '1.00' });
   const [courseDisplayNames, setCourseDisplayNames] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('courseDisplayNames');
     if (saved) {
@@ -14764,16 +14784,26 @@ export default function Dashboard() {
                         if (!isChecked) return;
                         const info = certCourseMap[certKey];
                         if (!info) return;
-                        const elective = openElectives[certKey];
-                        const actualCode = elective?.trim() ? elective.split(' ')[0] : info.code;
-                        const actualName = elective?.trim() ? elective.split(' ').slice(1).join(' ') : info.name;
+                        const elective = openElectives[certKey]?.trim();
+                        let actualCode = info.code;
+                        let actualName = info.name;
+                        if (elective) {
+                          const codeMatch = elective.match(/^([A-Z]{2,5}\s?\d{3}[A-Z]?)\s*(.*)/i);
+                          if (codeMatch) {
+                            actualCode = codeMatch[1].replace(/\s/g, '');
+                            actualName = codeMatch[2] || actualCode;
+                          } else {
+                            actualCode = elective.split(' ')[0];
+                            actualName = elective.split(' ').slice(1).join(' ');
+                          }
+                        }
                         if (currentCodes.includes(actualCode.toUpperCase())) return;
                         if (pastEntries.some(p => p.code === actualCode)) return;
                         pastEntries.push({ certKey, code: actualCode, name: actualName });
                       });
                       if (pastEntries.length === 0) return <div className="text-[10px] text-white/40 italic px-3">No past courses found. Check off completed courses in the Degree Tracker.</div>;
                       return pastEntries.map((entry, idx) => {
-                        const profInfo = pastCourseProfessors[entry.code] || { professor: '', email: '' };
+                        const profInfo = pastCourseInfo[entry.code] || { professor: '', email: '', grade: '', semester: '', credits: '1.00' };
                         return (
                           <div key={`past-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: 'rgba(59,130,246,0.15)' }}
                             onClick={() => {
@@ -14786,15 +14816,17 @@ export default function Dashboard() {
                             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#3b82f6' }} />
                             <span className="text-[11px] font-bold">{entry.code}</span>
                             <span className="text-[10px] text-white/70">{entry.name}</span>
-                            {profInfo.professor && (
-                              <span className="text-[10px] text-white/60 underline ml-auto">{profInfo.professor}</span>
-                            )}
+                            <div className="flex items-center gap-2 ml-auto">
+                              {profInfo.grade && <span className="text-[10px] font-bold text-emerald-400">{profInfo.grade}</span>}
+                              {profInfo.semester && <span className="text-[9px] text-white/50">{profInfo.semester}</span>}
+                              {profInfo.professor && <span className="text-[10px] text-white/60 underline">{profInfo.professor}</span>}
+                            </div>
                             <button
                               className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingSchoolCourseKey(entry.code);
-                                setEditingSchoolCourseData({ professor: profInfo.professor, email: profInfo.email });
+                                setEditingSchoolCourseData({ professor: profInfo.professor, email: profInfo.email, grade: profInfo.grade, semester: profInfo.semester, credits: profInfo.credits });
                               }}
                               data-testid={`button-edit-past-course-${entry.code}`}
                             >
@@ -14811,9 +14843,36 @@ export default function Dashboard() {
               {/* Edit Past Course Professor Dialog */}
               {editingSchoolCourseKey && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
-                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg p-4 w-[280px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                    <h3 className="text-[11px] font-medium text-white">Edit Professor Info — {editingSchoolCourseKey}</h3>
+                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg p-4 w-[300px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="text-[11px] font-medium text-white">Edit Course — {editingSchoolCourseKey}</h3>
                     <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Grade</label>
+                          <select className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.grade} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, grade: e.target.value }))} data-testid="select-edit-past-grade">
+                            <option value="">--</option>
+                            {['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'].map(g => <option key={g} value={g}>{g}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Credits</label>
+                          <input type="text" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.credits} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, credits: e.target.value }))} data-testid="input-edit-past-credits" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-white/60 block mb-0.5">Semester</label>
+                        <select className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.semester} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, semester: e.target.value }))} data-testid="select-edit-past-semester">
+                          <option value="">--</option>
+                          <option value="Fall 2024">Fall 2024</option>
+                          <option value="Winter 2025">Winter 2025</option>
+                          <option value="Spring/Summer 2025">Spring/Summer 2025</option>
+                          <option value="Fall 2025">Fall 2025</option>
+                          <option value="Winter 2026">Winter 2026</option>
+                          <option value="Spring/Summer 2026">Spring/Summer 2026</option>
+                          <option value="Fall 2026">Fall 2026</option>
+                          <option value="Winter 2027">Winter 2027</option>
+                        </select>
+                      </div>
                       <div>
                         <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
                         <input type="text" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.professor} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, professor: e.target.value }))} data-testid="input-edit-past-professor" />
@@ -14826,9 +14885,9 @@ export default function Dashboard() {
                     <div className="flex gap-2 justify-end">
                       <button className="px-3 py-1 text-[9px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors" onClick={() => setEditingSchoolCourseKey(null)} data-testid="button-cancel-edit-past">Cancel</button>
                       <button className="px-3 py-1 text-[9px] bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors" onClick={() => {
-                        const updated = { ...pastCourseProfessors, [editingSchoolCourseKey]: { professor: editingSchoolCourseData.professor, email: editingSchoolCourseData.email } };
-                        setPastCourseProfessors(updated);
-                        localStorage.setItem('pastCourseProfessors', JSON.stringify(updated));
+                        const updated = { ...pastCourseInfo, [editingSchoolCourseKey]: { professor: editingSchoolCourseData.professor, email: editingSchoolCourseData.email, grade: editingSchoolCourseData.grade, semester: editingSchoolCourseData.semester, credits: editingSchoolCourseData.credits } };
+                        setPastCourseInfo(updated);
+                        localStorage.setItem('pastCourseInfo', JSON.stringify(updated));
                         setEditingSchoolCourseKey(null);
                       }} data-testid="button-save-edit-past">Save</button>
                     </div>
