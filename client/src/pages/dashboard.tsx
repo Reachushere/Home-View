@@ -18562,7 +18562,7 @@ export default function Dashboard() {
               }}
               data-testid="weeks-flyout-resize-handle"
             />
-            <div className="h-full flex flex-col text-white relative rounded-xl" style={{ boxShadow: '-10px 0 40px rgba(0,0,0,0.3)' }}>
+            <div className="h-full flex flex-col text-white relative rounded-xl" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '-10px 0 40px rgba(0,0,0,0.3)' }}>
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-3">
@@ -20872,6 +20872,7 @@ export default function Dashboard() {
             className="h-full overflow-hidden flex flex-col rounded-xl text-white"
             style={{
               fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
               border: '1px solid rgba(255, 255, 255, 0.2)',
               boxShadow: '10px 0 40px rgba(0,0,0,0.3)'
             }}
