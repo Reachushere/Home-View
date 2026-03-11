@@ -4594,7 +4594,15 @@ export async function registerRoutes(
     const startTime = Date.now();
     const maxWait = estimatedMs + 30000;
     const minPlaybackMs = Math.min(estimatedMs * 0.6, 60000);
-    await new Promise(r => setTimeout(r, Math.max(minPlaybackMs, 30000)));
+    const initialWait = Math.max(minPlaybackMs, 30000);
+    const checkInterval = 2000;
+    for (let waited = 0; waited < initialWait; waited += checkInterval) {
+      if (!catWashPlaybackActive || catWashSessionId !== sessionId) {
+        console.log(`[Nest] Abort detected during initial wait (${Math.round(waited / 1000)}s in)`);
+        return false;
+      }
+      await new Promise(r => setTimeout(r, checkInterval));
+    }
     let consecutiveIdle = 0;
     const IDLE_THRESHOLD = 3;
     while (Date.now() - startTime < maxWait) {
