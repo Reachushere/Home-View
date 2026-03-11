@@ -4560,15 +4560,25 @@ export async function registerRoutes(
   async function waitForNestPlaybackEnd(estimatedMs: number, sessionId: number): Promise<boolean> {
     const startTime = Date.now();
     const maxWait = estimatedMs + 30000;
-    await new Promise(r => setTimeout(r, Math.min(estimatedMs - 3000, 5000)));
+    const minPlaybackMs = Math.min(estimatedMs * 0.6, 60000);
+    await new Promise(r => setTimeout(r, Math.max(minPlaybackMs, 30000)));
+    let consecutiveIdle = 0;
+    const IDLE_THRESHOLD = 3;
     while (Date.now() - startTime < maxWait) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) return false;
       const state = await getNestMediaState();
-      if (state.state === 'idle' || state.state === 'off' || state.state === 'paused') {
-        console.log(`[Nest] Playback ended (state: ${state.state})`);
-        return true;
+      if (state.state === 'idle' || state.state === 'off') {
+        consecutiveIdle++;
+        console.log(`[Nest] State: ${state.state} (consecutive idle: ${consecutiveIdle}/${IDLE_THRESHOLD}, elapsed: ${Math.round((Date.now() - startTime) / 1000)}s)`);
+        if (consecutiveIdle >= IDLE_THRESHOLD) {
+          console.log(`[Nest] Playback ended (${consecutiveIdle} consecutive idle checks after ${Math.round((Date.now() - startTime) / 1000)}s)`);
+          return true;
+        }
+      } else {
+        if (consecutiveIdle > 0) console.log(`[Nest] State recovered to ${state.state}, resetting idle count`);
+        consecutiveIdle = 0;
       }
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 3000));
     }
     console.log(`[Nest] Timed out waiting for playback to end after ${Math.round((Date.now() - startTime) / 1000)}s`);
     return true;
