@@ -192,6 +192,7 @@ export const files = pgTable("files", {
   checkedChunks: text("checked_chunks"),
   ttsAudioUrl: text("tts_audio_url"),
   ttsGeneratedAt: timestamp("tts_generated_at"),
+  extractedText: text("extracted_text"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

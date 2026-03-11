@@ -4682,6 +4682,10 @@ export async function registerRoutes(
       for (let i = startChunk; i < chunks.length; i++) {
         if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
           console.log(`[Nest Playback] Aborted at chunk ${i}`);
+          if (fileId) {
+            try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
+            console.log(`[Nest Playback] Saved progress on abort: chunk ${i}`);
+          }
           break;
         }
 
@@ -4696,7 +4700,13 @@ export async function registerRoutes(
           await playOnNestSpeaker(`${appUrl}${promptPath}`);
           await new Promise(r => setTimeout(r, 5000));
           chunksPlayedSinceLastPrompt = 0;
-          if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) break;
+          if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
+            if (fileId) {
+              try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
+              console.log(`[Nest Playback] Saved progress on abort after attention: chunk ${i}`);
+            }
+            break;
+          }
         }
 
         const chunkText = chunks[i];
@@ -4717,12 +4727,16 @@ export async function registerRoutes(
           const completed = await waitForNestPlaybackEnd(estimatedMs, sessionId);
           if (!completed) {
             console.log(`[Nest Playback] Session ended during chunk ${i + 1}`);
+            if (fileId) {
+              try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
+              console.log(`[Nest Playback] Saved progress on session end: chunk ${i}`);
+            }
             break;
           }
 
           chunksPlayedSinceLastPrompt++;
 
-          if (fileId && i > 0) {
+          if (fileId) {
             try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
           }
         } catch (chunkErr: any) {
@@ -4795,6 +4809,11 @@ export async function registerRoutes(
 
   async function extractFileText(file: any): Promise<string | null> {
     try {
+      if (file.extractedText) {
+        console.log(`[ExtractText] Using cached text for ${file.originalName} (${file.extractedText.length} chars)`);
+        return file.extractedText;
+      }
+
       let buffer: Buffer | null = null;
 
       if (file.objectPath?.startsWith('/School/')) {
@@ -4837,7 +4856,18 @@ export async function registerRoutes(
         textContent = pdfText;
       }
       console.log(`[ExtractText] Extracted ${textContent.length} chars from ${file.originalName}`);
-      return cleanTextForTTS(textContent);
+      const cleanedText = cleanTextForTTS(textContent);
+
+      if (cleanedText && file.id) {
+        try {
+          await storage.updateFile(file.id, { extractedText: cleanedText });
+          console.log(`[ExtractText] Cached ${cleanedText.length} chars for file ${file.id}`);
+        } catch (cacheErr: any) {
+          console.error(`[ExtractText] Failed to cache text: ${cacheErr.message}`);
+        }
+      }
+
+      return cleanedText;
     } catch (e: any) {
       console.error(`[ExtractText] Error for ${file.originalName}: ${e.message}`);
       return null;
@@ -5917,17 +5947,6 @@ document.body.removeChild(a);
 
       startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentLightsSession, "echo");
 
-      if (!isPromptDay) {
-        res.json({
-          action: "playing",
-          file: { id: cppaModule.id, name: fileName },
-          resumeFromChunk,
-          totalChunks: totalChunksCalc,
-          devices: deviceResults,
-          playbackMode: "nest-speaker",
-        });
-      }
-
     } catch (error: any) {
       console.error("[Cat Lights] Error:", error);
       res.status(500).json({ error: "Failed to handle cat lights webhook", details: error.message });
@@ -6202,8 +6221,17 @@ document.body.removeChild(a);
 
     const stopped: string[] = [];
 
-    if (catWashPlaybackActive) {
-      console.log(`[Cat Wash Stop] Stopping cat wash playback (file: ${catWashPlaybackState?.fileName})`);
+    if (catWashPlaybackActive && catWashPlaybackState) {
+      const { fileId, chunkIndex, fileName } = catWashPlaybackState;
+      console.log(`[Cat Wash Stop] Stopping cat wash playback (file: ${fileName}, chunk: ${chunkIndex})`);
+      if (fileId && chunkIndex != null) {
+        try {
+          await storage.updateFile(fileId, { lastChunkIndex: chunkIndex });
+          console.log(`[Cat Wash Stop] Saved progress: file ${fileId}, chunk ${chunkIndex}`);
+        } catch (e: any) {
+          console.error(`[Cat Wash Stop] Failed to save progress: ${e.message}`);
+        }
+      }
       stopped.push("catWashPlayback");
     }
     catWashPlaybackActive = false;
