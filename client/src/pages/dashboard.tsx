@@ -10981,8 +10981,8 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: '21px',
-          right: '22px',
+          left: '6px',
+          right: '7px',
           transform: `translateY(${isTopPillOpen ? '14px' : '-73px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
