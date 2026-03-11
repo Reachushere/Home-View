@@ -7825,8 +7825,18 @@ document.body.removeChild(a);
       const { ObjectStorageService } = await import("./replit_integrations/object_storage");
       const objectStorage = new ObjectStorageService();
       
-      const basePath = `/School/1. TMU/Courses/2026/Winter`;
-      const courseCodes = ['CPPA122', 'CFNF400', 'CASL101'];
+      const activeSemester = await storage.getActiveSemesterSettings();
+      const allSemesters = await storage.getAllSemesterSettings();
+      const semester = activeSemester || allSemesters[0];
+      if (!semester) {
+        return res.json({ success: true, message: 'No semester configured', synced: [] });
+      }
+      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring_Summer' };
+      const semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
+      const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
+      const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
+      const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean) as string[];
+      console.log(`[Sync] Using semester: ${semester.semesterName}, path: ${basePath}, courses: ${courseCodes.join(', ')}`);
       
       // Get all existing files once to avoid repeated DB queries
       const existingFiles = await storage.getFiles();
@@ -7902,7 +7912,7 @@ document.body.removeChild(a);
                   
                   const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
                   
-                  await storage.createFile({
+                  const newFile = await storage.createFile({
                     originalName: file.name,
                     displayName: file.name,
                     objectPath: objectPath,
@@ -7913,8 +7923,32 @@ document.body.removeChild(a);
                   });
                   
                   existingFileKeys.add(fileKey);
+
+                  let textLength = 0;
+                  let totalChunks = 0;
+                  try {
+                    const extractedText = await extractFileText({ ...newFile, objectPath });
+                    if (extractedText) {
+                      textLength = extractedText.length;
+                      totalChunks = Math.ceil(extractedText.length / CHUNK_SIZE);
+                      await storage.updateFile(newFile.id, { totalChunks, extractedText });
+                    }
+                  } catch (parseErr: any) {
+                    console.error(`[Sync] Text extraction failed for ${file.name}:`, parseErr.message);
+                  }
+
+                  const preparedEntry = {
+                    id: newFile.id,
+                    name: file.name,
+                    folder: folderName,
+                    totalChunks,
+                    textLength,
+                    preparedAt: new Date().toISOString(),
+                  };
+                  recentlyPreparedFiles.push(preparedEntry);
+
                   syncedFiles.push({ name: file.name, folder: folderName, course: courseCode, week: weekNum });
-                  console.log(`Synced: ${file.name} -> ${folderName}`);
+                  console.log(`[Sync] New file: ${file.name} -> ${folderName} (${totalChunks} chunks, ${textLength} chars, ready for TTS)`);
                 } catch (fileErr: any) {
                   errors.push({ file: file.name, week: weekNum, error: fileErr.message });
                 }
