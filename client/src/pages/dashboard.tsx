@@ -19316,7 +19316,7 @@ export default function Dashboard() {
                     const courseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
                       return tc === cCode && !t.isCompleted && new Date(t.dueDate) >= nowDate;
-                    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5);
+                    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No upcoming items</span>;
                     const isCFNF = cCode.startsWith('CFNF');
                     const isCASL = cCode.startsWith('CASL');
