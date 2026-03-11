@@ -1429,6 +1429,48 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.get("/api/scholarships", async (_req, res) => {
+    try {
+      const data = await storage.getScholarships();
+      res.json(data);
+    } catch (err) {
+      console.error("Error fetching scholarships:", err);
+      res.status(500).json({ error: "Failed to fetch scholarships" });
+    }
+  });
+
+  app.post("/api/scholarships", async (req, res) => {
+    try {
+      const created = await storage.createScholarship(req.body);
+      res.json(created);
+    } catch (err) {
+      console.error("Error creating scholarship:", err);
+      res.status(500).json({ error: "Failed to create scholarship" });
+    }
+  });
+
+  app.patch("/api/scholarships/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.updateScholarship(id, req.body);
+      res.json(updated);
+    } catch (err) {
+      console.error("Error updating scholarship:", err);
+      res.status(500).json({ error: "Failed to update scholarship" });
+    }
+  });
+
+  app.delete("/api/scholarships/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteScholarship(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting scholarship:", err);
+      res.status(500).json({ error: "Failed to delete scholarship" });
+    }
+  });
+
   app.post("/api/semester-reset-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();

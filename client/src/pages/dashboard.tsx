@@ -14381,8 +14381,53 @@ export default function Dashboard() {
           )}
 
           {/* Scholarships Dialog */}
+          {(() => {
+            const [scholarshipsList, setScholarshipsList] = useState<Array<{ id: number; name: string; organization: string; amount: string | null; deadline: string | null; winnersAnnounced: string | null; applicationUrl: string | null; contactInfo: string | null; additionalInfo: string | null; status: string | null }>>([]);
+            const [scholarshipWizardOpen, setScholarshipWizardOpen] = useState(false);
+            const [scholarshipWizardStep, setScholarshipWizardStep] = useState(0);
+            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
+            const [editingScholarshipId, setEditingScholarshipId] = useState<number | null>(null);
+
+            useEffect(() => {
+              if (isScholarshipsOpen) {
+                fetch('/api/scholarships').then(r => r.json()).then(d => setScholarshipsList(d)).catch(() => {});
+              }
+            }, [isScholarshipsOpen]);
+
+            const saveScholarship = async () => {
+              const body = { ...scholarshipForm, status: 'not_started' };
+              if (editingScholarshipId) {
+                await fetch(`/api/scholarships/${editingScholarshipId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+              } else {
+                await fetch('/api/scholarships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+              }
+              const updated = await fetch('/api/scholarships').then(r => r.json());
+              setScholarshipsList(updated);
+              setScholarshipWizardOpen(false);
+              setScholarshipWizardStep(0);
+              setScholarshipForm({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
+              setEditingScholarshipId(null);
+            };
+
+            const deleteScholarship = async (id: number) => {
+              await fetch(`/api/scholarships/${id}`, { method: 'DELETE' });
+              setScholarshipsList(prev => prev.filter(s => s.id !== id));
+            };
+
+            const wizardSteps = [
+              { title: 'Scholarship Name', field: 'name' as const, placeholder: 'e.g. Dean\'s List Scholarship', required: true },
+              { title: 'Organization', field: 'organization' as const, placeholder: 'e.g. TMU Financial Aid', required: true },
+              { title: 'Amount', field: 'amount' as const, placeholder: 'e.g. $2,000', required: false },
+              { title: 'Application Deadline', field: 'deadline' as const, placeholder: '', required: false, isDate: true },
+              { title: 'Winners Announced', field: 'winnersAnnounced' as const, placeholder: '', required: false, isDate: true },
+              { title: 'Application URL & Contact', field: 'applicationUrl' as const, placeholder: 'https://...', required: false, isMulti: true },
+              { title: 'Additional Information', field: 'additionalInfo' as const, placeholder: 'Notes, eligibility criteria, etc.', required: false, isTextarea: true },
+            ];
+
+            return (
+            <>
           <Dialog open={isScholarshipsOpen} onOpenChange={setIsScholarshipsOpen}>
-            <DialogContent className="max-w-2xl text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '80vh' }}>
+            <DialogContent className="max-w-3xl text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '80vh' }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
                 <div className="flex items-center gap-2">
                   <Award className="h-3.5 w-3.5 text-white" />
@@ -14390,28 +14435,190 @@ export default function Dashboard() {
                     SCHOLARSHIPS
                   </h2>
                 </div>
-                <button 
-                  onClick={() => setIsScholarshipsOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-scholarships"
-                >
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' }); }}
+                    className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                    data-testid="button-add-scholarship"
+                  >
+                    <Plus className="h-3 w-3" /> Add Scholarship
+                  </button>
+                  <button 
+                    onClick={() => setIsScholarshipsOpen(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-scholarships"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-y-auto" style={{ maxHeight: 'calc(80vh - 50px)', scrollbarWidth: 'none' }}>
+                {scholarshipsList.length === 0 ? (
+                  <div className="text-center py-10">
+                    <Award className="h-10 w-10 text-yellow-400 mx-auto mb-3" />
+                    <p className="text-[13px] font-medium text-white mb-1">Scholarships & Awards</p>
+                    <p className="text-[11px] text-white/60 mb-4">Track scholarship applications, deadlines, and awards here.</p>
+                    <button
+                      onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); }}
+                      className="px-3 py-1.5 rounded text-[11px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                      data-testid="button-add-scholarship-empty"
+                    >
+                      <Plus className="h-3 w-3 inline mr-1" /> Add Your First Scholarship
+                    </button>
+                  </div>
+                ) : (
+                  <table className="w-full text-[11px]" data-testid="scholarships-table">
+                    <thead>
+                      <tr className="border-b border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        <th className="text-left px-3 py-2 font-medium text-white/80">Scholarship</th>
+                        <th className="text-left px-3 py-2 font-medium text-white/80">Organization</th>
+                        <th className="text-left px-3 py-2 font-medium text-white/80">Amount</th>
+                        <th className="text-left px-3 py-2 font-medium text-white/80">Deadline</th>
+                        <th className="text-left px-3 py-2 font-medium text-white/80">Winners Announced</th>
+                        <th className="text-center px-2 py-2 font-medium text-white/80" style={{ width: '60px' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {scholarshipsList.map(s => (
+                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '' }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
+                          <td className="px-3 py-2.5 font-medium">{s.name}</td>
+                          <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
+                          <td className="px-3 py-2.5 text-white/70">{s.amount || '—'}</td>
+                          <td className="px-3 py-2.5 text-white/70">{s.deadline ? new Date(s.deadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
+                          <td className="px-3 py-2.5 text-white/70">{s.winnersAnnounced ? new Date(s.winnersAnnounced + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
+                          <td className="px-2 py-2.5 text-center">
+                            <button onClick={(e) => { e.stopPropagation(); deleteScholarship(s.id); }} className="text-red-400 hover:text-red-300 transition-colors p-1" data-testid={`delete-scholarship-${s.id}`}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Scholarship Add/Edit Wizard */}
+          <Dialog open={scholarshipWizardOpen} onOpenChange={(open) => { if (!open) { setScholarshipWizardOpen(false); setScholarshipWizardStep(0); setEditingScholarshipId(null); } }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+                <div className="flex items-center gap-2">
+                  <Award className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    {editingScholarshipId ? 'EDIT SCHOLARSHIP' : 'ADD SCHOLARSHIP'} — Step {scholarshipWizardStep + 1}/{wizardSteps.length}
+                  </h2>
+                </div>
+                <button onClick={() => { setScholarshipWizardOpen(false); setEditingScholarshipId(null); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-scholarship-wizard">
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 50px)', scrollbarWidth: 'none' }}>
-                <div className="space-y-4">
-                  <div className="text-center py-8">
-                    <Award className="h-10 w-10 text-yellow-400 mx-auto mb-3" />
-                    <p className="text-[13px] font-medium text-white mb-1">Scholarships & Awards</p>
-                    <p className="text-[11px] text-white/60">Track scholarship applications, deadlines, and awards here.</p>
+              <div className="p-4 space-y-3">
+                <div className="flex items-center gap-1 mb-2">
+                  {wizardSteps.map((_, i) => (
+                    <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300" style={{ background: i <= scholarshipWizardStep ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)' }} />
+                  ))}
+                </div>
+                <p className="text-[12px] font-medium text-white">{wizardSteps[scholarshipWizardStep].title}{wizardSteps[scholarshipWizardStep].required ? ' *' : ''}</p>
+                {wizardSteps[scholarshipWizardStep].isMulti ? (
+                  <div className="space-y-2">
+                    <input
+                      type="url"
+                      value={scholarshipForm.applicationUrl}
+                      onChange={(e) => setScholarshipForm(p => ({ ...p, applicationUrl: e.target.value }))}
+                      placeholder="Application URL (https://...)"
+                      className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
+                      data-testid="input-scholarship-url"
+                    />
+                    <input
+                      type="text"
+                      value={scholarshipForm.contactInfo}
+                      onChange={(e) => setScholarshipForm(p => ({ ...p, contactInfo: e.target.value }))}
+                      placeholder="Contact info (email, phone, etc.)"
+                      className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
+                      data-testid="input-scholarship-contact"
+                    />
                   </div>
-                  <div className="border border-white/20 rounded-lg p-3">
-                    <p className="text-[11px] text-white/70 text-center italic">No scholarships added yet. Check back soon.</p>
+                ) : wizardSteps[scholarshipWizardStep].isTextarea ? (
+                  <textarea
+                    value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                    onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
+                    placeholder={wizardSteps[scholarshipWizardStep].placeholder}
+                    rows={4}
+                    className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none"
+                    data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
+                  />
+                ) : wizardSteps[scholarshipWizardStep].isDate ? (
+                  <input
+                    type="date"
+                    value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                    onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
+                    className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                    data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                    onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
+                    placeholder={wizardSteps[scholarshipWizardStep].placeholder}
+                    className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
+                    autoFocus
+                    data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (scholarshipWizardStep < wizardSteps.length - 1) setScholarshipWizardStep(s => s + 1);
+                        else saveScholarship();
+                      }
+                    }}
+                  />
+                )}
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    onClick={() => scholarshipWizardStep > 0 ? setScholarshipWizardStep(s => s - 1) : setScholarshipWizardOpen(false)}
+                    className="px-3 py-1.5 rounded text-[10px] font-medium bg-white/5 hover:bg-white/10 transition-colors border border-white/15"
+                    data-testid="button-scholarship-back"
+                  >
+                    {scholarshipWizardStep > 0 ? 'Back' : 'Cancel'}
+                  </button>
+                  <div className="flex gap-2">
+                    {scholarshipWizardStep > 1 && scholarshipForm.name && scholarshipForm.organization && (
+                      <button
+                        onClick={saveScholarship}
+                        className="px-3 py-1.5 rounded text-[10px] font-medium bg-green-500/20 hover:bg-green-500/30 transition-colors border border-green-400/30 text-green-300"
+                        data-testid="button-scholarship-save-early"
+                      >
+                        Save Now
+                      </button>
+                    )}
+                    {scholarshipWizardStep < wizardSteps.length - 1 ? (
+                      <button
+                        onClick={() => setScholarshipWizardStep(s => s + 1)}
+                        disabled={wizardSteps[scholarshipWizardStep].required && !scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                        className="px-3 py-1.5 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                        data-testid="button-scholarship-next"
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <button
+                        onClick={saveScholarship}
+                        disabled={!scholarshipForm.name || !scholarshipForm.organization}
+                        className="px-3 py-1.5 rounded text-[10px] font-medium bg-blue-500/20 hover:bg-blue-500/30 transition-colors border border-blue-400/30 text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                        data-testid="button-scholarship-save"
+                      >
+                        {editingScholarshipId ? 'Update' : 'Save'}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
+          </>
+            );
+          })()}
 
           {/* AAS Reminder Popup */}
           <Dialog open={showAasReminder} onOpenChange={setShowAasReminder}>

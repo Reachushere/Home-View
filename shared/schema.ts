@@ -491,5 +491,22 @@ export const insertSemesterChecklistSchema = createInsertSchema(semesterChecklis
 export type SemesterChecklistItem = typeof semesterChecklist.$inferSelect;
 export type InsertSemesterChecklistItem = z.infer<typeof insertSemesterChecklistSchema>;
 
+export const scholarships = pgTable("scholarships", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  organization: text("organization").notNull(),
+  amount: text("amount"),
+  deadline: text("deadline"),
+  winnersAnnounced: text("winners_announced"),
+  applicationUrl: text("application_url"),
+  contactInfo: text("contact_info"),
+  additionalInfo: text("additional_info"),
+  status: text("status").default("not_started"),
+});
+
+export const insertScholarshipSchema = createInsertSchema(scholarships).omit({ id: true });
+export type Scholarship = typeof scholarships.$inferSelect;
+export type InsertScholarship = z.infer<typeof insertScholarshipSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

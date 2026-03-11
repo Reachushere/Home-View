@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -79,6 +79,11 @@ export interface IStorage {
   getSemesterChecklist(semesterSettingsId: number): Promise<SemesterChecklistItem[]>;
   upsertSemesterChecklistItem(item: InsertSemesterChecklistItem): Promise<SemesterChecklistItem>;
   initSemesterChecklist(semesterSettingsId: number, courseCodes: string[]): Promise<SemesterChecklistItem[]>;
+  getScholarships(): Promise<Scholarship[]>;
+  getScholarship(id: number): Promise<Scholarship | undefined>;
+  createScholarship(data: InsertScholarship): Promise<Scholarship>;
+  updateScholarship(id: number, updates: Partial<InsertScholarship>): Promise<Scholarship>;
+  deleteScholarship(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -646,6 +651,28 @@ export class DatabaseStorage implements IStorage {
       }
     }
     return items;
+  }
+  async getScholarships(): Promise<Scholarship[]> {
+    return await db.select().from(scholarships);
+  }
+
+  async getScholarship(id: number): Promise<Scholarship | undefined> {
+    const [s] = await db.select().from(scholarships).where(eq(scholarships.id, id));
+    return s;
+  }
+
+  async createScholarship(data: InsertScholarship): Promise<Scholarship> {
+    const [created] = await db.insert(scholarships).values(data).returning();
+    return created;
+  }
+
+  async updateScholarship(id: number, updates: Partial<InsertScholarship>): Promise<Scholarship> {
+    const [updated] = await db.update(scholarships).set(updates).where(eq(scholarships.id, id)).returning();
+    return updated;
+  }
+
+  async deleteScholarship(id: number): Promise<void> {
+    await db.delete(scholarships).where(eq(scholarships.id, id));
   }
 }
 
