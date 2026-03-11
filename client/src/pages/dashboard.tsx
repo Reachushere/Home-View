@@ -20234,7 +20234,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
                 const otherRowH = gridSizes.courseRowHeight || 48;
-                return `${lastBottom + otherRowH - 9}px`;
+                return `${lastBottom + otherRowH - 18}px`;
               }
             }
             return '14px';
