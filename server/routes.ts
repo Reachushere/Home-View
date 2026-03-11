@@ -5701,14 +5701,52 @@ document.body.removeChild(a);
       res.json({ action: "processing", reason: "Light on — processing in background" });
 
       const today = torontoDate();
-      const torontoNow = today;
-
       const semesterSettings = await storage.getActiveSemesterSettings();
-      const isSpingSummer = semesterSettings?.semesterType === 'spring_summer';
 
-      const dayOfWeek = torontoNow.getDay();
-      const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek];
-      console.log(`[Cat Lights] Day is ${dayName} — will prompt via HA Voice before playing`);
+      if (!semesterSettings) {
+        console.log(`[Cat Lights] No active semester — skipping prompt`);
+        return;
+      }
+
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      const ttsMessage = `Would you like to listen to your module reading? Say yes or confirm on the dashboard to start.`;
+
+      console.log(`[Cat Lights] Sending TTS prompt immediately...`);
+      try {
+        const [boolOffResp, boolOnResp, ttsResp] = await Promise.all([
+          fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
+          fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
+          fetch(`${haUrl}/api/services/tts/speak`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+          }),
+        ]);
+        const ttsBody = await ttsResp.text();
+        console.log(`[Cat Lights] TTS+booleans sent: confirmed_off=${boolOffResp.status}, pending_on=${boolOnResp.status}, tts=${ttsResp.status} ${ttsBody.substring(0, 300)}`);
+
+        if (!ttsResp.ok) {
+          console.log(`[Cat Lights] tts.speak failed, trying tts.cloud_say fallback...`);
+          const fallback1 = await fetch(`${haUrl}/api/services/tts/cloud_say`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+          });
+          const fb1Body = await fallback1.text();
+          console.log(`[Cat Lights] tts.cloud_say response: ${fallback1.status} ${fb1Body.substring(0, 300)}`);
+
+          if (!fallback1.ok) {
+            console.log(`[Cat Lights] tts.cloud_say failed, trying tts.google_translate_say fallback...`);
+            const fallback2 = await fetch(`${haUrl}/api/services/tts/google_translate_say`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+            });
+            const fb2Body = await fallback2.text();
+            console.log(`[Cat Lights] tts.google_translate_say response: ${fallback2.status} ${fb2Body.substring(0, 300)}`);
+          }
+        }
+      } catch (e: any) {
+        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message}`);
+        return;
+      }
 
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
@@ -5727,6 +5765,9 @@ document.body.removeChild(a);
 
       if (!cppaModule) {
         console.log(`[Cat Lights] No unlistened CPPA module for week ${currentWeekNumber}`);
+        try {
+          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) });
+        } catch {}
         return;
       }
 
@@ -5734,50 +5775,6 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
       {
-        const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-        const ttsMessage = `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start.`;
-
-        try {
-          const [boolOffResp, boolOnResp] = await Promise.all([
-            fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
-            fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
-          ]);
-          console.log(`[Cat Lights] Booleans set: confirmed_off=${boolOffResp.status}, pending_on=${boolOnResp.status}`);
-
-          // Try tts.speak first (HA Cloud TTS → HA Voice media player)
-          const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
-          });
-          const ttsBody = await ttsResp.text();
-          console.log(`[Cat Lights] tts.speak response: ${ttsResp.status} ${ttsBody.substring(0, 300)}`);
-
-          if (!ttsResp.ok) {
-            // Fallback: try tts.cloud_say (older HA Cloud TTS service name)
-            console.log(`[Cat Lights] tts.speak failed, trying tts.cloud_say fallback...`);
-            const fallback1 = await fetch(`${haUrl}/api/services/tts/cloud_say`, {
-              method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
-            });
-            const fb1Body = await fallback1.text();
-            console.log(`[Cat Lights] tts.cloud_say response: ${fallback1.status} ${fb1Body.substring(0, 300)}`);
-
-            if (!fallback1.ok) {
-              // Fallback 2: try tts.google_translate_say
-              console.log(`[Cat Lights] tts.cloud_say failed, trying tts.google_translate_say fallback...`);
-              const fallback2 = await fetch(`${haUrl}/api/services/tts/google_translate_say`, {
-                method: 'POST', headers: haHeaders,
-                body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
-              });
-              const fb2Body = await fallback2.text();
-              console.log(`[Cat Lights] tts.google_translate_say response: ${fallback2.status} ${fb2Body.substring(0, 300)}`);
-            }
-          }
-        } catch (e: any) {
-          console.error(`[Cat Lights] Failed to set booleans/TTS: ${e.message}`);
-          return;
-        }
-
         const pollIntervalMs = 3000;
         const maxPollMs = 65000;
         const pollStart = Date.now();
