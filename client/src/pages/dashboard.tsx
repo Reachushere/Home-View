@@ -20002,7 +20002,7 @@ export default function Dashboard() {
                           onClick={() => setEditingTask(t)}
                         >
                           <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span className="truncate" style={{ fontSize: '8px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           <span className="flex-shrink-0" style={{ fontSize: '8px', color: dateColor, fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
                         </div>
                       );
