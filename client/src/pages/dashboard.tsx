@@ -11111,7 +11111,7 @@ export default function Dashboard() {
 
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
-            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
@@ -13194,7 +13194,7 @@ export default function Dashboard() {
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border border-white/30 backdrop-blur-[3px] bg-white/[0.45] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white" style={{ top: '55%' }}>
+            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border border-white/30 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-white text-sm">
                   <CheckSquare className="h-5 w-5" />
@@ -20748,6 +20748,7 @@ export default function Dashboard() {
           <section 
             className="h-full overflow-hidden flex flex-col rounded-xl text-white" 
             style={{
+              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
               border: '1px solid rgba(255, 255, 255, 0.2)',
               boxShadow: '0 -10px 40px rgba(0,0,0,0.3)'
             }}
