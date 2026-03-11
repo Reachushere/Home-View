@@ -11406,6 +11406,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
                   <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l1Progress.completed / l1Progress.total) * 100}%`, backgroundColor: getHeaderColor(l1Progress) }} />
                 </div>
@@ -11652,6 +11653,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
                   <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l2Progress.completed / l2Progress.total) * 100}%`, backgroundColor: getHeaderColor(l2Progress) }} />
                 </div>
@@ -11879,6 +11881,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
                   <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
                 </div>
