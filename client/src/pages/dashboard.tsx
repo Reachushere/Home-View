@@ -16879,8 +16879,11 @@ export default function Dashboard() {
                               const unlistenedFiles = ensuredFiles.filter(f => !f.listened);
                               const firstFile = unlistenedFiles.length > 0 ? unlistenedFiles[0] : ensuredFiles[0];
                               if (firstFile) {
-                                setOneDrivePreviewFiles(ensuredFiles);
-                                setPreviewFile(firstFile);
+                                const isOneDrive = firstFile.objectPath?.startsWith('http');
+                                const readerUrl = isOneDrive
+                                  ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&fileId=${firstFile.id}&autoplay=1`
+                                  : `/pdf-reader/${firstFile.id}?autoplay=1`;
+                                window.open(readerUrl, '_blank');
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
