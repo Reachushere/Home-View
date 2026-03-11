@@ -12046,9 +12046,9 @@ export default function Dashboard() {
       
       {/* Set Default Layout Checkbox - moved to task boxes area */}
       
-      {/* Set Default checkbox - right-aligned with homework box */}
+      {/* Set Default checkbox - right-aligned with homework box, attached to bottom of glass box */}
       {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: '26px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 + 3 + 3 + 2}px` }}>
+        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: `${calendarBottom + 4}px`, right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 + 3 + 3 + 2}px` }}>
           <input
             type="checkbox"
             checked={showDeviceSaved}
