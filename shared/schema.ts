@@ -508,5 +508,22 @@ export const insertScholarshipSchema = createInsertSchema(scholarships).omit({ i
 export type Scholarship = typeof scholarships.$inferSelect;
 export type InsertScholarship = z.infer<typeof insertScholarshipSchema>;
 
+export const keyContacts = pgTable("key_contacts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  title: text("title"),
+  organization: text("organization"),
+  department: text("department"),
+  email: text("email"),
+  phone: text("phone"),
+  office: text("office"),
+  category: text("category").default("other"),
+  notes: text("notes"),
+});
+
+export const insertKeyContactSchema = createInsertSchema(keyContacts).omit({ id: true });
+export type KeyContact = typeof keyContacts.$inferSelect;
+export type InsertKeyContact = z.infer<typeof insertKeyContactSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

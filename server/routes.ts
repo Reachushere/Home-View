@@ -1471,6 +1471,48 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.get("/api/key-contacts", async (_req, res) => {
+    try {
+      const data = await storage.getKeyContacts();
+      res.json(data);
+    } catch (err) {
+      console.error("Error fetching key contacts:", err);
+      res.status(500).json({ error: "Failed to fetch key contacts" });
+    }
+  });
+
+  app.post("/api/key-contacts", async (req, res) => {
+    try {
+      const created = await storage.createKeyContact(req.body);
+      res.json(created);
+    } catch (err) {
+      console.error("Error creating key contact:", err);
+      res.status(500).json({ error: "Failed to create key contact" });
+    }
+  });
+
+  app.patch("/api/key-contacts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.updateKeyContact(id, req.body);
+      res.json(updated);
+    } catch (err) {
+      console.error("Error updating key contact:", err);
+      res.status(500).json({ error: "Failed to update key contact" });
+    }
+  });
+
+  app.delete("/api/key-contacts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteKeyContact(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting key contact:", err);
+      res.status(500).json({ error: "Failed to delete key contact" });
+    }
+  });
+
   app.post("/api/semester-reset-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();

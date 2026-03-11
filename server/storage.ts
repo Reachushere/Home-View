@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, keyContacts, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -84,6 +84,11 @@ export interface IStorage {
   createScholarship(data: InsertScholarship): Promise<Scholarship>;
   updateScholarship(id: number, updates: Partial<InsertScholarship>): Promise<Scholarship>;
   deleteScholarship(id: number): Promise<void>;
+  getKeyContacts(): Promise<KeyContact[]>;
+  getKeyContact(id: number): Promise<KeyContact | undefined>;
+  createKeyContact(data: InsertKeyContact): Promise<KeyContact>;
+  updateKeyContact(id: number, updates: Partial<InsertKeyContact>): Promise<KeyContact>;
+  deleteKeyContact(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -673,6 +678,28 @@ export class DatabaseStorage implements IStorage {
 
   async deleteScholarship(id: number): Promise<void> {
     await db.delete(scholarships).where(eq(scholarships.id, id));
+  }
+  async getKeyContacts(): Promise<KeyContact[]> {
+    return await db.select().from(keyContacts);
+  }
+
+  async getKeyContact(id: number): Promise<KeyContact | undefined> {
+    const [c] = await db.select().from(keyContacts).where(eq(keyContacts.id, id));
+    return c;
+  }
+
+  async createKeyContact(data: InsertKeyContact): Promise<KeyContact> {
+    const [created] = await db.insert(keyContacts).values(data).returning();
+    return created;
+  }
+
+  async updateKeyContact(id: number, updates: Partial<InsertKeyContact>): Promise<KeyContact> {
+    const [updated] = await db.update(keyContacts).set(updates).where(eq(keyContacts.id, id)).returning();
+    return updated;
+  }
+
+  async deleteKeyContact(id: number): Promise<void> {
+    await db.delete(keyContacts).where(eq(keyContacts.id, id));
   }
 }
 

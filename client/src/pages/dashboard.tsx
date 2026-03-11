@@ -57,6 +57,7 @@ import {
   Vote,
   GraduationCap,
   Award,
+  Contact,
   ClipboardCheck,
   Calendar,
   CalendarClock,
@@ -507,6 +508,7 @@ export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
+  const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [showRemainingList, setShowRemainingList] = useState(false);
   
   const [showSemesterChecklist, setShowSemesterChecklist] = useState(false);
@@ -11169,6 +11171,31 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Key Contacts Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-key-contacts"
+              title="Key Contacts"
+              onClick={() => {
+                triggerButtonGlow('keycontacts');
+                setIsKeyContactsOpen(true);
+              }}
+            >
+              <Contact className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
             <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
@@ -14637,6 +14664,220 @@ export default function Dashboard() {
                       </button>
                     )}
                   </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          </>
+            );
+          })()}
+
+          {/* Key Contacts Dialog */}
+          {(() => {
+            const [contactsList, setContactsList] = useState<Array<{ id: number; name: string; title: string | null; organization: string | null; department: string | null; email: string | null; phone: string | null; office: string | null; category: string | null; notes: string | null }>>([]);
+            const [contactFormOpen, setContactFormOpen] = useState(false);
+            const [editingContactId, setEditingContactId] = useState<number | null>(null);
+            const [contactForm, setContactForm] = useState({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: 'professor', notes: '' });
+            const [contactFilter, setContactFilter] = useState('all');
+
+            useEffect(() => {
+              if (isKeyContactsOpen) {
+                fetch('/api/key-contacts').then(r => r.json()).then(d => setContactsList(d)).catch(() => {});
+              }
+            }, [isKeyContactsOpen]);
+
+            const saveContact = async () => {
+              if (editingContactId) {
+                await fetch(`/api/key-contacts/${editingContactId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(contactForm) });
+              } else {
+                await fetch('/api/key-contacts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(contactForm) });
+              }
+              const updated = await fetch('/api/key-contacts').then(r => r.json());
+              setContactsList(updated);
+              setContactFormOpen(false);
+              setEditingContactId(null);
+              setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: 'professor', notes: '' });
+            };
+
+            const deleteContact = async (id: number) => {
+              await fetch(`/api/key-contacts/${id}`, { method: 'DELETE' });
+              setContactsList(prev => prev.filter(c => c.id !== id));
+            };
+
+            const categories = [
+              { value: 'professor', label: 'Professor' },
+              { value: 'advisor', label: 'Academic Advisor' },
+              { value: 'ta', label: 'Teaching Assistant' },
+              { value: 'admin', label: 'Administration' },
+              { value: 'accessibility', label: 'Accessibility Services' },
+              { value: 'financial', label: 'Financial Aid' },
+              { value: 'classmate', label: 'Classmate' },
+              { value: 'other', label: 'Other' },
+            ];
+
+            const filteredContacts = contactFilter === 'all' ? contactsList : contactsList.filter(c => c.category === contactFilter);
+
+            const getCategoryColor = (cat: string | null) => {
+              switch (cat) {
+                case 'professor': return '#ef4444';
+                case 'advisor': return '#3b82f6';
+                case 'ta': return '#f59e0b';
+                case 'admin': return '#8b5cf6';
+                case 'accessibility': return '#10b981';
+                case 'financial': return '#ec4899';
+                case 'classmate': return '#06b6d4';
+                default: return '#6b7280';
+              }
+            };
+
+            return (
+            <>
+          <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
+            <DialogContent className="max-w-3xl text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '80vh' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+                <div className="flex items-center gap-2">
+                  <Contact className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    KEY CONTACTS
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={contactFilter}
+                    onChange={(e) => setContactFilter(e.target.value)}
+                    className="px-2 py-1 rounded text-[10px] bg-white/10 border border-white/20 text-white focus:outline-none"
+                    data-testid="select-contact-filter"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  </select>
+                  <button
+                    onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: 'professor', notes: '' }); }}
+                    className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                    data-testid="button-add-contact"
+                  >
+                    <Plus className="h-3 w-3" /> Add Contact
+                  </button>
+                  <button onClick={() => setIsKeyContactsOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-key-contacts">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-y-auto" style={{ maxHeight: 'calc(80vh - 50px)', scrollbarWidth: 'none' }}>
+                {filteredContacts.length === 0 ? (
+                  <div className="text-center py-10">
+                    <Contact className="h-10 w-10 text-blue-400 mx-auto mb-3" />
+                    <p className="text-[13px] font-medium text-white mb-1">Key Contacts Directory</p>
+                    <p className="text-[11px] text-white/60 mb-4">Store important academic contacts — professors, advisors, TAs, and more.</p>
+                    <button
+                      onClick={() => { setContactFormOpen(true); setEditingContactId(null); }}
+                      className="px-3 py-1.5 rounded text-[11px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                      data-testid="button-add-contact-empty"
+                    >
+                      <Plus className="h-3 w-3 inline mr-1" /> Add Your First Contact
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid gap-2 p-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                    {filteredContacts.map(c => (
+                      <div
+                        key={c.id}
+                        className="rounded-lg border border-white/15 p-3 hover:bg-white/5 transition-colors cursor-pointer relative group"
+                        onClick={() => { setEditingContactId(c.id); setContactForm({ name: c.name, title: c.title || '', organization: c.organization || '', department: c.department || '', email: c.email || '', phone: c.phone || '', office: c.office || '', category: c.category || 'other', notes: c.notes || '' }); setContactFormOpen(true); }}
+                        data-testid={`contact-card-${c.id}`}
+                      >
+                        <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 p-1" data-testid={`delete-contact-${c.id}`}>
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                        <div className="flex items-start gap-2">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: getCategoryColor(c.category) }}>
+                            {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[12px] font-medium text-white truncate">{c.name}</p>
+                            {c.title && <p className="text-[10px] text-white/60 truncate">{c.title}</p>}
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-[8px] px-1.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: getCategoryColor(c.category) + '30', color: getCategoryColor(c.category) }}>
+                                {categories.find(cat => cat.value === c.category)?.label || 'Other'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-2 space-y-0.5 text-[10px]">
+                          {c.organization && <p className="text-white/50 truncate">{c.organization}{c.department ? ` — ${c.department}` : ''}</p>}
+                          {c.email && <p className="text-blue-300/80 truncate" onClick={(e) => { e.stopPropagation(); window.open(`mailto:${c.email}`); }}>{c.email}</p>}
+                          {c.phone && <p className="text-white/50">{c.phone}</p>}
+                          {c.office && <p className="text-white/50">Office: {c.office}</p>}
+                          {c.notes && <p className="text-white/40 italic truncate">{c.notes}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Key Contact Add/Edit Form */}
+          <Dialog open={contactFormOpen} onOpenChange={(open) => { if (!open) { setContactFormOpen(false); setEditingContactId(null); } }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+                <div className="flex items-center gap-2">
+                  <Contact className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    {editingContactId ? 'EDIT CONTACT' : 'ADD CONTACT'}
+                  </h2>
+                </div>
+                <button onClick={() => { setContactFormOpen(false); setEditingContactId(null); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-contact-form">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4 space-y-2.5 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 60px)', scrollbarWidth: 'none' }}>
+                <div>
+                  <label className="text-[10px] text-white/60 mb-1 block">Name *</label>
+                  <input type="text" value={contactForm.name} onChange={(e) => setContactForm(p => ({ ...p, name: e.target.value }))} placeholder="Full name" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" autoFocus data-testid="input-contact-name" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-white/60 mb-1 block">Title / Role</label>
+                  <input type="text" value={contactForm.title} onChange={(e) => setContactForm(p => ({ ...p, title: e.target.value }))} placeholder="e.g. Professor, Academic Advisor" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-title" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] text-white/60 mb-1 block">Organization</label>
+                    <input type="text" value={contactForm.organization} onChange={(e) => setContactForm(p => ({ ...p, organization: e.target.value }))} placeholder="e.g. TMU" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-org" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-white/60 mb-1 block">Department</label>
+                    <input type="text" value={contactForm.department} onChange={(e) => setContactForm(p => ({ ...p, department: e.target.value }))} placeholder="e.g. Politics" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-dept" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] text-white/60 mb-1 block">Email</label>
+                  <input type="email" value={contactForm.email} onChange={(e) => setContactForm(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-email" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] text-white/60 mb-1 block">Phone</label>
+                    <input type="tel" value={contactForm.phone} onChange={(e) => setContactForm(p => ({ ...p, phone: e.target.value }))} placeholder="(416) 555-0123" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-phone" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-white/60 mb-1 block">Office Location</label>
+                    <input type="text" value={contactForm.office} onChange={(e) => setContactForm(p => ({ ...p, office: e.target.value }))} placeholder="e.g. JOR-123" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-office" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] text-white/60 mb-1 block">Category</label>
+                  <select value={contactForm.category} onChange={(e) => setContactForm(p => ({ ...p, category: e.target.value }))} className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="select-contact-category">
+                    {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] text-white/60 mb-1 block">Notes</label>
+                  <textarea value={contactForm.notes} onChange={(e) => setContactForm(p => ({ ...p, notes: e.target.value }))} placeholder="Office hours, course taught, etc." rows={2} className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none" data-testid="input-contact-notes" />
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <button onClick={() => { setContactFormOpen(false); setEditingContactId(null); }} className="px-3 py-1.5 rounded text-[10px] font-medium bg-white/5 hover:bg-white/10 transition-colors border border-white/15" data-testid="button-contact-cancel">Cancel</button>
+                  <button onClick={saveContact} disabled={!contactForm.name} className="px-3 py-1.5 rounded text-[10px] font-medium bg-blue-500/20 hover:bg-blue-500/30 transition-colors border border-blue-400/30 text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed" data-testid="button-contact-save">{editingContactId ? 'Update' : 'Save'}</button>
                 </div>
               </div>
             </DialogContent>
