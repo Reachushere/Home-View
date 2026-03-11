@@ -89,6 +89,9 @@ const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (ur
 const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const NEST_SPEAKER_ENTITY = "media_player.nestaudio6787";
+const CAT_WR_HA_VOICE_ENTITY = "media_player.home_assistant_voice_097c38_media_player";
+const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
+const MODULE_READING_CONFIRMED = "input_boolean.module_reading_confirmed";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
 interface FlickDevice {
@@ -4396,16 +4399,6 @@ export async function registerRoutes(
   let catWashManuallyStoppedAt: Date | null = null;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
-  let pendingModuleConfirmation: {
-    createdAt: Date;
-    fileId: number;
-    fileName: string;
-    resumeFromChunk: number;
-    totalChunks: number;
-    fileChunks: string[];
-    timeoutHandle: ReturnType<typeof setTimeout>;
-  } | null = null;
-
   const startToothbrushPolling = () => {
     if (toothbrushPollInterval) clearInterval(toothbrushPollInterval);
     console.log(`[Toothbrush] Starting polling for sensor.toothbrush_bryn_toothbrush_state`);
@@ -5661,12 +5654,14 @@ document.body.removeChild(a);
       const semesterSettings = await storage.getActiveSemesterSettings();
       const isSpingSummer = semesterSettings?.semesterType === 'spring_summer';
 
-      if (!isSpingSummer) {
-        const dayOfWeek = today.getDay();
-        if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3) {
-          console.log(`[Cat Lights] Day of week is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]} — only triggers Wednesday-Friday`);
-          return res.json({ action: "skipped", reason: `Only triggers Wednesday-Friday (today is ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]})` });
-        }
+      const dayOfWeek = today.getDay();
+      const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek];
+      const isPromptDay = !isSpingSummer && (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek < 3);
+
+      if (isPromptDay) {
+        console.log(`[Cat Lights] Day is ${dayName} — prompt day (Sat-Tue), will ask via HA Voice before playing`);
+      } else if (!isSpingSummer) {
+        console.log(`[Cat Lights] Day is ${dayName} — auto-play day (Wed-Fri)`);
       } else {
         console.log(`[Cat Lights] Spring/Summer semester — lights automation active every day`);
       }
@@ -5695,6 +5690,86 @@ document.body.removeChild(a);
 
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
+
+      if (isPromptDay) {
+        console.log(`[Cat Lights] Prompt day — setting ${MODULE_READING_PENDING} to ON and polling for confirmation`);
+
+        try {
+          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }),
+          });
+          await fetch(`${haUrl}/api/services/input_boolean/turn_on`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: MODULE_READING_PENDING }),
+          });
+          console.log(`[Cat Lights] Set pending=ON, confirmed=OFF — HA automation will now ask Bryn`);
+        } catch (e: any) {
+          console.error(`[Cat Lights] Failed to set input_booleans: ${e.message}`);
+          return res.status(500).json({ error: "Failed to set HA input_booleans", details: e.message });
+        }
+
+        res.json({ action: "waiting_for_confirmation", day: dayName, file: { id: cppaModule.id, name: fileName } });
+
+        const pollIntervalMs = 3000;
+        const maxPollMs = 65000;
+        const pollStart = Date.now();
+        let confirmed = false;
+
+        while (Date.now() - pollStart < maxPollMs) {
+          await new Promise(r => setTimeout(r, pollIntervalMs));
+          try {
+            const stateResp = await fetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, {
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+            });
+            if (stateResp.ok) {
+              const stateData = await stateResp.json();
+              if (stateData.state === 'on') {
+                confirmed = true;
+                console.log(`[Cat Lights] Confirmation received after ${Math.round((Date.now() - pollStart) / 1000)}s — starting playback`);
+                break;
+              }
+            }
+          } catch (e: any) {
+            console.log(`[Cat Lights] Poll error: ${e.message}`);
+          }
+
+          try {
+            const pendingResp = await fetch(`${haUrl}/api/states/${MODULE_READING_PENDING}`, {
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+            });
+            if (pendingResp.ok) {
+              const pendingData = await pendingResp.json();
+              if (pendingData.state === 'off') {
+                console.log(`[Cat Lights] Pending was turned off (timeout or declined) — skipping`);
+                break;
+              }
+            }
+          } catch {}
+        }
+
+        try {
+          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: MODULE_READING_PENDING }),
+          });
+          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }),
+          });
+        } catch {}
+
+        if (!confirmed) {
+          console.log(`[Cat Lights] No confirmation received after ${Math.round((Date.now() - pollStart) / 1000)}s — skipping playback`);
+          return;
+        }
+      }
+
+      // === Confirmed (or auto-play day) — start playback ===
 
       // Resume from saved progress if available (start 1 chunk earlier for context)
       const savedChunkLights = cppaModule.lastChunkIndex || 0;
@@ -5777,14 +5852,16 @@ document.body.removeChild(a);
 
       startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentLightsSession, "echo");
 
-      res.json({
-        action: "playing",
-        file: { id: cppaModule.id, name: fileName },
-        resumeFromChunk,
-        totalChunks: totalChunksCalc,
-        devices: deviceResults,
-        playbackMode: "nest-speaker",
-      });
+      if (!isPromptDay) {
+        res.json({
+          action: "playing",
+          file: { id: cppaModule.id, name: fileName },
+          resumeFromChunk,
+          totalChunks: totalChunksCalc,
+          devices: deviceResults,
+          playbackMode: "nest-speaker",
+        });
+      }
 
     } catch (error: any) {
       console.error("[Cat Lights] Error:", error);
