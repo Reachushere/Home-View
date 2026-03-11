@@ -590,14 +590,29 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
           <div className="text-[9px] text-white/50">
             {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
           </div>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent h-7 px-4 text-[10px]"
-            data-testid="button-close-course-detail-footer"
-          >
-            Close
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+              style={{ fontSize: '12px' }}
+              data-testid="button-cancel-course-detail"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+              style={{
+                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                fontSize: '12px'
+              }}
+              data-testid="button-save-course-detail"
+            >
+              Save
+            </Button>
+          </div>
         </div>
       </div>
     </div>,
