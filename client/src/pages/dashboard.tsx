@@ -19321,7 +19321,7 @@ export default function Dashboard() {
                     const isCFNF = cCode.startsWith('CFNF');
                     const isCASL = cCode.startsWith('CASL');
                     const textColor = '#ffffff';
-                    const dateColor = isCFNF ? '#ff80bf' : isCASL ? '#b380ff' : 'rgba(255,255,255,0.5)';
+                    const dateColor = '#ffffff';
                     return courseTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
