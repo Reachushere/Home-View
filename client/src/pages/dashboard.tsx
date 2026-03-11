@@ -1289,9 +1289,13 @@ export default function Dashboard() {
       'OPEN2': true,
       'L2_LIBERAL': true,
       'L2_OPEN1': true,
+      'L1_PPA120': false,
+      'L1_PPA121': false,
     };
     const saved = localStorage.getItem('inProgressCourses');
     const existing = saved ? JSON.parse(saved) : {};
+    delete existing['ELECTIVE1'];
+    delete existing['ELECTIVE2'];
     const merged = { ...existing, ...ipDefaults };
     localStorage.setItem('inProgressCourses', JSON.stringify(merged));
     return merged;
