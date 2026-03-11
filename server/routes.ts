@@ -4479,9 +4479,11 @@ export async function registerRoutes(
   const startToothbrushPolling = () => {
     if (toothbrushPollInterval) clearInterval(toothbrushPollInterval);
     console.log(`[Toothbrush] Starting polling for sensor.toothbrush_bryn_toothbrush_state`);
+    let tbPollCount = 0;
     toothbrushPollInterval = setInterval(async () => {
+      tbPollCount++;
       if (!catWashPlaybackActive) {
-        console.log(`[Toothbrush] Playback no longer active, stopping poll`);
+        console.log(`[Toothbrush] Playback no longer active, stopping poll (after ${tbPollCount} polls)`);
         if (toothbrushPollInterval) { clearInterval(toothbrushPollInterval); toothbrushPollInterval = null; }
         return;
       }
@@ -4492,12 +4494,14 @@ export async function registerRoutes(
         });
         if (resp.ok) {
           const data = await resp.json();
-          if (data.state === 'running') {
-            console.log(`[Toothbrush] State changed to RUNNING — stopping cat wash playback`);
+          const state = (data.state || '').toLowerCase();
+          if (tbPollCount <= 3 || tbPollCount % 10 === 0) {
+            console.log(`[Toothbrush] Poll #${tbPollCount}: state="${data.state}" (playbackActive=${catWashPlaybackActive})`);
+          }
+          if (state === 'running' || state === 'brushing') {
+            console.log(`[Toothbrush] State changed to "${data.state}" — stopping cat wash playback (poll #${tbPollCount})`);
             if (toothbrushPollInterval) { clearInterval(toothbrushPollInterval); toothbrushPollInterval = null; }
             
-            const fakeReq = { body: { trigger: 'toothbrush_poll' } } as any;
-            const fakeRes = { json: (d: any) => console.log(`[Toothbrush] Stop result:`, JSON.stringify(d)), status: (code: number) => ({ json: (d: any) => console.log(`[Toothbrush] Stop error ${code}:`, JSON.stringify(d)) }) } as any;
             try {
               const stopUrl = `http://localhost:${process.env.PORT || 5000}/api/webhook/cat-wash-stop`;
               await fetch(stopUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trigger: 'toothbrush_poll' }) });
@@ -4505,6 +4509,8 @@ export async function registerRoutes(
               console.log(`[Toothbrush] Error calling stop endpoint: ${e.message}`);
             }
           }
+        } else {
+          console.log(`[Toothbrush] HA returned ${resp.status} for toothbrush state`);
         }
       } catch (e: any) {
         console.log(`[Toothbrush] Poll error: ${e.message}`);
