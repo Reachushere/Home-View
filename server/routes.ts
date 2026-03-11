@@ -5653,6 +5653,8 @@ document.body.removeChild(a);
         }
       }
 
+      res.json({ action: "processing", reason: "Light on — processing in background" });
+
       const today = torontoDate();
       const torontoNow = today;
 
@@ -5671,13 +5673,11 @@ document.body.removeChild(a);
         console.log(`[Cat Lights] Spring/Summer semester — lights automation active every day`);
       }
 
-      // Get current week number
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
-      // Find CPPA module for current week that hasn't been fully listened to
       const allFiles = await storage.getFiles();
       const cppaModule = allFiles.find((f: any) => {
         if (f.listened) return false;
@@ -5690,31 +5690,27 @@ document.body.removeChild(a);
 
       if (!cppaModule) {
         console.log(`[Cat Lights] No unlistened CPPA module for week ${currentWeekNumber}`);
-        return res.json({ action: "skipped", reason: `No unlistened CPPA module for week ${currentWeekNumber}` });
+        return;
       }
 
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
       if (isPromptDay) {
-        console.log(`[Cat Lights] Prompt day — setting booleans + TTS in parallel`);
+        const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+        const ttsMessage = `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start.`;
 
         try {
-          const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-          const ttsMessage = `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start.`;
-
-          const [, , ttsResp] = await Promise.all([
+          await Promise.all([
             fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
             fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
             fetch(`${haUrl}/api/services/tts/speak`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }) }),
           ]);
-          console.log(`[Cat Lights] Booleans set + TTS sent (status: ${ttsResp.status})`);
+          console.log(`[Cat Lights] Booleans set + TTS sent`);
         } catch (e: any) {
           console.error(`[Cat Lights] Failed to set booleans/TTS: ${e.message}`);
-          return res.status(500).json({ error: "Failed to set HA input_booleans", details: e.message });
+          return;
         }
-
-        res.json({ action: "waiting_for_confirmation", day: dayName, file: { id: cppaModule.id, name: fileName } });
 
         const pollIntervalMs = 3000;
         const maxPollMs = 65000;
