@@ -14479,7 +14479,7 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isScholarshipsOpen} onOpenChange={setIsScholarshipsOpen}>
-            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               <DialogHeader>
                 <div className="flex items-center justify-between">
                   <DialogTitle className="text-white">Scholarships</DialogTitle>
@@ -14721,7 +14721,7 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
-            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               <DialogHeader>
                 <div className="flex items-center justify-between">
                   <DialogTitle className="text-white">Key Contacts</DialogTitle>
