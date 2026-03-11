@@ -674,7 +674,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       fetch('${baseUrl}/api/debug-beacon', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'tablet-page:'+data.action,data:{url:(data.url||'').substring(0,80)}})}).catch(function(){});
       if (data.action === 'navigate' && data.url) {
         frame.src = data.url;
-      } else if (data.action === 'stop_playback' || data.action === 'go_home') {
+      } else if (data.action === 'go_home') {
         frame.src = '${baseUrl}/?auth=5747';
       }
     }).catch(function(){});
