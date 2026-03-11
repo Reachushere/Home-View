@@ -2217,7 +2217,7 @@ export default function PDFReaderPage() {
             </div>
           )}
 
-          {!isEditingText && !followOnly && (
+          {!isEditingText && !followOnly && !(catWashFollow && followState?.active) && (
             <div className="p-4 space-y-3">
               {chunksList.map((chunk, idx) => {
                 const isActive = currentChunk === idx && isPlaying;
