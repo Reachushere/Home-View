@@ -13249,9 +13249,25 @@ export default function Dashboard() {
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
             <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border border-white/30 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-white text-sm">
-                  <CheckSquare className="h-5 w-5" />
-                  Completed Tasks
+                <DialogTitle className="flex items-center justify-between text-white text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="h-5 w-5" />
+                    Completed Tasks
+                  </div>
+                  {allTasks.filter(t => t.isCompleted).length > 0 && (
+                    <button
+                      className="text-xs text-white/70 hover:text-red-400 underline transition-colors font-normal"
+                      onClick={() => {
+                        if (confirm('Permanently delete ALL completed tasks? This cannot be undone.')) {
+                          const completed = allTasks.filter(t => t.isCompleted);
+                          completed.forEach(t => deleteMutation.mutate(t.id));
+                        }
+                      }}
+                      data-testid="button-delete-all-completed"
+                    >
+                      delete all
+                    </button>
+                  )}
                 </DialogTitle>
               </DialogHeader>
               <div className="flex-1 overflow-y-auto space-y-2 pr-2">
@@ -13275,21 +13291,91 @@ export default function Dashboard() {
                   };
                   
                   return completedTasks.map(task => (
-                    <div key={task.id} className="flex items-center gap-3 p-2 rounded-md border border-white/10">
-                      <input
-                        type="checkbox"
-                        checked={true}
-                        onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                        className="h-4 w-4 rounded-sm cursor-pointer flex-shrink-0"
-                        style={{ accentColor: getCourseColor(task.courseName) }}
-                        data-testid={`completed-checkbox-${task.id}`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">{task.title}</div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-2">
-                          <span style={{ color: getCourseColor(task.courseName) }}>{task.courseName?.split(' - ')[0]}</span>
-                          <span>•</span>
-                          <span>{format(new Date(task.dueDate), 'MMM d, yyyy')}</span>
+                    <div
+                      key={task.id}
+                      className="relative overflow-hidden rounded-md"
+                      data-testid={`completed-task-row-${task.id}`}
+                    >
+                      <div
+                        className="absolute inset-y-0 right-0 flex items-center justify-end px-4 bg-red-600"
+                        style={{ width: '80px' }}
+                      >
+                        <Trash2 className="h-4 w-4 text-white" />
+                      </div>
+                      <div
+                        className="flex items-center gap-3 p-2 border border-white/10 bg-inherit relative"
+                        style={{
+                          background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+                          touchAction: 'pan-y',
+                          transition: 'transform 0.2s ease-out',
+                          cursor: 'grab'
+                        }}
+                        onTouchStart={(e) => {
+                          const el = e.currentTarget;
+                          const startX = e.touches[0].clientX;
+                          let currentX = 0;
+                          el.style.transition = 'none';
+                          const onMove = (ev: TouchEvent) => {
+                            currentX = ev.touches[0].clientX - startX;
+                            if (currentX > 0) currentX = 0;
+                            el.style.transform = `translateX(${currentX}px)`;
+                          };
+                          const onEnd = () => {
+                            el.style.transition = 'transform 0.2s ease-out';
+                            if (currentX < -60) {
+                              el.style.transform = 'translateX(-100%)';
+                              setTimeout(() => deleteMutation.mutate(task.id), 200);
+                            } else {
+                              el.style.transform = 'translateX(0)';
+                            }
+                            document.removeEventListener('touchmove', onMove);
+                            document.removeEventListener('touchend', onEnd);
+                          };
+                          document.addEventListener('touchmove', onMove, { passive: true });
+                          document.addEventListener('touchend', onEnd);
+                        }}
+                        onMouseDown={(e) => {
+                          const el = e.currentTarget;
+                          const startX = e.clientX;
+                          let currentX = 0;
+                          el.style.transition = 'none';
+                          el.style.cursor = 'grabbing';
+                          const onMove = (ev: MouseEvent) => {
+                            currentX = ev.clientX - startX;
+                            if (currentX > 0) currentX = 0;
+                            el.style.transform = `translateX(${currentX}px)`;
+                          };
+                          const onUp = () => {
+                            el.style.transition = 'transform 0.2s ease-out';
+                            el.style.cursor = 'grab';
+                            if (currentX < -60) {
+                              el.style.transform = 'translateX(-100%)';
+                              setTimeout(() => deleteMutation.mutate(task.id), 200);
+                            } else {
+                              el.style.transform = 'translateX(0)';
+                            }
+                            document.removeEventListener('mousemove', onMove);
+                            document.removeEventListener('mouseup', onUp);
+                          };
+                          document.addEventListener('mousemove', onMove);
+                          document.addEventListener('mouseup', onUp);
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={true}
+                          onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                          className="h-4 w-4 rounded-sm cursor-pointer flex-shrink-0"
+                          style={{ accentColor: getCourseColor(task.courseName) }}
+                          data-testid={`completed-checkbox-${task.id}`}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium truncate">{task.title}</div>
+                          <div className="text-xs text-muted-foreground flex items-center gap-2">
+                            <span style={{ color: getCourseColor(task.courseName) }}>{task.courseName?.split(' - ')[0]}</span>
+                            <span>•</span>
+                            <span>{format(new Date(task.dueDate), 'MMM d, yyyy')}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
