@@ -4637,16 +4637,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       var waiting = document.getElementById('waiting');
       if (data.action === 'navigate' && data.url) {
         lastTs = data.timestamp || Date.now();
+        fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'tv'})}).catch(function(){});
+        if (data.url.indexOf('tv-follow') !== -1) return;
+        var targetUrl = data.url;
+        if (targetUrl.indexOf('/tablet?') !== -1) {
+          try { targetUrl = new URL(targetUrl).searchParams.get('target') || targetUrl; } catch(e){}
+        }
         if (!frame) {
           if (waiting) waiting.remove();
           frame = document.createElement('iframe');
           frame.id = 'frame';
           frame.allow = 'fullscreen;autoplay';
-          frame.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bottom:0';
+          frame.style.cssText = 'width:100vw;height:100vh;border:none;position:fixed;top:0;left:0';
           document.body.appendChild(frame);
         }
-        frame.src = data.url;
-        fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'tv'})}).catch(function(){});
+        frame.src = targetUrl;
       } else if (data.action === 'stop_playback') {
         lastTs = data.timestamp || Date.now();
         if (frame) frame.src = '${baseUrl}/?auth=5747';
@@ -5781,7 +5786,7 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
       console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on master tablet (main reader) and Samsung TV (visual follow only) ===
       const tvFollowUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
