@@ -5597,27 +5597,28 @@ document.body.removeChild(a);
       });
       console.log(`[Cat Wash] Fire Stick ${entityId} adb_command: ${resp.status}`);
       if (resp.ok) {
-        // Try immersive mode + DPAD_CENTER to trigger fullscreen
-        setTimeout(async () => {
+        // Try immersive mode to trigger fullscreen - multiple attempts
+        const sendFullscreenCmds = async (attempt: number) => {
           try {
-            // Force immersive mode to hide system bars
             await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({ entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
             });
-            console.log(`[Cat Wash] Fire Stick ${entityId} set immersive mode for Silk`);
-            // Also send DPAD_CENTER to trigger page fullscreen handler
+            console.log(`[Cat Wash] Fire Stick immersive mode set (attempt ${attempt})`);
             await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({ entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }),
             });
-            console.log(`[Cat Wash] Fire Stick ${entityId} sent DPAD_CENTER for fullscreen`);
+            console.log(`[Cat Wash] Fire Stick DPAD_CENTER sent (attempt ${attempt})`);
           } catch (e: any) {
-            console.log(`[Cat Wash] Fire Stick fullscreen commands failed: ${e.message}`);
+            console.log(`[Cat Wash] Fire Stick fullscreen attempt ${attempt} failed: ${e.message}`);
           }
-        }, 5000);
+        };
+        setTimeout(() => sendFullscreenCmds(1), 5000);
+        setTimeout(() => sendFullscreenCmds(2), 10000);
+        setTimeout(() => sendFullscreenCmds(3), 18000);
         return true;
       }
     } catch (e: any) {

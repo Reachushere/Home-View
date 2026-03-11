@@ -2197,9 +2197,9 @@ export default function PDFReaderPage() {
                 <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }} />
               </div>
               {followState.words.length > 0 && (
-                <div className="max-h-60 overflow-y-auto p-3 rounded border border-white/10 text-base leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)' }} data-testid="follow-text-display-tablet">
+                <div className="overflow-y-auto p-4 rounded border border-white/10 text-xl leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)', maxHeight: 'calc(100vh - 340px)' }} data-testid="follow-text-display-tablet" id="follow-scroll-container-tablet">
                   {followState.words.map((word, idx) => (
-                    <span key={idx} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded" : idx < followState.estimatedWordIndex ? "text-white/30" : "text-white/80"} transition-colors duration-100`}>
+                    <span key={idx} ref={idx === followState.estimatedWordIndex ? (el) => { if (el) { const container = document.getElementById('follow-scroll-container-tablet'); if (container) { const elRect = el.getBoundingClientRect(); const contRect = container.getBoundingClientRect(); const elCenter = elRect.top - contRect.top + container.scrollTop; container.scrollTo({ top: elCenter - contRect.height / 3, behavior: 'smooth' }); } } } : undefined} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded" : idx < followState.estimatedWordIndex ? "text-white/30" : "text-white/80"} transition-colors duration-100`}>
                       {word}{" "}
                     </span>
                   ))}
