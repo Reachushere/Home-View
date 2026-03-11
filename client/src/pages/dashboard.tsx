@@ -1104,7 +1104,7 @@ export default function Dashboard() {
   });
 
   type UndoAction = {
-    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'sticky-delete' | 'sticky-edit';
+    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'sticky-delete' | 'sticky-edit' | 'resize';
     description: string;
     data: any;
   };
@@ -1859,7 +1859,16 @@ export default function Dashboard() {
     };
     
     const handleEnd = () => {
-      if (isResizingHomework) {
+      if (isResizingHomework && resizingHomeworkRef.current) {
+        const oldReduction = resizingHomeworkRef.current.startReduction;
+        if (oldReduction !== calendarReduction) {
+          setUndoStack(prev => [{ type: 'resize', description: 'Resize calendar/homework width', data: { resizeType: 'width', oldValue: oldReduction, newValue: calendarReduction } }, ...prev]);
+          setRedoStack([]);
+        }
+        setIsResizingHomework(false);
+        resizingHomeworkRef.current = null;
+        localStorage.setItem('calendarReduction', String(calendarReduction));
+      } else if (isResizingHomework) {
         setIsResizingHomework(false);
         resizingHomeworkRef.current = null;
         localStorage.setItem('calendarReduction', String(calendarReduction));
@@ -3014,7 +3023,7 @@ export default function Dashboard() {
     e.preventDefault();
     const { clientY } = getPointerXY(e);
     setIsResizing(true);
-    resizeRef.current = { startY: clientY, startHeight: calendarHeight };
+    resizeRef.current = { startY: clientY, startHeight: calendarHeight, _undoHeight: calendarHeight };
   }, [calendarHeight]);
 
   useEffect(() => {
@@ -3027,6 +3036,13 @@ export default function Dashboard() {
     };
 
     const handleEnd = () => {
+      if (resizeRef.current && resizeRef.current._undoHeight !== undefined) {
+        const oldHeight = resizeRef.current._undoHeight;
+        if (oldHeight !== calendarHeight) {
+          setUndoStack(prev => [{ type: 'resize', description: 'Resize calendar height', data: { resizeType: 'height', oldValue: oldHeight, newValue: calendarHeight } }, ...prev]);
+          setRedoStack([]);
+        }
+      }
       setIsResizing(false);
       resizeRef.current = null;
     };
@@ -6188,6 +6204,20 @@ export default function Dashboard() {
         toast({ title: "Undone", description: "Sticky note change reverted" });
         break;
       }
+      case 'resize': {
+        const reverseAction: UndoAction = { type: 'resize', description: `Redo ${action.data.resizeType} resize`, data: { resizeType: action.data.resizeType, oldValue: action.data.newValue, newValue: action.data.oldValue } };
+        setRedoStack(prev => [reverseAction, ...prev]);
+        if (action.data.resizeType === 'width') {
+          setCalendarReduction(action.data.oldValue);
+          setCalendarReductionUserSet(true);
+          localStorage.setItem('calendarReduction', String(action.data.oldValue));
+        } else if (action.data.resizeType === 'height') {
+          setCalendarHeight(action.data.oldValue);
+          localStorage.setItem('calendarHeight', String(action.data.oldValue));
+        }
+        toast({ title: "Undone", description: `Reverted ${action.data.resizeType} resize` });
+        break;
+      }
     }
   };
 
@@ -6266,6 +6296,20 @@ export default function Dashboard() {
         setUndoStack(prev => [reverseAction, ...prev]);
         updateStickyNoteMutation.mutate({ id: action.data.noteId, updates: action.data.oldFields });
         toast({ title: "Redone", description: "Sticky note change re-applied" });
+        break;
+      }
+      case 'resize': {
+        const reverseAction: UndoAction = { type: 'resize', description: `Undo ${action.data.resizeType} resize`, data: { resizeType: action.data.resizeType, oldValue: action.data.newValue, newValue: action.data.oldValue } };
+        setUndoStack(prev => [reverseAction, ...prev]);
+        if (action.data.resizeType === 'width') {
+          setCalendarReduction(action.data.oldValue);
+          setCalendarReductionUserSet(true);
+          localStorage.setItem('calendarReduction', String(action.data.oldValue));
+        } else if (action.data.resizeType === 'height') {
+          setCalendarHeight(action.data.oldValue);
+          localStorage.setItem('calendarHeight', String(action.data.oldValue));
+        }
+        toast({ title: "Redone", description: `Re-applied ${action.data.resizeType} resize` });
         break;
       }
     }
@@ -18732,6 +18776,7 @@ export default function Dashboard() {
               <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
             </div>
           </div>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
             style={{ left: '3px', top: '50%', transform: 'translateY(-50%)' }}
@@ -19688,6 +19733,7 @@ export default function Dashboard() {
                 )}
               </div>
             )}
+          </div>
           </div>
         </section>
 
