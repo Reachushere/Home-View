@@ -20132,7 +20132,7 @@ export default function Dashboard() {
               return true;
             }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
-            if (otherProgressTasks.length > 0 && courseRowRects.length > 0) {
+            if (courseRowRects.length > 0) {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const upcomingTop = calendarBorderTop || (calendarTop + 15);
@@ -20176,6 +20176,9 @@ export default function Dashboard() {
                     e.currentTarget.scrollTop += e.deltaY * 0.3;
                     e.preventDefault();
                   }}>
+                    {otherProgressTasks.length === 0 && (
+                      <span className="text-[10px] text-white/40 italic">No upcoming items</span>
+                    )}
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
