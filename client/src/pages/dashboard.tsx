@@ -14400,6 +14400,31 @@ export default function Dashboard() {
                 await fetch(`/api/scholarships/${editingScholarshipId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
               } else {
                 await fetch('/api/scholarships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                if (scholarshipForm.deadline) {
+                  try {
+                    const dueDate = new Date(scholarshipForm.deadline + 'T18:00:00');
+                    const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
+                    const description = [
+                      scholarshipForm.organization ? `Organization: ${scholarshipForm.organization}` : '',
+                      scholarshipForm.amount ? `Amount: ${scholarshipForm.amount}` : '',
+                      scholarshipForm.applicationUrl ? `Apply: ${scholarshipForm.applicationUrl}` : '',
+                      scholarshipForm.contactInfo ? `Contact: ${scholarshipForm.contactInfo}` : '',
+                      scholarshipForm.additionalInfo || '',
+                    ].filter(Boolean).join('\n');
+                    await apiRequest("POST", "/api/tasks", {
+                      title: `Scholarship: ${scholarshipForm.name}`,
+                      type: "other",
+                      dueDate: dueDate.toISOString(),
+                      weekNumber: Math.max(2, Math.min(13, weekNum)),
+                      priority: "high",
+                      description,
+                      referenceLink: scholarshipForm.applicationUrl || '',
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                  } catch (e) {
+                    console.error('Failed to create scholarship task:', e);
+                  }
+                }
               }
               const updated = await fetch('/api/scholarships').then(r => r.json());
               setScholarshipsList(updated);
