@@ -3834,7 +3834,7 @@ export default function Dashboard() {
     .filter(item => item.type === "folder")
     .sort((a, b) => {
       // Course order to match calendar
-      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
       
       // Check if folders are course folders
       const getCourseIndex = (name: string) => {
@@ -16905,11 +16905,11 @@ export default function Dashboard() {
                   const courseEnd = new Date(def.endDate + 'T23:59:59');
                   return currentWeekStart <= courseEnd;
                 });
-                const activeSpringSummerCourses = springSummerCourses.filter(c => {
-                  const courseStart = new Date(c.startDate + 'T00:00:00');
-                  const courseEnd = new Date(c.endDate + 'T23:59:59');
-                  return currentWeekEnd >= courseStart && currentWeekStart <= courseEnd;
-                });
+                const springSummerSemesterStart = new Date('2026-05-04T00:00:00');
+                const springSummerSemesterEnd = new Date('2026-08-14T23:59:59');
+                const activeSpringSummerCourses = (currentWeekEnd >= springSummerSemesterStart && currentWeekStart <= springSummerSemesterEnd)
+                  ? springSummerCourses
+                  : [];
                 const allDisplayCourses = [...winterCourses];
                 for (const sc of activeSpringSummerCourses) {
                   const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
@@ -18908,9 +18908,13 @@ export default function Dashboard() {
                     {oneDriveFolders.map((folder) => {
                       // Check if folder name or current path matches a course - use hardcoded colors
                       const courseColorMap: Record<string, string> = {
-                        'CPPA122': '#47B045', // green
-                        'CFNF400': '#FA67B3', // pink
-                        'CASL101': '#6366f1', // indigo
+                        'CPPA122': '#47B045',
+                        'CFNF400': '#FA67B3',
+                        'CASL101': '#6366f1',
+                        'CSOC103': '#FBBF24',
+                        'CPHL110': '#60A5FA',
+                        'CHST501': '#F87171',
+                        'CPPA235': '#CD853F',
                       };
                       let folderColor: string | undefined;
                       // First check if we're inside a course folder (path contains course code)
@@ -19565,7 +19569,7 @@ export default function Dashboard() {
           // Group tasks by course
           const groupByCourse = (tasks: typeof dueTodayTasks) => {
             const grouped: Record<string, typeof tasks> = {};
-            const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+            const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
             tasks.forEach(task => {
               const courseCode = task.courseName?.split(' - ')[0] || task.courseName?.split(' ')[0] || 'OTHER';
               if (!grouped[courseCode]) grouped[courseCode] = [];
