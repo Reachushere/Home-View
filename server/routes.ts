@@ -5712,6 +5712,25 @@ document.body.removeChild(a);
             }
           }
 
+          // Try ADB as final fallback (like Fire Stick)
+          try {
+            const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: 'media_player.tablet_cat',
+                command: `am start -a android.intent.action.VIEW -d "${readerUrl}"`
+              }),
+            });
+            console.log(`[Cat Wash] Tablet ADB adb_command: ${adbResp.status}`);
+            if (adbResp.ok) {
+              console.log(`[Cat Wash] Tablet opened via ADB`);
+              return true;
+            }
+          } catch (e: any) {
+            console.log(`[Cat Wash] Tablet ADB ERROR: ${e.message}`);
+          }
+
           console.log(`[Cat Wash] All tablet open methods failed, relying on tablet-nav polling`);
           return false;
         })(),
