@@ -507,16 +507,26 @@ export async function listCalendars() {
 export async function listEvents(timeMin: Date, timeMax: Date) {
   const calendar = await getGoogleCalendarClient();
   
-  const response = await calendar.events.list({
-    calendarId: 'primary',
-    timeMin: timeMin.toISOString(),
-    timeMax: timeMax.toISOString(),
-    singleEvents: true,
-    orderBy: 'startTime',
-    maxResults: 250,
-  });
+  let allItems: any[] = [];
+  let pageToken: string | undefined;
   
-  return response.data.items || [];
+  do {
+    const response = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: timeMin.toISOString(),
+      timeMax: timeMax.toISOString(),
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 2500,
+      pageToken,
+    });
+    
+    const items = response.data.items || [];
+    allItems = allItems.concat(items);
+    pageToken = response.data.nextPageToken || undefined;
+  } while (pageToken);
+  
+  return allItems;
 }
 
 // Create a recurring class event

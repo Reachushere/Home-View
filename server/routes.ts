@@ -9016,6 +9016,17 @@ document.body.removeChild(a);
     }
   });
 
+  // DELETE /api/calendar/event/:eventId - Delete a calendar event by ID
+  app.delete("/api/calendar/event/:eventId", async (req, res) => {
+    try {
+      await deleteCalendarEvent(req.params.eventId);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Calendar event delete error:", err);
+      res.status(500).json({ error: "Failed to delete calendar event" });
+    }
+  });
+
   // POST /api/calendar/class - Create a recurring class event
   app.post("/api/calendar/class", async (req, res) => {
     try {
@@ -9044,7 +9055,7 @@ document.body.removeChild(a);
     try {
       const now = new Date();
       const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const end = new Date(start.getTime() + 28 * 24 * 60 * 60 * 1000);
+      const end = new Date(start.getTime() + 120 * 24 * 60 * 60 * 1000);
 
       let primaryEvents: any[] = [];
       try {
