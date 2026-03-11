@@ -22,9 +22,9 @@ export const LIBERAL_STUDIES_COURSES: ElectiveCourse[] = [
   { code: 'CARB 601', name: 'Advanced Arabic II', level: 'UPPER', category: 'Arabic', prereq: true, semesters: { winter2026: 'R: Virtual', summer2026: 'TR: Virtual' } },
 
   // AMERICAN SIGN LANGUAGE
-  { code: 'CASL 101', name: 'Introductory American Sign Language I', level: 'LOWER', category: 'ASL', semesters: { fall2025: 'M/T/W/R: Virtual', spring2026: 'MW/TR: Virtual', summer2026: 'MW/TR: Virtual' } },
-  { code: 'CASL 201', name: 'Introductory American Sign Language II', level: 'LOWER', category: 'ASL', prereq: true, semesters: { fall2025: 'M: Virtual', summer2026: 'MW: Virtual' } },
-  { code: 'CASL 301', name: 'Intermediate American Sign Language I', level: 'UPPER', category: 'ASL', prereq: true, semesters: { spring2026: 'MW: Virtual' } },
+  { code: 'CASL 101', name: 'Introductory American Sign Language I', level: 'LOWER', category: 'ASL', semesters: { fall2025: 'M/T/W/R: Virtual' } },
+  { code: 'CASL 201', name: 'Introductory American Sign Language II', level: 'LOWER', category: 'ASL', prereq: true, semesters: { fall2025: 'M: Virtual' } },
+  { code: 'CASL 301', name: 'Intermediate American Sign Language I', level: 'UPPER', category: 'ASL', prereq: true, semesters: {} },
 
   // BIOLOGY
   { code: 'BMS 150', name: 'Introduction to the Human Genome', level: 'LOWER', category: 'Biology', semesters: { spring2026: 'MW: Virtual' } },
