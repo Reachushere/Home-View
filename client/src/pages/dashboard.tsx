@@ -20137,7 +20137,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const upcomingTop = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTop;
-                const otherRowHeight = Math.max(36, otherProgressTasks.length * 14 + 8);
+                const otherRowHeight = otherProgressTasks.length === 0 ? 24 : Math.max(24, otherProgressTasks.length * 20 + 4);
                 rows.push(
                   <div key="other-progress-bg" style={{
                     position: 'absolute',
@@ -20145,14 +20145,14 @@ export default function Dashboard() {
                     left: 0,
                     width: '33%',
                     height: `${otherRowHeight}px`,
-                    background: 'linear-gradient(180deg, #4a4a4a 0%, #6b6b6b 100%)',
+                    background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
                     zIndex: 41,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                    borderBottom: '1px dotted #999',
                   }}>
-                    <span className="text-[8px] font-medium uppercase tracking-wider text-white/80">Other</span>
+                    <span className="text-[8px] font-[785] uppercase tracking-wide text-white/80">Other</span>
                   </div>,
                   <div key="other-progress-tasks" style={{
                     position: 'absolute',
@@ -20160,9 +20160,9 @@ export default function Dashboard() {
                     left: '33%',
                     right: 0,
                     height: `${otherRowHeight}px`,
-                    background: 'linear-gradient(180deg, #4a4a4a 0%, #6b6b6b 100%)',
+                    background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
                     zIndex: 41,
-                    borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                    borderBottom: '1px dotted #999',
                     overflowX: 'hidden',
                     overflowY: 'auto',
                     scrollbarWidth: 'none',
