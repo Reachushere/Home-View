@@ -4590,7 +4590,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   });
 
   app.get("/api/cat-wash/tv-follow", (_req, res) => {
-    const tvUrl = currentTvFollowUrl || '';
+    const tvUrl = (_req.query.url ? decodeURIComponent(String(_req.query.url)) : '') || currentTvFollowUrl || '';
     const baseUrl = 'https://home-view--bkh416.replit.app';
     console.log(`[Cat Wash TV] Serving fullscreen wrapper, target: ${tvUrl || 'none'}`);
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -5781,10 +5781,10 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
       console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
-      // === STEP 2: Open PDF reader on master tablet and Samsung TV (visual follow only, Nest handles audio) ===
-      const tvFollowUrl = readerUrl;
+      // === STEP 2: Open PDF reader on master tablet (main reader) and Samsung TV (visual follow only) ===
+      const tvFollowUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
 
       const deviceResults: Record<string, string> = {};
 
@@ -5806,13 +5806,15 @@ document.body.removeChild(a);
       }
 
       const navTimestamp = Date.now();
+      const tabletWrapperUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}`;
+      const tvWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
       await Promise.all([
-        setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: navTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: navTimestamp }, true, 'tv'),
+        setTabletCommand({ action: 'navigate', url: tabletWrapperUrl, timestamp: navTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'navigate', url: tvWrapperUrl, timestamp: navTimestamp }, true, 'tv'),
       ]);
       console.log(`[Cat Wash] tablet-nav set for devices`);
-      console.log(`[Cat Wash] master: ${readerUrl}`);
-      console.log(`[Cat Wash] tv: ${tvFollowUrl}`);
+      console.log(`[Cat Wash] master (wrapper): ${tabletWrapperUrl.substring(0, 100)}`);
+      console.log(`[Cat Wash] tv (wrapper): ${tvWrapperUrl.substring(0, 100)}`);
 
       currentTabletReaderUrl = readerUrl;
 
