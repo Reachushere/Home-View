@@ -2422,12 +2422,12 @@ export default function Dashboard() {
     const saved = localStorage.getItem('courseGrades');
     if (saved) return JSON.parse(saved);
     const defaults: Record<string, { grade: string; percent: string }> = {
-      'PPA101': { grade: 'A-', percent: '' },
-      'PPA102': { grade: 'A', percent: '' },
-      'PPA125': { grade: 'A+', percent: '' },
-      'ELECTIVE1': { grade: 'A-', percent: '' },
-      'ELECTIVE2': { grade: 'B+', percent: '' },
-      'LIBERAL': { grade: 'A-', percent: '' },
+      'PPA101': { grade: 'A-', percent: '3.670' },
+      'PPA102': { grade: 'A', percent: '4.000' },
+      'PPA125': { grade: 'A+', percent: '4.330' },
+      'ELECTIVE1': { grade: 'A-', percent: '3.670' },
+      'ELECTIVE2': { grade: 'B+', percent: '3.330' },
+      'LIBERAL': { grade: 'A-', percent: '3.670' },
     };
     localStorage.setItem('courseGrades', JSON.stringify(defaults));
     return defaults;
