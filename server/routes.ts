@@ -5758,6 +5758,13 @@ document.body.removeChild(a);
         return res.json({ action: "ignored", reason: `Unknown state: ${lightState}` });
       }
 
+      // Cooldown: skip if prompted within last 10 minutes
+      if (catLightsLastPromptAt && (Date.now() - catLightsLastPromptAt) < CAT_LIGHTS_PROMPT_COOLDOWN_MS) {
+        const remainingSec = Math.round((CAT_LIGHTS_PROMPT_COOLDOWN_MS - (Date.now() - catLightsLastPromptAt)) / 1000);
+        console.log(`[Cat Lights] Prompt cooldown active — skipping (${remainingSec}s remaining)`);
+        return res.json({ action: "skipped", reason: `Cooldown active (${remainingSec}s remaining)` });
+      }
+
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
@@ -5781,12 +5788,6 @@ document.body.removeChild(a);
 
       if (!semesterSettings) {
         console.log(`[Cat Lights] No active semester — skipping prompt`);
-        return;
-      }
-
-      if (catLightsLastPromptAt && (Date.now() - catLightsLastPromptAt) < CAT_LIGHTS_PROMPT_COOLDOWN_MS) {
-        const remainingSec = Math.round((CAT_LIGHTS_PROMPT_COOLDOWN_MS - (Date.now() - catLightsLastPromptAt)) / 1000);
-        console.log(`[Cat Lights] Prompt cooldown active — skipping (${remainingSec}s remaining)`);
         return;
       }
 
