@@ -17504,7 +17504,7 @@ export default function Dashboard() {
           {/* Calendar Right-Side Resize Handle */}
           <div
             className="absolute top-0 bottom-0 w-3 cursor-col-resize z-50 group"
-            style={{ right: '-6px', touchAction: 'none' }}
+            style={{ right: '-14px', touchAction: 'none' }}
             onMouseDown={(e) => {
               e.preventDefault();
               setIsResizingHomework(true);
@@ -17517,7 +17517,7 @@ export default function Dashboard() {
             }}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ position: 'absolute', top: '50%', right: '-2px', transform: 'translateY(-50%)', width: '14px', height: '36px', borderRadius: '0 8px 8px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+            <div style={{ position: 'absolute', top: '50%', left: '0px', transform: 'translateY(-50%)', width: '14px', height: '36px', borderRadius: '0 8px 8px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
@@ -17525,13 +17525,13 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize z-50 group"
-            style={{ touchAction: 'none' }}
+            className="absolute left-0 right-0 h-3 cursor-ns-resize z-50 group"
+            style={{ bottom: '-14px', touchAction: 'none' }}
             onMouseDown={handleResizeStart}
             onTouchStart={handleResizeStart}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ position: 'absolute', left: '50%', bottom: '-2px', transform: 'translateX(-50%)', width: '36px', height: '14px', borderRadius: '0 0 8px 8px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+            <div style={{ position: 'absolute', left: '50%', top: '0px', transform: 'translateX(-50%)', width: '36px', height: '14px', borderRadius: '0 0 8px 8px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
@@ -18710,7 +18710,7 @@ export default function Dashboard() {
         >
           <div
             className="absolute z-[60] cursor-col-resize group"
-            style={{ left: '-6px', top: 0, bottom: 0, width: '12px', touchAction: 'none' }}
+            style={{ left: '-16px', top: 0, bottom: 0, width: '14px', touchAction: 'none' }}
             onMouseDown={(e) => {
               e.preventDefault();
               setIsResizingHomework(true);
@@ -18723,7 +18723,7 @@ export default function Dashboard() {
             }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ position: 'absolute', top: '50%', left: '-2px', transform: 'translateY(-50%)', width: '14px', height: '36px', borderRadius: '8px 0 0 8px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+            <div style={{ position: 'absolute', top: '50%', left: '0px', transform: 'translateY(-50%)', width: '14px', height: '36px', borderRadius: '8px 0 0 8px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
               <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
