@@ -19318,13 +19318,11 @@ export default function Dashboard() {
                     const textColor = cCode === 'CFNF' ? '#ffb3d9' : cCode === 'CASL' || cCode === 'CASL101' ? '#d4b3ff' : '#ffffff';
                     const dateColor = cCode === 'CFNF' ? '#ff80bf' : cCode === 'CASL' || cCode === 'CASL101' ? '#b380ff' : 'rgba(255,255,255,0.5)';
                     return courseTasks.map(t => {
-                      const typeLabel = t.type === 'exam' ? '📝' : t.type === 'quiz' ? '❓' : t.type === 'essay' ? '✍️' : t.type === 'assignment' ? '📋' : t.type === 'module' ? '📖' : t.type === 'reading' ? '📚' : '•';
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
                         <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.3' }}>
-                          <span style={{ fontSize: '10px', flexShrink: 0 }}>{typeLabel}</span>
-                          <span className="truncate font-semibold" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>{t.title}</span>
-                          <span className="flex-shrink-0 font-medium" style={{ fontSize: '9px', color: dateColor }}>{dueStr}</span>
+                          <span className="truncate" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400 }}>{t.title}</span>
+                          <span className="flex-shrink-0" style={{ fontSize: '9px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
                         </div>
                       );
                     });
