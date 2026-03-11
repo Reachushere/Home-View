@@ -1269,11 +1269,30 @@ export default function Dashboard() {
 
     const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('checkedCourses');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) return JSON.parse(saved);
+    const defaults: Record<string, boolean> = {
+      'PPA101': true,
+      'PPA102': true,
+      'PPA125': true,
+      'ELECTIVE1': true,
+      'ELECTIVE2': true,
+      'LIBERAL': true,
+    };
+    localStorage.setItem('checkedCourses', JSON.stringify(defaults));
+    return defaults;
   });
   const [inProgressCourses, setInProgressCourses] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('inProgressCourses');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) return JSON.parse(saved);
+    const defaults: Record<string, boolean> = {
+      'L1_PPA122': true,
+      'OPEN1': true,
+      'OPEN2': true,
+      'L2_LIBERAL': true,
+      'L2_OPEN1': true,
+    };
+    localStorage.setItem('inProgressCourses', JSON.stringify(defaults));
+    return defaults;
   });
   const toggleInProgress = (courseId: string) => {
     setInProgressCourses(prev => {
@@ -1312,6 +1331,11 @@ export default function Dashboard() {
         'PPA120': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
         'PPA121': { professor: '', email: '', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
         'CGCM738': { professor: '', email: '', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
+        'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+        'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+        'CPPA122': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+        'CPHL110': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
+        'CSOC103': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
       };
       localStorage.setItem('pastCourseInfo', JSON.stringify(defaults));
       return defaults;
@@ -2396,12 +2420,31 @@ export default function Dashboard() {
 
   const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
     const saved = localStorage.getItem('courseGrades');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) return JSON.parse(saved);
+    const defaults: Record<string, { grade: string; percent: string }> = {
+      'PPA101': { grade: 'A-', percent: '' },
+      'PPA102': { grade: 'A', percent: '' },
+      'PPA125': { grade: 'A+', percent: '' },
+      'ELECTIVE1': { grade: 'A-', percent: '' },
+      'ELECTIVE2': { grade: 'B+', percent: '' },
+      'LIBERAL': { grade: 'A-', percent: '' },
+    };
+    localStorage.setItem('courseGrades', JSON.stringify(defaults));
+    return defaults;
   });
 
   const [openElectives, setOpenElectives] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('openElectives');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) return JSON.parse(saved);
+    const defaults: Record<string, string> = {
+      'LIBERAL': 'CGCM 738 Photoshopped! The Art of Image Retouching',
+      'OPEN1': 'CASL 101 Intro to ASL I',
+      'OPEN2': 'CFNF 400 Socl Context Human Sexuality',
+      'L2_LIBERAL': 'CPHL 110 Philosophy of Religion I',
+      'L2_OPEN1': 'CSOC 103 How Society Works',
+    };
+    localStorage.setItem('openElectives', JSON.stringify(defaults));
+    return defaults;
   });
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
