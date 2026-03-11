@@ -623,8 +623,9 @@ export async function registerRoutes(
     res.json({ version: BUILD_VERSION });
   });
 
-  app.get('/tablet', (_req, res) => {
+  app.get('/tablet', (req, res) => {
     const baseUrl = `https://home-view--bkh416.replit.app`;
+    const targetUrl = req.query.target ? decodeURIComponent(String(req.query.target)) : `${baseUrl}/?auth=5747`;
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     res.setHeader('Content-Type', 'text/html');
     res.send(`<!DOCTYPE html>
@@ -638,16 +639,15 @@ export async function registerRoutes(
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
-iframe{width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bottom:0}
+iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 </style>
 </head>
 <body>
-<iframe id="frame" src="${baseUrl}/?auth=5747" allow="fullscreen;autoplay"></iframe>
+<iframe id="frame" src="${targetUrl}" allow="fullscreen;autoplay" allowfullscreen></iframe>
 <script>
 (function(){
   var frame = document.getElementById('frame');
   var lastTs = 0;
-  var polling = true;
 
   function goFullscreen() {
     var el = document.documentElement;
@@ -657,61 +657,32 @@ iframe{width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bo
       else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
     } catch(e){}
   }
-
   document.addEventListener('click', goFullscreen);
   document.addEventListener('touchstart', goFullscreen);
-  setTimeout(goFullscreen, 1000);
-  setTimeout(goFullscreen, 3000);
+  setTimeout(goFullscreen, 500);
+  setTimeout(goFullscreen, 2000);
+  setTimeout(goFullscreen, 5000);
 
   function poll() {
-    if (!polling) return;
     var url = '${baseUrl}/api/tablet-nav?device=master&auth=5747&_t=' + Date.now();
     fetch(url, {cache:'no-store'}).then(function(r){return r.json()}).then(function(data){
       if (!data || !data.action) return;
       if (data.timestamp && data.timestamp <= lastTs) return;
       if (data.timestamp && (Date.now() - data.timestamp > 120000)) return;
-
+      lastTs = data.timestamp || Date.now();
+      fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'master'})}).catch(function(){});
+      fetch('${baseUrl}/api/debug-beacon', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'tablet-page:'+data.action,data:{url:(data.url||'').substring(0,80)}})}).catch(function(){});
       if (data.action === 'navigate' && data.url) {
-        lastTs = data.timestamp || Date.now();
-        fetch('${baseUrl}/api/tablet-nav/ack', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({timestamp:data.timestamp,device:'master'})
-        }).catch(function(){});
-        fetch('${baseUrl}/api/debug-beacon', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({event:'tablet-page:navigate',data:{url:data.url.substring(0,80)}})
-        }).catch(function(){});
         frame.src = data.url;
-      } else if (data.action === 'stop_playback') {
-        lastTs = data.timestamp || Date.now();
-        fetch('${baseUrl}/api/tablet-nav/ack', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({timestamp:data.timestamp,device:'master'})
-        }).catch(function(){});
-        frame.src = '${baseUrl}/?auth=5747';
-      } else if (data.action === 'go_home') {
-        lastTs = data.timestamp || Date.now();
-        fetch('${baseUrl}/api/tablet-nav/ack', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({timestamp:data.timestamp,device:'master'})
-        }).catch(function(){});
+      } else if (data.action === 'stop_playback' || data.action === 'go_home') {
         frame.src = '${baseUrl}/?auth=5747';
       }
     }).catch(function(){});
   }
-
   setInterval(poll, 3000);
-  poll();
+  setTimeout(poll, 500);
 
-  fetch('${baseUrl}/api/debug-beacon', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({event:'tablet-page:loaded',data:{ua:navigator.userAgent.substring(0,80),ts:Date.now()}})
-  }).catch(function(){});
+  fetch('${baseUrl}/api/debug-beacon', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'tablet-page:loaded',data:{target:'${targetUrl.substring(0,80)}',ua:navigator.userAgent.substring(0,60)}})}).catch(function(){});
 })();
 </script>
 </body>
@@ -5847,51 +5818,50 @@ document.body.removeChild(a);
 
       const [masterResult, tvResult] = await Promise.allSettled([
         (async () => {
-          const browserModOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall');
-          if (browserModOpened) {
-            console.log(`[Cat Wash] Tablet opened via browser_mod`);
-            return true;
-          }
-          console.log(`[Cat Wash] browser_mod failed for tablet, trying HA notification fallbacks`);
-
-          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
-          for (const svc of notifyServices) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
-              });
-              console.log(`[Cat Wash] notify/${svc} command_webview: ${resp.status}`);
-              if (resp.ok) {
-                console.log(`[Cat Wash] Tablet opened via HA companion app (${svc})`);
-                return true;
-              }
-            } catch (e: any) {
-              console.log(`[Cat Wash] notify/${svc} ERROR: ${e.message}`);
-            }
-          }
-
-          // Try ADB as final fallback (like Fire Stick)
+          // Primary: ADB to open /tablet wrapper with reader URL (fullscreen iframe, no caching issues)
+          const tabletWrapperUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}`;
           try {
             const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 entity_id: 'media_player.tablet_cat',
-                command: `am start -a android.intent.action.VIEW -d "${readerUrl}"`
+                command: `am start -n com.amazon.cloud9/.BrowserActivity -a android.intent.action.VIEW -d "${tabletWrapperUrl}"`
               }),
             });
-            console.log(`[Cat Wash] Tablet ADB adb_command: ${adbResp.status}`);
+            console.log(`[Cat Wash] Tablet ADB Silk /tablet wrapper: ${adbResp.status}`);
             if (adbResp.ok) {
-              console.log(`[Cat Wash] Tablet opened via ADB`);
+              console.log(`[Cat Wash] Tablet opened via ADB Silk (fullscreen wrapper)`);
               return true;
             }
           } catch (e: any) {
-            console.log(`[Cat Wash] Tablet ADB ERROR: ${e.message}`);
+            console.log(`[Cat Wash] Tablet ADB Silk ERROR: ${e.message}`);
           }
 
-          console.log(`[Cat Wash] All tablet open methods failed, relying on tablet-nav polling`);
+          // Fallback: browser_mod
+          const browserModOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall');
+          if (browserModOpened) {
+            console.log(`[Cat Wash] Tablet opened via browser_mod`);
+            return true;
+          }
+          console.log(`[Cat Wash] browser_mod failed for tablet, trying ADB generic`);
+
+          // Fallback: ADB generic intent
+          try {
+            const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: 'media_player.tablet_cat',
+                command: `am start -a android.intent.action.VIEW -d "${tabletWrapperUrl}"`
+              }),
+            });
+            console.log(`[Cat Wash] Tablet ADB generic: ${adbResp.status}`);
+          } catch (e: any) {
+            console.log(`[Cat Wash] Tablet ADB generic ERROR: ${e.message}`);
+          }
+
+          console.log(`[Cat Wash] Relying on tablet-nav polling as final fallback`);
           return false;
         })(),
         (async () => {
