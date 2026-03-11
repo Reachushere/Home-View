@@ -5710,7 +5710,22 @@ document.body.removeChild(a);
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ entity_id: MODULE_READING_PENDING }),
           });
-          console.log(`[Cat Lights] Set pending=ON, confirmed=OFF — HA automation will now ask Bryn`);
+          console.log(`[Cat Lights] Set pending=ON, confirmed=OFF`);
+
+          try {
+            const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: "tts.home_assistant_cloud",
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message: `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start playback.`,
+              }),
+            });
+            console.log(`[Cat Lights] TTS prompt sent to HA Voice speaker (status: ${ttsResp.status})`);
+          } catch (ttsErr: any) {
+            console.error(`[Cat Lights] TTS prompt failed: ${ttsErr.message}`);
+          }
         } catch (e: any) {
           console.error(`[Cat Lights] Failed to set input_booleans: ${e.message}`);
           return res.status(500).json({ error: "Failed to set HA input_booleans", details: e.message });
