@@ -14733,8 +14733,8 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
-            <DialogContent className="max-w-3xl text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '80vh' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+            <DialogContent className="max-w-md text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '85vh', borderRadius: '12px', overflow: 'hidden' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
                 <div className="flex items-center gap-2">
                   <Contact className="h-3.5 w-3.5 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
@@ -14763,7 +14763,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <div className="overflow-y-auto" style={{ maxHeight: 'calc(80vh - 50px)', scrollbarWidth: 'none' }}>
+              <div className="overflow-y-auto" style={{ maxHeight: 'calc(85vh - 50px)', scrollbarWidth: 'none' }}>
                 {filteredContacts.length === 0 ? (
                   <div className="text-center py-10">
                     <Contact className="h-10 w-10 text-blue-400 mx-auto mb-3" />
