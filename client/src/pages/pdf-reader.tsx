@@ -522,7 +522,7 @@ export default function PDFReaderPage() {
         const resp = await fetch(`/api/tablet-nav?device=${deviceRole}`);
         const data = await resp.json();
         if (data.timestamp <= lastNavTimestamp.current) return;
-        if (Date.now() - data.timestamp > 30000) return;
+        if (Date.now() - data.timestamp > 120000) return;
         if (data.action === 'navigate' && data.url) {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
@@ -2168,9 +2168,11 @@ export default function PDFReaderPage() {
                       </span>
                     ))}
                   </p>
+                ) : followState.chunkText ? (
+                  <p className="text-2xl leading-relaxed text-white/90">{followState.chunkText}</p>
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <span className="text-lg text-white/40 animate-pulse">Loading text from master tablet...</span>
+                    <span className="text-lg text-white/40 animate-pulse">Loading text...</span>
                   </div>
                 )}
               </div>

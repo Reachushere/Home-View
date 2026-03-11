@@ -4384,7 +4384,7 @@ export async function registerRoutes(
   app.get("/api/tablet-nav", (req, res) => {
     const device = (req.query.device as string) || 'master';
     const cmd = pendingTabletCommands[device];
-    if (cmd && Date.now() - cmd.timestamp < 30000) {
+    if (cmd && Date.now() - cmd.timestamp < 120000) {
       return res.json(cmd);
     }
     res.json({ action: null });

@@ -992,7 +992,7 @@ export default function Dashboard() {
         const resp = await fetch(`/api/tablet-nav?device=${deviceRole}`);
         const data = await resp.json();
         if (data.timestamp <= lastTabletNavTimestamp.current) return;
-        if (Date.now() - data.timestamp > 30000) return;
+        if (Date.now() - data.timestamp > 120000) return;
         if (data.action === 'navigate' && data.url) {
           lastTabletNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
