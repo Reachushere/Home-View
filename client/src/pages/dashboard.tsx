@@ -19994,6 +19994,7 @@ export default function Dashboard() {
                           className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
                           style={{
                             lineHeight: '1.3',
+                            marginBottom: '1px',
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
