@@ -2496,12 +2496,12 @@ export default function Dashboard() {
 
   const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
     const completedGrades: Record<string, { grade: string; percent: string }> = {
-      'PPA101': { grade: 'A-', percent: '3.670' },
-      'PPA102': { grade: 'A', percent: '4.000' },
-      'PPA125': { grade: 'A+', percent: '4.330' },
-      'L1_PPA120': { grade: 'A-', percent: '3.670' },
-      'L1_PPA121': { grade: 'B+', percent: '3.330' },
-      'LIBERAL': { grade: 'A-', percent: '3.670' },
+      'PPA101': { grade: 'A-', percent: '82' },
+      'PPA102': { grade: 'A', percent: '87' },
+      'PPA125': { grade: 'A+', percent: '93' },
+      'L1_PPA120': { grade: 'A-', percent: '82' },
+      'L1_PPA121': { grade: 'B+', percent: '78' },
+      'LIBERAL': { grade: 'A-', percent: '82' },
     };
     const saved = localStorage.getItem('courseGrades');
     const existing = saved ? JSON.parse(saved) : {};
@@ -11917,12 +11917,12 @@ export default function Dashboard() {
                 for (const id of l1CourseIds) {
                   const g = courseGrades[id];
                   if (!g) continue;
-                  if (g.percent && g.percent.trim() !== '') {
-                    const p = parseFloat(g.percent);
-                    if (!isNaN(p)) gpaValues.push(percentToGpa(p));
-                  } else if (g.grade && g.grade.trim() !== '') {
+                  if (g.grade && g.grade.trim() !== '') {
                     const gpa = gradeLetterToGpa(g.grade);
                     if (gpa >= 0) gpaValues.push(gpa);
+                  } else if (g.percent && g.percent.trim() !== '') {
+                    const p = parseFloat(g.percent);
+                    if (!isNaN(p)) gpaValues.push(percentToGpa(p));
                   }
                 }
                 const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
