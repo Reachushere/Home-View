@@ -19498,7 +19498,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).end }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(taskCourseCode).end }}
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
@@ -19662,7 +19662,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-tomorrow-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).end }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(taskCourseCode).end }}
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                             </button>
@@ -19783,7 +19783,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -19971,7 +19971,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -20135,7 +20135,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -20169,7 +20169,7 @@ export default function Dashboard() {
                                         className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
                                         onClick={() => setEditingTask(task)}
                                         data-testid={`task-link-beyond-${task.id}`}
-                                        style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : getCourseGradientColors(taskCourseCode).end }}
+                                        style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(taskCourseCode).end }}
                                       >
                                         {task.title}
                                       </button>
