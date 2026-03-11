@@ -14841,9 +14841,22 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-              <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
-                <Button variant="outline" size="sm" className="text-[10px] border-white/30 hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
-                <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-save-school-courses">Save</Button>
+              <div className="flex items-center justify-between px-4 py-3 border-t border-white/20">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-7 px-4"
+                  style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                  onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                  data-testid="button-new-course-school-courses"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  New Course
+                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="text-[10px] border-white/30 hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
+                  <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-save-school-courses">Save</Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
