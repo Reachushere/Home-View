@@ -19305,10 +19305,17 @@ export default function Dashboard() {
                   overflowX: 'hidden',
                   overflowY: 'auto',
                   scrollbarWidth: 'none',
+                  scrollBehavior: 'smooth',
                   padding: '3px 6px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
+                }}
+                onWheel={(e) => {
+                  e.stopPropagation();
+                  const el = e.currentTarget;
+                  el.scrollTop += e.deltaY * 0.3;
+                  e.preventDefault();
                 }}>
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
