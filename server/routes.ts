@@ -5861,7 +5861,7 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
       console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       // === STEP 2: Open PDF reader on master tablet (main reader) and Samsung TV (visual follow only) ===
       const tvFollowUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
@@ -6241,8 +6241,8 @@ document.body.removeChild(a);
       const resumeFromChunk = Math.max(0, savedChunkLights > 0 ? savedChunkLights - 1 : 0);
       console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunkLights}, starting 1 earlier)`);
 
-      // Build reader URL - visual follow only, Nest handles audio
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
+      // Build reader URL - tablet gets full controls, Nest handles audio
+      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
       catWashSessionId++;
       const currentLightsSession = catWashSessionId;
