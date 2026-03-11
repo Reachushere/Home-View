@@ -19300,7 +19300,7 @@ export default function Dashboard() {
                   right: 0,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 1,
+                  zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflow: 'hidden',
                   padding: '3px 6px',
