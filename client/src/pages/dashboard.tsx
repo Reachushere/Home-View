@@ -299,6 +299,7 @@ export default function Dashboard() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarView, setCalendarView] = useState<"week" | "month">("week");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [pendingSleepTask, setPendingSleepTask] = useState<{ day: Date; hour: number; minutes: number } | null>(null);
   const [newTaskType, setNewTaskType] = useState<string>("module");
   const [initialStartTime, setInitialStartTime] = useState<string>("");
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
@@ -12636,6 +12637,59 @@ export default function Dashboard() {
 
       
       
+      {pendingSleepTask && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setPendingSleepTask(null)} data-testid="sleep-confirm-overlay">
+          <div 
+            className="rounded-xl w-[400px] overflow-hidden flex flex-col text-white shadow-2xl"
+            style={{
+              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
+            }}
+            onClick={(e) => e.stopPropagation()}
+            data-testid="sleep-confirm-dialog"
+          >
+            <div className="flex items-center gap-3 px-5 py-4 bg-black/30 border-b border-white/20">
+              <MoonIcon className="h-5 w-5 text-purple-300" />
+              <h3 className="text-sm font-semibold">Sleep Hours</h3>
+            </div>
+            <div className="px-5 py-5">
+              <p className="text-sm text-white/90 leading-relaxed">
+                This time slot falls during scheduled sleep hours. Are you sure you want to add a task here?
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-white/20">
+              <Button
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-white/10"
+                onClick={() => setPendingSleepTask(null)}
+                data-testid="sleep-confirm-cancel"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-white/20 text-white hover:bg-white/30 border border-white/30"
+                onClick={() => {
+                  const { day, hour, minutes } = pendingSleepTask;
+                  const dueDate = new Date(day);
+                  dueDate.setHours(hour, minutes, 0, 0);
+                  setSelectedDate(dueDate);
+                  setNewTaskType("other");
+                  setInitialStartTime(`${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+                  setInitialEndTime(`${(hour + 1).toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+                  bringFlyoutToFront('addTask');
+                  setIsAddDialogOpen(true);
+                  setPendingSleepTask(null);
+                }}
+                data-testid="sleep-confirm-proceed"
+              >
+                Add Task Anyway
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Copyright - Right side of page, right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
         <div 
@@ -17717,17 +17771,19 @@ export default function Dashboard() {
                           onDragLeave={handleDragLeave}
                           onDrop={(e) => handleDrop(e, day, hour)}
                           onDoubleClick={(e) => {
-                            // Detect if click was in top or bottom half of cell
                             const rect = e.currentTarget.getBoundingClientRect();
                             const clickY = e.clientY - rect.top;
                             const isBottomHalf = clickY > rect.height / 2;
                             const minutes = isBottomHalf ? 30 : 0;
                             
-                            // Create new task with pre-filled date and time
+                            if (isSleepHour) {
+                              setPendingSleepTask({ day: new Date(day), hour, minutes });
+                              return;
+                            }
+                            
                             const dueDate = new Date(day);
                             dueDate.setHours(hour, minutes, 0, 0);
                             
-                            // Set the pre-filled data and open Add dialog
                             setSelectedDate(dueDate);
                             setNewTaskType("other");
                             setInitialStartTime(`${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
@@ -17755,21 +17811,34 @@ export default function Dashboard() {
                               justifyContent: 'center',
                               zIndex: 1,
                               pointerEvents: 'none',
-                              overflow: 'visible'
+                              overflow: 'hidden'
                             }}>
-                              <span style={{
-                                writingMode: 'vertical-rl',
-                                textOrientation: 'mixed',
-                                transform: 'rotate(180deg)',
-                                fontSize: sleepCellCount >= 5 ? '48px' : '28px',
-                                fontWeight: 900,
-                                letterSpacing: '8px',
-                                color: 'rgba(150, 150, 150, 0.07)',
-                                userSelect: 'none',
-                                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                                textTransform: 'uppercase',
-                                whiteSpace: 'nowrap'
-                              }}>SLEEP</span>
+                              {isFirstDayShiftEvening ? (
+                                <span style={{
+                                  fontSize: '18px',
+                                  fontWeight: 900,
+                                  letterSpacing: '4px',
+                                  color: 'rgba(150, 150, 150, 0.07)',
+                                  userSelect: 'none',
+                                  fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                                  textTransform: 'uppercase',
+                                  whiteSpace: 'nowrap'
+                                }}>SLEEP</span>
+                              ) : (
+                                <span style={{
+                                  writingMode: 'vertical-rl',
+                                  textOrientation: 'mixed',
+                                  transform: 'rotate(180deg)',
+                                  fontSize: isFirstDayShiftMorning ? '32px' : '48px',
+                                  fontWeight: 900,
+                                  letterSpacing: isFirstDayShiftMorning ? '4px' : '8px',
+                                  color: 'rgba(150, 150, 150, 0.07)',
+                                  userSelect: 'none',
+                                  fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                                  textTransform: 'uppercase',
+                                  whiteSpace: 'nowrap'
+                                }}>SLEEP</span>
+                              )}
                             </div>
                           )}
                           {isToday && isCurrentHour && !hasAnyTasks && (() => {
