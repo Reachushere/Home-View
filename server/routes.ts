@@ -9123,10 +9123,12 @@ document.body.removeChild(a);
       const weekNumber = Number(req.query.weekNumber) || getWeekNumber(torontoDate(), semesterStart, activeSemester?.readingWeekStart);
       const { start, end } = getWeekDates(weekNumber, semesterStart, activeSemester?.readingWeekStart);
       
+      const endOfWeek = new Date(end.getTime() + 24 * 60 * 60 * 1000);
+      
       // Fetch events from primary account
       let primaryEvents: any[] = [];
       try {
-        primaryEvents = await listEvents(start, end);
+        primaryEvents = await listEvents(start, endOfWeek);
       } catch (err) {
         console.error("Failed to fetch primary account events:", err);
       }
@@ -9187,40 +9189,7 @@ document.body.removeChild(a);
         };
       });
       
-      // Now filter to only show events that conflict with tasks in this app
-      // Get tasks for this week
-      const weekTasks = tasks.filter(t => {
-        const taskDue = new Date(t.dueDate);
-        return taskDue >= start && taskDue <= end;
-      });
-      
-      // Check for conflicts: all-day events conflict if task is due same day
-      // Timed events conflict if they overlap within 1 hour of task due time
-      const conflictingEvents = formattedEvents.filter(event => {
-        const eventStart = new Date(event.startDate);
-        const eventEnd = event.endDate ? new Date(event.endDate) : new Date(eventStart.getTime() + 60 * 60 * 1000);
-        
-        return weekTasks.some(task => {
-          const taskDue = new Date(task.dueDate);
-          
-          if (event.isAllDay) {
-            // All-day event: conflict if task is due on the same date
-            const eventDate = eventStart.toDateString();
-            const taskDate = taskDue.toDateString();
-            return eventDate === taskDate;
-          } else {
-            // Timed event: conflict if overlapping within 1 hour buffer
-            const buffer = 60 * 60 * 1000; // 1 hour
-            const taskStartWindow = new Date(taskDue.getTime() - buffer);
-            const taskEndWindow = new Date(taskDue.getTime() + buffer);
-            
-            // Check overlap
-            return eventStart < taskEndWindow && eventEnd > taskStartWindow;
-          }
-        });
-      });
-      
-      res.json(conflictingEvents);
+      res.json(formattedEvents);
     } catch (error) {
       console.error("Fetch Google Calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch Google Calendar events" });
