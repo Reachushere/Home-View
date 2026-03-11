@@ -6205,7 +6205,9 @@ export default function Dashboard() {
         break;
       }
       case 'resize': {
-        const reverseAction: UndoAction = { type: 'resize', description: `Redo ${action.data.resizeType} resize`, data: { resizeType: action.data.resizeType, oldValue: action.data.newValue, newValue: action.data.oldValue } };
+        const reverseAction: UndoAction = { type: 'resize', description: `Redo ${action.data.resizeType} resize`, data: action.data.resizeType === 'both'
+          ? { resizeType: 'both', oldHeight: action.data.newHeight, oldReduction: action.data.newReduction, newHeight: action.data.oldHeight, newReduction: action.data.oldReduction }
+          : { resizeType: action.data.resizeType, oldValue: action.data.newValue, newValue: action.data.oldValue } };
         setRedoStack(prev => [reverseAction, ...prev]);
         if (action.data.resizeType === 'width') {
           setCalendarReduction(action.data.oldValue);
@@ -6214,8 +6216,14 @@ export default function Dashboard() {
         } else if (action.data.resizeType === 'height') {
           setCalendarHeight(action.data.oldValue);
           localStorage.setItem('calendarHeight', String(action.data.oldValue));
+        } else if (action.data.resizeType === 'both') {
+          setCalendarHeight(action.data.oldHeight);
+          setCalendarReduction(action.data.oldReduction);
+          setCalendarReductionUserSet(action.data.oldReduction > 120);
+          localStorage.setItem('calendarHeight', String(action.data.oldHeight));
+          localStorage.setItem('calendarReduction', String(action.data.oldReduction));
         }
-        toast({ title: "Undone", description: `Reverted ${action.data.resizeType} resize` });
+        toast({ title: "Undone", description: `Reverted ${action.data.resizeType === 'both' ? 'default reset' : action.data.resizeType + ' resize'}` });
         break;
       }
     }
@@ -6299,7 +6307,9 @@ export default function Dashboard() {
         break;
       }
       case 'resize': {
-        const reverseAction: UndoAction = { type: 'resize', description: `Undo ${action.data.resizeType} resize`, data: { resizeType: action.data.resizeType, oldValue: action.data.newValue, newValue: action.data.oldValue } };
+        const reverseAction: UndoAction = { type: 'resize', description: `Undo ${action.data.resizeType} resize`, data: action.data.resizeType === 'both'
+          ? { resizeType: 'both', oldHeight: action.data.newHeight, oldReduction: action.data.newReduction, newHeight: action.data.oldHeight, newReduction: action.data.oldReduction }
+          : { resizeType: action.data.resizeType, oldValue: action.data.newValue, newValue: action.data.oldValue } };
         setUndoStack(prev => [reverseAction, ...prev]);
         if (action.data.resizeType === 'width') {
           setCalendarReduction(action.data.oldValue);
@@ -6308,8 +6318,14 @@ export default function Dashboard() {
         } else if (action.data.resizeType === 'height') {
           setCalendarHeight(action.data.oldValue);
           localStorage.setItem('calendarHeight', String(action.data.oldValue));
+        } else if (action.data.resizeType === 'both') {
+          setCalendarHeight(action.data.oldHeight);
+          setCalendarReduction(action.data.oldReduction);
+          setCalendarReductionUserSet(action.data.oldReduction > 120);
+          localStorage.setItem('calendarHeight', String(action.data.oldHeight));
+          localStorage.setItem('calendarReduction', String(action.data.oldReduction));
         }
-        toast({ title: "Redone", description: `Re-applied ${action.data.resizeType} resize` });
+        toast({ title: "Redone", description: `Re-applied ${action.data.resizeType === 'both' ? 'default reset' : action.data.resizeType + ' resize'}` });
         break;
       }
     }
@@ -17569,18 +17585,42 @@ export default function Dashboard() {
               <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
             </div>
           </div>
-          {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
+          {/* Calendar Height Resize Handle + Set Default — bottom-center, fully outside overflow:clip */}
           <div
-            className="cursor-ns-resize z-50 group"
-            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onMouseDown={handleResizeStart}
-            onTouchStart={handleResizeStart}
-            data-testid="calendar-height-resize-handle"
+            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            <div
+              className="cursor-ns-resize group"
+              style={{ width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onMouseDown={handleResizeStart}
+              onTouchStart={handleResizeStart}
+              data-testid="calendar-height-resize-handle"
+            >
+              <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+                <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+                <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+                <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              </div>
+            </div>
+            <div
+              className="cursor-pointer hover:!bg-white/70"
+              style={{ height: '10px', padding: '0 6px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }}
+              onClick={() => {
+                const defaultHeight = window.innerHeight - 70;
+                const oldHeight = calendarHeight;
+                const oldReduction = calendarReduction;
+                setCalendarHeight(defaultHeight);
+                setCalendarReduction(120);
+                setCalendarReductionUserSet(false);
+                localStorage.setItem('calendarHeight', String(defaultHeight));
+                localStorage.setItem('calendarReduction', '120');
+                setUndoStack(prev => [{ type: 'resize', description: 'Reset to default size', data: { resizeType: 'both', oldHeight, oldReduction, newHeight: defaultHeight, newReduction: 120 } }, ...prev]);
+                setRedoStack([]);
+                toast({ title: "Reset", description: "Calendar size reset to default" });
+              }}
+              data-testid="button-set-default-size"
+            >
+              <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(100,100,100,0.7)', whiteSpace: 'nowrap', lineHeight: '10px' }}>SET DEFAULT</span>
             </div>
           </div>
           </div>
