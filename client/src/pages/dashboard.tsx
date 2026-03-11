@@ -14530,10 +14530,13 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isScholarshipsOpen} onOpenChange={setIsScholarshipsOpen}>
-            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
-              <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-white">Scholarships</DialogTitle>
+            <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <Award className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Scholarships</h2>
+                </div>
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' }); }}
                     className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
@@ -14541,9 +14544,12 @@ export default function Dashboard() {
                   >
                     <Plus className="h-3 w-3" /> Add Scholarship
                   </button>
+                  <button onClick={() => setIsScholarshipsOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-scholarships">
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-              </DialogHeader>
-              <div className="space-y-4" style={{ maxHeight: 'calc(85vh - 120px)', overflowY: 'auto', scrollbarWidth: 'none' }}>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ scrollbarWidth: 'none' }}>
                 {scholarshipsList.length === 0 ? (
                   <div className="text-center py-10">
                     <Award className="h-10 w-10 text-yellow-400 mx-auto mb-3" />
@@ -14593,8 +14599,8 @@ export default function Dashboard() {
 
           {/* Scholarship Add/Edit Wizard */}
           <Dialog open={scholarshipWizardOpen} onOpenChange={(open) => { if (!open) { setScholarshipWizardOpen(false); setScholarshipWizardStep(0); setEditingScholarshipId(null); } }}>
-            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', borderRadius: '12px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 rounded-t-xl" style={{ backgroundColor: colorSettings.headerBar }}>
                 <div className="flex items-center gap-2">
                   <Award className="h-3.5 w-3.5 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
