@@ -208,7 +208,7 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       data-testid="course-detail-overlay"
     >
@@ -218,11 +218,11 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
           width: "480px",
           maxWidth: "95vw",
           height: "88vh",
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
+          backdropFilter: 'blur(40px) saturate(1.4)',
+          WebkitBackdropFilter: 'blur(40px) saturate(1.4)',
           border: '1.5px solid rgba(255,255,255,0.35)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.05)',
         }}
         data-testid="course-detail-dialog"
       >
@@ -586,7 +586,7 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
           </div>
         </div>
 
-        <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex items-center justify-between flex-shrink-0">
+        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
           <div className="text-[9px] text-white/50">
             {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
           </div>
