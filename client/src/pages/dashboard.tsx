@@ -9103,15 +9103,27 @@ export default function Dashboard() {
 
             <button
               className="media-btn media-btn-sm"
-              onClick={() => {
-                if (previewFile?.id) {
-                  window.open(`/pdf-reader/${previewFile.id}`, '_blank');
+              onClick={async () => {
+                if (isPlayingRef.current || isPlaying) {
+                  handleStopMedia();
                 }
+                const fileToSave = previewFile;
+                const chunksToSave = new Set(checkedChunksRef.current);
+                const totalToSave = ttsChunksRef.current.length || totalChunks;
+                if (fileToSave && fileToSave.id && chunksToSave.size > 0 && totalToSave > 0) {
+                  const checkedJson = JSON.stringify(Array.from(chunksToSave));
+                  try { await fetch(`/api/files/${fileToSave.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: totalToSave }) }); } catch {}
+                }
+                setPreviewFile(null);
+                setOneDrivePreviewFiles([]);
+                setDialogPos(null);
+                await queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                refreshFileCounts();
               }}
-              data-testid="button-open-fullpage"
-              title="Open in full page reader"
+              data-testid="button-exit-player"
+              title="Exit player"
             >
-              <Maximize className="h-5 w-5 text-white" />
+              <X className="h-5 w-5 text-white" />
             </button>
             
             <Button
@@ -16347,18 +16359,8 @@ export default function Dashboard() {
                               const unlistenedFiles = ensuredFiles.filter(f => !f.listened);
                               const firstFile = unlistenedFiles.length > 0 ? unlistenedFiles[0] : ensuredFiles[0];
                               if (firstFile) {
-                                const hasDbId = typeof firstFile.id === 'number' && firstFile.id > 0;
-                                const filesData = encodeURIComponent(JSON.stringify(ensuredFiles.map(f => ({
-                                  id: f.id,
-                                  name: f.displayName || f.originalName,
-                                  listened: f.listened || false,
-                                }))));
-                                const url = hasDbId
-                                  ? `/pdf-reader/${firstFile.id}?autoplay=1&course=${encodeURIComponent(courseCode)}&files=${filesData}`
-                                  : (firstFile.objectPath?.startsWith('http')
-                                    ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath || '')}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&autoplay=1&course=${encodeURIComponent(courseCode)}&files=${filesData}`
-                                    : `/pdf-reader/${firstFile.id}?autoplay=1&course=${encodeURIComponent(courseCode)}&files=${filesData}`);
-                                window.location.href = url;
+                                setOneDrivePreviewFiles(ensuredFiles);
+                                setPreviewFile(firstFile);
                               }
                               queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                               refreshFileCounts();
@@ -16792,7 +16794,7 @@ export default function Dashboard() {
                                   <span style={{ fontSize: '14px', color: 'rgba(90, 120, 180, 0.45)', fontWeight: 800, letterSpacing: '-0.5px' }}>
                                     {displayTime}
                                   </span>
-                                  <span style={{ fontSize: '8px', color: 'rgba(90, 120, 180, 0.45)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
+                                  <span style={{ fontSize: '8px', color: 'rgb(90, 120, 180)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
                                     until next task due
                                   </span>
                                 </div>
