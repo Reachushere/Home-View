@@ -987,28 +987,50 @@ export default function Dashboard() {
     const deviceRole = roleParam || (() => { try { return localStorage.getItem('tabletDeviceRole'); } catch { return null; } })() || (isFireTV ? 'tv' : 'master');
     const saved = lastTabletNavTimestamp.current;
     lastTabletNavTimestamp.current = typeof saved === 'function' ? saved() : saved;
+    const beacon = (step: string, data: any) => {
+      fetch('/api/debug-beacon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ step: `tablet-nav:${step}`, data }) }).catch(() => {});
+    };
+    beacon('init', { deviceRole, isFireTV, lastTs: lastTabletNavTimestamp.current, ua: navigator.userAgent.substring(0, 80) });
+    let pollCount = 0;
     const checkTabletNav = async () => {
       try {
         const resp = await fetch(`/api/tablet-nav?device=${deviceRole}`);
         const data = await resp.json();
-        if (data.timestamp <= lastTabletNavTimestamp.current) return;
-        if (Date.now() - data.timestamp > 120000) return;
+        pollCount++;
+        if (pollCount % 20 === 0) {
+          beacon('heartbeat', { deviceRole, pollCount, lastTs: lastTabletNavTimestamp.current, action: data.action || 'null' });
+        }
+        if (!data.action || data.action === null) return;
+        beacon('cmd-received', { action: data.action, cmdTs: data.timestamp, lastTs: lastTabletNavTimestamp.current, age: Date.now() - data.timestamp, url: data.url?.substring(0, 60) });
+        if (data.timestamp <= lastTabletNavTimestamp.current) {
+          beacon('cmd-skipped-old', { cmdTs: data.timestamp, lastTs: lastTabletNavTimestamp.current });
+          return;
+        }
+        if (Date.now() - data.timestamp > 120000) {
+          beacon('cmd-skipped-expired', { cmdTs: data.timestamp, age: Date.now() - data.timestamp });
+          return;
+        }
         if (data.action === 'navigate' && data.url) {
+          beacon('cmd-navigate', { url: data.url.substring(0, 80) });
           lastTabletNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
           window.location.href = data.url;
         } else if (data.action === 'stop_playback') {
+          beacon('cmd-stop', {});
           lastTabletNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
         } else if (data.action === 'go_home' && window.location.pathname !== '/') {
+          beacon('cmd-go-home', {});
           lastTabletNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
           fetch('/api/tablet-nav/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: data.timestamp, device: deviceRole }) }).catch(() => {});
           window.location.href = '/';
         }
-      } catch {}
+      } catch (e: any) {
+        beacon('poll-error', { error: e.message });
+      }
     };
     const interval = setInterval(checkTabletNav, 3000);
     return () => clearInterval(interval);

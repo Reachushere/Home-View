@@ -4390,6 +4390,16 @@ export async function registerRoutes(
     res.json({ action: null });
   });
 
+  app.get("/api/tablet-nav/debug", (_req, res) => {
+    const devices = Object.keys(pendingTabletCommands);
+    const cmds: Record<string, any> = {};
+    for (const d of devices) {
+      const c = pendingTabletCommands[d];
+      cmds[d] = c ? { action: c.action, age: Date.now() - c.timestamp, url: c.url?.substring(0, 60) } : null;
+    }
+    res.json({ pendingCommands: cmds, deviceCount: devices.length });
+  });
+
   app.get("/api/cat-wash/find-next", async (req, res) => {
     const authParam = (req.query.auth as string) || '';
     if (authParam !== (process.env.SITE_PASSWORD || '')) {
@@ -4430,8 +4440,9 @@ export async function registerRoutes(
     const deviceParam = (req.query.device as string) || 'master';
     const { action, url, goodbyeText, timestamp } = req.body;
     if (action) {
-      pendingTabletCommands[deviceParam] = { action, url, goodbyeText, timestamp: timestamp || Date.now() };
-      console.log(`[Tablet Nav] Command set for ${deviceParam}: ${action} ${url || ''} ${goodbyeText ? '(has goodbye)' : ''}`);
+      const ts = timestamp || Date.now();
+      pendingTabletCommands[deviceParam] = { action, url, goodbyeText, timestamp: ts };
+      console.log(`[Tablet Nav] Command SET for ${deviceParam}: ${action} url=${url || 'none'} ts=${ts} pending=${JSON.stringify(Object.keys(pendingTabletCommands))}`);
     }
     res.json({ ok: true });
   });
