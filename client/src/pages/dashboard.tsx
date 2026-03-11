@@ -56,6 +56,7 @@ import {
   MessageSquare,
   Vote,
   GraduationCap,
+  Award,
   ClipboardCheck,
   Calendar,
   CalendarClock,
@@ -505,6 +506,7 @@ export default function Dashboard() {
   });
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+  const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [showRemainingList, setShowRemainingList] = useState(false);
   
   const [showSemesterChecklist, setShowSemesterChecklist] = useState(false);
@@ -11142,6 +11144,31 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Scholarships Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-scholarships"
+              title="Scholarships"
+              onClick={() => {
+                triggerButtonGlow('scholarships');
+                setIsScholarshipsOpen(true);
+              }}
+            >
+              <Award className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
             <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
@@ -14352,6 +14379,39 @@ export default function Dashboard() {
               )}
             </div>
           )}
+
+          {/* Scholarships Dialog */}
+          <Dialog open={isScholarshipsOpen} onOpenChange={setIsScholarshipsOpen}>
+            <DialogContent className="max-w-2xl text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '80vh' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+                <div className="flex items-center gap-2">
+                  <Award className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    SCHOLARSHIPS
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsScholarshipsOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-scholarships"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 50px)', scrollbarWidth: 'none' }}>
+                <div className="space-y-4">
+                  <div className="text-center py-8">
+                    <Award className="h-10 w-10 text-yellow-400 mx-auto mb-3" />
+                    <p className="text-[13px] font-medium text-white mb-1">Scholarships & Awards</p>
+                    <p className="text-[11px] text-white/60">Track scholarship applications, deadlines, and awards here.</p>
+                  </div>
+                  <div className="border border-white/20 rounded-lg p-3">
+                    <p className="text-[11px] text-white/70 text-center italic">No scholarships added yet. Check back soon.</p>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* AAS Reminder Popup */}
           <Dialog open={showAasReminder} onOpenChange={setShowAasReminder}>
