@@ -1742,6 +1742,11 @@ export default function Dashboard() {
     return defaults;
   });
   
+  useEffect(() => {
+    const bg = `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`;
+    document.documentElement.style.setProperty('--dialog-bg', bg);
+  }, [colorSettings.mainBackground, colorSettings.mainBackgroundGradientEnd]);
+
   // Store original settings when dialog opens (for cancel functionality)
   const [originalColorSettings, setOriginalColorSettings] = useState(colorSettings);
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
@@ -7960,7 +7965,7 @@ export default function Dashboard() {
       <Dialog open={showPartnerAwayPopup} onOpenChange={(open) => {
         if (!open) handleDismissPartnerPopup(); // Any close action dismisses for 4 hours
       }}>
-        <DialogContent className="max-w-[340px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
+        <DialogContent className="max-w-[340px] p-4 text-white [&_*]:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base text-white">
               <Volume2 className="h-5 w-5 text-blue-400" />
@@ -7992,7 +7997,7 @@ export default function Dashboard() {
       </Dialog>
 
       <Dialog open={showPreparedDialog} onOpenChange={(open) => { if (!open) acknowledgePreparedFiles(); }}>
-        <DialogContent className="max-w-[400px] p-5 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white" data-testid="dialog-prepared-files">
+        <DialogContent className="max-w-[400px] p-5 text-white [&_*]:text-white" data-testid="dialog-prepared-files">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base text-white">
               <CheckCircle2 className="h-5 w-5 text-green-400" />
@@ -8037,7 +8042,7 @@ export default function Dashboard() {
 
       {/* Readings Popup Dialog - OneDrive Files */}
       <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
-        <DialogContent className="max-w-[420px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
+        <DialogContent className="max-w-[420px] p-4 text-white [&_*]:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base text-white">
               <FolderOpen 
@@ -8117,7 +8122,7 @@ export default function Dashboard() {
       </Dialog>
 
       <Dialog open={showSemesterChecklist} onOpenChange={setShowSemesterChecklist}>
-        <DialogContent className="max-w-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" data-testid="semester-checklist-dialog">
+        <DialogContent className="max-w-md text-white" data-testid="semester-checklist-dialog">
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-semibold">Hey Bryn, have you...</DialogTitle>
             <DialogDescription className="text-white/60 text-sm">Complete these items to get your semester started right.</DialogDescription>
@@ -8178,7 +8183,7 @@ export default function Dashboard() {
       </Dialog>
 
       <Dialog open={showConfirmSemesterDialog} onOpenChange={setShowConfirmSemesterDialog}>
-        <DialogContent className="max-w-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" data-testid="confirm-semester-dialog">
+        <DialogContent className="max-w-md text-white" data-testid="confirm-semester-dialog">
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-semibold flex items-center gap-2">
               <GraduationCap className="h-5 w-5" />
@@ -8193,7 +8198,7 @@ export default function Dashboard() {
               <label className="text-xs font-medium text-white/70">Semester Start Date</label>
               <input
                 type="date"
-                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.startDate}
                 onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, startDate: e.target.value }))}
                 data-testid="input-confirm-start-date"
@@ -8203,7 +8208,7 @@ export default function Dashboard() {
               <label className="text-xs font-medium text-white/70">Semester End Date</label>
               <input
                 type="date"
-                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.endDate}
                 onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, endDate: e.target.value }))}
                 data-testid="input-confirm-end-date"
@@ -8213,7 +8218,7 @@ export default function Dashboard() {
               <label className="text-xs font-medium text-white/70">Reading Week Start</label>
               <input
                 type="date"
-                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.breakStart}
                 onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, breakStart: e.target.value }))}
                 data-testid="input-confirm-break-start"
@@ -8223,7 +8228,7 @@ export default function Dashboard() {
               <label className="text-xs font-medium text-white/70">Reading Week End</label>
               <input
                 type="date"
-                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.breakEnd}
                 onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, breakEnd: e.target.value }))}
                 data-testid="input-confirm-break-end"
@@ -8264,7 +8269,7 @@ export default function Dashboard() {
       </Dialog>
 
       <Dialog open={showPdfUploadDialog} onOpenChange={setShowPdfUploadDialog}>
-        <DialogContent className="sm:max-w-[480px]" style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e8edf5 100%)', border: '2px solid #4a5568' }}>
+        <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-center">
               📋 Update Course Offerings List
@@ -8309,7 +8314,7 @@ export default function Dashboard() {
 
       {/* New Semester Setup Dialog */}
       <Dialog open={isNewSemesterDialogOpen} onOpenChange={setIsNewSemesterDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-white">
               <GraduationCap className="h-5 w-5" />
@@ -8509,7 +8514,7 @@ export default function Dashboard() {
 
       {/* Upload Files Dialog - Windows Explorer Style */}
       <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-        <DialogContent className="max-w-4xl h-[70vh] p-0 overflow-hidden bg-[#1e1e1e] border border-[#3c3c3c] text-white shadow-2xl">
+        <DialogContent className="max-w-4xl h-[70vh] p-0 overflow-hidden text-white shadow-2xl">
           <VisuallyHidden.Root><DialogTitle>Upload Files</DialogTitle></VisuallyHidden.Root>
           {/* Title Bar */}
           <div className="flex items-center gap-2 px-3 py-2 bg-[#323232] border-b border-[#3c3c3c]">
@@ -8518,7 +8523,7 @@ export default function Dashboard() {
           </div>
           
           {/* Address Bar */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#252526] border-b border-[#3c3c3c]">
+          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[#3c3c3c]">
             <div className="flex items-center gap-1 px-2 py-1 bg-[#3c3c3c] rounded text-xs flex-1">
               <Folder className="h-3 w-3 text-yellow-500" />
               <span className="text-white/80">{uploadTargetFolder || 'Select a folder...'}</span>
@@ -8527,7 +8532,7 @@ export default function Dashboard() {
           
           <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100% - 80px)' }}>
             {/* Left Panel - Folder Tree */}
-            <div className="w-64 bg-[#252526] border-r border-[#3c3c3c] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+            <div className="w-64 border-r border-[#3c3c3c] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               <div className="p-2">
                 {/* Root folder */}
                 <div className="flex items-center gap-1 py-1 px-1 text-white/90 text-sm font-medium">
@@ -8788,9 +8793,9 @@ export default function Dashboard() {
             </div>
             
             {/* Right Panel - Upload Area */}
-            <div className="flex-1 bg-[#1e1e1e] flex flex-col">
+            <div className="flex-1 flex flex-col">
               {/* Toolbar */}
-              <div className="flex items-center gap-2 px-3 py-2 bg-[#252526] border-b border-[#3c3c3c]">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-[#3c3c3c]">
                 <Button
                   size="sm"
                   variant="ghost"
@@ -8839,7 +8844,7 @@ export default function Dashboard() {
               
               {/* Upload Drop Zone */}
               <div className="flex-1 flex items-center justify-center p-8">
-                <div className="w-full max-w-md border-2 border-dashed border-[#3c3c3c] rounded-lg p-8 text-center hover:border-blue-500 hover:bg-[#252526] transition-all cursor-pointer">
+                <div className="w-full max-w-md border-2 border-dashed border-[#3c3c3c] rounded-lg p-8 text-center hover:border-blue-500 hover:transition-all cursor-pointer">
                   <input 
                     type="file" 
                     id="file-upload" 
@@ -8936,7 +8941,7 @@ export default function Dashboard() {
 
       {/* Rename File Dialog */}
       <Dialog open={renameFileId !== null} onOpenChange={(open) => !open && setRenameFileId(null)}>
-        <DialogContent className="max-w-md bg-[#252526] border-white/20 text-white">
+        <DialogContent className="max-w-md text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-sm">
               <Pencil className="h-4 w-4" />
@@ -9002,7 +9007,7 @@ export default function Dashboard() {
 
       {/* Move File Dialog */}
       <Dialog open={moveFileId !== null} onOpenChange={(open) => !open && setMoveFileId(null)}>
-        <DialogContent className="max-w-md bg-[#252526] border-white/20 text-white">
+        <DialogContent className="max-w-md text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-sm">
               <Folder className="h-4 w-4" />
@@ -9067,7 +9072,7 @@ export default function Dashboard() {
       {/* Folder Context Menu */}
       {folderContextMenu && (
         <div 
-          className="fixed z-[9999] bg-[#1e1e1e] border border-white/20 rounded-md shadow-lg py-1 min-w-[180px]"
+          className="fixed z-[9999] rounded-md shadow-lg py-1 min-w-[180px]"
           style={{ top: folderContextMenu.y, left: folderContextMenu.x }}
           onClick={(e) => e.stopPropagation()}
           data-testid="folder-context-menu"
@@ -9187,7 +9192,7 @@ export default function Dashboard() {
 
       {/* New Folder Dialog */}
       <Dialog open={newFolderDialogOpen} onOpenChange={setNewFolderDialogOpen}>
-        <DialogContent className="bg-[#1e1e1e] border-white/20 text-white [&>button]:text-white">
+        <DialogContent className="text-white [&>button]:text-white">
           <DialogHeader>
             <DialogTitle>Create New Folder</DialogTitle>
           </DialogHeader>
@@ -9202,7 +9207,7 @@ export default function Dashboard() {
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder="Enter folder name"
-                className="bg-[#2a2d2e] border-white/20 text-white mt-1"
+                className="bg-[#2a2d2e] text-white mt-1"
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                 autoFocus
                 data-testid="input-new-folder-name"
@@ -9297,7 +9302,7 @@ export default function Dashboard() {
             
             return (
               <DialogHeader 
-                className="px-6 py-4 border-b border-white/20 cursor-grab active:cursor-grabbing select-none backdrop-blur-md"
+                className="px-6 py-4 border-b cursor-grab active:cursor-grabbing select-none backdrop-blur-md"
                 style={{ background: playerHeaderGradient }}
                 onMouseDown={onHeaderMouseDown}
                 onTouchStart={onHeaderTouchStart}
@@ -11035,7 +11040,7 @@ export default function Dashboard() {
 
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
-            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
@@ -11060,7 +11065,7 @@ export default function Dashboard() {
                     <SelectTrigger data-testid="select-speaker" className="h-8 text-[10px] bg-black/50 border-white/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-white/20 max-h-[300px]">
+                    <SelectContent className="bg-gray-900 max-h-[300px]">
                       <SelectItem value="media_player.byhome">Apartment</SelectItem>
                       <SelectItem value="media_player.cat_wash">Cat Wash</SelectItem>
                       <SelectItem value="media_player.cat_wr">Cat Washroom Speakers</SelectItem>
@@ -11260,7 +11265,7 @@ export default function Dashboard() {
           {/* Return-from-break reading prompt (admin only) */}
           {isAdmin && (
             <Dialog open={showReturnReadingPrompt && returnReadingFiles.length > 0} onOpenChange={setShowReturnReadingPrompt}>
-              <DialogContent className="max-w-[340px] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%' }}>
+              <DialogContent className="max-w-[340px] text-[11px] text-white p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%' }}>
                 <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-3.5 w-3.5 text-blue-400" />
@@ -11293,7 +11298,7 @@ export default function Dashboard() {
                     <SelectTrigger className="h-7 text-[10px] bg-black/30 border-white/20" data-testid="select-return-file">
                       <SelectValue placeholder="Select a PDF..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-white/20 text-white max-h-[200px]">
+                    <SelectContent className="bg-gray-900 text-white max-h-[200px]">
                       {returnReadingFiles.map((f) => (
                         <SelectItem key={f.id} value={f.id.toString()} className="text-[10px] text-white">
                           {f.name}
@@ -11305,7 +11310,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-6 text-[9px] border-white/20 hover:bg-white/10"
+                      className="h-6 text-[9px] hover:bg-white/10"
                       onClick={() => setShowReturnReadingPrompt(false)}
                       data-testid="button-return-no"
                     >
@@ -11335,7 +11340,7 @@ export default function Dashboard() {
 
           {/* Share Link Dialog */}
           <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-            <DialogContent className="max-w-[360px] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden">
+            <DialogContent className="max-w-[360px] text-[11px] text-white p-0 [&>button.absolute]:hidden">
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
                   <Share2 className="h-3 w-3 text-white" />
@@ -12473,7 +12478,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div className="px-4 py-2.5 border-t border-white/20 bg-black/40 flex justify-end gap-2">
+          <div className="px-4 py-2.5 border-t bg-black/40 flex justify-end gap-2">
               <Button 
                 type="button" 
                 variant="outline"
@@ -12507,7 +12512,7 @@ export default function Dashboard() {
       </Dialog>
 
       <Dialog open={icsImportOpen} onOpenChange={(open) => { if (!open) { setIcsImportOpen(false); setIcsImportEvents([]); } }}>
-        <DialogContent className="max-w-[640px] max-h-[85vh] bg-gradient-to-br from-gray-900/98 via-black/95 to-gray-800/98 border border-white/20 text-white p-0 overflow-hidden" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        <DialogContent className="max-w-[640px] max-h-[85vh] bg-gradient-to-br from-gray-900/98 via-black/95 to-gray-800/98 text-white p-0 overflow-hidden" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
           <DialogHeader className="px-5 py-3 border-b border-white/15" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
             <DialogTitle className="text-sm font-normal text-white flex items-center gap-2">
               <Upload className="h-4 w-4 text-violet-400" />
@@ -13279,7 +13284,7 @@ export default function Dashboard() {
           >
             {/* Flyout content */}
             <section 
-              className="h-full overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white [&_label]:font-normal" 
+              className="h-full overflow-hidden flex flex-col rounded-xl text-white [&_label]:font-normal" 
               style={{
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
@@ -13366,7 +13371,7 @@ export default function Dashboard() {
           {isAddChooserOpen && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => setIsAddChooserOpen(false)}>
               <div
-                className="rounded-xl w-[320px] overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-2xl"
+                className="rounded-xl w-[320px] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -13415,7 +13420,7 @@ export default function Dashboard() {
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-2xl"
+                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -13735,7 +13740,7 @@ export default function Dashboard() {
                         <h3 className="text-sm font-medium text-white">Attachments</h3>
                         <p className="text-[9px] text-white/50 mt-1">Add attachments</p>
                       </div>
-                      <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-white/20 bg-white/5 hover:bg-white/20 transition-colors cursor-pointer">
+                      <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed bg-white/5 hover:bg-white/20 transition-colors cursor-pointer">
                         <Upload className="h-4 w-4 text-white/50" />
                         <span className="text-white/50 text-[12px]">Upload file</span>
                         <input
@@ -14198,7 +14203,7 @@ export default function Dashboard() {
 
           {/* AAS Reminder Popup */}
           <Dialog open={showAasReminder} onOpenChange={setShowAasReminder}>
-            <DialogContent className="max-w-sm text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%' }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%' }}>
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
@@ -14252,7 +14257,7 @@ export default function Dashboard() {
 
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+            <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)' }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -14571,14 +14576,14 @@ export default function Dashboard() {
                 {/* Course Edit Dialog */}
                 {schoolEditCourseIdx !== null && (
                   <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setSchoolEditCourseIdx(null)}>
-                    <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg p-4 w-[280px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg p-4 w-[280px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
                       <h3 className="text-[11px] font-medium text-white">Edit Course</h3>
                       <div className="space-y-2">
                         <div>
                           <label className="text-[9px] text-white/60 block mb-0.5">Course Code</label>
                           <input
                             type="text"
-                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
                             value={schoolEditCourseData.code}
                             onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, code: e.target.value }))}
                             data-testid="input-edit-course-code"
@@ -14588,7 +14593,7 @@ export default function Dashboard() {
                           <label className="text-[9px] text-white/60 block mb-0.5">Course Name</label>
                           <input
                             type="text"
-                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
                             value={schoolEditCourseData.name}
                             onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, name: e.target.value }))}
                             data-testid="input-edit-course-name"
@@ -14598,7 +14603,7 @@ export default function Dashboard() {
                           <label className="text-[9px] text-white/60 block mb-0.5">Calendar Label</label>
                           <input
                             type="text"
-                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
                             value={schoolEditCourseData.calendarLabel}
                             onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, calendarLabel: e.target.value }))}
                             placeholder={schoolEditCourseData.code}
@@ -14609,7 +14614,7 @@ export default function Dashboard() {
                           <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
                           <input
                             type="text"
-                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
                             value={schoolEditCourseData.professor}
                             onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, professor: e.target.value }))}
                             data-testid="input-edit-professor-name"
@@ -14619,7 +14624,7 @@ export default function Dashboard() {
                           <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
                           <input
                             type="text"
-                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
                             value={schoolEditCourseData.email}
                             onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, email: e.target.value }))}
                             data-testid="input-edit-professor-email"
@@ -14760,7 +14765,7 @@ export default function Dashboard() {
                 </div>
               </div>
               </div>
-              <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex justify-end items-center gap-2">
+              <div className="px-4 py-3 border-t bg-black/30 flex justify-end items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"
@@ -14791,7 +14796,7 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-xl text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+            <DialogContent className="max-w-xl text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
@@ -14938,25 +14943,25 @@ export default function Dashboard() {
               {/* Edit Past Course Professor Dialog */}
               {editingSchoolCourseKey && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
-                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg p-4 w-[300px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg p-4 w-[300px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
                     <h3 className="text-[11px] font-medium text-white">Edit Course — {editingSchoolCourseKey}</h3>
                     <div className="space-y-2">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-[9px] text-white/60 block mb-0.5">Grade</label>
-                          <select className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.grade} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, grade: e.target.value }))} data-testid="select-edit-past-grade">
+                          <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.grade} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, grade: e.target.value }))} data-testid="select-edit-past-grade">
                             <option value="">--</option>
                             {['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'].map(g => <option key={g} value={g}>{g}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="text-[9px] text-white/60 block mb-0.5">Credits</label>
-                          <input type="text" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.credits} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, credits: e.target.value }))} data-testid="input-edit-past-credits" />
+                          <input type="text" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.credits} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, credits: e.target.value }))} data-testid="input-edit-past-credits" />
                         </div>
                       </div>
                       <div>
                         <label className="text-[9px] text-white/60 block mb-0.5">Semester</label>
-                        <select className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.semester} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, semester: e.target.value }))} data-testid="select-edit-past-semester">
+                        <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.semester} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, semester: e.target.value }))} data-testid="select-edit-past-semester">
                           <option value="">--</option>
                           <option value="Fall 2024">Fall 2024</option>
                           <option value="Winter 2025">Winter 2025</option>
@@ -14970,11 +14975,11 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
-                        <input type="text" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.professor} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, professor: e.target.value }))} data-testid="input-edit-past-professor" />
+                        <input type="text" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.professor} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, professor: e.target.value }))} data-testid="input-edit-past-professor" />
                       </div>
                       <div>
                         <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
-                        <input type="email" className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.email} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, email: e.target.value }))} data-testid="input-edit-past-email" />
+                        <input type="email" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.email} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, email: e.target.value }))} data-testid="input-edit-past-email" />
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end">
@@ -15012,7 +15017,7 @@ export default function Dashboard() {
           {/* New Course Dialog (opened from grad cap menu) */}
           <Dialog open={isNewCourseDialogOpen} onOpenChange={(open) => { if (!open) { newCourseDialogClosingRef.current = true; setIsNewCourseDialogOpen(false); setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300); } }}>
             <DialogContent 
-              className="overflow-hidden flex flex-col w-[520px] max-h-[85vh] text-[11px] bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 text-white shadow-2xl p-0 [&>button.absolute]:hidden"
+              className="overflow-hidden flex flex-col w-[520px] max-h-[85vh] text-[11px] bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 text-white shadow-2xl p-0 [&>button.absolute]:hidden"
               onInteractOutside={(e) => e.preventDefault()}
               onPointerDownOutside={(e) => e.preventDefault()}
               aria-describedby={undefined}
@@ -15216,7 +15221,7 @@ export default function Dashboard() {
             }
             setIsSettingsDialogOpen(open);
           }}>
-            <DialogContent data-settings-dialog className="max-w-4xl max-h-[98vh] text-[9px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+            <DialogContent data-settings-dialog className="max-w-4xl max-h-[98vh] text-[9px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
@@ -15250,7 +15255,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Task Boxes Background</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.boxBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -15318,7 +15323,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Upcoming Header, Date, and Time Label Background</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.headerBar}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -15353,7 +15358,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Today Column</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.todayCellBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -15381,7 +15386,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Current Time Row</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.currentHourRowBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -15409,7 +15414,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Today Date & Current Hour</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.todayCurrentHourCellBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -15517,7 +15522,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Top (Lightest)' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.mainBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -15558,7 +15563,7 @@ export default function Dashboard() {
                         <Label className="text-xs whitespace-nowrap flex-1">Gradient Bottom (Darkest)</Label>
                         <input
                           type="text"
-                          className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent border border-white/20 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                          className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                           value={colorSettings.mainBackgroundGradientEnd}
                           onChange={(e) => {
                             let val = e.target.value;
@@ -15594,7 +15599,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-3">
                         <Label className="text-xs whitespace-nowrap flex-1">Preview</Label>
                         <div 
-                          className="w-full h-4 rounded border border-white/20"
+                          className="w-full h-4 rounded"
                           style={{ background: `linear-gradient(90deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)` }}
                           data-testid="gradient-preview"
                         />
@@ -16163,7 +16168,7 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300`} style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300`} style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
               <DialogHeader>
                 <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
@@ -16415,7 +16420,7 @@ export default function Dashboard() {
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
-            <DialogContent className="max-w-[320px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
+            <DialogContent className="max-w-[320px] p-4 text-white [&_*]:text-white">
               <DialogHeader>
                 <DialogTitle className="text-sm font-medium">
                   {moduleMediaControlCourse === 'cppa122' ? 'CPPA122' : moduleMediaControlCourse === 'cfnf400' ? 'CFNF400' : 'CASL101'} Module Media
@@ -18419,7 +18424,7 @@ export default function Dashboard() {
               }}
               data-testid="weeks-flyout-resize-handle"
             />
-            <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 flex flex-col text-white relative rounded-xl" style={{ boxShadow: '-10px 0 40px rgba(0,0,0,0.3)' }}>
+            <div className="h-full flex flex-col text-white relative rounded-xl" style={{ boxShadow: '-10px 0 40px rgba(0,0,0,0.3)' }}>
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-3">
@@ -18930,7 +18935,7 @@ export default function Dashboard() {
                                                       onContextMenu={(e) => {
                                                         e.preventDefault();
                                                         const menu = document.createElement('div');
-                                                        menu.className = 'fixed z-[9999] bg-[#252526] border border-white/20 rounded-md py-1 shadow-lg min-w-[140px]';
+                                                        menu.className = 'fixed z-[9999] rounded-md py-1 shadow-lg min-w-[140px]';
                                                         menu.style.left = `${e.clientX}px`;
                                                         menu.style.top = `${e.clientY}px`;
                                                         menu.innerHTML = `
@@ -20602,7 +20607,7 @@ export default function Dashboard() {
         >
           {/* Flyout content */}
           <section 
-            className="h-full overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white" 
+            className="h-full overflow-hidden flex flex-col rounded-xl text-white" 
             style={{
               border: '1px solid rgba(255, 255, 255, 0.2)',
               boxShadow: '0 -10px 40px rgba(0,0,0,0.3)'
@@ -20680,7 +20685,7 @@ export default function Dashboard() {
                       <input 
                         type="text" 
                         data-todo-idx={idx}
-                        className={`flex-1 text-xs px-1.5 py-1 border border-white/20 rounded bg-white/10 text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none ${item.startsWith('✓') ? 'line-through text-white/50' : ''}`}
+                        className={`flex-1 text-xs px-1.5 py-1 rounded bg-white/10 text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none ${item.startsWith('✓') ? 'line-through text-white/50' : ''}`}
                         placeholder="Item..." 
                         value={item.replace(/^✓/, '')} 
                         onChange={(e) => {
@@ -20725,7 +20730,7 @@ export default function Dashboard() {
         >
           {/* Flyout Panel */}
           <div 
-            className="h-full overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white"
+            className="h-full overflow-hidden flex flex-col rounded-xl text-white"
             style={{
               fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
               border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -21031,7 +21036,7 @@ export default function Dashboard() {
         {projectDialogOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
             <div
-              className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-2xl"
+              className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
               style={{
                 fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                 border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -21336,7 +21341,7 @@ export default function Dashboard() {
         {/* Task Context Menu for right-click delete */}
         {contextMenu && (
           <div
-            className="fixed bg-gray-900/95 border border-white/20 rounded-lg shadow-xl py-1 z-[9999]"
+            className="fixed bg-gray-900/95 rounded-lg shadow-xl py-1 z-[9999]"
             style={{
               left: contextMenu.x,
               top: contextMenu.y,
@@ -21359,7 +21364,7 @@ export default function Dashboard() {
 
         {/* Recurring Delete Dialog */}
         <Dialog open={!!recurringDeleteTask} onOpenChange={(open) => !open && setRecurringDeleteTask(null)}>
-          <DialogContent className="max-w-sm bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <DialogContent className="max-w-sm text-white">
             <DialogHeader>
               <DialogTitle className="text-white text-sm">Delete Recurring Task</DialogTitle>
             </DialogHeader>
@@ -21422,7 +21427,7 @@ export default function Dashboard() {
 
         {/* Recurring Edit Confirmation Dialog */}
         <Dialog open={!!recurringEditPending} onOpenChange={(open) => !open && setRecurringEditPending(null)}>
-          <DialogContent className="max-w-sm bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <DialogContent className="max-w-sm text-white">
             <DialogHeader>
               <DialogTitle className="text-white text-sm">Edit Recurring Task</DialogTitle>
             </DialogHeader>
@@ -21491,7 +21496,7 @@ export default function Dashboard() {
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
+          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
             <DialogHeader>
               <DialogTitle className="text-white">Reschedule Task</DialogTitle>
             </DialogHeader>
@@ -21506,7 +21511,7 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT' || active.closest('[data-radix-popper-content-wrapper]'))) return; setEditingTask(null); } }} modal={false}>
-          <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&>button[class*='absolute']]:hidden">
+          <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] max-h-[90vh] overflow-y-auto text-white [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&>button[class*='absolute']]:hidden">
             <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <div className="flex items-center gap-2">
                 <Pencil className="h-3 w-3 text-white" />
@@ -22540,7 +22545,7 @@ function ProfileForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
       {cropImageSrc && (
-        <div className="rounded-lg overflow-hidden border border-white/20 bg-black/50 p-3 space-y-3">
+        <div className="rounded-lg overflow-hidden bg-black/50 p-3 space-y-3">
           <span className="text-[10px] text-white/70">Move and zoom to crop your photo</span>
           <div className="relative w-full" style={{ height: '220px' }}>
             <Cropper
@@ -22644,7 +22649,7 @@ function ProfileForm({
           <select
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
             data-testid="select-profile-location"
           >
             <option value="">Select your city</option>
@@ -22658,7 +22663,7 @@ function ProfileForm({
           <select
             value={provinceState}
             onChange={(e) => setProvinceState(e.target.value)}
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
             data-testid="select-profile-province-state"
           >
             <option value="">Select {regionLabel.toLowerCase()}</option>
@@ -22674,7 +22679,7 @@ function ProfileForm({
           <select
             value={country}
             onChange={(e) => { setCountry(e.target.value); setProvinceState(''); }}
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
             data-testid="select-profile-country"
           >
             <option value="">Select country</option>
@@ -22700,7 +22705,7 @@ function ProfileForm({
           <select
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
-            className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
             data-testid="select-profile-timezone"
           >
             {timezones.map(tz => (
@@ -22986,7 +22991,7 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
         type="date"
         value={dateVal}
         onChange={(e) => handleDateChange(e.target.value)}
-        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        className="w-full h-7 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
         style={{ color: 'black' }}
         data-testid={testId + '-date'}
       />
@@ -22994,7 +22999,7 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
         type="time"
         value={timeVal}
         onChange={(e) => handleTimeChange(e.target.value)}
-        className="w-full h-7 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+        className="w-full h-7 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
         style={{ color: 'black' }}
         data-testid={testId + '-time'}
       />
@@ -23127,7 +23132,7 @@ function SchoolForm({
               value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'}
               onChange={(e) => { const v = e.target.value; setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}
               style={{ color: '#000000', backgroundColor: '#ffffff' }}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full h-8 px-2 text-[10px] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               data-testid="select-school-name"
             >
               {NORTH_AMERICAN_SCHOOLS.map(s => (
@@ -23150,7 +23155,7 @@ function SchoolForm({
             <select
               value={firstDayOfWeek}
               onChange={(e) => setFirstDayOfWeek(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
               data-testid="select-first-day-of-week"
             >
               {daysOfWeek.map(day => (
@@ -23163,7 +23168,7 @@ function SchoolForm({
             <select
               value={lastDayOfSchoolWeek}
               onChange={(e) => setLastDayOfSchoolWeek(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
               data-testid="select-last-day-of-school-week"
             >
               {daysOfWeek.map(day => (
@@ -23203,7 +23208,7 @@ function SchoolForm({
                 <select
                   value={semesterType}
                   onChange={(e) => setSemesterType(e.target.value)}
-                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+                  className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-semester-type"
                 >
                   <option value="fall" className="text-black bg-white">Fall</option>
@@ -23218,7 +23223,7 @@ function SchoolForm({
                 <select
                   value={String(numberOfWeeks)}
                   onChange={(e) => setNumberOfWeeks(Number(e.target.value))}
-                  className="h-8 w-24 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+                  className="h-8 w-24 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-number-of-weeks"
                 >
                   {[10, 11, 12, 13, 14, 15, 16].map(w => (
@@ -23231,7 +23236,7 @@ function SchoolForm({
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+                  className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-timezone"
                 >
                   {[
@@ -23269,7 +23274,7 @@ function SchoolForm({
                   type="date"
                   value={readingWeekDate}
                   onChange={(e) => setReadingWeekDate(e.target.value)}
-                  className="!text-black !text-[10px] h-8 bg-white border-white/20 w-40"
+                  className="!text-black !text-[10px] h-8 bg-white w-40"
                   style={{ fontSize: '10px', color: 'black' }}
                   data-testid="input-reading-week-date"
                 />
@@ -23310,7 +23315,7 @@ function SchoolForm({
                   <select
                     value={travelTimezone}
                     onChange={(e) => setTravelTimezone(e.target.value)}
-                    className="w-full h-8 px-2 text-[10px] rounded-md border border-white/20 bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
+                    className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
                     data-testid="select-travel-timezone"
                   >
                     <option value="" className="text-black bg-white">Pick a city</option>
@@ -23507,7 +23512,7 @@ function CoursesForm({
             const dayNames: Record<string, string> = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
 
             return (
-              <div key={realIndex} className="border border-white/20 rounded p-3 space-y-1">
+              <div key={realIndex} className="border rounded p-3 space-y-1">
                 <div className="flex items-center gap-2">
                   <div className="relative flex-shrink-0">
                     <div className="w-3 h-3 rounded-full cursor-pointer" style={{ backgroundColor: course.color }} onClick={() => document.getElementById(`course-color-${realIndex}`)?.click()} />
@@ -23760,7 +23765,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
 
   return (
     <>
-      <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b flex-shrink-0">
         <div className="flex items-center gap-2">
           <GraduationCap className="h-3.5 w-3.5 text-white" />
           <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
@@ -23804,7 +23809,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 type="color"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-8 h-8 rounded cursor-pointer border border-white/20 p-0"
+                className="w-8 h-8 rounded cursor-pointer p-0"
                 data-testid="input-new-course-color"
               />
             </div>
@@ -23843,7 +23848,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 <select
                   value={semesterType}
                   onChange={(e) => setSemesterType(e.target.value)}
-                  className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                  className="w-full h-8 rounded bg-white/10 text-white text-[10px] px-2"
                   data-testid="select-new-course-semester"
                 >
                   <option value="fall" className="bg-gray-800">Fall</option>
@@ -23856,7 +23861,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 <select
                   value={deliveryMode}
                   onChange={(e) => setDeliveryMode(e.target.value)}
-                  className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                  className="w-full h-8 rounded bg-white/10 text-white text-[10px] px-2"
                   data-testid="select-new-course-delivery"
                 >
                   <option value="" className="bg-gray-800">Select...</option>
@@ -23872,7 +23877,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 <select
                   value={springSummerTerm}
                   onChange={(e) => setSpringSummerTerm(e.target.value)}
-                  className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                  className="w-full h-8 rounded bg-white/10 text-white text-[10px] px-2"
                   data-testid="select-new-course-term"
                 >
                   <option value="full" className="bg-gray-800">Full Length (May-Aug)</option>
@@ -23889,7 +23894,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                   <select
                     value={classDay}
                     onChange={(e) => setClassDay(e.target.value)}
-                    className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                    className="w-full h-8 rounded bg-white/10 text-white text-[10px] px-2"
                     data-testid="select-new-course-day1"
                   >
                     {dayOptions.map(d => (
@@ -23902,7 +23907,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                   <select
                     value={classDay2}
                     onChange={(e) => setClassDay2(e.target.value)}
-                    className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                    className="w-full h-8 rounded bg-white/10 text-white text-[10px] px-2"
                     data-testid="select-new-course-day2"
                   >
                     {dayOptions.map(d => (
@@ -23979,7 +23984,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 <select
                   value={reminder2}
                   onChange={(e) => setReminder2(Number(e.target.value))}
-                  className="h-6 rounded bg-white/10 border border-white/20 text-white text-[10px] px-1.5"
+                  className="h-6 rounded bg-white/10 text-white text-[10px] px-1.5"
                   data-testid="select-reminder-2"
                 >
                   <option value={0} className="bg-gray-800">Off</option>
@@ -24001,7 +24006,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 <select
                   value={reminder3}
                   onChange={(e) => setReminder3(Number(e.target.value))}
-                  className="h-6 rounded bg-white/10 border border-white/20 text-white text-[10px] px-1.5"
+                  className="h-6 rounded bg-white/10 text-white text-[10px] px-1.5"
                   data-testid="select-reminder-3"
                 >
                   <option value={0} className="bg-gray-800">Off</option>
@@ -24055,7 +24060,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                         <select
                           value={deadline.type}
                           onChange={(e) => updateDeadline(idx, 'type', e.target.value)}
-                          className="h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2 w-28"
+                          className="h-7 rounded bg-white/10 text-white text-[10px] px-2 w-28"
                           data-testid={`select-deadline-type-${idx}`}
                         >
                           {deadlineTypes.map(t => (
@@ -24127,7 +24132,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
 function NewCourseDialog(props: NewCourseDialogProps) {
   return createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}>
-      <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <NewCourseDialogInner {...props} />
       </div>
     </div>,
@@ -24959,7 +24964,7 @@ function TaskForm({
 
       {/* Subtasks Section for NEW tasks - Pending subtasks */}
       {!task && (
-        <div className="border border-white/20 rounded-lg p-3 space-y-3">
+        <div className="border rounded-lg p-3 space-y-3">
           <div className="flex items-center justify-between">
             <Label className="text-xs font-medium">Subtasks (optional)</Label>
             <span className="text-[10px] text-white/60">{pendingSubtasks.length} subtask{pendingSubtasks.length !== 1 ? 's' : ''}</span>
@@ -25006,7 +25011,7 @@ function TaskForm({
               type="button"
               size="sm"
               variant="outline"
-              className="h-8 text-xs border-white/20 hover:bg-white/10"
+              className="h-8 text-xs hover:bg-white/10"
               onClick={() => {
                 if (newPendingSubtask.trim()) {
                   setPendingSubtasks(prev => [...prev, newPendingSubtask.trim()]);
@@ -25098,7 +25103,7 @@ function SubtasksSection({ taskId }: { taskId: number }) {
   const totalCount = subtasks.length;
 
   return (
-    <div className="border-t border-white/20 pt-4 mt-4">
+    <div className="border-t pt-4 mt-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <ListChecks className="h-4 w-4 text-white/70" />
@@ -25197,7 +25202,7 @@ function SubtasksSection({ taskId }: { taskId: number }) {
               }
             }}
             autoFocus
-            className="flex h-7 flex-1 rounded-md border border-white/20 bg-white/10 px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 text-white placeholder:text-white/40"
+            className="flex h-7 flex-1 rounded-md bg-white/10 px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 text-white placeholder:text-white/40"
             style={{ fontSize: '11px' }}
             data-testid="input-new-subtask"
           />
@@ -25360,7 +25365,7 @@ function TaskDependencies({ taskId, taskTitle }: { taskId: number; taskTitle: st
             <select
               value={selectedLinkType}
               onChange={(e) => setSelectedLinkType(e.target.value)}
-              className="h-7 text-xs rounded bg-white/10 border border-white/20 text-white px-2"
+              className="h-7 text-xs rounded bg-white/10 text-white px-2"
               data-testid="select-link-type"
             >
               <option value="blocks">Blocks</option>
@@ -25372,7 +25377,7 @@ function TaskDependencies({ taskId, taskTitle }: { taskId: number; taskTitle: st
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tasks..."
-              className="flex-1 h-7 text-xs rounded bg-white/10 border border-white/20 text-white px-2 placeholder:text-white/30"
+              className="flex-1 h-7 text-xs rounded bg-white/10 text-white px-2 placeholder:text-white/30"
               autoFocus
               data-testid="input-search-dependency"
             />
