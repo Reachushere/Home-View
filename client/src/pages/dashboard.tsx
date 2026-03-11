@@ -3785,18 +3785,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
-    const startDate = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null;
-    if (!startDate) return;
 
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-    const startDay = new Date(startDate);
-    startDay.setHours(0, 0, 0, 0);
-    const endOfStartDay = new Date(startDay);
-    endOfStartDay.setHours(23, 59, 59, 999);
-
-    const isFirstDay = now >= startDay && now <= endOfStartDay;
-    if (!isFirstDay) return;
-
     const lastShownKey = `semChecklist_lastShown_${semesterSettings.id}`;
     const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
     const hoursSinceShown = (now.getTime() - lastShown) / (1000 * 60 * 60);
