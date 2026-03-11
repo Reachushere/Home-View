@@ -150,6 +150,7 @@ import { useAccessMode } from "@/components/access-gate";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
+import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel } from "@shared/electiveCourses";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -444,6 +445,8 @@ export default function Dashboard() {
   const [showConfirmSemesterDialog, setShowConfirmSemesterDialog] = useState(false);
   const [upcomingSemester, setUpcomingSemester] = useState<FutureSemesterDates | null>(null);
   const [confirmSemesterForm, setConfirmSemesterForm] = useState({ startDate: '', endDate: '', breakStart: '', breakEnd: '' });
+  const [showPdfUploadDialog, setShowPdfUploadDialog] = useState(false);
+  const pdfUploadShownRef = useRef(false);
   const confirmSemesterShownRef = useRef(false);
 
   // Return-from-break reading prompt (dev mode only - when returning to Replit after 2+ hours)
@@ -2633,7 +2636,7 @@ export default function Dashboard() {
       { required: 1, members: ['L3_PRACTICUM1', 'L3_PRACTICUM2'] },
       { required: 3, members: ['L3_POG1', 'L3_POG2', 'L3_POG3'] },
       { required: 4, members: ['L3_LIBERAL1', 'L3_LIBERAL2', 'L3_LIBERAL3', 'L3_LIBERAL4'] },
-      { required: 6, members: ['L3_OPEN1', 'L3_OPEN2', 'L3_OPEN3', 'L3_OPEN4', 'L3_OPEN5', 'L3_OPEN6'] },
+      { required: 7, members: ['L3_OPEN1', 'L3_OPEN2', 'L3_OPEN3', 'L3_OPEN4', 'L3_OPEN5', 'L3_OPEN6', 'L3_OPEN7'] },
     ],
   };
 
@@ -2702,65 +2705,66 @@ export default function Dashboard() {
   };
 
   const certCourseMap: Record<string, { code: string; name: string }> = {
-    PPA101: { code: 'PPA101', name: 'Canadian Public Administration I: Institutions' },
-    PPA102: { code: 'PPA102', name: 'Canadian Public Administration II: Processes' },
+    PPA101: { code: 'PPA101', name: 'Cdn Public Admin: Institutions' },
+    PPA102: { code: 'PPA102', name: 'Cdn Public Admin: Processes' },
     PPA125: { code: 'PPA125', name: 'Rights, Equity and the State' },
-    ELECTIVE1: { code: 'PPA120', name: 'Canadian Politics & Government' },
-    ELECTIVE2: { code: 'PPA121', name: 'Ontario Politics and Government' },
-    L1_PPA122: { code: 'PPA122', name: 'Local Politics and Government' },
-    L1_PPA124: { code: 'PPA124', name: 'Indigenous Politics and Government' },
-    LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective' },
+    ELECTIVE1: { code: 'PPA120', name: 'Canadian Politics & Gov\'t' },
+    ELECTIVE2: { code: 'PPA121', name: 'Ontario Politics & Gov\'t' },
+    L1_PPA122: { code: 'PPA122', name: 'Local Politics & Gov\'t' },
+    L1_PPA124: { code: 'PPA124', name: 'Indigenous Pol. & Governance' },
+    LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective (Lower)' },
     OPEN1: { code: 'OPEN1', name: 'Open Elective 1' },
     OPEN2: { code: 'OPEN2', name: 'Open Elective 2' },
-    L2_PPA211: { code: 'PPA211', name: 'Public Administration & Management' },
-    L2_PPA120: { code: 'PPA120', name: 'Canadian Politics & Government' },
-    L2_PPA121: { code: 'PPA121', name: 'Ontario Politics and Government' },
-    L2_PPA122: { code: 'PPA122', name: 'Local Politics and Government' },
-    L2_PPA124: { code: 'PPA124', name: 'Indigenous Politics and Government' },
-    L2_PPA235: { code: 'PPA235', name: 'Canada and Global Politics' },
-    L2_PPA303: { code: 'PPA303', name: 'Public Finance and Budgeting' },
-    L2_PPA319: { code: 'PPA319', name: 'Public Sector Human Resource Management' },
-    L2_LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective' },
+    L2_PPA211: { code: 'PPA211', name: 'Public Policy' },
+    L2_PPA120: { code: 'PPA120', name: 'Canadian Politics & Gov\'t' },
+    L2_PPA121: { code: 'PPA121', name: 'Ontario Politics & Gov\'t' },
+    L2_PPA122: { code: 'PPA122', name: 'Local Politics & Gov\'t' },
+    L2_PPA124: { code: 'PPA124', name: 'Indigenous Pol. & Governance' },
+    L2_PPA235: { code: 'PPA235', name: 'Theories of the State' },
+    L2_PPA303: { code: 'PPA303', name: 'Financial Management' },
+    L2_PPA319: { code: 'PPA319', name: 'Politics of Work and Labour' },
+    L2_LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective (Lower)' },
     L2_ECN1: { code: 'ECN101', name: 'Principles of Microeconomics' },
-    L2_ECN2: { code: 'ECN104', name: 'Introductory Microeconomics' },
+    L2_ECN2: { code: 'CECN104', name: 'Introductory Microeconomics' },
     L2_ECN3: { code: 'ECN110', name: 'The Economy and Society' },
     L2_ECN4: { code: 'ECN201', name: 'Principles of Macroeconomics' },
-    L2_ECN5: { code: 'ECN204', name: 'Introductory Macroeconomics' },
-    L2_ECN6: { code: 'ECN210', name: 'Understanding Economics' },
+    L2_ECN5: { code: 'CECN204', name: 'Introductory Macroeconomics' },
+    L2_ECN6: { code: 'CECN210', name: 'Understanding Economics' },
     L2_ECN7: { code: 'ECN220', name: 'Evolution of the Global Economy' },
     L2_ECN8: { code: 'ECN320', name: 'Introduction to Financial Economics' },
     L2_OPEN1: { code: 'L2OPEN1', name: 'Open Elective 1' },
     L2_OPEN2: { code: 'L2OPEN2', name: 'Open Elective 2' },
-    L3_PPA333: { code: 'PPA333', name: 'Administrative Law' },
-    L3_PPA235: { code: 'PPA235', name: 'Canada and Global Politics' },
-    L3_PPA301: { code: 'PPA301', name: 'Introduction to Policy Analysis' },
-    L3_PPA303: { code: 'PPA303', name: 'Public Finance and Budgeting' },
-    L3_PPA319: { code: 'PPA319', name: 'Public Sector Human Resource Management' },
-    L3_PPA335: { code: 'PPA335', name: 'Planning and Policy in the City' },
-    L3_PPA401: { code: 'PPA401', name: 'Program Evaluation' },
-    L3_PPA402: { code: 'PPA402', name: 'Organizational Behaviour' },
-    L3_PPA403: { code: 'PPA403', name: 'Ethics in Public Administration' },
-    L3_PPA404: { code: 'PPA404', name: 'Strategic Management in Public Sector' },
-    L3_PPA411: { code: 'PPA411', name: 'Issues in Public Administration' },
-    L3_PPA414: { code: 'PPA414', name: 'Research Methods in Public Admin' },
-    L3_PPA425: { code: 'PPA425', name: 'Municipal Government and Politics' },
-    L3_PPA490: { code: 'PPA490', name: 'Special Topics in Public Administration' },
-    L3_PPA501: { code: 'PPA501', name: 'Comparative Public Administration' },
-    L3_PRACTICUM1: { code: 'PRAC1', name: 'Practicum 1' },
-    L3_PRACTICUM2: { code: 'PRAC2', name: 'Practicum 2' },
-    L3_POG1: { code: 'POG1', name: 'Politics & Governance Elective 1' },
-    L3_POG2: { code: 'POG2', name: 'Politics & Governance Elective 2' },
-    L3_POG3: { code: 'POG3', name: 'Politics & Governance Elective 3' },
-    L3_LIBERAL1: { code: 'LIB1', name: 'Liberal Studies 1' },
-    L3_LIBERAL2: { code: 'LIB2', name: 'Liberal Studies 2' },
-    L3_LIBERAL3: { code: 'LIB3', name: 'Liberal Studies 3' },
-    L3_LIBERAL4: { code: 'LIB4', name: 'Liberal Studies 4' },
+    L3_PPA333: { code: 'PPA333', name: 'Research Methods in Public Admin' },
+    L3_PPA235: { code: 'PPA235', name: 'Theories of the State' },
+    L3_PPA301: { code: 'PPA301', name: 'Administrative Law' },
+    L3_PPA303: { code: 'PPA303', name: 'Financial Management' },
+    L3_PPA319: { code: 'PPA319', name: 'Politics of Work and Labour' },
+    L3_PPA335: { code: 'PPA335', name: 'Theories of Bureaucracy' },
+    L3_PPA401: { code: 'PPA401', name: 'Collaborative Governance' },
+    L3_PPA402: { code: 'PPA402', name: 'Program Planning & Evaluation' },
+    L3_PPA403: { code: 'PPA403', name: 'e-Government' },
+    L3_PPA404: { code: 'PPA404', name: 'Issues in Public Admin' },
+    L3_PPA411: { code: 'PPA411', name: 'Advanced Public Policy' },
+    L3_PPA414: { code: 'PPA414', name: 'Comparative Public Policy' },
+    L3_PPA425: { code: 'PPA425', name: 'Intergovernmental Relations' },
+    L3_PPA490: { code: 'PPA490', name: 'Public Administration Themes' },
+    L3_PPA501: { code: 'PPA501', name: 'Public Sector Leadership' },
+    L3_PRACTICUM1: { code: 'PPA50A', name: 'Practicum A' },
+    L3_PRACTICUM2: { code: 'PPA50B', name: 'Practicum B' },
+    L3_POG1: { code: 'POG1', name: 'Required Group II Elective 1' },
+    L3_POG2: { code: 'POG2', name: 'Required Group II Elective 2' },
+    L3_POG3: { code: 'POG3', name: 'Required Group II Elective 3' },
+    L3_LIBERAL1: { code: 'LIB1', name: 'Liberal Studies (Lower) 1' },
+    L3_LIBERAL2: { code: 'LIB2', name: 'Liberal Studies (Upper) 2' },
+    L3_LIBERAL3: { code: 'LIB3', name: 'Liberal Studies (Upper) 3' },
+    L3_LIBERAL4: { code: 'LIB4', name: 'Liberal Studies (Upper) 4' },
     L3_OPEN1: { code: 'L3OPEN1', name: 'Open Elective 1' },
     L3_OPEN2: { code: 'L3OPEN2', name: 'Open Elective 2' },
     L3_OPEN3: { code: 'L3OPEN3', name: 'Open Elective 3' },
     L3_OPEN4: { code: 'L3OPEN4', name: 'Open Elective 4' },
     L3_OPEN5: { code: 'L3OPEN5', name: 'Open Elective 5' },
     L3_OPEN6: { code: 'L3OPEN6', name: 'Open Elective 6' },
+    L3_OPEN7: { code: 'L3OPEN7', name: 'Open Elective 7' },
   };
 
   const [openedCourseFromDegreeTracking, setOpenedCourseFromDegreeTracking] = useState(false);
@@ -3850,6 +3854,22 @@ export default function Dashboard() {
       })
       .catch(err => console.error('Error resetting files for new semester:', err));
   }, []);
+
+  useEffect(() => {
+    if (!semesterSettings || pdfUploadShownRef.current) return;
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const semEnd = semesterSettings.semesterEndDate ? new Date(semesterSettings.semesterEndDate) : null;
+    if (!semEnd) return;
+    const daysUntilEnd = Math.floor((semEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysUntilEnd > 14 || daysUntilEnd < 0) return;
+    const lastShownKey = `pdfUpload_lastShown_${semesterSettings.id}`;
+    const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
+    const hoursSinceShown = (now.getTime() - lastShown) / (1000 * 60 * 60);
+    if (hoursSinceShown < 336) return;
+    setShowPdfUploadDialog(true);
+    localStorage.setItem(lastShownKey, String(now.getTime()));
+    pdfUploadShownRef.current = true;
+  }, [semesterSettings]);
 
   // Deleted folders query for hamburger menu filtering
   const { data: deletedFoldersData = [] } = useQuery<{ id: number; folderId: string }[]>({
@@ -8086,6 +8106,50 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={showPdfUploadDialog} onOpenChange={setShowPdfUploadDialog}>
+        <DialogContent className="sm:max-w-[480px]" style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e8edf5 100%)', border: '2px solid #4a5568' }}>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-center">
+              📋 Update Course Offerings List
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p className="text-gray-700">
+              Hey Bryn, the semester is ending soon! Time to upload the latest <strong>PAG Elective Course List Offerings PDF</strong> for the upcoming semester so your degree planner stays up to date.
+            </p>
+            <p className="text-gray-600 text-xs">
+              You can get the latest PDF from the PAG program office or your advisor. Upload it here and I'll update the elective dropdowns in your degree tracker.
+            </p>
+            <div className="border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white/50 hover:bg-white/80 transition-colors cursor-pointer" onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = '.pdf';
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  alert(`Received: ${file.name}\n\nIn a future update, I'll parse this PDF and update your elective course options automatically. For now, share the PDF content in our chat and I'll update the system for you.`);
+                  setShowPdfUploadDialog(false);
+                }
+              };
+              input.click();
+            }} data-testid="pdf-upload-dropzone">
+              <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+              <p className="text-sm font-medium text-gray-600">Click to upload PDF</p>
+              <p className="text-xs text-gray-400 mt-1">PAG Registration Package (.pdf)</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              className="px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 text-gray-700"
+              onClick={() => setShowPdfUploadDialog(false)}
+              data-testid="btn-dismiss-pdf-upload"
+            >
+              Remind Me Later
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* New Semester Setup Dialog */}
       <Dialog open={isNewSemesterDialogOpen} onOpenChange={setIsNewSemesterDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
@@ -11646,14 +11710,17 @@ export default function Dashboard() {
                       <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
                     </div>
                     <div className="px-1 pb-1 flex items-end">
-                      <input 
-                        type="text" 
-                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
-                        placeholder="Course..."
+                      <select
+                        className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
                         value={openElectives['LIBERAL'] || ''}
                         onChange={(e) => updateOpenElective('LIBERAL', e.target.value)}
-                        data-testid="input-pag-liberal"
-                      />
+                        data-testid="select-pag-liberal"
+                      >
+                        <option value="">Select course...</option>
+                        {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className={`w-12 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-emerald-100' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-100' : ''}`}>
@@ -11678,24 +11745,30 @@ export default function Dashboard() {
                       OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
                     </div>
                     <div className="px-1 pt-2 pb-5 flex items-end">
-                      <input 
-                        type="text" 
-                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['OPEN1'] || courseGrades['OPEN1']?.grade || courseGrades['OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
-                        placeholder="Course 1..."
+                      <select
+                        className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['OPEN1'] || courseGrades['OPEN1']?.grade || courseGrades['OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
                         value={openElectives['OPEN1'] || ''}
                         onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
-                        data-testid="input-pag-open1"
-                      />
+                        data-testid="select-pag-open1"
+                      >
+                        <option value="">Select course 1...</option>
+                        {OPEN_ELECTIVE_COURSES.map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="px-1 pt-1 pb-1 flex items-end">
-                      <input 
-                        type="text" 
-                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['OPEN2'] || courseGrades['OPEN2']?.grade || courseGrades['OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
-                        placeholder="Course 2..."
+                      <select
+                        className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['OPEN2'] || courseGrades['OPEN2']?.grade || courseGrades['OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
                         value={openElectives['OPEN2'] || ''}
                         onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
-                        data-testid="input-pag-open2"
-                      />
+                        data-testid="select-pag-open2"
+                      >
+                        <option value="">Select course 2...</option>
+                        {OPEN_ELECTIVE_COURSES.map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
@@ -11925,7 +11998,12 @@ export default function Dashboard() {
                     <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
                   </div>
                   <div className="flex-1 h-11 px-1 flex items-center">
-                    <input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} placeholder="Course..." value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} />
+                    <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
+                      <option value="">Select course...</option>
+                      {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
+                        <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5">
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_LIBERAL']?.grade || ''} onChange={(e) => updateGrade('L2_LIBERAL', e.target.value)}>
@@ -12012,8 +12090,8 @@ export default function Dashboard() {
                     <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</span>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className="h-11 px-1 flex items-center"><input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} placeholder="Course 1..." value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} placeholder="Course 2..." value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} /></div>
+                    <div className="h-11 px-1 flex items-center"><select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} data-testid="select-l2-open1"><option value="">Select course 1...</option>{OPEN_ELECTIVE_COURSES.map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select></div>
+                    <div className="h-11 px-1 flex items-center"><select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} data-testid="select-l2-open2"><option value="">Select course 2...</option>{OPEN_ELECTIVE_COURSES.map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select></div>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -12167,9 +12245,17 @@ export default function Dashboard() {
                     <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline relative ${courseRowClass('L3_POG1')}`} onClick={() => handleCertCourseClick('L3_POG1')} data-testid="cert-course-L3_POG1">Any POG – 300 or 400 level courses<InProgressToggle id="L3_POG1" /></div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline relative ${courseRowClass('L3_POG2')}`} onClick={() => handleCertCourseClick('L3_POG2')} data-testid="cert-course-L3_POG2">Any POG – 300 or 400 level courses<InProgressToggle id="L3_POG2" /></div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline relative ${courseRowClass('L3_POG3')}`} onClick={() => handleCertCourseClick('L3_POG3')} data-testid="cert-course-L3_POG3">Any POG – 300 or 400 level courses<InProgressToggle id="L3_POG3" /></div>
+                    {['L3_POG1','L3_POG2','L3_POG3'].map((cid, i) => (
+                      <div key={cid} className={`h-11 px-1 flex items-center relative ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
+                        <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
+                          <option value="">{`Select POG course ${i+1}...`}</option>
+                          {POG_COURSES.map(c => (
+                            <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                          ))}
+                        </select>
+                        <InProgressToggle id={cid} />
+                      </div>
+                    ))}
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -12207,7 +12293,12 @@ export default function Dashboard() {
                   <div className="flex-1 flex flex-col">
                     {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                       <div key={cid} className={`h-11 px-1 flex items-center ${checkedCourses[cid] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
-                        <input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} placeholder={`Course ${i+1}...`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} />
+                        <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
+                          <option value="">{i === 0 ? 'Lower Level...' : 'Upper Level...'}</option>
+                          {getCoursesForLevel(i === 0 ? 'LOWER' : 'UPPER', LIBERAL_STUDIES_COURSES).map(c => (
+                            <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                          ))}
+                        </select>
                       </div>
                     ))}
                   </div>
@@ -12229,24 +12320,29 @@ export default function Dashboard() {
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
-                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map(cid => (
+                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map(cid => (
                       <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
                         <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                       </div>
                     ))}
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
+                    <div className="leading-tight"><span className="font-bold">SEVEN</span> one-term courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map((cid, i) => (
+                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                       <div key={cid} className={`h-11 px-1 flex items-center ${checkedCourses[cid] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
-                        <input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} placeholder={`Course ${i+1}...`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} />
+                        <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
+                          <option value="">{`Select course ${i+1}...`}</option>
+                          {OPEN_ELECTIVE_COURSES.map(c => (
+                            <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                          ))}
+                        </select>
                       </div>
                     ))}
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
-                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map(cid => (
+                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map(cid => (
                       <div key={cid} className={`h-11 flex flex-col items-center justify-center gap-0.5 ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
                         <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                         <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />

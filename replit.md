@@ -105,6 +105,18 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Behavior**: Remembers checked items; dialog stops appearing once all items are checked
 - **API**: `GET /api/semester-checklist`, `PATCH /api/semester-checklist`
 
+### PDF Upload Reminder
+- **Trigger**: Shows when semester end is within 14 days, once every 2 weeks (336 hours)
+- **Purpose**: Reminds user to upload latest PAG Elective Course List Offerings PDF for upcoming semester
+- **Behavior**: File picker dialog with .pdf accept; localStorage-tracked per semester ID
+- **State**: `showPdfUploadDialog` / `pdfUploadShownRef`
+
+### Degree Tracker
+- **File**: `shared/electiveCourses.ts` — full course data for LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES with code, name, level (LOWER/UPPER), category, prereq flags, semester availability
+- **Elective Dropdowns**: All elective slots use `<select>` dropdowns pulling from course data arrays. Level restrictions: L1 LIBERAL = LOWER only, L2 LIBERAL = LOWER only, L3_LIBERAL1 = LOWER, L3_LIBERAL2-4 = UPPER
+- **POG Dropdowns**: L3_POG1/2/3 use dropdowns from POG_COURSES array (300/400-level courses)
+- **GPA Box**: Level I GPA computed from TMU 4.33 scale; color-coded green (≥3.0), yellow (≥2.0), red (<2.0); shows letter grade equivalent
+
 ### Future Semester Dates & Confirmation
 - **File**: `shared/semesterUtils.ts` — `FUTURE_SEMESTER_SCHEDULE` array with dates through Winter 2029
 - **Confirm Dialog**: Shows ~1 month before each new semester (based on `confirmMonth`), lets user verify/update dates
