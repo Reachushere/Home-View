@@ -5541,9 +5541,17 @@ document.body.removeChild(a);
       });
       console.log(`[Cat Wash] Fire Stick ${entityId} adb_command: ${resp.status}`);
       if (resp.ok) {
-        // Send DPAD_CENTER after delay to trigger fullscreen via click handler
+        // Try immersive mode + DPAD_CENTER to trigger fullscreen
         setTimeout(async () => {
           try {
+            // Force immersive mode to hide system bars
+            await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
+            });
+            console.log(`[Cat Wash] Fire Stick ${entityId} set immersive mode for Silk`);
+            // Also send DPAD_CENTER to trigger page fullscreen handler
             await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -5551,7 +5559,7 @@ document.body.removeChild(a);
             });
             console.log(`[Cat Wash] Fire Stick ${entityId} sent DPAD_CENTER for fullscreen`);
           } catch (e: any) {
-            console.log(`[Cat Wash] Fire Stick DPAD_CENTER failed: ${e.message}`);
+            console.log(`[Cat Wash] Fire Stick fullscreen commands failed: ${e.message}`);
           }
         }, 5000);
         return true;
@@ -5826,15 +5834,13 @@ document.body.removeChild(a);
       }
 
       const navTimestamp = Date.now();
-      const tabletWrapperUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}`;
-      const tvWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
       await Promise.all([
-        setTabletCommand({ action: 'navigate', url: tabletWrapperUrl, timestamp: navTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: tvWrapperUrl, timestamp: navTimestamp }, true, 'tv'),
+        setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: navTimestamp }, true, 'master'),
+        setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: navTimestamp }, true, 'tv'),
       ]);
       console.log(`[Cat Wash] tablet-nav set for devices`);
-      console.log(`[Cat Wash] master (wrapper): ${tabletWrapperUrl.substring(0, 100)}`);
-      console.log(`[Cat Wash] tv (wrapper): ${tvWrapperUrl.substring(0, 100)}`);
+      console.log(`[Cat Wash] master (direct): ${readerUrl.substring(0, 100)}`);
+      console.log(`[Cat Wash] tv (direct): ${tvFollowUrl.substring(0, 100)}`);
 
       currentTabletReaderUrl = readerUrl;
 
