@@ -19318,8 +19318,10 @@ export default function Dashboard() {
                       return tc === cCode && !t.isCompleted && new Date(t.dueDate) >= nowDate;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5);
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No upcoming items</span>;
-                    const textColor = cCode === 'CFNF' ? '#ffb3d9' : cCode === 'CASL' || cCode === 'CASL101' ? '#d4b3ff' : '#ffffff';
-                    const dateColor = cCode === 'CFNF' ? '#ff80bf' : cCode === 'CASL' || cCode === 'CASL101' ? '#b380ff' : 'rgba(255,255,255,0.5)';
+                    const isCFNF = cCode.startsWith('CFNF');
+                    const isCASL = cCode.startsWith('CASL');
+                    const textColor = isCFNF ? '#ffb3d9' : isCASL ? '#d4b3ff' : '#ffffff';
+                    const dateColor = isCFNF ? '#ff80bf' : isCASL ? '#b380ff' : 'rgba(255,255,255,0.5)';
                     return courseTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
