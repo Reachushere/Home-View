@@ -1272,8 +1272,8 @@ export default function Dashboard() {
       'PPA101': true,
       'PPA102': true,
       'PPA125': true,
-      'ELECTIVE1': true,
-      'ELECTIVE2': true,
+      'L1_PPA120': true,
+      'L1_PPA121': true,
       'LIBERAL': true,
     };
     const saved = localStorage.getItem('checkedCourses');
@@ -2419,8 +2419,8 @@ export default function Dashboard() {
       'PPA101': { grade: 'A-', percent: '3.670' },
       'PPA102': { grade: 'A', percent: '4.000' },
       'PPA125': { grade: 'A+', percent: '4.330' },
-      'ELECTIVE1': { grade: 'A-', percent: '3.670' },
-      'ELECTIVE2': { grade: 'B+', percent: '3.330' },
+      'L1_PPA120': { grade: 'A-', percent: '3.670' },
+      'L1_PPA121': { grade: 'B+', percent: '3.330' },
       'LIBERAL': { grade: 'A-', percent: '3.670' },
     };
     const saved = localStorage.getItem('courseGrades');
@@ -2680,13 +2680,13 @@ export default function Dashboard() {
 
   const gradeOptions = ['', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
 
-  const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'ELECTIVE1', 'ELECTIVE2', 'LIBERAL', 'OPEN1', 'OPEN2']
+  const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'L1_PPA120', 'L1_PPA121', 'LIBERAL', 'OPEN1', 'OPEN2']
     .every(id => checkedCourses[id]);
 
   const certSections = {
     L1: [
       { required: 3, members: ['PPA101', 'PPA102', 'PPA125'] },
-      { required: 2, members: ['ELECTIVE1', 'ELECTIVE2', 'L1_PPA122', 'L1_PPA124'] },
+      { required: 2, members: ['L1_PPA120', 'L1_PPA121', 'L1_PPA122', 'L1_PPA124'] },
       { required: 1, members: ['LIBERAL'] },
       { required: 2, members: ['OPEN1', 'OPEN2'] },
     ],
@@ -2775,8 +2775,8 @@ export default function Dashboard() {
     PPA101: { code: 'PPA101', name: 'Cdn Public Admin: Institutions' },
     PPA102: { code: 'PPA102', name: 'Cdn Public Admin: Processes' },
     PPA125: { code: 'PPA125', name: 'Rights, Equity and the State' },
-    ELECTIVE1: { code: 'PPA120', name: 'Canadian Politics & Gov\'t' },
-    ELECTIVE2: { code: 'PPA121', name: 'Ontario Politics & Gov\'t' },
+    L1_PPA120: { code: 'PPA120', name: 'Canadian Politics & Gov\'t' },
+    L1_PPA121: { code: 'PPA121', name: 'Ontario Politics & Gov\'t' },
     L1_PPA122: { code: 'PPA122', name: 'Local Politics & Gov\'t' },
     L1_PPA124: { code: 'PPA124', name: 'Indigenous Pol. & Governance' },
     LIBERAL: { code: 'LIBERAL', name: 'Liberal Studies Elective (Lower)' },
@@ -11718,36 +11718,30 @@ export default function Dashboard() {
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA125']?.percent || ''} onChange={(e) => updatePercent('PPA125', e.target.value)} />
                   </div>
                 </div>
-                <div className="flex border-b border-black">
-                  <div className="w-5 border-r border-black"></div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-semibold">CORE ELECTIVES:</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
-                  <div className="w-12 border-l border-black"></div>
-                </div>
-                <div className={`flex border-b border-black ${courseRowClass('ELECTIVE1')}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L1_PPA120')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['ELECTIVE1'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('ELECTIVE1')) ? "default" : "pointer", opacity: (isCheckDisabled('ELECTIVE1')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('ELECTIVE1'))) { toggleCourse('ELECTIVE1'); } }}>{(checkedCourses['ELECTIVE1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L1_PPA120'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L1_PPA120')}>{(checkedCourses['L1_PPA120'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
-                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('ELECTIVE1')} data-testid="cert-course-ELECTIVE1">Canadian Politics & Government **<InProgressToggle id="ELECTIVE1" /></div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L1_PPA120')} data-testid="cert-course-L1_PPA120">Canadian Politics & Government<InProgressToggle id="L1_PPA120" /></div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L1_PPA120']?.grade || ''} onChange={(e) => updateGrade('L1_PPA120', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L1_PPA120']?.percent || ''} onChange={(e) => updatePercent('L1_PPA120', e.target.value)} />
                   </div>
                 </div>
-                <div className={`flex border-b border-black ${courseRowClass('ELECTIVE2')}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L1_PPA121')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['ELECTIVE2'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('ELECTIVE2')) ? "default" : "pointer", opacity: (isCheckDisabled('ELECTIVE2')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('ELECTIVE2'))) { toggleCourse('ELECTIVE2'); } }}>{(checkedCourses['ELECTIVE2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L1_PPA121'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L1_PPA121')}>{(checkedCourses['L1_PPA121'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
-                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('ELECTIVE2')} data-testid="cert-course-ELECTIVE2">Ontario Politics and Government<InProgressToggle id="ELECTIVE2" /></div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L1_PPA121')} data-testid="cert-course-L1_PPA121">Ontario Politics and Government<InProgressToggle id="L1_PPA121" /></div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L1_PPA121']?.grade || ''} onChange={(e) => updateGrade('L1_PPA121', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L1_PPA121']?.percent || ''} onChange={(e) => updatePercent('L1_PPA121', e.target.value)} />
                   </div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L1_PPA122')}`}>
@@ -11875,7 +11869,7 @@ export default function Dashboard() {
               </div>
               </div>
               {(() => {
-                const l1CourseIds = ['PPA101','PPA102','PPA125','ELECTIVE1','ELECTIVE2','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
+                const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
                 const percentToGpa = (p: number): number => {
                   if (p >= 90) return 4.33;
                   if (p >= 85) return 4.0;
@@ -14353,7 +14347,7 @@ export default function Dashboard() {
                               if (savedMapping[codeUpper]) {
                                 carouselKeys.push(savedMapping[codeUpper]);
                               } else if (newVal) {
-                                const slots = ct === 'liberal_studies' ? ['LIBERAL'] : ['ELECTIVE1', 'ELECTIVE2', 'OPEN1', 'OPEN2'];
+                                const slots = ct === 'liberal_studies' ? ['LIBERAL'] : ['L1_PPA120', 'L1_PPA121', 'OPEN1', 'OPEN2'];
                                 for (const slot of slots) {
                                   if (!checkedCourses[slot]) { 
                                     carouselKeys.push(slot); 
