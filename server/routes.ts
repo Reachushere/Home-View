@@ -4944,6 +4944,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (catWashPlaybackState) {
           catWashPlaybackState.chunkIndex = i;
           catWashPlaybackState.chunkStartedAt = new Date();
+          const chunkText = chunks[i] || '';
+          catWashPlaybackState.currentWords = chunkText.split(/\s+/).filter((w: string) => w.length > 0);
+          catWashPlaybackState.wordIndex = 0;
         }
 
         if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL && i > startChunk + 2) {
