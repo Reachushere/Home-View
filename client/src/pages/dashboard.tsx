@@ -1002,8 +1002,7 @@ export default function Dashboard() {
         }
         if (!data.action || data.action === null) return;
         beacon('cmd-received', { action: data.action, cmdTs: data.timestamp, lastTs: lastTabletNavTimestamp.current, age: Date.now() - data.timestamp, url: data.url?.substring(0, 60) });
-        if (data.timestamp <= lastTabletNavTimestamp.current) {
-          beacon('cmd-skipped-old', { cmdTs: data.timestamp, lastTs: lastTabletNavTimestamp.current });
+        if (data.timestamp === lastTabletNavTimestamp.current) {
           return;
         }
         if (Date.now() - data.timestamp > 120000) {
