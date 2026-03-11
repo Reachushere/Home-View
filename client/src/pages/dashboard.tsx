@@ -19355,13 +19355,6 @@ export default function Dashboard() {
                           className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
                           style={{
                             lineHeight: '1.3',
-                            transition: 'all 0.15s ease',
-                            transform: hoveredCountdownTaskId === t.id ? 'scale(1.08)' : undefined,
-                            background: hoveredCountdownTaskId === t.id ? 'rgba(255,255,255,0.15)' : undefined,
-                            borderRadius: hoveredCountdownTaskId === t.id ? '3px' : undefined,
-                            padding: hoveredCountdownTaskId === t.id ? '1px 4px' : undefined,
-                            boxShadow: hoveredCountdownTaskId === t.id ? '0 2px 8px rgba(0,0,0,0.3)' : undefined,
-                            zIndex: hoveredCountdownTaskId === t.id ? 10 : undefined,
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
@@ -19370,8 +19363,8 @@ export default function Dashboard() {
                           onClick={() => setEditingTask(t)}
                         >
                           <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400 }}>{t.title}</span>
-                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: dateColor, fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
                         </div>
                       );
                     });
@@ -19523,6 +19516,7 @@ export default function Dashboard() {
                       const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                      const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
                         <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: '1px' }}
                           onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
@@ -19579,6 +19573,9 @@ export default function Dashboard() {
                                 <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
+                            {hwPdfUrl && (
+                              <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-${task.id}`} />
+                            )}
                           </div>
                           </div>
                         </div>
@@ -19686,6 +19683,7 @@ export default function Dashboard() {
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                                const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
                                   <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
@@ -19756,6 +19754,9 @@ export default function Dashboard() {
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
+                                        {hwPdfUrl && (
+                                          <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-tw-${task.id}`} />
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -19871,6 +19872,7 @@ export default function Dashboard() {
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                                 const gc = getCourseGradientColors(taskCourseCode);
+                                const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
                                   <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
@@ -19941,6 +19943,9 @@ export default function Dashboard() {
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
+                                        {hwPdfUrl && (
+                                          <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-nw-${task.id}`} />
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -20058,6 +20063,7 @@ export default function Dashboard() {
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                                 const gc = getCourseGradientColors(taskCourseCode);
+                                const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
                                   <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.15)', marginBottom: isLastTask ? 0 : '1px' }}
@@ -20106,6 +20112,9 @@ export default function Dashboard() {
                                             <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
+                                        {hwPdfUrl && (
+                                          <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-2w-${task.id}`} />
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -20219,6 +20228,7 @@ export default function Dashboard() {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                                const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 return (
                                   <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.1)' : 'none' }}>
                                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
@@ -20240,6 +20250,9 @@ export default function Dashboard() {
                                         <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                       </div>
                                     </div>
+                                    {hwPdfUrl && (
+                                      <img src={pdfIconPath} alt="Open PDF" style={{ width: '20px', height: '20px', objectFit: 'contain', cursor: 'pointer', flexShrink: 0, marginLeft: '2px' }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (hwPdfUrl.startsWith('http')) { window.open(hwPdfUrl, '_blank'); } else { const p = hwPdfUrl.startsWith('/') ? hwPdfUrl.slice(1) : encodeURIComponent(hwPdfUrl); window.open(`/pdf-viewer/${p}`, '_blank'); } }} data-testid={`pdf-icon-hw-3w-${task.id}`} />
+                                    )}
                                   </div>
                                 );
                               })}
