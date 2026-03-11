@@ -18689,9 +18689,9 @@ export default function Dashboard() {
                   localStorage.removeItem('calendarDefaultSize');
                 }
               }}
-              style={{ width: '10px', height: '10px', accentColor: '#666' }}
+              style={{ width: '10px', height: '10px', accentColor: '#ffffff' }}
             />
-            <span style={{ fontSize: '8px', fontWeight: 600, color: 'rgba(100,100,100,0.7)', whiteSpace: 'nowrap' }}>Set Default</span>
+            <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', whiteSpace: 'nowrap' }}>Set Default</span>
           </label>
           </div>
           </div>
