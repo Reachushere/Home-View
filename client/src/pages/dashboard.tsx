@@ -12157,11 +12157,11 @@ export default function Dashboard() {
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
-                  { id: 'L2_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: 'Prof-Req\'d' },
-                  { id: 'L2_PPA121', code: 'PPA 121', name: 'Ontario Politics and Government (POG310, PPA522)', type: 'SELECT' },
-                  { id: 'L2_PPA122', code: 'PPA 122', name: 'Local Politics and Government (POL122)', type: 'THREE (3)' },
-                  { id: 'L2_PPA124', code: 'PPA 124', name: 'Indigenous Politics and Governance (POG440, POL440)', type: 'not previously' },
-                  { id: 'L2_PPA235', code: 'PPA 235', name: 'Theories of the State (PPA525)', type: 'completed' },
+                  { id: 'L2_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: '' },
+                  { id: 'L2_PPA121', code: 'PPA 121', name: 'Ontario Politics and Government (POG310, PPA522)', type: '' },
+                  { id: 'L2_PPA122', code: 'PPA 122', name: 'Local Politics and Government (POL122)', type: '' },
+                  { id: 'L2_PPA124', code: 'PPA 124', name: 'Indigenous Politics and Governance (POG440, POL440)', type: '' },
+                  { id: 'L2_PPA235', code: 'PPA 235', name: 'Theories of the State (PPA525)', type: '' },
                   { id: 'L2_PPA303', code: 'PPA 303', name: 'Financial Management (PPA600)', type: '' },
                   { id: 'L2_PPA319', code: 'PPA 319', name: 'Politics of Work and Labour (POG319, PPA533)', type: '' },
                 ].map((c) => {
