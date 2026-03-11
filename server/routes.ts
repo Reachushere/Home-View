@@ -5835,6 +5835,9 @@ document.body.removeChild(a);
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
+      const extractionPromise = extractFileText(cppaModule);
+      console.log(`[Cat Lights] Started text extraction in background (will be ready when you confirm)`);
+
       {
         const maxWaitMs = 65000;
         console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation via /api/webhook/cat-lights-confirm ...`);
@@ -5884,7 +5887,8 @@ document.body.removeChild(a);
       catWashPlaybackStartedAt = new Date();
       startToothbrushPolling();
 
-      const fileText = await extractFileText(cppaModule);
+      const fileText = await extractionPromise;
+      console.log(`[Cat Lights] Text extraction ready (${fileText ? fileText.length : 0} chars)`);
       const fileChunks = fileText ? chunkTextForNest(fileText) : [];
       const totalChunksCalc = fileChunks.length;
 
@@ -8055,7 +8059,7 @@ document.body.removeChild(a);
                     textLength = cleaned.length;
                     totalChunks = Math.ceil(cleaned.length / CHUNK_SIZE);
 
-                    await storage.updateFile(newFile.id, { totalChunks });
+                    await storage.updateFile(newFile.id, { totalChunks, extractedText: cleaned });
                   } catch (parseErr: any) {
                     console.error(`[Monitor] Failed to extract text from ${file.name}:`, parseErr.message);
                   }
@@ -8092,6 +8096,44 @@ document.body.removeChild(a);
     } catch (error: any) {
       console.error("[Monitor] Error syncing Spring/Summer files:", error);
       res.status(500).json({ error: "Failed to monitor Spring/Summer files", details: error.message });
+    }
+  });
+
+  app.post("/api/files/pre-extract", async (_req, res) => {
+    try {
+      const allFiles = await storage.getFiles();
+      const needExtraction = allFiles.filter((f: any) => !f.extractedText && f.objectPath);
+      console.log(`[Pre-Extract] Found ${needExtraction.length} files needing text extraction`);
+
+      if (needExtraction.length === 0) {
+        return res.json({ success: true, message: 'All files already have cached text', extracted: 0 });
+      }
+
+      res.json({ success: true, message: `Extracting ${needExtraction.length} files in background`, queued: needExtraction.length });
+
+      (async () => {
+        let extracted = 0;
+        let failed = 0;
+        for (const file of needExtraction) {
+          try {
+            const text = await extractFileText(file);
+            if (text) {
+              extracted++;
+              console.log(`[Pre-Extract] ${extracted}/${needExtraction.length}: ${file.originalName} (${text.length} chars)`);
+            } else {
+              failed++;
+              console.log(`[Pre-Extract] Failed: ${file.originalName} (no text)`);
+            }
+          } catch (e: any) {
+            failed++;
+            console.error(`[Pre-Extract] Error: ${file.originalName}: ${e.message}`);
+          }
+        }
+        console.log(`[Pre-Extract] Complete: ${extracted} extracted, ${failed} failed`);
+      })();
+    } catch (error: any) {
+      console.error("[Pre-Extract] Error:", error);
+      res.status(500).json({ error: error.message });
     }
   });
 
