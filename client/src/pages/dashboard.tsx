@@ -1401,6 +1401,7 @@ export default function Dashboard() {
       'CPPA122': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CPHL110': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
       'CSOC103': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
+      'CHST501': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
     };
     try {
       const saved = localStorage.getItem('pastCourseInfo');
@@ -3234,14 +3235,15 @@ export default function Dashboard() {
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
       } else {
-        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
-        const readingWeek = semesterSettings?.readingWeekStart || null;
+        const cachedSem = queryClient.getQueryData<SemesterSettings | null>(["/api/semester"]);
+        const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
+        const readingWeek = cachedSem?.readingWeekStart || null;
         const computedWeek = getWeekNumber(today, semStart, readingWeek);
         setSelectedWeek(computedWeek);
       }
       lastAutoWeekDateRef.current = today.getDate();
     }
-  }, [weeks, semesterSettings]);
+  }, [weeks]);
 
   useEffect(() => {
     if (weeks.length === 0) return;
@@ -3259,13 +3261,14 @@ export default function Dashboard() {
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
       } else {
-        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
-        const readingWeek = semesterSettings?.readingWeekStart || null;
+        const cachedSem = queryClient.getQueryData<SemesterSettings | null>(["/api/semester"]);
+        const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
+        const readingWeek = cachedSem?.readingWeekStart || null;
         const computedWeek = getWeekNumber(currentTime, semStart, readingWeek);
         setSelectedWeek(computedWeek);
       }
     }
-  }, [currentTime, weeks, semesterSettings]);
+  }, [currentTime, weeks]);
 
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -6145,18 +6148,18 @@ export default function Dashboard() {
     course2StartDate: "",
     course2EndDate: "",
     course2SpringSummerTerm: "full" as string,
-    course3Code: "",
-    course3Name: "",
+    course3Code: "CHST501",
+    course3Name: "CHST501 - The American Civil War",
     course3Professor: "",
     course3ProfessorEmail: "",
-    course3DeliveryMode: "" as string,
-    course3ClassDay: "" as string,
-    course3ClassDay2: "" as string,
+    course3DeliveryMode: "virtual" as string,
+    course3ClassDay: "monday" as string,
+    course3ClassDay2: "wednesday" as string,
     course3ClassTime: "",
     course3ClassEndTime: "",
-    course3StartDate: "",
-    course3EndDate: "",
-    course3SpringSummerTerm: "full" as string,
+    course3StartDate: "2026-06-22",
+    course3EndDate: "2026-08-12",
+    course3SpringSummerTerm: "second_half" as string,
     secondaryCalendarId: "",
   });
   
