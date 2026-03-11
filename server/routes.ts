@@ -5697,54 +5697,20 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
 
       if (isPromptDay) {
-        console.log(`[Cat Lights] Prompt day — setting ${MODULE_READING_PENDING} to ON and polling for confirmation`);
+        console.log(`[Cat Lights] Prompt day — setting booleans + TTS in parallel`);
 
         try {
-          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }),
-          });
-          await fetch(`${haUrl}/api/services/input_boolean/turn_on`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: MODULE_READING_PENDING }),
-          });
-          console.log(`[Cat Lights] Set pending=ON, confirmed=OFF`);
+          const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+          const ttsMessage = `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start.`;
 
-          const ttsMessage = `Would you like to listen to your module reading? ${fileName}. Say yes or confirm on the dashboard to start playback.`;
-          let ttsSuccess = false;
-
-          const ttsMethods = [
-            { name: "tts.speak", service: "tts/speak", body: { entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage } },
-            { name: "tts.cloud_say", service: "tts/cloud_say", body: { entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage } },
-            { name: "tts.google_translate_say", service: "tts/google_translate_say", body: { entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage } },
-          ];
-
-          for (const method of ttsMethods) {
-            try {
-              const ttsResp = await fetch(`${haUrl}/api/services/${method.service}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(method.body),
-              });
-              const respText = await ttsResp.text();
-              console.log(`[Cat Lights] TTS method ${method.name}: status=${ttsResp.status}, response=${respText.substring(0, 200)}`);
-              if (ttsResp.ok) {
-                ttsSuccess = true;
-                console.log(`[Cat Lights] TTS prompt sent successfully via ${method.name}`);
-                break;
-              }
-            } catch (ttsErr: any) {
-              console.error(`[Cat Lights] TTS method ${method.name} failed: ${ttsErr.message}`);
-            }
-          }
-
-          if (!ttsSuccess) {
-            console.error(`[Cat Lights] All TTS methods failed — no voice prompt played`);
-          }
+          const [, , ttsResp] = await Promise.all([
+            fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
+            fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
+            fetch(`${haUrl}/api/services/tts/speak`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }) }),
+          ]);
+          console.log(`[Cat Lights] Booleans set + TTS sent (status: ${ttsResp.status})`);
         } catch (e: any) {
-          console.error(`[Cat Lights] Failed to set input_booleans: ${e.message}`);
+          console.error(`[Cat Lights] Failed to set booleans/TTS: ${e.message}`);
           return res.status(500).json({ error: "Failed to set HA input_booleans", details: e.message });
         }
 
