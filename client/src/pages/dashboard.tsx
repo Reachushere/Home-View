@@ -5885,7 +5885,15 @@ export default function Dashboard() {
   const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
   const [shiftScheduleYear, setShiftScheduleYear] = useState(new Date().getFullYear());
   const [localShiftMap, setLocalShiftMap] = useState<Record<string, string>>({});
-  const [sleepDisabledDays, setSleepDisabledDays] = useState<Set<string>>(new Set());
+  const [sleepDisabledDays, setSleepDisabledDays] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('sleepDisabledDays');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('sleepDisabledDays', JSON.stringify(Array.from(sleepDisabledDays))); } catch {}
+  }, [sleepDisabledDays]);
   const [shiftDirty, setShiftDirty] = useState(false);
 
   const { data: shiftScheduleData } = useQuery<{ id: number; date: string; shiftType: string }[]>({
