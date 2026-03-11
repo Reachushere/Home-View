@@ -17587,6 +17587,7 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle + Set Default — bottom-center, fully outside overflow:clip */}
           <div
+            className="group/bottom-handle"
             style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
           >
             <div
@@ -17603,8 +17604,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div
-              className="cursor-pointer hover:!bg-white/70"
-              style={{ height: '10px', padding: '0 6px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }}
+              className="cursor-pointer hover:!bg-white/70 opacity-0 group-hover/bottom-handle:opacity-100 transition-opacity duration-150"
+              style={{ height: '10px', padding: '0 6px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)' }}
               onClick={() => {
                 const defaultHeight = window.innerHeight - 70;
                 const oldHeight = calendarHeight;
