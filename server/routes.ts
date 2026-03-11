@@ -623,6 +623,101 @@ export async function registerRoutes(
     res.json({ version: BUILD_VERSION });
   });
 
+  app.get('/tablet', (_req, res) => {
+    const baseUrl = `https://home-view--bkh416.replit.app`;
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Uni-Cal Tablet</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+iframe{width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bottom:0}
+</style>
+</head>
+<body>
+<iframe id="frame" src="${baseUrl}/?auth=5747" allow="fullscreen;autoplay"></iframe>
+<script>
+(function(){
+  var frame = document.getElementById('frame');
+  var lastTs = 0;
+  var polling = true;
+
+  function goFullscreen() {
+    var el = document.documentElement;
+    try {
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+    } catch(e){}
+  }
+
+  document.addEventListener('click', goFullscreen);
+  document.addEventListener('touchstart', goFullscreen);
+  setTimeout(goFullscreen, 1000);
+  setTimeout(goFullscreen, 3000);
+
+  function poll() {
+    if (!polling) return;
+    var url = '${baseUrl}/api/tablet-nav?device=master&auth=5747&_t=' + Date.now();
+    fetch(url, {cache:'no-store'}).then(function(r){return r.json()}).then(function(data){
+      if (!data || !data.action) return;
+      if (data.timestamp && data.timestamp <= lastTs) return;
+      if (data.timestamp && (Date.now() - data.timestamp > 120000)) return;
+
+      if (data.action === 'navigate' && data.url) {
+        lastTs = data.timestamp || Date.now();
+        fetch('${baseUrl}/api/tablet-nav/ack', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({timestamp:data.timestamp,device:'master'})
+        }).catch(function(){});
+        fetch('${baseUrl}/api/debug-beacon', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({event:'tablet-page:navigate',data:{url:data.url.substring(0,80)}})
+        }).catch(function(){});
+        frame.src = data.url;
+      } else if (data.action === 'stop_playback') {
+        lastTs = data.timestamp || Date.now();
+        fetch('${baseUrl}/api/tablet-nav/ack', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({timestamp:data.timestamp,device:'master'})
+        }).catch(function(){});
+        frame.src = '${baseUrl}/?auth=5747';
+      } else if (data.action === 'go_home') {
+        lastTs = data.timestamp || Date.now();
+        fetch('${baseUrl}/api/tablet-nav/ack', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({timestamp:data.timestamp,device:'master'})
+        }).catch(function(){});
+        frame.src = '${baseUrl}/?auth=5747';
+      }
+    }).catch(function(){});
+  }
+
+  setInterval(poll, 3000);
+  poll();
+
+  fetch('${baseUrl}/api/debug-beacon', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({event:'tablet-page:loaded',data:{ua:navigator.userAgent.substring(0,80),ts:Date.now()}})
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>`);
+  });
+
   app.post('/api/client-error', (req, res) => {
     const { message, stack, userAgent, url, timestamp } = req.body || {};
     console.error(`[CLIENT ERROR] ${timestamp || new Date().toISOString()} | UA: ${userAgent || 'unknown'} | URL: ${url || 'unknown'} | ${message} | Stack: ${stack || 'none'}`);
