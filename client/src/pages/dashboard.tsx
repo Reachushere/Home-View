@@ -994,7 +994,7 @@ export default function Dashboard() {
     let pollCount = 0;
     const checkTabletNav = async () => {
       try {
-        const resp = await fetch(`/api/tablet-nav?device=${deviceRole}`);
+        const resp = await fetch(`/api/tablet-nav?device=${deviceRole}&_t=${Date.now()}`);
         const data = await resp.json();
         pollCount++;
         if (pollCount % 20 === 0) {

@@ -4411,6 +4411,9 @@ export async function registerRoutes(
   }
 
   app.get("/api/tablet-nav", async (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     const device = (req.query.device as string) || 'master';
     let cmd = pendingTabletCommands[device];
     if (!cmd) {
