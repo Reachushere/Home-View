@@ -11958,11 +11958,13 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
                   <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                  <div className="w-5 border-l border-black"></div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
                   { id: 'PPA101', code: 'PPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
@@ -11982,6 +11984,9 @@ export default function Dashboard() {
                       </select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
                     </div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
+                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                    </div>
                   </div>
                 ))}
                 
@@ -11989,6 +11994,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
                   { id: 'L1_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)' },
@@ -12012,6 +12018,9 @@ export default function Dashboard() {
                       </select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
                     </div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
+                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                    </div>
                   </div>
                   );
                 })}
@@ -12019,6 +12028,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" in the calendar</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
@@ -12044,11 +12054,15 @@ export default function Dashboard() {
                     <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
                   </div>
+                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
+                    <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                  </div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" in the calendar</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['OPEN1','OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12067,6 +12081,9 @@ export default function Dashboard() {
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                       <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    </div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
+                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
                     </div>
                   </div>
                 ))}
@@ -12208,6 +12225,9 @@ export default function Dashboard() {
                       </select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
                     </div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
+                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                    </div>
                   </div>
                   );
                 })}
@@ -12215,6 +12235,7 @@ export default function Dashboard() {
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A in the calendar</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">

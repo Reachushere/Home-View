@@ -150,6 +150,45 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     zoomLink: courseInfo.zoomLink || '',
   });
 
+  const CERTIFICATE_TYPE_OPTIONS = [
+    { group: 'Certificate 1', options: [
+      'C1 - Mandatory Required Professional',
+      'C1 - Selected Required Professional',
+      'C1 - Liberal Studies Elective - Lower Level Table A',
+      'C1 - Professionally Related (Open) Elective Table 1',
+    ]},
+    { group: 'Certificate 2', options: [
+      'C2 - Mandatory Required Professional',
+      'C2 - Selected Required Professional',
+      'C2 - Liberal Studies Elective - Lower Level Table A',
+      'C2 - Professionally Related Elective - Upper Level Table B',
+      'C2 - Open Elective',
+    ]},
+    { group: 'Certificate 3', options: [
+      'C3 - Required Group 1',
+      'C3 - Required Group 2',
+      'C3 - Liberal Studies Elective Lower Level Table A',
+      'C3 - Liberal Studies Elective Upper Level Table B',
+      'C3 - Open Elective',
+    ]},
+  ];
+  const [certificateType, setCertificateType] = useState(() => {
+    try {
+      const saved = localStorage.getItem('courseCertificateTypes');
+      const parsed = saved ? JSON.parse(saved) : {};
+      return parsed[courseInfo.courseCode] || '';
+    } catch { return ''; }
+  });
+  const updateCertificateType = (val: string) => {
+    setCertificateType(val);
+    try {
+      const saved = localStorage.getItem('courseCertificateTypes');
+      const parsed = saved ? JSON.parse(saved) : {};
+      parsed[courseInfo.courseCode] = val;
+      localStorage.setItem('courseCertificateTypes', JSON.stringify(parsed));
+    } catch {}
+  };
+
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
@@ -509,6 +548,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
                   </div>
                 </div>
+                <div>
+                  <label className="text-white/50 text-[9px] mb-0.5 block">Certificate Type</label>
+                  <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={certificateType} onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-edit-certificate-type-detail">
+                    <option value="" className="bg-gray-800">-- Select --</option>
+                    {CERTIFICATE_TYPE_OPTIONS.map(g => (
+                      <optgroup key={g.group} label={g.group}>
+                        {g.options.map(o => <option key={o} value={o} className="bg-gray-800">{o}</option>)}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
               </div>
             ) : (
               <>
@@ -541,6 +591,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       <span className="text-white/90">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
+                  <div className="flex items-center gap-1.5 col-span-2">
+                    <GraduationCap className="h-3 w-3 text-white/40" />
+                    <span className="text-white/60">Certificate:</span>
+                    {certificateType ? (
+                      <span className="text-white/90 text-[9px]">{certificateType}</span>
+                    ) : (
+                      <select className="text-[9px] bg-white/10 border border-white/15 text-white/70 rounded px-1 py-0.5" value="" onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-cert-type-inline">
+                        <option value="" className="bg-gray-800">-- Select --</option>
+                        {CERTIFICATE_TYPE_OPTIONS.map(g => (
+                          <optgroup key={g.group} label={g.group}>
+                            {g.options.map(o => <option key={o} value={o} className="bg-gray-800">{o}</option>)}
+                          </optgroup>
+                        ))}
+                      </select>
+                    )}
+                  </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-3 w-3 text-white/40" />
                     <span className="text-white/60">Schedule:</span>
