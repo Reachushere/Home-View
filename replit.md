@@ -101,9 +101,15 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 
 ### Semester Setup Checklist
 - **Table**: `semester_checklist` — stores per-course checklist items (tasks, modules, readings)
-- **Trigger**: On the first day of each semester (based on `semesterStartDate`), a dialog prompts twice per day (8hr gap)
+- **Trigger**: Shows twice per day (8hr gap) until all items checked
 - **Behavior**: Remembers checked items; dialog stops appearing once all items are checked
 - **API**: `GET /api/semester-checklist`, `PATCH /api/semester-checklist`
+
+### Future Semester Dates & Confirmation
+- **File**: `shared/semesterUtils.ts` — `FUTURE_SEMESTER_SCHEDULE` array with dates through Winter 2029
+- **Confirm Dialog**: Shows ~1 month before each new semester (based on `confirmMonth`), lets user verify/update dates
+- **Auto-reset**: On the first day of each new semester, resets all file `listened` statuses via `POST /api/semester-reset-files`
+- **Schedule**: Fall 2026 (Sep 14-Dec 7), Winter 2027 (Jan 11-Apr 9), Spring/Summer 2027 (May 3-Aug 13), Fall 2027 (Sep 13-Dec 6), Winter 2028 (Jan 10-Apr 7), Spring/Summer 2028 (May 1-Aug 4), Fall 2028 (Sep 11-Dec 4), Winter 2029 (Jan 15-Apr 13)
 
 **Key Considerations for Schema**:
 - Courses need individual start/end dates (not just semester-wide)

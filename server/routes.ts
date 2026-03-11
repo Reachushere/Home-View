@@ -1352,6 +1352,24 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/semester-reset-files", async (_req, res) => {
+    try {
+      const allFiles = await storage.getFiles();
+      let resetCount = 0;
+      for (const file of allFiles) {
+        if (file.listened) {
+          await storage.updateFile(file.id, { listened: false, lastChunkIndex: 0, totalChunks: 0, checkedChunks: '' });
+          resetCount++;
+        }
+      }
+      console.log(`[Semester Reset] Reset listened status on ${resetCount} files`);
+      res.json({ success: true, resetCount });
+    } catch (err) {
+      console.error("Error resetting files:", err);
+      res.status(500).json({ error: "Failed to reset files" });
+    }
+  });
+
   app.get("/api/shift-schedule", async (_req, res) => {
     try {
       const schedule = await storage.getShiftSchedule();

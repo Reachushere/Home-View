@@ -149,6 +149,7 @@ import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK, LINK_TYPES } from "@shared/schema";
+import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -439,6 +440,11 @@ export default function Dashboard() {
   const [semesterChecklistItems, setSemesterChecklistItems] = useState<Array<{id: number; semesterSettingsId: number; courseCode: string; itemType: string; isChecked: boolean | null; checkedAt: string | null}>>([]);
   const [semesterChecklistId, setSemesterChecklistId] = useState<number | null>(null);
   const semesterChecklistShownRef = useRef(false);
+
+  const [showConfirmSemesterDialog, setShowConfirmSemesterDialog] = useState(false);
+  const [upcomingSemester, setUpcomingSemester] = useState<FutureSemesterDates | null>(null);
+  const [confirmSemesterForm, setConfirmSemesterForm] = useState({ startDate: '', endDate: '', breakStart: '', breakEnd: '' });
+  const confirmSemesterShownRef = useRef(false);
 
   // Return-from-break reading prompt (dev mode only - when returning to Replit after 2+ hours)
   const [showReturnReadingPrompt, setShowReturnReadingPrompt] = useState(false);
@@ -3805,6 +3811,45 @@ export default function Dashboard() {
       })
       .catch(err => console.error('Error fetching semester checklist:', err));
   }, [semesterSettings]);
+
+  useEffect(() => {
+    if (confirmSemesterShownRef.current) return;
+    const upcoming = getUpcomingSemesterToConfirm();
+    if (!upcoming) return;
+
+    const dismissedKey = `semConfirm_dismissed_${upcoming.label}`;
+    const dismissed = localStorage.getItem(dismissedKey);
+    if (dismissed === 'confirmed') return;
+
+    const lastShownKey = `semConfirm_lastShown_${upcoming.label}`;
+    const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
+    const now = Date.now();
+    const hoursSinceShown = (now - lastShown) / (1000 * 60 * 60);
+    if (hoursSinceShown < 12) return;
+
+    setUpcomingSemester(upcoming);
+    setConfirmSemesterForm({ startDate: upcoming.startDate, endDate: upcoming.endDate, breakStart: upcoming.breakStart, breakEnd: upcoming.breakEnd });
+    setShowConfirmSemesterDialog(true);
+    localStorage.setItem(lastShownKey, String(now));
+    confirmSemesterShownRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    const todaySemester = getNextSemesterByStartDate();
+    if (!todaySemester) return;
+    const resetKey = `semReset_done_${todaySemester.label}`;
+    if (localStorage.getItem(resetKey)) return;
+
+    fetch('/api/semester-reset-files', { method: 'POST', credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          console.log(`[Semester Start] Reset ${data.resetCount} files for ${todaySemester.label}`);
+          localStorage.setItem(resetKey, 'true');
+        }
+      })
+      .catch(err => console.error('Error resetting files for new semester:', err));
+  }, []);
 
   // Deleted folders query for hamburger menu filtering
   const { data: deletedFoldersData = [] } = useQuery<{ id: number; folderId: string }[]>({
@@ -7950,6 +7995,92 @@ export default function Dashboard() {
               data-testid="button-dismiss-checklist"
             >
               Dismiss for now
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showConfirmSemesterDialog} onOpenChange={setShowConfirmSemesterDialog}>
+        <DialogContent className="max-w-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" data-testid="confirm-semester-dialog">
+          <DialogHeader>
+            <DialogTitle className="text-white text-lg font-semibold flex items-center gap-2">
+              <GraduationCap className="h-5 w-5" />
+              Upcoming: {upcomingSemester?.label}
+            </DialogTitle>
+            <DialogDescription className="text-white/60 text-sm">
+              Please confirm or update the dates for your upcoming semester. These are the dates we have on file:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-white/70">Semester Start Date</label>
+              <input
+                type="date"
+                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                value={confirmSemesterForm.startDate}
+                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, startDate: e.target.value }))}
+                data-testid="input-confirm-start-date"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-white/70">Semester End Date</label>
+              <input
+                type="date"
+                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                value={confirmSemesterForm.endDate}
+                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, endDate: e.target.value }))}
+                data-testid="input-confirm-end-date"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-white/70">Reading Week Start</label>
+              <input
+                type="date"
+                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                value={confirmSemesterForm.breakStart}
+                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, breakStart: e.target.value }))}
+                data-testid="input-confirm-break-start"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-white/70">Reading Week End</label>
+              <input
+                type="date"
+                className="bg-white/10 border border-white/20 rounded px-3 py-1.5 text-sm text-white"
+                value={confirmSemesterForm.breakEnd}
+                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, breakEnd: e.target.value }))}
+                data-testid="input-confirm-break-end"
+              />
+            </div>
+          </div>
+          <DialogFooter className="mt-4 flex gap-2">
+            <button
+              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
+              onClick={() => setShowConfirmSemesterDialog(false)}
+              data-testid="button-dismiss-confirm-semester"
+            >
+              Remind me later
+            </button>
+            <button
+              className="px-4 py-2 text-sm font-semibold bg-white/20 hover:bg-white/30 rounded transition-colors text-white"
+              onClick={() => {
+                if (upcomingSemester) {
+                  const idx = FUTURE_SEMESTER_SCHEDULE.findIndex(s => s.label === upcomingSemester.label);
+                  if (idx !== -1) {
+                    FUTURE_SEMESTER_SCHEDULE[idx].startDate = confirmSemesterForm.startDate;
+                    FUTURE_SEMESTER_SCHEDULE[idx].endDate = confirmSemesterForm.endDate;
+                    FUTURE_SEMESTER_SCHEDULE[idx].breakStart = confirmSemesterForm.breakStart;
+                    FUTURE_SEMESTER_SCHEDULE[idx].breakEnd = confirmSemesterForm.breakEnd;
+                  }
+                  localStorage.setItem(`semConfirm_dismissed_${upcomingSemester.label}`, 'confirmed');
+                  localStorage.setItem(`semConfirm_dates_${upcomingSemester.label}`, JSON.stringify(confirmSemesterForm));
+                  toast({ title: "Dates confirmed", description: `${upcomingSemester.label} dates saved.` });
+                }
+                setShowConfirmSemesterDialog(false);
+              }}
+              data-testid="button-confirm-semester-dates"
+            >
+              Confirm dates
             </button>
           </DialogFooter>
         </DialogContent>
