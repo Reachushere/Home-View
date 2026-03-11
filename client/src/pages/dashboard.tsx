@@ -2718,12 +2718,15 @@ export default function Dashboard() {
     L3_OPEN6: { code: 'L3OPEN6', name: 'Open Elective 6' },
   };
 
+  const [openedCourseFromDegreeTracking, setOpenedCourseFromDegreeTracking] = useState(false);
   const handleCertCourseClick = (certKey: string) => {
     const info = certCourseMap[certKey];
     if (!info) return;
     const elective = openElectives[certKey];
     const code = elective?.trim() ? elective.split(' ')[0] || info.code : info.code;
     const name = elective?.trim() ? elective : info.name;
+    setIsSettingsPanelOpen(false);
+    setOpenedCourseFromDegreeTracking(true);
     setSelectedCertCourse({ courseCode: code, courseName: name, certKey });
   };
 
@@ -12015,7 +12018,13 @@ export default function Dashboard() {
         return (
           <CourseDetailDialog
             courseInfo={info}
-            onClose={() => setSelectedCertCourse(null)}
+            onClose={() => {
+              setSelectedCertCourse(null);
+              if (openedCourseFromDegreeTracking) {
+                setOpenedCourseFromDegreeTracking(false);
+                setIsSettingsPanelOpen(true);
+              }
+            }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}
           />
