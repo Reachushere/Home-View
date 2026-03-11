@@ -4364,24 +4364,39 @@ export async function registerRoutes(
 
   const pendingTabletCommands: Record<string, { action: string; url?: string; goodbyeText?: string; timestamp: number }> = {};
 
+  let tabletTableReady = false;
+  async function ensureTabletTable() {
+    if (!tabletTableReady) {
+      await db.execute(sql`CREATE TABLE IF NOT EXISTS tablet_commands (device TEXT PRIMARY KEY, cmd JSONB NOT NULL)`);
+      tabletTableReady = true;
+    }
+  }
+
   async function dbSetTabletCommand(device: string, cmd: { action: string; url?: string; goodbyeText?: string; timestamp: number }) {
     try {
-      await db.execute(sql`CREATE TABLE IF NOT EXISTS tablet_commands (device TEXT PRIMARY KEY, cmd JSONB NOT NULL)`);
-      await db.execute(sql`INSERT INTO tablet_commands (device, cmd) VALUES (${device}, ${JSON.stringify(cmd)}::jsonb) ON CONFLICT (device) DO UPDATE SET cmd = ${JSON.stringify(cmd)}::jsonb`);
+      await ensureTabletTable();
+      const cmdJson = JSON.stringify(cmd);
+      await db.execute(sql`INSERT INTO tablet_commands (device, cmd) VALUES (${device}, ${cmdJson}::jsonb) ON CONFLICT (device) DO UPDATE SET cmd = ${cmdJson}::jsonb`);
+      const verify = await db.execute(sql`SELECT cmd FROM tablet_commands WHERE device = ${device}`);
+      console.log(`[Tablet Nav DB] SET ${device}: wrote ${cmdJson.substring(0, 80)}, verify rows=${verify.rows?.length}`);
     } catch (e: any) {
-      console.log(`[Tablet Nav DB] Error saving: ${e.message}`);
+      console.log(`[Tablet Nav DB] Error saving ${device}: ${e.message}`);
     }
   }
 
   async function dbGetTabletCommand(device: string): Promise<{ action: string; url?: string; goodbyeText?: string; timestamp: number } | null> {
     try {
-      await db.execute(sql`CREATE TABLE IF NOT EXISTS tablet_commands (device TEXT PRIMARY KEY, cmd JSONB NOT NULL)`);
+      await ensureTabletTable();
       const result = await db.execute(sql`SELECT cmd FROM tablet_commands WHERE device = ${device}`);
       if (result.rows && result.rows.length > 0) {
-        return result.rows[0].cmd as any;
+        const row = result.rows[0] as any;
+        const cmd = typeof row.cmd === 'string' ? JSON.parse(row.cmd) : row.cmd;
+        console.log(`[Tablet Nav DB] GET ${device}: found rows=${result.rows.length} action=${cmd?.action} ts=${cmd?.timestamp}`);
+        return cmd;
       }
+      console.log(`[Tablet Nav DB] GET ${device}: no rows found`);
     } catch (e: any) {
-      console.log(`[Tablet Nav DB] Error loading: ${e.message}`);
+      console.log(`[Tablet Nav DB] Error loading ${device}: ${e.message}`);
     }
     return null;
   }
@@ -4416,12 +4431,22 @@ export async function registerRoutes(
     res.set('Expires', '0');
     const device = (req.query.device as string) || 'master';
     let cmd = pendingTabletCommands[device];
+    let source = 'memory';
     if (!cmd) {
       cmd = (await dbGetTabletCommand(device)) || undefined;
+      source = 'db';
       if (cmd) pendingTabletCommands[device] = cmd;
     }
-    if (cmd && Date.now() - cmd.timestamp < 120000) {
-      return res.json(cmd);
+    if (cmd && cmd.action) {
+      const age = Date.now() - cmd.timestamp;
+      if (age < 120000) {
+        console.log(`[Tablet Nav GET] ${device} FOUND from ${source}: action=${cmd.action} age=${age}ms`);
+        return res.json(cmd);
+      } else {
+        console.log(`[Tablet Nav GET] ${device} EXPIRED from ${source}: action=${cmd.action} age=${age}ms`);
+        delete pendingTabletCommands[device];
+        await dbClearTabletCommand(device);
+      }
     }
     res.json({ action: null });
   });
