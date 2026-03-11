@@ -14479,15 +14479,10 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isScholarshipsOpen} onOpenChange={setIsScholarshipsOpen}>
-            <DialogContent className="max-w-md text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '85vh', borderRadius: '12px', overflow: 'hidden' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
-                <div className="flex items-center gap-2">
-                  <Award className="h-3.5 w-3.5 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    SCHOLARSHIPS
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2">
+            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-white">Scholarships</DialogTitle>
                   <button
                     onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' }); }}
                     className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
@@ -14495,16 +14490,9 @@ export default function Dashboard() {
                   >
                     <Plus className="h-3 w-3" /> Add Scholarship
                   </button>
-                  <button 
-                    onClick={() => setIsScholarshipsOpen(false)}
-                    className="text-white hover:text-white/80 transition-colors p-1"
-                    data-testid="button-close-scholarships"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
                 </div>
-              </div>
-              <div className="overflow-y-auto" style={{ maxHeight: 'calc(85vh - 50px)', scrollbarWidth: 'none' }}>
+              </DialogHeader>
+              <div className="space-y-4" style={{ maxHeight: 'calc(85vh - 120px)', overflowY: 'auto', scrollbarWidth: 'none' }}>
                 {scholarshipsList.length === 0 ? (
                   <div className="text-center py-10">
                     <Award className="h-10 w-10 text-yellow-400 mx-auto mb-3" />
@@ -14733,37 +14721,31 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
-            <DialogContent className="max-w-md text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '50%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', maxHeight: '85vh', borderRadius: '12px', overflow: 'hidden' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
-                <div className="flex items-center gap-2">
-                  <Contact className="h-3.5 w-3.5 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    KEY CONTACTS
-                  </h2>
+            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-white">Key Contacts</DialogTitle>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={contactFilter}
+                      onChange={(e) => setContactFilter(e.target.value)}
+                      className="px-2 py-1 rounded text-[10px] bg-white/10 border border-white/20 text-white focus:outline-none"
+                      data-testid="select-contact-filter"
+                    >
+                      <option value="all">All Categories</option>
+                      {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                    </select>
+                    <button
+                      onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: 'professor', notes: '' }); }}
+                      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                      data-testid="button-add-contact"
+                    >
+                      <Plus className="h-3 w-3" /> Add Contact
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <select
-                    value={contactFilter}
-                    onChange={(e) => setContactFilter(e.target.value)}
-                    className="px-2 py-1 rounded text-[10px] bg-white/10 border border-white/20 text-white focus:outline-none"
-                    data-testid="select-contact-filter"
-                  >
-                    <option value="all">All Categories</option>
-                    {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                  </select>
-                  <button
-                    onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: 'professor', notes: '' }); }}
-                    className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
-                    data-testid="button-add-contact"
-                  >
-                    <Plus className="h-3 w-3" /> Add Contact
-                  </button>
-                  <button onClick={() => setIsKeyContactsOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-key-contacts">
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-              <div className="overflow-y-auto" style={{ maxHeight: 'calc(85vh - 50px)', scrollbarWidth: 'none' }}>
+              </DialogHeader>
+              <div className="space-y-4" style={{ maxHeight: 'calc(85vh - 120px)', overflowY: 'auto', scrollbarWidth: 'none' }}>
                 {filteredContacts.length === 0 ? (
                   <div className="text-center py-10">
                     <Contact className="h-10 w-10 text-blue-400 mx-auto mb-3" />
