@@ -19323,7 +19323,18 @@ export default function Dashboard() {
                     return courseTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
-                        <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.3' }}>
+                        <div
+                          key={t.id}
+                          className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
+                          style={{ lineHeight: '1.3', transition: 'all 0.15s ease' }}
+                          onMouseEnter={() => {
+                            setHoveredCountdownTaskId(t.id);
+                            const boxEl = document.querySelector(`[data-box-task-id="${t.id}"]`);
+                            if (boxEl) boxEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                          }}
+                          onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                          onClick={() => setEditingTask(t)}
+                        >
                           <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400 }}>{t.title}</span>
                           <span className="flex-shrink-0" style={{ fontSize: '8px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
