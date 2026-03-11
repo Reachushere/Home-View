@@ -11705,6 +11705,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ))}
+                
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list</div>
@@ -11736,95 +11737,60 @@ export default function Dashboard() {
                   );
                 })}
                 <div className="flex border-b border-black">
-                  <div className="w-5 border-r border-black flex flex-col">
-                    <div className="flex-1"></div>
-                    <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-emerald-100' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-100' : ''}`}>
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['LIBERAL']?.trim())) { toggleCourse('LIBERAL'); } }}>{(checkedCourses['LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
-                    </div>
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" in the calendar</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                </div>
+                <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives['LIBERAL']?.trim()) { toggleCourse('LIBERAL'); } }}>{(checkedCourses['LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
-                  <div className="flex-1 flex flex-col">
-                    <div className="px-1 pt-0.5 text-[8px]">
-                      <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
-                    </div>
-                    <div className="px-1 pb-1 flex items-end">
-                      <select
-                        className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
-                        value={openElectives['LIBERAL'] || ''}
-                        onChange={(e) => updateOpenElective('LIBERAL', e.target.value)}
-                        data-testid="select-pag-liberal"
-                      >
-                        <option value="">Select course...</option>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">Table A</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">
+                    <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
+                      <option value="">Select Liberal Studies course...</option>
+                      <optgroup label="Lower Level (Table A)">
                         {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className={`w-12 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-emerald-100' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-100' : ''}`}>
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
-                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                      </optgroup>
+                      <optgroup label="Upper Level (Table B)">
+                        {getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES).map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </optgroup>
                     </select>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
                   </div>
                 </div>
-                <div className="flex">
-                  <div className="w-5 border-r border-black flex flex-col">
-                    <div className="flex-1"></div>
-                    <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-emerald-100' : (inProgressCourses['OPEN1'] || courseGrades['OPEN1']?.grade || courseGrades['OPEN1']?.percent) ? 'bg-amber-100' : ''}`}>
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['OPEN1'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['OPEN1']?.trim()) ? "default" : "pointer", opacity: (!openElectives['OPEN1']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['OPEN1']?.trim())) { toggleCourse('OPEN1'); } }}>{(checkedCourses['OPEN1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
-                    </div>
-                    <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-emerald-100' : (inProgressCourses['OPEN2'] || courseGrades['OPEN2']?.grade || courseGrades['OPEN2']?.percent) ? 'bg-amber-100' : ''}`}>
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['OPEN2']?.trim()) ? "default" : "pointer", opacity: (!openElectives['OPEN2']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives['OPEN2']?.trim())) { toggleCourse('OPEN2'); } }}>{(checkedCourses['OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <div className="px-1 pt-0.5 text-[8px]">
-                      OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
-                    </div>
-                    <div className="px-1 pt-2 pb-5 flex items-end">
-                      <select
-                        className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['OPEN1'] || courseGrades['OPEN1']?.grade || courseGrades['OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
-                        value={openElectives['OPEN1'] || ''}
-                        onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
-                        data-testid="select-pag-open1"
-                      >
-                        <option value="">Select course 1...</option>
-                        {OPEN_ELECTIVE_COURSES.map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="px-1 pt-1 pb-1 flex items-end">
-                      <select
-                        className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['OPEN2'] || courseGrades['OPEN2']?.grade || courseGrades['OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`}
-                        value={openElectives['OPEN2'] || ''}
-                        onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
-                        data-testid="select-pag-open2"
-                      >
-                        <option value="">Select course 2...</option>
-                        {OPEN_ELECTIVE_COURSES.map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="w-12 border-l border-black flex flex-col">
-                    <div className="pt-5"></div>
-                    <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-emerald-100' : (inProgressCourses['OPEN1'] || courseGrades['OPEN1']?.grade || courseGrades['OPEN1']?.percent) ? 'bg-amber-100' : ''}`}>
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
-                    </div>
-                    <div className="flex-1"></div>
-                    <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN2'] ? 'bg-emerald-100' : (inProgressCourses['OPEN2'] || courseGrades['OPEN2']?.grade || courseGrades['OPEN2']?.percent) ? 'bg-amber-100' : ''}`}>
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN2']?.percent || ''} onChange={(e) => updatePercent('OPEN2', e.target.value)} />
-                    </div>
-                  </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" in the calendar</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
+                {['OPEN1','OPEN2'].map((cid, i) => (
+                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
+                    <div className="w-5 border-r border-black flex items-center justify-center">
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    </div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">PR Table I</div>
+                    <div className="flex-1 px-1 py-0.5 flex items-center">
+                      <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
+                        <option value="">{`Select PR elective ${i+1}...`}</option>
+                        {OPEN_ELECTIVE_COURSES.map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    </div>
+                  </div>
+                ))}
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
@@ -11906,12 +11872,19 @@ export default function Dashboard() {
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - CERTIFICATE</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - ADVANCED CERTIFICATE</div>
+                </div>
+                <div className="flex border-b border-black bg-gray-50">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
+                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Course</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center" style={{ backgroundColor: '#e5e5e5' }}>Grade</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -11964,22 +11937,28 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A in the calendar</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
-                <div className={`flex items-stretch ${courseRowClass('L2_LIBERAL')}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
                   <div className="w-5 border-r border-black flex items-center justify-center">
-                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_LIBERAL')}>{(checkedCourses['L2_LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['L2_LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['L2_LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives['L2_LIBERAL']?.trim()) toggleCourse('L2_LIBERAL'); }}>{(checkedCourses['L2_LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
-                  <div className="flex-1 h-11 px-1 flex items-center">
-                    <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
-                      <option value="">Select course...</option>
-                      {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
-                        <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                      ))}
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">Table A</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">
+                    <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
+                      <option value="">Select Liberal Studies course...</option>
+                      <optgroup label="Lower Level (Table A)">
+                        {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Upper Level (Table B)">
+                        {getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES).map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </optgroup>
                     </select>
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_LIBERAL']?.grade || ''} onChange={(e) => updateGrade('L2_LIBERAL', e.target.value)}>
-                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_LIBERAL']?.grade || ''} onChange={(e) => updateGrade('L2_LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                     <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} />
                   </div>
                 </div>
@@ -12089,12 +12068,19 @@ export default function Dashboard() {
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DEGREE</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DEGREE (Course-Based Option)</div>
+                </div>
+                <div className="flex border-b border-black bg-gray-50">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
+                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center" style={{ backgroundColor: '#e5e5e5' }}>Grade</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <table className="w-full border-collapse">
                   <colgroup>
@@ -12238,82 +12224,63 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: Select four courses; 1 from Table A and 3 from Table B</div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
-                <div className="flex">
-                  <div className="w-5 border-r border-black flex flex-col">
-                    {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map(cid => (
-                      <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
-                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight"><i>Requirement Note: Select one Lower Level and three Upper Level Liberal Studies electives</i></div>
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
-                      <div key={cid} className={`h-11 px-1 flex items-center ${checkedCourses[cid] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
-                        <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
-                          <option value="">{i === 0 ? 'Lower Level...' : 'Upper Level...'}</option>
-                          {getCoursesForLevel(i === 0 ? 'LOWER' : 'UPPER', LIBERAL_STUDIES_COURSES).map(c => (
+                {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
+                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
+                    <div className="w-5 border-r border-black flex items-center justify-center">
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    </div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">{i === 0 ? 'Table A' : 'Table B'}</div>
+                    <div className="flex-1 px-1 py-0.5 flex items-center">
+                      <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
+                        <option value="">{i === 0 ? 'Select Lower Level course...' : 'Select Upper Level course...'}</option>
+                        <optgroup label="Lower Level (Table A)">
+                          {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
                             <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                           ))}
-                        </select>
-                      </div>
-                    ))}
+                        </optgroup>
+                        <optgroup label="Upper Level (Table B)">
+                          {getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES).map(c => (
+                            <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    </div>
+                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    </div>
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col">
-                    {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map(cid => (
-                      <div key={cid} className={`h-11 flex flex-col items-center justify-center gap-0.5 ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
-                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="h-px bg-black"></div>
+                ))}
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven courses from PR table I</div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I</div>
                   <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
-                <div className="flex">
-                  <div className="w-5 border-r border-black flex flex-col">
-                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map(cid => (
-                      <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
-                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(!openElectives[cid]?.trim())) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
-                      </div>
-                    ))}
+                {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
+                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
+                    <div className="w-5 border-r border-black flex items-center justify-center">
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    </div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">PR Table I</div>
+                    <div className="flex-1 px-1 py-0.5 flex items-center">
+                      <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
+                        <option value="">{`Select PR elective ${i+1}...`}</option>
+                        {OPEN_ELECTIVE_COURSES.map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    </div>
                   </div>
-                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight">PR Table I<br/><br/><a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View Table</a></div>
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
-                      <div key={cid} className={`h-11 px-1 flex items-center ${checkedCourses[cid] ? 'bg-emerald-100 text-emerald-700' : ''}`}>
-                        <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
-                          <option value="">{`Select course ${i+1}...`}</option>
-                          {OPEN_ELECTIVE_COURSES.map(c => (
-                            <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="w-12 border-l border-black flex flex-col">
-                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map(cid => (
-                      <div key={cid} className={`h-11 flex flex-col items-center justify-center gap-0.5 ${checkedCourses[cid] ? 'bg-emerald-100' : ''}`}>
-                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
