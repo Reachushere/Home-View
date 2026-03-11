@@ -24,9 +24,13 @@ import {
   AlertCircle,
   Pencil,
   Check,
+  Upload,
+  Loader2,
+  Paperclip,
 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useUpload } from "@/hooks/use-upload";
 import { TASK_TYPES, getWeekNumber } from "@shared/schema";
 import type { Task } from "@shared/schema";
 
@@ -133,6 +137,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
   const [isEditingInfo, setIsEditingInfo] = useState(false);
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
+  const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
     professor: courseInfo.professor || '',
     professorEmail: courseInfo.professorEmail || '',
@@ -227,6 +233,80 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     },
   });
+
+  const handleUploadAssignment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      toast({ title: "Invalid file", description: "Please upload a PDF file.", variant: "destructive" });
+      return;
+    }
+
+    setIsParsingPdf(true);
+    toast({ title: "Uploading...", description: `Uploading ${file.name}` });
+
+    try {
+      const uploadResult = await uploadFile(file);
+      if (!uploadResult) throw new Error("Upload failed");
+
+      toast({ title: "Analyzing...", description: "AI is reading the assignment document..." });
+
+      const parseResp = await fetch("/api/tasks/parse-assignment-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          objectPath: uploadResult.objectPath,
+          courseName: courseInfo.fullName,
+          fileName: file.name,
+        }),
+      });
+
+      if (!parseResp.ok) {
+        const err = await parseResp.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to parse assignment");
+      }
+
+      const parsed = await parseResp.json();
+
+      const existingTask = courseTasks.find(t =>
+        t.title.toLowerCase().includes(parsed.title?.toLowerCase()?.split(' - ')[0]?.trim() || '___') ||
+        parsed.title?.toLowerCase()?.includes(t.title.toLowerCase().split(' - ')[0]?.trim() || '___')
+      );
+
+      if (existingTask) {
+        await apiRequest("PATCH", `/api/tasks/${existingTask.id}`, {
+          title: parsed.title || existingTask.title,
+          description: parsed.description || existingTask.description,
+          type: parsed.type || existingTask.type,
+          gradeWeight: parsed.gradeWeight || existingTask.gradeWeight,
+          attachments: [...(existingTask.attachments || []), uploadResult.objectPath],
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+        toast({ title: "Assignment updated", description: `"${parsed.title}" updated with PDF attached.` });
+      } else {
+        await apiRequest("POST", "/api/tasks", {
+          title: parsed.title || file.name.replace('.pdf', ''),
+          description: parsed.description || "",
+          type: parsed.type || "assignment",
+          courseName: courseInfo.fullName,
+          dueDate: new Date().toISOString(),
+          priority: "high",
+          weekNumber: 1,
+          gradeWeight: parsed.gradeWeight || null,
+          attachments: [uploadResult.objectPath],
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+        toast({ title: "Assignment created", description: `"${parsed.title}" created with PDF attached. Please set the due date.` });
+      }
+    } catch (err: any) {
+      console.error("Upload assignment error:", err);
+      toast({ title: "Error", description: err.message || "Failed to process assignment.", variant: "destructive" });
+    } finally {
+      setIsParsingPdf(false);
+    }
+  };
 
   const handleAddTask = () => {
     if (!newTask.title.trim() || !newTask.dueDate) {
@@ -506,15 +586,30 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   {totalWeight > 0 && ` · ${totalWeight}% weight`}
                 </span>
               </div>
-              <Button
-                size="sm"
-                onClick={() => setShowAddForm(!showAddForm)}
-                className="h-6 px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                data-testid="button-add-assignment"
-              >
-                <Plus className="h-3 w-3 mr-1" />
-                Add
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <label className="cursor-pointer" data-testid="button-upload-assignment">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={handleUploadAssignment}
+                    disabled={isParsingPdf || isUploading}
+                  />
+                  <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                    {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                    {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
+                  </div>
+                </label>
+                <Button
+                  size="sm"
+                  onClick={() => setShowAddForm(!showAddForm)}
+                  className="h-6 px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                  data-testid="button-add-assignment"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add
+                </Button>
+              </div>
             </div>
 
             {totalWeight > 0 && (
@@ -751,8 +846,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </button>
                     <TypeIcon className="h-3 w-3 text-white/40 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className={`text-[10px] font-medium truncate ${task.isCompleted ? "line-through text-white/40" : "text-white/90"}`}>
+                      <div className={`text-[10px] font-medium truncate flex items-center gap-1 ${task.isCompleted ? "line-through text-white/40" : "text-white/90"}`}>
                         {task.title}
+                        {task.attachments && task.attachments.length > 0 && (
+                          <Paperclip className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 inline" />
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-[8px] text-white/40">
                         <span className={overdue ? "text-red-400" : ""}>

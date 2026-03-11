@@ -9394,6 +9394,85 @@ document.body.removeChild(a);
     }
   });
 
+  // Parse uploaded assignment PDF and extract task details
+  app.post("/api/tasks/parse-assignment-pdf", async (req, res) => {
+    try {
+      const { objectPath, courseName, fileName } = req.body;
+      if (!objectPath || !courseName) {
+        return res.status(400).json({ error: "objectPath and courseName are required" });
+      }
+
+      const bucketId = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split('/')[1] || '';
+      const filePath = objectPath.replace('/objects/', '');
+      let fileBuffer: Buffer;
+      try {
+        const [buffer] = await objectStorageClient.bucket(bucketId).file(filePath).download();
+        fileBuffer = buffer;
+      } catch (dlErr) {
+        console.error("Failed to download file from object storage:", dlErr);
+        return res.status(500).json({ error: "Failed to read uploaded file" });
+      }
+
+      let pdfText = '';
+      try {
+        const pdfParse = (await import('pdf-parse')).default;
+        const pdfData = await pdfParse(fileBuffer);
+        pdfText = pdfData.text;
+      } catch (pdfErr) {
+        console.error("Failed to parse PDF:", pdfErr);
+        return res.status(500).json({ error: "Failed to parse PDF content" });
+      }
+
+      if (!pdfText.trim()) {
+        return res.status(400).json({ error: "Could not extract text from PDF" });
+      }
+
+      const OpenAI = (await import('openai')).default;
+      const openai = new OpenAI({
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+      });
+
+      const prompt = `Extract assignment details from this academic document. Return a JSON object with these fields:
+- title: string (the assignment name, e.g. "Assignment 2 - Municipal Issues Policy Paper")
+- type: string (one of: reading, essay, exam, quiz, discussion, poll, project, module, class, assignment, other)
+- description: string (comprehensive summary including requirements, word count, format, grading breakdown, topics/options, and any other key details)
+- gradeWeight: number or null (percentage of final grade if mentioned, e.g. 30 for 30%)
+- dueDescription: string (the due date description as written, e.g. "End of Week 10, Friday 11:59 pm")
+- wordCount: string or null (required word count if mentioned)
+- format: string or null (format requirements like "APA", "double spaced", etc.)
+
+Document text:
+${pdfText.substring(0, 4000)}
+
+Return ONLY the JSON object, no markdown formatting.`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.1,
+      });
+
+      const responseText = completion.choices[0]?.message?.content || '';
+      let parsed: any;
+      try {
+        const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        parsed = JSON.parse(jsonStr);
+      } catch {
+        return res.status(500).json({ error: "Failed to parse AI response", raw: responseText });
+      }
+
+      res.json({
+        ...parsed,
+        objectPath,
+        fileName: fileName || 'Assignment.pdf',
+      });
+    } catch (err: any) {
+      console.error("Error parsing assignment PDF:", err);
+      res.status(500).json({ error: err.message || "Internal server error" });
+    }
+  });
+
   // Seed database with sample tasks
   await seedDatabase();
 

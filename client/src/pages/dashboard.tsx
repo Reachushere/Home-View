@@ -24450,6 +24450,31 @@ function TaskForm({
             />
           </div>
 
+          {task?.attachments && task.attachments.length > 0 && (
+            <div>
+              <Label className="text-[11px] text-white">Attachments</Label>
+              <div className="flex flex-col gap-1 mt-1">
+                {task.attachments.map((att: string, idx: number) => {
+                  const fileName = att.split('/').pop() || 'Attachment';
+                  return (
+                    <a
+                      key={idx}
+                      href={att}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-2 py-1.5 bg-blue-500/10 border border-blue-400/20 rounded-md hover:bg-blue-500/20 transition-colors cursor-pointer"
+                      data-testid={`attachment-link-${idx}`}
+                    >
+                      <FileText className="h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                      <span className="text-[10px] text-blue-300 truncate">{task.title ? `${task.title}.pdf` : fileName}</span>
+                      <ExternalLink className="h-3 w-3 text-blue-400/50 flex-shrink-0 ml-auto" />
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div>
             <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
             <input
