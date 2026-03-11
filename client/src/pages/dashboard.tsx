@@ -11723,6 +11723,70 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold whitespace-nowrap">{l1Progress.completed} / {l1Progress.total}</span>
               </div>
               </div>
+              {(() => {
+                const l1CourseIds = ['PPA101','PPA102','PPA125','ELECTIVE1','ELECTIVE2','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
+                const percentToGpa = (p: number): number => {
+                  if (p >= 90) return 4.33;
+                  if (p >= 85) return 4.0;
+                  if (p >= 80) return 3.67;
+                  if (p >= 77) return 3.33;
+                  if (p >= 73) return 3.0;
+                  if (p >= 70) return 2.67;
+                  if (p >= 67) return 2.33;
+                  if (p >= 63) return 2.0;
+                  if (p >= 60) return 1.67;
+                  if (p >= 50) return 1.0;
+                  return 0;
+                };
+                const gradeLetterToGpa = (g: string): number => {
+                  const map: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                  return map[g] ?? -1;
+                };
+                const gpaValues: number[] = [];
+                for (const id of l1CourseIds) {
+                  const g = courseGrades[id];
+                  if (!g) continue;
+                  if (g.percent && g.percent.trim() !== '') {
+                    const p = parseFloat(g.percent);
+                    if (!isNaN(p)) gpaValues.push(percentToGpa(p));
+                  } else if (g.grade && g.grade.trim() !== '') {
+                    const gpa = gradeLetterToGpa(g.grade);
+                    if (gpa >= 0) gpaValues.push(gpa);
+                  }
+                }
+                const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
+                const gpaToLetter = (gpa: number): string => {
+                  if (gpa >= 4.17) return 'A+';
+                  if (gpa >= 3.84) return 'A';
+                  if (gpa >= 3.5) return 'A-';
+                  if (gpa >= 3.17) return 'B+';
+                  if (gpa >= 2.84) return 'B';
+                  if (gpa >= 2.5) return 'B-';
+                  if (gpa >= 2.17) return 'C+';
+                  if (gpa >= 1.84) return 'C';
+                  if (gpa >= 1.34) return 'C-';
+                  if (gpa >= 0.5) return 'D';
+                  return 'F';
+                };
+                const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
+                return (
+                  <div className="mt-2 border-2 border-black rounded-md flex items-center justify-center py-3 px-2" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }} data-testid="l1-gpa-box">
+                    {avgGpa !== null ? (
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: '#555' }}>Level I GPA</span>
+                        <span className="font-bold leading-none" style={{ fontSize: '28px', color: gpaColor }}>{avgGpa.toFixed(2)}</span>
+                        <span className="text-[9px] font-semibold" style={{ color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
+                        <span className="text-[7px] text-gray-400">{gpaValues.length} course{gpaValues.length !== 1 ? 's' : ''} averaged</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: '#555' }}>Level I GPA</span>
+                        <span className="text-[10px] text-gray-400">Enter grades to calculate</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
               </div>
 
               {/* Level II */}
