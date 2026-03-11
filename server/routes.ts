@@ -1238,6 +1238,17 @@ export async function registerRoutes(
 
   // ============= SEMESTER SETTINGS ROUTES =============
 
+  // GET /api/semesters - Get all semester settings
+  app.get("/api/semesters", async (_req, res) => {
+    try {
+      const all = await storage.getAllSemesterSettings();
+      res.json(all);
+    } catch (err) {
+      console.error("Error fetching all semester settings:", err);
+      res.status(500).json({ error: "Failed to fetch semester settings" });
+    }
+  });
+
   // GET /api/semester - Get active semester settings
   app.get(api.semester.get.path, async (_req, res) => {
     try {
