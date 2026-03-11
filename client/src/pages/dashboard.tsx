@@ -19314,17 +19314,17 @@ export default function Dashboard() {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
                       return tc === cCode && !t.isCompleted;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5);
-                    if (courseTasks.length === 0) return <span className="text-[7px] text-white/40 italic">No upcoming items</span>;
+                    if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No upcoming items</span>;
                     const textColor = cCode === 'CFNF' ? '#ffb3d9' : cCode === 'CASL' || cCode === 'CASL101' ? '#d4b3ff' : '#ffffff';
                     const dateColor = cCode === 'CFNF' ? '#ff80bf' : cCode === 'CASL' || cCode === 'CASL101' ? '#b380ff' : 'rgba(255,255,255,0.5)';
                     return courseTasks.map(t => {
                       const typeLabel = t.type === 'exam' ? '📝' : t.type === 'quiz' ? '❓' : t.type === 'essay' ? '✍️' : t.type === 'assignment' ? '📋' : t.type === 'module' ? '📖' : t.type === 'reading' ? '📚' : '•';
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
-                        <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.2' }}>
-                          <span style={{ fontSize: '7px', flexShrink: 0 }}>{typeLabel}</span>
-                          <span className="truncate font-semibold" style={{ fontSize: '7px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>{t.title}</span>
-                          <span className="flex-shrink-0 font-medium" style={{ fontSize: '6px', color: dateColor }}>{dueStr}</span>
+                        <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.3' }}>
+                          <span style={{ fontSize: '10px', flexShrink: 0 }}>{typeLabel}</span>
+                          <span className="truncate font-semibold" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>{t.title}</span>
+                          <span className="flex-shrink-0 font-medium" style={{ fontSize: '9px', color: dateColor }}>{dueStr}</span>
                         </div>
                       );
                     });
