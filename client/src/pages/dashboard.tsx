@@ -19302,7 +19302,32 @@ export default function Dashboard() {
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
-                }} />,
+                  overflow: 'hidden',
+                  padding: '3px 6px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                  {(() => {
+                    const cCode = pd.courseCode.toUpperCase();
+                    const courseTasks = (allTasks || []).filter(t => {
+                      const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
+                      return tc === cCode && !t.isCompleted;
+                    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5);
+                    if (courseTasks.length === 0) return <span className="text-[7px] text-white/40 italic">No upcoming items</span>;
+                    return courseTasks.map(t => {
+                      const typeLabel = t.type === 'exam' ? '📝' : t.type === 'quiz' ? '❓' : t.type === 'essay' ? '✍️' : t.type === 'assignment' ? '📋' : t.type === 'module' ? '📖' : t.type === 'reading' ? '📚' : '•';
+                      const dueStr = format(new Date(t.dueDate), 'MMM d');
+                      return (
+                        <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.2' }}>
+                          <span style={{ fontSize: '7px', flexShrink: 0 }}>{typeLabel}</span>
+                          <span className="truncate text-white/90 font-medium" style={{ fontSize: '7px' }}>{t.title}</span>
+                          <span className="text-white/50 flex-shrink-0" style={{ fontSize: '6px' }}>{dueStr}</span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>,
               ];
             });
             return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
