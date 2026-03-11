@@ -1441,7 +1441,35 @@ export default function Dashboard() {
     } catch { return courseInfoDefaults; }
   });
   const [editingSchoolCourseKey, setEditingSchoolCourseKey] = useState<string | null>(null);
-  const [editingSchoolCourseData, setEditingSchoolCourseData] = useState({ professor: '', email: '', grade: '', semester: '', credits: '1.00' });
+  const [editingSchoolCourseData, setEditingSchoolCourseData] = useState({ professor: '', email: '', grade: '', semester: '', credits: '1.00', certificateType: '' });
+  const [courseCertificateTypes, setCourseCertificateTypes] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('courseCertificateTypes');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  const CERTIFICATE_TYPE_OPTIONS = [
+    { group: 'Certificate 1', options: [
+      'C1 - Mandatory Required Professional',
+      'C1 - Selected Required Professional',
+      'C1 - Liberal Studies Elective - Lower Level Table A',
+      'C1 - Professionally Related (Open) Elective Table 1',
+    ]},
+    { group: 'Certificate 2', options: [
+      'C2 - Mandatory Required Professional',
+      'C2 - Selected Required Professional',
+      'C2 - Liberal Studies Elective - Lower Level Table A',
+      'C2 - Professionally Related Elective - Upper Level Table B',
+      'C2 - Open Elective',
+    ]},
+    { group: 'Certificate 3', options: [
+      'C3 - Required Group 1',
+      'C3 - Required Group 2',
+      'C3 - Liberal Studies Elective Lower Level Table A',
+      'C3 - Liberal Studies Elective Upper Level Table B',
+      'C3 - Open Elective',
+    ]},
+  ];
   const [courseDisplayNames, setCourseDisplayNames] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('courseDisplayNames');
     if (saved) {
@@ -15167,6 +15195,9 @@ export default function Dashboard() {
                             <span className="font-medium">{courseCode}</span>
                             {courseName !== courseCode && <span className="text-white/80"> {courseName}</span>}
                           </span>
+                          {courseCertificateTypes[courseCode] && (
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/10 text-white/60 whitespace-nowrap" data-testid={`badge-cert-type-${index}`}>{courseCertificateTypes[courseCode]}</span>
+                          )}
                           {course.professor && (
                             professorEmail ? (
                               <a
@@ -15306,6 +15337,26 @@ export default function Dashboard() {
                             onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, email: e.target.value }))}
                             data-testid="input-edit-professor-email"
                           />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Certificate Type</label>
+                          <select
+                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            value={courseCertificateTypes[schoolEditCourseData.code] || ''}
+                            onChange={(e) => {
+                              const updated = { ...courseCertificateTypes, [schoolEditCourseData.code]: e.target.value };
+                              setCourseCertificateTypes(updated);
+                              localStorage.setItem('courseCertificateTypes', JSON.stringify(updated));
+                            }}
+                            data-testid="select-edit-certificate-type"
+                          >
+                            <option value="">-- Select --</option>
+                            {CERTIFICATE_TYPE_OPTIONS.map(g => (
+                              <optgroup key={g.group} label={g.group}>
+                                {g.options.map(o => <option key={o} value={o}>{o}</option>)}
+                              </optgroup>
+                            ))}
+                          </select>
                         </div>
                       </div>
                       <div className="flex gap-2 justify-end pt-1">
@@ -15593,6 +15644,9 @@ export default function Dashboard() {
                             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#3b82f6' }} />
                             <span className="text-[11px] font-bold">{entry.code}</span>
                             <span className="text-[10px] text-white/70">{entry.name}</span>
+                            {courseCertificateTypes[entry.code] && (
+                              <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/50 whitespace-nowrap">{courseCertificateTypes[entry.code]}</span>
+                            )}
                             <div className="flex items-center gap-2 ml-auto">
                               {profInfo.grade && <span className="text-[10px] font-bold text-emerald-400">{profInfo.grade}</span>}
                               {profInfo.semester && <span className="text-[9px] text-white/50">{profInfo.semester}</span>}
@@ -15603,7 +15657,7 @@ export default function Dashboard() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingSchoolCourseKey(entry.code);
-                                setEditingSchoolCourseData({ professor: profInfo.professor, email: profInfo.email, grade: profInfo.grade, semester: profInfo.semester, credits: profInfo.credits });
+                                setEditingSchoolCourseData({ professor: profInfo.professor, email: profInfo.email, grade: profInfo.grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: courseCertificateTypes[entry.code] || '' });
                               }}
                               data-testid={`button-edit-past-course-${entry.code}`}
                             >
@@ -15658,11 +15712,25 @@ export default function Dashboard() {
                         <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
                         <input type="email" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.email} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, email: e.target.value }))} data-testid="input-edit-past-email" />
                       </div>
+                      <div>
+                        <label className="text-[9px] text-white/60 block mb-0.5">Certificate Type</label>
+                        <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.certificateType} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, certificateType: e.target.value }))} data-testid="select-edit-past-certificate-type">
+                          <option value="">-- Select --</option>
+                          {CERTIFICATE_TYPE_OPTIONS.map(g => (
+                            <optgroup key={g.group} label={g.group}>
+                              {g.options.map(o => <option key={o} value={o}>{o}</option>)}
+                            </optgroup>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                     <div className="flex gap-2 justify-end">
                       <button className="px-3 py-1 text-[9px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors" onClick={() => setEditingSchoolCourseKey(null)} data-testid="button-cancel-edit-past">Cancel</button>
                       <button className="px-3 py-1 text-[9px] bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors" onClick={() => {
                         const updated = { ...pastCourseInfo, [editingSchoolCourseKey]: { professor: editingSchoolCourseData.professor, email: editingSchoolCourseData.email, grade: editingSchoolCourseData.grade, semester: editingSchoolCourseData.semester, credits: editingSchoolCourseData.credits } };
+                        const updatedCerts = { ...courseCertificateTypes, [editingSchoolCourseKey]: editingSchoolCourseData.certificateType };
+                        setCourseCertificateTypes(updatedCerts);
+                        localStorage.setItem('courseCertificateTypes', JSON.stringify(updatedCerts));
                         setPastCourseInfo(updated);
                         localStorage.setItem('pastCourseInfo', JSON.stringify(updated));
                         setEditingSchoolCourseKey(null);
