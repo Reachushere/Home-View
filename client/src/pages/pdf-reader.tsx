@@ -1791,7 +1791,7 @@ export default function PDFReaderPage() {
       />
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
 
-      <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
+      {!followOnly && <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
         <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
           <button
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium uppercase tracking-wide transition-colors bg-white/10 border border-white/20 text-white hover:bg-white/20"
@@ -1993,11 +1993,11 @@ export default function PDFReaderPage() {
             )}
           </div>
         </div>
-      </div>
+      </div>}
 
       <div className="flex-1 flex relative overflow-hidden min-h-0" style={{ zIndex: 2 }}>
         <div className={`${isFullPage ? 'w-full' : 'flex-1 lg:w-1/2'} overflow-auto pdf-reader-scrollbar`} style={{ background: 'rgba(0,0,0,0.4)' }}>
-          <div className="sticky top-0 z-20" style={{ background: 'rgba(0,10,30,0.8)', backdropFilter: 'blur(10px)' }}>
+          {!followOnly && <div className="sticky top-0 z-20" style={{ background: 'rgba(0,10,30,0.8)', backdropFilter: 'blur(10px)' }}>
             <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/10">
               <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
               <div className="flex items-center gap-2">
@@ -2108,9 +2108,9 @@ export default function PDFReaderPage() {
                 )}
               </div>
             )}
-          </div>
+          </div>}
 
-          {isEditingText && (
+          {isEditingText && !followOnly && (
             <div className="p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-white/80">Edit TTS Text</span>
@@ -2217,7 +2217,7 @@ export default function PDFReaderPage() {
             </div>
           )}
 
-          {!isEditingText && (
+          {!isEditingText && !followOnly && (
             <div className="p-4 space-y-3">
               {chunksList.map((chunk, idx) => {
                 const isActive = currentChunk === idx && isPlaying;
@@ -2502,7 +2502,16 @@ export default function PDFReaderPage() {
         <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
           <div className="relative px-8 pb-5" style={{ overflow: 'visible' }}>
             <div className="flex items-end justify-center" style={{ overflow: 'visible' }}>
-              {!isPlaying ? (
+              {catWashFollow && followState?.active ? (
+                <button
+                  className="rounded-full bg-red-600 hover:bg-red-500"
+                  style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,100,100,0.5)', outlineOffset: '3px' }}
+                  onClick={() => fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null))}
+                  data-testid="button-stop-catwash"
+                >
+                  <Square className="h-10 w-10 text-white fill-white" />
+                </button>
+              ) : !isPlaying ? (
                 <div className="flex items-center" style={{ marginTop: '-30px', gap: '30px' }}>
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
