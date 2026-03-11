@@ -16892,16 +16892,13 @@ export default function Dashboard() {
                 ];
                 const currentWeekStart = weekDays[0];
                 const currentWeekEnd = weekDays[6];
-                const winterCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
-                const isAfterWinterSemester = selectedWeek > 13;
-                const activeSpringSummerCourses = springSummerCourses.filter(c => {
-                  const courseStart = new Date(c.startDate + 'T00:00:00');
-                  const courseEnd = new Date(c.endDate + 'T23:59:59');
-                  return currentWeekStart <= courseEnd && currentWeekEnd >= courseStart;
-                });
-                const filteredCourses = isAfterWinterSemester
-                  ? (activeSpringSummerCourses.length > 0 ? activeSpringSummerCourses : [])
-                  : winterCourses;
+                const winterCourses = coursesData.courses.filter(c => c.name);
+                const allDisplayCourses = [...winterCourses];
+                for (const sc of springSummerCourses) {
+                  const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
+                  if (!alreadyExists) allDisplayCourses.push(sc);
+                }
+                const filteredCourses = allDisplayCourses;
                 const minThreeTaskHeight = 3 * 20 + 4; // 64px minimum (3 tasks)
                 const maxCourseRowHeight = Math.max(minThreeTaskHeight, ...filteredCourses.map(cd => {
                   const cn = cd.name.split(' - ')[0].toUpperCase();
