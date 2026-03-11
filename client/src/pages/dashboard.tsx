@@ -19310,9 +19310,10 @@ export default function Dashboard() {
                 }}>
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
+                    const nowDate = startOfDay(new Date());
                     const courseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
-                      return tc === cCode && !t.isCompleted;
+                      return tc === cCode && !t.isCompleted && new Date(t.dueDate) >= nowDate;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5);
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No upcoming items</span>;
                     const textColor = cCode === 'CFNF' ? '#ffb3d9' : cCode === 'CASL' || cCode === 'CASL101' ? '#d4b3ff' : '#ffffff';
@@ -19321,6 +19322,7 @@ export default function Dashboard() {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
                         <div key={t.id} className="flex items-center gap-1 min-w-0" style={{ lineHeight: '1.3' }}>
+                          <span style={{ fontSize: '10px', color: textColor, flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400 }}>{t.title}</span>
                           <span className="flex-shrink-0" style={{ fontSize: '9px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
                         </div>
