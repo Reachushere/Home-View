@@ -11419,7 +11419,7 @@ export default function Dashboard() {
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DIPLOMA</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
