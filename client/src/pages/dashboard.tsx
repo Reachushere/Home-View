@@ -11673,17 +11673,17 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - CERTIFICATE</div>
                 </div>
-                <div className="flex border-b border-black">
-                  <div className="w-5 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center" style={{ backgroundColor: '#e5e5e5' }}>Grade</div>
-                </div>
                 <div className="flex border-b border-black bg-gray-50">
                   <div className="w-5 border-r border-black"></div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
-                  <div className="w-12 border-l border-black"></div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
                   { id: 'PPA101', code: 'PPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
