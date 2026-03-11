@@ -19306,7 +19306,9 @@ export default function Dashboard() {
                   padding: '3px 6px',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'center',
+                  justifyContent: 'flex-start',
+                  overflowY: 'auto',
+                  scrollbarWidth: 'none',
                 }}>
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
