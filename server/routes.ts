@@ -4364,10 +4364,39 @@ export async function registerRoutes(
 
   const pendingTabletCommands: Record<string, { action: string; url?: string; goodbyeText?: string; timestamp: number }> = {};
 
+  async function dbSetTabletCommand(device: string, cmd: { action: string; url?: string; goodbyeText?: string; timestamp: number }) {
+    try {
+      await db.execute(sql`CREATE TABLE IF NOT EXISTS tablet_commands (device TEXT PRIMARY KEY, cmd JSONB NOT NULL)`);
+      await db.execute(sql`INSERT INTO tablet_commands (device, cmd) VALUES (${device}, ${JSON.stringify(cmd)}::jsonb) ON CONFLICT (device) DO UPDATE SET cmd = ${JSON.stringify(cmd)}::jsonb`);
+    } catch (e: any) {
+      console.log(`[Tablet Nav DB] Error saving: ${e.message}`);
+    }
+  }
+
+  async function dbGetTabletCommand(device: string): Promise<{ action: string; url?: string; goodbyeText?: string; timestamp: number } | null> {
+    try {
+      await db.execute(sql`CREATE TABLE IF NOT EXISTS tablet_commands (device TEXT PRIMARY KEY, cmd JSONB NOT NULL)`);
+      const result = await db.execute(sql`SELECT cmd FROM tablet_commands WHERE device = ${device}`);
+      if (result.rows && result.rows.length > 0) {
+        return result.rows[0].cmd as any;
+      }
+    } catch (e: any) {
+      console.log(`[Tablet Nav DB] Error loading: ${e.message}`);
+    }
+    return null;
+  }
+
+  async function dbClearTabletCommand(device: string) {
+    try {
+      await db.execute(sql`DELETE FROM tablet_commands WHERE device = ${device}`);
+    } catch {}
+  }
+
   const DEPLOYED_APP_URL = "https://home-view--bkh416.replit.app";
 
   async function setTabletCommand(cmd: { action: string; url?: string; goodbyeText?: string; timestamp: number }, propagate = true, device = 'master') {
     pendingTabletCommands[device] = cmd;
+    await dbSetTabletCommand(device, cmd);
     if (propagate) {
       try {
         await fetch(`${DEPLOYED_APP_URL}/api/tablet-nav/set?auth=${encodeURIComponent(process.env.SITE_PASSWORD || '')}&device=${device}`, {
@@ -4381,9 +4410,13 @@ export async function registerRoutes(
     }
   }
 
-  app.get("/api/tablet-nav", (req, res) => {
+  app.get("/api/tablet-nav", async (req, res) => {
     const device = (req.query.device as string) || 'master';
-    const cmd = pendingTabletCommands[device];
+    let cmd = pendingTabletCommands[device];
+    if (!cmd) {
+      cmd = (await dbGetTabletCommand(device)) || undefined;
+      if (cmd) pendingTabletCommands[device] = cmd;
+    }
     if (cmd && Date.now() - cmd.timestamp < 120000) {
       return res.json(cmd);
     }
@@ -4421,18 +4454,19 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/tablet-nav/ack", (req, res) => {
+  app.post("/api/tablet-nav/ack", async (req, res) => {
     const { timestamp, device } = req.body;
     const deviceKey = device || 'master';
     const cmd = pendingTabletCommands[deviceKey];
     if (cmd && cmd.timestamp === timestamp) {
       delete pendingTabletCommands[deviceKey];
+      await dbClearTabletCommand(deviceKey);
       console.log(`[Tablet Nav] Command acknowledged and cleared for ${deviceKey}`);
     }
     res.json({ ok: true });
   });
 
-  app.post("/api/tablet-nav/set", (req, res) => {
+  app.post("/api/tablet-nav/set", async (req, res) => {
     const authParam = (req.query.auth as string) || '';
     if (authParam !== (process.env.SITE_PASSWORD || '')) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -4441,7 +4475,9 @@ export async function registerRoutes(
     const { action, url, goodbyeText, timestamp } = req.body;
     if (action) {
       const ts = timestamp || Date.now();
-      pendingTabletCommands[deviceParam] = { action, url, goodbyeText, timestamp: ts };
+      const cmd = { action, url, goodbyeText, timestamp: ts };
+      pendingTabletCommands[deviceParam] = cmd;
+      await dbSetTabletCommand(deviceParam, cmd);
       console.log(`[Tablet Nav] Command SET for ${deviceParam}: ${action} url=${url || 'none'} ts=${ts} pending=${JSON.stringify(Object.keys(pendingTabletCommands))}`);
     }
     res.json({ ok: true });
