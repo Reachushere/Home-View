@@ -11847,8 +11847,10 @@ export default function Dashboard() {
                     {avgGpa !== null ? (
                       <div className="flex flex-col items-center gap-0.5">
                         <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: '#555' }}>Level I GPA</span>
-                        <span className="font-bold leading-none" style={{ fontSize: '28px', color: gpaColor }}>{avgGpa.toFixed(2)}</span>
-                        <span className="text-[9px] font-semibold" style={{ color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-bold leading-none" style={{ fontSize: '28px', color: gpaColor }}>{avgGpa.toFixed(2)}</span>
+                          <span className="font-bold leading-none" style={{ fontSize: '28px', color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
+                        </div>
                         <span className="text-[7px] text-gray-400">{gpaValues.length} course{gpaValues.length !== 1 ? 's' : ''} averaged</span>
                       </div>
                     ) : (
