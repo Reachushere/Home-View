@@ -4619,11 +4619,76 @@ iframe{width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bo
   });
 
   app.get("/api/cat-wash/tv-follow", (_req, res) => {
-    if (currentTvFollowUrl) {
-      console.log(`[Cat Wash TV] Redirecting to: ${currentTvFollowUrl}`);
-      return res.redirect(currentTvFollowUrl);
-    }
-    res.status(404).send('<html><body style="background:#0a0a1a;color:white;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><h2>No active playback</h2></body></html>');
+    const tvUrl = currentTvFollowUrl || '';
+    const baseUrl = 'https://home-view--bkh416.replit.app';
+    console.log(`[Cat Wash TV] Serving fullscreen wrapper, target: ${tvUrl || 'none'}`);
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Uni-Cal TV</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0a1a}
+iframe{width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bottom:0}
+#waiting{display:flex;align-items:center;justify-content:center;height:100vh;color:white;font-family:sans-serif;font-size:24px;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1}
+</style>
+</head>
+<body>
+${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></iframe>` : '<div id="waiting">No active playback</div>'}
+<script>
+(function(){
+  function goFullscreen() {
+    var el = document.documentElement;
+    try {
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+    } catch(e){}
+  }
+  document.addEventListener('click', goFullscreen);
+  document.addEventListener('touchstart', goFullscreen);
+  setTimeout(goFullscreen, 500);
+  setTimeout(goFullscreen, 2000);
+
+  var lastTs = 0;
+  function poll() {
+    var url = '${baseUrl}/api/tablet-nav?device=tv&auth=5747&_t=' + Date.now();
+    fetch(url, {cache:'no-store'}).then(function(r){return r.json()}).then(function(data){
+      if (!data || !data.action) return;
+      if (data.timestamp && data.timestamp <= lastTs) return;
+      if (data.timestamp && (Date.now() - data.timestamp > 120000)) return;
+      var frame = document.getElementById('frame');
+      var waiting = document.getElementById('waiting');
+      if (data.action === 'navigate' && data.url) {
+        lastTs = data.timestamp || Date.now();
+        if (!frame) {
+          if (waiting) waiting.remove();
+          frame = document.createElement('iframe');
+          frame.id = 'frame';
+          frame.allow = 'fullscreen;autoplay';
+          frame.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;right:0;bottom:0';
+          document.body.appendChild(frame);
+        }
+        frame.src = data.url;
+        fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'tv'})}).catch(function(){});
+      } else if (data.action === 'stop_playback') {
+        lastTs = data.timestamp || Date.now();
+        if (frame) frame.src = '${baseUrl}/?auth=5747';
+        fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'tv'})}).catch(function(){});
+      }
+    }).catch(function(){});
+  }
+  setInterval(poll, 3000);
+  poll();
+})();
+</script>
+</body>
+</html>`);
   });
 
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
