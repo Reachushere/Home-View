@@ -2702,10 +2702,9 @@ export default function Dashboard() {
       { required: 2, members: ['L2_OPEN1', 'L2_OPEN2'] },
     ],
     L3: [
-      { required: 1, members: ['L3_PPA333'] },
+      { required: 2, members: ['L3_PPA333', 'L3_PRACTICUM1'] },
       { required: 8, members: ['L3_PPA235', 'L3_PPA301', 'L3_PPA303', 'L3_PPA319', 'L3_PPA335', 'L3_PPA401', 'L3_PPA402', 'L3_PPA403', 'L3_PPA404', 'L3_PPA411', 'L3_PPA414', 'L3_PPA425', 'L3_PPA490', 'L3_PPA501'] },
-      { required: 1, members: ['L3_PRACTICUM1', 'L3_PRACTICUM2'] },
-      { required: 3, members: ['L3_POG1', 'L3_POG2', 'L3_POG3'] },
+      { required: 2, members: ['L3_POG1', 'L3_POG2'] },
       { required: 4, members: ['L3_LIBERAL1', 'L3_LIBERAL2', 'L3_LIBERAL3', 'L3_LIBERAL4'] },
       { required: 7, members: ['L3_OPEN1', 'L3_OPEN2', 'L3_OPEN3', 'L3_OPEN4', 'L3_OPEN5', 'L3_OPEN6', 'L3_OPEN7'] },
     ],
@@ -2820,22 +2819,20 @@ export default function Dashboard() {
     L3_PPA425: { code: 'PPA425', name: 'Intergovernmental Relations' },
     L3_PPA490: { code: 'PPA490', name: 'Public Administration Themes' },
     L3_PPA501: { code: 'PPA501', name: 'Public Sector Leadership' },
-    L3_PRACTICUM1: { code: 'PPA50A', name: 'Practicum A' },
-    L3_PRACTICUM2: { code: 'PPA50B', name: 'Practicum B' },
-    L3_POG1: { code: 'POG1', name: 'Required Group II Elective 1' },
-    L3_POG2: { code: 'POG2', name: 'Required Group II Elective 2' },
-    L3_POG3: { code: 'POG3', name: 'Required Group II Elective 3' },
+    L3_PRACTICUM1: { code: 'PPA51', name: 'Public Policy Research Paper' },
+    L3_POG1: { code: 'POG1', name: 'Required Professional POG 1' },
+    L3_POG2: { code: 'POG2', name: 'Required Professional POG 2' },
     L3_LIBERAL1: { code: 'LIB1', name: 'Liberal Studies (Lower) 1' },
     L3_LIBERAL2: { code: 'LIB2', name: 'Liberal Studies (Upper) 2' },
     L3_LIBERAL3: { code: 'LIB3', name: 'Liberal Studies (Upper) 3' },
     L3_LIBERAL4: { code: 'LIB4', name: 'Liberal Studies (Upper) 4' },
-    L3_OPEN1: { code: 'L3OPEN1', name: 'Open Elective 1' },
-    L3_OPEN2: { code: 'L3OPEN2', name: 'Open Elective 2' },
-    L3_OPEN3: { code: 'L3OPEN3', name: 'Open Elective 3' },
-    L3_OPEN4: { code: 'L3OPEN4', name: 'Open Elective 4' },
-    L3_OPEN5: { code: 'L3OPEN5', name: 'Open Elective 5' },
-    L3_OPEN6: { code: 'L3OPEN6', name: 'Open Elective 6' },
-    L3_OPEN7: { code: 'L3OPEN7', name: 'Open Elective 7' },
+    L3_OPEN1: { code: 'L3OPEN1', name: 'PR Elective 1' },
+    L3_OPEN2: { code: 'L3OPEN2', name: 'PR Elective 2' },
+    L3_OPEN3: { code: 'L3OPEN3', name: 'PR Elective 3' },
+    L3_OPEN4: { code: 'L3OPEN4', name: 'PR Elective 4' },
+    L3_OPEN5: { code: 'L3OPEN5', name: 'PR Elective 5' },
+    L3_OPEN6: { code: 'L3OPEN6', name: 'PR Elective 6' },
+    L3_OPEN7: { code: 'L3OPEN7', name: 'PR Elective 7' },
   };
 
   const [openedCourseFromDegreeTracking, setOpenedCourseFromDegreeTracking] = useState(false);
@@ -12088,8 +12085,9 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DEGREE</div>
                 </div>
                 <div className="flex border-b border-black">
-                  <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center" style={{ backgroundColor: '#e5e5e5' }}>Grade</div>
                 </div>
                 <table className="w-full border-collapse">
                   <colgroup>
@@ -12104,9 +12102,9 @@ export default function Dashboard() {
                       <td className="px-0.5 py-0.5 border-r border-black text-center align-middle">
                         <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PPA333'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_PPA333')}>{(checkedCourses['L3_PPA333'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                       </td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Core Req</td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">PPA 333</td>
-                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333">Research Methods in Public Administration<InProgressToggle id="L3_PPA333" /></td>
+                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333">Research Methods in Public Admin (POG230, PPA524)<InProgressToggle id="L3_PPA333" /></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
                           <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PPA333']?.grade || ''} onChange={(e) => updateGrade('L3_PPA333', e.target.value)}>
@@ -12116,20 +12114,52 @@ export default function Dashboard() {
                         </div>
                       </td>
                     </tr>
+                    <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`}>
+                      <td className="px-0.5 py-0.5 border-r border-black text-center align-middle">
+                        <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_PRACTICUM1')}>{(checkedCourses['L3_PRACTICUM1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      </td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Prof-Req'd</td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">PPA 51 A/B</td>
+                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)<InProgressToggle id="L3_PRACTICUM1" /></td>
+                      <td className="border-l border-black align-middle">
+                        <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
+                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PRACTICUM1']?.grade || ''} onChange={(e) => updateGrade('L3_PRACTICUM1', e.target.value)}>
+                            {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                          </select>
+                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the following list</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                </div>
+                <table className="w-full border-collapse">
+                  <colgroup>
+                    <col style={{ width: '1.25rem' }} />
+                    <col style={{ width: '55px' }} />
+                    <col style={{ width: '55px' }} />
+                    <col />
+                    <col style={{ width: '3rem' }} />
+                  </colgroup>
+                  <tbody>
                     {[
-                      { code: 'PPA 235', title: 'Theories of the State', id: 'L3_PPA235' },
-                      { code: 'PPA 301', title: 'Administrative Law T', id: 'L3_PPA301' },
-                      { code: 'PPA 303', title: 'Public Budget Policy/Politics', id: 'L3_PPA303' },
-                      { code: 'PPA 319', title: 'Politics of Work and Labour', id: 'L3_PPA319' },
-                      { code: 'PPA 335', title: 'Theories of Bureaucracy', id: 'L3_PPA335' },
-                      { code: 'PPA 401', title: 'Collaborative Governance', id: 'L3_PPA401' },
-                      { code: 'PPA 402', title: 'Program Planning and Evaluation', id: 'L3_PPA402' },
-                      { code: 'PPA 403', title: 'e-Government', id: 'L3_PPA403' },
-                      { code: 'PPA 404', title: 'Issues in Public Administration', id: 'L3_PPA404' },
+                      { code: 'PPA 235', title: 'Theories of the State (PPA525)', id: 'L3_PPA235' },
+                      { code: 'PPA 301', title: 'Administrative Law (PPA629)', id: 'L3_PPA301' },
+                      { code: 'PPA 303', title: 'Financial Management (PPA600)', id: 'L3_PPA303' },
+                      { code: 'PPA 319', title: 'Politics of Work and Labour (POG319, PPA533)', id: 'L3_PPA319' },
+                      { code: 'PPA 335', title: 'Theories of Bureaucracy (PPA624)', id: 'L3_PPA335' },
+                      { code: 'PPA 401', title: 'Collaborative Governance (PPA601)', id: 'L3_PPA401' },
+                      { code: 'PPA 402', title: 'Program Planning and Evaluation (PPA602)', id: 'L3_PPA402' },
+                      { code: 'PPA 403', title: 'e-Government (POG413, PPA633)', id: 'L3_PPA403' },
+                      { code: 'PPA 404', title: 'Issues in Public Administration (PPA604)', id: 'L3_PPA404' },
                       { code: 'PPA 411', title: 'Advanced Public Policy', id: 'L3_PPA411' },
-                      { code: 'PPA 414', title: 'Comparative Public Policy', id: 'L3_PPA414' },
-                      { code: 'PPA 425', title: 'Intergovernmental Relations', id: 'L3_PPA425' },
-                      { code: 'PPA 490', title: 'Public Admin Themes', id: 'L3_PPA490' },
+                      { code: 'PPA 414', title: 'Comparative Public Policy (PPA603)', id: 'L3_PPA414' },
+                      { code: 'PPA 425', title: 'Intergovernmental Relations (PPA650)', id: 'L3_PPA425' },
+                      { code: 'PPA 490', title: 'Public Administration Themes', id: 'L3_PPA490' },
                       { code: 'PPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
                     ].map((course, idx, arr) => (
                       <tr key={course.code} className={`${idx < arr.length - 1 ? 'border-b border-black' : ''} ${courseRowClass(course.id)}`}>
@@ -12145,8 +12175,7 @@ export default function Dashboard() {
                               </div>
                             </td>
                             <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[8px] align-middle">
-                              <div className="font-semibold">CORE ELECTIVES:</div>
-                              <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
+                              <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>EIGHT (8)<br/><br/>not previously<br/>completed</div>
                             </td>
                           </>
                         )}
@@ -12165,53 +12194,21 @@ export default function Dashboard() {
                   </tbody>
                 </table>
                 <div className="h-px bg-black"></div>
-                <div className="flex">
+                <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
-                  <div className="w-[55px] border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
-                  <div className="w-12 border-l border-black"></div>
-                </div>
-                <div className="flex">
-                  <div className="w-5 border-r border-black flex flex-col">
-                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM1')}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM1'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L3_PRACTICUM1')) ? "default" : "pointer", opacity: (isCheckDisabled('L3_PRACTICUM1')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L3_PRACTICUM1'))) { toggleCourse('L3_PRACTICUM1'); } }}>{(checkedCourses['L3_PRACTICUM1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${courseRowClass('L3_PRACTICUM2')}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PRACTICUM2'] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled('L3_PRACTICUM2')) ? "default" : "pointer", opacity: (isCheckDisabled('L3_PRACTICUM2')) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled('L3_PRACTICUM2'))) { toggleCourse('L3_PRACTICUM2'); } }}>{(checkedCourses['L3_PRACTICUM2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                  </div>
-                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
-                    Select&nbsp;<span className="font-bold">ONE</span>
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline relative ${courseRowClass('L3_PRACTICUM1')}`} onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1">PPA 50A/B (Formerly PPA030) ***Practicum1<InProgressToggle id="L3_PRACTICUM1" /></div>
-                    <div className={`h-11 px-1 flex items-center text-[9px] cursor-pointer hover:underline relative ${courseRowClass('L3_PRACTICUM2')}`} onClick={() => handleCertCourseClick('L3_PRACTICUM2')} data-testid="cert-course-L3_PRACTICUM2">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE<InProgressToggle id="L3_PRACTICUM2" /></div>
-                  </div>
-                  <div className="w-12 border-l border-black flex flex-col">
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PRACTICUM1']?.grade || ''} onChange={(e) => updateGrade('L3_PRACTICUM1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PRACTICUM2']?.grade || ''} onChange={(e) => updateGrade('L3_PRACTICUM2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_PRACTICUM2']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM2', e.target.value)} />
-                    </div>
-                  </div>
-                </div>
-                <div className="h-px bg-black"></div>
-                <div className="flex">
-                  <div className="w-5 border-r border-black"></div>
-                  <div className="w-[55px] border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
-                  <div className="w-12 border-l border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
                     <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG1'] ? 'bg-emerald-100' : (inProgressCourses['L3_POG1'] || courseGrades['L3_POG1']?.grade || courseGrades['L3_POG1']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG1')}>{(checkedCourses['L3_POG1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                     <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG2'] ? 'bg-emerald-100' : (inProgressCourses['L3_POG2'] || courseGrades['L3_POG2']?.grade || courseGrades['L3_POG2']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG2')}>{(checkedCourses['L3_POG2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG3'] ? 'bg-emerald-100' : (inProgressCourses['L3_POG3'] || courseGrades['L3_POG3']?.grade || courseGrades['L3_POG3']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG3'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG3')}>{(checkedCourses['L3_POG3'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
+                    <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>TWO (2)</div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    {['L3_POG1','L3_POG2','L3_POG3'].map((cid, i) => (
+                    {['L3_POG1','L3_POG2'].map((cid, i) => (
                       <div key={cid} className={`h-11 px-1 flex items-center relative ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
                         <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                           <option value="">{`Select POG course ${i+1}...`}</option>
@@ -12232,18 +12229,13 @@ export default function Dashboard() {
                       <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_POG2']?.grade || ''} onChange={(e) => updateGrade('L3_POG2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_POG2']?.percent || ''} onChange={(e) => updatePercent('L3_POG2', e.target.value)} />
                     </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_POG3']?.grade || ''} onChange={(e) => updateGrade('L3_POG3', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_POG3']?.percent || ''} onChange={(e) => updatePercent('L3_POG3', e.target.value)} />
-                    </div>
                   </div>
                 </div>
                 <div className="h-px bg-black"></div>
-                <div className="flex">
+                <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
-                  <div className="w-[55px] border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
-                  <div className="w-12 border-l border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: Select four courses; 1 from Table A and 3 from Table B</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
@@ -12254,7 +12246,7 @@ export default function Dashboard() {
                     ))}
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
+                    <div className="leading-tight"><i>Requirement Note: Select one Lower Level and three Upper Level Liberal Studies electives</i></div>
                   </div>
                   <div className="flex-1 flex flex-col">
                     {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
@@ -12278,11 +12270,10 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="h-px bg-black"></div>
-                <div className="flex">
+                <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
-                  <div className="w-[55px] border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
-                  <div className="w-12 border-l border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven courses from PR table I</div>
+                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
@@ -12293,7 +12284,7 @@ export default function Dashboard() {
                     ))}
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight"><span className="font-bold">SEVEN</span> one-term courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
+                    <div className="leading-tight">PR Table I<br/><br/><a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View Table</a></div>
                   </div>
                   <div className="flex-1 flex flex-col">
                     {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
@@ -12359,12 +12350,11 @@ export default function Dashboard() {
               addRemaining('Diploma', 'Liberal Studies', certSections.L2[2]);
               addRemaining('Diploma', 'Economics (pick 1 of 8)', certSections.L2[3]);
               addRemaining('Diploma', 'Open Electives', certSections.L2[4]);
-              addRemaining('Degree', 'Core Requirement', certSections.L3[0]);
-              addRemaining('Degree', 'Core Electives (pick 8 of 14)', certSections.L3[1]);
-              addRemaining('Degree', 'Practicum (pick 1 of 2)', certSections.L3[2]);
-              addRemaining('Degree', 'Politics & Governance', certSections.L3[3]);
-              addRemaining('Degree', 'Liberal Studies', certSections.L3[4]);
-              addRemaining('Degree', 'Open Electives', certSections.L3[5]);
+              addRemaining('Degree', 'Required Professional (PPA333 + PPA 51)', certSections.L3[0]);
+              addRemaining('Degree', 'Required Professional (pick 8 of 14)', certSections.L3[1]);
+              addRemaining('Degree', 'Required Professional POG (pick 2)', certSections.L3[2]);
+              addRemaining('Degree', 'Liberal Studies', certSections.L3[3]);
+              addRemaining('Degree', 'PR Electives', certSections.L3[4]);
               const totalRemaining = remainingItems.reduce((sum, g) => {
                 const match = g.category.match(/\((\d+) needed\)/);
                 return sum + (match ? parseInt(match[1]) : 0);
