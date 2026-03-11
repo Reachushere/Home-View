@@ -11988,10 +11988,21 @@ export default function Dashboard() {
                 {showRemainingList ? 'Hide' : 'Remaining'}
               </Button>
               {!showRemainingList && (
+              <div className="flex gap-2">
               <Button 
                 type="button" 
                 variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-8 w-[110px]"
+                style={{ fontSize: '12px' }}
+                onClick={() => setIsSettingsPanelOpen(false)}
+                data-testid="button-cancel-settings-panel"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 w-[110px]"
                 style={{
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                   fontSize: '12px'
@@ -12006,6 +12017,7 @@ export default function Dashboard() {
               >
                 Save
               </Button>
+              </div>
               )}
             </div>
           </div>
