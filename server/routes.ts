@@ -5183,8 +5183,26 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const stopTimestamp = Date.now();
     await Promise.all([
       setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: stopTimestamp }, true, 'master'),
-      setTabletCommand({ action: 'go_home', timestamp: stopTimestamp }, true, 'tv'),
+      setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
     ]);
+
+    // Turn off the TV via Fire Stick
+    try {
+      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+      });
+      console.log(`[Nest Stop] Fire Stick turned off`);
+      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+      });
+      console.log(`[Nest Stop] Samsung TV turned off`);
+    } catch (e: any) {
+      console.log(`[Nest Stop] TV turn off error: ${e.message}`);
+    }
   }
 
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
