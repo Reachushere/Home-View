@@ -11678,6 +11678,13 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
                   <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center" style={{ backgroundColor: '#e5e5e5' }}>Grade</div>
                 </div>
+                <div className="flex border-b border-black bg-gray-50">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
+                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
                 {[
                   { id: 'PPA101', code: 'PPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
                   { id: 'PPA102', code: 'PPA 102', name: 'Cdn Public Admin II: Processes (PPA422)', type: 'Prof-Req\'d' },
