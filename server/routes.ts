@@ -9394,6 +9394,82 @@ document.body.removeChild(a);
     }
   });
 
+  app.post("/api/tasks/parse-ics", async (req, res) => {
+    try {
+      const { icsContent } = req.body;
+      if (!icsContent || typeof icsContent !== 'string') {
+        return res.status(400).json({ error: "icsContent is required" });
+      }
+
+      const events: Array<{
+        title: string;
+        description: string;
+        startDate: string | null;
+        endDate: string | null;
+        location: string;
+        allDay: boolean;
+      }> = [];
+
+      const lines = icsContent.replace(/\r\n /g, '').replace(/\r\n\t/g, '').split(/\r?\n/);
+      let inEvent = false;
+      let currentEvent: Record<string, string> = {};
+
+      for (const line of lines) {
+        if (line === 'BEGIN:VEVENT') {
+          inEvent = true;
+          currentEvent = {};
+        } else if (line === 'END:VEVENT') {
+          inEvent = false;
+          const summary = currentEvent['SUMMARY'] || '';
+          const description = (currentEvent['DESCRIPTION'] || '').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\\\/g, '\\');
+          const dtstart = currentEvent['DTSTART'] || currentEvent['DTSTART;VALUE=DATE'] || '';
+          const dtend = currentEvent['DTEND'] || currentEvent['DTEND;VALUE=DATE'] || '';
+          const location = (currentEvent['LOCATION'] || '').replace(/\\,/g, ',').replace(/\\\\/g, '\\');
+          const allDay = !!(currentEvent['DTSTART;VALUE=DATE'] || (dtstart && dtstart.length === 8));
+
+          const parseIcsDate = (val: string): string | null => {
+            if (!val) return null;
+            const clean = val.replace(/[^0-9TZ]/g, '');
+            if (clean.length === 8) {
+              return `${clean.slice(0,4)}-${clean.slice(4,6)}-${clean.slice(6,8)}T00:00:00.000Z`;
+            }
+            if (clean.length >= 15) {
+              const d = `${clean.slice(0,4)}-${clean.slice(4,6)}-${clean.slice(6,8)}T${clean.slice(9,11)}:${clean.slice(11,13)}:${clean.slice(13,15)}.000Z`;
+              return d;
+            }
+            return null;
+          };
+
+          if (summary) {
+            events.push({
+              title: summary.replace(/\\,/g, ',').replace(/\\\\/g, '\\'),
+              description,
+              startDate: parseIcsDate(dtstart),
+              endDate: parseIcsDate(dtend),
+              location,
+              allDay,
+            });
+          }
+        } else if (inEvent) {
+          const colonIdx = line.indexOf(':');
+          if (colonIdx > 0) {
+            let key = line.slice(0, colonIdx);
+            const value = line.slice(colonIdx + 1);
+            if (key.includes(';') && !key.startsWith('DTSTART;VALUE') && !key.startsWith('DTEND;VALUE')) {
+              key = key.split(';')[0];
+            }
+            currentEvent[key] = value;
+          }
+        }
+      }
+
+      res.json({ events, count: events.length });
+    } catch (err) {
+      console.error("ICS parse error:", err);
+      res.status(500).json({ error: "Failed to parse ICS file" });
+    }
+  });
+
   // Parse uploaded assignment PDF and extract task details
   app.post("/api/tasks/parse-assignment-pdf", async (req, res) => {
     try {

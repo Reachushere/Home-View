@@ -341,6 +341,75 @@ export default function Dashboard() {
       setIsQuickAddOpen(false);
     }
   };
+  const icsFileInputRef = useRef<HTMLInputElement>(null);
+  const [icsImportEvents, setIcsImportEvents] = useState<Array<{
+    title: string; description: string; startDate: string | null; endDate: string | null;
+    location: string; allDay: boolean; selected: boolean; type: string; courseName: string;
+  }>>([]);
+  const [icsImportOpen, setIcsImportOpen] = useState(false);
+  const [icsImporting, setIcsImporting] = useState(false);
+
+  const handleIcsFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    try {
+      const text = await file.text();
+      const resp = await apiRequest('/api/tasks/parse-ics', 'POST', { icsContent: text });
+      const data = await resp.json();
+      if (!data.events?.length) {
+        toast({ title: "No events found", description: "The ICS file didn't contain any calendar events." });
+        return;
+      }
+      const mapped = data.events.map((ev: any) => ({ ...ev, selected: true, type: 'other', courseName: '' }));
+      setIcsImportEvents(mapped);
+      setIcsImportOpen(true);
+    } catch (err) {
+      toast({ title: "Import failed", description: "Could not parse the ICS file." });
+    }
+  };
+
+  const handleIcsImportConfirm = async () => {
+    const selected = icsImportEvents.filter(ev => ev.selected);
+    if (selected.length === 0) { toast({ title: "No events selected" }); return; }
+    setIcsImporting(true);
+    let imported = 0;
+    for (const ev of selected) {
+      try {
+        const dueDate = ev.endDate || ev.startDate;
+        if (!dueDate) continue;
+        const dueDateObj = new Date(dueDate);
+        const weekNum = getWeekNumber(dueDateObj);
+        if (weekNum < 1 || weekNum > 15) continue;
+        const startTime = ev.startDate && !ev.allDay ? new Date(ev.startDate).toTimeString().slice(0, 5) : '';
+        const endTime = ev.endDate && !ev.allDay ? new Date(ev.endDate).toTimeString().slice(0, 5) : '';
+        const desc = [ev.description, ev.location ? `Location: ${ev.location}` : ''].filter(Boolean).join('\n');
+        await apiRequest('/api/tasks', 'POST', {
+          title: ev.title,
+          description: desc || '',
+          type: ev.type,
+          courseName: ev.courseName || null,
+          dueDate: dueDateObj.toISOString(),
+          startDate: ev.startDate && ev.startDate !== ev.endDate ? new Date(ev.startDate).toISOString() : null,
+          eventStartTime: startTime || null,
+          eventEndTime: endTime || null,
+          weekNumber: Math.max(1, Math.min(weekNum, 13)),
+          reminder1: DEFAULT_REMINDER_1,
+          reminder2: DEFAULT_REMINDER_2,
+          priority: 'medium',
+        });
+        imported++;
+      } catch (err) {
+        console.error('Failed to import ICS event:', ev.title, err);
+      }
+    }
+    setIcsImporting(false);
+    setIcsImportOpen(false);
+    setIcsImportEvents([]);
+    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+    toast({ title: `Imported ${imported} event${imported !== 1 ? 's' : ''}`, description: `Successfully created ${imported} task${imported !== 1 ? 's' : ''} from ICS file.` });
+  };
+
   const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [maxTaskNameWidth, setMaxTaskNameWidth] = useState<number>(0);
@@ -12417,6 +12486,106 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={icsImportOpen} onOpenChange={(open) => { if (!open) { setIcsImportOpen(false); setIcsImportEvents([]); } }}>
+        <DialogContent className="max-w-[640px] max-h-[85vh] bg-gradient-to-br from-gray-900/98 via-black/95 to-gray-800/98 border border-white/20 text-white p-0 overflow-hidden" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+          <DialogHeader className="px-5 py-3 border-b border-white/15" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+            <DialogTitle className="text-sm font-normal text-white flex items-center gap-2">
+              <Upload className="h-4 w-4 text-violet-400" />
+              Import ICS Events ({icsImportEvents.filter(e => e.selected).length} of {icsImportEvents.length} selected)
+            </DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto px-4 py-3 flex-1" style={{ maxHeight: 'calc(85vh - 140px)', scrollbarWidth: 'thin' }}>
+            <div className="flex items-center justify-between mb-3">
+              <button
+                className="text-[10px] text-violet-400 hover:text-violet-300 transition-colors"
+                onClick={() => {
+                  const allSelected = icsImportEvents.every(e => e.selected);
+                  setIcsImportEvents(prev => prev.map(e => ({ ...e, selected: !allSelected })));
+                }}
+                data-testid="button-ics-toggle-all"
+              >
+                {icsImportEvents.every(e => e.selected) ? 'Deselect All' : 'Select All'}
+              </button>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {icsImportEvents.map((ev, idx) => (
+                <div
+                  key={idx}
+                  className={`rounded-lg border px-3 py-2 transition-all cursor-pointer ${ev.selected ? 'bg-white/10 border-violet-400/40' : 'bg-white/3 border-white/10 opacity-50'}`}
+                  onClick={() => setIcsImportEvents(prev => prev.map((e, i) => i === idx ? { ...e, selected: !e.selected } : e))}
+                  data-testid={`ics-event-${idx}`}
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="mt-0.5">
+                      <div style={{ width: '14px', height: '14px', border: '1.5px solid rgba(255,255,255,0.5)', borderRadius: '3px', backgroundColor: ev.selected ? '#8b5cf6' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {ev.selected && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] font-medium text-white truncate">{ev.title}</div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {ev.startDate && (
+                          <span className="text-[9px] text-white/50">
+                            {format(new Date(ev.startDate), 'MMM d, yyyy')}
+                            {!ev.allDay && ` ${format(new Date(ev.startDate), 'h:mm a')}`}
+                            {ev.endDate && ev.endDate !== ev.startDate && !ev.allDay && ` — ${format(new Date(ev.endDate), 'h:mm a')}`}
+                          </span>
+                        )}
+                        {ev.location && <span className="text-[9px] text-white/40 truncate max-w-[150px]">{ev.location}</span>}
+                      </div>
+                      {ev.description && <div className="text-[8px] text-white/35 mt-0.5 line-clamp-1">{ev.description.slice(0, 100)}</div>}
+                    </div>
+                    <div className="flex flex-col gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <select
+                        className="text-[9px] bg-white/10 border border-white/15 rounded px-1 py-0.5 text-white w-[85px]"
+                        value={ev.type}
+                        onChange={(e) => setIcsImportEvents(prev => prev.map((item, i) => i === idx ? { ...item, type: e.target.value } : item))}
+                        data-testid={`ics-event-type-${idx}`}
+                      >
+                        {TASK_TYPES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+                      </select>
+                      <select
+                        className="text-[9px] bg-white/10 border border-white/15 rounded px-1 py-0.5 text-white w-[85px]"
+                        value={ev.courseName}
+                        onChange={(e) => setIcsImportEvents(prev => prev.map((item, i) => i === idx ? { ...item, courseName: e.target.value } : item))}
+                        data-testid={`ics-event-course-${idx}`}
+                      >
+                        <option value="">No course</option>
+                        {COURSES.map(c => <option key={c.code} value={`${c.code} - ${c.name}`}>{c.code}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="px-4 py-3 border-t border-white/15 flex items-center justify-between">
+            <span className="text-[10px] text-white/40">{icsImportEvents.filter(e => e.selected).length} event{icsImportEvents.filter(e => e.selected).length !== 1 ? 's' : ''} will be imported as tasks</span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent h-8 px-4"
+                style={{ fontSize: '11px' }}
+                onClick={() => { setIcsImportOpen(false); setIcsImportEvents([]); }}
+                data-testid="button-ics-cancel"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                className="border !border-violet-400/50 text-white hover:!border-violet-400 hover:bg-violet-500/20 h-8 px-4"
+                style={{ fontSize: '11px', boxShadow: '0 0 8px rgba(139,92,246,0.3)' }}
+                onClick={handleIcsImportConfirm}
+                disabled={icsImporting || icsImportEvents.filter(e => e.selected).length === 0}
+                data-testid="button-ics-import-confirm"
+              >
+                {icsImporting ? 'Importing...' : `Import ${icsImportEvents.filter(e => e.selected).length} Event${icsImportEvents.filter(e => e.selected).length !== 1 ? 's' : ''}`}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {selectedCertCourse && (() => {
         const info = buildCourseInfoForCert();
         if (!info) return null;
@@ -13322,6 +13491,25 @@ export default function Dashboard() {
                         >
                           <GraduationCap className="h-3.5 w-3.5" />
                           Course
+                        </button>
+                      </div>
+                      <div className="border-t border-white/15 mt-3 pt-3">
+                        <input
+                          type="file"
+                          accept=".ics"
+                          className="hidden"
+                          ref={icsFileInputRef}
+                          onChange={handleIcsFileUpload}
+                          data-testid="input-ics-file"
+                        />
+                        <button
+                          className="w-full px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 text-white border border-violet-400/30 hover:border-violet-400/50 hover:from-violet-500/20 hover:to-indigo-500/20 flex items-center gap-2"
+                          onClick={() => icsFileInputRef.current?.click()}
+                          data-testid="button-import-ics"
+                        >
+                          <Upload className="h-3.5 w-3.5 text-violet-400" />
+                          Import from .ICS File
+                          <span className="text-[9px] text-white/40 ml-auto">Calendar events</span>
                         </button>
                       </div>
                     </div>
