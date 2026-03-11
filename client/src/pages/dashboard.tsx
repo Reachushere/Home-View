@@ -11585,14 +11585,8 @@ export default function Dashboard() {
               <div
                 className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ml-4"
                 onClick={() => {
-                  const firstCourse = coursesData.courses.find(c => c.name.trim());
-                  if (firstCourse) {
-                    const code = firstCourse.name.split(' - ')[0]?.trim();
-                    const name = firstCourse.name.split(' - ').slice(1).join(' - ').trim();
-                    setIsSettingsPanelOpen(false);
-                    setOpenedCourseFromDegreeTracking(true);
-                    setSelectedCertCourse({ courseCode: code, courseName: name, certKey: code });
-                  }
+                  setIsSettingsPanelOpen(false);
+                  setTimeout(() => setIsSchoolCoursesDialogOpen(true), 200);
                 }}
                 data-testid="button-degree-courses"
               >
