@@ -12733,7 +12733,9 @@ export default function Dashboard() {
             courseInfo={info}
             onClose={() => {
               setSelectedCertCourse(null);
-              if (openedCourseFromDegreeTracking) {
+              if (isSchoolCoursesDialogOpen) {
+                // School Courses dialog is still open underneath, just go back to it
+              } else if (openedCourseFromDegreeTracking) {
                 setOpenedCourseFromDegreeTracking(false);
                 setIsSettingsPanelOpen(true);
               }
@@ -15604,8 +15606,6 @@ export default function Dashboard() {
                       return (
                         <div key={`current-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: course.colorEnd ? `linear-gradient(135deg, ${course.color}44, ${course.colorEnd}44)` : `${course.color}33` }}
                           onClick={() => {
-                            setIsSchoolCoursesDialogOpen(false);
-                            setOpenedCourseFromDegreeTracking(false);
                             setSelectedCertCourse({ courseCode: code, courseName: name, certKey: code });
                           }}
                           data-testid={`school-course-current-${code}`}
@@ -15656,8 +15656,6 @@ export default function Dashboard() {
                         return (
                           <div key={`past-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: 'rgba(59,130,246,0.15)' }}
                             onClick={() => {
-                              setIsSchoolCoursesDialogOpen(false);
-                              setOpenedCourseFromDegreeTracking(false);
                               setSelectedCertCourse({ courseCode: entry.code, courseName: entry.name, certKey: entry.certKey });
                             }}
                             data-testid={`school-course-past-${entry.code}`}
