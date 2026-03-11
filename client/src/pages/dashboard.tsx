@@ -17987,27 +17987,37 @@ export default function Dashboard() {
               <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
             </div>
           </div>
-          {/* Set Default button — bottom-right area, separate from resize handle */}
-          <div
-            className="cursor-pointer hover:!bg-white/70"
-            style={{ position: 'absolute', right: '8px', bottom: '-10px', height: '10px', padding: '0 6px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', zIndex: 50 }}
-            onClick={() => {
-              const defaultHeight = window.innerHeight - 70;
-              const oldHeight = calendarHeight;
-              const oldReduction = calendarReduction;
-              setCalendarHeight(defaultHeight);
-              setCalendarReduction(120);
-              setCalendarReductionUserSet(false);
-              localStorage.setItem('calendarHeight', String(defaultHeight));
-              localStorage.setItem('calendarReduction', '120');
-              setUndoStack(prev => [{ type: 'resize', description: 'Reset to default size', data: { resizeType: 'both', oldHeight, oldReduction, newHeight: defaultHeight, newReduction: 120 } }, ...prev]);
-              setRedoStack([]);
-              toast({ title: "Reset", description: "Calendar size reset to default" });
-            }}
-            data-testid="button-set-default-size"
+          {/* Set Default checkbox — below calendar */}
+          <label
+            className="cursor-pointer select-none"
+            style={{ position: 'absolute', right: '8px', bottom: '-22px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
+            data-testid="checkbox-set-default-size"
           >
-            <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(100,100,100,0.7)', whiteSpace: 'nowrap', lineHeight: '10px' }}>SET DEFAULT</span>
-          </div>
+            <input
+              type="checkbox"
+              checked={localStorage.getItem('calendarDefaultSize') === 'true'}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  const defaultHeight = window.innerHeight - 70;
+                  const oldHeight = calendarHeight;
+                  const oldReduction = calendarReduction;
+                  setCalendarHeight(defaultHeight);
+                  setCalendarReduction(120);
+                  setCalendarReductionUserSet(false);
+                  localStorage.setItem('calendarHeight', String(defaultHeight));
+                  localStorage.setItem('calendarReduction', '120');
+                  localStorage.setItem('calendarDefaultSize', 'true');
+                  setUndoStack(prev => [{ type: 'resize', description: 'Reset to default size', data: { resizeType: 'both', oldHeight, oldReduction, newHeight: defaultHeight, newReduction: 120 } }, ...prev]);
+                  setRedoStack([]);
+                  toast({ title: "Reset", description: "Calendar size reset to default" });
+                } else {
+                  localStorage.removeItem('calendarDefaultSize');
+                }
+              }}
+              style={{ width: '10px', height: '10px', accentColor: '#666' }}
+            />
+            <span style={{ fontSize: '8px', fontWeight: 600, color: 'rgba(100,100,100,0.7)', whiteSpace: 'nowrap' }}>Set Default</span>
+          </label>
           </div>
           </div>
           
