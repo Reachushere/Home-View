@@ -16200,7 +16200,7 @@ export default function Dashboard() {
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
                     <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '1px', padding: '0 1px' }}>
-                      <span className="font-medium text-black" style={{ fontSize: '7px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEE, MMM d, yyyy')}</span>
+                      <span className="font-medium text-black" style={{ fontSize: '7.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEE, MMM d, yyyy')}</span>
                     </div>
                   )}
                 </div>
@@ -16254,9 +16254,9 @@ export default function Dashboard() {
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-sun-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-moon-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     {day.getDay() === 6 && (
-                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '0.5px', color: isToday ? '#FFFF00' : 'rgba(255,255,255,0.85)', lineHeight: '1', paddingTop: '2px' }}>NEW COURSE WEEK</div>
+                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW COURSE WEEK</div>
                     )}
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '4px' : undefined }}>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
