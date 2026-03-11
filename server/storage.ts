@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -76,6 +76,9 @@ export interface IStorage {
   setShiftBulk(entries: InsertShiftScheduleEntry[]): Promise<void>;
   deleteShiftDay(date: string): Promise<void>;
   clearAllShifts(): Promise<void>;
+  getSemesterChecklist(semesterSettingsId: number): Promise<SemesterChecklistItem[]>;
+  upsertSemesterChecklistItem(item: InsertSemesterChecklistItem): Promise<SemesterChecklistItem>;
+  initSemesterChecklist(semesterSettingsId: number, courseCodes: string[]): Promise<SemesterChecklistItem[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -594,6 +597,52 @@ export class DatabaseStorage implements IStorage {
 
   async clearAllShifts(): Promise<void> {
     await db.delete(shiftSchedule);
+  }
+
+  async getSemesterChecklist(semesterSettingsId: number): Promise<SemesterChecklistItem[]> {
+    return await db.select().from(semesterChecklist).where(eq(semesterChecklist.semesterSettingsId, semesterSettingsId));
+  }
+
+  async upsertSemesterChecklistItem(item: InsertSemesterChecklistItem): Promise<SemesterChecklistItem> {
+    const existing = await db.select().from(semesterChecklist).where(
+      and(
+        eq(semesterChecklist.semesterSettingsId, item.semesterSettingsId),
+        eq(semesterChecklist.courseCode, item.courseCode),
+        eq(semesterChecklist.itemType, item.itemType)
+      )
+    );
+    if (existing.length > 0) {
+      const [updated] = await db.update(semesterChecklist)
+        .set({ isChecked: item.isChecked, checkedAt: item.isChecked ? new Date() : null })
+        .where(eq(semesterChecklist.id, existing[0].id))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(semesterChecklist).values({
+      ...item,
+      checkedAt: item.isChecked ? new Date() : null,
+    }).returning();
+    return created;
+  }
+
+  async initSemesterChecklist(semesterSettingsId: number, courseCodes: string[]): Promise<SemesterChecklistItem[]> {
+    const existing = await this.getSemesterChecklist(semesterSettingsId);
+    if (existing.length > 0) return existing;
+
+    const itemTypes = ['tasks', 'modules', 'readings'];
+    const items: SemesterChecklistItem[] = [];
+    for (const courseCode of courseCodes) {
+      for (const itemType of itemTypes) {
+        const [created] = await db.insert(semesterChecklist).values({
+          semesterSettingsId,
+          courseCode,
+          itemType,
+          isChecked: false,
+        }).returning();
+        items.push(created);
+      }
+    }
+    return items;
   }
 }
 

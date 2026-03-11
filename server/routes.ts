@@ -1325,6 +1325,33 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/semester-checklist", async (_req, res) => {
+    try {
+      const semester = await storage.getActiveSemesterSettings();
+      if (!semester) return res.json({ items: [], allChecked: true, semesterId: null });
+      const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean);
+      const items = await storage.initSemesterChecklist(semester.id, courseCodes);
+      const allChecked = items.every(i => i.isChecked);
+      res.json({ items, allChecked, semesterId: semester.id });
+    } catch (err) {
+      console.error("Error fetching semester checklist:", err);
+      res.status(500).json({ error: "Failed to fetch semester checklist" });
+    }
+  });
+
+  app.patch("/api/semester-checklist", async (req, res) => {
+    try {
+      const { semesterSettingsId, courseCode, itemType, isChecked } = req.body;
+      const updated = await storage.upsertSemesterChecklistItem({ semesterSettingsId, courseCode, itemType, isChecked });
+      const allItems = await storage.getSemesterChecklist(semesterSettingsId);
+      const allChecked = allItems.every(i => i.isChecked);
+      res.json({ item: updated, allChecked });
+    } catch (err) {
+      console.error("Error updating semester checklist:", err);
+      res.status(500).json({ error: "Failed to update semester checklist" });
+    }
+  });
+
   app.get("/api/shift-schedule", async (_req, res) => {
     try {
       const schedule = await storage.getShiftSchedule();

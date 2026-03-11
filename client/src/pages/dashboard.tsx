@@ -435,6 +435,11 @@ export default function Dashboard() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [showRemainingList, setShowRemainingList] = useState(false);
   
+  const [showSemesterChecklist, setShowSemesterChecklist] = useState(false);
+  const [semesterChecklistItems, setSemesterChecklistItems] = useState<Array<{id: number; semesterSettingsId: number; courseCode: string; itemType: string; isChecked: boolean | null; checkedAt: string | null}>>([]);
+  const [semesterChecklistId, setSemesterChecklistId] = useState<number | null>(null);
+  const semesterChecklistShownRef = useRef(false);
+
   // Return-from-break reading prompt (dev mode only - when returning to Replit after 2+ hours)
   const [showReturnReadingPrompt, setShowReturnReadingPrompt] = useState(false);
   const [returnReadingFiles, setReturnReadingFiles] = useState<Array<{id: number; name: string; folder: string; originalName: string; displayName: string; objectPath: string; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string}>>([]);
@@ -3777,6 +3782,39 @@ export default function Dashboard() {
     retry: 2,
     retryDelay: 1000,
   });
+
+  useEffect(() => {
+    if (!semesterSettings || semesterChecklistShownRef.current) return;
+    const startDate = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null;
+    if (!startDate) return;
+
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const startDay = new Date(startDate);
+    startDay.setHours(0, 0, 0, 0);
+    const endOfStartDay = new Date(startDay);
+    endOfStartDay.setHours(23, 59, 59, 999);
+
+    const isFirstDay = now >= startDay && now <= endOfStartDay;
+    if (!isFirstDay) return;
+
+    const lastShownKey = `semChecklist_lastShown_${semesterSettings.id}`;
+    const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
+    const hoursSinceShown = (now.getTime() - lastShown) / (1000 * 60 * 60);
+
+    if (hoursSinceShown < 8) return;
+
+    fetch('/api/semester-checklist', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.allChecked) return;
+        setSemesterChecklistItems(data.items);
+        setSemesterChecklistId(data.semesterId);
+        setShowSemesterChecklist(true);
+        localStorage.setItem(lastShownKey, String(now.getTime()));
+        semesterChecklistShownRef.current = true;
+      })
+      .catch(err => console.error('Error fetching semester checklist:', err));
+  }, [semesterSettings]);
 
   // Deleted folders query for hamburger menu filtering
   const { data: deletedFoldersData = [] } = useQuery<{ id: number; folderId: string }[]>({
@@ -7863,6 +7901,67 @@ export default function Dashboard() {
               <div className="text-xs text-white/40 text-center py-4">No reading files for this week</div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSemesterChecklist} onOpenChange={setShowSemesterChecklist}>
+        <DialogContent className="max-w-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" data-testid="semester-checklist-dialog">
+          <DialogHeader>
+            <DialogTitle className="text-white text-lg font-semibold">Hey Bryn, have you...</DialogTitle>
+            <DialogDescription className="text-white/60 text-sm">Complete these items to get your semester started right.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-2">
+            {(() => {
+              const grouped: Record<string, typeof semesterChecklistItems> = {};
+              semesterChecklistItems.forEach(item => {
+                if (!grouped[item.courseCode]) grouped[item.courseCode] = [];
+                grouped[item.courseCode].push(item);
+              });
+              return Object.entries(grouped).map(([courseCode, items]) => (
+                <div key={courseCode} className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-white/80 uppercase tracking-wider">{courseCode}</span>
+                  {items.map(item => {
+                    const label = item.itemType === 'tasks' ? 'Input all assignments, essays, projects and exams' : item.itemType === 'modules' ? 'Upload the modules' : 'Upload reading materials';
+                    return (
+                      <label key={item.id} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded px-2 py-1.5 transition-colors" data-testid={`checklist-${courseCode}-${item.itemType}`}>
+                        <Checkbox
+                          checked={!!item.isChecked}
+                          onCheckedChange={(checked) => {
+                            setSemesterChecklistItems(prev => prev.map(i => i.id === item.id ? { ...i, isChecked: !!checked } : i));
+                            fetch('/api/semester-checklist', {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify({ semesterSettingsId: item.semesterSettingsId, courseCode: item.courseCode, itemType: item.itemType, isChecked: !!checked }),
+                            })
+                              .then(r => r.json())
+                              .then(data => {
+                                if (data.allChecked) {
+                                  toast({ title: "All done!", description: "Semester setup checklist complete." });
+                                  setShowSemesterChecklist(false);
+                                }
+                              })
+                              .catch(err => console.error('Error updating checklist:', err));
+                          }}
+                          data-testid={`checkbox-${courseCode}-${item.itemType}`}
+                        />
+                        <span className="text-sm text-white/90">{label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              ));
+            })()}
+          </div>
+          <DialogFooter className="mt-4">
+            <button
+              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
+              onClick={() => setShowSemesterChecklist(false)}
+              data-testid="button-dismiss-checklist"
+            >
+              Dismiss for now
+            </button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

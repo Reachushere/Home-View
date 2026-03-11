@@ -99,6 +99,12 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - `CPHL 110 - Philosophy of Religion I` (Weeks 1-7)
 - `CASL 201 - Intro to ASL II`
 
+### Semester Setup Checklist
+- **Table**: `semester_checklist` — stores per-course checklist items (tasks, modules, readings)
+- **Trigger**: On the first day of each semester (based on `semesterStartDate`), a dialog prompts twice per day (8hr gap)
+- **Behavior**: Remembers checked items; dialog stops appearing once all items are checked
+- **API**: `GET /api/semester-checklist`, `PATCH /api/semester-checklist`
+
 **Key Considerations for Schema**:
 - Courses need individual start/end dates (not just semester-wide)
 - Class schedules (days of week, times) should be stored per course

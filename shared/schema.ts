@@ -477,5 +477,18 @@ export const insertShiftScheduleSchema = createInsertSchema(shiftSchedule).omit(
 export type ShiftScheduleEntry = typeof shiftSchedule.$inferSelect;
 export type InsertShiftScheduleEntry = z.infer<typeof insertShiftScheduleSchema>;
 
+export const semesterChecklist = pgTable("semester_checklist", {
+  id: serial("id").primaryKey(),
+  semesterSettingsId: integer("semester_settings_id").notNull(),
+  courseCode: text("course_code").notNull(),
+  itemType: text("item_type").notNull(),
+  isChecked: boolean("is_checked").default(false),
+  checkedAt: timestamp("checked_at"),
+});
+
+export const insertSemesterChecklistSchema = createInsertSchema(semesterChecklist).omit({ id: true, checkedAt: true });
+export type SemesterChecklistItem = typeof semesterChecklist.$inferSelect;
+export type InsertSemesterChecklistItem = z.infer<typeof insertSemesterChecklistSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";
