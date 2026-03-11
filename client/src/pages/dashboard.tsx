@@ -20233,7 +20233,8 @@ export default function Dashboard() {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
-                return `${lastBottom + 24 - 31}px`;
+                const otherRowH = gridSizes.courseRowHeight || 48;
+                return `${lastBottom + otherRowH + 6}px`;
               }
             }
             return '14px';
