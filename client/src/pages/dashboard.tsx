@@ -5888,12 +5888,21 @@ export default function Dashboard() {
   const [sleepDisabledDays, setSleepDisabledDays] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('sleepDisabledDays');
-      return saved ? new Set(JSON.parse(saved)) : new Set();
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return new Set(parsed);
+      }
+      return new Set();
     } catch { return new Set(); }
   });
-  useEffect(() => {
-    try { localStorage.setItem('sleepDisabledDays', JSON.stringify(Array.from(sleepDisabledDays))); } catch {}
-  }, [sleepDisabledDays]);
+  const updateSleepDisabledDays = useCallback((dateStr: string) => {
+    setSleepDisabledDays(prev => {
+      const next = new Set(prev);
+      if (next.has(dateStr)) next.delete(dateStr); else next.add(dateStr);
+      try { localStorage.setItem('sleepDisabledDays', JSON.stringify(Array.from(next))); } catch {}
+      return next;
+    });
+  }, []);
   const [shiftDirty, setShiftDirty] = useState(false);
 
   const { data: shiftScheduleData } = useQuery<{ id: number; date: string; shiftType: string }[]>({
@@ -15737,8 +15746,8 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-sun-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); setSleepDisabledDays(prev => { const next = new Set(prev); if (next.has(shiftDateStr)) next.delete(shiftDateStr); else next.add(shiftDateStr); return next; }); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-moon-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); setSleepDisabledDays(prev => { const next = new Set(prev); if (next.has(shiftDateStr)) next.delete(shiftDateStr); else next.add(shiftDateStr); return next; }); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-sun-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-moon-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     <div className="flex items-center gap-1.5">
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
