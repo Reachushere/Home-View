@@ -1607,12 +1607,7 @@ export default function Dashboard() {
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
   
   // Generate a device-specific identifier based on screen dimensions
-  const getDeviceId = useCallback(() => {
-    const screenWidth = window.screen.width;
-    const screenHeight = window.screen.height;
-    const pixelRatio = window.devicePixelRatio || 1;
-    return `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-  }, []);
+  
   
   // Grid size settings for resizable calendar columns and rows
   const [gridSizes, setGridSizes] = useState<{
@@ -1683,19 +1678,6 @@ export default function Dashboard() {
     }
     return defaultSizes;
   });
-  
-  // State to show "Saved!" confirmation
-  const [showDeviceSaved, setShowDeviceSaved] = useState(false);
-  
-  // Save grid sizes as default for this device
-  const saveAsDeviceDefault = useCallback(() => {
-    const deviceId = getDeviceId();
-    localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
-    localStorage.setItem(`calendarHeight_${deviceId}`, calendarHeight.toString());
-    setShowDeviceSaved(true);
-    setTimeout(() => setShowDeviceSaved(false), 2000);
-    toast({ title: `Layout saved for this device (${deviceId})` });
-  }, [gridSizes, calendarHeight, getDeviceId, toast]);
   
   // Save grid sizes to localStorage
   useEffect(() => {
@@ -12091,21 +12073,7 @@ export default function Dashboard() {
       })()}
 
       
-      {/* Set Default Layout Checkbox - moved to task boxes area */}
       
-      {/* Set Default checkbox - right-aligned with homework box, attached to bottom of glass box */}
-      {!isTodoFlyoutOpen && (
-        <label className="fixed flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-[70] cursor-pointer" style={{ bottom: `${calendarBottom + 4}px`, right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 + 3 + 3 + 2}px` }}>
-          <input
-            type="checkbox"
-            checked={showDeviceSaved}
-            onChange={saveAsDeviceDefault}
-            className="w-[8px] h-[8px] rounded border-white/40 bg-transparent accent-green-500"
-            data-testid="checkbox-save-device-default"
-          />
-          {showDeviceSaved ? "Saved!" : "Set Default"}
-        </label>
-      )}
       {/* Copyright - Right side of page, right-aligned with homework box */}
       {!isTodoFlyoutOpen && (
         <div 
@@ -17524,7 +17492,7 @@ export default function Dashboard() {
             </div>
           </div>
           </div>
-          {/* Set Default - fixed position, right-aligned with homework box */}
+          
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
