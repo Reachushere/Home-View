@@ -4396,6 +4396,16 @@ export async function registerRoutes(
   let catWashManuallyStoppedAt: Date | null = null;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
+  let pendingModuleConfirmation: {
+    createdAt: Date;
+    fileId: number;
+    fileName: string;
+    resumeFromChunk: number;
+    totalChunks: number;
+    fileChunks: string[];
+    timeoutHandle: ReturnType<typeof setTimeout>;
+  } | null = null;
+
   const startToothbrushPolling = () => {
     if (toothbrushPollInterval) clearInterval(toothbrushPollInterval);
     console.log(`[Toothbrush] Starting polling for sensor.toothbrush_bryn_toothbrush_state`);
