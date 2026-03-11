@@ -2192,7 +2192,7 @@ export default function Dashboard() {
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
       { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
-      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: 'CHST501 - The American Civil War', color: '#8B4513', colorEnd: '#CD853F', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
@@ -2214,6 +2214,17 @@ export default function Dashboard() {
           professor: c.professor ?? defaultCourses[i]?.professor ?? '',
           professorEmail: defaultCourses[i]?.professorEmail ?? ''
         }));
+        const savedNames = coursesWithProfessor.map((c: { name: string }) => c.name?.split(' - ')[0]?.trim().toUpperCase()).filter(Boolean);
+        for (const dc of defaultCourses) {
+          if (dc.name && !savedNames.includes(dc.name.split(' - ')[0]?.trim().toUpperCase())) {
+            const emptyIdx = coursesWithProfessor.findIndex((c: { name: string }) => !c.name?.trim());
+            if (emptyIdx >= 0) {
+              coursesWithProfessor[emptyIdx] = { ...dc };
+            } else {
+              coursesWithProfessor.push({ ...dc });
+            }
+          }
+        }
         localStorage.setItem('coursesData', JSON.stringify({ courses: coursesWithProfessor }));
         return { courses: coursesWithProfessor };
       }
