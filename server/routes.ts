@@ -1372,6 +1372,9 @@ export async function registerRoutes(
 
   app.get("/api/shift-schedule", async (_req, res) => {
     try {
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
       const schedule = await storage.getShiftSchedule();
       res.json(schedule);
     } catch (err) {
@@ -9804,6 +9807,41 @@ Return ONLY the JSON object, no markdown formatting.`;
   } catch (e) {
     // Ignore if task doesn't exist on this environment
   }
+
+  // Auto-sync CRCU shifts on startup
+  (async () => {
+    try {
+      const thirdAccStatus = await isThirdAccountConnected();
+      if (thirdAccStatus.connected) {
+        const calendarId = 'family01331437021788124598@group.calendar.google.com';
+        const now = new Date();
+        const timeMin = new Date(now.getFullYear(), 0, 1);
+        const timeMax = new Date(now.getFullYear() + 1, 0, 31, 23, 59, 59);
+        const events = await getEventsFromThirdAccountCalendar(calendarId, timeMin, timeMax);
+        const shiftEntries: { date: string; shiftType: string }[] = [];
+        for (const event of events) {
+          const summary = (event.summary || '').toLowerCase();
+          if (!summary.includes('crcu')) continue;
+          const startStr = event.start?.dateTime || event.start?.date;
+          if (!startStr) continue;
+          const startDate = new Date(startStr);
+          const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+          const hour = startDate.getHours();
+          const isNight = hour >= 18 || hour < 6 || summary.includes('🌙');
+          shiftEntries.push({ date: dateStr, shiftType: isNight ? 'night' : 'day' });
+        }
+        await storage.clearAllShifts();
+        if (shiftEntries.length > 0) {
+          await storage.setShiftBulk(shiftEntries);
+        }
+        console.log(`[Startup] Auto-synced ${shiftEntries.length} CRCU shifts`);
+      } else {
+        console.log('[Startup] Third Google account not connected, skipping CRCU shift sync');
+      }
+    } catch (err) {
+      console.error('[Startup] CRCU shift auto-sync failed:', err);
+    }
+  })();
 
   return httpServer;
 }
