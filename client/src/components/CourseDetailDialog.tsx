@@ -213,12 +213,16 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
       data-testid="course-detail-overlay"
     >
       <div
-        className="flex flex-col text-white border border-white/25 shadow-xl rounded-lg overflow-hidden"
+        className="flex flex-col text-white rounded-lg overflow-hidden"
         style={{
           width: "480px",
           maxWidth: "95vw",
           height: "88vh",
-          background: "linear-gradient(135deg, rgba(30,41,59,0.98) 0%, rgba(15,23,42,0.96) 50%, rgba(30,41,59,0.98) 100%)",
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1.5px solid rgba(255,255,255,0.35)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
         }}
         data-testid="course-detail-dialog"
       >
