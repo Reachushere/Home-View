@@ -18376,7 +18376,7 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <label
             className="cursor-pointer select-none"
-            style={{ position: 'absolute', right: '8px', bottom: '-18px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
+            style={{ position: 'absolute', right: '8px', bottom: '-14px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
             data-testid="checkbox-set-default-size"
           >
             <input
