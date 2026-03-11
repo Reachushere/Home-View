@@ -4920,7 +4920,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.log(`[Nest Playback] Stopped Echo devices`);
 
       const cleanName = fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
-      const introText = `Now reading: ${cleanName}`;
+      const hour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });
+      const h = parseInt(hour, 10);
+      const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      const action = startChunk > 0 ? 'resume' : 'play';
+      const introText = `${greeting} Bryn. I will now ${action} ${cleanName}.`;
       console.log(`[Nest Playback] Announcing: "${introText}"`);
       const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`, voice);
       await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
