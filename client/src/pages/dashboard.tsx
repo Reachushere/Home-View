@@ -16254,9 +16254,9 @@ export default function Dashboard() {
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-sun-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-moon-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     {day.getDay() === 6 && (
-                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW COURSE WEEK</div>
+                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW COURSE WEEK</div>
                     )}
-                    <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '4px' : undefined }}>
+                    <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '5.5px' : undefined }}>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                       <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
@@ -19396,7 +19396,12 @@ export default function Dashboard() {
                     <>
                       <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         {!pd.moduleP.hasFiles && (
-                          <span className="text-[8px] text-white leading-none">N/A</span>
+                          <>
+                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Module</span>
+                            </div>
+                            <span className="text-[8px] text-white/50 leading-none italic">N/A</span>
+                          </>
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
@@ -19424,7 +19429,12 @@ export default function Dashboard() {
                       </div>
                       <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         {!pd.readingP.hasFiles && (
-                          <span className="text-[8px] text-white leading-none">N/A</span>
+                          <>
+                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff' }}>Reading</span>
+                            </div>
+                            <span className="text-[8px] text-white/50 leading-none italic">N/A</span>
+                          </>
                         )}
                         {pd.readingP.hasFiles && (
                           <>
@@ -19518,7 +19528,7 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '14px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                               <div>
@@ -19682,7 +19692,7 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '14px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                                           <div>
@@ -19867,7 +19877,7 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '14px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
                                           <div>
@@ -20054,7 +20064,7 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-2w-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '14px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
                                           <div>
@@ -20192,7 +20202,7 @@ export default function Dashboard() {
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 return (
-                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '14px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.1)' : 'none' }}>
+                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.1)' : 'none' }}>
                                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                                       <button
                                         className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
