@@ -19302,13 +19302,13 @@ export default function Dashboard() {
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
-                  overflow: 'hidden',
+                  overflowX: 'hidden',
+                  overflowY: 'auto',
+                  scrollbarWidth: 'none',
                   padding: '3px 6px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
-                  overflowY: 'auto',
-                  scrollbarWidth: 'none',
                 }}>
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
