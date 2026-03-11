@@ -20160,7 +20160,7 @@ export default function Dashboard() {
                 const upcomingTop = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTop;
                 const calOtherRowHeight = gridSizes.courseRowHeight || 48;
-                const otherRowHeight = otherProgressTasks.length === 0 ? calOtherRowHeight : Math.max(calOtherRowHeight, otherProgressTasks.length * 20 + 4);
+                const otherRowHeight = calOtherRowHeight;
                 rows.push(
                   <div key="other-progress-bg" style={{
                     position: 'absolute',
