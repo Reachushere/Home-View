@@ -5655,6 +5655,24 @@ document.body.removeChild(a);
     if (catLightsConfirmResolve) {
       catLightsConfirmResolve(true);
       catLightsConfirmResolve = null;
+
+      try {
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const catEchoEntities = [
+          "media_player.echo_cat_left_am",
+          "media_player.echo_cat_right_am",
+          "media_player.echo_cat_washroom_middle",
+        ];
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: catEchoEntities }),
+        });
+        console.log(`[Cat Lights Confirm] Stopped media on cat washroom Echos`);
+      } catch (e: any) {
+        console.warn(`[Cat Lights Confirm] Failed to stop Echos (non-fatal): ${e.message}`);
+      }
+
       res.json({ action: "confirmed", message: "Module reading confirmed — starting playback" });
     } else {
       console.log(`[Cat Lights Confirm] No pending confirmation to resolve`);
