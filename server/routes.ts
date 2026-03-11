@@ -94,6 +94,10 @@ const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
 const MODULE_READING_CONFIRMED = "input_boolean.module_reading_confirmed";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
+function torontoDate(): Date {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+}
+
 interface FlickDevice {
   id: string;
   name: string;
@@ -4264,7 +4268,7 @@ export async function registerRoutes(
   app.get("/api/debug/week", async (req, res) => {
     try {
       const semesterSettings = await storage.getActiveSemesterSettings();
-      const today = new Date();
+      const today = torontoDate();
       
       if (!semesterSettings?.semesterStartDate) {
         return res.json({
@@ -4337,7 +4341,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
-      currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
+      currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
         return res.json({ found: false, weekNumber: currentWeekNumber });
@@ -4553,7 +4557,7 @@ export async function registerRoutes(
           const semesterSettings = await storage.getActiveSemesterSettings();
           const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
           const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
-          const currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
+          const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
           const unlistenedFiles = allFiles.filter((f: any) => {
             if (f.listened || f.id === fileId) return false;
@@ -4858,7 +4862,7 @@ export async function registerRoutes(
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
-      currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
+      currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       
       // Filter for unlistened files from current week
       const unlistenedFiles = allFiles.filter(f => {
@@ -5366,7 +5370,7 @@ document.body.removeChild(a);
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
-      const today = new Date();
+      const today = torontoDate();
 
       if (catWashManuallyStoppedAt) {
         const msSinceStopped = Date.now() - catWashManuallyStoppedAt.getTime();
@@ -5649,8 +5653,8 @@ document.body.removeChild(a);
         }
       }
 
-      const today = new Date();
-      const torontoNow = new Date(today.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const today = torontoDate();
+      const torontoNow = today;
 
       const semesterSettings = await storage.getActiveSemesterSettings();
       const isSpingSummer = semesterSettings?.semesterType === 'spring_summer';
@@ -6096,7 +6100,7 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
-      currentWeekNumber = getWeekNumber(new Date(), semStart, rwStart);
+      currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
       if (nextFile) {
@@ -6330,7 +6334,7 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
+        currentWeekNumber = getWeekNumber(torontoDate(), new Date(semesterSettings.semesterStartDate));
       }
       
       // Sync OneDrive files for current week
@@ -6642,7 +6646,7 @@ document.body.removeChild(a);
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate));
+        currentWeekNumber = getWeekNumber(torontoDate(), new Date(semesterSettings.semesterStartDate));
       }
       
       // Get all files
@@ -7353,7 +7357,7 @@ document.body.removeChild(a);
       
       // Get current week number from semester settings
       const semesterSettings = await storage.getActiveSemesterSettings();
-      const today = new Date();
+      const today = torontoDate();
       let currentWeekNumber = 1;
       
       if (semesterSettings?.semesterStartDate) {
@@ -9066,7 +9070,7 @@ document.body.removeChild(a);
     try {
       const activeSemester = await storage.getActiveSemesterSettings();
       const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
-      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date(), semesterStart, activeSemester?.readingWeekStart);
+      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(torontoDate(), semesterStart, activeSemester?.readingWeekStart);
       const { start, end } = getWeekDates(weekNumber, semesterStart, activeSemester?.readingWeekStart);
       
       // Fetch events from primary account
