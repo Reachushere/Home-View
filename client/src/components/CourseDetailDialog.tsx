@@ -264,37 +264,43 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
           <div className="p-3 border-b border-white/10 space-y-2">
             <div className="grid grid-cols-2 gap-2 text-[10px]">
-              {courseInfo.professor && (
-                <div className="flex items-center gap-1.5">
-                  <User className="h-3 w-3 text-white/40" />
-                  <span className="text-white/60">Professor:</span>
-                  <span className="text-white/90">{courseInfo.professor}</span>
-                </div>
-              )}
-              {courseInfo.professorEmail && (
-                <div className="flex items-center gap-1.5">
-                  <Mail className="h-3 w-3 text-white/40" />
+              <div className="flex items-center gap-1.5">
+                <User className="h-3 w-3 text-white/40" />
+                <span className="text-white/60">Professor:</span>
+                <span className="text-white/90">{courseInfo.professor || "Not set"}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Mail className="h-3 w-3 text-white/40" />
+                <span className="text-white/60">Email:</span>
+                {courseInfo.professorEmail ? (
                   <a href={`mailto:${courseInfo.professorEmail}`} className="text-blue-300 hover:text-blue-200 underline" data-testid="link-professor-email">
                     {courseInfo.professorEmail}
                   </a>
-                </div>
-              )}
+                ) : (
+                  <span className="text-white/90">Not set</span>
+                )}
+              </div>
               <div className="flex items-center gap-1.5">
                 {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white/40" /> : <Globe className="h-3 w-3 text-white/40" />}
                 <span className="text-white/60">Mode:</span>
                 <span className="text-white/90">{deliveryLabel}</span>
               </div>
-              {courseInfo.deliveryMode === "virtual" && courseInfo.classDay && (
+              {courseInfo.courseType && (
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="h-3 w-3 text-white/40" />
-                  <span className="text-white/60">Schedule:</span>
-                  <span className="text-white/90 capitalize">
-                    {courseInfo.classDay}{courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}
-                    {courseInfo.classTime ? ` ${courseInfo.classTime}` : ""}
-                    {courseInfo.classEndTime ? `–${courseInfo.classEndTime}` : ""}
-                  </span>
+                  <BookOpen className="h-3 w-3 text-white/40" />
+                  <span className="text-white/60">Type:</span>
+                  <span className="text-white/90">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                 </div>
               )}
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3 w-3 text-white/40" />
+                <span className="text-white/60">Schedule:</span>
+                <span className="text-white/90 capitalize">
+                  {courseInfo.classDay
+                    ? `${courseInfo.classDay}${courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}${courseInfo.classTime ? ` ${courseInfo.classTime}` : ""}${courseInfo.classEndTime ? `–${courseInfo.classEndTime}` : ""}`
+                    : "Not set"}
+                </span>
+              </div>
               {courseInfo.deliveryMode === "online" && (
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3 w-3 text-white/40" />
@@ -303,7 +309,7 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
                 </div>
               )}
             </div>
-            {courseInfo.deliveryMode === "virtual" && courseInfo.zoomLink && (
+            {courseInfo.zoomLink && (
               <a
                 href={courseInfo.zoomLink}
                 target="_blank"
