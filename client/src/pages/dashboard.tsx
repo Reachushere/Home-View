@@ -11576,6 +11576,23 @@ export default function Dashboard() {
               <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                 DEGREE TRACKING
               </h2>
+              <div
+                className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ml-4"
+                onClick={() => {
+                  const firstCourse = coursesData.courses.find(c => c.name.trim());
+                  if (firstCourse) {
+                    const code = firstCourse.name.split(' - ')[0]?.trim();
+                    const name = firstCourse.name.split(' - ').slice(1).join(' - ').trim();
+                    setIsSettingsPanelOpen(false);
+                    setOpenedCourseFromDegreeTracking(true);
+                    setSelectedCertCourse({ courseCode: code, courseName: name, certKey: code });
+                  }
+                }}
+                data-testid="button-degree-courses"
+              >
+                <span className="text-white/80 text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Courses</span>
+                <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
+              </div>
             </div>
             <button 
               onClick={() => setIsSettingsPanelOpen(false)}
@@ -14120,7 +14137,7 @@ export default function Dashboard() {
 
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md text-[11px] border border-white/30 backdrop-blur-[3px] bg-white/[0.45] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)' }}>
+            <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -14161,7 +14178,8 @@ export default function Dashboard() {
           {/* School Dialog */}
           <Dialog open={isSchoolDialogOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen && !newCourseDialogClosingRef.current && !isNewCourseWizardOpen) setIsSchoolDialogOpen(open); }}>
             <DialogContent 
-              className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] border border-white/30 backdrop-blur-[3px] bg-white/[0.45] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
+              className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
+              style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
               onInteractOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
               onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
               onPointerDownOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
@@ -15833,7 +15851,7 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} border border-white/25 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300`} style={{ background: 'linear-gradient(to bottom right, rgba(120,120,130,0.95), rgba(30,30,35,0.90), rgba(110,110,120,0.95))', backdropFilter: 'blur(19px)', WebkitBackdropFilter: 'blur(19px)', paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300`} style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
               <DialogHeader>
                 <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
@@ -17990,7 +18008,7 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <label
             className="cursor-pointer select-none"
-            style={{ position: 'absolute', right: '8px', bottom: '-22px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
+            style={{ position: 'absolute', right: '8px', bottom: '-18px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
             data-testid="checkbox-set-default-size"
           >
             <input
