@@ -367,9 +367,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           width: "480px",
           maxWidth: "95vw",
           height: "88vh",
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%)',
-          backdropFilter: 'blur(40px) saturate(1.4)',
-          WebkitBackdropFilter: 'blur(40px) saturate(1.4)',
+          background: 'var(--dialog-bg, linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%))',
           border: '1.5px solid rgba(255,255,255,0.35)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.05)',
         }}
