@@ -22,6 +22,8 @@ import {
   MessageSquare,
   ClipboardCheck,
   AlertCircle,
+  Pencil,
+  Check,
 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -74,6 +76,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string }) => void;
   semesterStart: Date;
   readingWeekStart: Date | null;
 }
@@ -108,10 +111,21 @@ function createEmptyTaskForm(): NewTaskForm {
   };
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, semesterStart, readingWeekStart }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, semesterStart, readingWeekStart }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
+  const [isEditingInfo, setIsEditingInfo] = useState(false);
+  const [editInfo, setEditInfo] = useState({
+    professor: courseInfo.professor || '',
+    professorEmail: courseInfo.professorEmail || '',
+    deliveryMode: courseInfo.deliveryMode || '',
+    classDay: courseInfo.classDay || '',
+    classDay2: courseInfo.classDay2 || '',
+    classTime: courseInfo.classTime || '',
+    classEndTime: courseInfo.classEndTime || '',
+    zoomLink: courseInfo.zoomLink || '',
+  });
 
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -263,64 +277,168 @@ export function CourseDetailDialog({ courseInfo, onClose, semesterStart, reading
 
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
           <div className="p-3 border-b border-white/10 space-y-2">
-            <div className="grid grid-cols-2 gap-2 text-[10px]">
-              <div className="flex items-center gap-1.5">
-                <User className="h-3 w-3 text-white/40" />
-                <span className="text-white/60">Professor:</span>
-                <span className="text-white/90">{courseInfo.professor || "Not set"}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Mail className="h-3 w-3 text-white/40" />
-                <span className="text-white/60">Email:</span>
-                {courseInfo.professorEmail ? (
-                  <a href={`mailto:${courseInfo.professorEmail}`} className="text-blue-300 hover:text-blue-200 underline" data-testid="link-professor-email">
-                    {courseInfo.professorEmail}
-                  </a>
-                ) : (
-                  <span className="text-white/90">Not set</span>
-                )}
-              </div>
-              <div className="flex items-center gap-1.5">
-                {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white/40" /> : <Globe className="h-3 w-3 text-white/40" />}
-                <span className="text-white/60">Mode:</span>
-                <span className="text-white/90">{deliveryLabel}</span>
-              </div>
-              {courseInfo.courseType && (
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[9px] text-white/40 uppercase tracking-wider font-semibold">Course Info</span>
+              {!isEditingInfo ? (
+                <button
+                  onClick={() => setIsEditingInfo(true)}
+                  className="flex items-center gap-1 text-[9px] text-white/50 hover:text-white/80 transition-colors"
+                  data-testid="button-edit-course-info"
+                >
+                  <Pencil className="w-2.5 h-2.5" />
+                  Edit
+                </button>
+              ) : (
                 <div className="flex items-center gap-1.5">
-                  <BookOpen className="h-3 w-3 text-white/40" />
-                  <span className="text-white/60">Type:</span>
-                  <span className="text-white/90">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-1.5">
-                <Calendar className="h-3 w-3 text-white/40" />
-                <span className="text-white/60">Schedule:</span>
-                <span className="text-white/90 capitalize">
-                  {courseInfo.classDay
-                    ? `${courseInfo.classDay}${courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}${courseInfo.classTime ? ` ${courseInfo.classTime}` : ""}${courseInfo.classEndTime ? `–${courseInfo.classEndTime}` : ""}`
-                    : "Not set"}
-                </span>
-              </div>
-              {courseInfo.deliveryMode === "online" && (
-                <div className="flex items-center gap-1.5">
-                  <Clock className="h-3 w-3 text-white/40" />
-                  <span className="text-white/60">Modules:</span>
-                  <span className="text-white/90">Weekly (change every Saturday)</span>
+                  <button
+                    onClick={() => {
+                      setEditInfo({
+                        professor: courseInfo.professor || '',
+                        professorEmail: courseInfo.professorEmail || '',
+                        deliveryMode: courseInfo.deliveryMode || '',
+                        classDay: courseInfo.classDay || '',
+                        classDay2: courseInfo.classDay2 || '',
+                        classTime: courseInfo.classTime || '',
+                        classEndTime: courseInfo.classEndTime || '',
+                        zoomLink: courseInfo.zoomLink || '',
+                      });
+                      setIsEditingInfo(false);
+                    }}
+                    className="text-[9px] text-white/50 hover:text-white/80 transition-colors px-1.5 py-0.5 rounded border border-white/20"
+                    data-testid="button-cancel-edit-info"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (onSaveCourseInfo) {
+                        onSaveCourseInfo(editInfo);
+                      }
+                      setIsEditingInfo(false);
+                      toast({ title: "Course info updated" });
+                    }}
+                    className="flex items-center gap-0.5 text-[9px] text-emerald-400 hover:text-emerald-300 transition-colors px-1.5 py-0.5 rounded border border-emerald-500/30"
+                    data-testid="button-save-edit-info"
+                  >
+                    <Check className="w-2.5 h-2.5" />
+                    Save
+                  </button>
                 </div>
               )}
             </div>
-            {courseInfo.zoomLink && (
-              <a
-                href={courseInfo.zoomLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-[10px] text-blue-300 hover:text-blue-200 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1.5"
-                data-testid="link-zoom"
-              >
-                <Video className="h-3 w-3" />
-                <span className="truncate">{courseInfo.zoomLink}</span>
-                <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
-              </a>
+            {isEditingInfo ? (
+              <div className="space-y-2 text-[10px]">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Professor</label>
+                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professor} onChange={(e) => setEditInfo({...editInfo, professor: e.target.value})} placeholder="Professor name" data-testid="input-edit-professor" />
+                  </div>
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Email</label>
+                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professorEmail} onChange={(e) => setEditInfo({...editInfo, professorEmail: e.target.value})} placeholder="professor@email.com" data-testid="input-edit-email" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Delivery Mode</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.deliveryMode} onChange={(e) => setEditInfo({...editInfo, deliveryMode: e.target.value})} data-testid="select-edit-delivery">
+                      <option value="" className="bg-gray-800">Not set</option>
+                      <option value="virtual" className="bg-gray-800">Virtual (Live Zoom)</option>
+                      <option value="online" className="bg-gray-800">Online (Async)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Zoom Link</label>
+                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder="https://zoom.us/..." data-testid="input-edit-zoom" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Day 1</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay} onChange={(e) => setEditInfo({...editInfo, classDay: e.target.value})} data-testid="select-edit-day1">
+                      <option value="" className="bg-gray-800">—</option>
+                      {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Day 2</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
+                      <option value="" className="bg-gray-800">—</option>
+                      {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">Start</label>
+                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
+                  </div>
+                  <div>
+                    <label className="text-white/50 text-[9px] mb-0.5 block">End</label>
+                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                  <div className="flex items-center gap-1.5">
+                    <User className="h-3 w-3 text-white/40" />
+                    <span className="text-white/60">Professor:</span>
+                    <span className="text-white/90">{courseInfo.professor || "Not set"}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="h-3 w-3 text-white/40" />
+                    <span className="text-white/60">Email:</span>
+                    {courseInfo.professorEmail ? (
+                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-blue-300 hover:text-blue-200 underline" data-testid="link-professor-email">
+                        {courseInfo.professorEmail}
+                      </a>
+                    ) : (
+                      <span className="text-white/90">Not set</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white/40" /> : <Globe className="h-3 w-3 text-white/40" />}
+                    <span className="text-white/60">Mode:</span>
+                    <span className="text-white/90">{deliveryLabel}</span>
+                  </div>
+                  {courseInfo.courseType && (
+                    <div className="flex items-center gap-1.5">
+                      <BookOpen className="h-3 w-3 text-white/40" />
+                      <span className="text-white/60">Type:</span>
+                      <span className="text-white/90">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="h-3 w-3 text-white/40" />
+                    <span className="text-white/60">Schedule:</span>
+                    <span className="text-white/90 capitalize">
+                      {courseInfo.classDay
+                        ? `${courseInfo.classDay}${courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}${courseInfo.classTime ? ` ${courseInfo.classTime}` : ""}${courseInfo.classEndTime ? `–${courseInfo.classEndTime}` : ""}`
+                        : "Not set"}
+                    </span>
+                  </div>
+                  {courseInfo.deliveryMode === "online" && (
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-3 w-3 text-white/40" />
+                      <span className="text-white/60">Modules:</span>
+                      <span className="text-white/90">Weekly (change every Saturday)</span>
+                    </div>
+                  )}
+                </div>
+                {courseInfo.zoomLink && (
+                  <a
+                    href={courseInfo.zoomLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-[10px] text-blue-300 hover:text-blue-200 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1.5"
+                    data-testid="link-zoom"
+                  >
+                    <Video className="h-3 w-3" />
+                    <span className="truncate">{courseInfo.zoomLink}</span>
+                    <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
+                  </a>
+                )}
+              </>
             )}
           </div>
 

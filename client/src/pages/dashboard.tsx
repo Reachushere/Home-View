@@ -12037,6 +12037,27 @@ export default function Dashboard() {
                 setIsSettingsPanelOpen(true);
               }
             }}
+            onSaveCourseInfo={(updates) => {
+              const courseCode = selectedCertCourse!.courseCode;
+              const certKey = selectedCertCourse!.certKey;
+              const updatedCourses = [...coursesData.courses];
+              const matchIdx = updatedCourses.findIndex(c => {
+                const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
+                return cCode === courseCode.replace(/\s/g, '');
+              });
+              if (matchIdx >= 0) {
+                updatedCourses[matchIdx] = {
+                  ...updatedCourses[matchIdx],
+                  professor: updates.professor || updatedCourses[matchIdx].professor,
+                  professorEmail: updates.professorEmail || updatedCourses[matchIdx].professorEmail,
+                };
+                saveCourses({ courses: updatedCourses });
+              }
+              const certData = localStorage.getItem('certCourseData');
+              const savedData = certData ? JSON.parse(certData) : {};
+              savedData[certKey] = { ...savedData[certKey], ...updates };
+              localStorage.setItem('certCourseData', JSON.stringify(savedData));
+            }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}
           />
