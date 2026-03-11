@@ -16892,11 +16892,23 @@ export default function Dashboard() {
                 ];
                 const currentWeekStart = weekDays[0];
                 const currentWeekEnd = weekDays[6];
-                const winterCourseNames = ['CPPA122', 'CFNF400', 'CASL101'];
-                const winterCourses = coursesData.courses.filter(c => c.name && winterCourseNames.some(wc => c.name.toUpperCase().startsWith(wc)));
+                const winterCourseDefs = [
+                  { code: 'CPPA122', endDate: '2026-04-17' },
+                  { code: 'CFNF400', endDate: '2026-04-17' },
+                  { code: 'CASL101', endDate: '2026-04-17' },
+                ];
+                const winterCourses = coursesData.courses.filter(c => {
+                  if (!c.name) return false;
+                  const code = c.name.split(' - ')[0]?.trim().toUpperCase();
+                  const def = winterCourseDefs.find(d => code === d.code);
+                  if (!def) return false;
+                  const courseEnd = new Date(def.endDate + 'T23:59:59');
+                  return currentWeekStart <= courseEnd;
+                });
                 const activeSpringSummerCourses = springSummerCourses.filter(c => {
                   const courseStart = new Date(c.startDate + 'T00:00:00');
-                  return currentWeekEnd >= courseStart;
+                  const courseEnd = new Date(c.endDate + 'T23:59:59');
+                  return currentWeekEnd >= courseStart && currentWeekStart <= courseEnd;
                 });
                 const allDisplayCourses = [...winterCourses];
                 for (const sc of activeSpringSummerCourses) {
