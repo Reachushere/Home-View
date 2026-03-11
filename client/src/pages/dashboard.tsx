@@ -11887,7 +11887,7 @@ export default function Dashboard() {
       {/* Settings Panel Popup - Degree Tracking */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
-          className="overflow-hidden flex flex-col text-[11px] p-0 [&>button.absolute]:hidden" 
+          className="overflow-hidden flex flex-col text-[11px] p-0 [&>button.absolute]:hidden [&_select]:text-black [&_input[type=text]]:text-black" 
           style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
@@ -11949,10 +11949,10 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
                         {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
                     </div>
                   </div>
                 ))}
@@ -11979,10 +11979,10 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
                         {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
                     </div>
                   </div>
                   );
@@ -12013,8 +12013,8 @@ export default function Dashboard() {
                     </select>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
                   </div>
                 </div>
                 <div className="flex border-b border-black">
@@ -12037,8 +12037,8 @@ export default function Dashboard() {
                       </select>
                     </div>
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
                     </div>
                   </div>
                 ))}
@@ -12145,10 +12145,10 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211">Public Policy (PPA623)<InProgressToggle id="L2_PPA211" /></div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_PPA211']?.grade || ''} onChange={(e) => updateGrade('L2_PPA211', e.target.value)}>
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_PPA211']?.grade || ''} onChange={(e) => updateGrade('L2_PPA211', e.target.value)}>
                       {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} />
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} />
                   </div>
                 </div>
                 <div className="flex border-b border-black">
@@ -12175,10 +12175,10 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
                         {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
                     </div>
                   </div>
                   );
@@ -12209,8 +12209,8 @@ export default function Dashboard() {
                     </select>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_LIBERAL']?.grade || ''} onChange={(e) => updateGrade('L2_LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} />
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_LIBERAL']?.grade || ''} onChange={(e) => updateGrade('L2_LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} />
                   </div>
                 </div>
                 <div className="h-px bg-black"></div>
@@ -12242,39 +12242,39 @@ export default function Dashboard() {
                       <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center cursor-pointer hover:underline relative ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}>{ecn.name}<InProgressToggle id={ecn.id} /></div>
                     ))}
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col">
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-7 border-b border-black"></div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN1']?.grade || ''} onChange={(e) => updateGrade('L2_ECN1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN1']?.percent || ''} onChange={(e) => updatePercent('L2_ECN1', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN1']?.grade || ''} onChange={(e) => updateGrade('L2_ECN1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN1']?.percent || ''} onChange={(e) => updatePercent('L2_ECN1', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN2']?.grade || ''} onChange={(e) => updateGrade('L2_ECN2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN2']?.percent || ''} onChange={(e) => updatePercent('L2_ECN2', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN2']?.grade || ''} onChange={(e) => updateGrade('L2_ECN2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN2']?.percent || ''} onChange={(e) => updatePercent('L2_ECN2', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN3']?.grade || ''} onChange={(e) => updateGrade('L2_ECN3', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN3']?.percent || ''} onChange={(e) => updatePercent('L2_ECN3', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN3']?.grade || ''} onChange={(e) => updateGrade('L2_ECN3', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN3']?.percent || ''} onChange={(e) => updatePercent('L2_ECN3', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN4']?.grade || ''} onChange={(e) => updateGrade('L2_ECN4', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN4']?.percent || ''} onChange={(e) => updatePercent('L2_ECN4', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN4']?.grade || ''} onChange={(e) => updateGrade('L2_ECN4', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN4']?.percent || ''} onChange={(e) => updatePercent('L2_ECN4', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN5']?.grade || ''} onChange={(e) => updateGrade('L2_ECN5', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN5']?.percent || ''} onChange={(e) => updatePercent('L2_ECN5', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN5']?.grade || ''} onChange={(e) => updateGrade('L2_ECN5', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN5']?.percent || ''} onChange={(e) => updatePercent('L2_ECN5', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN6']?.grade || ''} onChange={(e) => updateGrade('L2_ECN6', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN6']?.percent || ''} onChange={(e) => updatePercent('L2_ECN6', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN6']?.grade || ''} onChange={(e) => updateGrade('L2_ECN6', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN6']?.percent || ''} onChange={(e) => updatePercent('L2_ECN6', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN7']?.grade || ''} onChange={(e) => updateGrade('L2_ECN7', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN7']?.percent || ''} onChange={(e) => updatePercent('L2_ECN7', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN7']?.grade || ''} onChange={(e) => updateGrade('L2_ECN7', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN7']?.percent || ''} onChange={(e) => updatePercent('L2_ECN7', e.target.value)} />
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_ECN8']?.grade || ''} onChange={(e) => updateGrade('L2_ECN8', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_ECN8']?.percent || ''} onChange={(e) => updatePercent('L2_ECN8', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN8']?.grade || ''} onChange={(e) => updateGrade('L2_ECN8', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN8']?.percent || ''} onChange={(e) => updatePercent('L2_ECN8', e.target.value)} />
                     </div>
                   </div>
                 </div>
@@ -12293,14 +12293,14 @@ export default function Dashboard() {
                     <div className="h-11 px-1 flex items-center"><select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} data-testid="select-l2-open1"><option value="">Select course 1...</option>{OPEN_ELECTIVE_COURSES.map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select></div>
                     <div className="h-11 px-1 flex items-center"><select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} data-testid="select-l2-open2"><option value="">Select course 2...</option>{OPEN_ELECTIVE_COURSES.map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select></div>
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col">
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_OPEN1']?.grade || ''} onChange={(e) => updateGrade('L2_OPEN1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_OPEN1']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN1', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_OPEN1']?.grade || ''} onChange={(e) => updateGrade('L2_OPEN1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_OPEN1']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN1', e.target.value)} />
                     </div>
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L2_OPEN2']?.grade || ''} onChange={(e) => updateGrade('L2_OPEN2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L2_OPEN2']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN2', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_OPEN2']?.grade || ''} onChange={(e) => updateGrade('L2_OPEN2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_OPEN2']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN2', e.target.value)} />
                     </div>
                   </div>
                 </div>
@@ -12351,10 +12351,10 @@ export default function Dashboard() {
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333">Research Methods in Public Admin (POG230, PPA524)<InProgressToggle id="L3_PPA333" /></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PPA333']?.grade || ''} onChange={(e) => updateGrade('L3_PPA333', e.target.value)}>
+                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_PPA333']?.grade || ''} onChange={(e) => updateGrade('L3_PPA333', e.target.value)}>
                             {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                           </select>
-                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} />
+                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} />
                         </div>
                       </td>
                     </tr>
@@ -12367,10 +12367,10 @@ export default function Dashboard() {
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)<InProgressToggle id="L3_PRACTICUM1" /></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_PRACTICUM1']?.grade || ''} onChange={(e) => updateGrade('L3_PRACTICUM1', e.target.value)}>
+                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_PRACTICUM1']?.grade || ''} onChange={(e) => updateGrade('L3_PRACTICUM1', e.target.value)}>
                             {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                           </select>
-                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} />
+                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} />
                         </div>
                       </td>
                     </tr>
@@ -12427,10 +12427,10 @@ export default function Dashboard() {
                         <td className={`h-11 px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}>{course.title}<InProgressToggle id={course.id} /></td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
-                            <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[course.id]?.grade || ''} onChange={(e) => updateGrade(course.id, e.target.value)}>
+                            <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[course.id]?.grade || ''} onChange={(e) => updateGrade(course.id, e.target.value)}>
                               {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                             </select>
-                            <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} />
+                            <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} />
                           </div>
                         </td>
                       </tr>
@@ -12464,14 +12464,14 @@ export default function Dashboard() {
                       </div>
                     ))}
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col">
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_POG1']?.grade || ''} onChange={(e) => updateGrade('L3_POG1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_POG1']?.percent || ''} onChange={(e) => updatePercent('L3_POG1', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_POG1']?.grade || ''} onChange={(e) => updateGrade('L3_POG1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG1']?.percent || ''} onChange={(e) => updatePercent('L3_POG1', e.target.value)} />
                     </div>
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['L3_POG2']?.grade || ''} onChange={(e) => updateGrade('L3_POG2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['L3_POG2']?.percent || ''} onChange={(e) => updatePercent('L3_POG2', e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_POG2']?.grade || ''} onChange={(e) => updateGrade('L3_POG2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG2']?.percent || ''} onChange={(e) => updatePercent('L3_POG2', e.target.value)} />
                     </div>
                   </div>
                 </div>
@@ -12502,8 +12502,8 @@ export default function Dashboard() {
                       </select>
                     </div>
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
                     </div>
                   </div>
                 ))}
@@ -12527,8 +12527,8 @@ export default function Dashboard() {
                       </select>
                     </div>
                     <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
                     </div>
                   </div>
                 ))}
