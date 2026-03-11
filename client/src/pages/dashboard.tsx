@@ -19214,7 +19214,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ left: '3px', top: '50%', transform: 'translateY(-50%)' }}
+            style={{ left: '-30px', top: '50%', transform: 'translateY(-50%)' }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
