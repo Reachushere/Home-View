@@ -19979,7 +19979,10 @@ export default function Dashboard() {
                     const nowDate = startOfDay(new Date());
                     const courseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
-                      return tc === cCode && !t.isCompleted && new Date(t.dueDate) >= nowDate;
+                      if (tc !== cCode || t.isCompleted || new Date(t.dueDate) < nowDate) return false;
+                      const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
+                      if (!knownCourseCodes.includes(tc)) return false;
+                      return true;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No upcoming items</span>;
                     const isCFNF = cCode.startsWith('CFNF');
@@ -20012,7 +20015,7 @@ export default function Dashboard() {
                 </div>,
               ];
             });
-            return [...rightBgs, ...courseProgressDataRef.current.map((pd, idx) => {
+            const courseRows = courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
@@ -20115,7 +20118,87 @@ export default function Dashboard() {
                   )}
                 </div>
               );
-            })];
+            });
+
+            const rows = [...rightBgs, ...courseRows];
+
+            const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
+            const nowDate = startOfDay(new Date());
+            const otherProgressTasks = (allTasks || []).filter(t => {
+              if (t.isCompleted) return false;
+              if (new Date(t.dueDate) < nowDate) return false;
+              const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
+              if (knownCourseCodes.includes(tc)) return false;
+              return true;
+            }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+            if (otherProgressTasks.length > 0 && courseRowRects.length > 0) {
+              const lastRect = courseRowRects[courseRowRects.length - 1];
+              if (lastRect) {
+                const upcomingTop = calendarBorderTop || (calendarTop + 15);
+                const otherTop = lastRect.top + lastRect.height - upcomingTop;
+                const otherRowHeight = Math.max(36, otherProgressTasks.length * 14 + 8);
+                rows.push(
+                  <div key="other-progress-bg" style={{
+                    position: 'absolute',
+                    top: `${otherTop}px`,
+                    left: 0,
+                    width: '33%',
+                    height: `${otherRowHeight}px`,
+                    background: 'linear-gradient(180deg, #4a4a4a 0%, #6b6b6b 100%)',
+                    zIndex: 41,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                  }}>
+                    <span className="text-[8px] font-medium uppercase tracking-wider text-white/80">Other</span>
+                  </div>,
+                  <div key="other-progress-tasks" style={{
+                    position: 'absolute',
+                    top: `${otherTop}px`,
+                    left: '33%',
+                    right: 0,
+                    height: `${otherRowHeight}px`,
+                    background: 'linear-gradient(180deg, #4a4a4a 0%, #6b6b6b 100%)',
+                    zIndex: 41,
+                    borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                    overflowX: 'hidden',
+                    overflowY: 'auto',
+                    scrollbarWidth: 'none',
+                    padding: '3px 6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                  }}
+                  onWheel={(e) => {
+                    e.stopPropagation();
+                    e.currentTarget.scrollTop += e.deltaY * 0.3;
+                    e.preventDefault();
+                  }}>
+                    {otherProgressTasks.map(t => {
+                      const dueStr = format(new Date(t.dueDate), 'MMM d');
+                      return (
+                        <div
+                          key={t.id}
+                          className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
+                          style={{ lineHeight: '1.3', marginBottom: '1px' }}
+                          onMouseEnter={() => setHoveredCountdownTaskId(t.id)}
+                          onMouseLeave={() => setHoveredCountdownTaskId(null)}
+                          onClick={() => setEditingTask(t)}
+                        >
+                          <span style={{ fontSize: '9px', color: '#ffffff', flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '8px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: '#ffffff', fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              }
+            }
+
+            return rows;
           })()}
           <div style={{ height: '1px', background: 'rgba(255,255,255,0.25)', margin: '0 8px', flexShrink: 0 }} />
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
