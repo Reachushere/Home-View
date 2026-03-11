@@ -387,7 +387,13 @@ export default function Dashboard() {
   const [calendarBottom, setCalendarBottom] = useState(0); // Bottom edge of calendar wrapper
   const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
   const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
-  const [calendarReduction, setCalendarReduction] = useState(0); // Pixels to reduce calendar from left (1.5x Tuesday col width)
+  const [calendarReduction, setCalendarReduction] = useState(() => {
+    const saved = localStorage.getItem('calendarReduction');
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const [calendarReductionUserSet, setCalendarReductionUserSet] = useState(() => !!localStorage.getItem('calendarReduction'));
+  const [isResizingHomework, setIsResizingHomework] = useState(false);
+  const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const courseRowRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -1844,19 +1850,30 @@ export default function Dashboard() {
           setGridSizes(prev => ({ ...prev, timeSlotHeight: Math.min(100, newHeight) }));
         }
       }
+      if (isResizingHomework && resizingHomeworkRef.current) {
+        const delta = resizingHomeworkRef.current.startX - clientX;
+        const newReduction = Math.max(120, Math.min(window.innerWidth * 0.45, resizingHomeworkRef.current.startReduction + delta));
+        setCalendarReduction(newReduction);
+        setCalendarReductionUserSet(true);
+      }
     };
     
     const handleEnd = () => {
+      if (isResizingHomework) {
+        setIsResizingHomework(false);
+        resizingHomeworkRef.current = null;
+        localStorage.setItem('calendarReduction', String(calendarReduction));
+      }
       setColumnResizing(null);
       setRowResizing(null);
     };
     
-    if (columnResizing?.isResizing || rowResizing?.isResizing) {
+    if (columnResizing?.isResizing || rowResizing?.isResizing || isResizingHomework) {
       document.addEventListener('mousemove', handleMove);
       document.addEventListener('mouseup', handleEnd);
       document.addEventListener('touchmove', handleMove, { passive: false });
       document.addEventListener('touchend', handleEnd);
-      document.body.style.cursor = columnResizing?.isResizing ? 'col-resize' : 'row-resize';
+      document.body.style.cursor = (columnResizing?.isResizing || isResizingHomework) ? 'col-resize' : 'row-resize';
       document.body.style.userSelect = 'none';
     }
     
@@ -1868,7 +1885,7 @@ export default function Dashboard() {
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-  }, [columnResizing, rowResizing, gridSizes.dayColumnWidths]);
+  }, [columnResizing, rowResizing, gridSizes.dayColumnWidths, isResizingHomework, calendarReduction]);
   
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
   const [thisWeekBoxHeight, setThisWeekBoxHeight] = useState<number | null>(null);
@@ -6913,7 +6930,9 @@ export default function Dashboard() {
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
         const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
-        setCalendarReduction(reduction);
+        if (!calendarReductionUserSet) {
+          setCalendarReduction(reduction);
+        }
         const origLeft = rect.left - Math.max(0, calendarReduction - 3);
         setOriginalCalendarLeft(origLeft);
       }
@@ -18667,6 +18686,23 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          <div
+            className="absolute z-[60] cursor-col-resize group"
+            style={{ left: '-4px', top: 0, bottom: 0, width: '8px' }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setIsResizingHomework(true);
+              resizingHomeworkRef.current = { startX: e.clientX, startReduction: calendarReduction };
+            }}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              setIsResizingHomework(true);
+              resizingHomeworkRef.current = { startX: touch.clientX, startReduction: calendarReduction };
+            }}
+            data-testid="resize-handle-homework"
+          >
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[3px] h-8 rounded-full bg-white/20 group-hover:bg-white/50 transition-colors" />
+          </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
             style={{ left: '3px', top: '50%', transform: 'translateY(-50%)' }}
