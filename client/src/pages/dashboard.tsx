@@ -779,35 +779,10 @@ export default function Dashboard() {
   const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openTopPill = useCallback(() => {
-    const el = topPillRef.current;
-    if (el && !isTopPillOpen) {
-      const current = getComputedStyle(el).transform;
-      el.style.animation = 'none';
-      el.style.transform = current;
-      void el.offsetHeight;
-      el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateY(7px)';
-    }
     setIsTopPillOpen(true);
-  }, [isTopPillOpen]);
+  }, []);
   const closeTopPill = useCallback(() => {
-    const el = topPillRef.current;
-    if (el) {
-      el.style.animation = 'none';
-      void el.offsetHeight;
-      el.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      el.style.transform = 'translateY(-63px)';
-      setTimeout(() => {
-        if (el) {
-          el.style.animation = '';
-          el.style.transform = '';
-          el.style.transition = '';
-        }
-        setIsTopPillOpen(false);
-      }, 450);
-    } else {
-      setIsTopPillOpen(false);
-    }
+    setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
     requestAnimationFrame(() => {
