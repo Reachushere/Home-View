@@ -28,7 +28,6 @@ function babelLetConstToVar(): Plugin {
 export default defineConfig({
   plugins: [
     react(),
-    runtimeErrorOverlay(),
     babelLetConstToVar(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
