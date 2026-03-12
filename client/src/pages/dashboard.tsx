@@ -17487,7 +17487,7 @@ export default function Dashboard() {
                     )}
                     <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '5.5px' : undefined }}>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                      <div className="text-2xl font-bold" style={{ color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
+                      <div className="font-bold" style={{ fontSize: isToday ? '25px' : '24px', color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 6 && (
                       <div
