@@ -70,7 +70,7 @@ export const LIBERAL_STUDIES_COURSES: ElectiveCourse[] = [
   { code: 'CENG 212', name: 'Cultures in Crisis', level: 'LOWER', category: 'English', semesters: { spring2026: 'TR: Virtual' } },
   { code: 'CENG 201', name: 'Myth and Literature', level: 'LOWER', category: 'English', semesters: { summer2026: 'MW: Virtual' } },
   { code: 'CENG 503', name: 'Science Fiction', level: 'UPPER', category: 'English', semesters: { spring2026: 'MW: Virtual' } },
-  { code: 'CENG 505', name: 'Creative Writing', level: 'UPPER', category: 'English', semesters: { fall2025: 'M/R: Virtual', winter2026: 'M/W: Virtual', spring2026: 'MW/TR: Virtual', summer2026: 'MW/TR: Virtual' } },
+  { code: 'CENG 505', name: 'Creative Writing', level: 'BOTH', category: 'English', semesters: { fall2025: 'M/R: Virtual', winter2026: 'M/W: Virtual', spring2026: 'MW/TR: Virtual', summer2026: 'MW/TR: Virtual' } },
   { code: 'CENG 510', name: 'Gothic Horror', level: 'UPPER', category: 'English', semesters: { winter2026: 'W: Virtual', spring2026: 'TR: Virtual' } },
   { code: 'CENG 511', name: 'The Art of Writing Life', level: 'UPPER', category: 'English', semesters: { fall2025: 'M: Virtual' } },
   { code: 'CENG 602', name: "Women's Writing", level: 'UPPER', category: 'English', semesters: { fall2025: 'Online', winter2026: 'Online', spring2026: 'Online' } },
@@ -79,7 +79,7 @@ export const LIBERAL_STUDIES_COURSES: ElectiveCourse[] = [
   { code: 'CFRE 101', name: 'Introductory French I', level: 'LOWER', category: 'French', semesters: { spring2026: 'TR: Virtual', summer2026: 'TR: Virtual' } },
   { code: 'CFRE 201', name: 'Introductory French II', level: 'LOWER', category: 'French', prereq: true, semesters: { summer2026: 'MW: Virtual' } },
   { code: 'CFRE 301', name: 'Intermediate French I', level: 'UPPER', category: 'French', prereq: true, semesters: { spring2026: 'MW/TR: Virtual' } },
-  { code: 'CFRE 302', name: 'French Food, Wine and Hospitality', level: 'UPPER', category: 'French', semesters: { spring2026: 'TR: Virtual' } },
+  { code: 'CFRE 302', name: 'French Food, Wine and Hospitality', level: 'LOWER', category: 'French', semesters: { spring2026: 'TR: Virtual' } },
   { code: 'CFRE 401', name: 'Intermediate French II', level: 'UPPER', category: 'French', prereq: true, semesters: { summer2026: 'TR: Virtual' } },
   { code: 'CFRE 501', name: 'Speaking and Writing French', level: 'UPPER', category: 'French', prereq: true, semesters: { spring2026: 'MW: Virtual' } },
 
@@ -152,6 +152,7 @@ export const LIBERAL_STUDIES_COURSES: ElectiveCourse[] = [
   { code: 'CPHL 611', name: 'Philosophy of Mind', level: 'UPPER', category: 'Philosophy', semesters: { fall2025: 'W: Virtual' } },
   { code: 'CPHL 612', name: 'Philosophy of Law', level: 'UPPER', category: 'Philosophy', semesters: { fall2025: 'Online', winter2026: 'Online', spring2026: 'Online' } },
   { code: 'CPHL 708', name: 'Early Modern Philosophy', level: 'UPPER', category: 'Philosophy', semesters: { winter2026: 'W: Virtual' } },
+  { code: 'CPHL 709', name: 'Religion, Science and Philosophy', level: 'UPPER', category: 'Philosophy', semesters: { summer2026: 'MW: Virtual' } },
   { code: 'CPHL 710', name: 'Philosophy and Film', level: 'UPPER', category: 'Philosophy', semesters: { winter2026: 'T: Virtual', spring2026: 'TR: Virtual' } },
 
   // PHYSICS
@@ -186,7 +187,7 @@ export const LIBERAL_STUDIES_COURSES: ElectiveCourse[] = [
   { code: 'CSOC 507', name: 'Race and Ethnicity in Canadian Society', level: 'UPPER', category: 'Sociology', semesters: { fall2025: 'R: Virtual', winter2026: 'T: Virtual', spring2026: 'TR: Virtual' } },
   { code: 'CSOC 603', name: 'Sociology of Gender', level: 'UPPER', category: 'Sociology', prereq: true, semesters: { fall2025: 'T: Virtual', winter2026: 'T: Virtual', spring2026: 'MW: Virtual' } },
   { code: 'CSOC 633', name: 'Sexualities, Identities and Society', level: 'UPPER', category: 'Sociology', semesters: { fall2025: 'R: Virtual', winter2026: 'R: Virtual', spring2026: 'TR: Virtual' } },
-  { code: 'CSOC 808', name: 'Sociology of Food and Eating', level: 'LOWER', category: 'Sociology', semesters: { fall2025: 'Online', winter2026: 'Online', spring2026: 'Online' } },
+  { code: 'CSOC 808', name: 'Sociology of Food and Eating', level: 'BOTH', category: 'Sociology', semesters: { fall2025: 'Online', winter2026: 'Online', spring2026: 'Online' } },
   { code: 'CSOC 880', name: 'Information Technology and Society', level: 'UPPER', category: 'Sociology', semesters: { fall2025: 'Online', winter2026: 'Online', spring2026: 'Online' } },
   { code: 'CSOC 885', name: 'Women and Islam', level: 'UPPER', category: 'Sociology', semesters: { fall2025: 'Online', winter2026: 'Online', spring2026: 'Online' } },
 
