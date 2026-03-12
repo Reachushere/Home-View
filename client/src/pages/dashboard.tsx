@@ -571,15 +571,17 @@ export default function Dashboard() {
           return true;
         };
 
-        const partialFiles = files.filter(isPartial);
-
-        const allUnlistened = files.filter((f: any) => {
+        const currentWeekFiles = files.filter((f: any) => {
+          const weekMatch = f.folder?.match(/week-(\d+)/i);
+          if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNum) return false;
           if (f.listened) return false;
-          if (partialFiles.some((p: any) => p.id === f.id)) return false;
           return true;
         });
 
-        const orderedFiles = [...partialFiles, ...allUnlistened];
+        const partialCurrentWeek = currentWeekFiles.filter(isPartial);
+        const unlistenedCurrentWeek = currentWeekFiles.filter((f: any) => !isPartial(f));
+
+        const orderedFiles = [...partialCurrentWeek, ...unlistenedCurrentWeek];
 
         if (orderedFiles.length > 0) {
           const mapped = orderedFiles.map((f: any) => ({
@@ -11428,8 +11430,8 @@ export default function Dashboard() {
           {/* Return-from-break reading prompt (admin only) */}
           {isAdmin && (
             <Dialog open={showReturnReadingPrompt && returnReadingFiles.length > 0} onOpenChange={setShowReturnReadingPrompt}>
-              <DialogContent className="max-w-[340px] text-[11px] text-white p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%' }}>
-                <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+              <DialogContent className="max-w-[340px] text-[11px] text-white p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-3.5 w-3.5 text-blue-400" />
                     <h2 className="text-xs font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
