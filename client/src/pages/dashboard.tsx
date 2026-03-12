@@ -12598,16 +12598,16 @@ export default function Dashboard() {
                   };
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
-                    <div className="border border-white/20 rounded-md flex items-center gap-2 px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.06)' }} data-testid="l1-gpa-box">
-                      <span className="text-[8px] font-bold uppercase tracking-wider text-white/50">Cert I GPA</span>
+                    <div className="border border-white/40 rounded-lg flex items-center gap-3 px-4 py-3" style={{ background: 'rgba(255,255,255,0.12)', maxWidth: '50%' }} data-testid="l1-gpa-box">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">GPA</span>
                       {avgGpa !== null ? (
                         <>
-                          <span className="font-bold text-[16px] leading-none" style={{ color: gpaColor }}>{avgGpa.toFixed(2)}</span>
-                          <span className="font-bold text-[14px] leading-none" style={{ color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
-                          <span className="text-[7px] text-white/30">({gpaValues.length})</span>
+                          <span className="font-bold text-[24px] leading-none text-white">{avgGpa.toFixed(2)}</span>
+                          <span className="font-bold text-[20px] leading-none text-white/90">{gpaToLetter(avgGpa)}</span>
+                          <span className="text-[10px] text-white/40">({gpaValues.length} courses)</span>
                         </>
                       ) : (
-                        <span className="text-[9px] text-white/30">—</span>
+                        <span className="text-[12px] text-white/40">—</span>
                       )}
                     </div>
                   );
