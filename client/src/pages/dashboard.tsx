@@ -18095,6 +18095,7 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = async (fileType: 'module' | 'reading') => {
+                      const newWindow = window.open('about:blank', '_blank');
                       setIsLoadingOneDriveFiles(true);
                       const courseId = courseCode.toLowerCase();
                       const basePath = `/School/1. TMU/Courses/2026/Winter`;
@@ -18105,56 +18106,60 @@ export default function Dashboard() {
                         const matchedFolder = baseFolders.find((f: any) => 
                           f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
                         );
-                        if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
+                        if (!matchedFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
                         const coursePath = matchedFolder.path;
                         const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
                         const courseFolders = await courseResponse.json();
                         const weekFolder = courseFolders.find((f: any) => 
                           f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
                         );
-                        if (weekFolder) {
-                          const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                          const weekContents = await weekResponse.json();
-                          const targetFolder = weekContents.find((f: any) => 
-                            f.type === 'folder' && f.name.toLowerCase().includes(fileType)
-                          );
-                          if (targetFolder) {
-                            const filesResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(targetFolder.path)}`);
-                            const filesData = await filesResponse.json();
-                            const pdfFiles = filesData.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                            if (pdfFiles.length > 0) {
-                              const folder = `week-${selectedWeek}-${courseId}-${fileType}`;
-                              const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
-                                const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
-                                try {
-                                  const resp = await fetch('/api/files/ensure', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ objectPath: stablePath, originalName: pdf.name, displayName: pdf.name, folder }),
-                                  });
-                                  if (resp.ok) {
-                                    const dbFile = await resp.json();
-                                    return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false, checkedChunks: dbFile.checkedChunks || undefined, totalChunks: dbFile.totalChunks || undefined, lastChunkIndex: dbFile.lastChunkIndex || undefined } as FileItem;
-                                  }
-                                } catch {}
-                                return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
-                              }));
-                              const unlistenedFiles = ensuredFiles.filter(f => !f.listened);
-                              const firstFile = unlistenedFiles.length > 0 ? unlistenedFiles[0] : ensuredFiles[0];
-                              if (firstFile) {
-                                const isOneDrive = firstFile.objectPath?.startsWith('http');
-                                const readerUrl = isOneDrive
-                                  ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&fileId=${firstFile.id}&catWashFollow=true&autoplay=false&resumeChunk=0`
-                                  : `/pdf-reader/${firstFile.id}?catWashFollow=true&autoplay=false&resumeChunk=0`;
-                                window.open(readerUrl, '_blank');
-                              }
-                              queryClient.invalidateQueries({ queryKey: ["/api/files"] });
-                              refreshFileCounts();
+                        if (!weekFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
+                        const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                        const weekContents = await weekResponse.json();
+                        const targetFolder = weekContents.find((f: any) => 
+                          f.type === 'folder' && f.name.toLowerCase().includes(fileType)
+                        );
+                        if (!targetFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
+                        const filesResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(targetFolder.path)}`);
+                        const filesData = await filesResponse.json();
+                        const pdfFiles = filesData.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                        if (pdfFiles.length === 0) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
+                        const folder = `week-${selectedWeek}-${courseId}-${fileType}`;
+                        const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
+                          const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
+                          try {
+                            const resp = await fetch('/api/files/ensure', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ objectPath: stablePath, originalName: pdf.name, displayName: pdf.name, folder }),
+                            });
+                            if (resp.ok) {
+                              const dbFile = await resp.json();
+                              return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false, checkedChunks: dbFile.checkedChunks || undefined, totalChunks: dbFile.totalChunks || undefined, lastChunkIndex: dbFile.lastChunkIndex || undefined } as FileItem;
                             }
+                          } catch {}
+                          return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
+                        }));
+                        const unlistenedFiles = ensuredFiles.filter(f => !f.listened);
+                        const firstFile = unlistenedFiles.length > 0 ? unlistenedFiles[0] : ensuredFiles[0];
+                        if (firstFile) {
+                          const isOneDrive = firstFile.objectPath?.startsWith('http');
+                          const readerUrl = isOneDrive
+                            ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&fileId=${firstFile.id}&catWashFollow=true&autoplay=false&resumeChunk=0`
+                            : `/pdf-reader/${firstFile.id}?catWashFollow=true&autoplay=false&resumeChunk=0`;
+                          if (newWindow) {
+                            newWindow.location.href = window.location.origin + readerUrl;
+                          } else {
+                            window.location.href = readerUrl;
                           }
+                        } else {
+                          if (newWindow) newWindow.close();
                         }
+                        queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                        refreshFileCounts();
                       } catch (error) {
                         console.error(`Error fetching ${fileType} files:`, error);
+                        if (newWindow) newWindow.close();
                         try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton ${fileType} error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
                       } finally {
                         setIsLoadingOneDriveFiles(false);
