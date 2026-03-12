@@ -980,7 +980,7 @@ export default function PDFReaderPage() {
     }
   };
 
-  const chunkText = (text: string, maxLength: number = 4000): string[] => {
+  const chunkText = (text: string, maxLength: number = 1000): string[] => {
     const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
 
     if (paragraphs.length <= 1) {
@@ -1111,10 +1111,6 @@ export default function PDFReaderPage() {
           }
         };
         
-        audioRef.current.onerror = (e) => {
-          console.error('[TTS] Audio element error:', e, audioRef.current?.error);
-        };
-        
         if (!isPlayingRef.current) {
           console.log('[TTS] Stopped before play — aborting');
           return false;
@@ -1124,11 +1120,23 @@ export default function PDFReaderPage() {
           await audioContextRef.current.resume();
           console.log('[TTS] Resumed visualizer AudioContext');
         }
-        await audioRef.current.play();
-        audioRef.current.playbackRate = playbackSpeedRef.current;
-        audioRef.current.volume = volumeRef.current;
-        beacon("playTTS-playing-success");
-        console.log(`[TTS] Playing: speed=${audioRef.current.playbackRate}, vol=${audioRef.current.volume}`);
+
+        await new Promise<void>((resolve, reject) => {
+          if (!audioRef.current) { resolve(); return; }
+          audioRef.current.onended = () => resolve();
+          audioRef.current.onerror = (e) => {
+            console.error('[TTS] Audio element error:', e, audioRef.current?.error);
+            reject(new Error('Audio playback error'));
+          };
+          audioRef.current.play().then(() => {
+            if (audioRef.current) {
+              audioRef.current.playbackRate = playbackSpeedRef.current;
+              audioRef.current.volume = volumeRef.current;
+            }
+            beacon("playTTS-playing-success");
+            console.log(`[TTS] Playing: speed=${audioRef.current?.playbackRate}, vol=${audioRef.current?.volume}`);
+          }).catch(reject);
+        });
       }
       return true;
     } catch (error: any) {
@@ -1383,31 +1391,23 @@ export default function PDFReaderPage() {
     }
 
     const success = await playTTS(chunksRef.current[index]);
-    if (!success && isPlayingRef.current) {
+    if (!isPlayingRef.current) return;
+    if (!success) {
       console.log(`[TTS] Chunk ${index + 1} failed after retries, skipping to next chunk`);
       toast({ title: "Skipped chunk", description: `Chunk ${index + 1} failed, moving to next` });
+    }
+    if (index >= 4 && index < chunksRef.current.length - 1 && (index + 1) % 5 === 0 && !playingAttentionPromptRef.current) {
+      playingAttentionPromptRef.current = true;
+      console.log(`[TTS] Playing attention prompt after chunk ${index + 1}`);
+      await playTTS("Bryn, are you paying attention?");
+      playingAttentionPromptRef.current = false;
+    }
+    if (isPlayingRef.current) {
       playNextChunk(index + 1);
-      return;
     }
   };
 
   const handleAudioEnded = async () => {
-    const playing = isPlayingRef.current;
-    const paused = isPausedRef.current;
-    const chunk = currentChunkRef.current;
-    console.log(`[TTS] Audio ended: isPlaying=${playing}, isPaused=${paused}, currentChunk=${chunk}, attentionPrompt=${playingAttentionPromptRef.current}`);
-    if (playing && !paused) {
-      if (playingAttentionPromptRef.current) {
-        playingAttentionPromptRef.current = false;
-        playNextChunk(chunk + 1);
-      } else if (chunk >= 4 && chunk < chunksRef.current.length - 1 && (chunk + 1) % 5 === 0) {
-        playingAttentionPromptRef.current = true;
-        console.log(`[TTS] Playing attention prompt after chunk ${chunk + 1}`);
-        await playTTS("Bryn, are you paying attention?");
-      } else {
-        playNextChunk(chunk + 1);
-      }
-    }
   };
 
   const pauseReading = () => {
