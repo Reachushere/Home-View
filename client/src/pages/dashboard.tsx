@@ -538,7 +538,8 @@ export default function Dashboard() {
     const lastActive = parseInt(localStorage.getItem('replitLastActiveTime') || '0', 10);
     const now = Date.now();
     const twoHoursMs = 2 * 60 * 60 * 1000;
-    if (lastActive > 0 && (now - lastActive) < twoHoursMs) {
+    const forceWelcome = new URLSearchParams(window.location.search).has('forceWelcome');
+    if (!forceWelcome && lastActive > 0 && (now - lastActive) < twoHoursMs) {
       localStorage.setItem('replitLastActiveTime', String(now));
       return;
     }
@@ -596,6 +597,8 @@ export default function Dashboard() {
           }));
           setReturnReadingFiles(mapped);
           setSelectedReturnFile(mapped[0].id);
+        }
+        if (orderedFiles.length > 0) {
           setShowReturnReadingPrompt(true);
         }
       })
