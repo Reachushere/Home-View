@@ -11574,7 +11574,7 @@ export default function Dashboard() {
                             className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
                             onClick={() => {
                               if (file) {
-                                window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=0`, '_blank');
+                                window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=true&resumeChunk=0`, '_blank');
                               }
                               setShowReturnReadingPrompt(false);
                             }}
@@ -11588,7 +11588,8 @@ export default function Dashboard() {
                               className="h-6 text-[9px] bg-green-600 hover:bg-green-500 border-0"
                               onClick={() => {
                                 if (file) {
-                                  window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=${file.lastChunkIndex}`, '_blank');
+                                  const resumeIdx = Math.max(0, (file.lastChunkIndex || 1) - 1);
+                                  window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeIdx}`, '_blank');
                                 }
                                 setShowReturnReadingPrompt(false);
                               }}
