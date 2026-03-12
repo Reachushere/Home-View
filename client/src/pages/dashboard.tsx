@@ -14751,10 +14751,13 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
-            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
-              <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-white">Key Contacts</DialogTitle>
+            <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <DialogTitle className="sr-only">Key Contacts</DialogTitle>
+              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <Contact className="h-3.5 w-3.5 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Key Contacts</h2>
+                </div>
                   <div className="flex items-center gap-2">
                     <select
                       value={contactFilter}
@@ -14772,10 +14775,12 @@ export default function Dashboard() {
                     >
                       <Plus className="h-3 w-3" /> Add Contact
                     </button>
+                    <button onClick={() => setIsKeyContactsOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-key-contacts">
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
-                </div>
-              </DialogHeader>
-              <div className="space-y-4" style={{ maxHeight: 'calc(85vh - 120px)', overflowY: 'auto', scrollbarWidth: 'none' }}>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'none' }}>
                 {filteredContacts.length === 0 ? (
                   <div className="text-center py-10">
                     <Contact className="h-10 w-10 text-blue-400 mx-auto mb-3" />
