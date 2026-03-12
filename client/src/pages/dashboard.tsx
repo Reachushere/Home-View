@@ -17636,7 +17636,11 @@ export default function Dashboard() {
                 // If there are full-week tasks, render them using grid column spanning
                 if (hasFullWeekTasks) {
                   return (
-                    <div key={course.name} className="w-full flex-shrink-0" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
+                    <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
+                      <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.courseColumnWidth}px` }} data-testid={`course-row-label-${course.name}`}>
+                        {course.name}
+                      </div>
+                      <div className="flex-1 min-w-0">
                       {fullWeekTasks.map((task, taskIdx) => {
                         const today = startOfDay(new Date());
                         const tomorrow = addDays(today, 1);
@@ -17644,26 +17648,20 @@ export default function Dashboard() {
                         const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                         const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                         
-                        // Get current day of week (0 = Sunday, 6 = Saturday)
                         const currentDayOfWeek = today.getDay();
-                        // Wednesday is day 3 - start blinking from Wednesday onwards
                         const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
                         const shouldBlink = !task.isCompleted && isWednesdayOrLater;
                         
-                        // Render ONE row with BOTH static MODULE task AND dynamic task on same line
+                        const remainingColumns = getGridTemplateColumns().split(' ').slice(1).join(' ');
                         return (
                           <div 
                             key={`fullweek-row-${task.id}`}
                             className="grid w-full"
                             style={{ 
-                              gridTemplateColumns: getGridTemplateColumns(),
+                              gridTemplateColumns: remainingColumns,
                               minHeight: `${gridSizes.courseRowHeight}px`
                             }}
                           >
-                            {/* Course name column */}
-                            <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
-                              {taskIdx === 0 ? course.name : ''}
-                            </div>
                             
                             {/* Static MODULE column task - only when module column is visible */}
                             {gridSizes.moduleColumnWidth > 0 && (
@@ -17798,6 +17796,7 @@ export default function Dashboard() {
                           </div>
                         );
                       })}
+                      </div>
                     </div>
                   );
                 }
