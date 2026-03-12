@@ -12065,7 +12065,11 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
-                        {OPEN_ELECTIVE_COURSES.map(c => (
+                        {[...OPEN_ELECTIVE_COURSES].sort((a, b) => {
+                          const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
+                          const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0;
+                          return numA - numB || a.code.localeCompare(b.code);
+                        }).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         ))}
                       </select>
@@ -12555,7 +12559,11 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`w-full text-[8px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
-                        {OPEN_ELECTIVE_COURSES.map(c => (
+                        {[...OPEN_ELECTIVE_COURSES].sort((a, b) => {
+                          const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
+                          const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0;
+                          return numA - numB || a.code.localeCompare(b.code);
+                        }).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         ))}
                       </select>
