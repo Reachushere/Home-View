@@ -1403,7 +1403,7 @@ export default function PDFReaderPage() {
       console.log(`[TTS] Chunk ${index + 1} failed after retries, skipping to next chunk`);
       toast({ title: "Skipped chunk", description: `Chunk ${index + 1} failed, moving to next` });
     }
-    if (index >= 4 && index < chunksRef.current.length - 1 && (index + 1) % 5 === 0 && !playingAttentionPromptRef.current) {
+    if (index >= 2 && index < chunksRef.current.length - 1 && (index + 1) % 3 === 0 && !playingAttentionPromptRef.current) {
       playingAttentionPromptRef.current = true;
       console.log(`[TTS] Playing attention prompt after chunk ${index + 1}`);
       await playTTS("Bryn, are you paying attention?");
