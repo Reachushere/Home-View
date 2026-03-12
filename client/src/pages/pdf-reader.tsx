@@ -229,18 +229,6 @@ export default function PDFReaderPage() {
   const [isFlicking, setIsFlicking] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState("browser_tts");
   const selectedSpeakerRef = useRef("browser_tts");
-  const [binauralEnabled, setBinauralEnabled] = useState(() => {
-    const saved = localStorage.getItem('pdf-reader-binaural');
-    return saved !== null ? saved === 'true' : false;
-  });
-  const [binauralVolume, setBinauralVolume] = useState(() => {
-    const saved = localStorage.getItem('pdf-reader-binaural-volume');
-    return saved ? parseFloat(saved) : 0.15;
-  });
-  const binauralContextRef = useRef<AudioContext | null>(null);
-  const binauralGainRef = useRef<GainNode | null>(null);
-  const binauralOscLRef = useRef<OscillatorNode | null>(null);
-  const binauralOscRRef = useRef<OscillatorNode | null>(null);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -1426,7 +1414,6 @@ export default function PDFReaderPage() {
     isPlayingRef.current = false;
     setIsPaused(false);
     isPausedRef.current = false;
-    stopBinauralBeats();
     if (speakerTimerRef.current) {
       clearTimeout(speakerTimerRef.current);
       speakerTimerRef.current = null;
@@ -1597,70 +1584,6 @@ export default function PDFReaderPage() {
       console.log(`[TTS] Volume changed: ${volume}`);
     }
   }, [volume]);
-
-  const startBinauralBeats = () => {
-    if (binauralContextRef.current) return;
-    try {
-      const ctx = new AudioContext();
-      if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = binauralVolume;
-      const merger = ctx.createChannelMerger(2);
-      const oscL = ctx.createOscillator();
-      oscL.type = 'sine';
-      oscL.frequency.value = 200;
-      const oscR = ctx.createOscillator();
-      oscR.type = 'sine';
-      oscR.frequency.value = 210;
-      const gainL = ctx.createGain();
-      gainL.gain.value = 1;
-      const gainR = ctx.createGain();
-      gainR.gain.value = 1;
-      oscL.connect(gainL);
-      gainL.connect(merger, 0, 0);
-      oscR.connect(gainR);
-      gainR.connect(merger, 0, 1);
-      merger.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      oscL.start();
-      oscR.start();
-      binauralContextRef.current = ctx;
-      binauralGainRef.current = gainNode;
-      binauralOscLRef.current = oscL;
-      binauralOscRRef.current = oscR;
-      console.log('[Binaural] Started: 200Hz L / 210Hz R = 10Hz alpha beat');
-    } catch (e) {
-      console.error('[Binaural] Failed to start:', e);
-    }
-  };
-
-  const stopBinauralBeats = () => {
-    if (binauralOscLRef.current) { try { binauralOscLRef.current.stop(); } catch {} binauralOscLRef.current = null; }
-    if (binauralOscRRef.current) { try { binauralOscRRef.current.stop(); } catch {} binauralOscRRef.current = null; }
-    if (binauralContextRef.current) { binauralContextRef.current.close().catch(() => {}); binauralContextRef.current = null; }
-    binauralGainRef.current = null;
-    console.log('[Binaural] Stopped');
-  };
-
-  useEffect(() => {
-    if (binauralEnabled && isPlaying && !isPaused) {
-      startBinauralBeats();
-    } else {
-      stopBinauralBeats();
-    }
-    return () => { stopBinauralBeats(); };
-  }, [binauralEnabled, isPlaying, isPaused]);
-
-  useEffect(() => {
-    localStorage.setItem('pdf-reader-binaural', String(binauralEnabled));
-  }, [binauralEnabled]);
-
-  useEffect(() => {
-    localStorage.setItem('pdf-reader-binaural-volume', String(binauralVolume));
-    if (binauralGainRef.current) {
-      try { binauralGainRef.current.gain.value = binauralVolume; } catch {}
-    }
-  }, [binauralVolume]);
 
   const getTimeEstimate = () => {
     if (totalChunks === 0 || !chunksRef.current.length) return null;
