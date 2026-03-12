@@ -42,6 +42,15 @@ window.addEventListener('error', (event) => {
     event.preventDefault();
     return;
   }
+  if (event.error) {
+    console.error('[RUNTIME ERROR CAUGHT]', event.error, event.error?.message, event.error?.stack);
+  } else {
+    console.error('[RUNTIME ERROR NO-ERROR-OBJ]', event.message, event.filename, event.lineno);
+  }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[UNHANDLED REJECTION]', event.reason, typeof event.reason, event.reason?.message, event.reason?.stack);
 });
 
 window.onerror = function(message, source, lineno, colno, error) {
