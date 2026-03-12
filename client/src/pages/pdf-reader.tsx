@@ -1655,15 +1655,15 @@ export default function PDFReaderPage() {
         const dataArray = new Uint8Array(bufLen);
         analyser.getByteFrequencyData(dataArray);
         for (let i = 0; i < barCount; i++) {
-          const dataIdx = Math.floor((i / barCount) * bufLen * 0.6);
+          const dataIdx = Math.floor((i / barCount) * bufLen);
           const val = dataArray[dataIdx] / 255;
           const barH = Math.max(2, val * centerY * 0.85);
           const x = i * (barWidth + gap);
           const alpha = 0.3 + val * 0.7;
-          ctx.globalAlpha = alpha;
-          ctx.fillStyle = clr;
-          ctx.shadowColor = clr;
-          ctx.shadowBlur = val * 6;
+          const lightness = 70 + val * 30;
+          ctx.fillStyle = `hsla(200, 90%, ${Math.round(lightness)}%, ${alpha.toFixed(2)})`;
+          ctx.shadowColor = `hsla(200, 100%, 80%, ${(val * 0.6).toFixed(2)})`;
+          ctx.shadowBlur = val * 10;
           ctx.beginPath();
           ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
           ctx.fill();
@@ -1671,7 +1671,6 @@ export default function PDFReaderPage() {
           ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
           ctx.fill();
           ctx.shadowBlur = 0;
-          ctx.globalAlpha = 1;
         }
       } else {
         const t = Date.now() / 1000;
@@ -1679,7 +1678,9 @@ export default function PDFReaderPage() {
           const val = 0.3 + Math.sin(t * 3 + i * 0.8) * 0.25 + Math.sin(t * 5.3 + i * 1.2) * 0.15;
           const barH = Math.max(2, Math.min(1, val) * centerY * 0.85);
           const x = i * (barWidth + gap);
-          ctx.fillStyle = clr;
+          const alpha = 0.3 + val * 0.7;
+          const lightness = 70 + val * 30;
+          ctx.fillStyle = `hsla(200, 90%, ${Math.round(lightness)}%, ${alpha.toFixed(2)})`;
           ctx.beginPath();
           ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
           ctx.fill();
