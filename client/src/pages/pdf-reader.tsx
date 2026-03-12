@@ -1606,12 +1606,7 @@ export default function PDFReaderPage() {
     return { remaining: formatTime(remainingMinutes), total: formatTime(totalMinutes), remainingChunks: uncheckedChunks.length };
   };
 
-  const waveColor = (() => {
-    if (cId === 'cppa122') return '#47B045';
-    if (cId === 'cfnf400') return '#FA67B3';
-    if (cId === 'casl101') return '#B045A2';
-    return 'rgba(255,255,255,0.8)';
-  })();
+  const waveColorRef = useRef('rgba(255,255,255,0.8)');
 
   useEffect(() => {
     const drawMini = () => {
@@ -1626,6 +1621,7 @@ export default function PDFReaderPage() {
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
       ctx.clearRect(0, 0, w, h);
+      const clr = waveColorRef.current;
 
       if (!isPlaying || isPaused) {
         const barCount = 24;
@@ -1664,8 +1660,8 @@ export default function PDFReaderPage() {
           const barH = Math.max(2, val * centerY * 0.85);
           const x = i * (barWidth + gap);
           const alpha = 0.3 + val * 0.7;
-          const clr = waveColor || 'hsl(200,90%,70%)';
-          ctx.fillStyle = clr.replace(')', `,${alpha.toFixed(2)})`).replace('hsl(', 'hsla(').replace('rgb(', 'rgba(');
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = clr;
           ctx.shadowColor = clr;
           ctx.shadowBlur = val * 6;
           ctx.beginPath();
@@ -1675,6 +1671,7 @@ export default function PDFReaderPage() {
           ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
           ctx.fill();
           ctx.shadowBlur = 0;
+          ctx.globalAlpha = 1;
         }
       } else {
         const t = Date.now() / 1000;
@@ -1682,7 +1679,7 @@ export default function PDFReaderPage() {
           const val = 0.3 + Math.sin(t * 3 + i * 0.8) * 0.25 + Math.sin(t * 5.3 + i * 1.2) * 0.15;
           const barH = Math.max(2, Math.min(1, val) * centerY * 0.85);
           const x = i * (barWidth + gap);
-          ctx.fillStyle = (waveColor || 'rgba(255,255,255,0.5)');
+          ctx.fillStyle = clr;
           ctx.beginPath();
           ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
           ctx.fill();
@@ -1695,7 +1692,7 @@ export default function PDFReaderPage() {
     };
     miniAnimRef.current = requestAnimationFrame(drawMini);
     return () => cancelAnimationFrame(miniAnimRef.current);
-  }, [isPlaying, isPaused, waveColor]);
+  }, [isPlaying, isPaused]);
 
   if (fileLoading && !isOneDrive) {
     return (
@@ -1728,6 +1725,8 @@ export default function PDFReaderPage() {
   const folderParts = file?.folder?.split('-') || [];
   const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
   const cId = courseCodeFromFolder?.toLowerCase() || '';
+  waveColorRef.current = cId === 'cppa122' ? '#47B045' : cId === 'cfnf400' ? '#FA67B3' : cId === 'casl101' ? '#B045A2' : 'rgba(255,255,255,0.8)';
+  const waveColor = waveColorRef.current;
   const playerHeaderGradient = (() => {
     if (cId === 'cppa122') return 'linear-gradient(0deg, rgb(71, 176, 69) 0%, rgb(15, 80, 4) 100%)';
     if (cId === 'cfnf400') return 'linear-gradient(180deg, rgb(222, 24, 100) 0%, rgb(250, 103, 179) 100%)';
