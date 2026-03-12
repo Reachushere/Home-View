@@ -2811,6 +2811,22 @@ export default function Dashboard() {
 
   const gradeOptions = ['', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
 
+  const percentToGrade = (percent: string): string => {
+    const p = parseFloat(percent);
+    if (isNaN(p) || percent.trim() === '') return '';
+    if (p >= 90) return 'A+';
+    if (p >= 85) return 'A';
+    if (p >= 80) return 'A-';
+    if (p >= 77) return 'B+';
+    if (p >= 73) return 'B';
+    if (p >= 70) return 'B-';
+    if (p >= 67) return 'C+';
+    if (p >= 63) return 'C';
+    if (p >= 60) return 'C-';
+    if (p >= 50) return 'D';
+    return 'F';
+  };
+
   const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'L1_PPA120', 'L1_PPA121', 'LIBERAL', 'OPEN1', 'OPEN2']
     .every(id => checkedCourses[id]);
 
@@ -2881,15 +2897,15 @@ export default function Dashboard() {
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id);
 
-  const InProgressToggle = ({ id }: { id: string }) => {
+  const InProgressToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
     const greyedOut = isCourseGreyedOut(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
     const isActive = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
     if (greyedOut) return null;
     return (
     <div
-      className="absolute top-0 right-0 cursor-pointer flex items-center"
-      style={{ padding: '1px 3px', fontSize: '7px', lineHeight: 1 }}
+      className={inline ? "ml-0.5 shrink-0 cursor-pointer flex items-center" : "absolute top-0 right-0 cursor-pointer flex items-center"}
+      style={inline ? { fontSize: '7px', lineHeight: 1 } : { padding: '1px 3px', fontSize: '7px', lineHeight: 1 }}
       onClick={(e) => { e.stopPropagation(); if (!isAutoFromL1) toggleInProgress(id); }}
       title={isAutoFromL1 ? 'In progress (from Level I)' : isActive ? 'Mark not in progress' : 'Mark in progress'}
       data-testid={`toggle-in-progress-${id}`}
@@ -11956,13 +11972,13 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                  <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
                   <div className="w-5 border-l border-black"></div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
@@ -11977,11 +11993,8 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">{c.type}</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
@@ -11992,7 +12005,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
@@ -12011,11 +12024,8 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">{c.id === 'L1_PPA120' ? 'Prof-Req\'d' : c.id === 'L1_PPA124' ? '' : 'SELECT'}</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
@@ -12026,7 +12036,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" in the calendar</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
@@ -12035,16 +12045,16 @@ export default function Dashboard() {
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">Table A</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">
-                    <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
+                    <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A course...</option>
                       {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                         <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                       ))}
                     </select>
+                    <InProgressToggle id="LIBERAL" inline />
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
+                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['LIBERAL']?.percent || '')}</span></div>
                   </div>
                   <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
                     <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
@@ -12053,7 +12063,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" in the calendar</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['OPEN1','OPEN2'].map((cid, i) => (
@@ -12063,7 +12073,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">PR Table I</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
-                      <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
+                      <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
                         {[...OPEN_ELECTIVE_COURSES].sort((a, b) => {
                           const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
@@ -12073,10 +12083,10 @@ export default function Dashboard() {
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         ))}
                       </select>
+                      <InProgressToggle id={cid} inline />
                     </div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
                       <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
@@ -12171,12 +12181,14 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                  <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                  <div className="w-5 border-l border-black"></div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Course</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -12185,17 +12197,18 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">Prof-Req'd</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211">Public Policy (PPA623)<InProgressToggle id="L2_PPA211" /></div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_PPA211']?.grade || ''} onChange={(e) => updateGrade('L2_PPA211', e.target.value)}>
-                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} />
+                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_PPA211']?.percent || '')}</span></div>
+                  </div>
+                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
+                    <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
                   </div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">three</span> courses from the following list, not previously completed</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {[
                   { id: 'L2_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: '' },
@@ -12215,11 +12228,8 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">{c.type}</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[c.id]?.grade || ''} onChange={(e) => updateGrade(c.id, e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} />
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
@@ -12230,7 +12240,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A in the calendar</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
@@ -12239,23 +12249,25 @@ export default function Dashboard() {
                   </div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">Table A</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">
-                    <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
+                    <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A course...</option>
                       {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                         <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                       ))}
                     </select>
+                    <InProgressToggle id="L2_LIBERAL" inline />
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_LIBERAL']?.grade || ''} onChange={(e) => updateGrade('L2_LIBERAL', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} />
+                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_LIBERAL']?.percent || '')}</span></div>
                   </div>
+                  <div className="w-5 border-l border-black"></div>
                 </div>
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Required: Select <span className="underline">one</span> course from the following list</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className="flex items-stretch">
                   <div className="w-5 border-r border-black flex flex-col">
@@ -12280,47 +12292,41 @@ export default function Dashboard() {
                       <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center cursor-pointer hover:underline relative ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}>{ecn.name}<InProgressToggle id={ecn.id} /></div>
                     ))}
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-7 border-b border-black"></div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN1']?.grade || ''} onChange={(e) => updateGrade('L2_ECN1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN1']?.percent || ''} onChange={(e) => updatePercent('L2_ECN1', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN1']?.percent || ''} onChange={(e) => updatePercent('L2_ECN1', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN1']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN2']?.grade || ''} onChange={(e) => updateGrade('L2_ECN2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN2']?.percent || ''} onChange={(e) => updatePercent('L2_ECN2', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN2']?.percent || ''} onChange={(e) => updatePercent('L2_ECN2', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN2']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN3']?.grade || ''} onChange={(e) => updateGrade('L2_ECN3', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN3']?.percent || ''} onChange={(e) => updatePercent('L2_ECN3', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN3']?.percent || ''} onChange={(e) => updatePercent('L2_ECN3', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN3']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN4']?.grade || ''} onChange={(e) => updateGrade('L2_ECN4', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN4']?.percent || ''} onChange={(e) => updatePercent('L2_ECN4', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN4']?.percent || ''} onChange={(e) => updatePercent('L2_ECN4', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN4']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN5']?.grade || ''} onChange={(e) => updateGrade('L2_ECN5', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN5']?.percent || ''} onChange={(e) => updatePercent('L2_ECN5', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN5']?.percent || ''} onChange={(e) => updatePercent('L2_ECN5', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN5']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN6']?.grade || ''} onChange={(e) => updateGrade('L2_ECN6', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN6']?.percent || ''} onChange={(e) => updatePercent('L2_ECN6', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN6']?.percent || ''} onChange={(e) => updatePercent('L2_ECN6', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN6']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN7']?.grade || ''} onChange={(e) => updateGrade('L2_ECN7', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN7']?.percent || ''} onChange={(e) => updatePercent('L2_ECN7', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN7']?.percent || ''} onChange={(e) => updatePercent('L2_ECN7', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN7']?.percent || '')}</span></div>
                     </div>
                     <div className="h-9 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_ECN8']?.grade || ''} onChange={(e) => updateGrade('L2_ECN8', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN8']?.percent || ''} onChange={(e) => updatePercent('L2_ECN8', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN8']?.percent || ''} onChange={(e) => updatePercent('L2_ECN8', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN8']?.percent || '')}</span></div>
                     </div>
                   </div>
+                  <div className="w-5 border-l border-black"></div>
                 </div>
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I in the calendar</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className="flex items-stretch">
                   <div className="w-5 border-r border-black flex flex-col">
@@ -12328,19 +12334,18 @@ export default function Dashboard() {
                     <div className={`h-11 flex items-center justify-center ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-100' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_OPEN2')}>{(checkedCourses['L2_OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className="h-11 px-1 flex items-center"><select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} data-testid="select-l2-open1"><option value="">Select PR elective 1...</option>{[...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select></div>
-                    <div className="h-11 px-1 flex items-center"><select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} data-testid="select-l2-open2"><option value="">Select PR elective 2...</option>{[...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select></div>
+                    <div className="h-11 px-1 flex items-center"><select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} data-testid="select-l2-open1"><option value="">Select PR elective 1...</option>{[...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select><InProgressToggle id="L2_OPEN1" inline /></div>
+                    <div className="h-11 px-1 flex items-center"><select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} data-testid="select-l2-open2"><option value="">Select PR elective 2...</option>{[...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select><InProgressToggle id="L2_OPEN2" inline /></div>
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_OPEN1']?.grade || ''} onChange={(e) => updateGrade('L2_OPEN1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_OPEN1']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN1', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_OPEN1']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN1', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_OPEN1']?.percent || '')}</span></div>
                     </div>
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L2_OPEN2']?.grade || ''} onChange={(e) => updateGrade('L2_OPEN2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_OPEN2']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN2', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_OPEN2']?.percent || ''} onChange={(e) => updatePercent('L2_OPEN2', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_OPEN2']?.percent || '')}</span></div>
                     </div>
                   </div>
+                  <div className="w-5 border-l border-black"></div>
                 </div>
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
@@ -12364,12 +12369,14 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
-                  <div className="w-12 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                  <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
+                  <div className="w-5 px-1 py-0.5 border-l border-black"></div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <table className="w-full border-collapse">
                   <colgroup>
@@ -12377,7 +12384,8 @@ export default function Dashboard() {
                     <col style={{ width: '55px' }} />
                     <col style={{ width: '55px' }} />
                     <col />
-                    <col style={{ width: '3rem' }} />
+                    <col style={{ width: '4rem' }} />
+                    <col style={{ width: '1.25rem' }} />
                   </colgroup>
                   <tbody>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
@@ -12389,12 +12397,10 @@ export default function Dashboard() {
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333">Research Methods in Public Admin (POG230, PPA524)<InProgressToggle id="L3_PPA333" /></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_PPA333']?.grade || ''} onChange={(e) => updateGrade('L3_PPA333', e.target.value)}>
-                            {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                          </select>
-                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} />
+                          <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L3_PPA333']?.percent || '')}</span></div>
                         </div>
                       </td>
+                      <td className="border-l border-black"></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`}>
                       <td className="px-0.5 py-0.5 border-r border-black text-center align-middle">
@@ -12405,19 +12411,18 @@ export default function Dashboard() {
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)<InProgressToggle id="L3_PRACTICUM1" /></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_PRACTICUM1']?.grade || ''} onChange={(e) => updateGrade('L3_PRACTICUM1', e.target.value)}>
-                            {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                          </select>
-                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} />
+                          <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L3_PRACTICUM1']?.percent || '')}</span></div>
                         </div>
                       </td>
+                      <td className="border-l border-black"></td>
                     </tr>
                   </tbody>
                 </table>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the following list</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <table className="w-full border-collapse">
                   <colgroup>
@@ -12425,7 +12430,8 @@ export default function Dashboard() {
                     <col style={{ width: '55px' }} />
                     <col style={{ width: '55px' }} />
                     <col />
-                    <col style={{ width: '3rem' }} />
+                    <col style={{ width: '4rem' }} />
+                    <col style={{ width: '1.25rem' }} />
                   </colgroup>
                   <tbody>
                     {[
@@ -12465,12 +12471,10 @@ export default function Dashboard() {
                         <td className={`h-11 px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline relative`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}>{course.title}<InProgressToggle id={course.id} /></td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
-                            <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[course.id]?.grade || ''} onChange={(e) => updateGrade(course.id, e.target.value)}>
-                              {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                            </select>
-                            <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} />
+                            <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[course.id]?.percent || '')}</span></div>
                           </div>
                         </td>
+                        {idx === 0 && <td rowSpan={14} className="border-l border-black"></td>}
                       </tr>
                     ))}
                   </tbody>
@@ -12479,7 +12483,8 @@ export default function Dashboard() {
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
@@ -12491,32 +12496,32 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 flex flex-col">
                     {['L3_POG1','L3_POG2'].map((cid, i) => (
-                      <div key={cid} className={`h-11 px-1 flex items-center relative ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                        <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
+                      <div key={cid} className={`h-11 px-1 flex items-center ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
+                        <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                           <option value="">{`Select POG course ${i+1}...`}</option>
                           {POG_COURSES.map(c => (
                             <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                           ))}
                         </select>
-                        <InProgressToggle id={cid} />
+                        <InProgressToggle id={cid} inline />
                       </div>
                     ))}
                   </div>
-                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_POG1']?.grade || ''} onChange={(e) => updateGrade('L3_POG1', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG1']?.percent || ''} onChange={(e) => updatePercent('L3_POG1', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG1']?.percent || ''} onChange={(e) => updatePercent('L3_POG1', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L3_POG1']?.percent || '')}</span></div>
                     </div>
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades['L3_POG2']?.grade || ''} onChange={(e) => updateGrade('L3_POG2', e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG2']?.percent || ''} onChange={(e) => updatePercent('L3_POG2', e.target.value)} />
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG2']?.percent || ''} onChange={(e) => updatePercent('L3_POG2', e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades['L3_POG2']?.percent || '')}</span></div>
                     </div>
                   </div>
+                  <div className="w-5 border-l border-black"></div>
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12525,7 +12530,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">{i === 0 ? 'Table A' : 'Table B'}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
-                      <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
+                      <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                         <option value="">{i === 0 ? 'Select Lower Level Table A course...' : 'Select Upper Level Table B course...'}</option>
                         {i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
@@ -12533,17 +12538,19 @@ export default function Dashboard() {
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         ))}
                       </select>
+                      <InProgressToggle id={cid} inline />
                     </div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
+                    <div className="w-5 border-l border-black"></div>
                   </div>
                 ))}
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I</div>
-                  <div className="w-12 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
+                  <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12552,7 +12559,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">PR Table I</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
-                      <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
+                      <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
                         {[...OPEN_ELECTIVE_COURSES].sort((a, b) => {
                           const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
@@ -12562,11 +12569,12 @@ export default function Dashboard() {
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         ))}
                       </select>
+                      <InProgressToggle id={cid} inline />
                     </div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm" style={{ backgroundColor: 'white', color: 'black' }} value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-10 text-[9px] px-0.5 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[8px] font-medium w-5 text-center" style={{ color: '#333' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
+                    <div className="w-5 border-l border-black"></div>
                   </div>
                 ))}
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
