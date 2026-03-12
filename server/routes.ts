@@ -6227,6 +6227,7 @@ document.body.removeChild(a);
 
       if (!semesterSettings) {
         console.log(`[Cat Lights] No active semester — skipping prompt`);
+        catLightsPromptPending = false;
         return;
       }
 
@@ -6234,7 +6235,8 @@ document.body.removeChild(a);
       const ttsMessage = `Would you like to listen to your module reading? Say yes or confirm on the dashboard to start.`;
 
       catLightsLastPromptAt = Date.now();
-      console.log(`[Cat Lights] Sending TTS prompt immediately...`);
+      catLightsPromptPending = true;
+      console.log(`[Cat Lights] Sending TTS prompt immediately (catLightsPromptPending=true)...`);
       try {
         const [boolOffResp, boolOnResp, ttsResp] = await Promise.all([
           fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
@@ -6268,6 +6270,7 @@ document.body.removeChild(a);
         }
       } catch (e: any) {
         console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message}`);
+        catLightsPromptPending = false;
         return;
       }
 
@@ -6288,6 +6291,7 @@ document.body.removeChild(a);
 
       if (!cppaModule) {
         console.log(`[Cat Lights] No unlistened CPPA module for week ${currentWeekNumber}`);
+        catLightsPromptPending = false;
         try {
           await fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) });
         } catch {}
@@ -6324,9 +6328,11 @@ document.body.removeChild(a);
 
         if (!confirmed) {
           console.log(`[Cat Lights] No confirmation received — skipping playback`);
+          catLightsPromptPending = false;
           return;
         }
         console.log(`[Cat Lights] Confirmation received — starting playback`);
+        catLightsPromptPending = false;
       }
 
       // === Confirmed — start playback ===
