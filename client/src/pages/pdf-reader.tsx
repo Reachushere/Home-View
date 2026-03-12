@@ -307,6 +307,12 @@ export default function PDFReaderPage() {
       }
     };
 
+    let canvasInited = false;
+    let cW = 0;
+    let cH = 0;
+    const barCount = 24;
+    const gap = 2;
+
     const drawWaveform = () => {
       const canvas = canvasRef.current;
       const analyser = analyserRef.current;
@@ -318,29 +324,29 @@ export default function PDFReaderPage() {
       const canvasCtx = canvas.getContext('2d');
       if (!canvasCtx) return;
 
-      canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-      canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
-      canvasCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+      if (!canvasInited || canvas.offsetWidth !== cW || canvas.offsetHeight !== cH) {
+        const dpr = window.devicePixelRatio || 1;
+        cW = canvas.offsetWidth;
+        cH = canvas.offsetHeight;
+        canvas.width = cW * dpr;
+        canvas.height = cH * dpr;
+        canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        canvasInited = true;
+      }
 
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
       const bufLen = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufLen);
       analyser.getByteFrequencyData(dataArray);
 
-      canvasCtx.clearRect(0, 0, w, h);
+      canvasCtx.clearRect(0, 0, cW, cH);
 
-      const barCount = 24;
-      const gap = 2;
-      const totalBarWidth = w - (barCount - 1) * gap;
-      const barWidth = Math.max(2, totalBarWidth / barCount);
-      const centerY = h / 2;
+      const barWidth = Math.max(2, (cW - (barCount - 1) * gap) / barCount);
+      const centerY = cH / 2;
 
       for (let i = 0; i < barCount; i++) {
         const dataIdx = Math.floor((i / barCount) * bufLen);
         const val = dataArray[dataIdx] / 255;
         const barH = Math.max(2, val * centerY * 0.85);
-
         const x = i * (barWidth + gap);
         const alpha = 0.3 + val * 0.7;
         const lightness = 70 + val * 30;
@@ -349,12 +355,8 @@ export default function PDFReaderPage() {
         canvasCtx.shadowColor = `hsla(200, 100%, 80%, ${(val * 0.6).toFixed(2)})`;
         canvasCtx.shadowBlur = val * 6;
 
-        canvasCtx.beginPath();
-        canvasCtx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
-        canvasCtx.fill();
-        canvasCtx.beginPath();
-        canvasCtx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
-        canvasCtx.fill();
+        canvasCtx.fillRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH));
+        canvasCtx.fillRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH));
 
         canvasCtx.shadowBlur = 0;
       }
