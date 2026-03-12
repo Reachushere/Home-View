@@ -1104,6 +1104,10 @@ export default function PDFReaderPage() {
           return false;
         }
         beacon("playTTS-calling-play");
+        if (audioContextRef.current?.state === 'suspended') {
+          await audioContextRef.current.resume();
+          console.log('[TTS] Resumed visualizer AudioContext');
+        }
         await audioRef.current.play();
         audioRef.current.playbackRate = playbackSpeedRef.current;
         audioRef.current.volume = volumeRef.current;
