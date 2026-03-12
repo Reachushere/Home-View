@@ -3174,6 +3174,7 @@ export default function Dashboard() {
     const currentWeekNum = getWeekNumber(new Date());
     lastWeekRef.current = currentWeekNum;
     
+    let lastMinute = new Date().getMinutes();
     const timer = setInterval(() => {
       const now = new Date();
       const currentDate = now.getDate();
@@ -3191,7 +3192,12 @@ export default function Dashboard() {
         lastWeekRef.current = weekNum;
         speakNewWeek();
       }
-      setCurrentTime(now);
+      const el = document.getElementById('clock-seconds');
+      if (el) el.textContent = ':' + String(now.getSeconds()).padStart(2, '0');
+      if (now.getMinutes() !== lastMinute) {
+        lastMinute = now.getMinutes();
+        setCurrentTime(now);
+      }
     }, 1000);
     return () => clearInterval(timer);
   }, [speakNewWeek, speakNewDay]);
@@ -8950,7 +8956,7 @@ export default function Dashboard() {
               
               {/* Upload Drop Zone */}
               <div className="flex-1 flex items-center justify-center p-8">
-                <div className="w-full max-w-md border-2 border-dashed border-[#3c3c3c] rounded-lg p-8 text-center hover:border-blue-500 hover:transition-all cursor-pointer">
+                <div className="w-full max-w-md border-2 border-dashed border-[#3c3c3c] rounded-lg p-8 text-center hover:border-blue-500 hover:transition-colors cursor-pointer">
                   <input 
                     type="file" 
                     id="file-upload" 
@@ -9530,7 +9536,7 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
+                        className="h-5 text-[9px] px-2 bg-white/10 transition-opacity duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
                         style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }}
                         data-testid="select-module-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>
@@ -9574,7 +9580,7 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className="h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
+                        className="h-5 text-[9px] px-2 bg-white/10 transition-opacity duration-200 border !border-white focus:ring-0 focus:ring-offset-0"
                         style={{ color: 'white', maxWidth: 'fit-content', letterSpacing: '0.6px' }}
                         data-testid="select-reading-file">
                         <span className="truncate block" style={{ maxWidth: 'calc(50vw - 300px)', minWidth: '60px' }}>{readingFiles.length === 0 ? 'No readings' : (() => { const f = isReading && previewFile ? previewFile : readingFiles[0]; return f ? (f.displayName || f.originalName || 'No readings').replace(/\.pdf$/i, '') : 'No readings'; })()}</span>
@@ -9631,7 +9637,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 w-full sm:w-auto" style={{ marginRight: '10px' }}>
               <span className="text-[11px] font-bold text-white">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={(val) => { setPreviewSpeaker(val); previewSpeakerRef.current = val; }}>
-                <SelectTrigger className="flex-1 sm:w-[180px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-preview-speaker">
+                <SelectTrigger className="flex-1 sm:w-[180px] h-5 text-[9px] px-2 bg-white/10 transition-opacity duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
@@ -10448,7 +10454,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-white">Voice:</span>
                   <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                    <SelectTrigger className="w-[200px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-voice">
+                    <SelectTrigger className="w-[200px] h-5 text-[9px] px-2 bg-white/10 transition-opacity duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-voice">
                       <SelectValue placeholder="Select Voice" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -10485,7 +10491,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-white">Voice:</span>
                   <Select value={openaiVoice} onValueChange={(v) => { setOpenaiVoice(v as typeof openaiVoice); localStorage.setItem('pdf-reader-voice', v); }}>
-                    <SelectTrigger className="w-[280px] h-5 text-[9px] px-2 bg-white/10 transition-all duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-openai-voice">
+                    <SelectTrigger className="w-[280px] h-5 text-[9px] px-2 bg-white/10 transition-opacity duration-200 border !border-white focus:ring-0 focus:ring-offset-0 text-white" data-testid="select-openai-voice">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -10707,7 +10713,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 px-2 py-1 rounded-md" data-testid="chunk-completion-bar" style={{ marginLeft: '15px' }}>
                 <div className="w-24 h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'transparent', minHeight: '12px', border: '2px solid rgba(255,255,255,0.5)', position: 'relative', left: '17px' }}>
                   <div 
-                    className="h-full transition-all duration-300 rounded-full"
+                    className="h-full transition-opacity duration-300 rounded-full"
                     style={{ background: barColor, width: `${totalChunks > 0 
                       ? Math.round((checkedChunks.size / totalChunks) * 100)
                       : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
@@ -10727,7 +10733,7 @@ export default function Dashboard() {
               })()}
               <Button
                 variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6"
                 style={{
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                   fontSize: '12px',
@@ -11122,7 +11128,7 @@ export default function Dashboard() {
             <Button 
               size="icon"
               variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-settings-panel"
               title="Degree Tracking"
@@ -11155,7 +11161,7 @@ export default function Dashboard() {
             <Button 
               size="icon"
               variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-scholarships"
               title="Scholarships"
@@ -11180,7 +11186,7 @@ export default function Dashboard() {
             <Button 
               size="icon"
               variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-key-contacts"
               title="Key Contacts"
@@ -11260,7 +11266,7 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-opacity duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio', {
@@ -11289,7 +11295,7 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-opacity duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio-all', {
@@ -11363,7 +11369,7 @@ export default function Dashboard() {
                     </button>
                     <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-green-500 rounded-full transition-all duration-200" 
+                        className="h-full bg-green-500 rounded-full transition-opacity duration-200" 
                         style={{ width: `${radioVolume}%` }}
                       />
                     </div>
@@ -11549,7 +11555,7 @@ export default function Dashboard() {
             <Button 
               size="icon"
               variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-completed-tasks"
               title="Completed"
@@ -11870,7 +11876,7 @@ export default function Dashboard() {
         <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
-        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span id="clock-seconds" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
         <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
@@ -12059,7 +12065,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
-                  <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l1Progress.completed / l1Progress.total) * 100}%`, backgroundColor: getHeaderColor(l1Progress) }} />
+                  <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(l1Progress.completed / l1Progress.total) * 100}%`, backgroundColor: getHeaderColor(l1Progress) }} />
                 </div>
                 <span className="text-[8px] font-bold whitespace-nowrap">{l1Progress.completed} / {l1Progress.total}</span>
               </div>
@@ -12325,7 +12331,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
-                  <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l2Progress.completed / l2Progress.total) * 100}%`, backgroundColor: getHeaderColor(l2Progress) }} />
+                  <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(l2Progress.completed / l2Progress.total) * 100}%`, backgroundColor: getHeaderColor(l2Progress) }} />
                 </div>
                 <span className="text-[8px] font-bold whitespace-nowrap">{l2Progress.completed} / {l2Progress.total}</span>
               </div>
@@ -12553,7 +12559,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[8px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
-                  <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
+                  <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
                 </div>
                 <span className="text-[8px] font-bold whitespace-nowrap">{l3Progress.completed} / {l3Progress.total}</span>
               </div>
@@ -12565,7 +12571,7 @@ export default function Dashboard() {
               <Button 
                 type="button" 
                 variant="outline"
-                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-8 w-[110px]"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
                 style={{ fontSize: '12px' }}
                 onClick={() => setIsSettingsPanelOpen(false)}
                 data-testid="button-cancel-settings-panel"
@@ -12575,7 +12581,7 @@ export default function Dashboard() {
               <Button 
                 type="button" 
                 variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 w-[110px]"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
                 style={{
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                   fontSize: '12px'
@@ -12964,7 +12970,7 @@ export default function Dashboard() {
       {/* Spring out honeycombs for course readings - moved outside files button */}
       {/* CPPA122 */}
       <div 
-        className={`absolute transition-all duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`absolute transition-opacity duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
           width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
           height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
@@ -12983,7 +12989,7 @@ export default function Dashboard() {
       </div>
       {/* CFNF400 */}
       <div 
-        className={`absolute transition-all duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`absolute transition-opacity duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
           width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
           height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
@@ -13003,7 +13009,7 @@ export default function Dashboard() {
       </div>
       {/* CASL101 */}
       <div 
-        className={`absolute transition-all duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`absolute transition-opacity duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
           width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
           height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
@@ -13490,7 +13496,7 @@ export default function Dashboard() {
           </Dialog>
           {/* Add Task Flyout - Burst from Top */}
           <div 
-            className={`fixed transition-all ease-out ${isAddDialogOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}
+            className={`fixed transition-[opacity,transform] ease-out ${isAddDialogOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}
             style={{ 
               width: '900px', 
               maxWidth: '95vw',
@@ -13525,7 +13531,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8"
                     style={{
                       boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                       fontSize: '12px'
@@ -13547,7 +13553,7 @@ export default function Dashboard() {
                   </Button>
                   <Button 
                     variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8"
                     style={{
                       fontSize: '12px',
                       boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
@@ -13607,7 +13613,7 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-3 p-6">
                   <Button
                     variant="outline"
-                    className="w-full border !border-white/40 text-white hover:text-white hover:!border-white hover:bg-white/10 transition-all duration-200 h-12 text-[14px] font-medium"
+                    className="w-full border !border-white/40 text-white hover:text-white hover:!border-white hover:bg-white/10 transition-opacity duration-200 h-12 text-[14px] font-medium"
                     style={{ boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)' }}
                     onClick={() => {
                       setIsAddChooserOpen(false);
@@ -13621,7 +13627,7 @@ export default function Dashboard() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full border !border-white/40 text-white hover:text-white hover:!border-white hover:bg-white/10 transition-all duration-200 h-12 text-[14px] font-medium"
+                    className="w-full border !border-white/40 text-white hover:text-white hover:!border-white hover:bg-white/10 transition-opacity duration-200 h-12 text-[14px] font-medium"
                     style={{ boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)' }}
                     onClick={() => {
                       setIsAddChooserOpen(false);
@@ -13724,7 +13730,7 @@ export default function Dashboard() {
                           return (
                             <button
                               key={type}
-                              className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white border border-white/10 hover:bg-white/20'}`}
+                              className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 flex items-center gap-1.5 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white border border-white/10 hover:bg-white/20'}`}
                               onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
                               data-testid={`quick-add-type-${type}`}
                             >
@@ -13734,7 +13740,7 @@ export default function Dashboard() {
                           );
                         })}
                         <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-white/5 text-white border border-white/10 hover:bg-white/20 flex items-center gap-1.5"
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-white/5 text-white border border-white/10 hover:bg-white/20 flex items-center gap-1.5"
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
@@ -13752,7 +13758,7 @@ export default function Dashboard() {
                           data-testid="input-ics-file"
                         />
                         <button
-                          className="w-full px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 text-white border border-violet-400/30 hover:border-violet-400/50 hover:from-violet-500/20 hover:to-indigo-500/20 flex items-center gap-2"
+                          className="w-full px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 text-white border border-violet-400/30 hover:border-violet-400/50 hover:from-violet-500/20 hover:to-indigo-500/20 flex items-center gap-2"
                           onClick={() => icsFileInputRef.current?.click()}
                           data-testid="button-import-ics"
                         >
@@ -13794,7 +13800,7 @@ export default function Dashboard() {
                         <p className="text-[9px] text-white/50 mt-1">Select the course</p>
                       </div>
                       <button
-                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === '' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20'}`}
+                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.courseName === '' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20'}`}
                         onClick={() => { setQuickAddData(p => ({ ...p, courseName: '' })); setQuickAddStep(3); }}
                         data-testid="quick-add-course-none"
                       >
@@ -13803,7 +13809,7 @@ export default function Dashboard() {
                       {COURSES.map(course => (
                         <button
                           key={course.code}
-                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
+                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
                           onClick={() => { setQuickAddData(p => ({ ...p, courseName: `${course.code} - ${course.name}` })); setQuickAddStep(3); }}
                           data-testid={`quick-add-course-${course.code}`}
                         >
@@ -13912,7 +13918,7 @@ export default function Dashboard() {
                       {(['low', 'medium', 'high'] as const).map(p => (
                         <button
                           key={p}
-                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.priority === p ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
+                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.priority === p ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
                           onClick={() => { setQuickAddData(prev => ({ ...prev, priority: p })); setQuickAddStep(6); }}
                           data-testid={`quick-add-priority-${p}`}
                         >
@@ -14153,7 +14159,7 @@ export default function Dashboard() {
                         {REPEAT_TYPES.map(rt => (
                           <button
                             key={rt}
-                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 ${quickAddData.repeatType === rt ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
+                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.repeatType === rt ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
                             onClick={() => setQuickAddData(p => ({ ...p, repeatType: rt }))}
                             data-testid={`quick-add-repeat-${rt}`}
                           >
@@ -14298,7 +14304,7 @@ export default function Dashboard() {
                   <div style={{ flex: 1 }} />
                   <button
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
-                    className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-all duration-200"
+                    className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-opacity duration-200"
                     style={{ fontSize: "11px", border: '1.5px solid rgba(255,255,255,0.6)', background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)' }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
@@ -14314,7 +14320,7 @@ export default function Dashboard() {
                         variant="outline"
                         onClick={() => setQuickAddStep(s => s + 1)}
                         disabled={!canNext}
-                        className="border !border-white/50 text-white transition-all duration-200 disabled:opacity-30"
+                        className="border !border-white/50 text-white transition-opacity duration-200 disabled:opacity-30"
                         style={{
                           boxShadow: canNext ? "0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)" : "none",
                           fontSize: "11px",
@@ -14329,7 +14335,7 @@ export default function Dashboard() {
                   {quickAddStep === 11 && (
                     <Button
                       variant="outline"
-                      className="border !border-white/50 text-white transition-all duration-200"
+                      className="border !border-white/50 text-white transition-opacity duration-200"
                       style={{
                         boxShadow: "0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)",
                         fontSize: "11px",
@@ -14406,14 +14412,14 @@ export default function Dashboard() {
                     <div className="flex gap-3">
                       <button
                         onClick={() => setShowQuickAddCloseConfirm(false)}
-                        className="px-4 py-2 rounded-lg text-[11px] text-white/70 hover:text-white bg-white/10 hover:bg-white/20 border border-white/15 transition-all duration-200"
+                        className="px-4 py-2 rounded-lg text-[11px] text-white/70 hover:text-white bg-white/10 hover:bg-white/20 border border-white/15 transition-opacity duration-200"
                         data-testid="quick-add-cancel-discard"
                       >
                         Go Back
                       </button>
                       <button
                         onClick={() => { setShowQuickAddCloseConfirm(false); setIsQuickAddOpen(false); }}
-                        className="px-4 py-2 rounded-lg text-[11px] text-white bg-red-600/80 hover:bg-red-600 border border-red-500/30 transition-all duration-200"
+                        className="px-4 py-2 rounded-lg text-[11px] text-white bg-red-600/80 hover:bg-red-600 border border-red-500/30 transition-opacity duration-200"
                         data-testid="quick-add-confirm-discard"
                       >
                         Discard
@@ -14581,7 +14587,7 @@ export default function Dashboard() {
               <div className="p-4 space-y-3">
                 <div className="flex items-center gap-1 mb-2">
                   {wizardSteps.map((_, i) => (
-                    <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300" style={{ background: i <= scholarshipWizardStep ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)' }} />
+                    <div key={i} className="h-1 flex-1 rounded-full transition-opacity duration-300" style={{ background: i <= scholarshipWizardStep ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)' }} />
                   ))}
                 </div>
                 <p className="text-[12px] font-medium text-white">{wizardSteps[scholarshipWizardStep].title}{wizardSteps[scholarshipWizardStep].required ? ' *' : ''}</p>
@@ -14745,7 +14751,7 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
-            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+            <DialogContent className="max-w-md text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300" style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               <DialogHeader>
                 <div className="flex items-center justify-between">
                   <DialogTitle className="text-white">Key Contacts</DialogTitle>
@@ -15015,7 +15021,7 @@ export default function Dashboard() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6"
                   style={{
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px'
@@ -15493,7 +15499,7 @@ export default function Dashboard() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-8 px-6"
+                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6"
                   style={{ fontSize: '12px', minWidth: '120px' }}
                   onClick={() => setIsSchoolDialogOpen(false)}
                   data-testid="button-cancel-school"
@@ -15504,7 +15510,7 @@ export default function Dashboard() {
                   type="submit" 
                   form="school-settings-form"
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" 
                   style={{
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                     fontSize: '12px',
@@ -15727,7 +15733,7 @@ export default function Dashboard() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-7 px-4"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
                   style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
                   onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
                   data-testid="button-new-course-school-courses"
@@ -15801,7 +15807,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <span className="text-[9px] text-white/70 font-medium">OVERALL</span>
                         <div className="w-24 bg-white/20 rounded-full h-2.5">
-                          <div className="h-2.5 rounded-full transition-all duration-300" style={{ width: `${(overallCertProgress.completed / overallCertProgress.total) * 100}%`, backgroundColor: getHeaderColor(overallCertProgress) }} />
+                          <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(overallCertProgress.completed / overallCertProgress.total) * 100}%`, backgroundColor: getHeaderColor(overallCertProgress) }} />
                         </div>
                         <span className="text-[10px] text-white font-bold">{overallCertProgress.completed}/{overallCertProgress.total}</span>
                       </div>
@@ -16984,7 +16990,7 @@ export default function Dashboard() {
                 <div className="flex justify-end gap-2" style={{ marginTop: '-3px' }}>
                   <Button 
                     variant="outline"
-                    className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+                    className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-6 w-[110px]"
                     style={{ fontSize: '12px' }}
                     onClick={() => {
                       setColorSettings(originalColorSettings);
@@ -16997,7 +17003,7 @@ export default function Dashboard() {
                   </Button>
                   <Button 
                     variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-6 w-[110px]"
                     style={{
                       boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                       fontSize: '12px'
@@ -17028,7 +17034,7 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-all duration-300`} style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300`} style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
               <DialogHeader>
                 <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
@@ -17276,7 +17282,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-hidden overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, paddingTop: '10px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, order: 1, paddingTop: '10px' }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -19262,7 +19268,7 @@ export default function Dashboard() {
           
           {/* Weeks Flyout - centered panel for week folders */}
           <div 
-            className={`fixed ${isResizingWeeksFlyout ? '' : 'transition-all duration-400 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} 
+            className={`fixed ${isResizingWeeksFlyout ? '' : 'transition-opacity duration-400 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} 
             style={{ width: isMobile ? '95vw' : '900px', maxWidth: '900px', height: isMobile ? '90vh' : '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'center center', transitionDuration: '400ms', zIndex: getFlyoutZIndex('files') }}
             onClick={() => bringFlyoutToFront('files')}
           >
@@ -19334,7 +19340,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                     style={{
                       boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
                     }}
@@ -19923,7 +19929,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 1, marginLeft: '-4px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, order: 1, marginLeft: '-4px' }}>
           <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 10px)', marginTop: '6px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
@@ -20344,7 +20350,7 @@ export default function Dashboard() {
                     <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
                     <div style={{ width: '100%', position: 'relative', height: '3px' }}>
                       <div 
-                        className="rounded-full transition-all duration-300"
+                        className="rounded-full transition-opacity duration-300"
                         style={{ 
                           position: 'absolute',
                           top: 0,
@@ -20661,7 +20667,7 @@ export default function Dashboard() {
                               </div>
                               <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '26px', top: 'calc(50% + 5px)', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
                               <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                           </>
@@ -20694,7 +20700,7 @@ export default function Dashboard() {
                               </div>
                               <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '26px', top: 'calc(50% + 5px)', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
                               <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-all duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
                               </div>
                             </div>
                           </>
@@ -20883,7 +20889,7 @@ export default function Dashboard() {
                             <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                               <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                               <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             
@@ -21062,7 +21068,7 @@ export default function Dashboard() {
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
                                         
@@ -21249,7 +21255,7 @@ export default function Dashboard() {
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
                                         
@@ -21416,7 +21422,7 @@ export default function Dashboard() {
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                           </div>
                                         </div>
                                         
@@ -21552,7 +21558,7 @@ export default function Dashboard() {
                                     <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                       <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
                                       <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                        <div className="rounded-full transition-all duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                        <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
                                       </div>
                                     </div>
                                     
@@ -21578,7 +21584,7 @@ export default function Dashboard() {
         })()}
         {/* To Do Bottom Flyout - Burst from bottom */}
         <div 
-          className={`fixed transition-all ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          className={`fixed transition-[opacity,transform] ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '900px', 
             height: '85vh',
@@ -21607,7 +21613,7 @@ export default function Dashboard() {
             >
               <Button 
                 variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                 style={{
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
                 }}
@@ -21702,7 +21708,7 @@ export default function Dashboard() {
 
         {/* Projects Flyout - Burst from Left */}
         <div 
-          className={`fixed transition-all ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          className={`fixed transition-[opacity,transform] ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '900px', 
             height: '85vh',
@@ -21731,7 +21737,7 @@ export default function Dashboard() {
               >
                 <Button 
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                   style={{
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
                   }}
@@ -21956,7 +21962,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                                   <div 
-                                    className="h-full bg-green-400 transition-all duration-300"
+                                    className="h-full bg-green-400 transition-opacity duration-300"
                                     style={{ width: `${progress}%` }}
                                   />
                                 </div>
@@ -22101,7 +22107,7 @@ export default function Dashboard() {
                     <div className="flex justify-end mt-2">
                       <Button
                         variant="outline"
-                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                         style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
                         disabled={!projectWizardData.name.trim()}
                         onClick={() => setProjectWizardStep(1)}
@@ -22133,7 +22139,7 @@ export default function Dashboard() {
                       <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(0)} data-testid="button-project-wizard-back-1">Back</Button>
                       <Button
                         variant="outline"
-                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                         style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
                         onClick={() => setProjectWizardStep(2)}
                         data-testid="button-project-wizard-next-1"
@@ -22198,7 +22204,7 @@ export default function Dashboard() {
                       <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(1)} data-testid="button-project-wizard-back-2">Back</Button>
                       <Button
                         variant="outline"
-                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                         style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
                         onClick={() => setProjectWizardStep(3)}
                         data-testid="button-project-wizard-next-2"
@@ -22251,7 +22257,7 @@ export default function Dashboard() {
                       <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(2)} data-testid="button-project-wizard-back-3">Back</Button>
                       <Button
                         variant="outline"
-                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                         style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4)' }}
                         onClick={() => setProjectWizardStep(4)}
                         data-testid="button-project-wizard-next-3"
@@ -22296,7 +22302,7 @@ export default function Dashboard() {
                       <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent" onClick={() => setProjectWizardStep(3)} data-testid="button-project-wizard-back-4">Back</Button>
                       <Button
                         variant="outline"
-                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                        className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
                         style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' }}
                         onClick={() => {
                           const data = {
@@ -22362,7 +22368,7 @@ export default function Dashboard() {
             </p>
             <div className="flex flex-col gap-2 pt-2">
               <button
-                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-all duration-200 text-xs"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-opacity duration-200 text-xs"
                 style={{
                   border: '1.5px solid rgba(255,255,255,0.6)',
                   background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
@@ -22383,7 +22389,7 @@ export default function Dashboard() {
                 Delete this task only
               </button>
               <button
-                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-red-300 transition-all duration-200 text-xs"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-red-300 transition-opacity duration-200 text-xs"
                 style={{
                   border: '1.5px solid rgba(239,68,68,0.6)',
                   background: 'linear-gradient(180deg, rgba(239,68,68,0.38) 0%, rgba(239,68,68,0.15) 48%, rgba(239,68,68,0.06) 52%, rgba(239,68,68,0.22) 100%)',
@@ -22404,7 +22410,7 @@ export default function Dashboard() {
                 Delete this and all future events
               </button>
               <button
-                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-all duration-200 text-xs hover:text-white/80"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-opacity duration-200 text-xs hover:text-white/80"
                 onClick={() => setRecurringDeleteTask(null)}
                 data-testid="button-cancel-recurring-delete"
               >
@@ -22425,7 +22431,7 @@ export default function Dashboard() {
             </p>
             <div className="flex flex-col gap-2 pt-2">
               <button
-                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-all duration-200 text-xs"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-opacity duration-200 text-xs"
                 style={{
                   border: '1.5px solid rgba(255,255,255,0.6)',
                   background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
@@ -22449,7 +22455,7 @@ export default function Dashboard() {
                 This task only
               </button>
               <button
-                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-all duration-200 text-xs"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-opacity duration-200 text-xs"
                 style={{
                   border: '1.5px solid rgba(59,130,246,0.6)',
                   background: 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)',
@@ -22473,7 +22479,7 @@ export default function Dashboard() {
                 All recurring tasks
               </button>
               <button
-                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-all duration-200 text-xs hover:text-white/80"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-opacity duration-200 text-xs hover:text-white/80"
                 onClick={() => setRecurringEditPending(null)}
                 data-testid="button-cancel-recurring-edit"
               >
@@ -22509,7 +22515,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
-                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-8"
+                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8"
                   style={{ fontSize: '12px' }}
                   onClick={() => setEditingTask(null)}
                   data-testid="button-cancel-edit-task"
@@ -22519,7 +22525,7 @@ export default function Dashboard() {
                 {editingTask && (
                   <Button
                     variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8"
                     style={{
                       fontSize: '12px',
                       boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
@@ -22542,7 +22548,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="absolute top-0 right-0 z-10 text-red-400/60 hover:text-red-400 hover:bg-transparent transition-all duration-200 h-6 w-6"
+                  className="absolute top-0 right-0 z-10 text-red-400/60 hover:text-red-400 hover:bg-transparent transition-opacity duration-200 h-6 w-6"
                   onClick={() => {
                     deleteTaskWithUndo(editingTask.id);
                   }}
@@ -23789,7 +23795,7 @@ function ProfileForm({
         <Button 
           type="submit" 
           variant="outline"
-          className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
+          className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" 
           style={{
             boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
             fontSize: '12px'
@@ -24581,7 +24587,7 @@ function CoursesForm({
           variant="outline"
           onClick={() => { setEditingCourseIndex(null); setIsNewCourseOpen(true); }}
           disabled={!canAddMore}
-          className="border !border-green-400/50 text-green-300 transition-all duration-200"
+          className="border !border-green-400/50 text-green-300 transition-opacity duration-200"
           style={{ fontSize: '11px' }}
           data-testid="button-new-course"
         >
@@ -24597,7 +24603,7 @@ function CoursesForm({
               variant="outline"
               onClick={onGenerateClassTasks}
               disabled={isGenerating}
-              className="border !border-blue-400/50 text-blue-300 transition-all duration-200"
+              className="border !border-blue-400/50 text-blue-300 transition-opacity duration-200"
               style={{ fontSize: '11px' }}
               data-testid="button-generate-class-tasks"
             >
@@ -25094,7 +25100,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
               type="button"
               variant="outline"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
-              className="border !border-white/30 text-white/60 transition-all duration-200"
+              className="border !border-white/30 text-white/60 transition-opacity duration-200"
               style={{ fontSize: '11px' }}
               data-testid="button-cancel-new-course"
             >
@@ -25103,7 +25109,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
             <Button
               type="submit"
               variant="outline"
-              className="border !border-white/50 text-white transition-all duration-200"
+              className="border !border-white/50 text-white transition-opacity duration-200"
               style={{
                 boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                 fontSize: '11px'
@@ -26021,7 +26027,7 @@ function TaskForm({
           <button 
             type="submit" 
             disabled={createMutation.isPending}
-            className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-all duration-200"
+            className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-opacity duration-200"
             style={{ 
               fontSize: '11px',
               border: '1.5px solid rgba(255,255,255,0.6)',
