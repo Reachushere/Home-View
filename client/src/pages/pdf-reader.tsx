@@ -330,8 +330,8 @@ export default function PDFReaderPage() {
 
       canvasCtx.clearRect(0, 0, w, h);
 
-      const barCount = 80;
-      const gap = 3;
+      const barCount = 24;
+      const gap = 2;
       const totalBarWidth = w - (barCount - 1) * gap;
       const barWidth = Math.max(2, totalBarWidth / barCount);
       const centerY = h / 2;
@@ -347,13 +347,13 @@ export default function PDFReaderPage() {
 
         canvasCtx.fillStyle = `hsla(200, 90%, ${Math.round(lightness)}%, ${alpha.toFixed(2)})`;
         canvasCtx.shadowColor = `hsla(200, 100%, 80%, ${(val * 0.6).toFixed(2)})`;
-        canvasCtx.shadowBlur = val * 15;
+        canvasCtx.shadowBlur = val * 6;
 
         canvasCtx.beginPath();
-        canvasCtx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 2);
+        canvasCtx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
         canvasCtx.fill();
         canvasCtx.beginPath();
-        canvasCtx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 2);
+        canvasCtx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
         canvasCtx.fill();
 
         canvasCtx.shadowBlur = 0;
