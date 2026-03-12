@@ -309,6 +309,9 @@ function cleanTextForTTS(text: string): string {
     .replace(/^Listen\s+.+$/gm, '') // Lines starting with "Listen"
     .replace(/^Click\s+.+$/gm, '') // Lines starting with "Click"
     .replace(/click[\s-]*n[\s-]*reveal/gi, '') // Remove "click-n-reveal" references
+    .replace(/\bn\.d\.\b/g, '') // Remove standalone "n.d."
+    .replace(/\([^)]*n\.d\.[^)]*\)/g, '') // Remove bracketed citations containing "n.d." like "(Author, n.d.)"
+    .replace(/\[[^\]]*n\.d\.[^\]]*\]/g, '') // Remove square-bracketed references containing "n.d."
     .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
     .replace(/\d+:\d+/g, ''); // Remove timestamps like 1:23
   
