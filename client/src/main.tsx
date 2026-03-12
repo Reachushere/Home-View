@@ -36,7 +36,16 @@ function reportError(message: string, stack?: string) {
   } catch {}
 }
 
+window.addEventListener('error', (event) => {
+  if (event.message && typeof event.message === 'string' && event.message.includes('ResizeObserver')) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    return;
+  }
+});
+
 window.onerror = function(message, source, lineno, colno, error) {
+  if (typeof message === 'string' && message.includes('ResizeObserver')) return true;
   const msg = `${message} at ${source}:${lineno}:${colno}`;
   reportError(msg, error?.stack);
   return false;
