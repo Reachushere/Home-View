@@ -1408,9 +1408,9 @@ export default function Dashboard() {
       'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CPPA122': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
+      'CECN210': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
       'CPHL110': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
-      'CSOC103': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
-      'CHST501': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
+      'CHIS105': { professor: '', email: '', grade: '', semester: 'Spring/Summer 2026', credits: '1.00' },
     };
     try {
       const saved = localStorage.getItem('pastCourseInfo');
@@ -2230,7 +2230,8 @@ export default function Dashboard() {
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
       { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
-      { name: 'CHST501 - The American Civil War', color: '#8B4513', colorEnd: '#CD853F', professor: '', professorEmail: '' },
+      { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '' },
+      { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
@@ -3956,7 +3957,7 @@ export default function Dashboard() {
     .filter(item => item.type === "folder")
     .sort((a, b) => {
       // Course order to match calendar
-      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
+      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
       
       // Check if folders are course folders
       const getCourseIndex = (name: string) => {
@@ -6282,42 +6283,42 @@ export default function Dashboard() {
     semesterName: "Spring/Summer 2026 Semester",
     semesterType: "spring_summer" as string,
     semesterStartDate: "2026-05-04",
-    semesterEndDate: "2026-08-07",
-    course1Code: "CPHL110",
-    course1Name: "CPHL110 - Philosophy of Religion",
+    semesterEndDate: "2026-08-04",
+    course1Code: "CECN210",
+    course1Name: "CECN210 - Understanding Economics",
     course1Professor: "",
     course1ProfessorEmail: "",
-    course1DeliveryMode: "virtual" as string,
-    course1ClassDay: "tuesday" as string,
-    course1ClassDay2: "thursday" as string,
-    course1ClassTime: "13:00",
-    course1ClassEndTime: "16:00",
-    course1StartDate: "2026-05-05",
-    course1EndDate: "2026-06-16",
-    course1SpringSummerTerm: "first_half" as string,
-    course2Code: "CSOC103",
-    course2Name: "CSOC103 - How Society Works",
+    course1DeliveryMode: "online" as string,
+    course1ClassDay: "" as string,
+    course1ClassDay2: "" as string,
+    course1ClassTime: "",
+    course1ClassEndTime: "",
+    course1StartDate: "2026-05-04",
+    course1EndDate: "2026-07-31",
+    course1SpringSummerTerm: "full" as string,
+    course2Code: "CPHL110",
+    course2Name: "CPHL110 - Philosophy of Religion",
     course2Professor: "",
     course2ProfessorEmail: "",
-    course2DeliveryMode: "online" as string,
-    course2ClassDay: "" as string,
-    course2ClassDay2: "" as string,
-    course2ClassTime: "",
-    course2ClassEndTime: "",
-    course2StartDate: "",
-    course2EndDate: "",
-    course2SpringSummerTerm: "full" as string,
-    course3Code: "CHST501",
-    course3Name: "CHST501 - The American Civil War",
+    course2DeliveryMode: "in-person" as string,
+    course2ClassDay: "tuesday" as string,
+    course2ClassDay2: "thursday" as string,
+    course2ClassTime: "13:00",
+    course2ClassEndTime: "16:00",
+    course2StartDate: "2026-05-05",
+    course2EndDate: "2026-06-16",
+    course2SpringSummerTerm: "first_half" as string,
+    course3Code: "CHIS105",
+    course3Name: "CHIS105 - Inventing Popular Culture",
     course3Professor: "",
     course3ProfessorEmail: "",
-    course3DeliveryMode: "virtual" as string,
-    course3ClassDay: "monday" as string,
-    course3ClassDay2: "wednesday" as string,
+    course3DeliveryMode: "in-person" as string,
+    course3ClassDay: "tuesday" as string,
+    course3ClassDay2: "thursday" as string,
     course3ClassTime: "09:30",
     course3ClassEndTime: "12:30",
-    course3StartDate: "2026-06-22",
-    course3EndDate: "2026-08-10",
+    course3StartDate: "2026-06-23",
+    course3EndDate: "2026-08-04",
     course3SpringSummerTerm: "second_half" as string,
     secondaryCalendarId: "",
   });
@@ -17573,9 +17574,9 @@ export default function Dashboard() {
               {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}
               {(() => {
                 const springSummerCourses = [
+                  { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '', startDate: '2026-05-04', endDate: '2026-07-31' },
                   { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-16' },
-                  { name: 'CSOC103 - How Society Works', color: '#D97706', colorEnd: '#FBBF24', professor: '', professorEmail: '', startDate: '2026-05-04', endDate: '2026-08-07' },
-                  { name: 'CHST501 - The American Civil War', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-22', endDate: '2026-08-10' },
+                  { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-23', endDate: '2026-08-04' },
                 ];
                 const currentWeekStart = weekDays[0];
                 const currentWeekEnd = weekDays[6];
@@ -19604,9 +19605,9 @@ export default function Dashboard() {
                         'CPPA122': '#47B045',
                         'CFNF400': '#FA67B3',
                         'CASL101': '#6366f1',
-                        'CSOC103': '#FBBF24',
+                        'CECN210': '#34D399',
                         'CPHL110': '#60A5FA',
-                        'CHST501': '#F87171',
+                        'CHIS105': '#F87171',
                         'CPPA235': '#CD853F',
                       };
                       let folderColor: string | undefined;
@@ -20262,7 +20263,7 @@ export default function Dashboard() {
           // Group tasks by course
           const groupByCourse = (tasks: typeof dueTodayTasks) => {
             const grouped: Record<string, typeof tasks> = {};
-            const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
+            const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             tasks.forEach(task => {
               const courseCode = task.courseName?.split(' - ')[0] || task.courseName?.split(' ')[0] || 'OTHER';
               if (!grouped[courseCode]) grouped[courseCode] = [];
@@ -20673,7 +20674,7 @@ export default function Dashboard() {
                     const courseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
                       if (tc !== cCode || t.isCompleted || new Date(t.dueDate) < nowDate) return false;
-                      const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
+                      const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
                       if (!knownCourseCodes.includes(tc)) return false;
                       return true;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -20815,7 +20816,7 @@ export default function Dashboard() {
 
             const rows = [...rightBgs, ...courseRows];
 
-            const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CSOC103', 'CPHL110', 'CHST501', 'CPPA235'];
+            const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             const nowDate = startOfDay(new Date());
             const otherProgressTasks = (allTasks || []).filter(t => {
               if (t.isCompleted) return false;

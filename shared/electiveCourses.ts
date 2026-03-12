@@ -314,7 +314,7 @@ export const OPEN_ELECTIVE_COURSES: ElectiveCourse[] = [
   { code: 'CHSM 437', name: 'Human Resources Management in Healthcare', level: 'UPPER', category: 'Healthcare', semesters: { fall2025: 'Online', winter2026: 'Online' } },
 
   // HISTORY (OE)
-  { code: 'CHIS 105', name: 'Inventing Pop Culture', level: 'LOWER', category: 'History', semesters: { summer2026: 'TR: Virtual' } },
+  { code: 'CHIS 105', name: 'Inventing Popular Culture', level: 'LOWER', category: 'History', semesters: { summer2026: 'TR: Virtual' } },
   { code: 'CHIS 106', name: 'Technology, Warfare and Social Change', level: 'LOWER', category: 'History', semesters: { spring2026: 'TR: Virtual' } },
   { code: 'CHIS 590', name: 'Modern International Relations', level: 'UPPER', category: 'History', semesters: { spring2026: 'TR: Virtual' } },
 
