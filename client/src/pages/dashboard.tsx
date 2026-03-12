@@ -12036,17 +12036,10 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">Table A</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">
                     <select className={`w-full text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
-                      <option value="">Select Liberal Studies course...</option>
-                      <optgroup label="Lower Level (Table A)">
-                        {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="Upper Level (Table B)">
-                        {getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
-                      </optgroup>
+                      <option value="">Select Lower Level Table A course...</option>
+                      {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).map(c => (
+                        <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
