@@ -4136,18 +4136,8 @@ export default function Dashboard() {
   const [oneDriveFileCounts, setOneDriveFileCounts] = useState<Record<string, number>>({});
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
   const fileSelectorGlowTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [clickedButton, setClickedButton] = useState<string | null>(null);
-  const clickedButtonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const triggerButtonGlow = (buttonId: string) => {
-    if (clickedButtonTimeoutRef.current) {
-      clearTimeout(clickedButtonTimeoutRef.current);
-    }
-    setClickedButton(buttonId);
-    clickedButtonTimeoutRef.current = setTimeout(() => {
-      setClickedButton(null);
-    }, 1000);
-  };
+  const clickedButton = null as string | null;
+  const triggerButtonGlow = (_buttonId: string) => {};
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("browser_tts");
   const previewSpeakerRef = useRef<string>("browser_tts");
   const [previewText, setPreviewText] = useState<string>("");
@@ -10961,8 +10951,8 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: '6px',
-          right: '6px',
+          left: '14px',
+          right: '14px',
           transform: `translateY(${isTopPillOpen ? '14px' : '-73px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
@@ -10978,10 +10968,11 @@ export default function Dashboard() {
         onMouseLeave={() => {
           if (isHamburgerOpen) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          const delay = 'ontouchstart' in window ? 4000 : 1800;
           topPillTimeoutRef.current = setTimeout(() => {
             if (isHamburgerOpen) return;
             closeTopPill();
-          }, 1800);
+          }, delay);
         }}
       >
         {/* Glass pill background */}
@@ -10989,8 +10980,8 @@ export default function Dashboard() {
           position: 'absolute',
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderRadius: '12px',
           border: '1.5px solid rgba(255,255,255,0.35)',
           borderTop: '1.5px solid rgba(255,255,255,0.55)',
@@ -11785,7 +11776,7 @@ export default function Dashboard() {
           width: '84px',
           height: '25px',
           cursor: 'pointer',
-          pointerEvents: 'auto',
+          pointerEvents: isTopPillOpen ? 'none' : 'auto',
           zIndex: 111,
         }}
         onClick={() => {
