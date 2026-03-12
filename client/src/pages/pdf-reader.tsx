@@ -242,12 +242,12 @@ export default function PDFReaderPage() {
   const playbackSpeedRef = useRef<number>(1);
   const volumeRef = useRef<number>(1);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const miniCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const miniAnimRef = useRef<number>(0);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const animFrameRef = useRef<number>(0);
-  const [waveBarHeights, setWaveBarHeights] = useState<number[]>(new Array(20).fill(0));
-  const waveAnimRef = useRef<number>(0);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const { toast } = useToast();
@@ -1607,63 +1607,88 @@ export default function PDFReaderPage() {
   };
 
   useEffect(() => {
-    let lastHeights = new Array(20).fill(0);
-    const updateWaveBars = () => {
+    const drawMini = () => {
+      const canvas = miniCanvasRef.current;
+      if (!canvas) { miniAnimRef.current = requestAnimationFrame(drawMini); return; }
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.scale(dpr, dpr);
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+
       if (!isPlaying || isPaused) {
-        setWaveBarHeights(new Array(20).fill(0));
+        const barCount = 24;
+        const gap = 2;
+        const barWidth = Math.max(2, (w - (barCount - 1) * gap) / barCount);
+        const centerY = h / 2;
+        for (let i = 0; i < barCount; i++) {
+          const x = i * (barWidth + gap);
+          const idleH = 2 + Math.sin(i * 0.7) * 1.5;
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.beginPath();
+          ctx.roundRect(Math.round(x), Math.round(centerY - idleH), Math.round(barWidth), Math.round(idleH), 1);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(idleH), 1);
+          ctx.fill();
+        }
+        miniAnimRef.current = requestAnimationFrame(drawMini);
         return;
       }
+
       const analyser = analyserRef.current;
-      const bars = 20;
-      const heights: number[] = [];
+      const barCount = 24;
+      const gap = 2;
+      const barWidth = Math.max(2, (w - (barCount - 1) * gap) / barCount);
+      const centerY = h / 2;
 
       if (analyser) {
-        if (audioContextRef.current?.state === 'suspended') {
-          audioContextRef.current.resume();
-        }
+        if (audioContextRef.current?.state === 'suspended') audioContextRef.current.resume();
         const bufLen = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufLen);
         analyser.getByteFrequencyData(dataArray);
-        let hasData = false;
-        for (let i = 0; i < bars; i++) {
-          const startIdx = Math.floor((i / bars) * bufLen * 0.6);
-          const endIdx = Math.floor(((i + 1) / bars) * bufLen * 0.6);
-          let sum = 0;
-          for (let j = startIdx; j < endIdx; j++) {
-            sum += dataArray[j];
-            if (dataArray[j] > 0) hasData = true;
-          }
-          const avg = sum / (endIdx - startIdx) / 255;
-          heights.push(avg);
+        for (let i = 0; i < barCount; i++) {
+          const dataIdx = Math.floor((i / barCount) * bufLen * 0.6);
+          const val = dataArray[dataIdx] / 255;
+          const barH = Math.max(2, val * centerY * 0.85);
+          const x = i * (barWidth + gap);
+          const alpha = 0.3 + val * 0.7;
+          const clr = waveColor || 'hsl(200,90%,70%)';
+          ctx.fillStyle = clr.replace(')', `,${alpha.toFixed(2)})`).replace('hsl(', 'hsla(').replace('rgb(', 'rgba(');
+          ctx.shadowColor = clr;
+          ctx.shadowBlur = val * 6;
+          ctx.beginPath();
+          ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
+          ctx.fill();
+          ctx.shadowBlur = 0;
         }
-        if (hasData) {
-          lastHeights = heights;
-          setWaveBarHeights(heights);
-          waveAnimRef.current = requestAnimationFrame(updateWaveBars);
-          return;
+      } else {
+        const t = Date.now() / 1000;
+        for (let i = 0; i < barCount; i++) {
+          const val = 0.3 + Math.sin(t * 3 + i * 0.8) * 0.25 + Math.sin(t * 5.3 + i * 1.2) * 0.15;
+          const barH = Math.max(2, Math.min(1, val) * centerY * 0.85);
+          const x = i * (barWidth + gap);
+          ctx.fillStyle = (waveColor || 'rgba(255,255,255,0.5)');
+          ctx.beginPath();
+          ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
+          ctx.fill();
         }
       }
-
-      const t = Date.now() / 1000;
-      for (let i = 0; i < bars; i++) {
-        const base = 0.3 + Math.sin(t * 3 + i * 0.8) * 0.25;
-        const wave2 = Math.sin(t * 5.3 + i * 1.2) * 0.15;
-        const wave3 = Math.sin(t * 7.1 + i * 0.5) * 0.1;
-        const smoothed = lastHeights[i] * 0.3 + (base + wave2 + wave3) * 0.7;
-        heights.push(Math.max(0.05, Math.min(1, smoothed)));
-      }
-      lastHeights = heights;
-      setWaveBarHeights(heights);
-      waveAnimRef.current = requestAnimationFrame(updateWaveBars);
+      miniAnimRef.current = requestAnimationFrame(drawMini);
     };
-    if (isPlaying && !isPaused) {
-      waveAnimRef.current = requestAnimationFrame(updateWaveBars);
-    } else {
-      cancelAnimationFrame(waveAnimRef.current);
-      setWaveBarHeights(new Array(20).fill(0));
-    }
-    return () => cancelAnimationFrame(waveAnimRef.current);
-  }, [isPlaying, isPaused]);
+    miniAnimRef.current = requestAnimationFrame(drawMini);
+    return () => cancelAnimationFrame(miniAnimRef.current);
+  }, [isPlaying, isPaused, waveColor]);
 
   if (fileLoading && !isOneDrive) {
     return (
@@ -2484,24 +2509,12 @@ export default function PDFReaderPage() {
               )}
             </div>
 
-            <div className="absolute flex items-end" style={{ bottom: '25px', left: '32px' }}>
-              <div className="flex items-end gap-[3px] h-16" data-testid="sound-waves-left">
-                {waveBarHeights.map((val, i) => {
-                  const idleH = [8,14,22,30,18,26,12,20,28,16,24,10,18,26,14,22,30,12,20,8][i] || 10;
-                  const activeH = Math.max(4, val * 56);
-                  const h = isPlaying && !isPaused ? activeH : Math.max(4, idleH * 0.5);
-                  return (
-                    <div key={i} className="rounded-sm" style={{
-                      width: '3px',
-                      background: isPlaying && !isPaused
-                        ? `linear-gradient(180deg, ${waveColor}, ${waveColor}44)`
-                        : 'rgba(255,255,255,0.2)',
-                      height: `${Math.round(h)}px`,
-                      transition: isPlaying && !isPaused ? 'height 0.05s linear' : 'height 0.3s ease',
-                    }} />
-                  );
-                })}
-              </div>
+            <div className="absolute" style={{ bottom: '12px', left: '24px', width: '120px', height: '48px' }}>
+              <canvas
+                ref={miniCanvasRef}
+                className="w-full h-full pointer-events-none"
+                data-testid="mini-audio-visualizer"
+              />
             </div>
 
             <div className="absolute flex items-end gap-2" style={{ bottom: '10px', left: '265px' }}>
