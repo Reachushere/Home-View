@@ -3182,14 +3182,14 @@ export default function Dashboard() {
   // Update clock every second and detect week change (Sunday midnight)
   const lastWeekRef = useRef((() => {
     const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    return Math.floor((now.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    const sun = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    return `${sun.getFullYear()}-${sun.getMonth()}-${sun.getDate()}`;
   })());
   const lastDateRef = useRef(new Date().getDate());
   useEffect(() => {
     const getWeekNumber = (date: Date) => {
-      const startOfYear = new Date(date.getFullYear(), 0, 1);
-      return Math.floor((date.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000));
+      const sun = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+      return `${sun.getFullYear()}-${sun.getMonth()}-${sun.getDate()}`;
     };
     const currentWeekNum = getWeekNumber(new Date());
     lastWeekRef.current = currentWeekNum;
