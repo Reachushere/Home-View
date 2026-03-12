@@ -12580,7 +12580,8 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          {(() => {
+          <div className="px-3 py-2 border-t border-white/10 flex items-center gap-3">
+              {(() => {
                 const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
                 const percentToGpa = (p: number): number => {
                   if (p >= 90) return 4.33;
@@ -12627,25 +12628,52 @@ export default function Dashboard() {
                 };
                 const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                 return (
-                  <div className="mx-2 mb-2 border-2 border-black rounded-md flex items-center justify-center py-3 px-2" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }} data-testid="l1-gpa-box">
+                  <div className="border border-white/20 rounded-md flex items-center gap-2 px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.06)' }} data-testid="l1-gpa-box">
+                    <span className="text-[8px] font-bold uppercase tracking-wider text-white/50">Cert I GPA</span>
                     {avgGpa !== null ? (
-                      <div className="flex flex-col items-center gap-0.5">
-                        <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: '#555' }}>Level I GPA</span>
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-bold leading-none" style={{ fontSize: '28px', color: gpaColor }}>{avgGpa.toFixed(2)}</span>
-                          <span className="font-bold leading-none" style={{ fontSize: '28px', color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
-                        </div>
-                        <span className="text-[7px] text-gray-400">{gpaValues.length} course{gpaValues.length !== 1 ? 's' : ''} averaged</span>
-                      </div>
+                      <>
+                        <span className="font-bold text-[16px] leading-none" style={{ color: gpaColor }}>{avgGpa.toFixed(2)}</span>
+                        <span className="font-bold text-[14px] leading-none" style={{ color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
+                        <span className="text-[7px] text-white/30">({gpaValues.length})</span>
+                      </>
                     ) : (
-                      <div className="flex flex-col items-center gap-0.5">
-                        <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: '#555' }}>Level I GPA</span>
-                        <span className="text-[10px] text-gray-400">Enter grades to calculate</span>
-                      </div>
+                      <span className="text-[9px] text-white/30">—</span>
                     )}
                   </div>
                 );
               })()}
+              <div className="flex-1" />
+              <Button 
+                type="button" 
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                style={{ fontSize: '12px' }}
+                onClick={() => setIsSettingsPanelOpen(false)}
+                data-testid="button-cancel-settings-panel"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                style={{
+                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                  fontSize: '12px'
+                }}
+                onClick={() => {
+                  localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
+                  localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
+                  saveDegreeToServer('checkedCourses', checkedCourses);
+                  saveDegreeToServer('courseGrades', courseGrades);
+                  toast({ title: "Settings saved", description: "Your progress has been saved." });
+                  setIsSettingsPanelOpen(false);
+                }}
+                data-testid="button-save-settings-panel"
+              >
+                Save
+              </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
