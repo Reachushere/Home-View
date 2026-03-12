@@ -629,6 +629,13 @@ export default function PDFReaderPage() {
   });
 
   useEffect(() => {
+    if (file?.extractedText && !extractedText) {
+      console.log(`[TTS] Loading pre-extracted text from DB: ${file.extractedText.length} chars`);
+      setExtractedText(file.extractedText);
+    }
+  }, [file?.extractedText]);
+
+  useEffect(() => {
     if (!file?.folder) return;
     const parts = file.folder.split('-');
     if (parts.length < 3) return;
