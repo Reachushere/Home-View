@@ -20583,22 +20583,12 @@ export default function Dashboard() {
               const rowHeight = courseRowRects[idx].height;
               const halfHeight = rowHeight / 2;
               return [
-                <div key={`${pd.courseCode}-module-bg`} style={{
+                <div key={`${pd.courseCode}-progress-bg`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: 0,
                   width: '33%',
-                  height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 1,
-                  borderBottom: '0.5px solid rgba(255,255,255,0.15)',
-                }} />,
-                <div key={`${pd.courseCode}-reading-bg`} style={{
-                  position: 'absolute',
-                  top: `${rowTop + halfHeight}px`,
-                  left: 0,
-                  width: '33%',
-                  height: `${halfHeight}px`,
+                  height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                 }} />,
