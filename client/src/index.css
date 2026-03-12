@@ -2020,8 +2020,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
 }
 
-.hide-scrollbar::-webkit-scrollbar {
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 [data-testid="section-coming-up"] input[type="checkbox"] {
