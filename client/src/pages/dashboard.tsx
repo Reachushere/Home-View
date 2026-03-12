@@ -1524,9 +1524,14 @@ export default function Dashboard() {
     };
   });
   
-  // Save blink settings to localStorage
+  // Save blink settings to localStorage (debounced to avoid lag)
+  const blinkSettingsRef = useRef(blinkSettings);
+  blinkSettingsRef.current = blinkSettings;
   useEffect(() => {
-    localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+    const timer = setTimeout(() => {
+      localStorage.setItem('blinkSettings', JSON.stringify(blinkSettingsRef.current));
+    }, 300);
+    return () => clearTimeout(timer);
   }, [blinkSettings]);
   
   // TEST: Isolated progress bar position (completely separate from task columns)
@@ -11021,7 +11026,7 @@ export default function Dashboard() {
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 5)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 7)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } setIsHamburgerOpen(open); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }} modal={false}>
             <DropdownMenuTrigger asChild>
@@ -16519,7 +16524,6 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
-                        onInput={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number((e.target as HTMLInputElement).value) }))}
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         style={{ touchAction: 'none' }}
                         data-testid="slider-button-spacing"
