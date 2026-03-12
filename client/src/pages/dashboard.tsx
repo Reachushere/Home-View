@@ -538,7 +538,7 @@ export default function Dashboard() {
     const lastActive = parseInt(localStorage.getItem('replitLastActiveTime') || '0', 10);
     const now = Date.now();
     const twoHoursMs = 2 * 60 * 60 * 1000;
-    const forceWelcome = true;
+    const forceWelcome = new URLSearchParams(window.location.search).has('forceWelcome');
     if (!forceWelcome && lastActive > 0 && (now - lastActive) < twoHoursMs) {
       localStorage.setItem('replitLastActiveTime', String(now));
       return;
