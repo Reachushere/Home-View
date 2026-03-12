@@ -138,6 +138,9 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Auto-reset**: On the first day of each new semester, resets all file `listened` statuses via `POST /api/semester-reset-files`
 - **Schedule**: Fall 2026 (Sep 14-Dec 7), Winter 2027 (Jan 11-Apr 9), Spring/Summer 2027 (May 3-Aug 13), Fall 2027 (Sep 13-Dec 6), Winter 2028 (Jan 10-Apr 7), Spring/Summer 2028 (May 1-Aug 4), Fall 2028 (Sep 11-Dec 4), Winter 2029 (Jan 15-Apr 13)
 
+### Home Assistant Entities (For Future Use)
+- **Cat Washroom Presence Sensor**: `binary_sensor.sensor_cat_presence_presence` (Aqara presence sensor) — to be wired into cat wash automation later
+
 **Key Considerations for Schema**:
 - Courses need individual start/end dates (not just semester-wide)
 - Class schedules (days of week, times) should be stored per course
