@@ -1246,11 +1246,11 @@ export default function PDFReaderPage() {
     const mergedChecked = serverChecked.size > localChecked.size ? serverChecked : localChecked;
     setCheckedChunks(mergedChecked);
     let startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
-    if (catWashFollow && mergedChecked.size > 0) {
+    if (mergedChecked.size > 0 && startChunk === 0) {
       const firstUnchecked = newChunks.findIndex((_, idx) => !mergedChecked.has(idx));
-      if (firstUnchecked >= 0 && firstUnchecked > startChunk) {
+      if (firstUnchecked >= 0) {
         startChunk = firstUnchecked;
-        console.log(`[TTS] Cat wash: skipping ${mergedChecked.size} checked chunks, starting at chunk ${startChunk}`);
+        console.log(`[TTS] Skipping ${mergedChecked.size} checked chunks, starting at chunk ${startChunk}`);
       }
     }
     if (startChunk > 0) {
