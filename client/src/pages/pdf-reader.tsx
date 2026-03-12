@@ -1407,6 +1407,11 @@ export default function PDFReaderPage() {
 
   const stopReading = async () => {
     console.log('[TTS] Stopping');
+    setIsPlaying(false);
+    isPlayingRef.current = false;
+    setIsPaused(false);
+    isPausedRef.current = false;
+    stopBinauralBeats();
     if (speakerTimerRef.current) {
       clearTimeout(speakerTimerRef.current);
       speakerTimerRef.current = null;
@@ -1458,11 +1463,6 @@ export default function PDFReaderPage() {
         console.error('[TTS] Goodbye TTS failed:', e);
       }
     }
-
-    setIsPlaying(false);
-    isPlayingRef.current = false;
-    setIsPaused(false);
-    isPausedRef.current = false;
 
     if (catWashFollow || speakerParam) {
       try {

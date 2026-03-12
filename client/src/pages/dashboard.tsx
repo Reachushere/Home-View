@@ -11488,8 +11488,7 @@ export default function Dashboard() {
                         if (selectedReturnFile) {
                           const file = returnReadingFiles.find(f => f.id === selectedReturnFile);
                           if (file) {
-                            const resumeChunk = file.lastChunkIndex || 0;
-                            window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeChunk}`, '_blank');
+                            window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=0`, '_blank');
                           }
                         }
                         setShowReturnReadingPrompt(false);
