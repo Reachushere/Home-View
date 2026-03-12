@@ -20490,10 +20490,9 @@ export default function Dashboard() {
               <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
             </div>
           </div>
-          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ left: '-30px', top: '50%', transform: 'translateY(-50%)' }}
+            style={{ left: '-30px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
@@ -20514,12 +20513,13 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
-            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px' }}
+            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto' }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
             <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
           </div>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           <div style={{ padding: '0 8px', height: '37px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-medium flex items-center text-white"
