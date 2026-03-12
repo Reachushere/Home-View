@@ -12278,16 +12278,30 @@ export default function Dashboard() {
                   <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                     <span className="leading-tight">PR Req'd<br/>SELECT<br/>ONE (1)</span>
                   </div>
+                  <div className="w-14 border-r border-black flex flex-col">
+                    {[
+                      { id: 'L2_ECN1', code: 'ECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
+                      { id: 'L2_ECN2', code: 'ECN 104', name: 'Introductory Microeconomics ** (Anti-req ECN110)' },
+                      { id: 'L2_ECN3', code: 'ECN 110', name: 'The Economy and Society ** (Anti-req ECN104)' },
+                      { id: 'L2_ECN4', code: 'ECN 201', name: 'Principles of Macroeconomics ** (Anti-req ECN204)' },
+                      { id: 'L2_ECN5', code: 'ECN 204', name: 'Introductory Macroeconomics ** (Anti-req ECN210)' },
+                      { id: 'L2_ECN6', code: 'ECN 210', name: 'Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
+                      { id: 'L2_ECN7', code: 'ECN 220', name: 'Evolution of the Global Economy' },
+                      { id: 'L2_ECN8', code: 'ECN 320', name: 'Introduction to Financial Economics' },
+                    ].map((ecn, i) => (
+                      <div key={ecn.id} className={`h-9 px-1 text-[9px] flex items-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`}>{ecn.code}</div>
+                    ))}
+                  </div>
                   <div className="flex-1 flex flex-col">
                     {[
-                      { id: 'L2_ECN1', name: 'ECN 101 Principles of Microeconomics ** (Anti-req ECN104)' },
-                      { id: 'L2_ECN2', name: 'ECN 104 Introductory Microeconomics ** (Anti-req ECN110)' },
-                      { id: 'L2_ECN3', name: 'ECN 110 The Economy and Society ** (Anti-req ECN104)' },
-                      { id: 'L2_ECN4', name: 'ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)' },
-                      { id: 'L2_ECN5', name: 'ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)' },
-                      { id: 'L2_ECN6', name: 'ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
-                      { id: 'L2_ECN7', name: 'ECN 220 Evolution of the Global Economy' },
-                      { id: 'L2_ECN8', name: 'ECN 320 Introduction to Financial Economics' },
+                      { id: 'L2_ECN1', code: 'ECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
+                      { id: 'L2_ECN2', code: 'ECN 104', name: 'Introductory Microeconomics ** (Anti-req ECN110)' },
+                      { id: 'L2_ECN3', code: 'ECN 110', name: 'The Economy and Society ** (Anti-req ECN104)' },
+                      { id: 'L2_ECN4', code: 'ECN 201', name: 'Principles of Macroeconomics ** (Anti-req ECN204)' },
+                      { id: 'L2_ECN5', code: 'ECN 204', name: 'Introductory Macroeconomics ** (Anti-req ECN210)' },
+                      { id: 'L2_ECN6', code: 'ECN 210', name: 'Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
+                      { id: 'L2_ECN7', code: 'ECN 220', name: 'Evolution of the Global Economy' },
+                      { id: 'L2_ECN8', code: 'ECN 320', name: 'Introduction to Financial Economics' },
                     ].map((ecn, i) => (
                       <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center cursor-pointer hover:underline relative ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}>{ecn.name}<InProgressToggle id={ecn.id} /></div>
                     ))}
