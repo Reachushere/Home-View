@@ -19291,7 +19291,7 @@ export default function Dashboard() {
               }}
               style={{ width: '10px', height: '10px', accentColor: '#ffffff' }}
             />
-            <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', whiteSpace: 'nowrap' }}>Set Default</span>
+            <span style={{ fontSize: '8px', fontWeight: 400, color: '#ffffff', whiteSpace: 'nowrap' }}>Set Default</span>
           </label>
           </div>
           </div>
