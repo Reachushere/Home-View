@@ -1606,6 +1606,13 @@ export default function PDFReaderPage() {
     return { remaining: formatTime(remainingMinutes), total: formatTime(totalMinutes), remainingChunks: uncheckedChunks.length };
   };
 
+  const waveColor = (() => {
+    if (cId === 'cppa122') return '#47B045';
+    if (cId === 'cfnf400') return '#FA67B3';
+    if (cId === 'casl101') return '#B045A2';
+    return 'rgba(255,255,255,0.8)';
+  })();
+
   useEffect(() => {
     const drawMini = () => {
       const canvas = miniCanvasRef.current;
@@ -1733,13 +1740,6 @@ export default function PDFReaderPage() {
     if (cId === 'cfnf400') return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
     if (cId === 'casl101') return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
     return 'linear-gradient(180deg, rgba(10, 30, 60, 0.88) 0%, rgba(30, 60, 100, 0.78) 100%)';
-  })();
-
-  const waveColor = (() => {
-    if (cId === 'cppa122') return '#47B045';
-    if (cId === 'cfnf400') return '#FA67B3';
-    if (cId === 'casl101') return '#B045A2';
-    return 'rgba(255,255,255,0.8)';
   })();
 
   return (
