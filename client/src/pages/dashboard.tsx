@@ -532,6 +532,9 @@ export default function Dashboard() {
   const returnPromptShown = useRef(false);
 
   useEffect(() => {
+    if (returnPromptShown.current) return;
+    returnPromptShown.current = true;
+
     const lastActive = parseInt(localStorage.getItem('replitLastActiveTime') || '0', 10);
     const now = Date.now();
     const twoHoursMs = 2 * 60 * 60 * 1000;
