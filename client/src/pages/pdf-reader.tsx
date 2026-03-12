@@ -1193,6 +1193,7 @@ export default function PDFReaderPage() {
 
   const startReading = async () => {
     beacon("startReading-begin", { fileId });
+    await unlockAudio();
     markCurrentFileListened();
     
     let textToRead = extractedTextRef.current || extractedText;
