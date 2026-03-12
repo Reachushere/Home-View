@@ -10951,8 +10951,8 @@ export default function Dashboard() {
         style={{
           position: 'fixed',
           zIndex: 110,
-          left: '14px',
-          right: '14px',
+          left: '20px',
+          right: '20px',
           transform: `translateY(${isTopPillOpen ? '14px' : '-73px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
@@ -17450,8 +17450,8 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-sun-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : 'animate-moon-glow'}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : ''}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : ''}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     {day.getDay() === 6 && (
                       <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW COURSE WEEK</div>
                     )}
@@ -20009,8 +20009,8 @@ export default function Dashboard() {
                             }
                           }}
                         >
-                          {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500 animate-sun-glow" fill="currentColor" strokeWidth={1.5} />}
-                          {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400 animate-moon-glow" fill="currentColor" strokeWidth={1.5} />}
+                          {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
+                          {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400" fill="currentColor" strokeWidth={1.5} />}
                           <div className={`text-xs font-bold mb-1 ${
                             isToday ? "text-[#5979CC]" : "text-foreground"
                           }`}>
