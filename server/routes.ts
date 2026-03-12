@@ -4757,6 +4757,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catWashManuallyStoppedAt: Date | null = null;
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
+  let catLightsPromptPending = false;
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 10 * 60 * 1000;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -5871,6 +5872,11 @@ document.body.removeChild(a);
           return res.json({ action: "skipped", reason: `Manually stopped ${Math.round(msSinceStopped / 1000)}s ago, cooldown active` });
         }
         catWashManuallyStoppedAt = null;
+      }
+
+      if (catLightsPromptPending) {
+        console.log(`[Cat Wash] Cat lights prompt is pending — skipping shower webhook to avoid conflict`);
+        return res.json({ action: "skipped", reason: "Cat lights prompt pending — waiting for confirmation" });
       }
 
       if (catWashPlaybackActive && catWashPlaybackState) {
