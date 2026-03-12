@@ -2793,6 +2793,19 @@ export default function Dashboard() {
     });
   };
 
+  const getSelectedCodes = (siblingIds: string[], currentId: string): Set<string> => {
+    const codes = new Set<string>();
+    for (const sid of siblingIds) {
+      if (sid === currentId) continue;
+      const val = openElectives[sid];
+      if (val?.trim()) {
+        const code = val.split(' ').slice(0, 2).join(' ');
+        codes.add(code);
+      }
+    }
+    return codes;
+  };
+
   const updateGrade = (courseId: string, grade: string) => {
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], grade } };
@@ -12075,13 +12088,9 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
-                        {[...OPEN_ELECTIVE_COURSES].sort((a, b) => {
-                          const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
-                          const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0;
-                          return numA - numB || a.code.localeCompare(b.code);
-                        }).map(c => (
+                        {(() => { const used = getSelectedCodes(['OPEN1','OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
+                        )); })()}
                       </select>
                       <InProgressToggle id={cid} inline />
                     </div>
@@ -12348,8 +12357,8 @@ export default function Dashboard() {
                     <div className={`h-11 flex items-center justify-center ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-100' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_OPEN2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_OPEN2')}>{(checkedCourses['L2_OPEN2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className="h-11 px-1 flex items-center"><select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} data-testid="select-l2-open1"><option value="">Select PR elective 1...</option>{[...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select><InProgressToggle id="L2_OPEN1" inline /></div>
-                    <div className="h-11 px-1 flex items-center"><select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} data-testid="select-l2-open2"><option value="">Select PR elective 2...</option>{[...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>))}</select><InProgressToggle id="L2_OPEN2" inline /></div>
+                    <div className="h-11 px-1 flex items-center"><select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN1'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN1'] || courseGrades['L2_OPEN1']?.grade || courseGrades['L2_OPEN1']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN1'] || ''} onChange={(e) => updateOpenElective('L2_OPEN1', e.target.value)} data-testid="select-l2-open1"><option value="">Select PR elective 1...</option>{(() => { const used = getSelectedCodes(['L2_OPEN1','L2_OPEN2'], 'L2_OPEN1'); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>)); })()}</select><InProgressToggle id="L2_OPEN1" inline /></div>
+                    <div className="h-11 px-1 flex items-center"><select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_OPEN2'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_OPEN2'] || courseGrades['L2_OPEN2']?.grade || courseGrades['L2_OPEN2']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_OPEN2'] || ''} onChange={(e) => updateOpenElective('L2_OPEN2', e.target.value)} data-testid="select-l2-open2"><option value="">Select PR elective 2...</option>{(() => { const used = getSelectedCodes(['L2_OPEN1','L2_OPEN2'], 'L2_OPEN2'); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>)); })()}</select><InProgressToggle id="L2_OPEN2" inline /></div>
                   </div>
                   <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                     <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -12513,9 +12522,9 @@ export default function Dashboard() {
                       <div key={cid} className={`h-11 px-1 flex items-center ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
                         <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                           <option value="">{`Select POG course ${i+1}...`}</option>
-                          {POG_COURSES.map(c => (
+                          {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
                             <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                          ))}
+                          )); })()}
                         </select>
                         <InProgressToggle id={cid} inline />
                       </div>
@@ -12546,11 +12555,9 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                         <option value="">{i === 0 ? 'Select Lower Level Table A course...' : 'Select Upper Level Table B course...'}</option>
-                        {i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
+                        {(() => { const used = getSelectedCodes(['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'], cid); return (i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES)).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        )) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
+                        )); })()}
                       </select>
                       <InProgressToggle id={cid} inline />
                     </div>
@@ -12575,13 +12582,9 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
-                        {[...OPEN_ELECTIVE_COURSES].sort((a, b) => {
-                          const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
-                          const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0;
-                          return numA - numB || a.code.localeCompare(b.code);
-                        }).map(c => (
+                        {(() => { const used = getSelectedCodes(['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        ))}
+                        )); })()}
                       </select>
                       <InProgressToggle id={cid} inline />
                     </div>
