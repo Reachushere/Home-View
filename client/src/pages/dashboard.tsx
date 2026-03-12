@@ -18145,8 +18145,8 @@ export default function Dashboard() {
                         if (firstFile) {
                           const isOneDrive = firstFile.objectPath?.startsWith('http');
                           const readerUrl = isOneDrive
-                            ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&fileId=${firstFile.id}&catWashFollow=true&autoplay=false&resumeChunk=0`
-                            : `/pdf-reader/${firstFile.id}?catWashFollow=true&autoplay=false&resumeChunk=0`;
+                            ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&fileId=${firstFile.id}&autoplay=false&resumeChunk=0`
+                            : `/pdf-reader/${firstFile.id}?autoplay=false&resumeChunk=0`;
                           if (newWindow) {
                             newWindow.location.href = window.location.origin + readerUrl;
                           } else {
