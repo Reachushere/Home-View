@@ -308,6 +308,7 @@ function cleanTextForTTS(text: string): string {
     .replace(/^Watch\s+.+$/gm, '') // Lines starting with "Watch"
     .replace(/^Listen\s+.+$/gm, '') // Lines starting with "Listen"
     .replace(/^Click\s+.+$/gm, '') // Lines starting with "Click"
+    .replace(/click[\s-]*n[\s-]*reveal/gi, '') // Remove "click-n-reveal" references
     .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
     .replace(/\d+:\d+/g, ''); // Remove timestamps like 1:23
   
