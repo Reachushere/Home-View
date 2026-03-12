@@ -901,6 +901,21 @@ export default function PDFReaderPage() {
       const cleanedText = await cleanTextViaServer(fullText);
       setExtractedText(cleanedText);
       console.log("PDF text pre-extracted and cleaned:", cleanedText.length, "chars");
+      if (chunksRef.current.length === 0) {
+        const preChunks = chunkText(cleanedText);
+        chunksRef.current = preChunks;
+        setChunksList(preChunks);
+        setTotalChunks(preChunks.length);
+        const key = getFileKey();
+        let serverChecked = new Set<number>();
+        if (file?.checkedChunks) {
+          try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+        }
+        const localChecked = loadCheckedChunks(key);
+        const mergedChecked = serverChecked.size > localChecked.size ? serverChecked : localChecked;
+        setCheckedChunks(mergedChecked);
+        console.log("Pre-populated chunks:", preChunks.length);
+      }
     } catch (error) {
       console.error("Background text extraction failed:", error);
     } finally {
