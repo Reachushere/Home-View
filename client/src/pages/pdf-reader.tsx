@@ -1125,21 +1125,23 @@ export default function PDFReaderPage() {
           console.log('[TTS] Resumed visualizer AudioContext');
         }
 
-        await new Promise<void>((resolve, reject) => {
+        audioRef.current.onerror = (e) => {
+          console.error('[TTS] Audio element error:', e, audioRef.current?.error);
+        };
+
+        await audioRef.current.play();
+        audioRef.current.playbackRate = playbackSpeedRef.current;
+        audioRef.current.volume = volumeRef.current;
+        beacon("playTTS-playing-success");
+        console.log(`[TTS] Playing: speed=${audioRef.current.playbackRate}, vol=${audioRef.current.volume}`);
+
+        await new Promise<void>((resolve) => {
           if (!audioRef.current) { resolve(); return; }
-          audioRef.current.onended = () => resolve();
-          audioRef.current.onerror = (e) => {
-            console.error('[TTS] Audio element error:', e, audioRef.current?.error);
-            reject(new Error('Audio playback error'));
+          const onEnd = () => {
+            audioRef.current?.removeEventListener('ended', onEnd);
+            resolve();
           };
-          audioRef.current.play().then(() => {
-            if (audioRef.current) {
-              audioRef.current.playbackRate = playbackSpeedRef.current;
-              audioRef.current.volume = volumeRef.current;
-            }
-            beacon("playTTS-playing-success");
-            console.log(`[TTS] Playing: speed=${audioRef.current?.playbackRate}, vol=${audioRef.current?.volume}`);
-          }).catch(reject);
+          audioRef.current.addEventListener('ended', onEnd);
         });
       }
       return true;
@@ -2518,14 +2520,14 @@ export default function PDFReaderPage() {
               <span className="text-[11px] text-white uppercase tracking-wide">Speed</span>
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.25).toFixed(2)))}
+                onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.1).toFixed(2)))}
                 data-testid="button-speed-down"
               >−</button>
               <input
                 type="range"
                 min="0.5"
                 max="3"
-                step="0.25"
+                step="0.1"
                 value={playbackSpeed}
                 onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
                 className="w-24 h-[3px] cursor-pointer"
@@ -2534,7 +2536,7 @@ export default function PDFReaderPage() {
               />
               <button
                 className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
-                onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.25).toFixed(2)))}
+                onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.1).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
               <span className="text-sm text-white font-semibold min-w-[40px] text-center" style={{ marginLeft: '-2px' }} data-testid="text-speed">{playbackSpeed}x</span>
