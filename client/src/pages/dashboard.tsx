@@ -12560,99 +12560,103 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="px-3 py-2 flex items-center gap-3">
-              {(() => {
-                const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
-                const percentToGpa = (p: number): number => {
-                  if (p >= 90) return 4.33;
-                  if (p >= 85) return 4.0;
-                  if (p >= 80) return 3.67;
-                  if (p >= 77) return 3.33;
-                  if (p >= 73) return 3.0;
-                  if (p >= 70) return 2.67;
-                  if (p >= 67) return 2.33;
-                  if (p >= 63) return 2.0;
-                  if (p >= 60) return 1.67;
-                  if (p >= 50) return 1.0;
-                  return 0;
-                };
-                const gradeLetterToGpa = (g: string): number => {
-                  const map: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                  return map[g] ?? -1;
-                };
-                const gpaValues: number[] = [];
-                for (const id of l1CourseIds) {
-                  const g = courseGrades[id];
-                  if (!g) continue;
-                  if (g.grade && g.grade.trim() !== '') {
-                    const gpa = gradeLetterToGpa(g.grade);
-                    if (gpa >= 0) gpaValues.push(gpa);
-                  } else if (g.percent && g.percent.trim() !== '') {
-                    const p = parseFloat(g.percent);
-                    if (!isNaN(p)) gpaValues.push(percentToGpa(p));
+          <div className="px-2 pb-2 flex gap-3 items-end">
+              <div className="flex-1 min-w-0">
+                {(() => {
+                  const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
+                  const percentToGpa = (p: number): number => {
+                    if (p >= 90) return 4.33;
+                    if (p >= 85) return 4.0;
+                    if (p >= 80) return 3.67;
+                    if (p >= 77) return 3.33;
+                    if (p >= 73) return 3.0;
+                    if (p >= 70) return 2.67;
+                    if (p >= 67) return 2.33;
+                    if (p >= 63) return 2.0;
+                    if (p >= 60) return 1.67;
+                    if (p >= 50) return 1.0;
+                    return 0;
+                  };
+                  const gradeLetterToGpa = (g: string): number => {
+                    const map: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                    return map[g] ?? -1;
+                  };
+                  const gpaValues: number[] = [];
+                  for (const id of l1CourseIds) {
+                    const g = courseGrades[id];
+                    if (!g) continue;
+                    if (g.grade && g.grade.trim() !== '') {
+                      const gpa = gradeLetterToGpa(g.grade);
+                      if (gpa >= 0) gpaValues.push(gpa);
+                    } else if (g.percent && g.percent.trim() !== '') {
+                      const p = parseFloat(g.percent);
+                      if (!isNaN(p)) gpaValues.push(percentToGpa(p));
+                    }
                   }
-                }
-                const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
-                const gpaToLetter = (gpa: number): string => {
-                  if (gpa >= 4.17) return 'A+';
-                  if (gpa >= 3.84) return 'A';
-                  if (gpa >= 3.5) return 'A-';
-                  if (gpa >= 3.17) return 'B+';
-                  if (gpa >= 2.84) return 'B';
-                  if (gpa >= 2.5) return 'B-';
-                  if (gpa >= 2.17) return 'C+';
-                  if (gpa >= 1.84) return 'C';
-                  if (gpa >= 1.34) return 'C-';
-                  if (gpa >= 0.5) return 'D';
-                  return 'F';
-                };
-                const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
-                return (
-                  <div className="border border-white/20 rounded-md flex items-center gap-2 px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.06)' }} data-testid="l1-gpa-box">
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-white/50">Cert I GPA</span>
-                    {avgGpa !== null ? (
-                      <>
-                        <span className="font-bold text-[16px] leading-none" style={{ color: gpaColor }}>{avgGpa.toFixed(2)}</span>
-                        <span className="font-bold text-[14px] leading-none" style={{ color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
-                        <span className="text-[7px] text-white/30">({gpaValues.length})</span>
-                      </>
-                    ) : (
-                      <span className="text-[9px] text-white/30">—</span>
-                    )}
-                  </div>
-                );
-              })()}
-              <div className="flex-1" />
-              <Button 
-                type="button" 
-                variant="outline"
-                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                style={{ fontSize: '12px' }}
-                onClick={() => setIsSettingsPanelOpen(false)}
-                data-testid="button-cancel-settings-panel"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                style={{
-                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                  fontSize: '12px'
-                }}
-                onClick={() => {
-                  localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
-                  localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
-                  saveDegreeToServer('checkedCourses', checkedCourses);
-                  saveDegreeToServer('courseGrades', courseGrades);
-                  toast({ title: "Settings saved", description: "Your progress has been saved." });
-                  setIsSettingsPanelOpen(false);
-                }}
-                data-testid="button-save-settings-panel"
-              >
-                Save
-              </Button>
+                  const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
+                  const gpaToLetter = (gpa: number): string => {
+                    if (gpa >= 4.17) return 'A+';
+                    if (gpa >= 3.84) return 'A';
+                    if (gpa >= 3.5) return 'A-';
+                    if (gpa >= 3.17) return 'B+';
+                    if (gpa >= 2.84) return 'B';
+                    if (gpa >= 2.5) return 'B-';
+                    if (gpa >= 2.17) return 'C+';
+                    if (gpa >= 1.84) return 'C';
+                    if (gpa >= 1.34) return 'C-';
+                    if (gpa >= 0.5) return 'D';
+                    return 'F';
+                  };
+                  const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
+                  return (
+                    <div className="border border-white/20 rounded-md flex items-center gap-2 px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.06)' }} data-testid="l1-gpa-box">
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-white/50">Cert I GPA</span>
+                      {avgGpa !== null ? (
+                        <>
+                          <span className="font-bold text-[16px] leading-none" style={{ color: gpaColor }}>{avgGpa.toFixed(2)}</span>
+                          <span className="font-bold text-[14px] leading-none" style={{ color: gpaColor }}>{gpaToLetter(avgGpa)}</span>
+                          <span className="text-[7px] text-white/30">({gpaValues.length})</span>
+                        </>
+                      ) : (
+                        <span className="text-[9px] text-white/30">—</span>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="flex-1 min-w-0" />
+              <div className="flex-1 min-w-0 flex justify-end items-center gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                  style={{ fontSize: '12px' }}
+                  onClick={() => setIsSettingsPanelOpen(false)}
+                  data-testid="button-cancel-settings-panel"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                    fontSize: '12px'
+                  }}
+                  onClick={() => {
+                    localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
+                    localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
+                    saveDegreeToServer('checkedCourses', checkedCourses);
+                    saveDegreeToServer('courseGrades', courseGrades);
+                    toast({ title: "Settings saved", description: "Your progress has been saved." });
+                    setIsSettingsPanelOpen(false);
+                  }}
+                  data-testid="button-save-settings-panel"
+                >
+                  Save
+                </Button>
+              </div>
           </div>
         </DialogContent>
       </Dialog>
