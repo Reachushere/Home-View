@@ -11481,22 +11481,42 @@ export default function Dashboard() {
                     >
                       Not now
                     </Button>
-                    <Button
-                      size="sm"
-                      className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
-                      onClick={() => {
-                        if (selectedReturnFile) {
-                          const file = returnReadingFiles.find(f => f.id === selectedReturnFile);
-                          if (file) {
-                            window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=0`, '_blank');
-                          }
-                        }
-                        setShowReturnReadingPrompt(false);
-                      }}
-                      data-testid="button-return-play"
-                    >
-                      Open Reader
-                    </Button>
+                    {(() => {
+                      const file = selectedReturnFile ? returnReadingFiles.find(f => f.id === selectedReturnFile) : null;
+                      const hasProgress = file && file.lastChunkIndex && file.lastChunkIndex > 0;
+                      return (
+                        <>
+                          <Button
+                            size="sm"
+                            className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
+                            onClick={() => {
+                              if (file) {
+                                window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=0`, '_blank');
+                              }
+                              setShowReturnReadingPrompt(false);
+                            }}
+                            data-testid="button-return-play-start"
+                          >
+                            Play from Start
+                          </Button>
+                          {hasProgress && (
+                            <Button
+                              size="sm"
+                              className="h-6 text-[9px] bg-green-600 hover:bg-green-500 border-0"
+                              onClick={() => {
+                                if (file) {
+                                  window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=false&resumeChunk=${file.lastChunkIndex}`, '_blank');
+                                }
+                                setShowReturnReadingPrompt(false);
+                              }}
+                              data-testid="button-return-play-resume"
+                            >
+                              Resume ({file.lastChunkIndex}{file.totalChunks ? `/${file.totalChunks}` : ''})
+                            </Button>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </DialogContent>
