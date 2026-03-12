@@ -12300,32 +12300,12 @@ export default function Dashboard() {
                       <div key={ecn.id} className={`h-9 px-1 text-[8px] flex items-center cursor-pointer hover:underline relative ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}>{ecn.name}<InProgressToggle id={ecn.id} /></div>
                     ))}
                   </div>
-                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <div className="h-7 border-b border-black"></div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN1']?.percent || ''} onChange={(e) => updatePercent('L2_ECN1', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN1']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN2']?.percent || ''} onChange={(e) => updatePercent('L2_ECN2', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN2']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN3']?.percent || ''} onChange={(e) => updatePercent('L2_ECN3', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN3']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN4']?.percent || ''} onChange={(e) => updatePercent('L2_ECN4', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN4']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN5']?.percent || ''} onChange={(e) => updatePercent('L2_ECN5', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN5']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN6']?.percent || ''} onChange={(e) => updatePercent('L2_ECN6', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN6']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN7']?.percent || ''} onChange={(e) => updatePercent('L2_ECN7', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN7']?.percent || '')}</span></div>
-                    </div>
-                    <div className="h-9 flex flex-col items-center justify-center gap-0.5">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L2_ECN8']?.percent || ''} onChange={(e) => updatePercent('L2_ECN8', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L2_ECN8']?.percent || '')}</span></div>
-                    </div>
+                  <div className="w-16 border-l border-black flex flex-col">
+                    {['L2_ECN1','L2_ECN2','L2_ECN3','L2_ECN4','L2_ECN5','L2_ECN6','L2_ECN7','L2_ECN8'].map((cid, i) => (
+                      <div key={cid} className={`h-9 flex items-center justify-center ${i < 7 ? 'border-b border-black' : ''}`}>
+                        <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                      </div>
+                    ))}
                   </div>
                   <div className="w-5 border-l border-black"></div>
                 </div>
