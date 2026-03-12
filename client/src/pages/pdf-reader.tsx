@@ -903,6 +903,22 @@ export default function PDFReaderPage() {
         const mergedChecked = serverChecked.size > localChecked.size ? serverChecked : localChecked;
         setCheckedChunks(mergedChecked);
         console.log("Pre-populated chunks:", preChunks.length);
+
+        const firstUnlistened = preChunks.findIndex((_, idx) => !mergedChecked.has(idx));
+        const preloadIdx = firstUnlistened >= 0 ? firstUnlistened : 0;
+        if (preChunks[preloadIdx] && !ttsPreloadCache.current[preloadIdx]) {
+          console.log(`[TTS] Pre-fetching audio for chunk ${preloadIdx + 1}...`);
+          fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: preChunks[preloadIdx], voice: voiceRef.current || 'echo' }),
+          }).then(r => r.ok ? r.blob() : null).then(blob => {
+            if (blob) {
+              ttsPreloadCache.current[preloadIdx] = URL.createObjectURL(blob);
+              console.log(`[TTS] Pre-fetched chunk ${preloadIdx + 1} audio ready`);
+            }
+          }).catch(() => {});
+        }
       }
     } catch (error) {
       console.error("Background text extraction failed:", error);
@@ -1569,7 +1585,24 @@ export default function PDFReaderPage() {
       setChunksList(newChunks);
       setTotalChunks(newChunks.length);
       const key = getFileKey();
-      setCheckedChunks(loadCheckedChunks(key));
+      const loaded = loadCheckedChunks(key);
+      setCheckedChunks(loaded);
+
+      const firstUnlistened = newChunks.findIndex((_, idx) => !loaded.has(idx));
+      const preloadIdx = firstUnlistened >= 0 ? firstUnlistened : 0;
+      if (newChunks[preloadIdx] && !ttsPreloadCache.current[preloadIdx]) {
+        console.log(`[TTS] Auto-preloading chunk ${preloadIdx + 1} audio...`);
+        fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: newChunks[preloadIdx], voice: voiceRef.current || 'echo' }),
+        }).then(r => r.ok ? r.blob() : null).then(blob => {
+          if (blob) {
+            ttsPreloadCache.current[preloadIdx] = URL.createObjectURL(blob);
+            console.log(`[TTS] Chunk ${preloadIdx + 1} audio pre-cached and ready`);
+          }
+        }).catch(() => {});
+      }
     }
   }, [extractedText]);
 
