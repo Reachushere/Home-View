@@ -1354,7 +1354,7 @@ export default function PDFReaderPage() {
     if (index + 1 < chunksRef.current.length && !ttsPreloadCache.current[index + 1]) {
       const nextText = chunksRef.current[index + 1];
       const nextVoice = voiceRef.current || voice;
-      fetch("/api/tts/speak", {
+      fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: nextText, voice: nextVoice }),
