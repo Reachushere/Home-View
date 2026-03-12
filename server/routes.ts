@@ -6264,7 +6264,7 @@ document.body.removeChild(a);
           fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
           fetch(`${haUrl}/api/services/tts/speak`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: NEST_SPEAKER_ENTITY, message: ttsMessage }),
+            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
           }),
         ]);
         const ttsBody = await ttsResp.text();
