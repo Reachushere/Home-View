@@ -12580,7 +12580,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="px-3 py-2 border-t border-white/10 flex items-center gap-3">
+          <div className="px-3 py-2 flex items-center gap-3">
               {(() => {
                 const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
                 const percentToGpa = (p: number): number => {
