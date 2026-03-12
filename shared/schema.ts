@@ -525,5 +525,11 @@ export const insertKeyContactSchema = createInsertSchema(keyContacts).omit({ id:
 export type KeyContact = typeof keyContacts.$inferSelect;
 export type InsertKeyContact = z.infer<typeof insertKeyContactSchema>;
 
+export const degreeTrackingData = pgTable("degree_tracking_data", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  value: text("value").notNull(),
+});
+
 // Export chat models for AI integrations
 export * from "./models/chat";

@@ -6,8 +6,8 @@ import path from "path";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
-import { sql } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord } from "@shared/schema";
+import { sql, eq } from "drizzle-orm";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
@@ -622,6 +622,31 @@ export async function registerRoutes(
   } catch (e) {
     console.error("Failed to fix CASL101 file folders:", e);
   }
+
+  app.get('/api/degree-tracking', async (_req, res) => {
+    try {
+      const rows = await db.select().from(degreeTrackingData);
+      const result: Record<string, any> = {};
+      for (const row of rows) {
+        try { result[row.key] = JSON.parse(row.value); } catch { result[row.key] = row.value; }
+      }
+      res.json(result);
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to load degree tracking data' });
+    }
+  });
+
+  app.post('/api/degree-tracking', async (req, res) => {
+    try {
+      const { key, value } = req.body;
+      if (!key) return res.status(400).json({ error: 'key is required' });
+      const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
+      await db.insert(degreeTrackingData).values({ key, value: valueStr }).onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: valueStr } });
+      res.json({ ok: true });
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to save degree tracking data' });
+    }
+  });
 
   app.get('/api/version', (_req, res) => {
     res.json({ version: BUILD_VERSION });

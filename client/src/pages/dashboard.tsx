@@ -1380,6 +1380,7 @@ export default function Dashboard() {
     setInProgressCourses(prev => {
       const updated = { ...prev, [courseId]: !prev[courseId] };
       localStorage.setItem('inProgressCourses', JSON.stringify(updated));
+      saveDegreeToServer('inProgressCourses', updated);
       return updated;
     });
   };
@@ -2293,6 +2294,7 @@ export default function Dashboard() {
     setCheckedCourses(prev => {
       const updated = { ...prev, [courseId]: !prev[courseId] };
       localStorage.setItem('checkedCourses', JSON.stringify(updated));
+      saveDegreeToServer('checkedCourses', updated);
       return updated;
     });
   };
@@ -2782,16 +2784,62 @@ export default function Dashboard() {
     setOpenElectives(prev => {
       const updated = { ...prev, [id]: value };
       localStorage.setItem('openElectives', JSON.stringify(updated));
+      saveDegreeToServer('openElectives', updated);
       if (!value.trim() && checkedCourses[id]) {
         setCheckedCourses(prevChecked => {
           const updatedChecked = { ...prevChecked, [id]: false };
           localStorage.setItem('checkedCourses', JSON.stringify(updatedChecked));
+          saveDegreeToServer('checkedCourses', updatedChecked);
           return updatedChecked;
         });
       }
       return updated;
     });
   };
+
+  const saveDegreeToServer = useCallback((key: string, value: any) => {
+    fetch('/api/degree-tracking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value }),
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/degree-tracking')
+      .then(r => r.json())
+      .then((data: Record<string, any>) => {
+        if (data.checkedCourses) {
+          setCheckedCourses(prev => {
+            const merged = { ...prev, ...data.checkedCourses };
+            localStorage.setItem('checkedCourses', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.inProgressCourses) {
+          setInProgressCourses(prev => {
+            const merged = { ...prev, ...data.inProgressCourses };
+            localStorage.setItem('inProgressCourses', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.courseGrades) {
+          setCourseGrades(prev => {
+            const merged = { ...prev, ...data.courseGrades };
+            localStorage.setItem('courseGrades', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.openElectives) {
+          setOpenElectives(prev => {
+            const merged = { ...prev, ...data.openElectives };
+            localStorage.setItem('openElectives', JSON.stringify(merged));
+            return merged;
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const getSelectedCodes = (siblingIds: string[], currentId: string): Set<string> => {
     const codes = new Set<string>();
@@ -2810,6 +2858,7 @@ export default function Dashboard() {
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], grade } };
       localStorage.setItem('courseGrades', JSON.stringify(updated));
+      saveDegreeToServer('courseGrades', updated);
       return updated;
     });
   };
@@ -2818,6 +2867,7 @@ export default function Dashboard() {
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], percent } };
       localStorage.setItem('courseGrades', JSON.stringify(updated));
+      saveDegreeToServer('courseGrades', updated);
       return updated;
     });
   };
@@ -12627,6 +12677,8 @@ export default function Dashboard() {
                 onClick={() => {
                   localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
                   localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
+                  saveDegreeToServer('checkedCourses', checkedCourses);
+                  saveDegreeToServer('courseGrades', courseGrades);
                   toast({ title: "Settings saved", description: "Your progress has been saved." });
                   setIsSettingsPanelOpen(false);
                 }}
@@ -15178,6 +15230,7 @@ export default function Dashboard() {
                               carouselKeys.forEach(k => { updated[k] = newVal; });
                               setCheckedCourses(updated);
                               localStorage.setItem('checkedCourses', JSON.stringify(updated));
+                              saveDegreeToServer('checkedCourses', updated);
                             }
                             if (!newVal && savedMapping[codeUpper]) {
                               delete savedMapping[codeUpper];
