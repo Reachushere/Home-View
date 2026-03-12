@@ -540,8 +540,7 @@ export default function Dashboard() {
     const twoHoursMs = 2 * 60 * 60 * 1000;
     const forceWelcome = new URLSearchParams(window.location.search).has('forceWelcome');
     if (!forceWelcome && lastActive > 0 && (now - lastActive) < twoHoursMs) {
-      localStorage.setItem('replitLastActiveTime', String(now));
-      return;
+      // Temporarily force welcome prompt for testing
     }
 
     Promise.all([
