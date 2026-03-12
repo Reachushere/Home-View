@@ -12562,37 +12562,27 @@ export default function Dashboard() {
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
-                <div className="flex">
-                  <div className="w-5 border-r border-black flex flex-col">
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG1'] ? 'bg-emerald-100' : (inProgressCourses['L3_POG1'] || courseGrades['L3_POG1']?.grade || courseGrades['L3_POG1']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG1'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG1')}>{(checkedCourses['L3_POG1'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    <div className={`h-11 flex items-center justify-center ${checkedCourses['L3_POG2'] ? 'bg-emerald-100' : (inProgressCourses['L3_POG2'] || courseGrades['L3_POG2']?.grade || courseGrades['L3_POG2']?.percent) ? 'bg-amber-100' : ''}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_POG2'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_POG2')}>{(checkedCourses['L3_POG2'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                  </div>
-                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>TWO (2)</div>
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    {['L3_POG1','L3_POG2'].map((cid, i) => (
-                      <div key={cid} className={`h-11 px-1 flex items-center ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                        <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
-                          <option value="">{`Select POG course ${i+1}...`}</option>
-                          {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
-                            <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                          )); })()}
-                        </select>
-                        <InProgressToggle id={cid} inline />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG1']?.percent || ''} onChange={(e) => updatePercent('L3_POG1', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L3_POG1']?.percent || '')}</span></div>
+                {['L3_POG1','L3_POG2'].map((cid, i) => (
+                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
+                    <div className="w-5 border-r border-black flex items-center justify-center">
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades['L3_POG2']?.percent || ''} onChange={(e) => updatePercent('L3_POG2', e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades['L3_POG2']?.percent || '')}</span></div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">POG Req'd</div>
+                    <div className="flex-1 px-1 py-0.5 flex items-center">
+                      <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
+                        <option value="">{`Select POG course ${i+1}...`}</option>
+                        {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
+                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                        )); })()}
+                      </select>
+                      <InProgressToggle id={cid} inline />
                     </div>
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center gap-0.5"><input type="text" className="w-8 text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] font-bold w-6 text-center leading-none" style={{ color: '#333' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                    </div>
+                    <div className="w-5 border-l border-black"></div>
                   </div>
-                  <div className="w-5 border-l border-black"></div>
-                </div>
+                ))}
                 <div className="flex border-b border-black">
                   <div className="w-5 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B</div>
