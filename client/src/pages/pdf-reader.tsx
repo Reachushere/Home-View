@@ -1659,12 +1659,6 @@ export default function PDFReaderPage() {
     <div className="h-screen flex flex-col relative overflow-hidden">
       <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,15,40,0.15) 0%, rgba(0,10,30,0.25) 100%)' }} />
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
-        style={{ zIndex: 1 }}
-        data-testid="audio-visualizer-canvas"
-      />
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
 
       {!followOnly && <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
@@ -2422,6 +2416,14 @@ export default function PDFReaderPage() {
               )}
             </div>
 
+
+            <div className="absolute" style={{ bottom: '12px', left: '24px', width: '120px', height: '48px' }}>
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full pointer-events-none"
+                data-testid="audio-visualizer-canvas"
+              />
+            </div>
 
             <div className="absolute flex items-end gap-2" style={{ bottom: '10px', left: '265px' }}>
               <div className="flex items-center gap-2" style={{ alignSelf: 'flex-end' }}>
