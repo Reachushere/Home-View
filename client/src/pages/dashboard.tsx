@@ -573,14 +573,13 @@ export default function Dashboard() {
 
         const partialFiles = files.filter(isPartial);
 
-        const currentWeekUnlistened = files.filter((f: any) => {
+        const allUnlistened = files.filter((f: any) => {
           if (f.listened) return false;
           if (partialFiles.some((p: any) => p.id === f.id)) return false;
-          const weekMatch = f.folder?.match(/week-(\d+)/i);
-          return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNum;
+          return true;
         });
 
-        const orderedFiles = [...partialFiles, ...currentWeekUnlistened];
+        const orderedFiles = [...partialFiles, ...allUnlistened];
 
         if (orderedFiles.length > 0) {
           const mapped = orderedFiles.map((f: any) => ({
