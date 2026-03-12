@@ -918,7 +918,7 @@ export default function PDFReaderPage() {
           fetch("/api/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: preChunks[preloadIdx], voice: voiceRef.current || 'echo', stream: false }),
+            body: JSON.stringify({ text: preChunks[preloadIdx], voice: voiceRef.current || 'echo' }),
           }).then(r => r.ok ? r.blob() : null).then(blob => {
             if (blob) {
               ttsPreloadCache.current[preloadIdx] = URL.createObjectURL(blob);
@@ -1076,11 +1076,11 @@ export default function PDFReaderPage() {
         audioUrl = cachedUrl;
         delete ttsPreloadCache.current[chunkIdx];
       } else {
-        console.log(`[TTS] Streaming audio for ${words.length} words, voice=${voice}`);
+        console.log(`[TTS] Fetching audio for ${words.length} words, voice=${voice}`);
         const response = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, voice, stream: true }),
+          body: JSON.stringify({ text, voice }),
         });
 
         if (!isPlayingRef.current) {
@@ -1094,45 +1094,11 @@ export default function PDFReaderPage() {
           throw new Error(`TTS request failed: ${response.status}`);
         }
 
-        if (audioRef.current && response.body) {
-          const reader = response.body.getReader();
-          const allChunks: Uint8Array[] = [];
-          let headerSent = false;
-
-          const readStream = async () => {
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              if (!isPlayingRef.current) { reader.cancel(); return false; }
-              allChunks.push(value);
-            }
-            return true;
-          };
-
-          const firstRead = await reader.read();
-          if (firstRead.done || !isPlayingRef.current) return false;
-          allChunks.push(firstRead.value);
-
-          const streamComplete = readStream();
-
-          await streamComplete;
-          if (!isPlayingRef.current) return false;
-
-          const totalLen = allChunks.reduce((s, c) => s + c.length, 0);
-          const full = new Uint8Array(totalLen);
-          let offset = 0;
-          for (const c of allChunks) { full.set(c, offset); offset += c.length; }
-          const audioBlob = new Blob([full], { type: 'audio/wav' });
-          beacon("playTTS-blob-received", { size: audioBlob.size });
-          console.log(`[TTS] Streamed audio received: ${audioBlob.size} bytes`);
-          audioUrl = URL.createObjectURL(audioBlob);
-        } else {
-          const audioBlob = await response.blob();
-          if (!isPlayingRef.current) return false;
-          beacon("playTTS-blob-received", { size: audioBlob.size });
-          console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
-          audioUrl = URL.createObjectURL(audioBlob);
-        }
+        const audioBlob = await response.blob();
+        if (!isPlayingRef.current) return false;
+        beacon("playTTS-blob-received", { size: audioBlob.size });
+        console.log(`[TTS] Audio blob received: ${audioBlob.size} bytes`);
+        audioUrl = URL.createObjectURL(audioBlob);
       }
       
       if (audioRef.current) {
@@ -1419,7 +1385,7 @@ export default function PDFReaderPage() {
       fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: nextText, voice: nextVoice, stream: false }),
+        body: JSON.stringify({ text: nextText, voice: nextVoice }),
       }).then(r => r.ok ? r.blob() : null).then(blob => {
         if (blob) {
           ttsPreloadCache.current[index + 1] = URL.createObjectURL(blob);
@@ -1633,7 +1599,7 @@ export default function PDFReaderPage() {
         fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: newChunks[preloadIdx], voice: voiceRef.current || 'echo', stream: false }),
+          body: JSON.stringify({ text: newChunks[preloadIdx], voice: voiceRef.current || 'echo' }),
         }).then(r => r.ok ? r.blob() : null).then(blob => {
           if (blob) {
             ttsPreloadCache.current[preloadIdx] = URL.createObjectURL(blob);

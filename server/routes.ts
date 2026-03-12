@@ -14,7 +14,7 @@ import { objectStorageClient } from "./replit_integrations/object_storage/object
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
-import { textToSpeech, textToSpeechStream } from "./replit_integrations/audio/client";
+import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
@@ -3674,7 +3674,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   // POST /api/tts - Generate speech from text using OpenAI
   app.post("/api/tts", async (req, res) => {
     try {
-      const { text, voice = "alloy", stream: useStream = true } = req.body;
+      const { text, voice = "alloy" } = req.body;
       
       if (!text || typeof text !== "string") {
         return res.status(400).json({ message: "Text is required" });
@@ -3698,55 +3698,22 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         .trim();
       
       const trimmedText = normalizedText.slice(0, 4096);
+      const startTime = Date.now();
+      console.log(`TTS request: ${trimmedText.length} chars, voice: ${selectedVoice}`);
       
-      console.log(`TTS request: ${trimmedText.length} chars, voice: ${selectedVoice}, stream: ${useStream}`);
-
-      if (useStream) {
-        res.set({
-          "Content-Type": "audio/wav",
-          "Transfer-Encoding": "chunked",
-          "Cache-Control": "no-cache",
-        });
-
-        const sampleRate = 24000;
-        const bitsPerSample = 16;
-        const numChannels = 1;
-        const maxDataSize = 0x7FFFFFFF;
-        const wavHeader = Buffer.alloc(44);
-        wavHeader.write('RIFF', 0);
-        wavHeader.writeUInt32LE(36 + maxDataSize, 4);
-        wavHeader.write('WAVE', 8);
-        wavHeader.write('fmt ', 12);
-        wavHeader.writeUInt32LE(16, 16);
-        wavHeader.writeUInt16LE(1, 20);
-        wavHeader.writeUInt16LE(numChannels, 22);
-        wavHeader.writeUInt32LE(sampleRate, 24);
-        wavHeader.writeUInt32LE(sampleRate * numChannels * bitsPerSample / 8, 28);
-        wavHeader.writeUInt16LE(numChannels * bitsPerSample / 8, 32);
-        wavHeader.writeUInt16LE(bitsPerSample, 34);
-        wavHeader.write('data', 36);
-        wavHeader.writeUInt32LE(maxDataSize, 40);
-        res.write(wavHeader);
-
-        const audioStream = await textToSpeechStream(trimmedText, selectedVoice as any);
-        for await (const base64Chunk of audioStream) {
-          const pcmData = Buffer.from(base64Chunk, 'base64');
-          res.write(pcmData);
-        }
-        res.end();
-      } else {
-        const audioBuffer = await textToSpeech(
-          trimmedText,
-          selectedVoice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
-          "mp3"
-        );
-        
-        res.set({
-          "Content-Type": "audio/mpeg",
-          "Content-Length": audioBuffer.length.toString(),
-        });
-        res.send(audioBuffer);
-      }
+      const audioBuffer = await textToSpeech(
+        trimmedText,
+        selectedVoice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
+        "mp3"
+      );
+      
+      console.log(`TTS completed in ${Date.now() - startTime}ms, ${audioBuffer.length} bytes`);
+      
+      res.set({
+        "Content-Type": "audio/mpeg",
+        "Content-Length": audioBuffer.length.toString(),
+      });
+      res.send(audioBuffer);
     } catch (err) {
       console.error("Error generating TTS:", err);
       res.status(500).json({ message: "Failed to generate speech" });
