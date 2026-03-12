@@ -242,8 +242,6 @@ export default function PDFReaderPage() {
   const playbackSpeedRef = useRef<number>(1);
   const volumeRef = useRef<number>(1);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const miniCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const miniAnimRef = useRef<number>(0);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
@@ -1610,94 +1608,6 @@ export default function PDFReaderPage() {
     return { remaining: formatTime(remainingMinutes), total: formatTime(totalMinutes), remainingChunks: uncheckedChunks.length };
   };
 
-  const waveColorRef = useRef('rgba(255,255,255,0.8)');
-
-  useEffect(() => {
-    const drawMini = () => {
-      const canvas = miniCanvasRef.current;
-      if (!canvas) { miniAnimRef.current = requestAnimationFrame(drawMini); return; }
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
-      ctx.scale(dpr, dpr);
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
-      ctx.clearRect(0, 0, w, h);
-      const clr = waveColorRef.current;
-
-      if (!isPlaying || isPaused) {
-        const barCount = 24;
-        const gap = 2;
-        const barWidth = Math.max(2, (w - (barCount - 1) * gap) / barCount);
-        const centerY = h / 2;
-        for (let i = 0; i < barCount; i++) {
-          const x = i * (barWidth + gap);
-          const idleH = 2 + Math.sin(i * 0.7) * 1.5;
-          ctx.fillStyle = 'rgba(255,255,255,0.15)';
-          ctx.beginPath();
-          ctx.roundRect(Math.round(x), Math.round(centerY - idleH), Math.round(barWidth), Math.round(idleH), 1);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(idleH), 1);
-          ctx.fill();
-        }
-        miniAnimRef.current = requestAnimationFrame(drawMini);
-        return;
-      }
-
-      const analyser = analyserRef.current;
-      const barCount = 24;
-      const gap = 2;
-      const barWidth = Math.max(2, (w - (barCount - 1) * gap) / barCount);
-      const centerY = h / 2;
-
-      if (analyser) {
-        if (audioContextRef.current?.state === 'suspended') audioContextRef.current.resume();
-        const bufLen = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufLen);
-        analyser.getByteFrequencyData(dataArray);
-        for (let i = 0; i < barCount; i++) {
-          const dataIdx = Math.floor((i / barCount) * bufLen);
-          const val = dataArray[dataIdx] / 255;
-          const barH = Math.max(2, val * centerY * 0.85);
-          const x = i * (barWidth + gap);
-          const alpha = 0.3 + val * 0.7;
-          const lightness = 70 + val * 30;
-          ctx.fillStyle = `hsla(200, 90%, ${Math.round(lightness)}%, ${alpha.toFixed(2)})`;
-          ctx.shadowColor = `hsla(200, 100%, 80%, ${(val * 0.6).toFixed(2)})`;
-          ctx.shadowBlur = val * 10;
-          ctx.beginPath();
-          ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
-      } else {
-        const t = Date.now() / 1000;
-        for (let i = 0; i < barCount; i++) {
-          const val = 0.3 + Math.sin(t * 3 + i * 0.8) * 0.25 + Math.sin(t * 5.3 + i * 1.2) * 0.15;
-          const barH = Math.max(2, Math.min(1, val) * centerY * 0.85);
-          const x = i * (barWidth + gap);
-          const alpha = 0.3 + val * 0.7;
-          const lightness = 70 + val * 30;
-          ctx.fillStyle = `hsla(200, 90%, ${Math.round(lightness)}%, ${alpha.toFixed(2)})`;
-          ctx.beginPath();
-          ctx.roundRect(Math.round(x), Math.round(centerY - barH), Math.round(barWidth), Math.round(barH), 1);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.roundRect(Math.round(x), Math.round(centerY + 1), Math.round(barWidth), Math.round(barH), 1);
-          ctx.fill();
-        }
-      }
-      miniAnimRef.current = requestAnimationFrame(drawMini);
-    };
-    miniAnimRef.current = requestAnimationFrame(drawMini);
-    return () => cancelAnimationFrame(miniAnimRef.current);
-  }, [isPlaying, isPaused]);
 
   if (fileLoading && !isOneDrive) {
     return (
@@ -1730,8 +1640,7 @@ export default function PDFReaderPage() {
   const folderParts = file?.folder?.split('-') || [];
   const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
   const cId = courseCodeFromFolder?.toLowerCase() || '';
-  waveColorRef.current = cId === 'cppa122' ? '#47B045' : cId === 'cfnf400' ? '#FA67B3' : cId === 'casl101' ? '#B045A2' : 'rgba(255,255,255,0.8)';
-  const waveColor = waveColorRef.current;
+  const waveColor = cId === 'cppa122' ? '#47B045' : cId === 'cfnf400' ? '#FA67B3' : cId === 'casl101' ? '#B045A2' : 'rgba(255,255,255,0.8)';
   const playerHeaderGradient = (() => {
     if (cId === 'cppa122') return 'linear-gradient(0deg, rgb(71, 176, 69) 0%, rgb(15, 80, 4) 100%)';
     if (cId === 'cfnf400') return 'linear-gradient(180deg, rgb(222, 24, 100) 0%, rgb(250, 103, 179) 100%)';
@@ -2513,13 +2422,6 @@ export default function PDFReaderPage() {
               )}
             </div>
 
-            <div className="absolute" style={{ bottom: '12px', left: '24px', width: '120px', height: '48px' }}>
-              <canvas
-                ref={miniCanvasRef}
-                className="w-full h-full pointer-events-none"
-                data-testid="mini-audio-visualizer"
-              />
-            </div>
 
             <div className="absolute flex items-end gap-2" style={{ bottom: '10px', left: '265px' }}>
               <div className="flex items-center gap-2" style={{ alignSelf: 'flex-end' }}>
