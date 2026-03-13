@@ -6297,12 +6297,6 @@ document.body.removeChild(a);
             body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: fullAudioUrl, media_content_type: "music" }),
           });
           console.log(`[Cat Lights] play_media on HA Voice: ${playResp.status} ${(await playResp.text()).substring(0, 300)}`);
-
-          const nestPlayResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullAudioUrl, media_content_type: "music" }),
-          });
-          console.log(`[Cat Lights] play_media on Nest: ${nestPlayResp.status} ${(await nestPlayResp.text()).substring(0, 300)}`);
         } catch (fallbackErr: any) {
           console.log(`[Cat Lights] OpenAI TTS fallback failed: ${fallbackErr.message}`);
         }
