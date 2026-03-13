@@ -1358,6 +1358,17 @@ export default function PDFReaderPage() {
           console.error("[Cat Wash] Failed to report completion:", e);
         }
       } else {
+        if (fileId) {
+          try {
+            await fetch(`/api/files/${fileId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ listened: true, lastChunkIndex: chunksRef.current.length, totalChunks: chunksRef.current.length }),
+            });
+          } catch (e) {
+            console.error('Failed to mark file as listened:', e);
+          }
+        }
         toast({ title: "Finished", description: "Finished reading the document" });
       }
       return;
