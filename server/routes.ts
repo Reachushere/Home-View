@@ -6279,6 +6279,11 @@ document.body.removeChild(a);
         ]);
         console.log(`[Cat Lights] Booleans sent: confirmed_off=${boolOffResp.status}, pending_on=${boolOnResp.status}`);
 
+        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.9 }),
+        });
+        console.log(`[Cat Lights] Set HA Voice volume to 0.9`);
         console.log(`[Cat Lights] Trying tts.speak with entity=tts.home_assistant_cloud, target=${CAT_WR_HA_VOICE_ENTITY}`);
         const tts1 = await fetch(`${haUrl}/api/services/tts/speak`, {
           method: 'POST', headers: haHeaders,
