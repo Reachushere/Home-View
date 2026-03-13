@@ -4779,7 +4779,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
-  const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 10 * 60 * 1000;
+  const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 5 * 60 * 1000;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
   const startToothbrushPolling = () => {
