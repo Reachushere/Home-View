@@ -6191,7 +6191,7 @@ document.body.removeChild(a);
   app.post("/api/webhook/cat-lights", async (req, res) => {
     try {
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
-      console.log(`[Cat Lights] Timestamp: ${new Date().toISOString()}`);
+      console.log(`[Cat Lights] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
 
       const haUrl0 = HOME_ASSISTANT_URL?.replace(/\/$/, '') || '';
