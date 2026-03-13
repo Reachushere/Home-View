@@ -6190,13 +6190,23 @@ document.body.removeChild(a);
   // turning the light ON starts/resumes playback on Cat Wash speaker group, turning it OFF stops and saves progress.
   app.post("/api/webhook/cat-lights", async (req, res) => {
     try {
-      const { state } = req.body;
-      const rawNewState = req.body.new_state;
-      const lightState = state || (typeof rawNewState === 'string' ? rawNewState : rawNewState?.state) || 'unknown';
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Lights] Timestamp: ${new Date().toISOString()}`);
-      console.log(`[Cat Lights] Light state: ${lightState}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
+
+      const haUrl0 = HOME_ASSISTANT_URL?.replace(/\/$/, '') || '';
+      const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      let lightState = 'unknown';
+      try {
+        const lightResp = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+        if (lightResp.ok) {
+          const lightData = await lightResp.json();
+          lightState = lightData?.state || 'unknown';
+        }
+      } catch (e: any) {
+        console.log(`[Cat Lights] Failed to query light state from HA: ${e.message}`);
+      }
+      console.log(`[Cat Lights] Actual light state from HA: ${lightState}`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
