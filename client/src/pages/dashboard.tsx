@@ -3141,7 +3141,7 @@ export default function Dashboard() {
       }
     };
     const bg = state === 'green' ? '#8cb44c' : state === 'yellow' ? '#f0b429' : '#e8526e';
-    const knobLeft = state === 'red' ? '1px' : state === 'yellow' ? '50%' : 'calc(100% - 9px)';
+    const knobLeft = state === 'red' ? '1px' : state === 'yellow' ? '50%' : 'calc(100% - 13px)';
     const knobTransform = state === 'yellow' ? 'translateX(-50%)' : 'none';
     return (
       <div
@@ -3151,9 +3151,9 @@ export default function Dashboard() {
         title={state === 'red' ? 'Not started — click for In Progress' : state === 'yellow' ? 'In Progress — click for Completed' : 'Completed — click for Not Started'}
         data-testid={`toggle-tri-${id}`}
       >
-        <div style={{ width: '26px', height: '12px', borderRadius: '3px', background: bg, position: 'relative', transition: 'background 0.2s', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15)' }}>
+        <div style={{ width: '32px', height: '14px', borderRadius: '3px', background: bg, position: 'relative', transition: 'background 0.2s', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15)' }}>
           <div style={{
-            width: '10px', height: '10px', borderRadius: '2px', background: '#eee',
+            width: '12px', height: '12px', borderRadius: '2px', background: '#eee',
             position: 'absolute', top: '1px', left: knobLeft, transform: knobTransform,
             transition: 'left 0.2s, transform 0.2s',
             boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)',
