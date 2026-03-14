@@ -3139,8 +3139,9 @@ export default function Dashboard() {
     const greyed = isCourseGreyedOut(id);
     const prevCompleted = isPreviouslyCompleted(id);
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
-    const isDisabled = activeInLater || sectionDone || greyed || prevCompleted;
-    const state: 'red' | 'yellow' | 'green' = isDisabled ? 'red' : (checkedCourses[id] || hasPercent) ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    const isCompleted = checkedCourses[id] || hasPercent;
+    const isDisabled = !isCompleted && (activeInLater || sectionDone || greyed || prevCompleted);
+    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
     const cycle = () => {
       if (isDisabled) return;
       if (state === 'red') {
