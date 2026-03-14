@@ -3120,15 +3120,11 @@ export default function Dashboard() {
       style={inline ? { float: 'right', marginTop: '1px' } : { padding: '1px 3px' }}
       data-testid={`toggle-in-progress-${id}`}
     >
-      <div style={{ display: 'flex', gap: '0px' }}>
-        <div onClick={(e) => handleClick(e, 0)} title="Not started" style={{ width: '14px', height: '14px', border: '1px solid ' + (isDisabled ? '#ccc' : '#999'), borderRight: 'none', borderRadius: '2px 0 0 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', background: isDisabled ? '#f0f0f0' : activeIdx === 0 ? '#fecaca' : '#fff', opacity: isDisabled ? 0.5 : 1 }}>
-          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2.8" fill="none" stroke={isDisabled ? '#bbb' : activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/><line x1="1.8" y1="6.2" x2="6.2" y2="1.8" stroke={isDisabled ? '#bbb' : activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/></svg>
-        </div>
-        <div onClick={(e) => handleClick(e, 1)} title="In progress" style={{ width: '14px', height: '14px', border: '1px solid ' + (isDisabled ? '#ccc' : '#999'), display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', background: isDisabled ? '#f0f0f0' : activeIdx === 1 ? '#f59e0b' : '#fff', opacity: isDisabled ? 0.5 : 1 }}>
-          <span style={{ fontSize: '9px', fontWeight: 700, color: isDisabled ? '#bbb' : activeIdx === 1 ? '#fff' : '#ccc', lineHeight: 1 }}>~</span>
-        </div>
-        <div onClick={(e) => handleClick(e, 2)} title="Complete" style={{ width: '14px', height: '14px', border: '1px solid ' + (isDisabled ? '#ccc' : '#999'), borderLeft: 'none', borderRadius: '0 2px 2px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', background: isDisabled ? '#f0f0f0' : activeIdx === 2 ? '#dcfce7' : '#fff', opacity: isDisabled ? 0.5 : 1 }}>
-          <Check style={{ width: '8px', height: '8px', color: isDisabled ? '#bbb' : activeIdx === 2 ? '#16a34a' : '#ccc', strokeWidth: 3 }} />
+      <div style={{ display: 'flex', width: '42px', height: '16px', borderRadius: '3px', border: '1px solid ' + (isDisabled ? '#ccc' : '#888'), background: isDisabled ? '#e8e8e8' : '#ddd', position: 'relative', opacity: isDisabled ? 0.45 : 1, cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer' }} onClick={(e) => { e.stopPropagation(); if (isDisabled || isAutoFromL1) return; const next = (activeIdx + 1) % 3; handleClick(e, next); }}>
+        <div style={{ position: 'absolute', top: '1px', left: activeIdx === 0 ? '1px' : activeIdx === 1 ? '14px' : '27px', width: '13px', height: '12px', borderRadius: '2px', background: isDisabled ? '#ccc' : activeIdx === 0 ? '#ef4444' : activeIdx === 1 ? '#f59e0b' : '#22c55e', transition: 'left 0.15s ease, background 0.15s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+          {activeIdx === 0 && <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2.5" fill="none" stroke="#fff" strokeWidth="1"/><line x1="1.8" y1="6.2" x2="6.2" y2="1.8" stroke="#fff" strokeWidth="1"/></svg>}
+          {activeIdx === 1 && <span style={{ fontSize: '10px', fontWeight: 800, color: '#fff', lineHeight: 1 }}>~</span>}
+          {activeIdx === 2 && <Check style={{ width: '9px', height: '9px', color: '#fff', strokeWidth: 3 }} />}
         </div>
       </div>
     </div>
