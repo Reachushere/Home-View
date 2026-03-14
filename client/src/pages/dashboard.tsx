@@ -12613,20 +12613,20 @@ export default function Dashboard() {
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                   </div>
                   <div className="flex border-b border-black bg-gray-50">
-                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '3rem', minWidth: '3rem' }}>Type</div>
-                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '3.5rem', minWidth: '3.5rem' }}>Code</div>
+                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '48px', minWidth: '48px' }}>Type</div>
+                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '56px', minWidth: '56px' }}>Code</div>
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                    <div className="border-l border-black" style={{ width: '1.25rem', minWidth: '1.25rem' }}></div>
+                    <div className="border-l border-black" style={{ width: '20px', minWidth: '20px' }}></div>
                   </div>
                 </div>
                 <table className="w-full border-collapse">
                   <colgroup>
-                    <col style={{ width: '3rem' }} />
-                    <col style={{ width: '3.5rem' }} />
+                    <col style={{ width: '48px' }} />
+                    <col style={{ width: '56px' }} />
                     <col />
                     <col style={{ width: '54px' }} />
-                    <col style={{ width: '1.25rem' }} />
+                    <col style={{ width: '20px' }} />
                   </colgroup>
                   <tbody>
                     <tr className="border-b border-black">
@@ -12696,8 +12696,8 @@ export default function Dashboard() {
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
-                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '48px', minWidth: '48px' }}>SELECT</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                         <option value="">{`Select POG Course ${i+1}...`}</option>
@@ -12718,8 +12718,8 @@ export default function Dashboard() {
                 </div>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
-                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '48px', minWidth: '48px' }}>SELECT</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                         <option value="">{i === 0 ? 'Select Lower Level Table A Course...' : 'Select Upper Level Table B Course...'}</option>
@@ -12740,8 +12740,8 @@ export default function Dashboard() {
                 </div>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
-                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '48px', minWidth: '48px' }}>SELECT</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
