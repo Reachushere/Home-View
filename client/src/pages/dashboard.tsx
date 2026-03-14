@@ -3108,10 +3108,7 @@ export default function Dashboard() {
   };
 
   const InProgressToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
-    const greyedOut = isCourseGreyedOut(id);
-    const prevCompleted = isPreviouslyCompleted(id);
-    const sectionFulfilled = isSectionFulfilledForCourse(id);
-    const isDisabled = greyedOut || prevCompleted || sectionFulfilled;
+    const isDisabled = shouldStrikethrough(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
     const isIP = isDisabled ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
     const isDone = !!checkedCourses[id];
