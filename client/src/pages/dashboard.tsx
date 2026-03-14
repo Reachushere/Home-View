@@ -12372,7 +12372,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0 flex flex-col" style={{ color: '#000' }}>
-            <div className="shrink-0 flex items-center pb-1">
+            <div className="shrink-0 flex items-center py-1">
               <input
                 type="file"
                 ref={courseListFileRef}
