@@ -3074,7 +3074,6 @@ export default function Dashboard() {
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
-    if (inProgressCourses[id] || courseGrades[id]?.grade || courseGrades[id]?.percent) return null;
     if (isPreviouslyCompleted(id)) return <span className="font-bold">&nbsp;Completed</span>;
     if (isCourseGreyedOut(id)) return <span className="font-bold">&nbsp;Not required</span>;
     if (isSectionFulfilledForCourse(id)) return <span className="font-bold">&nbsp;Not required</span>;
