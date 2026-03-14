@@ -3181,6 +3181,26 @@ export default function Dashboard() {
     );
   };
 
+  const cycleTriState = (id: string) => {
+    const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
+    const isCompleted = checkedCourses[id] || hasPercent;
+    const activeInLater = isActiveInLaterLevel(id);
+    const sectionDone = isSectionFulfilledForCourse(id);
+    const greyed = isCourseGreyedOut(id);
+    const prevCompleted = isPreviouslyCompleted(id);
+    const isDisabled = !isCompleted && (activeInLater || sectionDone || greyed || prevCompleted);
+    if (isDisabled) return;
+    const state = isCompleted ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    if (state === 'red') {
+      if (!inProgressCourses[id]) toggleInProgress(id);
+    } else if (state === 'yellow') {
+      if (inProgressCourses[id]) toggleInProgress(id);
+      if (!checkedCourses[id]) toggleCourse(id);
+    } else {
+      if (checkedCourses[id]) toggleCourse(id);
+    }
+  };
+
   const InProgressToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
     const activeInLater = isActiveInLaterLevel(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
@@ -12404,7 +12424,7 @@ export default function Dashboard() {
                   const isSelectTwo = c.id.startsWith('L1_PPA12');
                   return (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
+                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(c.id)}>SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
@@ -12420,7 +12440,7 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: Select one course from "Table A" <span className="font-bold">({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
-                  <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
+                  <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('LIBERAL')}>SELECT</div>
                   <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
@@ -12443,7 +12463,7 @@ export default function Dashboard() {
                 </div>
                 {['OPEN1','OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
+                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
@@ -12535,7 +12555,7 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: Select one course from Table A <span className="font-bold">({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
-                  <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
+                  <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('L2_LIBERAL')}>SELECT</div>
                   <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
@@ -12567,7 +12587,7 @@ export default function Dashboard() {
                   const disabled = isCheckDisabled(ecn.id);
                   return (
                   <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
+                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(ecn.id)}>SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span><TriStateToggle id={ecn.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
@@ -12582,7 +12602,7 @@ export default function Dashboard() {
                 </div>
                 {['L2_OPEN1','L2_OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
+                    <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
@@ -12701,7 +12721,7 @@ export default function Dashboard() {
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '48px', minWidth: '48px' }}>SELECT</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" style={{ width: '48px', minWidth: '48px' }} onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
@@ -12723,7 +12743,7 @@ export default function Dashboard() {
                 </div>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '48px', minWidth: '48px' }}>SELECT</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" style={{ width: '48px', minWidth: '48px' }} onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
@@ -12745,7 +12765,7 @@ export default function Dashboard() {
                 </div>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '48px', minWidth: '48px' }}>SELECT</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" style={{ width: '48px', minWidth: '48px' }} onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
