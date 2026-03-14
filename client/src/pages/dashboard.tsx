@@ -3121,10 +3121,10 @@ export default function Dashboard() {
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     if (checkedCourses[id] || hasPercent) return null;
     if (isDropdownRow(id)) return null;
-    if (isActiveInLaterLevel(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
+    if (isActiveInLaterLevel(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (PREVIOUSLY COMPLETED)</span>;
     if (isSectionFulfilledForCourse(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (NOT REQUIRED)</span>;
     if (isCourseGreyedOut(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (NOT REQUIRED)</span>;
-    if (isPreviouslyCompleted(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
+    if (isPreviouslyCompleted(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (PREVIOUSLY COMPLETED)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
   };
