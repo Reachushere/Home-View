@@ -286,6 +286,64 @@ function getETMinutes(date: Date): number {
 export default function Dashboard() {
   const { toast } = useToast();
   
+  const renderCountRef = useRef(0);
+  const lastRenderTimeRef = useRef(performance.now());
+  useEffect(() => {
+    renderCountRef.current++;
+    const now = performance.now();
+    const gap = now - lastRenderTimeRef.current;
+    lastRenderTimeRef.current = now;
+    console.log(`[PERF] Render #${renderCountRef.current} | gap since last: ${gap.toFixed(0)}ms`);
+  });
+
+  useEffect(() => {
+    const PERF_LOG_DURATION = 5 * 60 * 1000;
+    const perfStart = Date.now();
+    const pendingClicks = new Map<string, number>();
+
+    const clickHandler = (e: MouseEvent) => {
+      if (Date.now() - perfStart > PERF_LOG_DURATION) return;
+      const target = e.target as HTMLElement;
+      const id = target.getAttribute('data-testid') || target.id || target.tagName + '.' + target.className.split(' ')[0];
+      const clickTime = performance.now();
+      pendingClicks.set(id, clickTime);
+      console.log(`[PERF] CLICK on "${id}" at ${clickTime.toFixed(0)}ms`);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const responseTime = performance.now() - clickTime;
+          console.log(`[PERF] RESPONSE for "${id}": ${responseTime.toFixed(0)}ms`);
+          pendingClicks.delete(id);
+        });
+      });
+    };
+
+    const longTaskObserver = new PerformanceObserver((list) => {
+      if (Date.now() - perfStart > PERF_LOG_DURATION) return;
+      for (const entry of list.getEntries()) {
+        console.log(`[PERF] LONG TASK: ${entry.duration.toFixed(0)}ms (start: ${entry.startTime.toFixed(0)}ms)`);
+      }
+    });
+
+    document.addEventListener('click', clickHandler, true);
+    try {
+      longTaskObserver.observe({ entryTypes: ['longtask'] });
+    } catch (e) {}
+
+    const cleanupTimer = setTimeout(() => {
+      document.removeEventListener('click', clickHandler, true);
+      try { longTaskObserver.disconnect(); } catch (e) {}
+      console.log(`[PERF] Performance logging ended after 5 minutes. Total renders: ${renderCountRef.current}`);
+    }, PERF_LOG_DURATION);
+
+    console.log(`[PERF] Performance logging STARTED. Will run for 5 minutes.`);
+
+    return () => {
+      document.removeEventListener('click', clickHandler, true);
+      try { longTaskObserver.disconnect(); } catch (e) {}
+      clearTimeout(cleanupTimer);
+    };
+  }, []);
+
   // Mobile detection
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
   
@@ -1310,38 +1368,32 @@ export default function Dashboard() {
   }, [showCelebration]);
   
   // Calculate if it's nighttime in Toronto based on approximate sunrise/sunset
-  const isNighttime = useMemo(() => {
-    // Get current time in Toronto timezone
-    const torontoTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+  const computeIsNighttime = useCallback(() => {
+    const torontoTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
     const hours = torontoTime.getHours();
     const minutes = torontoTime.getMinutes();
     const currentMinutes = hours * 60 + minutes;
-    
-    // Approximate sunrise/sunset times for Toronto (varies by season)
-    // Winter: sunrise ~7:45am, sunset ~5:00pm
-    // Summer: sunrise ~5:30am, sunset ~9:00pm
-    // We'll interpolate based on day of year
     const dayOfYear = Math.floor((torontoTime.getTime() - new Date(torontoTime.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Sine wave approximation for seasonal variation
-    // Peak daylight around day 172 (June 21), shortest around day 355 (Dec 21)
     const seasonalFactor = Math.sin((dayOfYear - 80) * 2 * Math.PI / 365);
-    
-    // Sunrise: ranges from 5:30am (330 min) in summer to 7:45am (465 min) in winter
     const sunriseMinutes = Math.round(397 - seasonalFactor * 67);
-    
-    // Sunset: ranges from 5:00pm (1020 min) in winter to 9:00pm (1260 min) in summer
     const sunsetMinutes = Math.round(1140 + seasonalFactor * 120);
-    
     return currentMinutes < sunriseMinutes || currentMinutes > sunsetMinutes;
-  }, [currentTime]);
+  }, []);
+  const [isNighttime, setIsNighttime] = useState(computeIsNighttime);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsNighttime(prev => {
+        const next = computeIsNighttime();
+        return prev === next ? prev : next;
+      });
+    }, 300000);
+    return () => clearInterval(interval);
+  }, [computeIsNighttime]);
   
-  // Calculate synchronized animation delay so all overdue blinks are in sync
-  // Animation is 1s, so we use negative delay based on current second fraction
   const blinkSyncDelay = useMemo(() => {
-    const ms = currentTime.getTime() % 1000;
+    const ms = Date.now() % 1000;
     return `-${ms / 1000}s`;
-  }, [currentTime]);
+  }, []);
 
     const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
     const completedDefaults: Record<string, boolean> = {
@@ -2290,6 +2342,8 @@ export default function Dashboard() {
   
   // Get the display timezone (travel if set, otherwise home)
   const displayTimezone = profileData.travelTimezone || profileData.timezone;
+  const displayTimezoneRef = useRef(displayTimezone);
+  displayTimezoneRef.current = displayTimezone;
 
   const toggleCourse = (courseId: string) => {
     setCheckedCourses(prev => {
@@ -3259,6 +3313,7 @@ export default function Dashboard() {
     lastWeekRef.current = currentWeekNum;
     
     let lastMinute = new Date().getMinutes();
+    let lastDate = new Date().getDate();
     const timer = setInterval(() => {
       const now = new Date();
       const currentDate = now.getDate();
@@ -3276,10 +3331,22 @@ export default function Dashboard() {
         lastWeekRef.current = weekNum;
         speakNewWeek();
       }
-      const el = document.getElementById('clock-seconds');
-      if (el) el.textContent = ':' + String(now.getSeconds()).padStart(2, '0');
+      const secEl = document.getElementById('clock-seconds');
+      if (secEl) secEl.textContent = ':' + String(now.getSeconds()).padStart(2, '0');
       if (now.getMinutes() !== lastMinute) {
         lastMinute = now.getMinutes();
+        const hmEl = document.getElementById('clock-hm');
+        const ampmEl = document.getElementById('clock-ampm');
+        const tz = displayTimezoneRef.current;
+        if (hmEl) {
+          hmEl.textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: tz }).format(now).replace(/\s?(AM|PM)$/i, '');
+        }
+        if (ampmEl) {
+          ampmEl.textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: tz }).format(now).replace(/^\d+\s*/, '');
+        }
+      }
+      if (currentDate !== lastDate) {
+        lastDate = currentDate;
         setCurrentTime(now);
       }
     }, 1000);
@@ -12008,13 +12075,13 @@ export default function Dashboard() {
 
       {/* Time - fixed position */}
       <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 4}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
         <span id="clock-seconds" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
-        <span className="text-white" style={{ fontSize: '14px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+        <span id="clock-ampm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
         </span>
         {profileData.travelTimezone && (
