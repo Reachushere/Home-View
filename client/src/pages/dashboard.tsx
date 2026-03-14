@@ -20941,14 +20941,16 @@ export default function Dashboard() {
                           <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '8px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
-                            const daysUntil = differenceInDays(startOfDay(new Date(t.dueDate)), startOfDay(new Date()));
+                            const tDueDate = new Date(t.dueDate);
+                            const tDue = startOfDay(tDueDate);
+                            const nowDate = startOfDay(new Date());
+                            const daysUntil = differenceInCalendarDays(tDueDate, new Date());
                             const maxDays = 14;
                             const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
                             const barWidth = Math.round((progressPercent / 100) * 28);
-                            const tDue = startOfDay(new Date(t.dueDate));
                             const isToday = daysUntil <= 0;
                             const isTomorrow = daysUntil === 1;
-                            const isThisWeek = tDue <= thisWeekFridayEnd;
+                            const isThisWeek = tDue <= thisWeekFridayEnd && !isToday && !isTomorrow;
                             const isNextWeek = tDue >= nextSaturday && tDue <= nextWeekEnd;
                             const is2Weeks = tDue >= twoWeeksStart && tDue <= threeWeeksEnd;
                             const barColor = isToday ? '#ef4444' : isTomorrow ? '#eab308' : isThisWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : isNextWeek ? 'rgb(0, 200, 0)' : is2Weeks ? 'rgb(0, 150, 0)' : 'rgb(100, 100, 100)';
