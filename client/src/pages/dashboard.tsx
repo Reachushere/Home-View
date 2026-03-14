@@ -3003,7 +3003,7 @@ export default function Dashboard() {
   const isPreviouslyCompleted = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
-    return prevIds.some(pid => checkedCourses[pid] || inProgressCourses[pid]);
+    return prevIds.some(pid => checkedCourses[pid] || inProgressCourses[pid] || (courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== ''));
   };
 
   const isSectionFulfilledByCompleted = (courseId: string): boolean => {
