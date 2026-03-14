@@ -12573,7 +12573,7 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
-                  <div className="text-[6px] font-bold text-center flex items-center justify-center leading-tight" style={{ width: '31px', borderRight: '1px solid black' }}>Done</div>
+                  <div className="text-[6px] font-bold text-center flex items-center justify-center leading-tight" style={{ width: '2rem', borderRight: '1px solid black' }}>Done</div>
                   <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '48px' }}>Type</div>
                   <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '55px' }}>Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Title</div>
@@ -12581,7 +12581,7 @@ export default function Dashboard() {
                   <div className="w-5 px-1 py-0.5 border-l border-black"></div>
                 </div>
                 <div className="flex border-b border-black">
-                  <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
+                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
@@ -12627,7 +12627,7 @@ export default function Dashboard() {
                   </tbody>
                 </table>
                 <div className="flex border-b border-black">
-                  <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
+                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
@@ -12689,14 +12689,14 @@ export default function Dashboard() {
                 </table>
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
-                  <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
+                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                    <div className="flex items-center justify-center" style={{ width: '31px', borderRight: '1px solid black' }}>
+                    <div className="flex items-center justify-center" style={{ width: '2rem', borderRight: '1px solid black' }}>
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
@@ -12717,14 +12717,14 @@ export default function Dashboard() {
                   </div>
                 ))}
                 <div className="flex border-b border-black">
-                  <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
+                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-black">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="flex items-center justify-center" style={{ width: '31px', borderRight: '1px solid black' }}>
+                    <div className="flex items-center justify-center" style={{ width: '2rem', borderRight: '1px solid black' }}>
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
@@ -12745,14 +12745,14 @@ export default function Dashboard() {
                   </div>
                 ))}
                 <div className="flex border-b border-black">
-                  <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
+                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I <span className="font-black">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="flex items-center justify-center" style={{ width: '31px', borderRight: '1px solid black' }}>
+                    <div className="flex items-center justify-center" style={{ width: '2rem', borderRight: '1px solid black' }}>
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
