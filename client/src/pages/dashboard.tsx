@@ -12368,6 +12368,7 @@ export default function Dashboard() {
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
@@ -12474,6 +12475,7 @@ export default function Dashboard() {
                     <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['L2_LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['L2_LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives['L2_LIBERAL']?.trim()) toggleCourse('L2_LIBERAL'); }}>{(checkedCourses['L2_LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">
                     <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A course...</option>
@@ -12539,6 +12541,7 @@ export default function Dashboard() {
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
@@ -12697,6 +12700,7 @@ export default function Dashboard() {
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                         <option value="">{`Select POG course ${i+1}...`}</option>
@@ -12724,6 +12728,7 @@ export default function Dashboard() {
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                         <option value="">{i === 0 ? 'Select Lower Level Table A course...' : 'Select Upper Level Table B course...'}</option>
@@ -12751,6 +12756,7 @@ export default function Dashboard() {
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
