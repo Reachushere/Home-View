@@ -12292,7 +12292,7 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
-                  <div className="w-8 border-r border-black text-[7px] font-bold text-center flex items-center justify-center leading-tight">Done</div>
+                  <div className="w-8 border-r border-black text-[9px] font-bold text-center flex items-center justify-center leading-tight">Done</div>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
@@ -12437,7 +12437,7 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
-                  <div className="w-8 border-r border-black text-[7px] font-bold text-center flex items-center justify-center leading-tight">Done</div>
+                  <div className="w-8 border-r border-black text-[9px] font-bold text-center flex items-center justify-center leading-tight">Done</div>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
@@ -12614,7 +12614,7 @@ export default function Dashboard() {
                   </colgroup>
                   <thead>
                     <tr className="border-b border-black bg-gray-50">
-                      <td className="border-r border-black text-[7px] font-bold text-center align-middle">Done</td>
+                      <td className="border-r border-black text-[9px] font-bold text-center align-middle">Done</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</td>
                       <td className="px-1 py-0.5 text-[9px] font-bold">Title</td>
