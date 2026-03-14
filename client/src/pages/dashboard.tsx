@@ -10893,8 +10893,6 @@ export default function Dashboard() {
       {(() => {
         const now = new Date();
         const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const calendarStartDate = weekDays.length > 0 ? new Date(weekDays[0].getFullYear(), weekDays[0].getMonth(), weekDays[0].getDate()) : nowDate;
-        const calendarEndDate = weekDays.length > 0 ? new Date(weekDays[weekDays.length - 1].getFullYear(), weekDays[weekDays.length - 1].getMonth(), weekDays[weekDays.length - 1].getDate()) : nowDate;
         const upcoming = allTasks
           .filter(t => {
             if (!t.dueDate || t.isCompleted) return false;
@@ -10902,7 +10900,6 @@ export default function Dashboard() {
             const dd = new Date(t.dueDate);
             const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
             if (ddOnly.getTime() < nowDate.getTime()) return false;
-            if (ddOnly.getTime() < calendarStartDate.getTime() || ddOnly.getTime() > calendarEndDate.getTime()) return false;
             return true;
           })
           .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
@@ -20663,6 +20660,8 @@ export default function Dashboard() {
                     const dateColor = '#ffffff';
                     return courseTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
+                      const daysUntil = Math.round((startOfDay(new Date(t.dueDate)).getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
+                      const pColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : '#22c55e';
                       return (
                         <div
                           key={t.id}
@@ -20679,7 +20678,13 @@ export default function Dashboard() {
                         >
                           <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '8px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
-                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: dateColor, fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
+                          <div style={{ width: '42px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+                            <span style={{ fontSize: '8px', fontWeight: 700, color: pColor, lineHeight: 1 }}>{daysUntil}d</span>
+                            <div style={{ width: '32px', position: 'relative', height: '2px' }}>
+                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 32), 32)}px`, height: '2px', backgroundColor: pColor, opacity: 0.9 }} />
+                            </div>
+                            <span style={{ fontSize: '7px', fontWeight: 700, color: pColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{dueStr}</span>
+                          </div>
                         </div>
                       );
                     });
@@ -20854,6 +20859,8 @@ export default function Dashboard() {
                     )}
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
+                      const daysUntil = Math.round((startOfDay(new Date(t.dueDate)).getTime() - startOfDay(new Date()).getTime()) / (1000 * 60 * 60 * 24));
+                      const pColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : '#22c55e';
                       return (
                         <div
                           key={t.id}
@@ -20865,7 +20872,13 @@ export default function Dashboard() {
                         >
                           <span style={{ fontSize: '9px', color: '#ffffff', flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '8px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
-                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: '#ffffff', fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
+                          <div style={{ width: '42px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+                            <span style={{ fontSize: '8px', fontWeight: 700, color: pColor, lineHeight: 1 }}>{daysUntil}d</span>
+                            <div style={{ width: '32px', position: 'relative', height: '2px' }}>
+                              <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 32), 32)}px`, height: '2px', backgroundColor: pColor, opacity: 0.9 }} />
+                            </div>
+                            <span style={{ fontSize: '7px', fontWeight: 700, color: pColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{dueStr}</span>
+                          </div>
                         </div>
                       );
                     })}
