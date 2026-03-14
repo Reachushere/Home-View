@@ -20936,11 +20936,12 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                              <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                              <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                            <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                              <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                              <div style={{ width: '44px', position: 'relative', height: '3px' }}>
+                                <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 44), 44)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`} />
                               </div>
+                              <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                             </div>
                             
                           </div>
@@ -21115,11 +21116,12 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                                          <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <div style={{ width: '44px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 44), 44)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`} />
                                           </div>
+                                          <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                                         </div>
                                         
                                       </div>
@@ -21302,11 +21304,12 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                                          <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <div style={{ width: '44px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 44), 44)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`} />
                                           </div>
+                                          <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                                         </div>
                                         
                                       </div>
@@ -21469,11 +21472,12 @@ export default function Dashboard() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                                          <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                          <div style={{ width: '44px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 44), 44)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`} />
                                           </div>
+                                          <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                                         </div>
                                         
                                       </div>
@@ -21605,11 +21609,12 @@ export default function Dashboard() {
                                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
                                       </div>
                                     </div>
-                                    <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                                      <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
-                                      <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                        <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                    <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                                      <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                                      <div style={{ width: '44px', position: 'relative', height: '3px' }}>
+                                        <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, left: 0, width: `${Math.min(Math.round((Math.max(0, Math.min(daysUntil, 7)) / 7) * 44), 44)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`} />
                                       </div>
+                                      <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                                     </div>
                                     
                                   </div>
