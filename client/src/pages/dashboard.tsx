@@ -12471,7 +12471,7 @@ export default function Dashboard() {
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_LIBERAL']?.percent || '')}</span></div>
                   </div>
-                  <div className="w-5 border-l border-black"></div>
+                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                 </div>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Professionally Related Required: Select <span className="underline">one</span> course from the list below <span className="font-black">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
@@ -12495,7 +12495,7 @@ export default function Dashboard() {
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
                     </div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                   );
                 })}
@@ -12516,7 +12516,7 @@ export default function Dashboard() {
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                 ))}
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
@@ -12541,7 +12541,7 @@ export default function Dashboard() {
                     <col style={{ width: '3rem' }} />
                     <col style={{ width: '3.5rem' }} />
                     <col />
-                    <col style={{ width: '4rem' }} />
+                    <col style={{ width: '54px' }} />
                     <col style={{ width: '1.25rem' }} />
                   </colgroup>
                   <thead>
@@ -12566,7 +12566,7 @@ export default function Dashboard() {
                           <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L3_PPA333']?.percent || '')}</span></div>
                         </div>
                       </td>
-                      <td className="border-l border-black"></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="pencil-cert-L3_PPA333"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
@@ -12577,7 +12577,7 @@ export default function Dashboard() {
                           <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L3_PRACTICUM1']?.percent || '')}</span></div>
                         </div>
                       </td>
-                      <td className="border-l border-black"></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="pencil-cert-L3_PRACTICUM1"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
                     <tr className="border-b border-black">
                       <td colSpan={5} className="px-1 py-0.5 text-[9px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
@@ -12611,7 +12611,7 @@ export default function Dashboard() {
                             <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[course.id]?.percent || '')}</span></div>
                           </div>
                         </td>
-                        {idx === 0 && <td rowSpan={14} className="border-l border-black"></td>}
+                        {idx === 0 && <td rowSpan={14} className="border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 ${i < 13 ? 'border-b border-black' : ''}`} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>))}</div></td>}
                       </tr>
                     ))}
                   </tbody>
@@ -12635,7 +12635,7 @@ export default function Dashboard() {
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                 ))}
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
@@ -12657,7 +12657,7 @@ export default function Dashboard() {
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                 ))}
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
@@ -12679,7 +12679,7 @@ export default function Dashboard() {
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                 ))}
               <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
