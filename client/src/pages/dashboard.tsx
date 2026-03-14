@@ -3064,9 +3064,9 @@ export default function Dashboard() {
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
-    if (isPreviouslyCompleted(id)) return <span className="font-bold inline-block" style={{ textDecoration: 'none' }}> Completed</span>;
-    if (isCourseGreyedOut(id)) return <span className="font-bold inline-block" style={{ textDecoration: 'none' }}> Not required</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="font-bold inline-block" style={{ textDecoration: 'none' }}> Not required</span>;
+    if (isPreviouslyCompleted(id)) return <>{' '}<span className="font-bold" style={{ display: 'inline-block', textDecoration: 'none', WebkitTextDecorationsInEffect: 'none' } as any}>Completed</span></>;
+    if (isCourseGreyedOut(id)) return <>{' '}<span className="font-bold" style={{ display: 'inline-block', textDecoration: 'none', WebkitTextDecorationsInEffect: 'none' } as any}>Not required</span></>;
+    if (isSectionFulfilledForCourse(id)) return <>{' '}<span className="font-bold" style={{ display: 'inline-block', textDecoration: 'none', WebkitTextDecorationsInEffect: 'none' } as any}>Not required</span></>;
     return null;
   };
 
