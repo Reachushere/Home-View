@@ -11290,7 +11290,7 @@ export default function Dashboard() {
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0 hide-scrollbar" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 4)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 4)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflowX: 'auto', overflowY: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } setIsHamburgerOpen(open); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }} modal={false}>
             <DropdownMenuTrigger asChild>
@@ -12257,7 +12257,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L1')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12284,7 +12284,7 @@ export default function Dashboard() {
                 
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L1')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12315,7 +12315,7 @@ export default function Dashboard() {
                 })}
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" in the calendar <span className="font-black">({sectionRemaining(2, 'L1')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" in the calendar <span className="font-black">({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12342,7 +12342,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" in the calendar <span className="font-black">({sectionRemaining(3, 'L1')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" in the calendar <span className="font-black">({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12396,7 +12396,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Course <span className="font-black">({sectionRemaining(0, 'L2')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Course <span className="font-black">({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12416,7 +12416,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">three</span> courses from the following list, not previously completed <span className="font-black">({sectionRemaining(1, 'L2')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">three</span> courses from the following list, not previously completed <span className="font-black">({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12449,7 +12449,7 @@ export default function Dashboard() {
                 })}
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A in the calendar <span className="font-black">({sectionRemaining(2, 'L2')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A in the calendar <span className="font-black">({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12475,7 +12475,7 @@ export default function Dashboard() {
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Required: Select <span className="underline">one</span> course from the following list <span className="font-black">({sectionRemaining(3, 'L2')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Required: Select <span className="underline">one</span> course from the following list <span className="font-black">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12513,7 +12513,7 @@ export default function Dashboard() {
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I in the calendar <span className="font-black">({sectionRemaining(4, 'L2')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I in the calendar <span className="font-black">({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12563,7 +12563,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L3')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12609,7 +12609,7 @@ export default function Dashboard() {
                 </table>
                 <div className="flex border-b border-black">
                   <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L3')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12671,7 +12671,7 @@ export default function Dashboard() {
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(2, 'L3')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12698,7 +12698,7 @@ export default function Dashboard() {
                 ))}
                 <div className="flex border-b border-black">
                   <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-black">({sectionRemaining(3, 'L3')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-black">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12725,7 +12725,7 @@ export default function Dashboard() {
                 ))}
                 <div className="flex border-b border-black">
                   <div style={{ width: "31px", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I <span className="font-black">({sectionRemaining(4, 'L3')})</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I <span className="font-black">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -20772,23 +20772,23 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ left: '-22px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
+            style={{ left: '-21px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '26px', height: '26px' }}
+              style={{ width: '25px', height: '25px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronUp style={{ width: '21px', height: '21px', color: 'rgba(255,255,255,0.35)' }} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '26px', height: '26px' }}
+              style={{ width: '25px', height: '25px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronDown style={{ width: '21px', height: '21px', color: 'rgba(255,255,255,0.35)' }} />
             </div>
           </div>
           <div
