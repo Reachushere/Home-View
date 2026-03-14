@@ -3080,7 +3080,9 @@ export default function Dashboard() {
   };
   const shouldStrikethrough = (id: string) => {
     if (checkedCourses[id]) return false;
-    return isCourseGreyedOut(id) || isPreviouslyCompleted(id) || isSectionFulfilledForCourse(id);
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
+    if ((courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '')) return false;
+    return isCourseGreyedOut(id) || isSectionFulfilledForCourse(id);
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
   const getElectiveCode = (val: string) => {
