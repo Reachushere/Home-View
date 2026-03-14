@@ -8297,6 +8297,7 @@ export default function Dashboard() {
                     return (
                       <label key={item.id} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded px-2 py-1.5 transition-colors" data-testid={`checklist-${courseCode}-${item.itemType}`}>
                         <Checkbox
+                          className="h-5 w-5 border-2"
                           checked={!!item.isChecked}
                           onCheckedChange={(checked) => {
                             setSemesterChecklistItems(prev => prev.map(i => i.id === item.id ? { ...i, isChecked: !!checked } : i));
