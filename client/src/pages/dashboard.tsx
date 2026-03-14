@@ -12302,9 +12302,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {[
                   { id: 'PPA101', code: 'PPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
@@ -12330,9 +12327,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {[
                   { id: 'L1_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)' },
@@ -12362,9 +12356,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Liberal Studies Elective: Select one course from "Table A" <span className="font-black">({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
                   <div className="w-8 border-r border-black flex items-center justify-center">
@@ -12391,9 +12382,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Professionally Related Elective: Select two courses from "Table I" <span className="font-black">({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {['OPEN1','OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12447,9 +12435,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Course <span className="font-black">({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-8 border-r border-black flex items-center justify-center">
@@ -12468,9 +12453,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses: Select <span className="underline">three</span> courses from the list below, not previously completed <span className="font-black">({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {[
                   { id: 'L2_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: 'SELECT' },
@@ -12502,9 +12484,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Liberal Studies Elective: Select one course from Table A <span className="font-black">({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
                   <div className="w-8 border-r border-black flex items-center justify-center">
@@ -12529,9 +12508,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Professionally Related Required: Select <span className="underline">one</span> course from the list below <span className="font-black">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {[
                   { id: 'L2_ECN1', code: 'ECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
@@ -12562,9 +12538,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I <span className="font-black">({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
-
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {['L2_OPEN1','L2_OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12707,8 +12680,6 @@ export default function Dashboard() {
                 <div className="flex border-t border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
@@ -12735,8 +12706,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-black">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></div>
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12763,8 +12732,6 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Professionally Related Electives: Select seven from PR table I <span className="font-black">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></div>
-                  <div className="w-16"></div>
-                  <div className="w-5"></div>
                 </div>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
