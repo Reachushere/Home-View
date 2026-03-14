@@ -12249,24 +12249,17 @@ export default function Dashboard() {
               <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                 DEGREE TRACKING
               </h2>
-              <div
-                className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ml-4"
-                onClick={() => {
-                  setIsSchoolCoursesDialogOpen(true);
-                }}
-                data-testid="button-degree-courses"
-              >
-                <span className="text-white/80 text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Courses</span>
-                <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
-              </div>
             </div>
-            <button 
-              onClick={() => setIsSettingsPanelOpen(false)}
-              className="text-white hover:text-white/80 transition-colors p-1"
-              data-testid="button-close-settings-panel"
+            <div
+              className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => {
+                setIsSchoolCoursesDialogOpen(true);
+              }}
+              data-testid="button-degree-courses"
             >
-              <X className="h-5 w-5" />
-            </button>
+              <span className="text-white/80 text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Courses</span>
+              <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
+            </div>
           </div>
           <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0" style={{ color: '#000' }}>
             <div className="flex gap-3 items-stretch h-full min-h-0">
