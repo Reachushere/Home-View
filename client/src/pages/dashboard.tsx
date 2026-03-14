@@ -5352,7 +5352,14 @@ export default function Dashboard() {
     }).catch(err => console.error('Failed to save auto-checked chunks:', err));
   };
 
+  const prevPreviewFileIdRef = useRef<number | null>(null);
   useEffect(() => {
+    const currentFileId = previewFile?.id ?? null;
+    if (currentFileId !== prevPreviewFileIdRef.current) {
+      setCheckedChunks(new Set());
+      checkedChunksRef.current = new Set();
+      prevPreviewFileIdRef.current = currentFileId;
+    }
     if (previewFile && totalChunks > 0) {
       const scrollToFirstUnlistened = (checked: Set<number>) => {
         const attemptScroll = (attempt: number) => {
@@ -5389,18 +5396,16 @@ export default function Dashboard() {
               return;
             } catch { /* fall through */ }
           }
-          const loaded = loadDashCheckedChunks();
-          setCheckedChunks(loaded);
-          checkedChunksRef.current = loaded;
-          scrollToFirstUnlistened(loaded);
+          setCheckedChunks(new Set());
+          checkedChunksRef.current = new Set();
+          scrollToFirstUnlistened(new Set());
         })
         .catch(() => {
-          const loaded = loadDashCheckedChunks();
-          setCheckedChunks(loaded);
-          checkedChunksRef.current = loaded;
-          scrollToFirstUnlistened(loaded);
+          setCheckedChunks(new Set());
+          checkedChunksRef.current = new Set();
+          scrollToFirstUnlistened(new Set());
         });
-    } else {
+    } else if (!previewFile) {
       setCheckedChunks(new Set());
       checkedChunksRef.current = new Set();
     }
