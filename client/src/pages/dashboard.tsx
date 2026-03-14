@@ -12643,7 +12643,7 @@ export default function Dashboard() {
                       { code: 'PPA 490', title: 'Public Administration Themes', id: 'L3_PPA490' },
                       { code: 'PPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
                     ].map((course, idx, arr) => (
-                      <tr key={course.code} className={`${idx < arr.length - 1 ? 'border-b border-black' : ''} ${courseRowClass(course.id)}`}>
+                      <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)}`}>
                         {idx === 0 && (
                           <>
                             <td rowSpan={14} className="p-0 border-r border-black text-center align-middle">
@@ -12672,14 +12672,14 @@ export default function Dashboard() {
                     ))}
                   </tbody>
                 </table>
-                <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
+                <div className="flex border-t border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
                     <div className="w-8 border-r border-black flex items-center justify-center">
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "2px solid black", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px] flex items-center">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
@@ -12705,7 +12705,7 @@ export default function Dashboard() {
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
                     <div className="w-8 border-r border-black flex items-center justify-center">
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "2px solid black", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px] flex items-center">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
@@ -12731,7 +12731,7 @@ export default function Dashboard() {
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
                     <div className="w-8 border-r border-black flex items-center justify-center">
-                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "2px solid black", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px] flex items-center">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
