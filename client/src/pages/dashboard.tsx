@@ -3078,6 +3078,7 @@ export default function Dashboard() {
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
     if (isDropdownRow(id)) return null;
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     if (isPreviouslyCompleted(id)) return <span className="font-bold text-black">&nbsp;Completed</span>;
     if (isCourseGreyedOut(id)) return <span className="font-bold text-black">&nbsp;Not required</span>;
     if (isSectionFulfilledForCourse(id)) return <span className="font-bold text-black">&nbsp;Not required</span>;
@@ -12575,29 +12576,30 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                 </div>
-                <div className="flex border-b border-black bg-gray-50">
-                  <div className="text-[6px] font-bold text-center flex items-center justify-center leading-tight" style={{ width: '2rem', borderRight: '1px solid black' }}>Done</div>
-                  <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '48px' }}>Type</div>
-                  <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '55px' }}>Code</div>
-                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Title</div>
-                  <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
-                  <div className="w-5 px-1 py-0.5 border-l border-black"></div>
-                </div>
-                <div className="flex border-b border-black">
-                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></div>
-
-                </div>
                 <table className="w-full border-collapse">
                   <colgroup>
                     <col style={{ width: '2rem' }} />
-                    <col style={{ width: '48px' }} />
-                    <col style={{ width: '55px' }} />
+                    <col style={{ width: '3rem' }} />
+                    <col style={{ width: '3.5rem' }} />
                     <col />
                     <col style={{ width: '4rem' }} />
                     <col style={{ width: '1.25rem' }} />
                   </colgroup>
+                  <thead>
+                    <tr className="border-b border-black bg-gray-50">
+                      <td className="border-r border-black text-[6px] font-bold text-center align-middle leading-tight">Done</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Type</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Code</td>
+                      <td className="px-1 py-0.5 text-[7px] font-bold">Title</td>
+                      <td className="px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</td>
+                      <td className="border-l border-black"></td>
+                    </tr>
+                  </thead>
                   <tbody>
+                    <tr className="border-b border-black">
+                      <td className="border-r border-black"></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
+                    </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
                       <td className="px-0.5 py-0.5 border-r border-black text-center align-middle">
                         <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L3_PPA333'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L3_PPA333')}>{(checkedCourses['L3_PPA333'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
@@ -12626,23 +12628,10 @@ export default function Dashboard() {
                       </td>
                       <td className="border-l border-black"></td>
                     </tr>
-                  </tbody>
-                </table>
-                <div className="flex border-b border-black">
-                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></div>
-
-                </div>
-                <table className="w-full border-collapse">
-                  <colgroup>
-                    <col style={{ width: '2rem' }} />
-                    <col style={{ width: '48px' }} />
-                    <col style={{ width: '55px' }} />
-                    <col />
-                    <col style={{ width: '4rem' }} />
-                    <col style={{ width: '1.25rem' }} />
-                  </colgroup>
-                  <tbody>
+                    <tr className="border-b border-black">
+                      <td className="border-r border-black"></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
+                    </tr>
                     {[
                       { code: 'PPA 235', title: 'Theories of the State (PPA525)', id: 'L3_PPA235' },
                       { code: 'PPA 301', title: 'Administrative Law (PPA629)', id: 'L3_PPA301' },
@@ -12688,15 +12677,13 @@ export default function Dashboard() {
                     ))}
                   </tbody>
                 </table>
-                <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
-                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
+                  <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
-
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                    <div className="flex items-center justify-center" style={{ width: '2rem', borderRight: '1px solid black' }}>
+                    <div className="w-8 border-r border-black flex items-center justify-center">
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
@@ -12717,13 +12704,13 @@ export default function Dashboard() {
                   </div>
                 ))}
                 <div className="flex border-b border-black">
-                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
+                  <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-black">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></div>
 
                 </div>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="flex items-center justify-center" style={{ width: '2rem', borderRight: '1px solid black' }}>
+                    <div className="w-8 border-r border-black flex items-center justify-center">
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
@@ -12744,13 +12731,13 @@ export default function Dashboard() {
                   </div>
                 ))}
                 <div className="flex border-b border-black">
-                  <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
+                  <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I <span className="font-black">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></div>
 
                 </div>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="flex items-center justify-center" style={{ width: '2rem', borderRight: '1px solid black' }}>
+                    <div className="w-8 border-r border-black flex items-center justify-center">
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
@@ -12830,7 +12817,7 @@ export default function Dashboard() {
                   };
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
-                    <div className="flex flex-col items-center gap-1.5">
+                    <div className="flex flex-col items-start gap-1.5">
                       <div className="border border-gray-300 rounded-lg flex items-center gap-1.5 px-4 py-3" style={{ background: '#ffffff' }} data-testid="l1-gpa-box">
                         <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
                         {avgGpa !== null ? (
