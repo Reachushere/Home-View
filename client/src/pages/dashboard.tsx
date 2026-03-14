@@ -3094,14 +3094,15 @@ export default function Dashboard() {
   const InProgressToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
     const greyedOut = isCourseGreyedOut(id);
     const prevCompleted = isPreviouslyCompleted(id);
+    const sectionFulfilled = isSectionFulfilledForCourse(id);
+    const isDisabled = greyedOut || prevCompleted || sectionFulfilled;
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
-    const isIP = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
+    const isIP = isDisabled ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
     const isDone = !!checkedCourses[id];
-    if (greyedOut || prevCompleted) return null;
     const activeIdx = isDone ? 2 : isIP ? 1 : 0;
     const handleClick = (e: React.MouseEvent, idx: number) => {
       e.stopPropagation();
-      if (isAutoFromL1) return;
+      if (isDisabled || isAutoFromL1) return;
       if (idx === 0) {
         if (isDone) toggleCourse(id);
         if (isIP) toggleInProgress(id);
@@ -3120,14 +3121,14 @@ export default function Dashboard() {
       data-testid={`toggle-in-progress-${id}`}
     >
       <div style={{ display: 'flex', gap: '0px' }}>
-        <div onClick={(e) => handleClick(e, 0)} title="Not started" style={{ width: '14px', height: '14px', border: '1px solid #999', borderRight: 'none', borderRadius: '2px 0 0 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 0 ? '#fecaca' : '#fff' }}>
-          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2.8" fill="none" stroke={activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/><line x1="1.8" y1="6.2" x2="6.2" y2="1.8" stroke={activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/></svg>
+        <div onClick={(e) => handleClick(e, 0)} title="Not started" style={{ width: '14px', height: '14px', border: '1px solid ' + (isDisabled ? '#ccc' : '#999'), borderRight: 'none', borderRadius: '2px 0 0 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', background: isDisabled ? '#f0f0f0' : activeIdx === 0 ? '#fecaca' : '#fff', opacity: isDisabled ? 0.5 : 1 }}>
+          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2.8" fill="none" stroke={isDisabled ? '#bbb' : activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/><line x1="1.8" y1="6.2" x2="6.2" y2="1.8" stroke={isDisabled ? '#bbb' : activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/></svg>
         </div>
-        <div onClick={(e) => handleClick(e, 1)} title="In progress" style={{ width: '14px', height: '14px', border: '1px solid #999', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 1 ? '#f59e0b' : '#fff' }}>
-          <span style={{ fontSize: '9px', fontWeight: 700, color: activeIdx === 1 ? '#fff' : '#ccc', lineHeight: 1 }}>~</span>
+        <div onClick={(e) => handleClick(e, 1)} title="In progress" style={{ width: '14px', height: '14px', border: '1px solid ' + (isDisabled ? '#ccc' : '#999'), display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', background: isDisabled ? '#f0f0f0' : activeIdx === 1 ? '#f59e0b' : '#fff', opacity: isDisabled ? 0.5 : 1 }}>
+          <span style={{ fontSize: '9px', fontWeight: 700, color: isDisabled ? '#bbb' : activeIdx === 1 ? '#fff' : '#ccc', lineHeight: 1 }}>~</span>
         </div>
-        <div onClick={(e) => handleClick(e, 2)} title="Complete" style={{ width: '14px', height: '14px', border: '1px solid #999', borderLeft: 'none', borderRadius: '0 2px 2px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 2 ? '#dcfce7' : '#fff' }}>
-          <Check style={{ width: '8px', height: '8px', color: activeIdx === 2 ? '#16a34a' : '#ccc', strokeWidth: 3 }} />
+        <div onClick={(e) => handleClick(e, 2)} title="Complete" style={{ width: '14px', height: '14px', border: '1px solid ' + (isDisabled ? '#ccc' : '#999'), borderLeft: 'none', borderRadius: '0 2px 2px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', background: isDisabled ? '#f0f0f0' : activeIdx === 2 ? '#dcfce7' : '#fff', opacity: isDisabled ? 0.5 : 1 }}>
+          <Check style={{ width: '8px', height: '8px', color: isDisabled ? '#bbb' : activeIdx === 2 ? '#16a34a' : '#ccc', strokeWidth: 3 }} />
         </div>
       </div>
     </div>
