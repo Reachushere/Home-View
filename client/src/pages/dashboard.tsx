@@ -12644,7 +12644,7 @@ export default function Dashboard() {
                     <col style={{ width: '56px' }} />
                     <col />
                     <col style={{ width: '54px' }} />
-                    <col style={{ width: '20px' }} />
+                    <col style={{ width: '24px' }} />
                   </colgroup>
                   <thead className="sticky top-0 z-10">
                     <tr className="border-b border-black bg-gray-50">
