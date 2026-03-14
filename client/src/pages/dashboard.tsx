@@ -3071,11 +3071,11 @@ export default function Dashboard() {
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
     if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
-    if (inProgressCourses[id]) return 'bg-amber-100 text-amber-800';
-    if ((courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
     if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
     if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
+    if (inProgressCourses[id]) return 'bg-amber-100 text-amber-800';
+    if ((courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
@@ -3100,8 +3100,8 @@ export default function Dashboard() {
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
     if (isDropdownRow(id)) return null;
-    if (isPreviouslyCompleted(id)) return <span className="text-black font-bold text-[9px]" style={{ textDecoration: 'none' }}> COMPLETED</span>;
-    if (isCourseGreyedOut(id) || isSectionFulfilledForCourse(id)) return <span className="text-black font-bold text-[9px]" style={{ textDecoration: 'none' }}> NOT REQUIRED</span>;
+    if (isPreviouslyCompleted(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
+    if (isCourseGreyedOut(id) || isSectionFulfilledForCourse(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (NOT REQUIRED)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
   };
