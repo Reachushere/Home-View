@@ -12354,9 +12354,9 @@ export default function Dashboard() {
           <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0" style={{ color: '#000' }}>
             <div className="flex gap-3 items-stretch h-full min-h-0">
               {/* Level I */}
-              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
-              <div className="border-2 border-black">
-                <div className="sticky top-0 z-10 bg-white">
+              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] flex flex-col ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              <div className="border-2 border-black flex flex-col min-h-0 flex-1">
+                <div className="shrink-0">
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
                     <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>CERTIFICATE</div>
@@ -12369,6 +12369,7 @@ export default function Dashboard() {
                     <div className="w-5 border-l border-black"></div>
                   </div>
                 </div>
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
                 </div>
@@ -12461,7 +12462,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ))}
-              <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                </div>
+              <div className="shrink-0 flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[9px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
                   <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(l1Progress.completed / l1Progress.total) * 100}%`, backgroundColor: getHeaderColor(l1Progress) }} />
@@ -12472,9 +12474,9 @@ export default function Dashboard() {
               </div>
 
               {/* Level II */}
-              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
-              <div className="border-2 border-black">
-                <div className="sticky top-0 z-10 bg-white">
+              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] flex flex-col ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              <div className="border-2 border-black flex flex-col min-h-0 flex-1">
+                <div className="shrink-0">
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                     <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
@@ -12487,6 +12489,7 @@ export default function Dashboard() {
                     <div className="w-5 border-l border-black"></div>
                   </div>
                 </div>
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold">({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
                 </div>
@@ -12594,7 +12597,8 @@ export default function Dashboard() {
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                 ))}
-              <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                </div>
+              <div className="shrink-0 flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[9px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
                   <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(l2Progress.completed / l2Progress.total) * 100}%`, backgroundColor: getHeaderColor(l2Progress) }} />
@@ -12605,9 +12609,9 @@ export default function Dashboard() {
               </div>
 
               {/* Level III */}
-              <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black overflow-y-auto scrollbar-hide">
-              <div className="border-2 border-black">
-                <div className="sticky top-0 z-10 bg-white">
+              <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black flex flex-col">
+              <div className="border-2 border-black flex flex-col min-h-0 flex-1">
+                <div className="shrink-0">
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
                     <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
@@ -12620,6 +12624,7 @@ export default function Dashboard() {
                     <div className="border-l border-black" style={{ width: '20px', minWidth: '20px' }}></div>
                   </div>
                 </div>
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
                 <table className="w-full border-collapse">
                   <colgroup>
                     <col style={{ width: '48px' }} />
@@ -12757,7 +12762,8 @@ export default function Dashboard() {
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                   </div>
                 ))}
-              <div className="flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
+                </div>
+              <div className="shrink-0 flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[9px] font-bold whitespace-nowrap">Progress</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2.5">
                   <div className="h-2.5 rounded-full transition-opacity duration-300" style={{ width: `${(l3Progress.completed / l3Progress.total) * 100}%`, backgroundColor: getHeaderColor(l3Progress) }} />
