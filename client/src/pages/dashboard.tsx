@@ -3072,8 +3072,12 @@ export default function Dashboard() {
     return code.replace(/([A-Z]+)(\d+)/, '$1 $2');
   };
 
+  const isDropdownRow = (id: string) =>
+    /^(LIBERAL|OPEN\d|L2_LIBERAL|L2_OPEN\d|L3_POG\d|L3_LIBERAL\d|L3_OPEN\d)$/.test(id);
+
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
+    if (isDropdownRow(id)) return null;
     if (isPreviouslyCompleted(id)) return <span className="font-bold">&nbsp;Completed</span>;
     if (isCourseGreyedOut(id)) return <span className="font-bold">&nbsp;Not required</span>;
     if (isSectionFulfilledForCourse(id)) return <span className="font-bold">&nbsp;Not required</span>;
