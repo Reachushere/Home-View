@@ -12371,8 +12371,45 @@ export default function Dashboard() {
               <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
             </div>
           </div>
-          <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0" style={{ color: '#000' }}>
-            <div className="flex gap-3 items-stretch h-full min-h-0">
+          <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0 flex flex-col" style={{ color: '#000' }}>
+            <div className="shrink-0 flex items-center pb-1">
+              <input
+                type="file"
+                ref={courseListFileRef}
+                accept=".txt,.csv,.md,.html,.htm"
+                className="hidden"
+                data-testid="input-course-list-file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const activeCourses = coursesData.courses.filter((c: any) => c.name.trim());
+                    if (activeCourses.length === 1) {
+                      handleCourseListUpload(file, activeCourses[0].name);
+                    } else if (activeCourses.length > 1) {
+                      setCourseListPendingFile(file);
+                      setCourseListUploadCourse('');
+                      setIsCourseListUploadOpen(true);
+                      setCourseListChanges([]);
+                    }
+                  }
+                  e.target.value = '';
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-7 flex items-center gap-1.5 whitespace-nowrap"
+                style={{ fontSize: '11px' }}
+                onClick={() => courseListFileRef.current?.click()}
+                disabled={courseListParsing}
+                data-testid="button-upload-course-list"
+                title="Upload course list to scan for task changes"
+              >
+                <Upload className="w-3 h-3" />
+                {courseListParsing ? 'Scanning...' : 'Upload Course List'}
+              </Button>
+            </div>
+            <div className="flex gap-3 items-stretch flex-1 min-h-0">
               {/* Level I */}
               <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] flex flex-col ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black flex flex-col min-h-0 flex-1">
@@ -12863,41 +12900,6 @@ export default function Dashboard() {
                           <span className="text-[10px] text-white/50">—</span>
                         )}
                       </div>
-                      <input
-                        type="file"
-                        ref={courseListFileRef}
-                        accept=".txt,.csv,.md,.html,.htm"
-                        className="hidden"
-                        data-testid="input-course-list-file"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const activeCourses = coursesData.courses.filter(c => c.name.trim());
-                            if (activeCourses.length === 1) {
-                              handleCourseListUpload(file, activeCourses[0].name);
-                            } else if (activeCourses.length > 1) {
-                              setCourseListPendingFile(file);
-                              setCourseListUploadCourse('');
-                              setIsCourseListUploadOpen(true);
-                              setCourseListChanges([]);
-                            }
-                          }
-                          e.target.value = '';
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[140px] flex items-center gap-1.5 whitespace-nowrap"
-                        style={{ fontSize: '12px' }}
-                        onClick={() => courseListFileRef.current?.click()}
-                        disabled={courseListParsing}
-                        data-testid="button-upload-course-list"
-                        title="Upload course list to scan for task changes"
-                      >
-                        <Upload className="w-3.5 h-3.5" />
-                        {courseListParsing ? 'Scanning...' : 'Upload Course List'}
-                      </Button>
                     </div>
                   );
                 })()}
