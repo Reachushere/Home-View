@@ -13164,22 +13164,24 @@ export default function Dashboard() {
           <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
+            style={{ marginLeft: '2px' }}
             onClick={() => { const newWeek = selectedWeek - 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-prev-week"
             data-date-nav
           >
-            <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
+            <ChevronLeft style={{ width: '19px', height: '19px' }} className="text-white" strokeWidth={2.5} />
           </div>
           <span className="text-[12px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
+            style={{ marginLeft: '2px' }}
             onClick={() => { const newWeek = selectedWeek + 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-next-week"
             data-date-nav
           >
-            <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
+            <ChevronRight style={{ width: '19px', height: '19px' }} className="text-white" strokeWidth={2.5} />
           </div>
         </div>
       </div>
