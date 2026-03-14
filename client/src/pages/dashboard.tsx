@@ -20795,19 +20795,19 @@ export default function Dashboard() {
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '25px', height: '25px' }}
+              style={{ width: '23px', height: '23px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '21px', height: '21px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronUp style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '25px', height: '25px' }}
+              style={{ width: '23px', height: '23px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '21px', height: '21px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronDown style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
             </div>
           </div>
           <div
