@@ -20949,11 +20949,10 @@ export default function Dashboard() {
                             const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
                             const barWidth = Math.round((progressPercent / 100) * 28);
                             const isToday = daysUntil <= 0;
-                            const isTomorrow = daysUntil === 1;
-                            const isThisWeek = tDue <= thisWeekFridayEnd && !isToday && !isTomorrow;
+                            const isThroughFriday = !isToday && tDue <= thisWeekFridayEnd;
                             const isNextWeek = tDue >= nextSaturday && tDue <= nextWeekEnd;
                             const is2Weeks = tDue >= twoWeeksStart && tDue <= threeWeeksEnd;
-                            const barColor = isToday ? '#ef4444' : isTomorrow ? '#eab308' : isThisWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : isNextWeek ? 'rgb(0, 200, 0)' : is2Weeks ? 'rgb(0, 150, 0)' : 'rgb(100, 100, 100)';
+                            const barColor = isToday ? '#ef4444' : isThroughFriday ? '#eab308' : isNextWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : is2Weeks ? (daysUntil < 3 ? '#eab308' : '#22c55e') : 'rgb(100, 100, 100)';
                             return (
                               <div className="flex-shrink-0 flex items-center justify-end gap-1.5" style={{ marginLeft: 'auto', width: '75px' }}>
                                 <div style={{ width: '28px', position: 'relative', height: '3px', flexShrink: 0 }}>
