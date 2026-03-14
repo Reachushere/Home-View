@@ -12427,7 +12427,7 @@ export default function Dashboard() {
                     <div className="w-5 border-r border-black flex items-center justify-center">
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives[cid]?.trim()) ? "default" : "pointer", opacity: (!openElectives[cid]?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives[cid]?.trim()) toggleCourse(cid); }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">PR Table I</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center">
                       <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR elective ${i+1}...`}</option>
