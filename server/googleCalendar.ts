@@ -69,6 +69,34 @@ export async function createCalendarEvent(task: {
   
   const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
   
+  const checkDateStr = dueDate.toISOString().split('T')[0];
+  const existingEventId = await findExistingEventBySummary(summary, checkDateStr);
+  if (existingEventId) {
+    console.log(`[Calendar] Event already exists: "${summary}" on ${checkDateStr}, reusing id=${existingEventId}`);
+    return { id: existingEventId };
+  }
+  if (task.courseName) {
+    const coursePrefix = `[${task.courseName}]`;
+    const titleWords = task.title.toLowerCase().replace(/[^a-z0-9\s&]/g, '').trim().split(/\s+/).filter(w => w.length > 2);
+    try {
+      const checkCal = await getGoogleCalendarClient();
+      const tMin = new Date(checkDateStr + 'T00:00:00-05:00').toISOString();
+      const tMax = new Date(checkDateStr + 'T23:59:59-05:00').toISOString();
+      const resp = await checkCal.events.list({ calendarId: 'primary', timeMin: tMin, timeMax: tMax, q: coursePrefix.substring(0, 50), singleEvents: true, maxResults: 30 });
+      const similar = (resp.data.items || []).find(e => {
+        if (!e.summary?.startsWith(coursePrefix)) return false;
+        const existingTitle = e.summary.replace(coursePrefix, '').trim().toLowerCase().replace(/[^a-z0-9\s&]/g, '').trim();
+        return titleWords.some(w => existingTitle.includes(w));
+      });
+      if (similar?.id) {
+        console.log(`[Calendar] Similar event found: "${similar.summary}" for "${summary}" on ${checkDateStr}, reusing id=${similar.id}`);
+        return { id: similar.id };
+      }
+    } catch (err) {
+      console.error('[Calendar] Fuzzy dedup check failed:', err);
+    }
+  }
+
   let event: any;
   
   if (isAllDay) {
