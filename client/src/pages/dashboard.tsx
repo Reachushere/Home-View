@@ -8666,13 +8666,13 @@ export default function Dashboard() {
                 value={checklistSnoozeValue}
                 onChange={e => setChecklistSnoozeValue(parseInt(e.target.value, 10))}
                 className="border border-white/30 rounded px-2 py-2 text-sm w-16 text-center"
-                style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
+                style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff', opacity: 1, WebkitAppearance: 'none' as any }}
                 data-testid="select-snooze-value"
                 size={1}
               >
                 {checklistSnoozeUnit === 'minutes'
-                  ? Array.from({ length: 60 }, (_, i) => i + 1).map(v => <option key={v} value={v} style={{ backgroundColor: '#2a2a2a', color: '#ffffff' }}>{v}</option>)
-                  : [1, 2, 3, 4, 6, 8, 12, 24].map(v => <option key={v} value={v} style={{ backgroundColor: '#2a2a2a', color: '#ffffff' }}>{v}</option>)
+                  ? Array.from({ length: 60 }, (_, i) => i + 1).map(v => <option key={v} value={v} style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>{v}</option>)
+                  : [1, 2, 3, 4, 6, 8, 12, 24].map(v => <option key={v} value={v} style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>{v}</option>)
                 }
               </select>
               <select
@@ -8683,11 +8683,11 @@ export default function Dashboard() {
                   setChecklistSnoozeValue(unit === 'minutes' ? 30 : 1);
                 }}
                 className="border border-white/30 rounded px-2 py-2 text-sm"
-                style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
+                style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff', opacity: 1, WebkitAppearance: 'none' as any }}
                 data-testid="select-snooze-unit"
               >
-                <option value="minutes" style={{ backgroundColor: '#2a2a2a', color: '#ffffff' }}>minutes</option>
-                <option value="hours" style={{ backgroundColor: '#2a2a2a', color: '#ffffff' }}>hours</option>
+                <option value="minutes" style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>minutes</option>
+                <option value="hours" style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>hours</option>
               </select>
             </div>
             <button
