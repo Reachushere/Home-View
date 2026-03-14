@@ -3008,7 +3008,7 @@ export default function Dashboard() {
 
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
-    if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
+    if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400 line-through';
     if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
     if (inProgressCourses[id] || (courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
     return '';
@@ -12695,16 +12695,16 @@ export default function Dashboard() {
                   };
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
-                    <div className="border border-white/40 rounded-lg flex items-center gap-3 px-4 py-3" style={{ background: 'rgba(255,255,255,0.12)', maxWidth: '50%' }} data-testid="l1-gpa-box">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">GPA</span>
+                    <div className="border border-gray-300 rounded-lg flex items-center gap-3 px-4 py-3" style={{ background: '#ffffff', maxWidth: '50%' }} data-testid="l1-gpa-box">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
                       {avgGpa !== null ? (
                         <>
-                          <span className="font-bold text-[24px] leading-none text-white">{avgGpa.toFixed(2)}</span>
-                          <span className="font-bold text-[20px] leading-none text-white/90">{gpaToLetter(avgGpa)}</span>
-                          <span className="text-[10px] text-white/40">({gpaValues.length} courses)</span>
+                          <span className="font-bold text-[24px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
+                          <span className="font-bold text-[20px] leading-none" style={{ color: '#222' }}>{gpaToLetter(avgGpa)}</span>
+                          <span className="text-[10px]" style={{ color: '#888' }}>({gpaValues.length} courses)</span>
                         </>
                       ) : (
-                        <span className="text-[12px] text-white/40">—</span>
+                        <span className="text-[12px]" style={{ color: '#aaa' }}>—</span>
                       )}
                     </div>
                   );
