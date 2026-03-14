@@ -12286,16 +12286,18 @@ export default function Dashboard() {
               {/* Level I */}
               <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
-                <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
-                  <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>CERTIFICATE</div>
-                </div>
-                <div className="flex border-b border-black bg-gray-50">
-                  <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
-                  <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
-                  <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                  <div className="w-5 border-l border-black"></div>
+                <div className="sticky top-0 z-10">
+                  <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
+                    <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
+                    <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>CERTIFICATE</div>
+                  </div>
+                  <div className="flex border-b border-black bg-gray-50">
+                    <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
+                    <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
+                    <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
+                    <div className="w-5 border-l border-black"></div>
+                  </div>
                 </div>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
@@ -12402,16 +12404,18 @@ export default function Dashboard() {
               {/* Level II */}
               <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
-                <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
-                  <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
-                </div>
-                <div className="flex border-b border-black bg-gray-50">
-                  <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
-                  <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
-                  <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                  <div className="w-5 border-l border-black"></div>
+                <div className="sticky top-0 z-10">
+                  <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
+                    <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
+                    <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
+                  </div>
+                  <div className="flex border-b border-black bg-gray-50">
+                    <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
+                    <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
+                    <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
+                    <div className="w-5 border-l border-black"></div>
+                  </div>
                 </div>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold">({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
@@ -12533,9 +12537,18 @@ export default function Dashboard() {
               {/* Level III */}
               <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black overflow-y-auto scrollbar-hide">
               <div className="border-2 border-black">
-                <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
-                  <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
+                <div className="sticky top-0 z-10">
+                  <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
+                    <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
+                    <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
+                  </div>
+                  <div className="flex border-b border-black bg-gray-50">
+                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '3rem', minWidth: '3rem' }}>Type</div>
+                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '3.5rem', minWidth: '3.5rem' }}>Code</div>
+                    <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
+                    <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
+                    <div className="border-l border-black" style={{ width: '1.25rem', minWidth: '1.25rem' }}></div>
+                  </div>
                 </div>
                 <table className="w-full border-collapse">
                   <colgroup>
@@ -12545,15 +12558,6 @@ export default function Dashboard() {
                     <col style={{ width: '54px' }} />
                     <col style={{ width: '1.25rem' }} />
                   </colgroup>
-                  <thead>
-                    <tr className="border-b border-black bg-gray-50">
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</td>
-                      <td className="px-1 py-0.5 text-[9px] font-bold">Title</td>
-                      <td className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Grade</td>
-                      <td className="border-l border-black"></td>
-                    </tr>
-                  </thead>
                   <tbody>
                     <tr className="border-b border-black">
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
