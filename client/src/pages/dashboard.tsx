@@ -304,7 +304,8 @@ export default function Dashboard() {
     const clickHandler = (e: MouseEvent) => {
       if (Date.now() - perfStart > PERF_LOG_DURATION) return;
       const target = e.target as HTMLElement;
-      const id = target.getAttribute('data-testid') || target.id || target.tagName + '.' + target.className.split(' ')[0];
+      const cn = typeof target.className === 'string' ? target.className : (target.className as any)?.baseVal || '';
+      const id = target.getAttribute('data-testid') || target.id || target.tagName + '.' + cn.split(' ')[0];
       const clickTime = performance.now();
       pendingClicks.set(id, clickTime);
       console.log(`[PERF] CLICK on "${id}" at ${clickTime.toFixed(0)}ms`);
