@@ -3095,6 +3095,7 @@ export default function Dashboard() {
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
     const isActive = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
     if (greyedOut || prevCompleted) return null;
+    if (isDropdownRow(id)) return null;
     return (
     <div
       className={inline ? "ml-0.5 shrink-0 cursor-pointer flex items-center" : "absolute top-0 right-0 cursor-pointer flex items-center"}
