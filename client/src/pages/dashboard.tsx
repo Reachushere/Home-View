@@ -3121,14 +3121,14 @@ export default function Dashboard() {
       data-testid={`toggle-in-progress-${id}`}
     >
       <div style={{ display: 'flex', gap: '0px' }}>
-        <div onClick={(e) => handleClick(e, 0)} title="Not started" style={{ width: '13px', height: '11px', border: '1px solid #999', borderRight: 'none', borderRadius: '2px 0 0 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 0 ? '#e5e7eb' : '#fff' }}>
-          <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="2.5" fill="none" stroke={activeIdx === 0 ? '#666' : '#ccc'} strokeWidth="0.8"/><line x1="1.5" y1="5.5" x2="5.5" y2="1.5" stroke={activeIdx === 0 ? '#666' : '#ccc'} strokeWidth="0.8"/></svg>
+        <div onClick={(e) => handleClick(e, 0)} title="Not started" style={{ width: '14px', height: '14px', border: '1px solid #999', borderRight: 'none', borderRadius: '2px 0 0 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 0 ? '#fecaca' : '#fff' }}>
+          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2.8" fill="none" stroke={activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/><line x1="1.8" y1="6.2" x2="6.2" y2="1.8" stroke={activeIdx === 0 ? '#dc2626' : '#ccc'} strokeWidth="0.9"/></svg>
         </div>
-        <div onClick={(e) => handleClick(e, 1)} title="In progress" style={{ width: '13px', height: '11px', border: '1px solid #999', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 1 ? '#fef3c7' : '#fff' }}>
-          <span style={{ fontSize: '8px', fontWeight: 700, color: activeIdx === 1 ? '#d97706' : '#ccc', lineHeight: 1 }}>~</span>
+        <div onClick={(e) => handleClick(e, 1)} title="In progress" style={{ width: '14px', height: '14px', border: '1px solid #999', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 1 ? '#f59e0b' : '#fff' }}>
+          <span style={{ fontSize: '9px', fontWeight: 700, color: activeIdx === 1 ? '#fff' : '#ccc', lineHeight: 1 }}>~</span>
         </div>
-        <div onClick={(e) => handleClick(e, 2)} title="Complete" style={{ width: '13px', height: '11px', border: '1px solid #999', borderLeft: 'none', borderRadius: '0 2px 2px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 2 ? '#dcfce7' : '#fff' }}>
-          <Check style={{ width: '7px', height: '7px', color: activeIdx === 2 ? '#16a34a' : '#ccc', strokeWidth: 3 }} />
+        <div onClick={(e) => handleClick(e, 2)} title="Complete" style={{ width: '14px', height: '14px', border: '1px solid #999', borderLeft: 'none', borderRadius: '0 2px 2px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 2 ? '#dcfce7' : '#fff' }}>
+          <Check style={{ width: '8px', height: '8px', color: activeIdx === 2 ? '#16a34a' : '#ccc', strokeWidth: 3 }} />
         </div>
       </div>
     </div>
