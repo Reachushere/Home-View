@@ -90,9 +90,10 @@ const VOICE_LABELS: Record<Voice, string> = {
 export default function PDFReaderPage() {
   const [, params] = useRoute("/pdf-reader/:fileId");
   const [isOneDriveRoute] = useRoute("/pdf-reader/onedrive");
-  const fileId = params?.fileId && params.fileId !== "onedrive" ? parseInt(params.fileId) : null;
-  
   const urlParams = new URLSearchParams(window.location.search);
+  const queryFileId = urlParams.get("fileId") ? parseInt(urlParams.get("fileId")!) : null;
+  const fileId = params?.fileId && params.fileId !== "onedrive" ? parseInt(params.fileId) : (queryFileId || null);
+  
   const oneDriveUrl = urlParams.get("oneDriveUrl") || urlParams.get("url");
   const oneDriveName = urlParams.get("name");
   const filesParam = urlParams.get("files");
@@ -625,7 +626,7 @@ export default function PDFReaderPage() {
       if (!response.ok) throw new Error("Failed to fetch file");
       return response.json();
     },
-    enabled: !!fileId && !isOneDriveRoute,
+    enabled: !!fileId,
   });
 
   useEffect(() => {
@@ -906,12 +907,12 @@ export default function PDFReaderPage() {
         if (file?.checkedChunks) {
           try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
         }
-        const localChecked = loadCheckedChunks(key);
-        const mergedChecked = serverChecked.size > localChecked.size ? serverChecked : localChecked;
-        setCheckedChunks(mergedChecked);
+        const finalChecked = serverChecked.size > 0 ? serverChecked : new Set<number>();
+        setCheckedChunks(finalChecked);
+        if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, preChunks.length);
         console.log("Pre-populated chunks:", preChunks.length);
 
-        const firstUnlistened = preChunks.findIndex((_, idx) => !mergedChecked.has(idx));
+        const firstUnlistened = preChunks.findIndex((_, idx) => !finalChecked.has(idx));
         const preloadIdx = firstUnlistened >= 0 ? firstUnlistened : 0;
         if (preChunks[preloadIdx] && !ttsPreloadCache.current[preloadIdx]) {
           console.log(`[TTS] Pre-fetching audio for chunk ${preloadIdx + 1}...`);
@@ -1243,15 +1244,15 @@ export default function PDFReaderPage() {
     if (file?.checkedChunks) {
       try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
     }
-    const localChecked = loadCheckedChunks(key);
-    const mergedChecked = serverChecked.size > localChecked.size ? serverChecked : localChecked;
-    setCheckedChunks(mergedChecked);
+    const finalChecked = serverChecked.size > 0 ? serverChecked : new Set<number>();
+    setCheckedChunks(finalChecked);
+    if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, newChunks.length);
     let startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
-    if (mergedChecked.size > 0 && startChunk === 0) {
-      const firstUnchecked = newChunks.findIndex((_, idx) => !mergedChecked.has(idx));
+    if (finalChecked.size > 0 && startChunk === 0) {
+      const firstUnchecked = newChunks.findIndex((_, idx) => !finalChecked.has(idx));
       if (firstUnchecked >= 0) {
         startChunk = firstUnchecked;
-        console.log(`[TTS] Skipping ${mergedChecked.size} checked chunks, starting at chunk ${startChunk}`);
+        console.log(`[TTS] Skipping ${finalChecked.size} checked chunks, starting at chunk ${startChunk}`);
       }
     }
     if (startChunk > 0) {
@@ -1602,8 +1603,11 @@ export default function PDFReaderPage() {
       chunksRef.current = newChunks;
       setChunksList(newChunks);
       setTotalChunks(newChunks.length);
-      const key = getFileKey();
-      const loaded = loadCheckedChunks(key);
+      let serverChecked = new Set<number>();
+      if (file?.checkedChunks) {
+        try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+      }
+      const loaded = serverChecked.size > 0 ? serverChecked : new Set<number>();
       setCheckedChunks(loaded);
 
       const firstUnlistened = newChunks.findIndex((_, idx) => !loaded.has(idx));
