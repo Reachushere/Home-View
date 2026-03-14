@@ -12885,20 +12885,19 @@ export default function Dashboard() {
                           e.target.value = '';
                         }}
                       />
-                      <button
+                      <Button
                         type="button"
-                        className="border border-gray-300 rounded-lg px-3 py-1.5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
-                        style={{ background: '#ffffff' }}
+                        variant="outline"
+                        className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[140px] flex items-center gap-1.5 whitespace-nowrap"
+                        style={{ fontSize: '12px' }}
                         onClick={() => courseListFileRef.current?.click()}
                         disabled={courseListParsing}
                         data-testid="button-upload-course-list"
                         title="Upload course list to scan for task changes"
                       >
-                        <Upload className="w-3.5 h-3.5" style={{ color: '#666' }} />
-                        <span className="text-[10px] font-bold" style={{ color: '#555' }}>
-                          {courseListParsing ? 'Scanning...' : 'Upload Course List'}
-                        </span>
-                      </button>
+                        <Upload className="w-3.5 h-3.5" />
+                        {courseListParsing ? 'Scanning...' : 'Upload Course List'}
+                      </Button>
                     </div>
                   );
                 })()}
