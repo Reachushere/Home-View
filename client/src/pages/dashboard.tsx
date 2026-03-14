@@ -12515,7 +12515,7 @@ export default function Dashboard() {
                     <div className="w-8 border-r border-black flex items-center justify-center">
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[ecn.id] || false) ? "#1a1a1a" : "transparent", cursor: disabled ? "default" : "pointer", opacity: 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!disabled) toggleCourse(ecn.id); }}>{(checkedCourses[ecn.id] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
-                    <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{i === 0 ? 'SELECT' : ''}</div>
+                    <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><InProgressToggle id={ecn.id} inline /><CourseName id={ecn.id}>{ecn.name}</CourseName> <StrikethroughLabel id={ecn.id} /></div>
                     <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
