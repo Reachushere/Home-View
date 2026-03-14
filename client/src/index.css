@@ -2020,6 +2020,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
 }
 
+[data-testid^="time-slot-"]:hover,
+[data-testid^="course-row-"]:hover,
+[data-testid^="other-row-"]:hover {
+  filter: brightness(0.92);
+  transition: filter 0.1s ease;
+}
+[data-testid^="all-day-slot-"]:hover {
+  filter: brightness(0.92);
+  transition: filter 0.1s ease;
+}
+
 .hide-scrollbar::-webkit-scrollbar,
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
