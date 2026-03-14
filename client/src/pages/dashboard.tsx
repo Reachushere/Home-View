@@ -20922,7 +20922,7 @@ export default function Dashboard() {
                     const isCASL = cCode.startsWith('CASL');
                     const textColor = '#ffffff';
                     const dateColor = '#ffffff';
-                    return courseTasks.map(t => {
+                    return courseTasks.map((t, tIdx) => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
                         <div
@@ -20931,6 +20931,7 @@ export default function Dashboard() {
                           style={{
                             lineHeight: '1.3',
                             marginBottom: '1px',
+                            marginTop: tIdx === 0 ? '-2px' : undefined,
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
