@@ -12599,7 +12599,7 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     <tr className="border-b border-black">
-                      <td className="border-r border-black"></td>
+                      <td className="border-r border-black" style={{ width: '2rem' }}></td>
                       <td colSpan={5} className="px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-black">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
@@ -12631,7 +12631,7 @@ export default function Dashboard() {
                       <td className="border-l border-black"></td>
                     </tr>
                     <tr className="border-b border-black">
-                      <td className="border-r border-black"></td>
+                      <td className="border-r border-black" style={{ width: '2rem' }}></td>
                       <td colSpan={5} className="px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
                     </tr>
                     {[
@@ -12653,10 +12653,10 @@ export default function Dashboard() {
                       <tr key={course.code} className={`${idx < arr.length - 1 ? 'border-b border-black' : ''} ${courseRowClass(course.id)}`}>
                         {idx === 0 && (
                           <>
-                            <td rowSpan={14} className="px-0.5 py-0.5 border-r border-black text-center align-middle">
-                              <div className="flex flex-col gap-0">
+                            <td rowSpan={14} className="p-0 border-r border-black text-center align-middle">
+                              <div className="flex flex-col w-full">
                                 {['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (
-                                  <div key={cid} className={`h-6 flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}>
+                                  <div key={cid} className={`h-6 w-full flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}>
                                     <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                                   </div>
                                 ))}
