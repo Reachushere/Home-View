@@ -12310,7 +12310,7 @@ export default function Dashboard() {
                 
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
 
                 </div>
                 {[
@@ -12440,7 +12440,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">three</span> courses from the following list, not previously completed <span className="font-black">({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">three</span> courses from the list below, not previously completed <span className="font-black">({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
 
                 </div>
                 {[
@@ -12498,7 +12498,7 @@ export default function Dashboard() {
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Required: Select <span className="underline">one</span> course from the following list <span className="font-black">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Required: Select <span className="underline">one</span> course from the list below <span className="font-black">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
 
                 </div>
                 <div className="flex items-stretch">
@@ -12630,7 +12630,7 @@ export default function Dashboard() {
                 </table>
                 <div className="flex border-b border-black">
                   <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the following list <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-black">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></div>
 
                 </div>
                 <table className="w-full border-collapse">
@@ -12691,7 +12691,7 @@ export default function Dashboard() {
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div style={{ width: "2rem", borderRight: "1px solid black" }}></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the following list <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-black">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
 
                 </div>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
