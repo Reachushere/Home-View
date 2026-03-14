@@ -12889,15 +12889,15 @@ export default function Dashboard() {
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
                     <div className="flex items-center gap-2">
-                      <div className="border border-white/30 rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: 'transparent', height: '32px', minHeight: '32px' }} data-testid="l1-gpa-box">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">GPA</span>
+                      <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: 'rgba(255,255,255,0.15)', height: '32px', minHeight: '32px' }} data-testid="l1-gpa-box">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.85)' }}>GPA</span>
                         {avgGpa !== null ? (
                           <>
-                            <span className="font-bold text-[14px] leading-none text-white">{avgGpa.toFixed(2)}</span>
-                            <span className="text-[10px] font-bold leading-none text-white/70">({gpaToLetter(avgGpa)}, {gpaValues.length})</span>
+                            <span className="font-bold text-[14px] leading-none" style={{ color: '#fff' }}>{avgGpa.toFixed(2)}</span>
+                            <span className="text-[10px] font-bold leading-none" style={{ color: 'rgba(255,255,255,0.85)' }}>({gpaToLetter(avgGpa)}, {gpaValues.length})</span>
                           </>
                         ) : (
-                          <span className="text-[10px] text-white/50">—</span>
+                          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>—</span>
                         )}
                       </div>
                     </div>
