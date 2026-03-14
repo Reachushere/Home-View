@@ -12245,7 +12245,7 @@ export default function Dashboard() {
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - CERTIFICATE</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
                   <div className="w-8 border-r border-black text-[6px] font-bold text-center flex items-center justify-center leading-tight">Complete</div>
@@ -12384,7 +12384,7 @@ export default function Dashboard() {
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - ADVANCED CERTIFICATE</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
                   <div className="w-8 border-r border-black text-[6px] font-bold text-center flex items-center justify-center leading-tight">Complete</div>
@@ -12551,7 +12551,7 @@ export default function Dashboard() {
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
-                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>PAG - DEGREE (Course-Based Option)</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
                   <div className="text-[6px] font-bold text-center flex items-center justify-center leading-tight" style={{ width: '31px', borderRight: '1px solid black' }}>Complete</div>
