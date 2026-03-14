@@ -10389,6 +10389,300 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   })();
 
+  app.post("/api/tasks/compare-course-list", async (req, res) => {
+    try {
+      const { courseListText, courseName } = req.body;
+      if (!courseListText || typeof courseListText !== 'string') {
+        return res.status(400).json({ error: "courseListText is required" });
+      }
+
+      const existingTasks = await storage.getTasks();
+      const courseCode = courseName?.split(' - ')[0]?.trim()?.toUpperCase() || '';
+      const courseTasks = existingTasks.filter(t => {
+        const tc = t.courseName?.split(' - ')[0]?.trim()?.toUpperCase() || '';
+        return tc === courseCode;
+      });
+
+      const lines = courseListText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+      const parsedItems: Array<{
+        title: string;
+        type: string;
+        weekNumber: number | null;
+        dueDate: string | null;
+        startDate: string | null;
+        gradeWeight: number | null;
+        referenceLink: string | null;
+        eventStartTime: string | null;
+        eventEndTime: string | null;
+      }> = [];
+
+      const typeKeywords: Record<string, string[]> = {
+        'reading': ['reading', 'read ch', 'textbook', 'chapter'],
+        'module': ['module', 'lesson', 'lecture', 'watch'],
+        'discussion': ['discussion', 'forum', 'post', 'respond', 'reply'],
+        'quiz': ['quiz', 'test'],
+        'exam': ['exam', 'midterm', 'final exam'],
+        'essay': ['essay', 'paper', 'write', 'report', 'assignment', 'submit'],
+        'poll': ['poll', 'survey', 'vote'],
+        'project': ['project', 'presentation', 'group'],
+      };
+
+      const detectType = (text: string): string => {
+        const lower = text.toLowerCase();
+        for (const [type, keywords] of Object.entries(typeKeywords)) {
+          if (keywords.some(kw => lower.includes(kw))) return type;
+        }
+        return 'other';
+      };
+
+      const parseDate = (text: string): string | null => {
+        const datePatterns = [
+          /(\d{4}-\d{2}-\d{2})/,
+          /(\d{1,2}\/\d{1,2}\/\d{2,4})/,
+          /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{4})?)/i,
+          /((?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{4})?)/i,
+        ];
+        for (const pattern of datePatterns) {
+          const match = text.match(pattern);
+          if (match) {
+            const d = new Date(match[1]);
+            if (!isNaN(d.getTime())) return d.toISOString();
+          }
+        }
+        return null;
+      };
+
+      const parseTime = (text: string): { start: string | null; end: string | null } => {
+        const timeRange = text.match(/(\d{1,2}:\d{2}\s*(?:am|pm|AM|PM)?)\s*[-–]\s*(\d{1,2}:\d{2}\s*(?:am|pm|AM|PM)?)/);
+        if (timeRange) {
+          return { start: timeRange[1].trim(), end: timeRange[2].trim() };
+        }
+        const ampmRange = text.match(/(\d{1,2}\s*(?:am|pm|AM|PM))\s*[-–]\s*(\d{1,2}\s*(?:am|pm|AM|PM))/);
+        if (ampmRange) {
+          return { start: ampmRange[1].trim(), end: ampmRange[2].trim() };
+        }
+        return { start: null, end: null };
+      };
+
+      const parseWeek = (text: string): number | null => {
+        const weekMatch = text.match(/week\s*(\d+)/i);
+        if (weekMatch) return parseInt(weekMatch[1]);
+        return null;
+      };
+
+      const parseWeight = (text: string): number | null => {
+        const weightMatch = text.match(/(\d+(?:\.\d+)?)\s*%/);
+        if (weightMatch) return parseFloat(weightMatch[1]);
+        return null;
+      };
+
+      let currentWeek: number | null = null;
+      let currentDate: string | null = null;
+
+      for (const line of lines) {
+        const weekHeader = line.match(/^week\s*(\d+)/i);
+        if (weekHeader) {
+          currentWeek = parseInt(weekHeader[1]);
+          const headerDate = parseDate(line);
+          if (headerDate) currentDate = headerDate;
+          continue;
+        }
+
+        const dateHeader = parseDate(line);
+        if (dateHeader && line.match(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|\d)/i) && line.length < 50) {
+          currentDate = dateHeader;
+          continue;
+        }
+
+        if (line.match(/^[-=]+$/) || line.match(/^#{1,3}\s/) || line.length < 3) continue;
+
+        const title = line
+          .replace(/(\d{4}-\d{2}-\d{2})/g, '')
+          .replace(/(\d{1,2}\/\d{1,2}\/\d{2,4})/g, '')
+          .replace(/((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{4})?)/gi, '')
+          .replace(/(\d+(?:\.\d+)?)\s*%/g, '')
+          .replace(/week\s*\d+/gi, '')
+          .replace(/\d{1,2}:\d{2}\s*(?:am|pm|AM|PM)?\s*[-–]\s*\d{1,2}:\d{2}\s*(?:am|pm|AM|PM)?/g, '')
+          .replace(/\d{1,2}\s*(?:am|pm|AM|PM)\s*[-–]\s*\d{1,2}\s*(?:am|pm|AM|PM)/g, '')
+          .replace(/^\s*[-•*]\s*/, '')
+          .replace(/\s*[-–]\s*[-–]\s*/g, ' - ')
+          .replace(/\s*[-–]\s*$/g, '')
+          .replace(/^\s*[-–]\s*/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        if (!title || title.length < 3) continue;
+
+        const type = detectType(line);
+        const week = parseWeek(line) || currentWeek;
+        const date = parseDate(line) || currentDate;
+        const weight = parseWeight(line);
+        const times = parseTime(line);
+
+        parsedItems.push({
+          title,
+          type,
+          weekNumber: week,
+          dueDate: date,
+          startDate: null,
+          gradeWeight: weight,
+          referenceLink: null,
+          eventStartTime: times.start,
+          eventEndTime: times.end,
+        });
+      }
+
+      const changes: Array<{
+        id: string;
+        changeType: 'new' | 'modified' | 'removed';
+        category: string;
+        description: string;
+        details: Record<string, { old: string; new: string }>;
+        parsed: typeof parsedItems[0] | null;
+        existingTaskId: number | null;
+      }> = [];
+
+      let changeIdx = 0;
+      const matchedExistingIds = new Set<number>();
+
+      for (const item of parsedItems) {
+        const normalizeTitle = (t: string) => t.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const matchingTask = courseTasks.find(t => {
+          const titleMatch = normalizeTitle(t.title) === normalizeTitle(item.title);
+          const fuzzyMatch = normalizeTitle(t.title).includes(normalizeTitle(item.title)) || 
+                            normalizeTitle(item.title).includes(normalizeTitle(t.title));
+          const weekMatch = item.weekNumber === null || t.weekNumber === item.weekNumber;
+          return (titleMatch || (fuzzyMatch && weekMatch));
+        });
+
+        if (matchingTask) {
+          matchedExistingIds.add(matchingTask.id);
+          const diffs: Record<string, { old: string; new: string }> = {};
+          if (item.dueDate && matchingTask.dueDate) {
+            const existingDate = new Date(matchingTask.dueDate).toISOString().split('T')[0];
+            const newDate = new Date(item.dueDate).toISOString().split('T')[0];
+            if (existingDate !== newDate) diffs['dueDate'] = { old: existingDate, new: newDate };
+          }
+          if (item.type !== 'other' && item.type !== matchingTask.type) {
+            diffs['type'] = { old: matchingTask.type, new: item.type };
+          }
+          if (item.gradeWeight !== null && item.gradeWeight !== matchingTask.gradeWeight) {
+            diffs['gradeWeight'] = { old: String(matchingTask.gradeWeight || ''), new: String(item.gradeWeight) };
+          }
+          if (item.eventStartTime && item.eventStartTime !== matchingTask.eventStartTime) {
+            diffs['eventStartTime'] = { old: matchingTask.eventStartTime || '', new: item.eventStartTime };
+          }
+          if (item.eventEndTime && item.eventEndTime !== matchingTask.eventEndTime) {
+            diffs['eventEndTime'] = { old: matchingTask.eventEndTime || '', new: item.eventEndTime };
+          }
+          if (Object.keys(diffs).length > 0) {
+            changes.push({
+              id: `change-${changeIdx++}`,
+              changeType: 'modified',
+              category: item.type,
+              description: `Update "${matchingTask.title}" (Week ${matchingTask.weekNumber})`,
+              details: diffs,
+              parsed: item,
+              existingTaskId: matchingTask.id,
+            });
+          }
+        } else {
+          changes.push({
+            id: `change-${changeIdx++}`,
+            changeType: 'new',
+            category: item.type,
+            description: `Add "${item.title}"${item.weekNumber ? ` (Week ${item.weekNumber})` : ''}`,
+            details: {},
+            parsed: item,
+            existingTaskId: null,
+          });
+        }
+      }
+
+      for (const task of courseTasks) {
+        if (!matchedExistingIds.has(task.id) && !task.isCompleted) {
+          changes.push({
+            id: `change-${changeIdx++}`,
+            changeType: 'removed',
+            category: task.type,
+            description: `Remove "${task.title}" (Week ${task.weekNumber})`,
+            details: {},
+            parsed: null,
+            existingTaskId: task.id,
+          });
+        }
+      }
+
+      res.json({ changes, parsedCount: parsedItems.length, existingCount: courseTasks.length });
+    } catch (error) {
+      console.error("Error comparing course list:", error);
+      res.status(500).json({ error: "Failed to compare course list" });
+    }
+  });
+
+  app.post("/api/tasks/apply-course-changes", async (req, res) => {
+    try {
+      const { changes, courseName } = req.body;
+      if (!changes || !Array.isArray(changes)) {
+        return res.status(400).json({ error: "changes array is required" });
+      }
+
+      const results = { created: 0, updated: 0, deleted: 0, errors: 0 };
+      const courseCode = courseName?.split(' - ')[0]?.trim()?.toUpperCase() || '';
+
+      for (const change of changes) {
+        try {
+          if (change.existingTaskId) {
+            const existingTask = await storage.getTask(change.existingTaskId);
+            if (existingTask) {
+              const taskCode = existingTask.courseName?.split(' - ')[0]?.trim()?.toUpperCase() || '';
+              if (courseCode && taskCode !== courseCode) {
+                results.errors++;
+                continue;
+              }
+            }
+          }
+          if (change.changeType === 'new' && change.parsed) {
+            await storage.createTask({
+              title: change.parsed.title,
+              type: change.parsed.type || 'other',
+              courseName: courseName || '',
+              weekNumber: change.parsed.weekNumber || 1,
+              dueDate: change.parsed.dueDate ? new Date(change.parsed.dueDate) : new Date(),
+              startDate: change.parsed.startDate ? new Date(change.parsed.startDate) : null,
+              gradeWeight: change.parsed.gradeWeight,
+              eventStartTime: change.parsed.eventStartTime,
+              eventEndTime: change.parsed.eventEndTime,
+            });
+            results.created++;
+          } else if (change.changeType === 'modified' && change.existingTaskId) {
+            const updates: Record<string, unknown> = {};
+            for (const [field, diff] of Object.entries(change.details)) {
+              const d = diff as { old: string; new: string };
+              if (field === 'dueDate') updates.dueDate = new Date(d.new);
+              else if (field === 'gradeWeight') updates.gradeWeight = Math.round(parseFloat(d.new));
+              else updates[field] = d.new;
+            }
+            await storage.updateTask(change.existingTaskId, updates);
+            results.updated++;
+          } else if (change.changeType === 'removed' && change.existingTaskId) {
+            await storage.deleteTask(change.existingTaskId);
+            results.deleted++;
+          }
+        } catch (err) {
+          console.error("Error applying change:", change, err);
+          results.errors++;
+        }
+      }
+
+      res.json(results);
+    } catch (error) {
+      console.error("Error applying course changes:", error);
+      res.status(500).json({ error: "Failed to apply changes" });
+    }
+  });
+
   return httpServer;
 }
 

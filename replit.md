@@ -116,6 +116,7 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Elective Dropdowns**: All elective slots use `<select>` dropdowns pulling from course data arrays. Level restrictions: L1 LIBERAL = LOWER only, L2 LIBERAL = LOWER only, L3_LIBERAL1 = LOWER, L3_LIBERAL2-4 = UPPER
 - **POG Dropdowns**: L3_POG1/2/3 use dropdowns from POG_COURSES array (300/400-level courses)
 - **GPA Box**: Level I GPA computed from TMU 4.33 scale; color-coded green (≥3.0), yellow (≥2.0), red (<2.0); shows letter grade equivalent
+- **Upload Course List**: Button next to GPA box. Uploads .txt/.csv/.md/.html file, server parses tasks (readings, discussions, quizzes, exams, etc.), compares against existing tasks for the selected course, and shows a dialog with categorized changes (new/modified/removed) with per-change accept/decline checkboxes. API: `POST /api/tasks/compare-course-list`, `POST /api/tasks/apply-course-changes`
 
 ### Dynamic Course Row Switching
 - **After Winter semester** (week 13+): Course rows stop showing CPPA122/CFNF400/CASL101 labels

@@ -2325,6 +2325,22 @@ export default function Dashboard() {
   });
   const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
   const [isNewCourseDialogOpen, setIsNewCourseDialogOpen] = useState(false);
+  const [isCourseListUploadOpen, setIsCourseListUploadOpen] = useState(false);
+  const [courseListChanges, setCourseListChanges] = useState<Array<{
+    id: string;
+    changeType: 'new' | 'modified' | 'removed';
+    category: string;
+    description: string;
+    details: Record<string, { old: string; new: string }>;
+    parsed: Record<string, unknown> | null;
+    existingTaskId: number | null;
+    accepted: boolean;
+  }>>([]);
+  const [courseListUploadCourse, setCourseListUploadCourse] = useState('');
+  const [courseListParsing, setCourseListParsing] = useState(false);
+  const [courseListApplying, setCourseListApplying] = useState(false);
+  const [courseListPendingFile, setCourseListPendingFile] = useState<File | null>(null);
+  const courseListFileRef = useRef<HTMLInputElement>(null);
   const [isNewCourseWizardOpen, setIsNewCourseWizardOpen] = useState(false);
   const newCourseDialogClosingRef = useRef(false);
 
@@ -7022,11 +7038,58 @@ export default function Dashboard() {
   });
 
   // File upload hook for drag and drop
+  const handleCourseListUpload = async (file: File, courseName: string) => {
+    setCourseListParsing(true);
+    try {
+      const text = await file.text();
+      const resp = await apiRequest("POST", "/api/tasks/compare-course-list", {
+        courseListText: text,
+        courseName,
+      });
+      const data = await resp.json() as { changes: Array<{ id: string; changeType: 'new' | 'modified' | 'removed'; category: string; description: string; details: Record<string, { old: string; new: string }>; parsed: Record<string, unknown> | null; existingTaskId: number | null }>; parsedCount: number; existingCount: number };
+      setCourseListChanges((data.changes || []).map(c => ({ ...c, accepted: true })));
+      setCourseListUploadCourse(courseName);
+      setIsCourseListUploadOpen(true);
+    } catch (err) {
+      console.error("Error parsing course list:", err);
+      toast({ title: "Error", description: "Failed to parse course list file", variant: "destructive" });
+    } finally {
+      setCourseListParsing(false);
+    }
+  };
+
+  const handleApplyCourseChanges = async () => {
+    const accepted = courseListChanges.filter(c => c.accepted);
+    if (accepted.length === 0) {
+      setIsCourseListUploadOpen(false);
+      return;
+    }
+    setCourseListApplying(true);
+    try {
+      const resp = await apiRequest("POST", "/api/tasks/apply-course-changes", {
+        changes: accepted,
+        courseName: courseListUploadCourse,
+      });
+      const results = await resp.json() as { created: number; updated: number; deleted: number; errors: number };
+      toast({
+        title: "Changes Applied",
+        description: `Created: ${results.created}, Updated: ${results.updated}, Removed: ${results.deleted}${results.errors > 0 ? `, Errors: ${results.errors}` : ''}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      setIsCourseListUploadOpen(false);
+      setCourseListChanges([]);
+    } catch (err) {
+      console.error("Error applying changes:", err);
+      toast({ title: "Error", description: "Failed to apply changes", variant: "destructive" });
+    } finally {
+      setCourseListApplying(false);
+    }
+  };
+
   const { uploadFile: uploadDroppedFile } = useUpload({
     onSuccess: () => {},
   });
 
-  // Mutation for creating task from dropped file
   const createTaskFromFileMutation = useMutation({
     mutationFn: async ({ day, hour, attachmentPath, fileName }: { day: Date; hour: number; attachmentPath: string; fileName: string }) => {
       const dueDate = new Date(day);
@@ -12742,17 +12805,55 @@ export default function Dashboard() {
                   };
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
-                    <div className="border border-gray-300 rounded-lg flex items-center gap-3 px-4 py-3" style={{ background: '#ffffff', maxWidth: '50%' }} data-testid="l1-gpa-box">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
-                      {avgGpa !== null ? (
-                        <>
-                          <span className="font-bold text-[24px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
-                          <span className="font-bold text-[20px] leading-none" style={{ color: '#222' }}>{gpaToLetter(avgGpa)}</span>
-                          <span className="text-[10px]" style={{ color: '#888' }}>({gpaValues.length} courses)</span>
-                        </>
-                      ) : (
-                        <span className="text-[12px]" style={{ color: '#aaa' }}>—</span>
-                      )}
+                    <div className="flex items-center gap-2">
+                      <div className="border border-gray-300 rounded-lg flex items-center gap-3 px-4 py-3" style={{ background: '#ffffff' }} data-testid="l1-gpa-box">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
+                        {avgGpa !== null ? (
+                          <>
+                            <span className="font-bold text-[24px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
+                            <span className="font-bold text-[20px] leading-none" style={{ color: '#222' }}>{gpaToLetter(avgGpa)}</span>
+                            <span className="text-[10px]" style={{ color: '#888' }}>({gpaValues.length} courses)</span>
+                          </>
+                        ) : (
+                          <span className="text-[12px]" style={{ color: '#aaa' }}>—</span>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        ref={courseListFileRef}
+                        accept=".txt,.csv,.md,.html,.htm"
+                        className="hidden"
+                        data-testid="input-course-list-file"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const activeCourses = coursesData.courses.filter(c => c.name.trim());
+                            if (activeCourses.length === 1) {
+                              handleCourseListUpload(file, activeCourses[0].name);
+                            } else if (activeCourses.length > 1) {
+                              setCourseListPendingFile(file);
+                              setCourseListUploadCourse('');
+                              setIsCourseListUploadOpen(true);
+                              setCourseListChanges([]);
+                            }
+                          }
+                          e.target.value = '';
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="border border-gray-300 rounded-lg px-3 py-2 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+                        style={{ background: '#ffffff', height: '46px' }}
+                        onClick={() => courseListFileRef.current?.click()}
+                        disabled={courseListParsing}
+                        data-testid="button-upload-course-list"
+                        title="Upload course list to scan for task changes"
+                      >
+                        <Upload className="w-4 h-4" style={{ color: '#666' }} />
+                        <span className="text-[10px] font-medium leading-tight whitespace-pre-line" style={{ color: '#555' }}>
+                          {courseListParsing ? 'Scanning...' : 'Upload\nCourse List'}
+                        </span>
+                      </button>
                     </div>
                   );
                 })()}
@@ -22767,6 +22868,123 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
+
+        <Dialog open={isCourseListUploadOpen} onOpenChange={setIsCourseListUploadOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" data-testid="dialog-course-list-changes">
+            <DialogHeader>
+              <DialogTitle className="text-base">Course List Changes</DialogTitle>
+            </DialogHeader>
+            {courseListChanges.length === 0 && !courseListUploadCourse ? (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Select which course this list belongs to:</p>
+                <div className="grid gap-2">
+                  {coursesData.courses.filter(c => c.name.trim()).map((course, idx) => (
+                    <button
+                      key={idx}
+                      className="text-left px-3 py-2 border rounded hover:bg-gray-50 text-sm"
+                      data-testid={`button-select-course-${idx}`}
+                      onClick={() => {
+                        if (courseListPendingFile) {
+                          handleCourseListUpload(courseListPendingFile, course.name);
+                          setCourseListPendingFile(null);
+                        }
+                      }}
+                    >
+                      <span className="inline-block w-3 h-3 rounded-full mr-2" style={{ background: course.color }} />
+                      {course.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : courseListChanges.length === 0 ? (
+              <div className="py-8 text-center">
+                <p className="text-sm text-gray-500">No changes detected between the uploaded list and existing tasks.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-gray-500">
+                  {courseListUploadCourse} — {courseListChanges.length} change{courseListChanges.length !== 1 ? 's' : ''} detected
+                </p>
+                <div className="flex gap-2 mb-2">
+                  <button
+                    className="text-[10px] text-blue-600 hover:underline"
+                    onClick={() => setCourseListChanges(prev => prev.map(c => ({ ...c, accepted: true })))}
+                    data-testid="button-accept-all-changes"
+                  >
+                    Accept All
+                  </button>
+                  <button
+                    className="text-[10px] text-gray-500 hover:underline"
+                    onClick={() => setCourseListChanges(prev => prev.map(c => ({ ...c, accepted: false })))}
+                    data-testid="button-decline-all-changes"
+                  >
+                    Decline All
+                  </button>
+                </div>
+                {['new', 'modified', 'removed'].map(changeType => {
+                  const items = courseListChanges.filter(c => c.changeType === changeType);
+                  if (items.length === 0) return null;
+                  const label = changeType === 'new' ? 'New Tasks' : changeType === 'modified' ? 'Modified Tasks' : 'Removed Tasks';
+                  const color = changeType === 'new' ? '#16a34a' : changeType === 'modified' ? '#ca8a04' : '#dc2626';
+                  return (
+                    <div key={changeType} className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 rounded-full" style={{ background: color }} />
+                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color }}>{label} ({items.length})</span>
+                      </div>
+                      {items.map(change => (
+                        <label
+                          key={change.id}
+                          className="flex items-start gap-2 px-2 py-1.5 rounded border cursor-pointer hover:bg-gray-50"
+                          style={{ borderColor: change.accepted ? color : '#e5e7eb', opacity: change.accepted ? 1 : 0.5 }}
+                          data-testid={`change-item-${change.id}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={change.accepted}
+                            onChange={() => setCourseListChanges(prev => prev.map(c => c.id === change.id ? { ...c, accepted: !c.accepted } : c))}
+                            className="mt-0.5"
+                            data-testid={`checkbox-${change.id}`}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium">{change.description}</p>
+                            {Object.entries(change.details).length > 0 && (
+                              <div className="mt-0.5 space-y-0.5">
+                                {Object.entries(change.details).map(([field, diff]) => (
+                                  <p key={field} className="text-[10px] text-gray-500">
+                                    {field}: <span className="line-through text-red-400">{(diff as { old: string; new: string }).old || '(empty)'}</span> → <span className="text-green-600">{(diff as { old: string; new: string }).new}</span>
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  );
+                })}
+                <div className="flex justify-end gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => { setIsCourseListUploadOpen(false); setCourseListChanges([]); }}
+                    data-testid="button-cancel-course-changes"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleApplyCourseChanges}
+                    disabled={courseListApplying || courseListChanges.every(c => !c.accepted)}
+                    data-testid="button-apply-course-changes"
+                  >
+                    {courseListApplying ? 'Applying...' : `Apply ${courseListChanges.filter(c => c.accepted).length} Changes`}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Arrow Connections - Split into two SVG layers for proper z-indexing */}
         {/* Layer 1: Transparent curves ABOVE prep boxes (z-index: 46, above green columns at z-42) */}
