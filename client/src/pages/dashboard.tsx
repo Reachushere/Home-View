@@ -3082,9 +3082,9 @@ export default function Dashboard() {
     if (checkedCourses[id]) return null;
     if (isDropdownRow(id)) return null;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
-    if (isPreviouslyCompleted(id)) return <span className="text-black whitespace-nowrap" style={{ textDecoration: 'none' }}> Completed</span>;
-    if (isCourseGreyedOut(id)) return <span className="text-black whitespace-nowrap" style={{ textDecoration: 'none' }}> Not required</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="text-black whitespace-nowrap" style={{ textDecoration: 'none' }}> Not required</span>;
+    if (isPreviouslyCompleted(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Completed</span>;
+    if (isCourseGreyedOut(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Not required</span>;
+    if (isSectionFulfilledForCourse(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Not required</span>;
     return null;
   };
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
