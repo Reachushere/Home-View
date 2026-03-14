@@ -12301,9 +12301,9 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
                 </div>
                 {[
-                  { id: 'PPA101', code: 'PPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
-                  { id: 'PPA102', code: 'PPA 102', name: 'Cdn Public Admin II: Processes (PPA422)', type: 'Prof-Req\'d' },
-                  { id: 'PPA125', code: 'PPA 125', name: 'Rights, Equity and the State (POG315, PPA521)', type: 'Prof-Req\'d' },
+                  { id: 'PPA101', code: 'CPPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
+                  { id: 'PPA102', code: 'CPPA 102', name: 'Cdn Public Admin II: Processes (PPA422)', type: 'Prof-Req\'d' },
+                  { id: 'PPA125', code: 'CPPA 125', name: 'Rights, Equity and the State (POG315, PPA521)', type: 'Prof-Req\'d' },
                 ].map((c, i) => (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
@@ -12322,10 +12322,10 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-bold">({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
                 </div>
                 {[
-                  { id: 'L1_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)' },
-                  { id: 'L1_PPA121', code: 'PPA 121', name: 'Ontario Politics and Government (POG310, PPA522)' },
-                  { id: 'L1_PPA122', code: 'PPA 122', name: 'Local Politics and Government (POL122)' },
-                  { id: 'L1_PPA124', code: 'PPA 124', name: 'Indigenous Politics and Governance (POG440, POL440)' },
+                  { id: 'L1_PPA120', code: 'CPPA 120', name: 'Canadian Politics and Government (POL332, POG210)' },
+                  { id: 'L1_PPA121', code: 'CPPA 121', name: 'Ontario Politics and Government (POG310, PPA522)' },
+                  { id: 'L1_PPA122', code: 'CPPA 122', name: 'Local Politics and Government (POL122)' },
+                  { id: 'L1_PPA124', code: 'CPPA 124', name: 'Indigenous Politics and Governance (POG440, POL440)' },
                 ].map((c) => {
                   const disabled = isCheckDisabled(c.id);
                   const isSelectTwo = c.id.startsWith('L1_PPA12');
@@ -12418,7 +12418,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">Prof-Req'd</div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id="L2_PPA211">PPA 211</CourseName></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0"><CourseName id="L2_PPA211">Public Policy (PPA623)</CourseName><StrikethroughLabel id="L2_PPA211" /></span><InProgressToggle id="L2_PPA211" inline /></div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_PPA211']?.percent || '')}</span></div>
@@ -12431,13 +12431,13 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Required Professional Courses: Select <span className="underline">three</span> courses from the list below, not previously completed <span className="font-bold">({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
                 </div>
                 {[
-                  { id: 'L2_PPA120', code: 'PPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: 'SELECT' },
-                  { id: 'L2_PPA121', code: 'PPA 121', name: 'Ontario Politics and Government (POG310, PPA522)', type: 'SELECT' },
-                  { id: 'L2_PPA122', code: 'PPA 122', name: 'Local Politics and Government (POL122)', type: 'SELECT' },
-                  { id: 'L2_PPA124', code: 'PPA 124', name: 'Indigenous Politics and Governance (POG440, POL440)', type: 'SELECT' },
-                  { id: 'L2_PPA235', code: 'PPA 235', name: 'Theories of the State (PPA525)', type: 'SELECT' },
-                  { id: 'L2_PPA303', code: 'PPA 303', name: 'Financial Management (PPA600)', type: 'SELECT' },
-                  { id: 'L2_PPA319', code: 'PPA 319', name: 'Politics of Work and Labour (POG319, PPA533)', type: 'SELECT' },
+                  { id: 'L2_PPA120', code: 'CPPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: 'SELECT' },
+                  { id: 'L2_PPA121', code: 'CPPA 121', name: 'Ontario Politics and Government (POG310, PPA522)', type: 'SELECT' },
+                  { id: 'L2_PPA122', code: 'CPPA 122', name: 'Local Politics and Government (POL122)', type: 'SELECT' },
+                  { id: 'L2_PPA124', code: 'CPPA 124', name: 'Indigenous Politics and Governance (POG440, POL440)', type: 'SELECT' },
+                  { id: 'L2_PPA235', code: 'CPPA 235', name: 'Theories of the State (PPA525)', type: 'SELECT' },
+                  { id: 'L2_PPA303', code: 'CPPA 303', name: 'Financial Management (PPA600)', type: 'SELECT' },
+                  { id: 'L2_PPA319', code: 'CPPA 319', name: 'Politics of Work and Labour (POG319, PPA533)', type: 'SELECT' },
                 ].map((c) => {
                   const disabled = isCheckDisabled(c.id);
                   return (
@@ -12560,7 +12560,7 @@ export default function Dashboard() {
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PPA333">PPA 333</CourseName></td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PPA333">Research Methods in Public Admin (POG230, PPA524)</CourseName><StrikethroughLabel id="L3_PPA333" /></span><InProgressToggle id="L3_PPA333" inline /></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -12571,7 +12571,7 @@ export default function Dashboard() {
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PRACTICUM1">PPA 51 A/B</CourseName></td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span><InProgressToggle id="L3_PRACTICUM1" inline /></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -12584,20 +12584,20 @@ export default function Dashboard() {
                       <td colSpan={5} className="px-1 py-0.5 text-[9px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-bold">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
                     </tr>
                     {[
-                      { code: 'PPA 235', title: 'Theories of the State (PPA525)', id: 'L3_PPA235' },
-                      { code: 'PPA 301', title: 'Administrative Law (PPA629)', id: 'L3_PPA301' },
-                      { code: 'PPA 303', title: 'Financial Management (PPA600)', id: 'L3_PPA303' },
-                      { code: 'PPA 319', title: 'Politics of Work and Labour (POG319, PPA533)', id: 'L3_PPA319' },
-                      { code: 'PPA 335', title: 'Theories of Bureaucracy (PPA624)', id: 'L3_PPA335' },
-                      { code: 'PPA 401', title: 'Collaborative Governance (PPA601)', id: 'L3_PPA401' },
-                      { code: 'PPA 402', title: 'Program Planning and Evaluation (PPA602)', id: 'L3_PPA402' },
-                      { code: 'PPA 403', title: 'e-Government (POG413, PPA633)', id: 'L3_PPA403' },
-                      { code: 'PPA 404', title: 'Issues in Public Administration (PPA604)', id: 'L3_PPA404' },
-                      { code: 'PPA 411', title: 'Advanced Public Policy', id: 'L3_PPA411' },
-                      { code: 'PPA 414', title: 'Comparative Public Policy (PPA603)', id: 'L3_PPA414' },
-                      { code: 'PPA 425', title: 'Intergovernmental Relations (PPA650)', id: 'L3_PPA425' },
-                      { code: 'PPA 490', title: 'Public Administration Themes', id: 'L3_PPA490' },
-                      { code: 'PPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
+                      { code: 'CPPA 235', title: 'Theories of the State (PPA525)', id: 'L3_PPA235' },
+                      { code: 'CPPA 301', title: 'Administrative Law (PPA629)', id: 'L3_PPA301' },
+                      { code: 'CPPA 303', title: 'Financial Management (PPA600)', id: 'L3_PPA303' },
+                      { code: 'CPPA 319', title: 'Politics of Work and Labour (POG319, PPA533)', id: 'L3_PPA319' },
+                      { code: 'CPPA 335', title: 'Theories of Bureaucracy (PPA624)', id: 'L3_PPA335' },
+                      { code: 'CPPA 401', title: 'Collaborative Governance (PPA601)', id: 'L3_PPA401' },
+                      { code: 'CPPA 402', title: 'Program Planning and Evaluation (PPA602)', id: 'L3_PPA402' },
+                      { code: 'CPPA 403', title: 'e-Government (POG413, PPA633)', id: 'L3_PPA403' },
+                      { code: 'CPPA 404', title: 'Issues in Public Administration (PPA604)', id: 'L3_PPA404' },
+                      { code: 'CPPA 411', title: 'Advanced Public Policy', id: 'L3_PPA411' },
+                      { code: 'CPPA 414', title: 'Comparative Public Policy (PPA603)', id: 'L3_PPA414' },
+                      { code: 'CPPA 425', title: 'Intergovernmental Relations (PPA650)', id: 'L3_PPA425' },
+                      { code: 'CPPA 490', title: 'Public Administration Themes', id: 'L3_PPA490' },
+                      { code: 'CPPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
                     ].map((course, idx, arr) => (
                       <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)}`}>
                         {idx === 0 && (
