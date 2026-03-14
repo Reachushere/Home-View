@@ -3084,21 +3084,23 @@ export default function Dashboard() {
 
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
+    if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
+    if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
+    if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
+    if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
     if (inProgressCourses[id]) return 'bg-amber-100 text-amber-800';
     if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
     if ((courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
-    if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
-    if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
-    if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
-    if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
     if (checkedCourses[id]) return false;
     if (isActiveInLaterLevel(id)) return true;
+    if (isSectionFulfilledForCourse(id)) return true;
+    if (isCourseGreyedOut(id)) return true;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
     if ((courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '')) return false;
-    return isCourseGreyedOut(id) || isSectionFulfilledForCourse(id);
+    return false;
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
   const getElectiveCode = (val: string) => {
@@ -3116,11 +3118,12 @@ export default function Dashboard() {
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
     if (isDropdownRow(id)) return null;
+    if (isActiveInLaterLevel(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
+    if (isSectionFulfilledForCourse(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (NOT REQUIRED)</span>;
+    if (isCourseGreyedOut(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (NOT REQUIRED)</span>;
+    if (isPreviouslyCompleted(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     if ((courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '')) return null;
-    if (isActiveInLaterLevel(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
-    if (isPreviouslyCompleted(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (COMPLETED)</span>;
-    if (isCourseGreyedOut(id) || isSectionFulfilledForCourse(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (NOT REQUIRED)</span>;
     return null;
   };
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
@@ -3130,9 +3133,13 @@ export default function Dashboard() {
 
   const TriStateToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
     const activeInLater = isActiveInLaterLevel(id);
-    const state: 'red' | 'yellow' | 'green' = activeInLater ? 'red' : checkedCourses[id] ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    const sectionDone = isSectionFulfilledForCourse(id);
+    const greyed = isCourseGreyedOut(id);
+    const prevCompleted = isPreviouslyCompleted(id);
+    const isDisabled = activeInLater || sectionDone || greyed || prevCompleted;
+    const state: 'red' | 'yellow' | 'green' = isDisabled ? 'red' : checkedCourses[id] ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
     const cycle = () => {
-      if (activeInLater) return;
+      if (isDisabled) return;
       if (state === 'red') {
         if (!inProgressCourses[id]) toggleInProgress(id);
       } else if (state === 'yellow') {
