@@ -7836,6 +7836,21 @@ export default function Dashboard() {
     };
   }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks, allTasks]);
 
+  useEffect(() => {
+    const timers = new Map<Element, ReturnType<typeof setTimeout>>();
+    const handler = (e: Event) => {
+      const el = e.target;
+      if (!(el instanceof HTMLElement)) return;
+      if (!el.classList.contains('scrollbar-hide') && !el.classList.contains('hide-scrollbar')) return;
+      el.classList.add('is-scrolling');
+      const prev = timers.get(el);
+      if (prev) clearTimeout(prev);
+      timers.set(el, setTimeout(() => { el.classList.remove('is-scrolling'); timers.delete(el); }, 1000));
+    };
+    document.addEventListener('scroll', handler, true);
+    return () => { document.removeEventListener('scroll', handler, true); timers.forEach(t => clearTimeout(t)); };
+  }, []);
+
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
