@@ -3078,9 +3078,9 @@ export default function Dashboard() {
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
     if (isDropdownRow(id)) return null;
-    if (isPreviouslyCompleted(id)) return <span className="font-bold">&nbsp;Completed</span>;
-    if (isCourseGreyedOut(id)) return <span className="font-bold">&nbsp;Not required</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="font-bold">&nbsp;Not required</span>;
+    if (isPreviouslyCompleted(id)) return <span className="font-bold text-black">&nbsp;Completed</span>;
+    if (isCourseGreyedOut(id)) return <span className="font-bold text-black">&nbsp;Not required</span>;
+    if (isSectionFulfilledForCourse(id)) return <span className="font-bold text-black">&nbsp;Not required</span>;
     return null;
   };
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
