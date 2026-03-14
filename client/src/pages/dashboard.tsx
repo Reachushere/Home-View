@@ -3024,12 +3024,24 @@ export default function Dashboard() {
     return !!(inProgressCourses[l1Id] && isSectionFulfilledByCompleted(l1Id));
   };
 
+  const isSectionFulfilledForCourse = (id: string): boolean => {
+    const level: 'L1' | 'L2' | 'L3' = id.startsWith('L3_') ? 'L3' : id.startsWith('L2_') ? 'L2' : 'L1';
+    const sections = certSections[level];
+    for (let i = 0; i < sections.length; i++) {
+      if (sections[i].members.includes(id)) {
+        return sectionRemaining(i, level) === 0;
+      }
+    }
+    return false;
+  };
+
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400 line-through';
     if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400 line-through';
     if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
     if (inProgressCourses[id] || (courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
+    if (isSectionFulfilledForCourse(id)) return 'line-through text-gray-400';
     return '';
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
