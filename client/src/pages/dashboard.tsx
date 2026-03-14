@@ -12802,7 +12802,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="px-2 pb-2 flex gap-3 items-end">
+          <div className="px-2 pb-2 flex gap-3 items-center">
               <div className="flex-1 min-w-0">
                 {(() => {
                   const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
@@ -12852,15 +12852,15 @@ export default function Dashboard() {
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
                     <div className="flex items-center gap-2">
-                      <div className="border border-gray-300 rounded-lg flex items-center gap-1.5 px-4 py-3" style={{ background: '#ffffff' }} data-testid="l1-gpa-box">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
+                      <div className="border border-white/30 rounded-md flex items-center gap-1.5 px-3 h-8" style={{ background: 'transparent' }} data-testid="l1-gpa-box">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">GPA</span>
                         {avgGpa !== null ? (
                           <>
-                            <span className="font-bold text-[24px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
-                            <span className="text-[13px] font-bold leading-none" style={{ color: '#222' }}>({gpaToLetter(avgGpa)}, {gpaValues.length} courses)</span>
+                            <span className="font-bold text-[14px] leading-none text-white">{avgGpa.toFixed(2)}</span>
+                            <span className="text-[10px] font-bold leading-none text-white/70">({gpaToLetter(avgGpa)}, {gpaValues.length})</span>
                           </>
                         ) : (
-                          <span className="text-[12px]" style={{ color: '#aaa' }}>—</span>
+                          <span className="text-[10px] text-white/50">—</span>
                         )}
                       </div>
                       <input
