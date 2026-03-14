@@ -3009,7 +3009,7 @@ export default function Dashboard() {
   const sectionRemaining = (sectionIndex: number, level: 'L1' | 'L2' | 'L3') => {
     const section = certSections[level][sectionIndex];
     if (!section) return 0;
-    const active = section.members.filter(m => checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m)).length;
+    const active = section.members.filter(m => checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m) || (courseGrades[m]?.percent && courseGrades[m]?.percent?.trim() !== '')).length;
     return Math.max(0, section.required - active);
   };
 
