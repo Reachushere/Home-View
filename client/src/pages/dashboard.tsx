@@ -12271,7 +12271,7 @@ export default function Dashboard() {
           <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0" style={{ color: '#000' }}>
             <div className="flex gap-3 items-stretch h-full min-h-0">
               {/* Level I */}
-              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL I</div>
@@ -12408,7 +12408,7 @@ export default function Dashboard() {
               </div>
 
               {/* Level II */}
-              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
@@ -12572,7 +12572,7 @@ export default function Dashboard() {
               </div>
 
               {/* Level III */}
-              <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black overflow-y-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black overflow-y-auto scrollbar-hide">
               <div className="border-2 border-black">
                 <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
