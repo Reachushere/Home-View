@@ -3133,11 +3133,11 @@ export default function Dashboard() {
       style={inline ? { float: 'right', marginTop: '1px' } : { padding: '1px 3px' }}
       data-testid={`toggle-in-progress-${id}`}
     >
-      <div style={{ width: '48px', height: '18px', borderRadius: '3px', border: '2px solid ' + (isDisabled ? '#ccc' : activeIdx === 0 ? '#e84070' : activeIdx === 1 ? '#d4a017' : '#4caf50'), background: isDisabled ? '#e0e0e0' : activeIdx === 0 ? '#ed5088' : activeIdx === 1 ? '#f0c030' : '#66cc44', position: 'relative', opacity: isDisabled ? 0.45 : 1, cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', transition: 'background 0.2s ease, border-color 0.2s ease' }} onClick={(e) => { e.stopPropagation(); if (isDisabled || isAutoFromL1) return; const next = (activeIdx + 1) % 3; handleClick(e, next); }}>
-        <div style={{ position: 'absolute', top: '1px', left: activeIdx === 0 ? '1px' : activeIdx === 1 ? '16px' : '31px', width: '13px', height: '12px', borderRadius: '1.5px', background: 'linear-gradient(135deg, #f8f8f8, #ddd)', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {activeIdx === 0 && <svg width="11" height="11" viewBox="0 0 11 11"><circle cx="5.5" cy="5.5" r="4" fill="none" stroke="#c0345a" strokeWidth="1.4"/><line x1="2.5" y1="8.5" x2="8.5" y2="2.5" stroke="#c0345a" strokeWidth="1.4"/></svg>}
-          {activeIdx === 1 && <span style={{ fontSize: '10px', fontWeight: 800, color: '#a07800', lineHeight: 1, marginTop: '-1px' }}>~</span>}
-          {activeIdx === 2 && <Check style={{ width: '9px', height: '9px', color: '#2e7d1e', strokeWidth: 3 }} />}
+      <div style={{ width: '48px', height: '18px', borderRadius: '5px', background: isDisabled ? '#d0d0d0' : activeIdx === 0 ? '#e85070' : activeIdx === 1 ? '#e8b800' : '#8bc34a', position: 'relative', opacity: isDisabled ? 0.45 : 1, cursor: (isDisabled || isAutoFromL1) ? 'default' : 'pointer', transition: 'background 0.2s ease', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.15)' }} onClick={(e) => { e.stopPropagation(); if (isDisabled || isAutoFromL1) return; const next = (activeIdx + 1) % 3; handleClick(e, next); }}>
+        <div style={{ position: 'absolute', top: '2px', left: activeIdx === 0 ? '2px' : activeIdx === 1 ? '16px' : '30px', width: '14px', height: '14px', borderRadius: '3px', background: 'linear-gradient(180deg, #f5f5f5, #ddd)', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {activeIdx === 0 && <span style={{ fontSize: '11px', fontWeight: 900, color: '#e05070', lineHeight: 1 }}>X</span>}
+          {activeIdx === 1 && <span style={{ fontSize: '13px', fontWeight: 800, color: '#d4a017', lineHeight: 1, marginTop: '-1px' }}>~</span>}
+          {activeIdx === 2 && <Check style={{ width: '10px', height: '10px', color: '#7cb342', strokeWidth: 3 }} />}
         </div>
       </div>
     </div>
