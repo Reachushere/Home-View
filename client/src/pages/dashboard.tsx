@@ -3069,6 +3069,7 @@ export default function Dashboard() {
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
+    if (inProgressCourses[id] || courseGrades[id]?.grade || courseGrades[id]?.percent) return null;
     if (isPreviouslyCompleted(id)) return <>{' '}<span className="font-bold" style={{ display: 'inline-block', textDecoration: 'none', WebkitTextDecorationsInEffect: 'none' } as any}>Completed</span></>;
     if (isCourseGreyedOut(id)) return <>{' '}<span className="font-bold" style={{ display: 'inline-block', textDecoration: 'none', WebkitTextDecorationsInEffect: 'none' } as any}>Not required</span></>;
     if (isSectionFulfilledForCourse(id)) return <>{' '}<span className="font-bold" style={{ display: 'inline-block', textDecoration: 'none', WebkitTextDecorationsInEffect: 'none' } as any}>Not required</span></>;
@@ -8746,7 +8747,7 @@ export default function Dashboard() {
               <Label className="font-medium text-green-600">Course 1 (Green)</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Course Code</Label>
+                  <Label className="text-xs text-muted-foreground">Code</Label>
                   <Input
                     placeholder="e.g., CPPA122"
                     value={newSemesterForm.course1Code}
@@ -8793,7 +8794,7 @@ export default function Dashboard() {
               <Label className="font-medium text-pink-600">Course 2 (Pink)</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Course Code</Label>
+                  <Label className="text-xs text-muted-foreground">Code</Label>
                   <Input
                     placeholder="e.g., CFNF400"
                     value={newSemesterForm.course2Code}
@@ -8840,7 +8841,7 @@ export default function Dashboard() {
               <Label className="font-medium text-indigo-600">Course 3 (Indigo)</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Course Code</Label>
+                  <Label className="text-xs text-muted-foreground">Code</Label>
                   <Input
                     placeholder="e.g., CASL101"
                     value={newSemesterForm.course3Code}
@@ -12262,10 +12263,10 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
-                  <div className="w-8 border-r border-black text-[6px] font-bold text-center flex items-center justify-center leading-tight">Complete</div>
-                  <div className="w-12 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
-                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
+                  <div className="w-8 border-r border-black text-[6px] font-bold text-center flex items-center justify-center leading-tight">Done</div>
+                  <div className="w-12 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Type</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Code</div>
+                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Title</div>
                   <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
                   <div className="w-5 border-l border-black"></div>
                 </div>
@@ -12329,7 +12330,7 @@ export default function Dashboard() {
                 })}
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" in the calendar <span className="font-black">({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from "Table A" <span className="font-black">({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12357,7 +12358,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" in the calendar <span className="font-black">({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Elective: Select two courses from "Table I" <span className="font-black">({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12402,10 +12403,10 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
-                  <div className="w-8 border-r border-black text-[6px] font-bold text-center flex items-center justify-center leading-tight">Complete</div>
-                  <div className="w-12 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Type</div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Course Code</div>
-                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
+                  <div className="w-8 border-r border-black text-[6px] font-bold text-center flex items-center justify-center leading-tight">Done</div>
+                  <div className="w-12 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Type</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] font-bold text-center">Code</div>
+                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Title</div>
                   <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
                   <div className="w-5 border-l border-black"></div>
                 </div>
@@ -12464,7 +12465,7 @@ export default function Dashboard() {
                 })}
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A in the calendar <span className="font-black">({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Elective: Select one course from Table A <span className="font-black">({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12528,7 +12529,7 @@ export default function Dashboard() {
                 <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I in the calendar <span className="font-black">({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I <span className="font-black">({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
                   <div className="w-16 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                   <div className="w-5 border-l border-black" style={{ backgroundColor: '#e5e5e5' }}></div>
                 </div>
@@ -12569,10 +12570,10 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                 </div>
                 <div className="flex border-b border-black bg-gray-50">
-                  <div className="text-[6px] font-bold text-center flex items-center justify-center leading-tight" style={{ width: '31px', borderRight: '1px solid black' }}>Complete</div>
-                  <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '48px' }}>Course Type</div>
-                  <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '55px' }}>Course Code</div>
-                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Course Title</div>
+                  <div className="text-[6px] font-bold text-center flex items-center justify-center leading-tight" style={{ width: '31px', borderRight: '1px solid black' }}>Done</div>
+                  <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '48px' }}>Type</div>
+                  <div className="px-1 py-0.5 border-r border-black text-[7px] font-bold text-center" style={{ width: '55px' }}>Code</div>
+                  <div className="flex-1 px-1 py-0.5 text-[7px] font-bold">Title</div>
                   <div className="w-16 px-1 py-0.5 border-l border-black text-[7px] font-bold text-center">Grade</div>
                   <div className="w-5 px-1 py-0.5 border-l border-black"></div>
                 </div>
@@ -15610,7 +15611,7 @@ export default function Dashboard() {
                       <h3 className="text-[11px] font-medium text-white">Edit Course</h3>
                       <div className="space-y-2">
                         <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Course Code</label>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Code</label>
                           <input
                             type="text"
                             className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
