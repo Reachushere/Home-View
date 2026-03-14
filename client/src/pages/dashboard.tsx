@@ -3061,6 +3061,11 @@ export default function Dashboard() {
     return '';
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
+  const getElectiveCode = (val: string) => {
+    if (!val?.trim()) return '';
+    const code = val.split(' ')[0] || '';
+    return code.replace(/([A-Z]+)(\d+)/, '$1 $2');
+  };
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (checkedCourses[id]) return null;
@@ -12333,6 +12338,7 @@ export default function Dashboard() {
                     <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['LIBERAL'] || false) ? "#1a1a1a" : "transparent", cursor: (!openElectives['LIBERAL']?.trim()) ? "default" : "pointer", opacity: (!openElectives['LIBERAL']?.trim()) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (openElectives['LIBERAL']?.trim()) { toggleCourse('LIBERAL'); } }}>{(checkedCourses['LIBERAL'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{(openElectives['LIBERAL'] || '').split(' ')[0] ? (openElectives['LIBERAL'] || '').split(' ').slice(0, 2).join(' ').replace(/(\d)([A-Z])/g, '$1 $2').split(' ').slice(0, 2).join(' ') : ''}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">
                     <select className={`flex-1 min-w-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A course...</option>
