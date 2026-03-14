@@ -12637,15 +12637,15 @@ export default function Dashboard() {
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                   </div>
                   <div className="flex border-b border-black bg-gray-50">
-                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '48px', minWidth: '48px' }}>Type</div>
-                    <div className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center" style={{ width: '56px', minWidth: '56px' }}>Code</div>
+                    <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                    <div className="border-l border-black" style={{ width: '20px', minWidth: '20px' }}></div>
+                    <div className="w-5 border-l border-black"></div>
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto scrollbar-hide">
-                <table className="w-full border-collapse">
+                <table className="w-full border-collapse" style={{ tableLayout: 'fixed' }}>
                   <colgroup>
                     <col style={{ width: '48px' }} />
                     <col style={{ width: '56px' }} />
