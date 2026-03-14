@@ -11532,11 +11532,10 @@ export default function Dashboard() {
                 <div className="px-4 py-3 space-y-3">
                   <p className="text-[10px] text-white/80">
                     {(() => {
-                      const sel = returnReadingFiles.find(f => f.id === selectedReturnFile);
-                      const isPartial = sel && ((sel.lastChunkIndex != null && sel.lastChunkIndex > 0) || (sel.checkedChunks && (() => { try { return JSON.parse(sel.checkedChunks!).length > 0; } catch { return false; } })()));
-                      return isPartial
+                      const anyPartial = returnReadingFiles.some(f => (f.lastChunkIndex != null && f.lastChunkIndex > 0) || (f.checkedChunks && (() => { try { return JSON.parse(f.checkedChunks!).length > 0; } catch { return false; } })()));
+                      return anyPartial
                         ? "Resume where you left off?"
-                        : `You have ${returnReadingFiles.length} PDF${returnReadingFiles.length !== 1 ? 's' : ''} for this week. Open one in the reader?`;
+                        : "Play your weekly Module or Reading material?";
                     })()}
                   </p>
                   <Select
@@ -11574,9 +11573,9 @@ export default function Dashboard() {
                             className="h-6 text-[9px] bg-blue-600 hover:bg-blue-500 border-0"
                             onClick={() => {
                               if (file) {
-                                window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=true&resumeChunk=0`, '_blank');
+                                setShowReturnReadingPrompt(false);
+                                window.location.href = `/pdf-reader/${file.id}?autoplay=true&resumeChunk=0`;
                               }
-                              setShowReturnReadingPrompt(false);
                             }}
                             data-testid="button-return-play-start"
                           >
@@ -11589,9 +11588,9 @@ export default function Dashboard() {
                               onClick={() => {
                                 if (file) {
                                   const resumeIdx = Math.max(0, (file.lastChunkIndex || 1) - 1);
-                                  window.open(`/pdf-reader/${file.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeIdx}`, '_blank');
+                                  setShowReturnReadingPrompt(false);
+                                  window.location.href = `/pdf-reader/${file.id}?autoplay=true&resumeChunk=${resumeIdx}`;
                                 }
-                                setShowReturnReadingPrompt(false);
                               }}
                               data-testid="button-return-play-resume"
                             >
