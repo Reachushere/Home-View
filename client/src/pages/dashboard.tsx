@@ -3033,6 +3033,20 @@ export default function Dashboard() {
     'L3_PPA235': ['L2_PPA235'], 'L3_PPA303': ['L2_PPA303'], 'L3_PPA319': ['L2_PPA319'],
   };
 
+  const laterLevelMap: Record<string, string[]> = {};
+  Object.entries(previousLevelMap).forEach(([later, earlierIds]) => {
+    earlierIds.forEach(eid => {
+      if (!laterLevelMap[eid]) laterLevelMap[eid] = [];
+      laterLevelMap[eid].push(later);
+    });
+  });
+
+  const isActiveInLaterLevel = (courseId: string): boolean => {
+    const laterIds = laterLevelMap[courseId];
+    if (!laterIds) return false;
+    return laterIds.some(lid => inProgressCourses[lid] || checkedCourses[lid] || (courseGrades[lid]?.percent && courseGrades[lid]?.percent?.trim() !== ''));
+  };
+
   const isPreviouslyCompleted = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
@@ -3071,6 +3085,7 @@ export default function Dashboard() {
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
     if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
+    if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
     if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
     if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
@@ -3080,6 +3095,7 @@ export default function Dashboard() {
   };
   const shouldStrikethrough = (id: string) => {
     if (checkedCourses[id]) return false;
+    if (isActiveInLaterLevel(id)) return true;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
     if ((courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '')) return false;
     return isCourseGreyedOut(id) || isSectionFulfilledForCourse(id);
@@ -3111,8 +3127,9 @@ export default function Dashboard() {
   };
 
   const InProgressToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
+    const activeInLater = isActiveInLaterLevel(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
-    const isActive = inProgressCourses[id] || isL2InProgressFromL1(id);
+    const isActive = activeInLater ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
     return (
     <div
       className={inline ? "ml-auto shrink-0 cursor-pointer flex items-center" : "absolute top-0 right-0 cursor-pointer flex items-center"}
