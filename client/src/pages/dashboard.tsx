@@ -11433,7 +11433,12 @@ export default function Dashboard() {
                   return !aasSentStatus[code];
                 });
                 if (uncheckedAas.length > 0) {
-                  setShowAasReminder(true);
+                  const lastShown = localStorage.getItem('aasReminderLastShown');
+                  const now = Date.now();
+                  if (!lastShown || now - parseInt(lastShown) > 24 * 60 * 60 * 1000) {
+                    setShowAasReminder(true);
+                    localStorage.setItem('aasReminderLastShown', String(now));
+                  }
                 }
               }}
             >
