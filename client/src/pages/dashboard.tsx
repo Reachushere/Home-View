@@ -12714,74 +12714,80 @@ export default function Dashboard() {
                         {idx === 0 && <td rowSpan={14} className="border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 ${i < 13 ? 'border-b border-black' : ''}`} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>))}</div></td>}
                       </tr>
                     ))}
+                    <tr className="border-b border-black">
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-bold">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
+                    </tr>
+                {['L3_POG1','L3_POG2'].map((cid, i) => (
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 align-middle text-[9px]">
+                        <div className="flex items-center overflow-hidden min-w-0">
+                          <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
+                            <option value="">{`Select POG Course ${i+1}...`}</option>
+                            {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
+                              <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                            )); })()}
+                          </select>
+                          <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
+                        </div>
+                      </td>
+                      <td className="border-l border-black align-middle">
+                        <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                      </td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                    </tr>
+                ))}
+                    <tr className="border-b border-black">
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#e5e5e5' }}>Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-bold">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
+                    </tr>
+                {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`}>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 align-middle text-[9px]">
+                        <div className="flex items-center overflow-hidden min-w-0">
+                          <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
+                            <option value="">{i === 0 ? 'Select Lower Level Table A Course...' : 'Select Upper Level Table B Course...'}</option>
+                            {(() => { const used = getSelectedCodes(['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'], cid); return (i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES)).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
+                              <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                            )); })()}
+                          </select>
+                          <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
+                        </div>
+                      </td>
+                      <td className="border-l border-black align-middle">
+                        <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                      </td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                    </tr>
+                ))}
+                    <tr className="border-b border-black">
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Electives: Select seven from PR table I <span className="font-bold">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
+                    </tr>
+                {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`}>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 align-middle text-[9px]">
+                        <div className="flex items-center overflow-hidden min-w-0">
+                          <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
+                            <option value="">{`Select PR Elective ${i+1}...`}</option>
+                            {(() => { const used = getSelectedCodes(['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
+                              <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                            )); })()}
+                          </select>
+                          <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
+                        </div>
+                      </td>
+                      <td className="border-l border-black align-middle">
+                        <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                      </td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                    </tr>
+                ))}
                   </tbody>
                 </table>
-                <div className="flex border-t border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-bold">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></div>
-                </div>
-                {['L3_POG1','L3_POG2'].map((cid, i) => (
-                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" style={{ width: '48px', minWidth: '48px' }} onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
-                    <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
-                        <option value="">{`Select POG Course ${i+1}...`}</option>
-                        {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        )); })()}
-                      </select>
-                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
-                    </div>
-                    <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
-                    </div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
-                  </div>
-                ))}
-                <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-bold">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></div>
-                </div>
-                {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
-                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" style={{ width: '48px', minWidth: '48px' }} onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
-                    <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
-                        <option value="">{i === 0 ? 'Select Lower Level Table A Course...' : 'Select Upper Level Table B Course...'}</option>
-                        {(() => { const used = getSelectedCodes(['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'], cid); return (i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES)).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        )); })()}
-                      </select>
-                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
-                    </div>
-                    <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
-                    </div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
-                  </div>
-                ))}
-                <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Electives: Select seven from PR table I <span className="font-bold">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></div>
-                </div>
-                {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
-                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" style={{ width: '48px', minWidth: '48px' }} onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '56px', minWidth: '56px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
-                    <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
-                        <option value="">{`Select PR Elective ${i+1}...`}</option>
-                        {(() => { const used = getSelectedCodes(['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        )); })()}
-                      </select>
-                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
-                    </div>
-                    <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
-                    </div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
-                  </div>
-                ))}
                 </div>
               <div className="shrink-0 flex items-center gap-2 px-2 py-1.5 border-t-2 border-black">
                 <span className="text-[9px] font-bold whitespace-nowrap">Progress</span>
