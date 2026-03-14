@@ -3137,9 +3137,9 @@ export default function Dashboard() {
         if (!inProgressCourses[id]) toggleInProgress(id);
       } else if (state === 'yellow') {
         if (inProgressCourses[id]) toggleInProgress(id);
-        if (!checkedCourses[id]) toggleCourseCheck(id);
+        if (!checkedCourses[id]) toggleCourse(id);
       } else {
-        if (checkedCourses[id]) toggleCourseCheck(id);
+        if (checkedCourses[id]) toggleCourse(id);
       }
     };
     const bg = state === 'green' ? '#8cb44c' : state === 'yellow' ? '#f0b429' : '#e8526e';
@@ -12369,7 +12369,7 @@ export default function Dashboard() {
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
-                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span>{c.id === 'PPA101' ? <TriStateToggle id={c.id} inline /> : <InProgressToggle id={c.id} inline />}</div>
+                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
@@ -12394,7 +12394,7 @@ export default function Dashboard() {
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
-                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><InProgressToggle id={c.id} inline /></div>
+                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
@@ -12411,13 +12411,13 @@ export default function Dashboard() {
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                   <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                    <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
+                    <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
                       {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                         <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                       ))}
                     </select>
-                    <StrikethroughLabel id="LIBERAL" /><InProgressToggle id={"LIBERAL"} inline />
+                    <StrikethroughLabel id="LIBERAL" /><TriStateToggle id={"LIBERAL"} inline />
                   </div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['LIBERAL']?.percent || '')}</span></div>
@@ -12434,13 +12434,13 @@ export default function Dashboard() {
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['OPEN1','OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         )); })()}
                       </select>
-                      <StrikethroughLabel id={cid} /><InProgressToggle id={cid} inline />
+                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
@@ -12482,7 +12482,7 @@ export default function Dashboard() {
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">Prof-Req'd</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
-                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0"><CourseName id="L2_PPA211">Public Policy (PPA623)</CourseName><StrikethroughLabel id="L2_PPA211" /></span><InProgressToggle id="L2_PPA211" inline /></div>
+                  <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0"><CourseName id="L2_PPA211">Public Policy (PPA623)</CourseName><StrikethroughLabel id="L2_PPA211" /></span><TriStateToggle id="L2_PPA211" inline /></div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_PPA211']?.percent || '')}</span></div>
                   </div>
@@ -12507,7 +12507,7 @@ export default function Dashboard() {
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
-                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><InProgressToggle id={c.id} inline /></div>
+                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
@@ -12524,13 +12524,13 @@ export default function Dashboard() {
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                   <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                    <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
+                    <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
                       {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                         <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                       ))}
                     </select>
-                    <StrikethroughLabel id="L2_LIBERAL" /><InProgressToggle id={"L2_LIBERAL"} inline />
+                    <StrikethroughLabel id="L2_LIBERAL" /><TriStateToggle id={"L2_LIBERAL"} inline />
                   </div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_LIBERAL']?.percent || '')}</span></div>
@@ -12555,7 +12555,7 @@ export default function Dashboard() {
                   <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)}`}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
-                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span><InProgressToggle id={ecn.id} inline /></div>
+                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span><TriStateToggle id={ecn.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
                     </div>
@@ -12571,11 +12571,11 @@ export default function Dashboard() {
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['L2_OPEN1','L2_OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>)); })()}
                       </select>
-                      <StrikethroughLabel id={cid} /><InProgressToggle id={cid} inline />
+                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
@@ -12624,7 +12624,7 @@ export default function Dashboard() {
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
-                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PPA333">Research Methods in Public Admin (POG230, PPA524)</CourseName><StrikethroughLabel id="L3_PPA333" /></span><InProgressToggle id="L3_PPA333" inline /></div></td>
+                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PPA333">Research Methods in Public Admin (POG230, PPA524)</CourseName><StrikethroughLabel id="L3_PPA333" /></span><TriStateToggle id="L3_PPA333" inline /></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
                           <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L3_PPA333']?.percent || '')}</span></div>
@@ -12635,7 +12635,7 @@ export default function Dashboard() {
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
-                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span><InProgressToggle id="L3_PRACTICUM1" inline /></div></td>
+                      <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span><TriStateToggle id="L3_PRACTICUM1" inline /></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
                           <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L3_PRACTICUM1']?.percent || '')}</span></div>
@@ -12669,7 +12669,7 @@ export default function Dashboard() {
                           </td>
                         )}
                         <td className={`px-1 py-0.5 border-r border-black align-middle text-[9px]`}><CourseName id={course.id}>{course.code}</CourseName></td>
-                        <td className={`px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id={course.id}>{course.title}</CourseName><StrikethroughLabel id={course.id} /></span><InProgressToggle id={course.id} inline /></div></td>
+                        <td className={`px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id={course.id}>{course.title}</CourseName><StrikethroughLabel id={course.id} /></span><TriStateToggle id={course.id} inline /></div></td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
                             <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[course.id]?.percent || '')}</span></div>
@@ -12688,13 +12688,13 @@ export default function Dashboard() {
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                         <option value="">{`Select POG Course ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         )); })()}
                       </select>
-                      <StrikethroughLabel id={cid} /><InProgressToggle id={cid} inline />
+                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
@@ -12710,13 +12710,13 @@ export default function Dashboard() {
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                         <option value="">{i === 0 ? 'Select Lower Level Table A Course...' : 'Select Upper Level Table B Course...'}</option>
                         {(() => { const used = getSelectedCodes(['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'], cid); return (i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES)).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         )); })()}
                       </select>
-                      <StrikethroughLabel id={cid} /><InProgressToggle id={cid} inline />
+                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
@@ -12732,13 +12732,13 @@ export default function Dashboard() {
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">SELECT</div>
                     <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
                         )); })()}
                       </select>
-                      <StrikethroughLabel id={cid} /><InProgressToggle id={cid} inline />
+                      <StrikethroughLabel id={cid} /><TriStateToggle id={cid} inline />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
