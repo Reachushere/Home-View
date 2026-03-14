@@ -12652,7 +12652,7 @@ export default function Dashboard() {
                               </div>
                             </td>
                             <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[9px] align-middle">
-                              <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>EIGHT (8)<br/><br/>not previously<br/>completed</div>
+                              <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
                             </td>
                           </>
                         )}
