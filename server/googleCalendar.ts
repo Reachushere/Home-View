@@ -579,3 +579,58 @@ export async function createRecurringClassEvent(classInfo: {
   
   return response.data;
 }
+
+export async function findExistingEventBySummary(summary: string, dateStr: string): Promise<string | null> {
+  const calendar = await getGoogleCalendarClient();
+  try {
+    const timeMin = new Date(dateStr + 'T00:00:00-05:00').toISOString();
+    const timeMax = new Date(dateStr + 'T23:59:59-05:00').toISOString();
+    const response = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin,
+      timeMax,
+      q: summary.substring(0, 50),
+      singleEvents: true,
+      maxResults: 20,
+    });
+    const events = response.data.items || [];
+    const match = events.find(e => e.summary === summary);
+    return match?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function findAndDeleteDuplicateEvents(timeMin: string, timeMax: string): Promise<{ deleted: number; kept: number }> {
+  const calendar = await getGoogleCalendarClient();
+  const response = await calendar.events.list({
+    calendarId: 'primary',
+    timeMin,
+    timeMax,
+    singleEvents: true,
+    maxResults: 2500,
+    orderBy: 'startTime',
+  });
+  const events = response.data.items || [];
+  const seen = new Map<string, string>();
+  let deleted = 0;
+  const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+  
+  for (const event of events) {
+    if (!event.summary || !event.id) continue;
+    const startKey = event.start?.dateTime || event.start?.date || '';
+    const key = `${event.summary}|||${startKey}`;
+    if (seen.has(key)) {
+      try {
+        await calendar.events.delete({ calendarId: 'primary', eventId: event.id });
+        deleted++;
+        await delay(200);
+      } catch (err: any) {
+        console.error(`Failed to delete duplicate event ${event.id}:`, err?.message);
+      }
+    } else {
+      seen.set(key, event.id);
+    }
+  }
+  return { deleted, kept: seen.size };
+}

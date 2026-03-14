@@ -11,7 +11,7 @@ import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1,
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
@@ -3144,12 +3144,20 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               results.dueEvents.updated++;
             }
           } else {
-            const event = await createCalendarEvent({
-              id: task.id, title: task.title, description: task.description,
-              dueDate: task.dueDate, courseName: task.courseName,
-            });
-            await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: "google" });
-            results.dueEvents.created++;
+            const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+            const dateStr = new Date(task.dueDate).toISOString().split('T')[0];
+            const existingId = await findExistingEventBySummary(summary, dateStr);
+            if (existingId) {
+              await storage.updateTask(task.id, { calendarEventId: existingId, calendarProvider: "google" });
+              results.dueEvents.updated++;
+            } else {
+              const event = await createCalendarEvent({
+                id: task.id, title: task.title, description: task.description,
+                dueDate: task.dueDate, courseName: task.courseName,
+              });
+              await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: "google" });
+              results.dueEvents.created++;
+            }
           }
         } catch (err: any) {
           const status = err?.status || err?.code;
@@ -3171,7 +3179,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           }
         }
         
-        await delay(100);
+        await delay(300);
         
         if (task.startDate) {
           try {
@@ -3220,7 +3228,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               results.prepEvents.failed++;
             }
           }
-          await delay(100);
+          await delay(300);
         } else {
           results.prepEvents.skipped++;
         }
@@ -3230,6 +3238,20 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     } catch (err) {
       console.error("Error syncing all tasks:", err);
       res.status(500).json({ message: 'Failed to sync tasks', error: String(err) });
+    }
+  });
+
+  app.post("/api/calendar/deduplicate", async (req, res) => {
+    try {
+      const { startDate, endDate } = req.body;
+      const timeMin = startDate ? new Date(startDate).toISOString() : new Date().toISOString();
+      const end = endDate ? new Date(endDate) : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+      const timeMax = end.toISOString();
+      const result = await findAndDeleteDuplicateEvents(timeMin, timeMax);
+      res.json({ success: true, ...result });
+    } catch (err) {
+      console.error("Error deduplicating calendar:", err);
+      res.status(500).json({ message: 'Failed to deduplicate', error: String(err) });
     }
   });
 
