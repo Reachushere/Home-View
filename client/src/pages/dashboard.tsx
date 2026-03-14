@@ -12494,7 +12494,7 @@ export default function Dashboard() {
                       <div key={cid} className={`h-9 flex items-center justify-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
                     ))}
                   </div>
-                  <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+                  <div className="w-12 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                     <span className="leading-tight">PR Req'd<br/>SELECT<br/>ONE (1)</span>
                   </div>
                   <div className="flex-1 flex flex-col">
