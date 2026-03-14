@@ -12889,7 +12889,7 @@ export default function Dashboard() {
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
                     <div className="flex items-center gap-2">
-                      <div className="border border-white/30 rounded-md flex items-center gap-1.5 px-3 h-8" style={{ background: 'transparent' }} data-testid="l1-gpa-box">
+                      <div className="border border-white/30 rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: 'transparent', height: '32px', minHeight: '32px' }} data-testid="l1-gpa-box">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">GPA</span>
                         {avgGpa !== null ? (
                           <>
