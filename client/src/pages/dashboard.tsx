@@ -12567,14 +12567,14 @@ export default function Dashboard() {
                   <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
                   <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                 </div>
-                <table className="w-full" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+                <table className="w-full border-collapse">
                   <colgroup>
-                    <col style={{ width: '2rem', boxSizing: 'border-box' }} />
-                    <col style={{ width: '3rem', boxSizing: 'border-box' }} />
-                    <col style={{ width: '3.5rem', boxSizing: 'border-box' }} />
+                    <col style={{ width: '2rem' }} />
+                    <col style={{ width: '3rem' }} />
+                    <col style={{ width: '3.5rem' }} />
                     <col />
-                    <col style={{ width: '4rem', boxSizing: 'border-box' }} />
-                    <col style={{ width: '1.25rem', boxSizing: 'border-box' }} />
+                    <col style={{ width: '4rem' }} />
+                    <col style={{ width: '1.25rem' }} />
                   </colgroup>
                   <thead>
                     <tr className="border-b border-black bg-gray-50">
