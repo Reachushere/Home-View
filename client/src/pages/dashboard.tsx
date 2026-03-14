@@ -3068,8 +3068,11 @@ export default function Dashboard() {
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
   const getElectiveCode = (val: string) => {
     if (!val?.trim()) return '';
-    const code = val.split(' ')[0] || '';
-    return code.replace(/([A-Z]+)(\d+)/, '$1 $2');
+    const parts = val.split(' ');
+    const prefix = parts[0] || '';
+    const num = parts[1] || '';
+    if (/^\d+$/.test(num)) return `${prefix} ${num}`;
+    return prefix.replace(/([A-Z]+)(\d+)/, '$1 $2');
   };
 
   const isDropdownRow = (id: string) =>
@@ -3095,7 +3098,6 @@ export default function Dashboard() {
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
     const isActive = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
     if (greyedOut || prevCompleted) return null;
-    if (isDropdownRow(id)) return null;
     return (
     <div
       className={inline ? "ml-0.5 shrink-0 cursor-pointer flex items-center" : "absolute top-0 right-0 cursor-pointer flex items-center"}
