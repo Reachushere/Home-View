@@ -20549,7 +20549,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ left: '-30px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
+            style={{ left: '-26px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
