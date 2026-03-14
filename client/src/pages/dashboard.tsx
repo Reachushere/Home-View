@@ -12398,8 +12398,8 @@ export default function Dashboard() {
               <Button
                 type="button"
                 variant="outline"
-                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-7 flex items-center gap-1.5 whitespace-nowrap"
-                style={{ fontSize: '11px' }}
+                className="border !border-white/30 !text-white/70 hover:!text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-7 flex items-center gap-1.5 whitespace-nowrap"
+                style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}
                 onClick={() => courseListFileRef.current?.click()}
                 disabled={courseListParsing}
                 data-testid="button-upload-course-list"
