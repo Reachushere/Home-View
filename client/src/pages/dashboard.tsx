@@ -3126,6 +3126,48 @@ export default function Dashboard() {
     return strike ? <span style={{ textDecoration: 'line-through' }}>{children}</span> : <>{children}</>;
   };
 
+  const TriStateToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
+    const activeInLater = isActiveInLaterLevel(id);
+    const state: 'red' | 'yellow' | 'green' = activeInLater ? 'red' : checkedCourses[id] ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    const cycle = () => {
+      if (activeInLater) return;
+      if (state === 'red') {
+        if (!inProgressCourses[id]) toggleInProgress(id);
+      } else if (state === 'yellow') {
+        if (inProgressCourses[id]) toggleInProgress(id);
+        if (!checkedCourses[id]) toggleCourseCheck(id);
+      } else {
+        if (checkedCourses[id]) toggleCourseCheck(id);
+      }
+    };
+    const bg = state === 'green' ? '#8cb44c' : state === 'yellow' ? '#f0b429' : '#e8526e';
+    const knobLeft = state === 'red' ? '1px' : state === 'yellow' ? '50%' : 'calc(100% - 9px)';
+    const knobTransform = state === 'yellow' ? 'translateX(-50%)' : 'none';
+    return (
+      <div
+        className={inline ? "ml-auto shrink-0 cursor-pointer flex items-center" : "absolute top-0 right-0 cursor-pointer flex items-center"}
+        style={inline ? { fontSize: '7px', lineHeight: 1 } : { padding: '1px 3px', fontSize: '7px', lineHeight: 1 }}
+        onClick={(e) => { e.stopPropagation(); cycle(); }}
+        title={state === 'red' ? 'Not started — click for In Progress' : state === 'yellow' ? 'In Progress — click for Completed' : 'Completed — click for Not Started'}
+        data-testid={`toggle-tri-${id}`}
+      >
+        <div style={{ width: '26px', height: '12px', borderRadius: '3px', background: bg, position: 'relative', transition: 'background 0.2s', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15)' }}>
+          <div style={{
+            width: '10px', height: '10px', borderRadius: '2px', background: '#eee',
+            position: 'absolute', top: '1px', left: knobLeft, transform: knobTransform,
+            transition: 'left 0.2s, transform 0.2s',
+            boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            {state === 'red' && <span style={{ fontSize: '7px', fontWeight: 'bold', color: '#e8526e', lineHeight: 1 }}>✕</span>}
+            {state === 'yellow' && <span style={{ fontSize: '8px', fontWeight: 'bold', color: '#f0b429', lineHeight: 1 }}>~</span>}
+            {state === 'green' && <span style={{ fontSize: '7px', fontWeight: 'bold', color: '#8cb44c', lineHeight: 1 }}>✓</span>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const InProgressToggle = ({ id, inline }: { id: string; inline?: boolean }) => {
     const activeInLater = isActiveInLaterLevel(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
@@ -12325,7 +12367,7 @@ export default function Dashboard() {
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
-                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><InProgressToggle id={c.id} inline /></div>
+                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span>{c.id === 'PPA101' ? <TriStateToggle id={c.id} inline /> : <InProgressToggle id={c.id} inline />}</div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
