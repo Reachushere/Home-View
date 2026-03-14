@@ -20947,12 +20947,12 @@ export default function Dashboard() {
                             const barWidth = Math.round((progressPercent / 100) * 28);
                             const barColor = daysUntil <= 0 ? '#ef4444' : daysUntil <= 1 ? '#eab308' : daysUntil < 3 ? '#eab308' : '#22c55e';
                             return (
-                              <div className="flex-shrink-0 flex items-center gap-1.5" style={{ marginLeft: 'auto' }}>
+                              <div className="flex-shrink-0 flex items-center justify-end gap-1.5" style={{ marginLeft: 'auto', width: '70px' }}>
                                 <div style={{ width: '28px', position: 'relative', height: '3px', flexShrink: 0 }}>
                                   <div style={{ position: 'absolute', top: 0, right: 0, width: '28px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '3px', backgroundColor: barColor, opacity: 0.9 }} />
                                 </div>
-                                <span style={{ fontSize: '8px', color: dateColor, fontWeight: 400 }}>{dueStr}</span>
+                                <span style={{ fontSize: '8px', color: dateColor, fontWeight: 400, width: '30px', textAlign: 'right' }}>{dueStr}</span>
                               </div>
                             );
                           })()}
