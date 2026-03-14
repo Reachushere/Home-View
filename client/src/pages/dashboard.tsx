@@ -12636,13 +12636,6 @@ export default function Dashboard() {
                     <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL III</div>
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                   </div>
-                  <div className="flex border-b border-black bg-gray-50">
-                    <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
-                    <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
-                    <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                    <div className="w-5 border-l border-black"></div>
-                  </div>
                 </div>
                 <div className="flex-1 overflow-y-auto scrollbar-hide">
                 <table className="w-full border-collapse" style={{ tableLayout: 'fixed' }}>
@@ -12653,6 +12646,15 @@ export default function Dashboard() {
                     <col style={{ width: '54px' }} />
                     <col style={{ width: '20px' }} />
                   </colgroup>
+                  <thead className="sticky top-0 z-10">
+                    <tr className="border-b border-black bg-gray-50">
+                      <th className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</th>
+                      <th className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</th>
+                      <th className="px-1 py-0.5 text-[9px] font-bold text-left">Title</th>
+                      <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Grade</th>
+                      <th className="border-l border-black"></th>
+                    </tr>
+                  </thead>
                   <tbody>
                     <tr className="border-b border-black">
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#e5e5e5' }}>Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
