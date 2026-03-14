@@ -12143,8 +12143,8 @@ export default function Dashboard() {
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-hidden p-2 pt-1" style={{ color: '#000' }}>
-            <div className="flex gap-3 items-stretch h-full">
+          <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0" style={{ color: '#000' }}>
+            <div className="flex gap-3 items-stretch h-full min-h-0">
               {/* Level I */}
               <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] overflow-y-auto scrollbar-hide ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="border-2 border-black">
