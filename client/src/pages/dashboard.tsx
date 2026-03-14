@@ -12424,7 +12424,7 @@ export default function Dashboard() {
 
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
-                  <div className="w-8 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+                  <div className="w-8 border-r border-black flex items-center justify-center">
                     <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses['L2_PPA211'] || false) ? "#1a1a1a" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => toggleCourse('L2_PPA211')}>{(checkedCourses['L2_PPA211'] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                   </div>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">Prof-Req'd</div>
@@ -12494,44 +12494,37 @@ export default function Dashboard() {
                   </div>
                   <div className="w-5 border-l border-black"></div>
                 </div>
-                <div className="h-px bg-black"></div>
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally Related Required: Select <span className="underline">one</span> course from the list below <span className="font-black">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
 
                 </div>
-                <div className="flex items-stretch">
-                  <div className="w-8 border-r border-black flex flex-col">
-                    {['L2_ECN1','L2_ECN2','L2_ECN3','L2_ECN4','L2_ECN5','L2_ECN6','L2_ECN7','L2_ECN8'].map((cid, i) => (
-                      <div key={cid} className={`h-9 flex items-center justify-center ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(cid)}`}><div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[cid] || false) ? "#1a1a1a" : "transparent", cursor: (isCheckDisabled(cid)) ? "default" : "pointer", opacity: (isCheckDisabled(cid)) ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!(isCheckDisabled(cid))) { toggleCourse(cid); } }}>{(checkedCourses[cid] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div></div>
-                    ))}
+                {[
+                  { id: 'L2_ECN1', code: 'ECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
+                  { id: 'L2_ECN2', code: 'ECN 104', name: 'Introductory Microeconomics ** (Anti-req ECN110)' },
+                  { id: 'L2_ECN3', code: 'ECN 110', name: 'The Economy and Society ** (Anti-req ECN104)' },
+                  { id: 'L2_ECN4', code: 'ECN 201', name: 'Principles of Macroeconomics ** (Anti-req ECN204)' },
+                  { id: 'L2_ECN5', code: 'ECN 204', name: 'Introductory Macroeconomics ** (Anti-req ECN210)' },
+                  { id: 'L2_ECN6', code: 'ECN 210', name: 'Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
+                  { id: 'L2_ECN7', code: 'ECN 220', name: 'Evolution of the Global Economy' },
+                  { id: 'L2_ECN8', code: 'ECN 320', name: 'Introduction to Financial Economics' },
+                ].map((ecn, i) => {
+                  const disabled = isCheckDisabled(ecn.id);
+                  return (
+                  <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)}`}>
+                    <div className="w-8 border-r border-black flex items-center justify-center">
+                      <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[ecn.id] || false) ? "#1a1a1a" : "transparent", cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!disabled) toggleCourse(ecn.id); }}>{(checkedCourses[ecn.id] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
+                    </div>
+                    <div className="w-12 px-1 py-0.5 border-r border-black text-[8px]">{i === 0 ? 'SELECT' : ''}</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
+                    <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline flex items-center overflow-hidden min-w-0" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="truncate"><CourseName id={ecn.id}>{ecn.name}</CourseName></span><StrikethroughLabel id={ecn.id} /><InProgressToggle id={ecn.id} inline /></div>
+                    <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                      <div className="flex items-center justify-center gap-0.5" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '22px', minWidth: '22px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
+                    </div>
+                    <div className="w-5 border-l border-black"></div>
                   </div>
-                  <div className="w-12 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                    <span className="leading-tight">PR Req'd<br/>SELECT<br/>ONE (1)</span>
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    {[
-                      { id: 'L2_ECN1', code: 'ECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
-                      { id: 'L2_ECN2', code: 'ECN 104', name: 'Introductory Microeconomics ** (Anti-req ECN110)' },
-                      { id: 'L2_ECN3', code: 'ECN 110', name: 'The Economy and Society ** (Anti-req ECN104)' },
-                      { id: 'L2_ECN4', code: 'ECN 201', name: 'Principles of Macroeconomics ** (Anti-req ECN204)' },
-                      { id: 'L2_ECN5', code: 'ECN 204', name: 'Introductory Macroeconomics ** (Anti-req ECN210)' },
-                      { id: 'L2_ECN6', code: 'ECN 210', name: 'Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
-                      { id: 'L2_ECN7', code: 'ECN 220', name: 'Evolution of the Global Economy' },
-                      { id: 'L2_ECN8', code: 'ECN 320', name: 'Introduction to Financial Economics' },
-                    ].map((ecn, i) => (
-                      <div key={ecn.id} className={`flex ${i < 7 ? 'border-b border-black' : ''} ${courseRowClass(ecn.id)}`}>
-                        <div className="w-14 border-r border-black h-9 px-1 text-[9px] flex items-center"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
-                        <div className="flex-1 h-9 px-1 text-[8px] flex items-center cursor-pointer hover:underline overflow-hidden min-w-0" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="truncate"><CourseName id={ecn.id}>{ecn.name}</CourseName></span><StrikethroughLabel id={ecn.id} /><InProgressToggle id={ecn.id} inline /></div>
-                        <div className="w-16 border-l border-black h-9 flex items-center justify-center">
-                          <div className="flex items-center justify-center gap-0.5" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '22px', minWidth: '22px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
-                        </div>
-                        <div className="w-5 border-l border-black"></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="h-px bg-black"></div>
+                  );
+                })}
                 <div className="flex border-b border-black">
                   <div className="w-8 border-r border-black"></div>
                   <div className="flex-1 px-1 py-0.5 text-[8px] font-bold" style={{ backgroundColor: '#e5e5e5' }}>Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I <span className="font-black">({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
