@@ -12090,8 +12090,9 @@ export default function Dashboard() {
       </div>
 
       {/* Settings Panel Popup - Degree Tracking */}
-      <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen} modal={false}>
+      <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
+          onOpenAutoFocus={(e) => e.preventDefault()}
           className="overflow-hidden flex flex-col text-[11px] p-0 [&>button.absolute]:hidden" 
           style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
         >
