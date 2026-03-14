@@ -12637,14 +12637,14 @@ export default function Dashboard() {
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>BACHELOR OF ARTS DEGREE (Course-Based Option)</div>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                <div className="flex-1 overflow-y-auto l3-no-scrollbar">
                 <table className="w-full" style={{ tableLayout: 'fixed', borderSpacing: 0 }}>
                   <colgroup>
                     <col style={{ width: '48px' }} />
                     <col style={{ width: '56px' }} />
                     <col />
                     <col style={{ width: '54px' }} />
-                    <col style={{ width: '28px' }} />
+                    <col style={{ width: '20px' }} />
                   </colgroup>
                   <thead className="sticky top-0 z-10">
                     <tr className="border-b border-black bg-gray-50">

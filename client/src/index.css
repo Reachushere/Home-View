@@ -2061,6 +2061,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
+.l3-no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.l3-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 [data-testid="section-coming-up"] input[type="checkbox"] {
   -webkit-appearance: none;
   appearance: none;
