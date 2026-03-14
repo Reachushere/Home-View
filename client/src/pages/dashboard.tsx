@@ -3019,7 +3019,7 @@ export default function Dashboard() {
   const isPreviouslyCompleted = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
-    return prevIds.some(pid => checkedCourses[pid] || (courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== ''));
+    return prevIds.some(pid => checkedCourses[pid] || inProgressCourses[pid] || (courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== ''));
   };
 
   const isSectionFulfilledByCompleted = (courseId: string): boolean => {
@@ -3056,13 +3056,14 @@ export default function Dashboard() {
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
     if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
     if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
-    if (inProgressCourses[id] || (courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
-    if (isSectionFulfilledForCourse(id)) return 'text-gray-400';
+    if (inProgressCourses[id]) return 'bg-amber-100 text-amber-800';
+    if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
+    if ((courseGrades[id]?.grade && courseGrades[id]?.grade !== '') || (courseGrades[id]?.percent && courseGrades[id]?.percent !== '')) return 'bg-amber-100 text-amber-800';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
     if (checkedCourses[id]) return false;
-    if (inProgressCourses[id] || courseGrades[id]?.grade || courseGrades[id]?.percent) return false;
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
     return isCourseGreyedOut(id) || isPreviouslyCompleted(id) || isSectionFulfilledForCourse(id);
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
@@ -3083,8 +3084,7 @@ export default function Dashboard() {
     if (isDropdownRow(id)) return null;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     if (isPreviouslyCompleted(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Completed</span>;
-    if (isCourseGreyedOut(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Not required</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Not required</span>;
+    if (isCourseGreyedOut(id) || isSectionFulfilledForCourse(id)) return <span className="text-black font-bold whitespace-nowrap" style={{ textDecoration: 'none' }}>{'\u00A0'}Not required</span>;
     return null;
   };
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
