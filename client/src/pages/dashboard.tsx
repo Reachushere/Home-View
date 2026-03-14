@@ -12206,7 +12206,7 @@ export default function Dashboard() {
                     <div className="w-5 border-r border-black flex items-center justify-center">
                       <div style={{ width: "14px", height: "14px", minWidth: "14px", border: "1.5px solid #333", borderRadius: "3px", backgroundColor: (checkedCourses[c.id] || false) ? "#1a1a1a" : "transparent", cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { if (!disabled) toggleCourse(c.id); }}>{(checkedCourses[c.id] || false) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}</div>
                     </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">{c.id === 'L1_PPA120' ? 'Prof-Req\'d' : c.id === 'L1_PPA124' ? '' : 'SELECT'}</div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black">{c.code}</div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline relative" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}>{c.name}<InProgressToggle id={c.id} /></div>
                     <div className="w-16 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
