@@ -20941,11 +20941,11 @@ export default function Dashboard() {
                           <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '8px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
-                            const daysUntil = Math.ceil((new Date(t.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                            const daysUntil = differenceInDays(startOfDay(new Date(t.dueDate)), startOfDay(new Date()));
                             const maxDays = 14;
                             const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
                             const barWidth = Math.round((progressPercent / 100) * 28);
-                            const barColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#eab308' : '#22c55e';
+                            const barColor = daysUntil <= 0 ? '#ef4444' : daysUntil <= 1 ? '#eab308' : daysUntil < 3 ? '#eab308' : '#22c55e';
                             return (
                               <div className="flex-shrink-0 flex items-center gap-1.5" style={{ marginLeft: 'auto' }}>
                                 <div style={{ width: '28px', position: 'relative', height: '3px', flexShrink: 0 }}>
