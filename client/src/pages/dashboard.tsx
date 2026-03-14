@@ -12819,14 +12819,13 @@ export default function Dashboard() {
                   };
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
-                    <div className="flex items-center gap-2">
-                      <div className="border border-gray-300 rounded-lg flex items-center gap-3 px-4 py-3" style={{ background: '#ffffff' }} data-testid="l1-gpa-box">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="border border-gray-300 rounded-lg flex items-center gap-1.5 px-4 py-3" style={{ background: '#ffffff' }} data-testid="l1-gpa-box">
                         <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
                         {avgGpa !== null ? (
                           <>
                             <span className="font-bold text-[24px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
-                            <span className="font-bold text-[20px] leading-none" style={{ color: '#222' }}>{gpaToLetter(avgGpa)}</span>
-                            <span className="text-[10px]" style={{ color: '#888' }}>({gpaValues.length} courses)</span>
+                            <span className="text-[13px] font-bold leading-none" style={{ color: '#222' }}>({gpaToLetter(avgGpa)}, {gpaValues.length} courses)</span>
                           </>
                         ) : (
                           <span className="text-[12px]" style={{ color: '#aaa' }}>—</span>
@@ -12856,16 +12855,16 @@ export default function Dashboard() {
                       />
                       <button
                         type="button"
-                        className="border border-gray-300 rounded-lg px-3 py-2 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
-                        style={{ background: '#ffffff', height: '46px' }}
+                        className="border border-gray-300 rounded-lg px-3 py-1.5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
+                        style={{ background: '#ffffff' }}
                         onClick={() => courseListFileRef.current?.click()}
                         disabled={courseListParsing}
                         data-testid="button-upload-course-list"
                         title="Upload course list to scan for task changes"
                       >
-                        <Upload className="w-4 h-4" style={{ color: '#666' }} />
-                        <span className="text-[10px] font-medium leading-tight whitespace-pre-line" style={{ color: '#555' }}>
-                          {courseListParsing ? 'Scanning...' : 'Upload\nCourse List'}
+                        <Upload className="w-3.5 h-3.5" style={{ color: '#666' }} />
+                        <span className="text-[10px] font-bold" style={{ color: '#555' }}>
+                          {courseListParsing ? 'Scanning...' : 'Upload Course List'}
                         </span>
                       </button>
                     </div>
