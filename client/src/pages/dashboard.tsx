@@ -3096,18 +3096,40 @@ export default function Dashboard() {
     const greyedOut = isCourseGreyedOut(id);
     const prevCompleted = isPreviouslyCompleted(id);
     const isAutoFromL1 = isL2InProgressFromL1(id) && !inProgressCourses[id];
-    const isActive = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
+    const isIP = greyedOut ? false : (inProgressCourses[id] || isL2InProgressFromL1(id));
+    const isDone = !!checkedCourses[id];
     if (greyedOut || prevCompleted) return null;
+    const activeIdx = isDone ? 2 : isIP ? 1 : 0;
+    const handleClick = (e: React.MouseEvent, idx: number) => {
+      e.stopPropagation();
+      if (isAutoFromL1) return;
+      if (idx === 0) {
+        if (isDone) toggleCourse(id);
+        if (isIP) toggleInProgress(id);
+      } else if (idx === 1) {
+        if (isDone) toggleCourse(id);
+        if (!isIP) toggleInProgress(id);
+      } else {
+        if (isIP) toggleInProgress(id);
+        if (!isDone) toggleCourse(id);
+      }
+    };
     return (
     <div
-      className={inline ? "shrink-0 cursor-pointer flex items-center" : "absolute top-0 right-0 cursor-pointer flex items-center"}
-      style={inline ? { fontSize: '7px', lineHeight: 1, float: 'right', marginTop: '1px' } : { padding: '1px 3px', fontSize: '7px', lineHeight: 1 }}
-      onClick={(e) => { e.stopPropagation(); if (!isAutoFromL1) toggleInProgress(id); }}
-      title={isAutoFromL1 ? 'In progress (from Level I)' : isActive ? 'Mark not in progress' : 'Mark in progress'}
+      className={inline ? "shrink-0 flex items-center" : "absolute top-0 right-0 flex items-center"}
+      style={inline ? { float: 'right', marginTop: '1px' } : { padding: '1px 3px' }}
       data-testid={`toggle-in-progress-${id}`}
     >
-      <div style={{ width: '20px', height: '11px', borderRadius: '6px', background: isActive ? '#f59e0b' : 'rgba(0,0,0,0.15)', position: 'relative', transition: 'background 0.2s' }}>
-        <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '1px', left: isActive ? '10px' : '1px', transition: 'left 0.2s', boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)' }} />
+      <div style={{ display: 'flex', gap: '0px' }}>
+        <div onClick={(e) => handleClick(e, 0)} title="Not started" style={{ width: '13px', height: '11px', border: '1px solid #999', borderRight: 'none', borderRadius: '2px 0 0 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 0 ? '#e5e7eb' : '#fff' }}>
+          <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="2.5" fill="none" stroke={activeIdx === 0 ? '#666' : '#ccc'} strokeWidth="0.8"/><line x1="1.5" y1="5.5" x2="5.5" y2="1.5" stroke={activeIdx === 0 ? '#666' : '#ccc'} strokeWidth="0.8"/></svg>
+        </div>
+        <div onClick={(e) => handleClick(e, 1)} title="In progress" style={{ width: '13px', height: '11px', border: '1px solid #999', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 1 ? '#fef3c7' : '#fff' }}>
+          <span style={{ fontSize: '8px', fontWeight: 700, color: activeIdx === 1 ? '#d97706' : '#ccc', lineHeight: 1 }}>~</span>
+        </div>
+        <div onClick={(e) => handleClick(e, 2)} title="Complete" style={{ width: '13px', height: '11px', border: '1px solid #999', borderLeft: 'none', borderRadius: '0 2px 2px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isAutoFromL1 ? 'default' : 'pointer', background: activeIdx === 2 ? '#dcfce7' : '#fff' }}>
+          <Check style={{ width: '7px', height: '7px', color: activeIdx === 2 ? '#16a34a' : '#ccc', strokeWidth: 3 }} />
+        </div>
       </div>
     </div>
     );
@@ -12355,7 +12377,7 @@ export default function Dashboard() {
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                    <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
+                    <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
                       {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                         <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
@@ -12385,7 +12407,7 @@ export default function Dashboard() {
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['OPEN1','OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
@@ -12495,7 +12517,7 @@ export default function Dashboard() {
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                    <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
+                    <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
                       {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
                         <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
@@ -12556,7 +12578,7 @@ export default function Dashboard() {
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['L2_OPEN1','L2_OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>)); })()}
                       </select>
@@ -12700,7 +12722,7 @@ export default function Dashboard() {
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                         <option value="">{`Select POG Course ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
@@ -12728,7 +12750,7 @@ export default function Dashboard() {
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                         <option value="">{i === 0 ? 'Select Lower Level Table A Course...' : 'Select Upper Level Table B Course...'}</option>
                         {(() => { const used = getSelectedCodes(['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'], cid); return (i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES)).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
@@ -12756,7 +12778,7 @@ export default function Dashboard() {
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">SELECT</div>
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
-                      <select className={`flex-1 min-w-0 mr-2 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
+                      <select className={`flex-1 min-w-0 mr-1 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
                         {(() => { const used = getSelectedCodes(['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
                           <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
