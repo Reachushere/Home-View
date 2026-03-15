@@ -927,6 +927,7 @@ export default function Dashboard() {
   }, []);
 
   const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; daily?: { date: string; high: number; low: number }[] } | null>(null);
+  const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
     left: Math.random() * 110 - 5,
     delay: Math.random() * 4,
@@ -959,9 +960,20 @@ export default function Dashboard() {
         console.error('[Weather] Failed to fetch:', e);
       }
     };
+    const fetchPollen = async () => {
+      try {
+        const res = await fetch('/api/pollen');
+        const data = await res.json();
+        if (data.overall) setPollenData(data);
+      } catch (e) {
+        console.error('[Pollen] Failed to fetch:', e);
+      }
+    };
     fetchWeather();
-    const interval = setInterval(fetchWeather, 15 * 60 * 1000);
-    return () => clearInterval(interval);
+    fetchPollen();
+    const weatherInterval = setInterval(fetchWeather, 15 * 60 * 1000);
+    const pollenInterval = setInterval(fetchPollen, 30 * 60 * 1000);
+    return () => { clearInterval(weatherInterval); clearInterval(pollenInterval); };
   }, []);
 
   const [isVoiceListening, setIsVoiceListening] = useState(false);
@@ -21190,8 +21202,13 @@ export default function Dashboard() {
                     <div className="weather-cloud" style={{ top: '22px', left: '55%', width: '32px', height: '11px', opacity: isCloudy ? 0.2 : 0.12, animationDelay: '3s' }} />
                   </>
                 )}
-                <div className="absolute flex items-center gap-1" style={{ bottom: '4px', left: '6px', zIndex: 41 }}>
+                <div className="absolute flex items-center gap-2" style={{ bottom: '4px', left: '6px', zIndex: 41 }}>
                   <span className="text-[8px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>{Math.round(weatherData.temp)}°C CYTZ</span>
+                  {pollenData && (
+                    <span className="text-[8px] font-medium" style={{ color: pollenData.overall.level === 'Low' ? 'rgba(74,222,128,0.7)' : pollenData.overall.level === 'Moderate' ? 'rgba(250,204,21,0.7)' : pollenData.overall.level === 'High' ? 'rgba(251,146,60,0.7)' : 'rgba(248,113,113,0.7)' }} data-testid="pollen-indicator">
+                      🌿 {pollenData.overall.level}
+                    </span>
+                  )}
                 </div>
               </div>
             );

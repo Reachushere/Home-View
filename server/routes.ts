@@ -1477,6 +1477,104 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  const pollenCache: { data: any | null; timestamp: number } = { data: null, timestamp: 0 };
+
+  app.get("/api/pollen", async (_req, res) => {
+    try {
+      const now = Date.now();
+      if (pollenCache.data && now - pollenCache.timestamp < 30 * 60 * 1000) {
+        return res.json(pollenCache.data);
+      }
+      const response = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=43.6275&longitude=-79.3962&current=alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen,european_aqi&timezone=America/Toronto');
+      const raw = await response.json();
+      const c = raw.current || {};
+      const treePollen = Math.max(c.alder_pollen || 0, c.birch_pollen || 0, c.olive_pollen || 0);
+      const grassPollen = c.grass_pollen || 0;
+      const ragweedPollen = c.ragweed_pollen || 0;
+      const mugwortPollen = c.mugwort_pollen || 0;
+      const weedPollen = Math.max(ragweedPollen, mugwortPollen);
+      const overallMax = Math.max(treePollen, grassPollen, weedPollen);
+
+      const getLevel = (val: number) => {
+        if (val <= 10) return 'Low';
+        if (val <= 30) return 'Moderate';
+        if (val <= 60) return 'High';
+        return 'Very High';
+      };
+
+      const result = {
+        tree: { value: treePollen, level: getLevel(treePollen), details: { alder: c.alder_pollen || 0, birch: c.birch_pollen || 0, olive: c.olive_pollen || 0 } },
+        grass: { value: grassPollen, level: getLevel(grassPollen) },
+        weed: { value: weedPollen, level: getLevel(weedPollen), details: { ragweed: ragweedPollen, mugwort: mugwortPollen } },
+        overall: { value: overallMax, level: getLevel(overallMax) },
+        aqi: c.european_aqi || 0,
+        timestamp: new Date().toISOString(),
+      };
+      pollenCache.data = result;
+      pollenCache.timestamp = now;
+      res.json(result);
+    } catch (err) {
+      console.error("Error fetching pollen:", err);
+      res.status(500).json({ error: "Failed to fetch pollen data" });
+    }
+  });
+
+  app.get("/api/ha/sensor/pollen", async (_req, res) => {
+    try {
+      const now = Date.now();
+      if (!pollenCache.data || now - pollenCache.timestamp > 30 * 60 * 1000) {
+        const response = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=43.6275&longitude=-79.3962&current=alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen,european_aqi&timezone=America/Toronto');
+        const raw = await response.json();
+        const c = raw.current || {};
+        const treePollen = Math.max(c.alder_pollen || 0, c.birch_pollen || 0, c.olive_pollen || 0);
+        const grassPollen = c.grass_pollen || 0;
+        const ragweedPollen = c.ragweed_pollen || 0;
+        const mugwortPollen = c.mugwort_pollen || 0;
+        const weedPollen = Math.max(ragweedPollen, mugwortPollen);
+        const overallMax = Math.max(treePollen, grassPollen, weedPollen);
+        const getLevel = (val: number) => {
+          if (val <= 10) return 'Low';
+          if (val <= 30) return 'Moderate';
+          if (val <= 60) return 'High';
+          return 'Very High';
+        };
+        pollenCache.data = {
+          tree: { value: treePollen, level: getLevel(treePollen), details: { alder: c.alder_pollen || 0, birch: c.birch_pollen || 0, olive: c.olive_pollen || 0 } },
+          grass: { value: grassPollen, level: getLevel(grassPollen) },
+          weed: { value: weedPollen, level: getLevel(weedPollen), details: { ragweed: ragweedPollen, mugwort: mugwortPollen } },
+          overall: { value: overallMax, level: getLevel(overallMax) },
+          aqi: c.european_aqi || 0,
+          timestamp: new Date().toISOString(),
+        };
+        pollenCache.timestamp = now;
+      }
+      const p = pollenCache.data;
+      res.json({
+        state: p.overall.value,
+        attributes: {
+          unit_of_measurement: "grains/m³",
+          friendly_name: "Pollen Index Toronto",
+          level: p.overall.level,
+          tree_pollen: p.tree.value,
+          tree_level: p.tree.level,
+          tree_alder: p.tree.details.alder,
+          tree_birch: p.tree.details.birch,
+          grass_pollen: p.grass.value,
+          grass_level: p.grass.level,
+          weed_pollen: p.weed.value,
+          weed_level: p.weed.level,
+          weed_ragweed: p.weed.details.ragweed,
+          weed_mugwort: p.weed.details.mugwort,
+          aqi: p.aqi,
+          last_updated: p.timestamp,
+        },
+      });
+    } catch (err) {
+      console.error("Error fetching pollen for HA:", err);
+      res.status(500).json({ error: "Failed to fetch pollen sensor data" });
+    }
+  });
+
   const newsCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 };
 
   app.get("/api/news", async (_req, res) => {
