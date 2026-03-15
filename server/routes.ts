@@ -1711,11 +1711,11 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const authParam = req.query.auth ? `?auth=${req.query.auth}` : '';
 
       const LOGOS: Record<string, { file: string; height: number }> = {
-        'CNN': { file: 'CNN_1773536484180.png', height: 18 },
+        'CNN': { file: 'CNN_1773536484180.png', height: 24 },
         'CBC': { file: 'cbc-news-logo-black-and-white_1773536865600.png', height: 26 },
         'CTV': { file: 'CTV2_1773545440801.png', height: 20 },
         'Global': { file: 'Global_White_1773536754594.png', height: 20 },
-        'MSNBC': { file: 'MSNBC_1773536950584.png', height: 24 },
+        'MSNBC': { file: 'MSNBC_1773536950584.png', height: 18 },
         'Politico': { file: 'Politico_1773537080711.png', height: 20 },
         'Raw Story': { file: 'Raw_Story_1773607642361.png', height: 22 },
         'ABC News': { file: 'ABC_1773609250051.png', height: 22 },
