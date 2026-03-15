@@ -11,7 +11,7 @@ import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_17691109
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import tmuDialogBg from "@assets/TMU2_1772839789326.png";
-import ctvLogoPath from "@assets/CTV_1773544176026.png";
+import ctvLogoPath from "@assets/CTV2_1773545440801.png";
 import cnnLogoPath from "@assets/CNN_1773536484180.png";
 import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
@@ -326,9 +326,8 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     if (!containerRef.current || headlines.length === 0) return;
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
       const logoInfo = TICKER_LOGO_MAP[item.source];
-      const blendMode = item.source === 'CTV' ? 'mix-blend-mode:screen;' : '';
       const logoHtml = logoInfo
-        ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain;${blendMode}" />`
+        ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain" />`
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-[13px] text-white/90">${safeTitle}</span><span class="text-white/20 mx-2">|</span></a>`;
