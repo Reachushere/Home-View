@@ -13,6 +13,7 @@ import campusBg from "@assets/TMU_1769151150961.jpg";
 import tmuDialogBg from "@assets/TMU2_1772839789326.png";
 import ctvLogoPath from "@assets/ctv_logo_cropped.png";
 import cnnLogoPath from "@assets/CNN_1773536484180.png";
+import globalLogoPath from "@assets/Global_1773536645917.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
@@ -13341,7 +13342,7 @@ export default function Dashboard() {
                     CNN: cnnLogoPath,
                     CBC: 'https://favicon.controld.com/cbc.ca',
                     CTV: ctvLogoPath,
-                    Global: 'https://favicon.controld.com/globalnews.ca',
+                    Global: globalLogoPath,
                     MSNBC: 'https://favicon.controld.com/msnbc.com',
                     Politico: 'https://favicon.controld.com/politico.com',
                   };
