@@ -2137,3 +2137,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   animation: weatherLightning 6s ease-in-out infinite;
   pointer-events: none;
 }
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.news-ticker-scroll:hover {
+  animation-play-state: paused !important;
+}

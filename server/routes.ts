@@ -1458,6 +1458,66 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  const newsCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 };
+
+  app.get("/api/news", async (_req, res) => {
+    try {
+      const now = Date.now();
+      if (newsCache.data && now - newsCache.timestamp < 10 * 60 * 1000) {
+        return res.json(newsCache.data);
+      }
+
+      const feeds = [
+        { source: 'CNN', url: 'http://rss.cnn.com/rss/cnn_topstories.rss' },
+        { source: 'CBC', url: 'https://www.cbc.ca/cmlink/rss-topstories' },
+        { source: 'CTV', url: 'https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009' },
+        { source: 'Global', url: 'https://globalnews.ca/feed/' },
+        { source: 'MSNBC', url: 'https://www.msnbc.com/feeds/latest' },
+      ];
+
+      const results: { title: string; source: string; link: string }[] = [];
+
+      await Promise.allSettled(feeds.map(async (feed) => {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 8000);
+          const response = await fetch(feed.url, {
+            signal: controller.signal,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' }
+          });
+          clearTimeout(timeout);
+          const xml = await response.text();
+
+          const items = xml.split(/<item[\s>]/i).slice(1, 8);
+          for (const item of items) {
+            const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
+            const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
+            if (titleMatch?.[1]) {
+              const title = titleMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16))).trim();
+              if (title && title !== feed.source) {
+                results.push({
+                  title,
+                  source: feed.source,
+                  link: linkMatch?.[1]?.trim() || '',
+                });
+              }
+            }
+          }
+        } catch (e) {
+          console.error(`[News] Failed to fetch ${feed.source}:`, e);
+        }
+      }));
+
+      const shuffled = results.sort(() => Math.random() - 0.5);
+      newsCache.data = shuffled;
+      newsCache.timestamp = now;
+      res.json(shuffled);
+    } catch (err) {
+      console.error("Error fetching news:", err);
+      res.status(500).json({ error: "Failed to fetch news" });
+    }
+  });
+
   app.get("/api/scholarships", async (_req, res) => {
     try {
       const data = await storage.getScholarships();
