@@ -304,7 +304,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   Politico: { src: politicoLogoPath, height: 52 },
   'Raw Story': { src: rawStoryLogoPath, height: 48 },
   'ABC News': { src: abcNewsLogoPath, height: 56 },
-  'BBC': { src: bbcNewsLogoPath, height: 24 },
+  'BBC': { src: bbcNewsLogoPath, height: 48 },
 };
 
 function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
