@@ -1532,7 +1532,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const bySource: Record<string, typeof results> = {};
       for (const item of results) {
         if (!bySource[item.source]) bySource[item.source] = [];
-        if (bySource[item.source].length < 4) {
+        if (bySource[item.source].length < 3) {
           bySource[item.source].push(item);
         }
       }

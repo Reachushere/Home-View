@@ -325,8 +325,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
   useEffect(() => {
     if (!containerRef.current || headlines.length === 0) return;
     const doubled = [...headlines, ...headlines];
-    const animDuration = `tickerScroll 60s linear infinite`;
-    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="animation:${animDuration}">${doubled.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll">${doubled.map((item, i) => {
       const logo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logo
         ? `<img src="${logo}" alt="${item.source}" class="rounded-sm" style="height:28px;width:auto;min-width:28px;object-fit:contain" />`
@@ -335,6 +334,15 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-[13px] text-white/90">${safeTitle}</span><span class="text-white/20 mx-2">|</span></a>`;
     }).join('')}</div></div>`;
     containerRef.current.innerHTML = html;
+    requestAnimationFrame(() => {
+      const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
+      if (scrollEl) {
+        const totalWidth = scrollEl.scrollWidth;
+        const speed = 150;
+        const duration = totalWidth / (2 * speed);
+        scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
+      }
+    });
   }, [headlines]);
 
   return null;
