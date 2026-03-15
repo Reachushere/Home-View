@@ -302,7 +302,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   Global: { src: globalLogoPath, height: 28 },
   MSNBC: { src: msnbcLogoPath, height: 52 },
   Politico: { src: politicoLogoPath, height: 38 },
-  'Raw Story': { src: rawStoryLogoPath, height: 96 },
+  'Raw Story': { src: rawStoryLogoPath, height: 48 },
   'ABC News': { src: abcNewsLogoPath, height: 56 },
   'BBC': { src: bbcNewsLogoPath, height: 24 },
 };
