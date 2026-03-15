@@ -21218,6 +21218,7 @@ export default function Dashboard() {
             const isDrizzle = wc >= 51 && wc <= 57;
             const isThunder = wc >= 95 && wc <= 99;
             const isFog = wc >= 45 && wc <= 48;
+            const isOvercast = wc === 3;
             const isCloudy = wc >= 2 && wc <= 3;
             const isPartlyCloudy = wc === 1 || wc === 2;
             const isClear = wc === 0;
@@ -21269,10 +21270,20 @@ export default function Dashboard() {
                     zIndex: 1,
                   }} />
                 )}
+                {isOvercast && (
+                  <div className="absolute inset-0" style={{ background: 'rgba(140,150,170,0.12)' }} />
+                )}
                 {(isCloudy || isPartlyCloudy) && (
                   <>
-                    <div className="weather-cloud" style={{ top: '8px', left: '15%', width: '40px', height: '14px', opacity: isCloudy ? 0.25 : 0.15 }} />
-                    <div className="weather-cloud" style={{ top: '22px', left: '55%', width: '32px', height: '11px', opacity: isCloudy ? 0.2 : 0.12, animationDelay: '3s' }} />
+                    <div className="weather-cloud" style={{ top: '6px', left: '10%', width: '45px', height: '15px', opacity: isOvercast ? 0.35 : isCloudy ? 0.25 : 0.15 }} />
+                    <div className="weather-cloud" style={{ top: '18px', left: '45%', width: '38px', height: '13px', opacity: isOvercast ? 0.3 : isCloudy ? 0.2 : 0.12, animationDelay: '2s' }} />
+                    <div className="weather-cloud" style={{ top: '10px', left: '70%', width: '35px', height: '12px', opacity: isOvercast ? 0.28 : isCloudy ? 0.18 : 0.1, animationDelay: '4s' }} />
+                    {isOvercast && (
+                      <>
+                        <div className="weather-cloud" style={{ top: '28px', left: '25%', width: '42px', height: '14px', opacity: 0.22, animationDelay: '1s' }} />
+                        <div className="weather-cloud" style={{ top: '35px', left: '60%', width: '30px', height: '10px', opacity: 0.18, animationDelay: '5s' }} />
+                      </>
+                    )}
                   </>
                 )}
                 <div className="absolute flex items-center gap-2" style={{ bottom: '4px', left: '6px', zIndex: 41 }}>
