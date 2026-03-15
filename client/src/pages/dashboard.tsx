@@ -840,6 +840,38 @@ export default function Dashboard() {
     return () => clearTimeout(sideTimeout);
   }, []);
   const [isTopPillOpen, setIsTopPillOpen] = useState(false);
+  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean } | null>(null);
+  const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
+    left: Math.random() * 110 - 5,
+    delay: Math.random() * 4,
+    sizeFactor: Math.random(),
+    durationFactor: Math.random(),
+    driftFactor: Math.random(),
+    opacityFactor: Math.random(),
+  })), []);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&timezone=America/Toronto');
+        const data = await res.json();
+        if (data.current) {
+          setWeatherData({
+            code: data.current.weather_code,
+            temp: data.current.temperature_2m,
+            windSpeed: data.current.wind_speed_10m,
+            isDay: data.current.is_day === 1,
+          });
+        }
+      } catch (e) {
+        console.error('[Weather] Failed to fetch:', e);
+      }
+    };
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 15 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [isVoiceListening, setIsVoiceListening] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState('');
   const voiceRecognitionRef = useRef<any>(null);
@@ -20967,6 +20999,77 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          {/* Weather Overlay */}
+          {weatherData && (() => {
+            const wc = weatherData.code;
+            const isSnow = wc >= 71 && wc <= 77;
+            const isRain = (wc >= 51 && wc <= 67) || (wc >= 80 && wc <= 82);
+            const isDrizzle = wc >= 51 && wc <= 57;
+            const isThunder = wc >= 95 && wc <= 99;
+            const isFog = wc >= 45 && wc <= 48;
+            const isCloudy = wc >= 2 && wc <= 3;
+            const isPartlyCloudy = wc === 1 || wc === 2;
+            const isClear = wc === 0;
+            const isFreezingRain = wc >= 66 && wc <= 67;
+            const isSleet = wc >= 85 && wc <= 86;
+            const particleCount = isSnow ? (wc >= 75 ? 55 : wc >= 73 ? 35 : 20)
+              : isRain ? (wc >= 65 || wc >= 82 ? 60 : isDrizzle ? 18 : 35)
+              : isSleet ? 30 : isFreezingRain ? 40 : 0;
+            const showParticles = particleCount > 0;
+
+            return (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 40, borderRadius: '12px' }}>
+                {isFog && (
+                  <div className="absolute inset-0" style={{ background: 'rgba(200,200,210,0.15)', backdropFilter: 'blur(1px)' }} />
+                )}
+                {isThunder && (
+                  <div className="absolute inset-0 weather-lightning" />
+                )}
+                {showParticles && weatherParticles.slice(0, particleCount).map((p, i) => {
+                  const size = isSnow ? (2 + p.sizeFactor * 3) : isSleet ? (1.5 + p.sizeFactor * 2) : (1 + p.sizeFactor * 1.5);
+                  const duration = isSnow ? (3 + p.durationFactor * 4) : isRain ? (0.6 + p.durationFactor * 0.8) : (1 + p.durationFactor * 1.5);
+                  const drift = isSnow ? (p.driftFactor * 30 - 15) : 0;
+                  const opacity = isSnow ? (0.5 + p.opacityFactor * 0.5) : isRain ? (0.3 + p.opacityFactor * 0.4) : 0.5;
+                  const windAngle = isRain ? 8 : isSleet ? 5 : 0;
+
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        position: 'absolute',
+                        left: `${p.left}%`,
+                        top: '-8px',
+                        width: `${isSnow ? size : Math.max(1, size * 0.5)}px`,
+                        height: `${isSnow ? size : size * (isRain ? 8 : 4)}px`,
+                        borderRadius: isSnow ? '50%' : '1px',
+                        background: isSnow ? 'white' : isFreezingRain ? 'rgba(180,210,255,0.7)' : 'rgba(170,195,220,0.6)',
+                        opacity,
+                        animation: `weatherFall ${duration}s linear ${p.delay}s infinite`,
+                        transform: `translateX(${drift}px) rotate(${windAngle}deg)`,
+                      }}
+                    />
+                  );
+                })}
+                {(isClear || isPartlyCloudy) && weatherData.isDay && (
+                  <div className="absolute" style={{
+                    top: '6px', right: '6px', width: '18px', height: '18px',
+                    borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,220,80,0.9) 0%, rgba(255,200,50,0.4) 50%, transparent 70%)',
+                    boxShadow: '0 0 12px rgba(255,200,50,0.4)',
+                    zIndex: 1,
+                  }} />
+                )}
+                {(isCloudy || isPartlyCloudy) && (
+                  <>
+                    <div className="weather-cloud" style={{ top: '8px', left: '15%', width: '40px', height: '14px', opacity: isCloudy ? 0.25 : 0.15 }} />
+                    <div className="weather-cloud" style={{ top: '22px', left: '55%', width: '32px', height: '11px', opacity: isCloudy ? 0.2 : 0.12, animationDelay: '3s' }} />
+                  </>
+                )}
+                <div className="absolute flex items-center gap-1" style={{ bottom: '4px', left: '6px', zIndex: 41 }}>
+                  <span className="text-[8px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>{Math.round(weatherData.temp)}°C CYTZ</span>
+                </div>
+              </div>
+            );
+          })()}
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60] cursor-col-resize group"
