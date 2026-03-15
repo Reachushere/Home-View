@@ -1725,17 +1725,19 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const US_SOURCES = ['CNN','Politico','Raw Story','MSNBC','ABC News','Fox News'];
       const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-      const internalBase = `http://localhost:${process.env.PORT || 5000}`;
+      const now = Date.now();
       const withTimeout = (url: string, ms: number) => {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), ms);
         return fetch(url, { signal: controller.signal }).then(r => { clearTimeout(timer); return r.json(); }).catch(() => { clearTimeout(timer); return null; });
       };
+      const port = process.env.PORT || 5000;
+
       const [alertRes, wxRes, pollenRes, newsRes] = await Promise.all([
-        withTimeout(`${internalBase}/api/weather-alerts`, 5000),
-        withTimeout(`${internalBase}/api/weather`, 5000),
-        withTimeout(`${internalBase}/api/pollen`, 5000),
-        withTimeout(`${internalBase}/api/news`, 8000),
+        weatherAlertCache.data ? Promise.resolve(weatherAlertCache.data) : withTimeout(`http://localhost:${port}/api/weather-alerts`, 5000),
+        weatherCache.data ? Promise.resolve(weatherCache.data) : withTimeout(`http://localhost:${port}/api/weather`, 5000),
+        pollenCache.data ? Promise.resolve(pollenCache.data) : withTimeout(`http://localhost:${port}/api/pollen`, 5000),
+        newsCache.data ? Promise.resolve(newsCache.data) : withTimeout(`http://localhost:${port}/api/news`, 8000),
       ]);
 
       let tickerItems = '';
@@ -1835,10 +1837,15 @@ html,body{height:100%;overflow:hidden;background:transparent}
     track.style.setProperty('--ticker-start',sw+'px');
     track.style.setProperty('--ticker-end','-'+cw+'px');
     track.style.animation='tickerScroll '+dur+'s linear infinite';
-    track.addEventListener('animationiteration',function handler(){
-      track.removeEventListener('animationiteration',handler);
-      location.reload();
-    });
+    const hasNews = track.querySelectorAll('.t-headline').length > 0;
+    if (!hasNews) {
+      setTimeout(() => location.reload(), 8000);
+    } else {
+      track.addEventListener('animationiteration',function handler(){
+        track.removeEventListener('animationiteration',handler);
+        location.reload();
+      });
+    }
   });
 })();
 </script></body></html>`;
