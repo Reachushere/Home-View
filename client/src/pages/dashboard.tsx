@@ -13331,7 +13331,7 @@ export default function Dashboard() {
       {/* News Ticker */}
       {newsHeadlines.length > 0 && (
         <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '22px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
-          <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(20, newsHeadlines.length * 2)}s linear infinite` }}>
+          <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(10, newsHeadlines.length * 0.8)}s linear infinite` }}>
             {[...newsHeadlines, ...newsHeadlines].map((item, i) => (
               <span key={i} className="inline-flex items-center gap-1.5 mx-4">
                 <span className="text-[9px] font-bold px-1 py-0 rounded" style={{
