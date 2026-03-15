@@ -859,7 +859,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean } | null>(null);
+  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; daily?: { date: string; high: number; low: number }[] } | null>(null);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
     left: Math.random() * 110 - 5,
     delay: Math.random() * 4,
@@ -872,14 +872,20 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&timezone=America/Toronto');
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10');
         const data = await res.json();
         if (data.current) {
+          const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({
+            date: d,
+            high: Math.round(data.daily.temperature_2m_max[i]),
+            low: Math.round(data.daily.temperature_2m_min[i]),
+          })) : [];
           setWeatherData({
             code: data.current.weather_code,
             temp: data.current.temperature_2m,
             windSpeed: data.current.wind_speed_10m,
             isDay: data.current.is_day === 1,
+            daily,
           });
         }
       } catch (e) {
@@ -18044,6 +18050,16 @@ export default function Dashboard() {
                   >
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : ''}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : ''}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {(() => {
+                      const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
+                      if (!dayForecast) return null;
+                      return (
+                        <div className="absolute left-1 flex flex-col items-start" style={{ top: '50%', transform: 'translateY(-50%)' }} data-testid={`weather-temp-${shiftDateStr}`}>
+                          <span className="text-[8px] font-semibold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
+                          <span className="text-[8px] font-medium leading-none" style={{ color: '#60a5fa' }}>{dayForecast.low}°</span>
+                        </div>
+                      );
+                    })()}
                     {day.getDay() === 6 && (
                       <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW COURSE WEEK</div>
                     )}
