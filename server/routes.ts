@@ -1492,6 +1492,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         { source: 'CTV', url: 'https://news.google.com/rss/search?q=site:ctvnews.ca+when:1d&hl=en-CA&gl=CA&ceid=CA:en' },
         { source: 'Global', url: 'https://globalnews.ca/feed/' },
         { source: 'MSNBC', url: 'https://msnbc.com/feed' },
+        { source: 'Politico', url: 'https://rss.politico.com/politics-news.xml' },
       ];
 
       const results: { title: string; source: string; link: string }[] = [];

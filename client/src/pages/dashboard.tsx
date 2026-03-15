@@ -13341,6 +13341,7 @@ export default function Dashboard() {
                     CTV: 'https://favicon.controld.com/ctvnews.ca',
                     Global: 'https://favicon.controld.com/globalnews.ca',
                     MSNBC: 'https://favicon.controld.com/msnbc.com',
+                    Politico: 'https://favicon.controld.com/politico.com',
                   };
                   return logoMap[item.source] ? (
                     <img src={logoMap[item.source]} alt={item.source} className="w-3.5 h-3.5 rounded-sm" style={{ minWidth: '14px' }} />
