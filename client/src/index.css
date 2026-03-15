@@ -2127,8 +2127,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .weather-cloud {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  box-shadow: 8px 2px 0 rgba(255,255,255,0.15), -6px 1px 0 rgba(255,255,255,0.12);
+  background: rgba(180,190,210,0.35);
+  box-shadow: 10px 3px 0 rgba(180,190,210,0.3), -8px 2px 0 rgba(180,190,210,0.25), 4px -2px 0 rgba(200,210,225,0.2);
   animation: weatherCloudDrift 12s ease-in-out infinite;
   pointer-events: none;
 }

@@ -21271,17 +21271,19 @@ export default function Dashboard() {
                   }} />
                 )}
                 {isOvercast && (
-                  <div className="absolute inset-0" style={{ background: 'rgba(140,150,170,0.12)' }} />
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(120,130,150,0.2) 0%, rgba(100,110,130,0.1) 100%)' }} />
                 )}
                 {(isCloudy || isPartlyCloudy) && (
                   <>
-                    <div className="weather-cloud" style={{ top: '6px', left: '10%', width: '45px', height: '15px', opacity: isOvercast ? 0.35 : isCloudy ? 0.25 : 0.15 }} />
-                    <div className="weather-cloud" style={{ top: '18px', left: '45%', width: '38px', height: '13px', opacity: isOvercast ? 0.3 : isCloudy ? 0.2 : 0.12, animationDelay: '2s' }} />
-                    <div className="weather-cloud" style={{ top: '10px', left: '70%', width: '35px', height: '12px', opacity: isOvercast ? 0.28 : isCloudy ? 0.18 : 0.1, animationDelay: '4s' }} />
+                    <div className="weather-cloud" style={{ top: '4px', left: '5%', width: isOvercast ? '65px' : '45px', height: isOvercast ? '20px' : '15px', opacity: isOvercast ? 0.6 : isCloudy ? 0.25 : 0.15 }} />
+                    <div className="weather-cloud" style={{ top: '16px', left: '40%', width: isOvercast ? '55px' : '38px', height: isOvercast ? '18px' : '13px', opacity: isOvercast ? 0.5 : isCloudy ? 0.2 : 0.12, animationDelay: '2s' }} />
+                    <div className="weather-cloud" style={{ top: '8px', left: '68%', width: isOvercast ? '50px' : '35px', height: isOvercast ? '16px' : '12px', opacity: isOvercast ? 0.45 : isCloudy ? 0.18 : 0.1, animationDelay: '4s' }} />
                     {isOvercast && (
                       <>
-                        <div className="weather-cloud" style={{ top: '28px', left: '25%', width: '42px', height: '14px', opacity: 0.22, animationDelay: '1s' }} />
-                        <div className="weather-cloud" style={{ top: '35px', left: '60%', width: '30px', height: '10px', opacity: 0.18, animationDelay: '5s' }} />
+                        <div className="weather-cloud" style={{ top: '26px', left: '20%', width: '58px', height: '17px', opacity: 0.4, animationDelay: '1s' }} />
+                        <div className="weather-cloud" style={{ top: '34px', left: '55%', width: '48px', height: '15px', opacity: 0.35, animationDelay: '5s' }} />
+                        <div className="weather-cloud" style={{ top: '42px', left: '8%', width: '52px', height: '16px', opacity: 0.3, animationDelay: '3s' }} />
+                        <div className="weather-cloud" style={{ top: '50px', left: '75%', width: '40px', height: '13px', opacity: 0.25, animationDelay: '6s' }} />
                       </>
                     )}
                   </>
