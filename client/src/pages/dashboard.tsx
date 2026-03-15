@@ -146,6 +146,8 @@ import {
   Headphones,
   Sun as SunIcon,
   Moon as MoonIcon,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -838,6 +840,66 @@ export default function Dashboard() {
     return () => clearTimeout(sideTimeout);
   }, []);
   const [isTopPillOpen, setIsTopPillOpen] = useState(false);
+  const [isVoiceListening, setIsVoiceListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const voiceRecognitionRef = useRef<any>(null);
+  const voiceTargetRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+
+  const startVoiceInput = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Not supported", description: "Speech recognition is not supported in this browser." });
+      return;
+    }
+    const activeEl = document.activeElement as HTMLInputElement | HTMLTextAreaElement | null;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+      voiceTargetRef.current = activeEl;
+    } else {
+      voiceTargetRef.current = null;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    let finalText = '';
+    recognition.onresult = (event: any) => {
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const t = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalText += t;
+        } else {
+          interim += t;
+        }
+      }
+      setVoiceTranscript(finalText + interim);
+    };
+    recognition.onerror = (event: any) => {
+      console.error('[Voice] Recognition error:', event.error);
+      setIsVoiceListening(false);
+    };
+    recognition.onend = () => {
+      setIsVoiceListening(false);
+      if (finalText && voiceTargetRef.current) {
+        const el = voiceTargetRef.current;
+        el.focus();
+        document.execCommand('insertText', false, finalText);
+      }
+      setVoiceTranscript('');
+      voiceTargetRef.current = null;
+    };
+    voiceRecognitionRef.current = recognition;
+    recognition.start();
+    setIsVoiceListening(true);
+    setVoiceTranscript('');
+  }, [toast]);
+
+  const stopVoiceInput = useCallback(() => {
+    if (voiceRecognitionRef.current) {
+      voiceRecognitionRef.current.stop();
+      voiceRecognitionRef.current = null;
+    }
+  }, []);
   const [topPillMounted, setTopPillMounted] = useState(false);
   const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -13186,6 +13248,29 @@ export default function Dashboard() {
         </div>
       </div>
       
+      {/* Voice Input Floating Button */}
+      <div className="fixed z-[9999]" style={{ bottom: '18px', left: '18px' }}>
+        <button
+          onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
+          className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
+          style={{ padding: isVoiceListening ? '10px 16px 10px 12px' : '10px', minWidth: isVoiceListening ? '120px' : '40px' }}
+          data-testid="button-voice-input"
+        >
+          {isVoiceListening ? (
+            <>
+              <MicOff className="h-4 w-4 text-white shrink-0" />
+              <div className="flex flex-col items-start min-w-0">
+                <span className="text-[10px] text-white font-medium">Listening...</span>
+                {voiceTranscript && <span className="text-[9px] text-white/70 truncate max-w-[160px]">{voiceTranscript}</span>}
+              </div>
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
+            </>
+          ) : (
+            <Mic className="h-4 w-4 text-white" />
+          )}
+        </button>
+      </div>
+
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {(() => {
         const btnCount = 1;
