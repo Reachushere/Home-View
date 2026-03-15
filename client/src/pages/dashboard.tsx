@@ -325,7 +325,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
   useEffect(() => {
     if (!containerRef.current || headlines.length === 0) return;
     const doubled = [...headlines, ...headlines];
-    const animDuration = `tickerScroll ${Math.max(15, headlines.length * 3)}s linear infinite`;
+    const animDuration = `tickerScroll ${Math.max(10, Math.round(headlines.length * 1.2))}s linear infinite`;
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="animation:${animDuration}">${doubled.map((item, i) => {
       const logo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logo
