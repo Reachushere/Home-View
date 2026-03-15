@@ -21473,7 +21473,7 @@ export default function Dashboard() {
                   overflowY: 'auto',
                   scrollbarWidth: 'none',
                   scrollBehavior: 'smooth',
-                  padding: '3px 6px',
+                  padding: '2px 6px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
@@ -21508,7 +21508,6 @@ export default function Dashboard() {
                           style={{
                             lineHeight: '1.3',
                             marginBottom: '1px',
-                            marginTop: tIdx === 0 ? '-2px' : undefined,
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
