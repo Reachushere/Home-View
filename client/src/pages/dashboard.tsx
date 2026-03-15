@@ -21210,6 +21210,58 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          {/* Homework Width Resize Handle — outside left side, near bottom */}
+          <div
+            className="absolute z-[60] cursor-col-resize group"
+            style={{ left: '-10px', bottom: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setIsResizingHomework(true);
+              resizingHomeworkRef.current = { startX: e.clientX, startReduction: calendarReduction };
+            }}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              setIsResizingHomework(true);
+              resizingHomeworkRef.current = { startX: touch.clientX, startReduction: calendarReduction };
+            }}
+            data-testid="resize-handle-homework"
+          >
+            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            </div>
+          </div>
+          <div
+            className="absolute z-50 flex flex-col gap-1 cursor-pointer"
+            style={{ left: '-21px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
+          >
+            <div
+              className="hover:bg-white/20 rounded-full flex items-center justify-center"
+              style={{ width: '23px', height: '23px' }}
+              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
+              data-testid="button-homework-scroll-top"
+            >
+              <ChevronUp style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
+            </div>
+            <div
+              className="hover:bg-white/20 rounded-full flex items-center justify-center"
+              style={{ width: '23px', height: '23px' }}
+              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
+              data-testid="button-homework-scroll-bottom"
+            >
+              <ChevronDown style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
+            </div>
+          </div>
+          <div
+            className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
+            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto' }}
+            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
+            data-testid="button-homework-scroll-to-top"
+          >
+            <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
+          </div>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
             const wc = weatherData.code;
@@ -21230,7 +21282,7 @@ export default function Dashboard() {
             const showParticles = particleCount > 0;
 
             return (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 40, borderRadius: '12px' }}>
+              <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 45, borderRadius: '12px' }}>
                 {isFog && (
                   <div className="absolute inset-0" style={{ background: 'rgba(200,200,210,0.15)', backdropFilter: 'blur(1px)' }} />
                 )}
@@ -21288,7 +21340,7 @@ export default function Dashboard() {
                     )}
                   </>
                 )}
-                <div className="absolute flex items-center gap-2" style={{ bottom: '4px', left: '6px', zIndex: 41 }}>
+                <div className="absolute flex items-center gap-2" style={{ bottom: '4px', left: '6px', zIndex: 46 }}>
                   <span className="text-[8px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>{Math.round(weatherData.temp)}°C CYTZ</span>
                   {pollenData && (
                     <span className="text-[8px] font-medium" style={{ color: pollenData.overall.level === 'Low' ? 'rgba(74,222,128,0.7)' : pollenData.overall.level === 'Moderate' ? 'rgba(250,204,21,0.7)' : pollenData.overall.level === 'High' ? 'rgba(251,146,60,0.7)' : 'rgba(248,113,113,0.7)' }} data-testid="pollen-indicator">
@@ -21299,58 +21351,6 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          {/* Homework Width Resize Handle — outside left side, near bottom */}
-          <div
-            className="absolute z-[60] cursor-col-resize group"
-            style={{ left: '-10px', bottom: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              setIsResizingHomework(true);
-              resizingHomeworkRef.current = { startX: e.clientX, startReduction: calendarReduction };
-            }}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              setIsResizingHomework(true);
-              resizingHomeworkRef.current = { startX: touch.clientX, startReduction: calendarReduction };
-            }}
-            data-testid="resize-handle-homework"
-          >
-            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-            </div>
-          </div>
-          <div
-            className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ left: '-21px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'auto' }}
-          >
-            <div
-              className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '23px', height: '23px' }}
-              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
-              data-testid="button-homework-scroll-top"
-            >
-              <ChevronUp style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
-            </div>
-            <div
-              className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '23px', height: '23px' }}
-              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
-              data-testid="button-homework-scroll-bottom"
-            >
-              <ChevronDown style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
-            </div>
-          </div>
-          <div
-            className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
-            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto' }}
-            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
-            data-testid="button-homework-scroll-to-top"
-          >
-            <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
-          </div>
-          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           <div style={{ padding: '0 8px', height: '37px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42, boxShadow: `0 4px 0 0 ${colorSettings.headerBar}` }}>
             <h4
               className="text-xs font-medium flex items-center text-white"
