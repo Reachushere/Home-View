@@ -872,7 +872,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10');
+        const res = await fetch('/api/weather');
         const data = await res.json();
         if (data.current) {
           const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({
