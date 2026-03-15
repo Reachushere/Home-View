@@ -15624,7 +15624,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="mt-2 space-y-0.5 text-[10px]">
                                   {c.organization && <p className="text-white/50 truncate">{c.organization}{c.department ? ` — ${c.department}` : ''}</p>}
-                                  {c.email && <p className="text-blue-300/80 truncate" onClick={(e) => { e.stopPropagation(); window.open(`mailto:${c.email}`); }}>{c.email}</p>}
+                                  {c.email && <p className="text-blue-300/80 truncate cursor-pointer hover:text-blue-200" onClick={(e) => { e.stopPropagation(); window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`, '_blank'); }}>{c.email}</p>}
                                   {c.phone && <p className="text-white/50">{c.phone}</p>}
                                   {c.office && <p className="text-white/50">Office: {c.office}</p>}
                                   {c.notes && <p className="text-white/40 italic truncate">{c.notes}</p>}
