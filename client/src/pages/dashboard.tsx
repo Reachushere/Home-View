@@ -293,10 +293,10 @@ function getETMinutes(date: Date): number {
 
 const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   CNN: { src: cnnLogoPath, height: 28 },
-  CBC: { src: cbcLogoPath, height: 28 },
+  CBC: { src: cbcLogoPath, height: 38 },
   CTV: { src: ctvLogoPath, height: 28 },
   Global: { src: globalLogoPath, height: 28 },
-  MSNBC: { src: msnbcLogoPath, height: 38 },
+  MSNBC: { src: msnbcLogoPath, height: 42 },
   Politico: { src: politicoLogoPath, height: 38 },
 };
 
@@ -326,8 +326,9 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     if (!containerRef.current || headlines.length === 0) return;
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
       const logoInfo = TICKER_LOGO_MAP[item.source];
+      const blendMode = item.source === 'CTV' ? 'mix-blend-mode:screen;' : '';
       const logoHtml = logoInfo
-        ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain" />`
+        ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain;${blendMode}" />`
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-[13px] text-white/90">${safeTitle}</span><span class="text-white/20 mx-2">|</span></a>`;
