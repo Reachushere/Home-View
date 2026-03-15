@@ -21,6 +21,7 @@ import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
 import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
 import bbcNewsLogoPath from "@assets/BBC_1773609711103.png";
+import foxNewsLogoPath from "@assets/Fox_News_1773610204651.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
@@ -300,11 +301,12 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   CBC: { src: cbcLogoPath, height: 78 },
   CTV: { src: ctvLogoPath, height: 42 },
   Global: { src: globalLogoPath, height: 42 },
-  MSNBC: { src: msnbcLogoPath, height: 52 },
+  MSNBC: { src: msnbcLogoPath, height: 62 },
   Politico: { src: politicoLogoPath, height: 49 },
   'Raw Story': { src: rawStoryLogoPath, height: 56 },
   'ABC News': { src: abcNewsLogoPath, height: 56 },
   'BBC': { src: bbcNewsLogoPath, height: 62 },
+  'Fox News': { src: foxNewsLogoPath, height: 28 },
 };
 
 function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
@@ -13524,7 +13526,7 @@ export default function Dashboard() {
         })() : []),
         ...(pollenData ? [{ title: `🌿 Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_', link: '' }] : []),
         ...(() => {
-          const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News'];
+          const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
           const us = newsHeadlines.filter(h => US_SOURCES.includes(h.source));
           const bbc = newsHeadlines.filter(h => h.source === 'BBC');
