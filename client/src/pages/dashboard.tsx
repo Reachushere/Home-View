@@ -300,27 +300,45 @@ const TICKER_LOGO_MAP: Record<string, string> = {
   Politico: politicoLogoPath,
 };
 
-const NewsTicker = React.memo(function NewsTicker({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
-  const doubled = useMemo(() => [...headlines, ...headlines], [headlines]);
-  const animDuration = useMemo(() => `tickerScroll ${Math.max(15, headlines.length * 28)}s linear infinite`, [headlines.length]);
-  return (
-    <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '32px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
-      <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: animDuration }}>
-        {doubled.map((item, i) => (
-          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid={`news-headline-${i}`}>
-            {TICKER_LOGO_MAP[item.source] ? (
-              <img src={TICKER_LOGO_MAP[item.source]} alt={item.source} className="rounded-sm" style={{ height: '18px', width: 'auto', minWidth: '18px', objectFit: 'contain' }} />
-            ) : (
-              <span className="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
-            )}
-            <span className="text-[13px] text-white/90">{item.title}</span>
-            <span className="text-white/20 mx-2">|</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-});
+function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<any>(null);
+  const renderedRef = useRef(false);
+
+  useEffect(() => {
+    if (!containerRef.current) {
+      const el = document.createElement('div');
+      el.id = 'news-ticker-root';
+      document.body.appendChild(el);
+      containerRef.current = el;
+    }
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.remove();
+        containerRef.current = null;
+        rootRef.current = null;
+        renderedRef.current = false;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || headlines.length === 0) return;
+    const doubled = [...headlines, ...headlines];
+    const animDuration = `tickerScroll ${Math.max(15, headlines.length * 28)}s linear infinite`;
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="animation:${animDuration}">${doubled.map((item, i) => {
+      const logo = TICKER_LOGO_MAP[item.source];
+      const logoHtml = logo
+        ? `<img src="${logo}" alt="${item.source}" class="rounded-sm" style="height:18px;width:auto;min-width:18px;object-fit:contain" />`
+        : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
+      const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-[13px] text-white/90">${safeTitle}</span><span class="text-white/20 mx-2">|</span></a>`;
+    }).join('')}</div></div>`;
+    containerRef.current.innerHTML = html;
+  }, [headlines]);
+
+  return null;
+}
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -13366,7 +13384,7 @@ export default function Dashboard() {
       </div>
 
       {/* News Ticker */}
-      {newsHeadlines.length > 0 && <NewsTicker headlines={newsHeadlines} />}
+      <NewsTickerPortal headlines={newsHeadlines} />
 
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {(() => {
