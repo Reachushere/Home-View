@@ -14858,7 +14858,7 @@ export default function Dashboard() {
             const wizardSteps = [
               { title: 'Scholarship Name', field: 'name' as const, placeholder: 'e.g. Dean\'s List Scholarship', required: true },
               { title: 'Organization', field: 'organization' as const, placeholder: 'e.g. TMU Financial Aid', required: true },
-              { title: 'Amount', field: 'amount' as const, placeholder: 'e.g. $2,000', required: false },
+              { title: 'Amount', field: 'amount' as const, placeholder: 'e.g. 2,000', required: false, isCurrency: true },
               { title: 'Applications Open', field: 'applicationsOpen' as const, placeholder: '', required: false, isDate: true },
               { title: 'Application Deadline', field: 'deadline' as const, placeholder: '', required: false, isDate: true },
               { title: 'Winners Announced', field: 'winnersAnnounced' as const, placeholder: '', required: false, isDate: true },
@@ -14943,7 +14943,7 @@ export default function Dashboard() {
                             )}
                           </td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
-                          <td className="px-3 py-2.5 text-white/70">{s.amount || '—'}</td>
+                          <td className="px-3 py-2.5 text-white/70">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.applicationsOpen ? new Date(s.applicationsOpen + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.deadline ? new Date(s.deadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.winnersAnnounced ? new Date(s.winnersAnnounced + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
@@ -15031,6 +15031,25 @@ export default function Dashboard() {
                     className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                     data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
                   />
+                ) : (wizardSteps[scholarshipWizardStep] as any).isCurrency ? (
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 text-[11px] pointer-events-none">$</span>
+                    <input
+                      type="text"
+                      value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                      onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value.replace(/^\$/, '') }))}
+                      placeholder={wizardSteps[scholarshipWizardStep].placeholder}
+                      className="w-full pl-6 pr-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
+                      autoFocus
+                      data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          if (scholarshipWizardStep < wizardSteps.length - 1) setScholarshipWizardStep(s => s + 1);
+                          else saveScholarship();
+                        }
+                      }}
+                    />
+                  </div>
                 ) : (
                   <input
                     type="text"
