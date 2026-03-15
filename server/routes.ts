@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import type { Server } from "http";
 import crypto from "crypto";
 import fs from "fs";
@@ -1702,6 +1703,142 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   });
 
   const newsCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 };
+
+  app.use('/api/ticker-assets', express.static(path.join(process.cwd(), 'attached_assets')));
+
+  app.get("/api/ticker", async (req, res) => {
+    try {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const authParam = req.query.auth ? `?auth=${req.query.auth}` : '';
+
+      const LOGOS: Record<string, { file: string; height: number }> = {
+        'CNN': { file: 'CNN_1773536484180.png', height: 33 },
+        'CBC': { file: 'cbc-news-logo-black-and-white_1773536865600.png', height: 78 },
+        'CTV': { file: 'CTV2_1773545440801.png', height: 42 },
+        'Global': { file: 'Global_White_1773536754594.png', height: 42 },
+        'MSNBC': { file: 'MSNBC_1773536950584.png', height: 72 },
+        'Politico': { file: 'Politico_1773537080711.png', height: 49 },
+        'Raw Story': { file: 'Raw_Story_1773607642361.png', height: 56 },
+        'ABC News': { file: 'ABC_1773609250051.png', height: 56 },
+        'BBC': { file: 'BBC_1773609711103.png', height: 62 },
+        'Fox News': { file: 'Fox_News_1773610204651.png', height: 72 },
+      };
+      const ALERT_LOGO = 'Weather_Alert_1773608511887.png';
+
+      const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:transparent}
+@keyframes tickerScroll{0%{transform:translate3d(var(--ticker-start),0,0)}100%{transform:translate3d(var(--ticker-end),0,0)}}
+@keyframes tickerAlertBlink{0%,100%{opacity:1}50%{opacity:0.3}}
+.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
+.ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;position:relative;will-change:transform;backface-visibility:hidden}
+.t-item{display:inline-flex;align-items:center;gap:6px;margin:0 16px}
+.t-item a{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.t-item a:hover{text-decoration:underline}
+.t-alert{animation:tickerAlertBlink 1s ease-in-out infinite}
+.t-alert-text{font-size:13px;font-weight:700;color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)}
+.t-forecast{font-size:13px;font-weight:600;color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)}
+.t-headline{font-size:13px;color:rgba(255,255,255,0.9)}
+.t-sep{color:rgba(255,255,255,0.6);margin:0 4px;font-weight:800;font-size:15px;line-height:1;vertical-align:middle}
+.t-logo{border-radius:2px;object-fit:contain;vertical-align:middle}
+</style></head><body>
+<div class="ticker-wrap"><div class="ticker-track" id="track"></div></div>
+<script>
+const BASE='${baseUrl}';
+const AUTH='${authParam}';
+const LOGOS=${JSON.stringify(Object.fromEntries(Object.entries(LOGOS).map(([k,v]) => [k, { src: baseUrl + '/api/ticker-assets/' + v.file, height: v.height }])))};
+const ALERT_LOGO='${baseUrl}/api/ticker-assets/${ALERT_LOGO}';
+const WMO={0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm'};
+const US=['CNN','Politico','Raw Story','MSNBC','ABC News','Fox News'];
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+async function fetchJSON(url){try{const r=await fetch(url);return await r.json()}catch(e){return null}}
+
+async function buildTicker(){
+  const [alertData,wxData,pollenData,newsData]=await Promise.all([
+    fetchJSON(BASE+'/api/weather-alerts'+AUTH),
+    fetchJSON(BASE+'/api/weather'+AUTH),
+    fetchJSON(BASE+'/api/pollen'+AUTH),
+    fetchJSON(BASE+'/api/news'+AUTH),
+  ]);
+  const items=[];
+
+  if(alertData&&alertData.alerts){
+    alertData.alerts.forEach(a=>{items.push({type:'alert',title:'⚠️ '+a.title})});
+  }
+
+  if(wxData&&wxData.current){
+    const c=wxData.current;
+    const temp=Math.round(c.temperature_2m);
+    const desc=WMO[c.weather_code]||'Mixed';
+    const wind=Math.round(c.wind_speed_10m);
+    items.push({type:'forecast',title:'🌡️ <b>TORONTO</b>: '+temp+'°C — '+desc+'  |  Wind: '+wind+' km/h'});
+    if(wxData.daily&&wxData.daily.time&&wxData.daily.time.length>=3){
+      const parts=wxData.daily.time.slice(0,3).map((t,i)=>{
+        const dt=new Date(t+'T12:00:00');
+        return DAYS[dt.getDay()]+': '+Math.round(wxData.daily.temperature_2m_max[i])+'°/'+Math.round(wxData.daily.temperature_2m_min[i])+'°';
+      });
+      items.push({type:'forecast',title:'📅 <b>3-DAY FORECAST</b>  |  '+parts.join('  •  ')});
+    }
+  }
+
+  if(pollenData&&pollenData.overall){
+    items.push({type:'forecast',title:'🌿 <b>POLLEN</b>: '+pollenData.overall.level+' (Tree: '+pollenData.tree.level+', Grass: '+pollenData.grass.level+', Weed: '+pollenData.weed.level+')  |  AQI: '+pollenData.aqi});
+  }
+
+  if(newsData&&Array.isArray(newsData)){
+    const ca=[],us=[],bbc=[];
+    newsData.forEach(h=>{
+      if(h.source==='BBC') bbc.push(h);
+      else if(US.includes(h.source)) us.push(h);
+      else ca.push(h);
+    });
+    const max=Math.max(ca.length,us.length,bbc.length);
+    for(let i=0;i<max;i++){
+      if(i<ca.length) items.push({type:'news',source:ca[i].source,title:ca[i].title,link:ca[i].link});
+      if(i<us.length) items.push({type:'news',source:us[i].source,title:us[i].title,link:us[i].link});
+      if(i<bbc.length) items.push({type:'news',source:bbc[i].source,title:bbc[i].title,link:bbc[i].link});
+    }
+  }
+
+  const track=document.getElementById('track');
+  let html='';
+  items.forEach(item=>{
+    if(item.type==='alert'){
+      html+='<span class="t-item t-alert"><img src="'+ALERT_LOGO+'" class="t-logo" style="height:28px"/><span class="t-alert-text">'+item.title+'</span></span>';
+    }else if(item.type==='forecast'){
+      html+='<span class="t-item"><span class="t-forecast">'+item.title+'</span></span>';
+    }else{
+      const logo=LOGOS[item.source];
+      const lh=logo?'<img src="'+logo.src+'" class="t-logo" style="height:'+logo.height+'px"/>':'<span style="font-size:11px;font-weight:700;padding:0 4px;border-radius:3px;background:#555;color:#fff">'+item.source+'</span>';
+      html+='<span class="t-item"><a href="'+(item.link||'#')+'" target="_blank">'+lh+'<span class="t-sep">|</span><span class="t-headline">'+item.title+'</span></a></span>';
+    }
+  });
+  track.innerHTML=html;
+
+  requestAnimationFrame(()=>{
+    const cw=track.scrollWidth;
+    const sw=window.innerWidth;
+    const total=sw+cw;
+    const dur=total/65;
+    track.style.setProperty('--ticker-start',sw+'px');
+    track.style.setProperty('--ticker-end','-'+cw+'px');
+    track.style.animation='tickerScroll '+dur+'s linear infinite';
+  });
+}
+
+buildTicker();
+setInterval(buildTicker,10*60*1000);
+</script></body></html>`;
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (err) {
+      console.error("Error serving ticker:", err);
+      res.status(500).send("Ticker error");
+    }
+  });
 
   app.get("/api/news", async (_req, res) => {
     try {
