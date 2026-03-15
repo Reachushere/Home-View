@@ -1833,6 +1833,9 @@ buildTicker();
 setInterval(buildTicker,10*60*1000);
 </script></body></html>`;
       res.setHeader('Content-Type', 'text/html');
+      res.setHeader('X-Frame-Options', 'ALLOWALL');
+      res.setHeader('Content-Security-Policy', '');
+      res.setHeader('Access-Control-Allow-Origin', '*');
       res.send(html);
     } catch (err) {
       console.error("Error serving ticker:", err);
