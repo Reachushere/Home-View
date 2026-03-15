@@ -13350,7 +13350,7 @@ export default function Dashboard() {
                     Politico: politicoLogoPath,
                   };
                   return logoMap[item.source] ? (
-                    <img src={logoMap[item.source]} alt={item.source} className="w-5 h-5 rounded-sm" style={{ minWidth: '20px' }} />
+                    <img src={logoMap[item.source]} alt={item.source} className="rounded-sm" style={{ height: '18px', width: 'auto', minWidth: '18px', objectFit: 'contain' }} />
                   ) : (
                     <span className="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
                   );
