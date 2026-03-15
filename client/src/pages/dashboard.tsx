@@ -18082,9 +18082,9 @@ export default function Dashboard() {
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
                       return (
-                        <div className="absolute left-0.5 bottom-0.5 flex gap-0.5 items-center z-20" data-testid={`weather-temp-${shiftDateStr}`}>
-                          <span className="text-[7px] font-bold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
-                          <span className="text-[7px] font-medium leading-none" style={{ color: '#60a5fa' }}>{dayForecast.low}°</span>
+                        <div className="absolute left-0.5 top-0.5 flex flex-col z-20" data-testid={`weather-temp-${shiftDateStr}`}>
+                          <span className="text-[8px] font-bold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
+                          <span className="text-[8px] font-medium leading-none mt-px" style={{ color: '#60a5fa' }}>{dayForecast.low}°</span>
                         </div>
                       );
                     })()}
