@@ -302,8 +302,8 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   Global: { src: globalLogoPath, height: 28 },
   MSNBC: { src: msnbcLogoPath, height: 52 },
   Politico: { src: politicoLogoPath, height: 38 },
-  'Raw Story': { src: rawStoryLogoPath, height: 48 },
-  'ABC News': { src: abcNewsLogoPath, height: 28 },
+  'Raw Story': { src: rawStoryLogoPath, height: 96 },
+  'ABC News': { src: abcNewsLogoPath, height: 56 },
   'BBC': { src: bbcNewsLogoPath, height: 24 },
 };
 
@@ -13519,7 +13519,18 @@ export default function Dashboard() {
           return items;
         })() : []),
         ...(pollenData ? [{ title: `🌿 Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_', link: '' }] : []),
-        ...newsHeadlines,
+        ...(() => {
+          const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News'];
+          const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source));
+          const us = newsHeadlines.filter(h => US_SOURCES.includes(h.source));
+          const interleaved: typeof newsHeadlines = [];
+          const max = Math.max(ca.length, us.length);
+          for (let i = 0; i < max; i++) {
+            if (i < ca.length) interleaved.push(ca[i]);
+            if (i < us.length) interleaved.push(us[i]);
+          }
+          return interleaved;
+        })(),
       ]} />
 
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
