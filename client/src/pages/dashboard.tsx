@@ -13520,11 +13520,11 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `📅 3-Day Forecast  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `📅 <b>3-DAY FORECAST</b>  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
           }
           return items;
         })() : []),
-        ...(pollenData ? [{ title: `🌿 Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_', link: '' }] : []),
+        ...(pollenData ? [{ title: `🌿 <b>POLLEN</b>: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
