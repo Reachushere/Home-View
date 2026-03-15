@@ -5127,6 +5127,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 5 * 60 * 1000;
+  let catLightsBypassCooldown = false;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
   const startToothbrushPolling = () => {
@@ -6575,8 +6576,12 @@ document.body.removeChild(a);
         return res.json({ action: "ignored", reason: `Unknown state: ${lightState}` });
       }
 
-      // Cooldown: skip if prompted within last 10 minutes
-      if (catLightsLastPromptAt && (Date.now() - catLightsLastPromptAt) < CAT_LIGHTS_PROMPT_COOLDOWN_MS) {
+      // Cooldown: skip if prompted within last 5 minutes
+      const bypassRequested = req.body?.bypass === true;
+      if (bypassRequested) {
+        console.log(`[Cat Lights] Cooldown BYPASSED via request`);
+        catLightsPromptPending = false;
+      } else if (catLightsLastPromptAt && (Date.now() - catLightsLastPromptAt) < CAT_LIGHTS_PROMPT_COOLDOWN_MS) {
         const remainingSec = Math.round((CAT_LIGHTS_PROMPT_COOLDOWN_MS - (Date.now() - catLightsLastPromptAt)) / 1000);
         console.log(`[Cat Lights] Prompt cooldown active — skipping (${remainingSec}s remaining)`);
         return res.json({ action: "skipped", reason: `Cooldown active (${remainingSec}s remaining)` });
@@ -6618,7 +6623,7 @@ document.body.removeChild(a);
       }
 
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-      const ttsMessage = `Would you like to listen to your module reading? Say yes or confirm on the dashboard to start.`;
+      const ttsMessage = `Would you like to listen to your module reading?`;
       console.log(`[Cat Lights] Sending TTS prompt immediately (catLightsPromptPending=true)...`);
       try {
         const stateResp = await fetch(`${haUrl}/api/states/${CAT_WR_HA_VOICE_ENTITY}`, { headers: haHeaders });
@@ -6631,11 +6636,17 @@ document.body.removeChild(a);
         ]);
         console.log(`[Cat Lights] Booleans sent: confirmed_off=${boolOffResp.status}, pending_on=${boolOnResp.status}`);
 
-        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.45 }),
-        });
-        console.log(`[Cat Lights] Set HA Voice volume to 0.45`);
+        await Promise.all([
+          fetch(`${haUrl}/api/services/media_player/volume_set`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 1.0 }),
+          }),
+          fetch(`${haUrl}/api/services/media_player/volume_set`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 1.0 }),
+          }),
+        ]);
+        console.log(`[Cat Lights] Set HA Voice + Nest volume to 1.0`);
 
         let ttsSent = false;
 
