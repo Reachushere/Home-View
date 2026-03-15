@@ -2139,8 +2139,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 @keyframes tickerScroll {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
+  0% { transform: translate3d(var(--ticker-start), 0, 0); }
+  100% { transform: translate3d(var(--ticker-end), 0, 0); }
 }
 
 .news-ticker-scroll {

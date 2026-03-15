@@ -324,8 +324,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
 
   useEffect(() => {
     if (!containerRef.current || headlines.length === 0) return;
-    const doubled = [...headlines, ...headlines];
-    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll">${doubled.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
         ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain" />`
@@ -337,9 +336,13 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     requestAnimationFrame(() => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (scrollEl) {
-        const totalWidth = scrollEl.scrollWidth;
-        const speed = 150;
-        const duration = totalWidth / (2 * speed);
+        const contentWidth = scrollEl.scrollWidth;
+        const screenWidth = window.innerWidth;
+        const totalTravel = screenWidth + contentWidth;
+        const speed = 200;
+        const duration = totalTravel / speed;
+        scrollEl.style.setProperty('--ticker-start', `${screenWidth}px`);
+        scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
         scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
       }
     });
