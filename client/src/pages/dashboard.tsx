@@ -306,7 +306,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   'Raw Story': { src: rawStoryLogoPath, height: 56 },
   'ABC News': { src: abcNewsLogoPath, height: 56 },
   'BBC': { src: bbcNewsLogoPath, height: 62 },
-  'Fox News': { src: foxNewsLogoPath, height: 56 },
+  'Fox News': { src: foxNewsLogoPath, height: 72 },
 };
 
 function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
