@@ -52,6 +52,12 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Subtasks**: Nested tasks with completion tracking, progress counters, and cascading deletion. Supports task dependencies (blocks, blocked_by, relates_to).
 - **Projects**: Comprehensive project management with creation/editing, status, priority, progress bars, task linking, and multiple view modes (Grid, List, Workflow). Workflow view visualizes task dependencies.
 
+### Performance
+- **Arrow Connections Fix**: The `calculateArrows` useEffect had a scroll event listener (capture mode) that called `setArrowConnections` with a new array on every scroll, causing a render loop (~1.6s per render, every 2s). Fixed by: (1) debouncing the scroll handler (100ms), (2) deep-comparing new connections against previous state before setting, (3) using `.length` primitives in deps instead of array references.
+- **Position Setters**: All position state setters (`setCalendarTop`, `setCalendarBottom`, etc.) use functional updates with `prev === newValue` comparison to prevent unnecessary re-renders.
+- **calendarReduction Circular Dep**: `calendarReduction` was both a dep and modified inside the same `useEffect`. Broken by using `calendarReductionRef` for reads inside effects, with a wrapper `setCalendarReduction` that syncs both ref and state.
+- **Component Size Warning**: `dashboard.tsx` is ~27K lines. Each re-render takes 1.5-3s. Splitting into smaller components would be the ideal long-term fix.
+
 ### Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types.
 - **API Contracts**: Zod schemas for API validation.

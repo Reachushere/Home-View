@@ -343,15 +343,6 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
 export default function Dashboard() {
   const { toast } = useToast();
   
-  const renderCountRef = useRef(0);
-  const lastRenderTimeRef = useRef(performance.now());
-  useEffect(() => {
-    renderCountRef.current++;
-    const now = performance.now();
-    const gap = now - lastRenderTimeRef.current;
-    lastRenderTimeRef.current = now;
-    console.log(`[PERF] Render #${renderCountRef.current} | gap since last: ${gap.toFixed(0)}ms`);
-  });
 
   useEffect(() => {
     const PERF_LOG_DURATION = 5 * 60 * 1000;
@@ -390,7 +381,7 @@ export default function Dashboard() {
     const cleanupTimer = setTimeout(() => {
       document.removeEventListener('click', clickHandler, true);
       try { longTaskObserver.disconnect(); } catch (e) {}
-      console.log(`[PERF] Performance logging ended after 5 minutes. Total renders: ${renderCountRef.current}`);
+      console.log(`[PERF] Performance logging ended after 5 minutes.`);
     }, PERF_LOG_DURATION);
 
     console.log(`[PERF] Performance logging STARTED. Will run for 5 minutes.`);
@@ -577,10 +568,20 @@ export default function Dashboard() {
   const [calendarBottom, setCalendarBottom] = useState(0); // Bottom edge of calendar wrapper
   const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
   const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
-  const [calendarReduction, setCalendarReduction] = useState(() => {
+  const calendarReductionRef = useRef(0);
+  const [calendarReduction, setCalendarReductionRaw] = useState(() => {
     const saved = localStorage.getItem('calendarReduction');
-    return saved ? parseInt(saved, 10) : 0;
+    const v = saved ? parseInt(saved, 10) : 0;
+    calendarReductionRef.current = v;
+    return v;
   });
+  const setCalendarReduction: typeof setCalendarReductionRaw = (val) => {
+    setCalendarReductionRaw(prev => {
+      const next = typeof val === 'function' ? (val as (p: number) => number)(prev) : val;
+      calendarReductionRef.current = next;
+      return next;
+    });
+  };
   const [calendarReductionUserSet, setCalendarReductionUserSet] = useState(() => !!localStorage.getItem('calendarReduction'));
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
@@ -7853,44 +7854,55 @@ export default function Dashboard() {
   // Track calendar wrapper and course rows positions for course button alignment
   useEffect(() => {
     const updatePositions = () => {
-      // Don't update during resize to prevent buttons from jumping
       if (isResizingThisWeek) return;
       if (calendarWrapperRef.current) {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
-        setCalendarTop(rect.top + window.scrollY);
-        setCalendarBottom(window.innerHeight - rect.bottom);
-        setCalendarRight(window.innerWidth - rect.right);
-        setCalendarLeft(rect.left);
+        const newTop = Math.round(rect.top + window.scrollY);
+        const newBottom = Math.round(window.innerHeight - rect.bottom);
+        const newRight = Math.round(window.innerWidth - rect.right);
+        const newLeft = Math.round(rect.left);
+        setCalendarTop(prev => prev === newTop ? prev : newTop);
+        setCalendarBottom(prev => prev === newBottom ? prev : newBottom);
+        setCalendarRight(prev => prev === newRight ? prev : newRight);
+        setCalendarLeft(prev => prev === newLeft ? prev : newLeft);
         if (calendarBorderRef.current) {
           const borderRect = calendarBorderRef.current.getBoundingClientRect();
-          setCalendarBorderTop(borderRect.top + window.scrollY);
+          const newBorderTop = Math.round(borderRect.top + window.scrollY);
+          setCalendarBorderTop(prev => prev === newBorderTop ? prev : newBorderTop);
         }
-        const unreducedWidth = rect.width + calendarReduction;
+        const curReduction = calendarReductionRef.current;
+        const unreducedWidth = rect.width + curReduction;
         const frSpace = unreducedWidth - gridSizes.timeColumnWidth - gridSizes.moduleColumnWidth;
         const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
         const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
         if (!calendarReductionUserSet) {
-          setCalendarReduction(reduction);
+          setCalendarReduction(prev => prev === reduction ? prev : reduction);
         }
-        const origLeft = rect.left - Math.max(0, calendarReduction - 3);
-        setOriginalCalendarLeft(origLeft);
+        const origLeft = Math.round(rect.left - Math.max(0, curReduction - 3));
+        setOriginalCalendarLeft(prev => prev === origLeft ? prev : origLeft);
       }
       if (clockContainerRef.current) {
-        setClockWidth(clockContainerRef.current.offsetWidth);
+        const newW = clockContainerRef.current.offsetWidth;
+        setClockWidth(prev => prev === newW ? prev : newW);
       }
-      // Also track course rows container position directly
       if (courseRowsRef.current) {
         const rect = courseRowsRef.current.getBoundingClientRect();
-        setCourseRowsTop(rect.top + window.scrollY);
+        const newRowsTop = Math.round(rect.top + window.scrollY);
+        setCourseRowsTop(prev => prev === newRowsTop ? prev : newRowsTop);
         const newRects = courseRowRefs.current.filter(Boolean).map(el => {
           const r = el!.getBoundingClientRect();
-          return { top: r.top, height: r.height };
+          return { top: Math.round(r.top), height: Math.round(r.height) };
         });
-        setCourseRowRects(newRects);
+        setCourseRowRects(prev => {
+          if (prev.length !== newRects.length) return newRects;
+          for (let i = 0; i < prev.length; i++) {
+            if (prev[i].top !== newRects[i].top || prev[i].height !== newRects[i].height) return newRects;
+          }
+          return prev;
+        });
       }
-      // Track all day row height and update gridSizes if it has grown
       if (allDayRowRef.current) {
         const actualHeight = allDayRowRef.current.offsetHeight;
         if (actualHeight > gridSizes.allDayRowHeight) {
@@ -7899,36 +7911,24 @@ export default function Dashboard() {
       }
     };
     updatePositions();
-    // Use requestAnimationFrame for smoother updates
     let rafId: number;
+    let lastRunTime = 0;
     const rafUpdatePositions = () => {
       if (isResizingThisWeek) return;
+      const now = performance.now();
+      if (now - lastRunTime < 500) return;
+      cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
+        lastRunTime = performance.now();
         updatePositions();
       });
     };
     window.addEventListener('resize', rafUpdatePositions);
-    const observer = new ResizeObserver(rafUpdatePositions);
-    if (calendarWrapperRef.current) {
-      observer.observe(calendarWrapperRef.current);
-    }
-    if (courseRowsRef.current) {
-      observer.observe(courseRowsRef.current);
-    }
-    if (allDayRowRef.current) {
-      observer.observe(allDayRowRef.current);
-    }
-    // Also observe the parent container for height changes
-    const taskBoxesContainer = document.querySelector('[data-task-boxes-container]');
-    if (taskBoxesContainer) {
-      observer.observe(taskBoxesContainer);
-    }
     return () => {
       window.removeEventListener('resize', rafUpdatePositions);
-      observer.disconnect();
       cancelAnimationFrame(rafId);
     };
-  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, gridSizes.allDayRowHeight, calendarReduction]);
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, gridSizes.allDayRowHeight]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
@@ -8197,23 +8197,35 @@ export default function Dashboard() {
       });
 
       
-      setArrowConnections(connections);
+      setArrowConnections((prev: typeof connections) => {
+        if (prev.length !== connections.length) return connections;
+        const changed = connections.some((c, i) => {
+          const p = prev[i];
+          return !p || p.taskId !== c.taskId || Math.abs(p.fromX - c.fromX) > 1 || Math.abs(p.fromY - c.fromY) > 1 || Math.abs(p.toX - c.toX) > 1 || Math.abs(p.toY - c.toY) > 1;
+        });
+        return changed ? connections : prev;
+      });
     };
     
     // Calculate after DOM updates (give time for prep-today elements to render)
     const timer = setTimeout(calculateArrows, 300);
     
-    // Recalculate on scroll and resize
-    const handleUpdate = () => setTimeout(calculateArrows, 50);
+    // Recalculate on scroll and resize with proper debouncing
+    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
+    const handleUpdate = () => {
+      if (scrollTimer) clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(calculateArrows, 100);
+    };
     window.addEventListener('scroll', handleUpdate, true);
     window.addEventListener('resize', handleUpdate);
     
     return () => {
       clearTimeout(timer);
+      if (scrollTimer) clearTimeout(scrollTimer);
       window.removeEventListener('scroll', handleUpdate, true);
       window.removeEventListener('resize', handleUpdate);
     };
-  }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks, allTasks]);
+  }, [calendarView, dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, allTasks.length]);
 
   useEffect(() => {
     const timers = new Map<Element, ReturnType<typeof setTimeout>>();
