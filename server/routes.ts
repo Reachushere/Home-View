@@ -1532,7 +1532,9 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const bySource: Record<string, typeof results> = {};
       for (const item of results) {
         if (!bySource[item.source]) bySource[item.source] = [];
-        bySource[item.source].push(item);
+        if (bySource[item.source].length < 4) {
+          bySource[item.source].push(item);
+        }
       }
       const sources = Object.keys(bySource).sort(() => Math.random() - 0.5);
       const interleaved: typeof results = [];
