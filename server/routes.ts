@@ -1470,7 +1470,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const feeds = [
         { source: 'CNN', url: 'http://rss.cnn.com/rss/cnn_topstories.rss' },
         { source: 'CBC', url: 'https://www.cbc.ca/cmlink/rss-topstories' },
-        { source: 'CTV', url: 'https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009' },
+        { source: 'CTV', url: 'https://news.google.com/rss/search?q=site:ctvnews.ca+when:1d&hl=en-CA&gl=CA&ceid=CA:en' },
         { source: 'Global', url: 'https://globalnews.ca/feed/' },
         { source: 'MSNBC', url: 'https://www.msnbc.com/feeds/latest' },
       ];
@@ -1493,8 +1493,9 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
             const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
             if (titleMatch?.[1]) {
-              const title = titleMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16))).trim();
-              if (title && title !== feed.source) {
+              let title = titleMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16))).trim();
+              title = title.replace(/\s*-\s*(CTV News|Google News)$/i, '').trim();
+              if (title && title !== feed.source && title !== 'Google News') {
                 results.push({
                   title,
                   source: feed.source,
