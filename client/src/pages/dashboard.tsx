@@ -18084,10 +18084,10 @@ export default function Dashboard() {
                       return (
                         <>
                           <div className="absolute left-0.5 top-0.5 z-20" data-testid={`weather-temp-high-${shiftDateStr}`}>
-                            <span className="text-[9px] font-bold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
+                            <span className="text-[10px] font-bold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
                           </div>
                           <div className="absolute left-0.5 bottom-0.5 z-20" data-testid={`weather-temp-low-${shiftDateStr}`}>
-                            <span className="text-[9px] font-medium leading-none" style={{ color: '#60a5fa' }}>{dayForecast.low}°</span>
+                            <span className="text-[10px] font-medium leading-none" style={{ color: '#60a5fa' }}>{dayForecast.low}°</span>
                           </div>
                         </>
                       );
