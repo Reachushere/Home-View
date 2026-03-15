@@ -17,6 +17,7 @@ import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
+import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
@@ -298,6 +299,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   Global: { src: globalLogoPath, height: 28 },
   MSNBC: { src: msnbcLogoPath, height: 52 },
   Politico: { src: politicoLogoPath, height: 38 },
+  'Raw Story': { src: rawStoryLogoPath, height: 24 },
 };
 
 function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {

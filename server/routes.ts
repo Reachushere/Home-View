@@ -1697,6 +1697,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         { source: 'Global', url: 'https://globalnews.ca/feed/' },
         { source: 'MSNBC', url: 'https://msnbc.com/feed' },
         { source: 'Politico', url: 'https://rss.politico.com/politics-news.xml' },
+        { source: 'Raw Story', url: 'https://www.rawstory.com/feed', count: 3 },
       ];
 
       const results: { title: string; source: string; link: string }[] = [];
@@ -1712,7 +1713,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           clearTimeout(timeout);
           const xml = await response.text();
 
-          const items = xml.split(/<item[\s>]/i).slice(1, 8);
+          const maxItems = (feed as any).count || 7;
+          const items = xml.split(/<item[\s>]/i).slice(1, maxItems + 1);
           for (const item of items) {
             const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
             const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
