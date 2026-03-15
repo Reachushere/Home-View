@@ -6377,6 +6377,11 @@ document.body.removeChild(a);
         return res.json({ action: "skipped", reason: `Cooldown active (${remainingSec}s remaining)` });
       }
 
+      if (catLightsPromptPending) {
+        console.log(`[Cat Lights] Prompt already pending — skipping duplicate`);
+        return res.json({ action: "skipped", reason: "Prompt already pending" });
+      }
+
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
@@ -6393,6 +6398,9 @@ document.body.removeChild(a);
         }
       }
 
+      catLightsLastPromptAt = Date.now();
+      catLightsPromptPending = true;
+
       res.json({ action: "processing", reason: "Light on — processing in background" });
 
       const today = torontoDate();
@@ -6406,9 +6414,6 @@ document.body.removeChild(a);
 
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
       const ttsMessage = `Would you like to listen to your module reading? Say yes or confirm on the dashboard to start.`;
-
-      catLightsLastPromptAt = Date.now();
-      catLightsPromptPending = true;
       console.log(`[Cat Lights] Sending TTS prompt immediately (catLightsPromptPending=true)...`);
       try {
         const stateResp = await fetch(`${haUrl}/api/states/${CAT_WR_HA_VOICE_ENTITY}`, { headers: haHeaders });
