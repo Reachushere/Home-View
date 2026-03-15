@@ -13331,16 +13331,16 @@ export default function Dashboard() {
       {/* News Ticker */}
       {newsHeadlines.length > 0 && (
         <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '22px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
-          <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(15, newsHeadlines.length * 1.2)}s linear infinite` }}>
+          <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(15, newsHeadlines.length * 10)}s linear infinite` }}>
             {[...newsHeadlines, ...newsHeadlines].map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-1.5 mx-4">
+              <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid={`news-headline-${i}`}>
                 <span className="text-[9px] font-bold px-1 py-0 rounded" style={{
                   color: 'white',
                   background: item.source === 'CNN' ? '#cc0000' : item.source === 'CBC' ? '#e02424' : item.source === 'CTV' ? '#003087' : item.source === 'Global' ? '#1a6bb5' : item.source === 'MSNBC' ? '#0b69a3' : '#444',
                 }}>{item.source}</span>
                 <span className="text-[10px] text-white/90">{item.title}</span>
                 <span className="text-white/20 mx-2">|</span>
-              </span>
+              </a>
             ))}
           </div>
         </div>
