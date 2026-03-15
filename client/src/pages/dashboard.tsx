@@ -14934,7 +14934,7 @@ export default function Dashboard() {
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.applicationsOpen ? new Date(s.applicationsOpen + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
-                          <td className="px-3 py-2.5 text-white/70">{s.deadline ? new Date(s.deadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
+                          <td className="px-3 py-2.5" style={{ color: '#ef4444' }}>{s.deadline ? new Date(s.deadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.winnersAnnounced ? new Date(s.winnersAnnounced + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-1 py-2.5" data-testid={`scholarship-progress-${s.id}`}>
                             {deadlineDate ? (
