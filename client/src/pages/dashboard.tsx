@@ -293,7 +293,7 @@ function getETMinutes(date: Date): number {
 
 const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   CNN: { src: cnnLogoPath, height: 28 },
-  CBC: { src: cbcLogoPath, height: 48 },
+  CBC: { src: cbcLogoPath, height: 58 },
   CTV: { src: ctvLogoPath, height: 28 },
   Global: { src: globalLogoPath, height: 28 },
   MSNBC: { src: msnbcLogoPath, height: 42 },
