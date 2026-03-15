@@ -14916,9 +14916,32 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {scholarshipsList.map(s => (
+                      {scholarshipsList.map(s => {
+                        const now = new Date();
+                        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                        const deadlineDate = s.deadline ? new Date(s.deadline + 'T00:00:00') : null;
+                        const openDate = s.applicationsOpen ? new Date(s.applicationsOpen + 'T00:00:00') : null;
+                        const startDate = openDate && openDate < today ? openDate : today;
+                        const daysRemaining = deadlineDate ? Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) : null;
+                        const totalSpan = deadlineDate ? Math.ceil((deadlineDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) : null;
+                        const elapsed = totalSpan !== null && daysRemaining !== null ? totalSpan - daysRemaining : 0;
+                        const pct = totalSpan && totalSpan > 0 ? Math.min(100, Math.max(0, (elapsed / totalSpan) * 100)) : daysRemaining !== null && daysRemaining <= 0 ? 100 : 0;
+                        const barColor = daysRemaining === null ? 'rgba(255,255,255,0.2)' : daysRemaining <= 0 ? '#ef4444' : daysRemaining <= 3 ? '#ef4444' : daysRemaining <= 7 ? '#f97316' : daysRemaining <= 14 ? '#eab308' : '#22c55e';
+                        return (
                         <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', applicationsOpen: s.applicationsOpen || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '', recurring: true }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
-                          <td className="px-3 py-2.5 font-medium">{s.name}</td>
+                          <td className="px-3 py-2.5 font-medium">
+                            <div>{s.name}</div>
+                            {deadlineDate && (
+                              <div className="mt-1.5 flex items-center gap-2" data-testid={`scholarship-progress-${s.id}`}>
+                                <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: barColor }} />
+                                </div>
+                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: barColor }}>
+                                  {daysRemaining !== null && daysRemaining <= 0 ? 'Past due' : `${daysRemaining}d left`}
+                                </span>
+                              </div>
+                            )}
+                          </td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount || '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.applicationsOpen ? new Date(s.applicationsOpen + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
@@ -14930,7 +14953,8 @@ export default function Dashboard() {
                             </button>
                           </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}
