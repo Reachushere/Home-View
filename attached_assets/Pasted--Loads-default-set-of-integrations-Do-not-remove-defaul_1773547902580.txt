@@ -1,0 +1,1007 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+homekit:
+
+shell_command:
+  unical_cat_wash: 'curl -s -X POST https://home-view--bkh416.replit.app/api/webhook/cat-wash -H "Content-Type: application/json" -d "{}"'
+
+bluetooth:
+
+automation: !include automations.yaml
+
+script: !include scripts.yaml
+
+input_boolean:
+  bathroom_routine_active:
+    name: Bathroom Routine Active
+    icon: mdi:shower
+
+  module_reading_pending:
+    name: Module Reading Pending
+    icon: mdi:book-open-variant
+  module_reading_confirmed:
+    name: Module Reading Confirmed
+    icon: mdi:check-circle
+
+scene: !include scenes.yaml
+#themes: !include themes.yaml
+
+withings:
+  use_webhook: true
+
+rest:
+  - resource: "https://home-view--bkh416.replit.app/api/ha/sensor/pollen?auth=5747"
+    scan_interval: 1800
+    sensor:
+      - name: "Pollen Index (Open-Meteo)"
+        value_template: "{{ value_json.attributes.level }}"
+  - resource: "https://home-view--bkh416.replit.app/api/ha/sensor/weather-alerts?auth=5747"
+    scan_interval: 300
+    sensor:
+      - name: "Weather Alerts Toronto"
+        value_template: "{{ value_json.attributes.alert_1_title }}"
+      - name: "Weather Alert Count Toronto"
+        value_template: "{{ value_json.state }}"
+      - name: "Weather Alert 2 Toronto"
+        value_template: "{{ value_json.attributes.alert_2_title }}"
+  - resource: "https://home-view--bkh416.replit.app/api/ha/sensor/pollen?auth=5747"
+    scan_interval: 1800
+    sensor:
+      - name: "Pollen Index (Open-Meteo)"
+        value_template: "{{ value_json.attributes.level }}"
+  - resource: "https://home-view--bkh416.replit.app/api/ha/sensor/weather-alerts?auth=5747"
+    scan_interval: 300
+    sensor:
+      - name: "Weather Alerts Toronto"
+        value_template: "{{ value_json.attributes.alert_1_title }}"
+
+rest_command:
+  speak_text:
+    url: "https://home-view--bkh416.replit.app/api/tts/speaker"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"text": "{{ message_med }}"}'
+  cat_door_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-door"
+    method: POST
+    content_type: "application/json"
+    payload: '{"state": "open"}'
+
+  unical_cat_lights:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"state": "on"}'
+
+  unical_cat_lights_confirm:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: "{}"
+
+  unical_cat_wash_stop:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash-stop"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"state": "stopped"}'
+
+  unical_cat_wash:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash"
+    method: POST
+    content_type: "application/json"
+
+  unical_cat_wash_dry:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash-dry"
+    method: POST
+    content_type: "application/json"
+    payload: '{"state":"dry"}'
+
+  play_radio:
+    url: "https://home-view--bkh416.replit.app/api/media/play-radio"
+    method: POST
+    content_type: "application/json"
+    payload: '{"entityId": "media_player.echo_lr_studio_white_am"}'
+
+spotcast:
+  sp_dc: !secret primary_sp_dc
+  sp_key: !secret primary_sp_key
+  country: CA
+  accounts:
+    primary:
+      sp_dc: !secret primary_sp_dc
+      sp_key: !secret primary_sp_key
+    bryn:
+      sp_dc: !secret bryn_sp_dc
+      sp_key: !secret bryn_sp_key
+    byhomeyyz:
+      sp_dc: !secret byhomeyyz_sp_dc
+      sp_key: !secret byhomeyyz_sp_key
+    by_k:
+      sp_dc: !secret by_k_sp_dc
+      sp_key: !secret by_k_sp_key
+    home_assistant:
+      sp_dc: !secret home_assistant_sp_dc
+      sp_key: !secret home_assistant_sp_key
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+  extra_module_url:
+    - /hacsfiles/lovelace-card-mod/card-mod.js?hacstag=190927524322
+    - /local/custom_lovelace/html_card/html-card.js
+    - /hacsfiles/custom-sidebar/custom-sidebar-yaml.js?v1.0.0
+
+homeassistant:
+  internal_url: "http://homeassistant.local:8123"
+  external_url: "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa/"
+  customize: !include customize.yaml
+  allowlist_external_dirs:
+    - "/config/www/lovelace"
+    - "/config/www/temp"
+    - "/config/www/tmp"
+    - "/media"
+
+  media_dirs:
+    local: /media
+
+sensor:
+  - platform: template
+    sensors:
+      washer_door_lock:
+        friendly_name: "Washer Door Lock"
+        value_template: "{{ state_attr('sensor.lg_washer','door_lock') }}"
+
+      washer_time_display:
+        friendly_name: "Washer Time Display"
+        value_template: >-
+          {% if is_state('sensor.lg_washer_run_state', '-') %}
+          {% elif is_state('sensor.lg_washer_run_state', 'Standby') %}
+            -:--
+          {% else %}
+          {{ state_attr('sensor.lg_washer', 'remain_time') }}
+          {% endif %}
+          {% if is_state('sensor.lg_washer_run_state', '-') %}
+          {% elif is_state('sensor.lg_washer_run_state', 'unavailable') %}
+          {% elif is_state('sensor.lg_washer_run_state', 'Standby') %}
+            -:--
+          {% else %}
+            {{ state_attr("sensor.lg_washer","remain_time").split(":")[:-1] | join(':') }}   
+          {% endif %}
+
+      dryer_time_display:
+        friendly_name: "Dryer Time Display"
+        value_template: >-
+          {% if is_state('sensor.lg_dryer_run_state', '-') %}
+          {% elif is_state('sensor.lg_dryer_run_state', 'unavailable') %}
+          {% elif is_state('sensor.lg_dryer_run_state', 'Standby') %}
+            -:--
+          {% else %}
+          {{ state_attr('sensor.lg_dryer', 'remain_time') }}
+          {{ state_attr("sensor.lg_dryer","remain_time").split(":")[:-1] | join(':') }}
+          {% endif %}
+
+      blank:
+        friendly_name: "Blank Sensor"
+        value_template: ""
+
+  - platform: template
+    sensors:
+      last_automation_triggered:
+        friendly_name: "Last Automation Triggered"
+        value_template: >
+          {% set last_triggered = state_attr('automation.button_cat_litter_reset', 'last_triggered') %}
+          {% if last_triggered %}
+            {% set days_ago = ((as_timestamp(now()) - as_timestamp(last_triggered)) // 86400) | int %}
+            {{ days_ago }} days<br>{{ as_timestamp(last_triggered) | timestamp_custom('%H:%M:%S') }}
+          {% else %}
+            Never
+          {% endif %}
+
+  - platform: template
+    sensors:
+      last_automation_triggered2:
+        friendly_name: "Last Automation Triggered2"
+        value_template: >
+          {% set last_triggered = state_attr('automation.button_cat_litter_reset', 'last_triggered') %}
+          {% if last_triggered %}
+            {% set hours_ago = (as_timestamp(now()) - as_timestamp(last_triggered)) / 3600 %}
+            {% set day_of_week = as_timestamp(last_triggered) | timestamp_custom('%a') %}
+            {% if hours_ago >= 96 %}
+              <span class="blink-red">
+                {{ day_of_week }} - {{ as_timestamp(last_triggered) | timestamp_custom('%-I:%M%p') }}<br>{{ hours_ago | int }} hours ago
+              </span>
+            {% else %}
+              {{ day_of_week }} - {{ as_timestamp(last_triggered) | timestamp_custom('%-I:%M%p') }}<br>{{ hours_ago | int }} hours ago
+            {% endif %}
+          {% else %}
+            Never
+          {% endif %}
+
+  - platform: template
+    sensors:
+      water_level_no_unit:
+        friendly_name: "Water Level No Unit"
+        value_template: >
+          {% set value = states('sensor.water_level') %}
+          {% set number = value.split(' ')[0] %}
+          {% if number == 'High' %}
+            Not Empty\nEmpty
+          {% else %}
+            {{ number | capitalize }}
+          {% endif %}
+        attribute_templates:
+          blink: >
+            {% set number = value.split(' ')[0] %}
+            {% if number == 'Low' %}
+              true
+            {% else %}
+              false
+            {% endif %}
+
+  - platform: template
+    sensors:
+      meds_timer_status:
+        value_template: >
+          {% if states('timer.meds_timer_yasu') == '0' %}
+            red
+          {% elif states('timer.meds_timer_yasu') | int < 3600 %}
+            yellow
+          {% else %}
+            normal
+          {% endif %}
+
+  - platform: template
+    sensors:
+      iphone_8_home:
+        value_template: >-
+          {% if states('sensor.iphone_8_ssid') == "Airbus420iot5G" %} or ((states('sensor.iphone_8_ssid') == "Airbus420iot")) %}
+            home
+          {% else %}
+            not_home
+          {% endif %}
+        friendly_name: "iphone_8 Home (SSID = Airbus420iot5G)"
+
+  - platform: template
+    sensors:
+      yasu_home:
+        value_template: >-
+          {% if states('sensor.iphone_yasu_ssid') == "Airbus420iot5G" %} or ((states('sensor.iphone_yasu_ssid') == "Airbus420iot")) %}
+            home
+            {% else %}
+            not_home
+          {% endif %}
+        friendly_name: "yasu Home (SSID = Airbus420iot5G)"
+
+  - platform: rest
+    resource: https://www.theweathernetwork.com/api/data/caon0696
+    name: weather_network
+    json_attributes:
+      - obs
+      - swo
+    value_template: "OK"
+    scan_interval:
+      minutes: 15
+
+  - platform: feedparser
+    name: Google News
+    feed_url: https://www.google.ca/alerts/feeds/00028625660956993271/15040452229692133315
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - link
+      - description
+      - content
+    exclusions:
+
+  - platform: feedparser
+    name: CTV News Politics
+    feed_url: https://news.google.com/rss/search?q=site:ctvnews.ca+when:1d&hl=en-CA&gl=CA&ceid=CA:en
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: CTV News Top Stories
+    feed_url: https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: CTV News Toronto
+    feed_url: https://toronto.ctvnews.ca/rss/ctv-news-toronto-1.822319
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: CNN News
+    feed_url: https://www.google.ca/alerts/feeds/03887704524064700626/11442725197465208985
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: Google News
+    feed_url: ttps://www.google.ca/alerts/feeds/03887704524064700626/2375914619997562293
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: CBS News Politics
+    feed_url: https://www.cbsnews.com/latest/rss/politics
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: CBS News Top Stories
+    feed_url: https://www.cbsnews.com/latest/rss/main
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: Global News Headlines
+    feed_url: https://globalnews.ca/feed/
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: Global News Toronto
+    feed_url: https://globalnews.ca/toronto/feed/
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: Global News Politics
+    feed_url: https://globalnews.ca/politics/feed/
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 15
+    inclusions:
+      - title
+      - content
+      - description
+    exclusions:
+
+  - platform: feedparser
+    name: To Do
+    feed_url: home_assistant_ideas_account1_attributes
+    date_format: "%a, %d %b %Y %H:%M:%S %Z"
+    scan_interval:
+      minutes: 5
+    inclusions:
+      - subject
+    exclusions:
+
+  - platform: template
+    sensors:
+      stopwatch:
+        friendly_name: "Stopwatch"
+        value_template: >
+          {% if is_state('input_boolean.reset_stopwatch', 'on') %}
+            00:00:00
+          {% elif is_state('input_boolean.start_stopwatch', 'off') %}
+            {{ states('sensor.stopwatch') }}
+          {% else %}
+            {% set start_time = states('input_datetime.stopwatch_start_time') %}
+            {% if start_time != 'unknown' %}
+              {% set elapsed = as_timestamp(now()) - as_timestamp(start_time) %}
+              {{ (elapsed | timestamp_custom('%H:%M:%S', false)) }}
+            {% else %}
+              00:00:00
+            {% endif %}
+          {% endif %}
+
+  - platform: template
+    sensors:
+      ctv_news_politics_attributes_0:
+        friendly_name: "CTV News Politics Content"
+        value_template: >
+          {{ states.sensor.ctv_news_politics.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      ctv_news_politics_attributes_1:
+        friendly_name: "CTV News Politics Content 1"
+        value_template: >
+          {{ states.sensor.ctv_news_politics.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      ctv_news_politics_attributes_2:
+        friendly_name: "CTV News Politics Content 2"
+        value_template: >
+          {{ states.sensor.ctv_news_politics.attributes.entries[2].title }}
+
+  - platform: template
+    sensors:
+      ctv_news_top_stories_attributes_0:
+        friendly_name: "CTV News Top Stories Content"
+        value_template: >
+          {{ states.sensor.ctv_news_top_stories.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      ctv_news_top_stories_attributes_1:
+        friendly_name: "CTV News Top Stories Content 1"
+        value_template: >
+          {{ states.sensor.ctv_news_top_stories.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      ctv_news_toronto_attributes_1:
+        friendly_name: "CTV News Toronto Content 1"
+        value_template: >
+          {{ states.sensor.ctv_news_toronto.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      cbs_news_politics_attributes_0:
+        friendly_name: "CBS News Politics Content"
+        value_template: >
+          {{ states.sensor.cbs_news_politics.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      cbs_news_politics_attributes_1:
+        friendly_name: "CBS News Politics Content 1"
+        value_template: >
+          {{ states.sensor.cbs_news_politics.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      cbs_news_top_stories_attributes_0:
+        friendly_name: "CBS News Top Stories Content"
+        value_template: >
+          {{ states.sensor.cbs_news_top_stories.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      cbs_news_top_stories_attributes_1:
+        friendly_name: "CBS News Top Stories Content 1"
+        value_template: >
+          {{ states.sensor.cbs_news_top_stories.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      global_news_headlines_attributes_1:
+        friendly_name: "Global News Headlines Content 1"
+        value_template: >
+          {{ states.sensor.global_news_headlines.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      global_news_toronto_attributes_0:
+        friendly_name: "Global News Toronto Content"
+        value_template: >
+          {{ states.sensor.global_news_toronto.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      global_news_toronto_attributes_1:
+        friendly_name: "Global News Toronto Content 1"
+        value_template: >
+          {{ states.sensor.global_news_toronto.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      global_news_politics_attributes_0:
+        friendly_name: "Global News Politics Content"
+        value_template: >
+          {{ states.sensor.global_news_politics.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      cnn_news_attributes_0:
+        friendly_name: "CNN News Content 0"
+        value_template: >
+          {{ states.sensor.cnn_news.attributes.entries[0].title }}
+
+  - platform: template
+    sensors:
+      cnn_news_attributes_1:
+        friendly_name: "CNN News Content 1"
+        value_template: >
+          {{ states.sensor.cnn_news.attributes.entries[1].title }}
+
+  - platform: template
+    sensors:
+      cnn_news_attributes_2:
+        friendly_name: "CNN News Content 2"
+        value_template: >
+          {{ states.sensor.cnn_news.attributes.entries[2].title }}
+
+  - platform: template
+    sensors:
+      cnn_news_attributes_3:
+        friendly_name: "CNN News Content 3"
+        value_template: >
+          {{ states.sensor.cnn_news.attributes.entries[3].title }}
+
+  - platform: template
+    sensors:
+      cnn_news_attributes_4:
+        friendly_name: "CNN News Content 4"
+        value_template: >
+          {{ states.sensor.cnn_news.attributes.entries[4].title }}
+
+  - platform: template
+    sensors:
+      calories_remaining:
+        value_template: "{{ 1600 - (states('sensor.calories_in_clean') | int - states('sensor.activity_calories') | int) }}"
+        unit_of_measurement: ""
+
+  - platform: template
+    sensors:
+      iphone_8_steps_clean:
+        value_template: "{{ states('sensor.iphone_8_steps') | regex_replace(find=' steps', replace='') }}"
+
+  - platform: template
+    sensors:
+      calories_burned:
+        value_template: "{{ states('sensor.active_energy') | regex_replace(find=' cal', replace='') }}"
+
+  - platform: template
+    sensors:
+      calories_in_clean:
+        value_template: "{{ states('sensor.calories_in') | regex_replace(find=' cal', replace='') }}"
+
+  - platform: template
+    sensors:
+      brynexport_walking_running_distance_clean:
+        value_template: "{{ states('hae.brynexport_walking_running_distance').split(' ')[0] }}"
+
+  - platform: template
+    sensors:
+      activity_calories_clean:
+        value_template: "{{ states('sensor.activity_calories').split(' ')[0] }}"
+
+  - platform: template
+    sensors:
+      brynexport_carbohydrates_clean:
+        value_template: "{{ states('hae.brynexport_carbohydrates') | regex_replace(find=' grams', replace='') }}"
+
+  - platform: template
+    sensors:
+      brynexport_total_fat_clean:
+        value_template: "{{ states('hae.brynexport_total_fat') | regex_replace(find=' grams', replace='') }}"
+
+  - platform: template
+    sensors:
+      steps_remaining:
+        value_template: "{{ 10000 - (states('sensor.iphone_8_steps_clean') | int) }}"
+        unit_of_measurement: ""
+
+  - platform: template
+    sensors:
+      withings_active_calories_burnt_today_clean:
+        value_template: "{{ states('sensor.withings_active_calories_burnt_today').split(' ')[0] }}"
+        friendly_name: "Active Calories Burnt Today"
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_0:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[0].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_1:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[1].subject }}
+
+  - platform: template
+    sensors:
+      brynexport_active_energy_clean:
+        value_template: "{{ states('sensor.hae_brynexport_active_energy').split(' ')[-1] }}"
+        friendly_name: "Active Energy"
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_2:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[2].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_3:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[3].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_4:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[4].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_5:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[5].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_6:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[6].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_7:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[7].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_8:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[8].subject }}
+
+  - platform: template
+    sensors:
+      adjusted_weight:
+        friendly_name: "Adjusted Weight"
+        value_template: "{{ 160 - states('sensor.withings_weight') | float }}"
+        unit_of_measurement: "lbs"
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_9:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[9].subject }}
+
+  - platform: template
+    sensors:
+      home_assistant_ideas_account1_attributes_10:
+        friendly_name: "To Do List Contents"
+        value_template: >
+          {{ states.todo.home_assistant_ideas_account1.attributes.entries[10].subject }}
+
+  - platform: time_date
+    display_options:
+      - "date_time_iso"
+
+  - platform: template
+    sensors:
+      formatted_date:
+        value_template: "{{ now().strftime('%B %d') }}"
+        friendly_name: "Formatted Date"
+
+  - platform: template
+    sensors:
+      active_chores:
+        value_template: >
+          {% set chores = [
+            states.input_boolean.chore_bathrooms,
+            states.input_boolean.chore_vacuum,
+            states.input_boolean.chore_plants,
+            states.input_boolean.chore_clean_fridge,
+            states.input_boolean.chore_dusting,
+            states.input_boolean.chore_4_thur_vacuum,
+            states.input_boolean.chore_floors,
+            states.input_boolean.chore_8_wkly_brush_cats,
+            states.input_boolean.chore_clean_microwave,
+            states.input_boolean.chore_recycling,
+            states.input_boolean.chore_brushing_dogs,
+            states.input_boolean.chore_garbage,
+            states.input_boolean.chore_bed_linen,
+            states.input_boolean.chore_organics,
+          ] %}
+          {% set active_chores = chores | selectattr('state', 'eq', 'on') | map(attribute='name') | list %}
+          {{ active_chores | join(', ') }}
+
+o365:
+  accounts:
+    - account_name: Account1 # Do not use email address or spaces
+      client_id: 7f498e0d-5a9d-4d3c-9cfe-73de11e77643
+      client_secret: LkP8Q~Fqhawwv6kvHiMYuiNIFbiR4MXw7QxpqbBK
+      alt_auth_method: false
+      enable_calendar: true
+      enable_update: True
+      track_new_calendar: true
+      email_sensor:
+        - name: inbox
+          max_items: 10
+          is_unread: True
+          download_attachments: False
+      query_sensors:
+        - name: "Example"
+          folder: Inbox #Default is Inbox
+          from: bryn.kai-hendricks@outlook.com
+          subject_contains: "Example subject"
+          has_attachment: True
+          max_items: 10
+          is_unread: True
+      todo_sensors:
+        enabled: true
+        enable_update: true # set this to true if you want to be able to create new todos
+        track_new: true
+
+camera:
+  - platform: xiaomi_cloud_map_extractor
+    host: 172.24.3.99
+    token: 6149305874726f4b50536c5752307638
+    username: byhomeyyz@gmail.com
+    password: W3belong@4201
+    draw: ["all"]
+    attributes:
+      - calibration_points
+      - rooms
+      - zones
+
+template:
+  - sensor:
+      - name: Aquarium Temperature
+        state: "{{ states('number.currenttempc') | int(0) }}"
+        unit_of_measurement: "°C"
+
+  - sensor:
+      - default_entity_id: sensor.weather_network_uv_index
+        name: UV Index (Weather Network)
+        state: '{{ states.sensor.weather_network.attributes["obs"]["uv_label"] }}'
+
+  - sensor:
+      - default_entity_id: sensor.weather_network_air_quality
+        name: Air Quality (Weather Network)
+        state: '{{ states.sensor.weather_network.attributes["obs"]["aq_level"] }}'
+
+  - sensor:
+      - device_class: temperature
+        unit_of_measurement: °C
+        default_entity_id: sensor.weather_network_temperature
+        name: Temperature (Weather Network) (Weather Network)
+        state: '{{ states.sensor.weather_network.attributes["obs"]["t"] }}'
+
+  - sensor:
+      - default_entity_id: sensor.weather_network_swo_level
+        name: Severe Weather Risk Level (Weather Network)
+        state: '{{ states.sensor.weather_network.attributes["swo"]["swo_level"] }}'
+
+  - sensor:
+      - default_entity_id: sensor.weather_network_swo_type
+        name: Severe Weather Risk Type (Weather Network)
+        state: '{{ states.sensor.weather_network.attributes["swo"]["swo_type"] }}'
+
+  - sensor:
+      - default_entity_id: sensor.stopwatch
+        name: Stopwatch
+        state:
+          "{% if is_state('input_boolean.reset_stopwatch', 'on') %}\n  00:00:00\n{%
+          elif is_state('input_boolean.start_stopwatch', 'off') %}\n  {{ states('sensor.stopwatch')
+          }}\n{% else %}\n  {% set start_time = states('input_datetime.stopwatch_start_time')
+          %}\n  {% if start_time != 'unknown' %}\n    {% set elapsed = as_timestamp(now())
+          - as_timestamp(start_time) %}\n    {{ (elapsed | timestamp_custom('%H:%M:%S',
+          false)) }}\n  {% else %}\n    00:00:00\n  {% endif %}\n{% endif %}"
+
+  - sensor:
+      - default_entity_id: sensor.global_news_politics_attributes_1
+        name: Global News Politics Content 1
+        state: "{{ states.sensor.global_news_politics.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.global_news_toronto_attributes_0
+        name: Global News Toronto Content
+        state: "{{ states.sensor.global_news_toronto.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.global_news_toronto_attributes_1
+        name: Global News Toronto Content 1
+        state: "{{ states.sensor.global_news_toronto.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.global_news_politics_attributes_0
+        name: Global News Politics Content
+        state: "{{ states.sensor.global_news_politics.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.global_news_politics_attributes_1
+        name: Global News Politics Content 1
+        state: "{{ states.sensor.global_news_politics.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.cnn_news_attributes_0
+        name: CNN News Content 0
+        state: "{{ states.sensor.cnn_news.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.cnn_news_attributes_1
+        name: CNN News Content 1
+        state: "{{ states.sensor.cnn_news.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.google_news_attributes
+        name: Google News Content
+        state: "{{ states.sensor.google_news.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.google_news_attributes_2
+        name: Google News Content 2
+        state: "{{ states.sensor.google_news.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.google_news_attributes_3
+        name: Google News Content 3
+        state: "{{ states.sensor.google_news.attributes.entries[2].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.google_news_attributes_4
+        name: Google News Content 4
+        state: "{{ states.sensor.google_news.attributes.entries[3].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_toronto_attributes_0
+        name: CTV News Toronto Content
+        state: "{{ states.sensor.ctv_news_toronto.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_politics_attributes_1
+        name: CTV News Politics Content 1
+        state: "{{ states.sensor.ctv_news_politics.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_top_stories_attributes_2
+        name: CTV News Top Stories Content 2
+        state: "{{ states.sensor.ctv_news_top_stories.attributes.entries[2].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_politics_attributes_2
+        name: CTV News Politics Content 2
+        state: "{{ states.sensor.ctv_news_politics.attributes.entries[2].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_top_stories_attributes_0
+        name: CTV News Top Stories Content
+        state: "{{ states.sensor.ctv_news_top_stories.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_top_stories_attributes_1
+        name: CTV News Top Stories Content 1
+        state: "{{ states.sensor.ctv_news_top_stories.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_toronto_attributes_1
+        name: CTV News Toronto Content 1
+        state: "{{ states.sensor.ctv_news_toronto.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.cbs_news_politics_attributes_0
+        name: CBS News Politics Content
+        state: "{{ states.sensor.cbs_news_politics.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.cbs_news_politics_attributes_1
+        name: CBS News Politics Content 1
+        state: "{{ states.sensor.cbs_news_politics.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.cbs_news_top_stories_attributes_0
+        name: CBS News Top Stories Content
+        state: "{{ states.sensor.cbs_news_top_stories.attributes.entries[0].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.cbs_news_top_stories_attributes_1
+        name: CBS News Top Stories Content 1
+        state: "{{ states.sensor.cbs_news_top_stories.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.global_news_headlines_attributes_1
+        name: Global News Headlines Content 1
+        state: "{{ states.sensor.global_news_headlines.attributes.entries[1].title }}"
+
+  - sensor:
+      - default_entity_id: sensor.ctv_news_politics_attributes_0
+        name: CTV News Politics Content
+        state: "{{ states.sensor.ctv_news_politics.attributes.entries[0].title }}"
+
+  - sensor:
+      - name: "Active Energy"
+        state: >
+          {% set value = states('hae.brynexport_active_energy') %}
+          {% set number = value | regex_findall_index('\d+') %}
+          {{ number | int if number else 0 }}
+
+  - sensor:
+      - name: "Day"
+        state: >
+          {{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%A') }}
+        icon: "mdi:calendar-clock"
+
+  - sensor:
+      - name: "Date"
+        state: >
+          {{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%B %-d, %Y') }}
+        icon: "mdi:calendar-clock"
+
+  - sensor:
+      - name: "Date"
+        state: >
+          {{ as_timestamp(states('sensor.date')) | timestamp_custom('%A, %B %d'') }}
+
+    binary_sensor:
+      - unique_id: task_due
+        attributes:
+          friendly_name: Task due
+        state: "{{ (states |selectattr('entity_id', 'search', 'input_boolean.health_task_*') |selectattr('state', 'in', 'off')|list)|length > 0 }}"
+
+  - sensor:
+      - name: "Dogs Timer Color"
+        state: >
+          {% if states('timer.dogs') == '0' %}
+            red
+          {% elif states('timer.dogs') < '01:00:00' %}
+            yellow
+          {% else %}
+            rgba(255,255,255,1)
+          {% endif %}
