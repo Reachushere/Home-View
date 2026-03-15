@@ -13525,13 +13525,15 @@ export default function Dashboard() {
         ...(pollenData ? [{ title: `🌿 Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News'];
-          const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source));
+          const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
           const us = newsHeadlines.filter(h => US_SOURCES.includes(h.source));
+          const bbc = newsHeadlines.filter(h => h.source === 'BBC');
           const interleaved: typeof newsHeadlines = [];
-          const max = Math.max(ca.length, us.length);
+          const max = Math.max(ca.length, us.length, bbc.length);
           for (let i = 0; i < max; i++) {
             if (i < ca.length) interleaved.push(ca[i]);
             if (i < us.length) interleaved.push(us[i]);
+            if (i < bbc.length) interleaved.push(bbc[i]);
           }
           return interleaved;
         })(),
