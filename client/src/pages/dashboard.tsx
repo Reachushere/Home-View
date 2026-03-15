@@ -15584,40 +15584,57 @@ export default function Dashboard() {
                     </button>
                   </div>
                 ) : (
-                  <div className="grid gap-2 p-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-                    {filteredContacts.map(c => (
-                      <div
-                        key={c.id}
-                        className="rounded-lg border border-white/15 p-3 hover:bg-white/5 transition-colors cursor-pointer relative group"
-                        onClick={() => { setEditingContactId(c.id); setContactForm({ name: c.name, title: c.title || '', organization: c.organization || '', department: c.department || '', email: c.email || '', phone: c.phone || '', office: c.office || '', category: c.category || 'other', notes: c.notes || '' }); setContactFormOpen(true); }}
-                        data-testid={`contact-card-${c.id}`}
-                      >
-                        <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 p-1" data-testid={`delete-contact-${c.id}`}>
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                        <div className="flex items-start gap-2">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: getCategoryColor(c.category) }}>
-                            {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                  <div className="p-3 space-y-4">
+                    {(() => {
+                      const grouped = categories
+                        .map(cat => ({
+                          ...cat,
+                          contacts: filteredContacts.filter(c => c.category === cat.value),
+                        }))
+                        .filter(g => g.contacts.length > 0);
+                      const ungrouped = filteredContacts.filter(c => !categories.some(cat => cat.value === c.category));
+                      if (ungrouped.length > 0) grouped.push({ value: 'other', label: 'Other', contacts: ungrouped });
+                      return grouped.map(group => (
+                        <div key={group.value}>
+                          <div className="flex items-center gap-2 mb-2 px-1">
+                            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getCategoryColor(group.value) }} />
+                            <span className="text-[11px] font-medium text-white/80 uppercase tracking-wider">{group.label}</span>
+                            <span className="text-[9px] text-white/40">({group.contacts.length})</span>
+                            <div className="flex-1 border-b border-white/10" />
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[12px] font-medium text-white truncate">{c.name}</p>
-                            {c.title && <p className="text-[10px] text-white/60 truncate">{c.title}</p>}
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <span className="text-[8px] px-1.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: getCategoryColor(c.category) + '30', color: getCategoryColor(c.category) }}>
-                                {categories.find(cat => cat.value === c.category)?.label || 'Other'}
-                              </span>
-                            </div>
+                          <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                            {group.contacts.map(c => (
+                              <div
+                                key={c.id}
+                                className="rounded-lg border border-white/15 p-3 hover:bg-white/5 transition-colors cursor-pointer relative group"
+                                onClick={() => { setEditingContactId(c.id); setContactForm({ name: c.name, title: c.title || '', organization: c.organization || '', department: c.department || '', email: c.email || '', phone: c.phone || '', office: c.office || '', category: c.category || 'other', notes: c.notes || '' }); setContactFormOpen(true); }}
+                                data-testid={`contact-card-${c.id}`}
+                              >
+                                <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 p-1" data-testid={`delete-contact-${c.id}`}>
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                                <div className="flex items-start gap-2">
+                                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: getCategoryColor(c.category) }}>
+                                    {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-[12px] font-medium text-white truncate">{c.name}</p>
+                                    {c.title && <p className="text-[10px] text-white/60 truncate">{c.title}</p>}
+                                  </div>
+                                </div>
+                                <div className="mt-2 space-y-0.5 text-[10px]">
+                                  {c.organization && <p className="text-white/50 truncate">{c.organization}{c.department ? ` — ${c.department}` : ''}</p>}
+                                  {c.email && <p className="text-blue-300/80 truncate" onClick={(e) => { e.stopPropagation(); window.open(`mailto:${c.email}`); }}>{c.email}</p>}
+                                  {c.phone && <p className="text-white/50">{c.phone}</p>}
+                                  {c.office && <p className="text-white/50">Office: {c.office}</p>}
+                                  {c.notes && <p className="text-white/40 italic truncate">{c.notes}</p>}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                        <div className="mt-2 space-y-0.5 text-[10px]">
-                          {c.organization && <p className="text-white/50 truncate">{c.organization}{c.department ? ` — ${c.department}` : ''}</p>}
-                          {c.email && <p className="text-blue-300/80 truncate" onClick={(e) => { e.stopPropagation(); window.open(`mailto:${c.email}`); }}>{c.email}</p>}
-                          {c.phone && <p className="text-white/50">{c.phone}</p>}
-                          {c.office && <p className="text-white/50">Office: {c.office}</p>}
-                          {c.notes && <p className="text-white/40 italic truncate">{c.notes}</p>}
-                        </div>
-                      </div>
-                    ))}
+                      ));
+                    })()}
                   </div>
                 )}
               </div>
@@ -15641,45 +15658,45 @@ export default function Dashboard() {
               <div className="p-4 space-y-2.5 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 60px)', scrollbarWidth: 'none' }}>
                 <div>
                   <label className="text-[10px] text-white/60 mb-1 block">Name *</label>
-                  <input type="text" value={contactForm.name} onChange={(e) => setContactForm(p => ({ ...p, name: e.target.value }))} placeholder="Full name" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" autoFocus data-testid="input-contact-name" />
+                  <FastInput type="text" value={contactForm.name} onValueChange={(v) => setContactForm(p => ({ ...p, name: v }))} placeholder="Full name" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" autoFocus data-testid="input-contact-name" />
                 </div>
                 <div>
                   <label className="text-[10px] text-white/60 mb-1 block">Title / Role</label>
-                  <input type="text" value={contactForm.title} onChange={(e) => setContactForm(p => ({ ...p, title: e.target.value }))} placeholder="e.g. Professor, Academic Advisor" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-title" />
+                  <FastInput type="text" value={contactForm.title} onValueChange={(v) => setContactForm(p => ({ ...p, title: v }))} placeholder="e.g. Professor, Academic Advisor" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-title" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-[10px] text-white/60 mb-1 block">Organization</label>
-                    <input type="text" value={contactForm.organization} onChange={(e) => setContactForm(p => ({ ...p, organization: e.target.value }))} placeholder="e.g. TMU" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-org" />
+                    <FastInput type="text" value={contactForm.organization} onValueChange={(v) => setContactForm(p => ({ ...p, organization: v }))} placeholder="e.g. TMU" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-org" />
                   </div>
                   <div>
                     <label className="text-[10px] text-white/60 mb-1 block">Department</label>
-                    <input type="text" value={contactForm.department} onChange={(e) => setContactForm(p => ({ ...p, department: e.target.value }))} placeholder="e.g. Politics" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-dept" />
+                    <FastInput type="text" value={contactForm.department} onValueChange={(v) => setContactForm(p => ({ ...p, department: v }))} placeholder="e.g. Politics" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-dept" />
                   </div>
                 </div>
                 <div>
                   <label className="text-[10px] text-white/60 mb-1 block">Email</label>
-                  <input type="email" value={contactForm.email} onChange={(e) => setContactForm(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-email" />
+                  <FastInput type="email" value={contactForm.email} onValueChange={(v) => setContactForm(p => ({ ...p, email: v }))} placeholder="email@example.com" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-email" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-[10px] text-white/60 mb-1 block">Phone</label>
-                    <input type="tel" value={contactForm.phone} onChange={(e) => setContactForm(p => ({ ...p, phone: e.target.value }))} placeholder="(416) 555-0123" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-phone" />
+                    <FastInput type="tel" value={contactForm.phone} onValueChange={(v) => setContactForm(p => ({ ...p, phone: v }))} placeholder="(416) 555-0123" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-phone" />
                   </div>
                   <div>
                     <label className="text-[10px] text-white/60 mb-1 block">Office Location</label>
-                    <input type="text" value={contactForm.office} onChange={(e) => setContactForm(p => ({ ...p, office: e.target.value }))} placeholder="e.g. JOR-123" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-office" />
+                    <FastInput type="text" value={contactForm.office} onValueChange={(v) => setContactForm(p => ({ ...p, office: v }))} placeholder="e.g. JOR-123" className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="input-contact-office" />
                   </div>
                 </div>
                 <div>
                   <label className="text-[10px] text-white/60 mb-1 block">Category</label>
-                  <select value={contactForm.category} onChange={(e) => setContactForm(p => ({ ...p, category: e.target.value }))} className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="select-contact-category">
+                  <select value={contactForm.category} onChange={(e) => { const v = e.target.value; startTransition(() => setContactForm(p => ({ ...p, category: v }))); }} className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40" data-testid="select-contact-category">
                     {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[10px] text-white/60 mb-1 block">Notes</label>
-                  <textarea value={contactForm.notes} onChange={(e) => setContactForm(p => ({ ...p, notes: e.target.value }))} placeholder="Office hours, course taught, etc." rows={2} className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none" data-testid="input-contact-notes" />
+                  <FastTextarea value={contactForm.notes} onValueChange={(v) => setContactForm(p => ({ ...p, notes: v }))} placeholder="Office hours, course taught, etc." rows={2} className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none" data-testid="input-contact-notes" />
                 </div>
                 <div className="flex justify-end gap-2 pt-1">
                   <button onClick={() => { setContactFormOpen(false); setEditingContactId(null); }} className="px-3 py-1.5 rounded text-[10px] font-medium bg-white/5 hover:bg-white/10 transition-colors border border-white/15" data-testid="button-contact-cancel">Cancel</button>
