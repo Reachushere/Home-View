@@ -1718,7 +1718,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'Raw Story': { file: 'Raw_Story_1773607642361.png', height: 18 },
         'ABC News': { file: 'ABC_1773609250051.png', height: 24 },
         'BBC': { file: 'BBC_1773609711103.png', height: 13 },
-        'Fox News': { file: 'Fox_News_1773610204651.png', height: 18 },
+        'Fox News': { file: 'Fox_News_1773610204651.png', height: 15 },
       };
       const ALERT_LOGO_FILE = 'Weather_Alert_1773608511887.png';
       const WMO: Record<number, string> = {0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm'};
