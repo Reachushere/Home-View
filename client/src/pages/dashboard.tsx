@@ -19,6 +19,7 @@ import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
 import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773607768206.png";
+import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
 import bbcNewsLogoPath from "@assets/BBC_1773608074910.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
@@ -333,7 +334,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:38px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-alert-${i}"><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
