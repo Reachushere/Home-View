@@ -18048,8 +18048,14 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'day' && <SunIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-yellow-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : ''}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay === 'night' && <MoonIcon className={`absolute top-0.5 right-0.5 h-3.5 w-3.5 text-purple-400 cursor-pointer z-10 ${sleepDisabledDays.has(shiftDateStr) ? '' : ''}`} fill="currentColor" strokeWidth={1.5} style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }} onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }} data-testid={`toggle-sleep-${shiftDateStr}`} />}
+                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay && (
+                      <div
+                        className="absolute right-0 top-0 bottom-0 cursor-pointer z-10"
+                        style={{ width: '5px', backgroundColor: shiftForDay === 'day' ? '#facc15' : '#c084fc', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
+                        onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
+                        data-testid={`toggle-sleep-${shiftDateStr}`}
+                      />
+                    )}
                     {(() => {
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
