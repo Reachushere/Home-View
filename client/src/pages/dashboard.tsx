@@ -337,7 +337,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       }
       if (item.source === '_FORECAST_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold" style="color:#60a5fa;text-shadow:0 0 4px rgba(96,165,250,0.3)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold" style="color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
