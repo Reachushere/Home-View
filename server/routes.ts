@@ -1739,7 +1739,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
 .t-alert{animation:tickerAlertBlink 1s ease-in-out infinite}
 .t-alert-text{font-size:13px;font-weight:700;color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)}
 .t-forecast{font-size:13px;font-weight:600;color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)}
-.t-headline{font-size:13px;font-weight:600;color:rgba(255,255,255,0.9)}
+.t-headline{font-size:13px;font-weight:700;color:rgba(255,255,255,0.95)}
 .t-sep{color:rgba(255,255,255,0.6);margin:0 4px;font-weight:800;font-size:15px;line-height:1;vertical-align:middle}
 .t-logo{border-radius:2px;object-fit:contain;vertical-align:middle}
 </style></head><body>
