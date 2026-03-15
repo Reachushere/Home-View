@@ -13330,7 +13330,7 @@ export default function Dashboard() {
 
       {/* News Ticker */}
       {newsHeadlines.length > 0 && (
-        <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '22px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
+        <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '32px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
           <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(15, newsHeadlines.length * 10)}s linear infinite` }}>
             {[...newsHeadlines, ...newsHeadlines].map((item, i) => (
               <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid={`news-headline-${i}`}>
@@ -13344,12 +13344,12 @@ export default function Dashboard() {
                     Politico: 'https://favicon.controld.com/politico.com',
                   };
                   return logoMap[item.source] ? (
-                    <img src={logoMap[item.source]} alt={item.source} className="w-3.5 h-3.5 rounded-sm" style={{ minWidth: '14px' }} />
+                    <img src={logoMap[item.source]} alt={item.source} className="w-5 h-5 rounded-sm" style={{ minWidth: '20px' }} />
                   ) : (
-                    <span className="text-[9px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
+                    <span className="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
                   );
                 })()}
-                <span className="text-[10px] text-white/90">{item.title}</span>
+                <span className="text-[13px] text-white/90">{item.title}</span>
                 <span className="text-white/20 mx-2">|</span>
               </a>
             ))}
