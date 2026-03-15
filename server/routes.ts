@@ -6633,9 +6633,12 @@ document.body.removeChild(a);
 
         await fetch(`${haUrl}/api/services/media_player/volume_set`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.9 }),
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.45 }),
         });
-        console.log(`[Cat Lights] Set HA Voice volume to 0.9`);
+        console.log(`[Cat Lights] Set HA Voice volume to 0.45`);
+
+        let ttsSent = false;
+
         console.log(`[Cat Lights] Trying tts.speak with entity=tts.home_assistant_cloud, target=${CAT_WR_HA_VOICE_ENTITY}`);
         const tts1 = await fetch(`${haUrl}/api/services/tts/speak`, {
           method: 'POST', headers: haHeaders,
@@ -6643,29 +6646,34 @@ document.body.removeChild(a);
         });
         const tts1Body = await tts1.text();
         console.log(`[Cat Lights] tts.speak response: ${tts1.status} body=${tts1Body.substring(0, 500)}`);
+        if (tts1.ok) ttsSent = true;
 
-        if (!tts1.ok) {
+        if (!ttsSent) {
           console.log(`[Cat Lights] tts.speak failed — trying tts.cloud_say...`);
           const tts2 = await fetch(`${haUrl}/api/services/tts/cloud_say`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
           });
-          console.log(`[Cat Lights] tts.cloud_say response: ${tts2.status} body=${(await tts2.text()).substring(0, 500)}`);
+          const tts2Status = tts2.status;
+          console.log(`[Cat Lights] tts.cloud_say response: ${tts2Status} body=${(await tts2.text()).substring(0, 500)}`);
+          if (tts2.ok) ttsSent = true;
         }
 
-        console.log(`[Cat Lights] Also trying media_player.play_media with OpenAI TTS as fallback...`);
-        try {
-          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-          const appUrl = "https://home-view--bkh416.replit.app";
-          const fullAudioUrl = `${appUrl}${audioPath}`;
-          console.log(`[Cat Lights] Generated OpenAI TTS audio: ${fullAudioUrl}`);
-          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: fullAudioUrl, media_content_type: "music" }),
-          });
-          console.log(`[Cat Lights] play_media on HA Voice: ${playResp.status} ${(await playResp.text()).substring(0, 300)}`);
-        } catch (fallbackErr: any) {
-          console.log(`[Cat Lights] OpenAI TTS fallback failed: ${fallbackErr.message}`);
+        if (!ttsSent) {
+          console.log(`[Cat Lights] Both TTS methods failed — trying OpenAI TTS via play_media...`);
+          try {
+            const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
+            const appUrl = "https://home-view--bkh416.replit.app";
+            const fullAudioUrl = `${appUrl}${audioPath}`;
+            console.log(`[Cat Lights] Generated OpenAI TTS audio: ${fullAudioUrl}`);
+            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: fullAudioUrl, media_content_type: "music" }),
+            });
+            console.log(`[Cat Lights] play_media on HA Voice: ${playResp.status} ${(await playResp.text()).substring(0, 300)}`);
+          } catch (fallbackErr: any) {
+            console.log(`[Cat Lights] OpenAI TTS fallback failed: ${fallbackErr.message}`);
+          }
         }
 
       } catch (e: any) {
