@@ -344,14 +344,15 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_') {
-        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold" style="color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)">${item.title}</span></span>`;
+        const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?)/, '<span style="color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)">$1</span>');
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold text-white/95">${forecastHtml}</span></span>`;
       }
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
         ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain;vertical-align:middle" />`
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/60 mx-1 font-extrabold text-[15px]" style="line-height:1;vertical-align:middle">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
+      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[15px]" style="line-height:1;vertical-align:middle;font-weight:900">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
     }).join('')}</div></div>`;
     containerRef.current.innerHTML = html;
     requestAnimationFrame(() => {
