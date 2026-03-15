@@ -339,7 +339,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         const contentWidth = scrollEl.scrollWidth;
         const screenWidth = window.innerWidth;
         const totalTravel = screenWidth + contentWidth;
-        const speed = 55;
+        const speed = 65;
         const duration = totalTravel / speed;
         scrollEl.style.setProperty('--ticker-start', `${screenWidth}px`);
         scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
