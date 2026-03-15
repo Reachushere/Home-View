@@ -1726,11 +1726,16 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
       const internalBase = `http://localhost:${process.env.PORT || 5000}`;
+      const withTimeout = (url: string, ms: number) => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), ms);
+        return fetch(url, { signal: controller.signal }).then(r => { clearTimeout(timer); return r.json(); }).catch(() => { clearTimeout(timer); return null; });
+      };
       const [alertRes, wxRes, pollenRes, newsRes] = await Promise.all([
-        fetch(`${internalBase}/api/weather-alerts`).then(r => r.json()).catch(() => null),
-        fetch(`${internalBase}/api/weather`).then(r => r.json()).catch(() => null),
-        fetch(`${internalBase}/api/pollen`).then(r => r.json()).catch(() => null),
-        fetch(`${internalBase}/api/news`).then(r => r.json()).catch(() => null),
+        withTimeout(`${internalBase}/api/weather-alerts`, 5000),
+        withTimeout(`${internalBase}/api/weather`, 5000),
+        withTimeout(`${internalBase}/api/pollen`, 5000),
+        withTimeout(`${internalBase}/api/news`, 8000),
       ]);
 
       let tickerItems = '';
@@ -1786,6 +1791,16 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       }
 
       const authQS = req.query.auth ? `?auth=${req.query.auth}` : '';
+
+      if (!tickerItems) {
+        const retryHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="5"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}html,body{height:100%;overflow:hidden;background:#000}.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:#000;border-top:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center}.loading{color:rgba(255,255,255,0.5);font-size:14px;font-weight:600}</style></head><body><div class="ticker-wrap"><span class="loading">Loading news ticker...</span></div></body></html>`;
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('X-Frame-Options', 'ALLOWALL');
+        res.setHeader('Content-Security-Policy', '');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return res.send(retryHtml);
+      }
 
       const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
