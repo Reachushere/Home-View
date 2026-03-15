@@ -1804,7 +1804,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
 .t-forecast{font-size:15px;font-weight:600;color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)}
 .t-data{font-size:15px;font-weight:600;color:rgba(255,255,255,0.95)}
 .t-headline{font-size:15px;font-weight:700;color:rgba(255,255,255,0.95)}
-.t-sep{color:rgba(255,255,255,0.6);margin:0 4px;font-weight:800;font-size:16px;line-height:1;vertical-align:middle}
+.t-sep{color:rgba(255,255,255,0.85);margin:0 4px;font-weight:900;font-size:16px;line-height:1;vertical-align:middle}
 .t-logo{border-radius:2px;object-fit:contain;vertical-align:middle}
 </style></head><body>
 <div class="ticker-wrap"><div class="ticker-track" id="track">${tickerItems}</div></div>
