@@ -1502,14 +1502,14 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
   app.post("/api/scholarships/calendar-events", async (req, res) => {
     try {
-      const { name, applicationsOpen, deadline, description } = req.body;
+      const { name, applicationsOpen, deadline, description, recurring } = req.body;
       const results: any[] = [];
       if (applicationsOpen) {
-        const openEvent = await createYearlyScholarshipEvent({ name, date: applicationsOpen, type: 'open', description });
+        const openEvent = await createYearlyScholarshipEvent({ name, date: applicationsOpen, type: 'open', description, recurring: recurring !== false });
         if (openEvent) results.push({ type: 'open', eventId: openEvent.id });
       }
       if (deadline) {
-        const deadlineEvent = await createYearlyScholarshipEvent({ name, date: deadline, type: 'deadline', description });
+        const deadlineEvent = await createYearlyScholarshipEvent({ name, date: deadline, type: 'deadline', description, recurring: recurring !== false });
         if (deadlineEvent) results.push({ type: 'deadline', eventId: deadlineEvent.id });
       }
       res.json({ success: true, events: results });

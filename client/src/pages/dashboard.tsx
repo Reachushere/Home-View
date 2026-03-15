@@ -14784,7 +14784,7 @@ export default function Dashboard() {
             const [scholarshipsList, setScholarshipsList] = useState<Array<{ id: number; name: string; organization: string; amount: string | null; applicationsOpen: string | null; deadline: string | null; winnersAnnounced: string | null; applicationUrl: string | null; contactInfo: string | null; additionalInfo: string | null; status: string | null }>>([]);
             const [scholarshipWizardOpen, setScholarshipWizardOpen] = useState(false);
             const [scholarshipWizardStep, setScholarshipWizardStep] = useState(0);
-            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
+            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
             const [editingScholarshipId, setEditingScholarshipId] = useState<number | null>(null);
 
             useEffect(() => {
@@ -14834,6 +14834,7 @@ export default function Dashboard() {
                         applicationsOpen: scholarshipForm.applicationsOpen,
                         deadline: scholarshipForm.deadline,
                         description: calDescription,
+                        recurring: scholarshipForm.recurring,
                       }),
                     });
                   } catch (e) {
@@ -14845,7 +14846,7 @@ export default function Dashboard() {
               setScholarshipsList(updated);
               setScholarshipWizardOpen(false);
               setScholarshipWizardStep(0);
-              setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
+              setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
               setEditingScholarshipId(null);
             };
 
@@ -14876,7 +14877,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' }); }}
+                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true }); }}
                     className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
                     data-testid="button-add-scholarship"
                   >
@@ -14916,7 +14917,7 @@ export default function Dashboard() {
                     </thead>
                     <tbody>
                       {scholarshipsList.map(s => (
-                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', applicationsOpen: s.applicationsOpen || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '' }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
+                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', applicationsOpen: s.applicationsOpen || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '', recurring: true }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
                           <td className="px-3 py-2.5 font-medium">{s.name}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount || '—'}</td>
@@ -14978,14 +14979,26 @@ export default function Dashboard() {
                     />
                   </div>
                 ) : wizardSteps[scholarshipWizardStep].isTextarea ? (
-                  <textarea
-                    value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
-                    onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
-                    placeholder={wizardSteps[scholarshipWizardStep].placeholder}
-                    rows={4}
-                    className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none"
-                    data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
-                  />
+                  <div className="space-y-3">
+                    <textarea
+                      value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                      onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
+                      placeholder={wizardSteps[scholarshipWizardStep].placeholder}
+                      rows={4}
+                      className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none"
+                      data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
+                    />
+                    <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="checkbox-scholarship-recurring">
+                      <input
+                        type="checkbox"
+                        checked={scholarshipForm.recurring}
+                        onChange={(e) => setScholarshipForm(p => ({ ...p, recurring: e.target.checked }))}
+                        className="h-4 w-4 rounded border-white/30 bg-white/10 accent-green-400 cursor-pointer"
+                        data-testid="input-scholarship-recurring"
+                      />
+                      <span className="text-[11px] text-white/80">Recurring — add to calendar every year</span>
+                    </label>
+                  </div>
                 ) : wizardSteps[scholarshipWizardStep].isDate ? (
                   <input
                     type="date"

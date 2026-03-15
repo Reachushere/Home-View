@@ -668,11 +668,11 @@ export async function createYearlyScholarshipEvent(info: {
   date: string;
   type: 'open' | 'deadline';
   description?: string;
+  recurring?: boolean;
 }): Promise<{ id: string } | null> {
   try {
     const calendar = await getGoogleCalendarClient();
     const dateObj = new Date(info.date + 'T12:00:00');
-    const monthDay = info.date.substring(5);
     const summary = info.type === 'open'
       ? `📬 Scholarship Opens: ${info.name}`
       : `🚨 Scholarship Deadline: ${info.name}`;
@@ -682,17 +682,13 @@ export async function createYearlyScholarshipEvent(info: {
     endDate.setDate(endDate.getDate() + 1);
     const endDateStr = endDate.toISOString().split('T')[0];
 
-    const rruleUntilYear = dateObj.getFullYear() + 10;
-    const rruleUntilMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const rruleUntilDay = String(dateObj.getDate()).padStart(2, '0');
-    const recurrence = [`RRULE:FREQ=YEARLY;UNTIL=${rruleUntilYear}${rruleUntilMonth}${rruleUntilDay}T235959Z`];
+    const isRecurring = info.recurring !== false;
 
-    const event = {
+    const event: any = {
       summary,
       description: info.description || '',
       start: { date: dateStr },
       end: { date: endDateStr },
-      recurrence,
       reminders: {
         useDefault: false,
         overrides: [
@@ -701,6 +697,13 @@ export async function createYearlyScholarshipEvent(info: {
         ],
       },
     };
+
+    if (isRecurring) {
+      const rruleUntilYear = dateObj.getFullYear() + 10;
+      const rruleUntilMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const rruleUntilDay = String(dateObj.getDate()).padStart(2, '0');
+      event.recurrence = [`RRULE:FREQ=YEARLY;UNTIL=${rruleUntilYear}${rruleUntilMonth}${rruleUntilDay}T235959Z`];
+    }
 
     const response = await calendar.events.insert({
       calendarId: 'primary',
