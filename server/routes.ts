@@ -1509,10 +1509,28 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         }
       }));
 
-      const shuffled = results.sort(() => Math.random() - 0.5);
-      newsCache.data = shuffled;
+      const bySource: Record<string, typeof results> = {};
+      for (const item of results) {
+        if (!bySource[item.source]) bySource[item.source] = [];
+        bySource[item.source].push(item);
+      }
+      const sources = Object.keys(bySource).sort(() => Math.random() - 0.5);
+      const interleaved: typeof results = [];
+      let round = 0;
+      let added = true;
+      while (added) {
+        added = false;
+        for (const src of sources) {
+          if (round < bySource[src].length) {
+            interleaved.push(bySource[src][round]);
+            added = true;
+          }
+        }
+        round++;
+      }
+      newsCache.data = interleaved;
       newsCache.timestamp = now;
-      res.json(shuffled);
+      res.json(interleaved);
     } catch (err) {
       console.error("Error fetching news:", err);
       res.status(500).json({ error: "Failed to fetch news" });
