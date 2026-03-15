@@ -20,7 +20,7 @@ import politicoLogoPath from "@assets/Politico_1773537080711.png";
 import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
 import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
-import bbcNewsLogoPath from "@assets/BBC_1773608074910.png";
+import bbcNewsLogoPath from "@assets/BBC_1773609711103.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
