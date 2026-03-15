@@ -1720,7 +1720,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'Raw Story': { file: 'Raw_Story_1773607642361.png', height: 22 },
         'ABC News': { file: 'ABC_1773609250051.png', height: 22 },
         'BBC': { file: 'BBC_1773609711103.png', height: 18 },
-        'Fox News': { file: 'Fox_News_1773610204651.png', height: 24 },
+        'Fox News': { file: 'Fox_News_1773610204651.png', height: 18 },
       };
       const ALERT_LOGO = 'Weather_Alert_1773608511887.png';
 
