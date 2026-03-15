@@ -1727,7 +1727,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
 html,body{height:100%;overflow:hidden;background:transparent}
 @keyframes tickerScroll{0%{transform:translate3d(var(--ticker-start),0,0)}100%{transform:translate3d(var(--ticker-end),0,0)}}
 @keyframes tickerAlertBlink{0%,100%{opacity:1}50%{opacity:0.3}}
