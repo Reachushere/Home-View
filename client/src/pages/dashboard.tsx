@@ -13334,10 +13334,20 @@ export default function Dashboard() {
           <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(15, newsHeadlines.length * 10)}s linear infinite` }}>
             {[...newsHeadlines, ...newsHeadlines].map((item, i) => (
               <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid={`news-headline-${i}`}>
-                <span className="text-[9px] font-bold px-1 py-0 rounded" style={{
-                  color: 'white',
-                  background: item.source === 'CNN' ? '#cc0000' : item.source === 'CBC' ? '#e02424' : item.source === 'CTV' ? '#003087' : item.source === 'Global' ? '#1a6bb5' : item.source === 'MSNBC' ? '#0b69a3' : '#444',
-                }}>{item.source}</span>
+                {(() => {
+                  const logoMap: Record<string, string> = {
+                    CNN: 'https://favicon.controld.com/edition.cnn.com',
+                    CBC: 'https://favicon.controld.com/cbc.ca',
+                    CTV: 'https://favicon.controld.com/ctvnews.ca',
+                    Global: 'https://favicon.controld.com/globalnews.ca',
+                    MSNBC: 'https://favicon.controld.com/msnbc.com',
+                  };
+                  return logoMap[item.source] ? (
+                    <img src={logoMap[item.source]} alt={item.source} className="w-3.5 h-3.5 rounded-sm" style={{ minWidth: '14px' }} />
+                  ) : (
+                    <span className="text-[9px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
+                  );
+                })()}
                 <span className="text-[10px] text-white/90">{item.title}</span>
                 <span className="text-white/20 mx-2">|</span>
               </a>
