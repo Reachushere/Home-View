@@ -1827,8 +1827,21 @@ async function buildTicker(){
   });
 }
 
-buildTicker();
-setInterval(buildTicker,10*60*1000);
+let pendingRefresh=false;
+let lastBuild=0;
+function scheduleRefresh(){
+  const track=document.getElementById('track');
+  if(!track) return;
+  track.addEventListener('animationiteration',function handler(){
+    track.removeEventListener('animationiteration',handler);
+    if(Date.now()-lastBuild>=10*60*1000){
+      buildTicker().then(()=>{lastBuild=Date.now();scheduleRefresh();});
+    } else {
+      scheduleRefresh();
+    }
+  });
+}
+buildTicker().then(()=>{lastBuild=Date.now();scheduleRefresh();});
 </script></body></html>`;
       res.setHeader('Content-Type', 'text/html');
       res.setHeader('X-Frame-Options', 'ALLOWALL');
