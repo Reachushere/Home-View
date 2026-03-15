@@ -14781,10 +14781,10 @@ export default function Dashboard() {
 
           {/* Scholarships Dialog */}
           {(() => {
-            const [scholarshipsList, setScholarshipsList] = useState<Array<{ id: number; name: string; organization: string; amount: string | null; deadline: string | null; winnersAnnounced: string | null; applicationUrl: string | null; contactInfo: string | null; additionalInfo: string | null; status: string | null }>>([]);
+            const [scholarshipsList, setScholarshipsList] = useState<Array<{ id: number; name: string; organization: string; amount: string | null; applicationsOpen: string | null; deadline: string | null; winnersAnnounced: string | null; applicationUrl: string | null; contactInfo: string | null; additionalInfo: string | null; status: string | null }>>([]);
             const [scholarshipWizardOpen, setScholarshipWizardOpen] = useState(false);
             const [scholarshipWizardStep, setScholarshipWizardStep] = useState(0);
-            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
+            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
             const [editingScholarshipId, setEditingScholarshipId] = useState<number | null>(null);
 
             useEffect(() => {
@@ -14799,24 +14799,24 @@ export default function Dashboard() {
                 await fetch(`/api/scholarships/${editingScholarshipId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
               } else {
                 await fetch('/api/scholarships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                const calDescription = [
+                  scholarshipForm.organization ? `Organization: ${scholarshipForm.organization}` : '',
+                  scholarshipForm.amount ? `Amount: ${scholarshipForm.amount}` : '',
+                  scholarshipForm.applicationUrl ? `Apply: ${scholarshipForm.applicationUrl}` : '',
+                  scholarshipForm.contactInfo ? `Contact: ${scholarshipForm.contactInfo}` : '',
+                  scholarshipForm.additionalInfo || '',
+                ].filter(Boolean).join('\n');
                 if (scholarshipForm.deadline) {
                   try {
                     const dueDate = new Date(scholarshipForm.deadline + 'T18:00:00');
                     const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
-                    const description = [
-                      scholarshipForm.organization ? `Organization: ${scholarshipForm.organization}` : '',
-                      scholarshipForm.amount ? `Amount: ${scholarshipForm.amount}` : '',
-                      scholarshipForm.applicationUrl ? `Apply: ${scholarshipForm.applicationUrl}` : '',
-                      scholarshipForm.contactInfo ? `Contact: ${scholarshipForm.contactInfo}` : '',
-                      scholarshipForm.additionalInfo || '',
-                    ].filter(Boolean).join('\n');
                     await apiRequest("POST", "/api/tasks", {
                       title: `Scholarship: ${scholarshipForm.name}`,
                       type: "other",
                       dueDate: dueDate.toISOString(),
                       weekNumber: Math.max(2, Math.min(13, weekNum)),
                       priority: "high",
-                      description,
+                      description: calDescription,
                       referenceLink: scholarshipForm.applicationUrl || '',
                     });
                     queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -14824,12 +14824,28 @@ export default function Dashboard() {
                     console.error('Failed to create scholarship task:', e);
                   }
                 }
+                if (scholarshipForm.applicationsOpen || scholarshipForm.deadline) {
+                  try {
+                    await fetch('/api/scholarships/calendar-events', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        name: scholarshipForm.name,
+                        applicationsOpen: scholarshipForm.applicationsOpen,
+                        deadline: scholarshipForm.deadline,
+                        description: calDescription,
+                      }),
+                    });
+                  } catch (e) {
+                    console.error('Failed to create scholarship calendar events:', e);
+                  }
+                }
               }
               const updated = await fetch('/api/scholarships').then(r => r.json());
               setScholarshipsList(updated);
               setScholarshipWizardOpen(false);
               setScholarshipWizardStep(0);
-              setScholarshipForm({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
+              setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' });
               setEditingScholarshipId(null);
             };
 
@@ -14842,6 +14858,7 @@ export default function Dashboard() {
               { title: 'Scholarship Name', field: 'name' as const, placeholder: 'e.g. Dean\'s List Scholarship', required: true },
               { title: 'Organization', field: 'organization' as const, placeholder: 'e.g. TMU Financial Aid', required: true },
               { title: 'Amount', field: 'amount' as const, placeholder: 'e.g. $2,000', required: false },
+              { title: 'Applications Open', field: 'applicationsOpen' as const, placeholder: '', required: false, isDate: true },
               { title: 'Application Deadline', field: 'deadline' as const, placeholder: '', required: false, isDate: true },
               { title: 'Winners Announced', field: 'winnersAnnounced' as const, placeholder: '', required: false, isDate: true },
               { title: 'Application URL & Contact', field: 'applicationUrl' as const, placeholder: 'https://...', required: false, isMulti: true },
@@ -14859,7 +14876,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' }); }}
+                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '' }); }}
                     className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
                     data-testid="button-add-scholarship"
                   >
@@ -14891,6 +14908,7 @@ export default function Dashboard() {
                         <th className="text-left px-3 py-2 font-medium text-white/80">Scholarship</th>
                         <th className="text-left px-3 py-2 font-medium text-white/80">Organization</th>
                         <th className="text-left px-3 py-2 font-medium text-white/80">Amount</th>
+                        <th className="text-left px-3 py-2 font-medium text-white/80">Opens</th>
                         <th className="text-left px-3 py-2 font-medium text-white/80">Deadline</th>
                         <th className="text-left px-3 py-2 font-medium text-white/80">Winners Announced</th>
                         <th className="text-center px-2 py-2 font-medium text-white/80" style={{ width: '60px' }}></th>
@@ -14898,10 +14916,11 @@ export default function Dashboard() {
                     </thead>
                     <tbody>
                       {scholarshipsList.map(s => (
-                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '' }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
+                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', applicationsOpen: s.applicationsOpen || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '' }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
                           <td className="px-3 py-2.5 font-medium">{s.name}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount || '—'}</td>
+                          <td className="px-3 py-2.5 text-white/70">{s.applicationsOpen ? new Date(s.applicationsOpen + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.deadline ? new Date(s.deadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.winnersAnnounced ? new Date(s.winnersAnnounced + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-2 py-2.5 text-center">

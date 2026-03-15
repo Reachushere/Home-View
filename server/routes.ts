@@ -11,7 +11,7 @@ import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1,
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
@@ -1497,6 +1497,25 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     } catch (err) {
       console.error("Error deleting scholarship:", err);
       res.status(500).json({ error: "Failed to delete scholarship" });
+    }
+  });
+
+  app.post("/api/scholarships/calendar-events", async (req, res) => {
+    try {
+      const { name, applicationsOpen, deadline, description } = req.body;
+      const results: any[] = [];
+      if (applicationsOpen) {
+        const openEvent = await createYearlyScholarshipEvent({ name, date: applicationsOpen, type: 'open', description });
+        if (openEvent) results.push({ type: 'open', eventId: openEvent.id });
+      }
+      if (deadline) {
+        const deadlineEvent = await createYearlyScholarshipEvent({ name, date: deadline, type: 'deadline', description });
+        if (deadlineEvent) results.push({ type: 'deadline', eventId: deadlineEvent.id });
+      }
+      res.json({ success: true, events: results });
+    } catch (err) {
+      console.error("Error creating scholarship calendar events:", err);
+      res.status(500).json({ error: "Failed to create scholarship calendar events" });
     }
   });
 

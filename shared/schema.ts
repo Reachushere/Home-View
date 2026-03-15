@@ -496,6 +496,7 @@ export const scholarships = pgTable("scholarships", {
   name: text("name").notNull(),
   organization: text("organization").notNull(),
   amount: text("amount"),
+  applicationsOpen: text("applications_open"),
   deadline: text("deadline"),
   winnersAnnounced: text("winners_announced"),
   applicationUrl: text("application_url"),

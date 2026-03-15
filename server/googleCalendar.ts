@@ -662,3 +662,54 @@ export async function findAndDeleteDuplicateEvents(timeMin: string, timeMax: str
   }
   return { deleted, kept: seen.size };
 }
+
+export async function createYearlyScholarshipEvent(info: {
+  name: string;
+  date: string;
+  type: 'open' | 'deadline';
+  description?: string;
+}): Promise<{ id: string } | null> {
+  try {
+    const calendar = await getGoogleCalendarClient();
+    const dateObj = new Date(info.date + 'T12:00:00');
+    const monthDay = info.date.substring(5);
+    const summary = info.type === 'open'
+      ? `📬 Scholarship Opens: ${info.name}`
+      : `🚨 Scholarship Deadline: ${info.name}`;
+
+    const dateStr = info.date;
+    const endDate = new Date(dateObj);
+    endDate.setDate(endDate.getDate() + 1);
+    const endDateStr = endDate.toISOString().split('T')[0];
+
+    const rruleUntilYear = dateObj.getFullYear() + 10;
+    const rruleUntilMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const rruleUntilDay = String(dateObj.getDate()).padStart(2, '0');
+    const recurrence = [`RRULE:FREQ=YEARLY;UNTIL=${rruleUntilYear}${rruleUntilMonth}${rruleUntilDay}T235959Z`];
+
+    const event = {
+      summary,
+      description: info.description || '',
+      start: { date: dateStr },
+      end: { date: endDateStr },
+      recurrence,
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'popup', minutes: 60 * 24 * 7 },
+          { method: 'popup', minutes: 60 * 24 * 2 },
+        ],
+      },
+    };
+
+    const response = await calendar.events.insert({
+      calendarId: 'primary',
+      requestBody: event,
+    });
+    console.log(`[Calendar] Created yearly scholarship ${info.type} event: "${summary}" on ${dateStr}, id=${response.data.id}`);
+    return { id: response.data.id || '' };
+  } catch (error) {
+    console.error(`[Calendar] Failed to create yearly scholarship ${info.type} event:`, error);
+    return null;
+  }
+}
