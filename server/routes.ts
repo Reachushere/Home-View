@@ -1699,6 +1699,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         { source: 'Politico', url: 'https://rss.politico.com/politics-news.xml' },
         { source: 'Raw Story', url: 'https://www.rawstory.com/feed', count: 3 },
         { source: 'ABC News', url: 'https://abcnews.go.com/abcnews/topstories', count: 3 },
+        { source: 'BBC', url: 'https://feeds.bbci.co.uk/news/rss.xml', count: 3 },
       ];
 
       const results: { title: string; source: string; link: string }[] = [];
