@@ -1717,7 +1717,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'Politico': { file: 'Politico_1773537080711.png', height: 20 },
         'Raw Story': { file: 'Raw_Story_1773607642361.png', height: 18 },
         'ABC News': { file: 'ABC_1773609250051.png', height: 24 },
-        'BBC': { file: 'BBC_1773609711103.png', height: 15 },
+        'BBC': { file: 'BBC_1773609711103.png', height: 13 },
         'Fox News': { file: 'Fox_News_1773610204651.png', height: 18 },
       };
       const ALERT_LOGO_FILE = 'Weather_Alert_1773608511887.png';
@@ -1746,18 +1746,18 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         const temp = Math.round(c.temperature_2m);
         const desc = WMO[c.weather_code as number] || 'Mixed';
         const wind = Math.round(c.wind_speed_10m);
-        tickerItems += `<span class="t-item"><span class="t-forecast">🌡️ <b>TORONTO</b>: ${temp}°C — ${desc}  |  Wind: ${wind} km/h</span></span>`;
+        tickerItems += `<span class="t-item"><span class="t-forecast">🌡️ <b>TORONTO</b>:</span> <span class="t-data">${temp}°C — ${desc}  |  Wind: ${wind} km/h</span></span>`;
         if (wxRes.daily && wxRes.daily.time && wxRes.daily.time.length >= 3) {
           const parts = wxRes.daily.time.slice(0, 3).map((t: string, i: number) => {
             const dt = new Date(t + 'T12:00:00');
             return `${DAYS[dt.getDay()]}: ${Math.round(wxRes.daily.temperature_2m_max[i])}°/${Math.round(wxRes.daily.temperature_2m_min[i])}°`;
           });
-          tickerItems += `<span class="t-item"><span class="t-forecast">📅 <b>3-DAY FORECAST</b>  |  ${parts.join('  •  ')}</span></span>`;
+          tickerItems += `<span class="t-item"><span class="t-forecast">📅 <b>3-DAY FORECAST</b></span> <span class="t-data"> |  ${parts.join('  •  ')}</span></span>`;
         }
       }
 
       if (pollenRes && pollenRes.overall) {
-        tickerItems += `<span class="t-item"><span class="t-forecast">🌿 <b>POLLEN</b>: ${pollenRes.overall.level} (Tree: ${pollenRes.tree.level}, Grass: ${pollenRes.grass.level}, Weed: ${pollenRes.weed.level})  |  AQI: ${pollenRes.aqi}</span></span>`;
+        tickerItems += `<span class="t-item"><span class="t-forecast">🌿 <b>POLLEN</b>:</span> <span class="t-data">${pollenRes.overall.level} (Tree: ${pollenRes.tree.level}, Grass: ${pollenRes.grass.level}, Weed: ${pollenRes.weed.level})  |  AQI: ${pollenRes.aqi}</span></span>`;
       }
 
       if (newsRes && Array.isArray(newsRes)) {
@@ -1802,6 +1802,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
 .t-alert{animation:tickerAlertBlink 1s ease-in-out infinite}
 .t-alert-text{font-size:15px;font-weight:700;color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)}
 .t-forecast{font-size:15px;font-weight:600;color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)}
+.t-data{font-size:15px;font-weight:600;color:rgba(255,255,255,0.95)}
 .t-headline{font-size:15px;font-weight:700;color:rgba(255,255,255,0.95)}
 .t-sep{color:rgba(255,255,255,0.6);margin:0 4px;font-weight:800;font-size:16px;line-height:1;vertical-align:middle}
 .t-logo{border-radius:2px;object-fit:contain;vertical-align:middle}
