@@ -1708,7 +1708,6 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
   app.get("/api/ticker", async (req, res) => {
     try {
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
       const authParam = req.query.auth ? `?auth=${req.query.auth}` : '';
 
       const LOGOS: Record<string, { file: string; height: number }> = {
@@ -1746,10 +1745,9 @@ html,body{height:100%;overflow:hidden;background:transparent}
 </style></head><body>
 <div class="ticker-wrap"><div class="ticker-track" id="track"></div></div>
 <script>
-const BASE='${baseUrl}';
 const AUTH='${authParam}';
-const LOGOS=${JSON.stringify(Object.fromEntries(Object.entries(LOGOS).map(([k,v]) => [k, { src: baseUrl + '/api/ticker-assets/' + v.file, height: v.height }])))};
-const ALERT_LOGO='${baseUrl}/api/ticker-assets/${ALERT_LOGO}';
+const LOGOS=${JSON.stringify(Object.fromEntries(Object.entries(LOGOS).map(([k,v]) => [k, { src: '/api/ticker-assets/' + v.file, height: v.height }])))};
+const ALERT_LOGO='/api/ticker-assets/${ALERT_LOGO}';
 const WMO={0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm'};
 const US=['CNN','Politico','Raw Story','MSNBC','ABC News','Fox News'];
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1758,10 +1756,10 @@ async function fetchJSON(url){try{const r=await fetch(url);return await r.json()
 
 async function buildTicker(){
   const [alertData,wxData,pollenData,newsData]=await Promise.all([
-    fetchJSON(BASE+'/api/weather-alerts'+AUTH),
-    fetchJSON(BASE+'/api/weather'+AUTH),
-    fetchJSON(BASE+'/api/pollen'+AUTH),
-    fetchJSON(BASE+'/api/news'+AUTH),
+    fetchJSON('/api/weather-alerts'+AUTH),
+    fetchJSON('/api/weather'+AUTH),
+    fetchJSON('/api/pollen'+AUTH),
+    fetchJSON('/api/news'+AUTH),
   ]);
   const items=[];
 
