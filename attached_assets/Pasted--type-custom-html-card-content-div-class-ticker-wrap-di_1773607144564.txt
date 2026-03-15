@@ -1,0 +1,220 @@
+  - type: custom:html-card
+    content: |
+      <div class="ticker-wrap">
+        <div class="ticker">
+          <span class="ticker__item" style="color: #39FF14;">Pollen: [[ sensor.pollen_index_open_meteo ]] 🌿</span>
+          <span class="ticker__item" style="color: #39FF14;">Tree Pollen: [[ sensor.pollen_index_open_meteo.attributes.tree_level ]]</span>
+          <span class="ticker__item" style="color: #39FF14;">Grass Pollen: [[ sensor.pollen_index_open_meteo.attributes.grass_level ]]</span>
+          <span class="ticker__item" style="color: #39FF14;">Weed Pollen: [[ sensor.pollen_index_open_meteo.attributes.weed_level ]]</span>
+          <span class="ticker__item" style="text-transform: uppercase; color: #00E7FF; font-weight: bold;">Forecast: </span>
+          <span class="ticker__item" style="color: white;">[[ sensor.toronto_summary ]]</span>
+          <span class="ticker__item" style="text-transform: uppercase; color: #00E7FF; font-weight: bold;">In the news today: </span>
+          <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_politics_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cbs_news_top_stories_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CBS News2.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_toronto_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_politics_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_toronto_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_politics_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cbs_news_top_stories_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CBS News2.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_headlines_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_2 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_toronto_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_politics_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_3 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_toronto_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_politics_attributes_2 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_4 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+        </div>
+      </div>
+      <style>
+        ha-card {
+          height: 0px;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translate3d(0, 0, 0);
+                visibility: visible;
+            }
+            100% {
+                transform: translate3d(-100%, 0, 0);
+            }
+        }
+
+        .ticker-wrap {
+            font-family: tahoma;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            background-color: black;
+            visibility: visible;
+            padding-left: 100%;
+            box-sizing: content-box;
+        }
+
+        .ticker {
+            display: inline-block;
+            height: 1rem;
+            font-family: tahoma;
+            font-size: 20px;
+            line-height: 2rem;
+            white-space: nowrap;
+            padding-right: 0;
+            box-sizing: content-box;
+            animation: ticker 265s linear infinite;
+        }
+
+        .ticker__item {
+            display: inline-block;
+        }
+
+        .ticker__item:before {
+            content: " »» ";
+            color: rgba(0, 166, 255, 1);
+            font-size: 20px;
+        }
+
+        .ticker__item:after {
+            margin-right: 10px;
+        }
+      </style>
+    style:
+      top: 98.2%
+      width: 100%
+      height: 5%
+      opacity: 100%
+      transform: scale(75%, 75%);
+  - type: custom:mini-media-player
+    entity: media_player.spotifyplus_byhomeyyz
+    name: Now Playing
+    icon: mdi:music
+    artwork: material
+    source: full
+    sound_mode: full
+    info: scroll
+    group: true
+    hide:
+      power: false
+    style:
+      left: 33.75%
+      top: 79.3%
+      width: 35%
+      transform: scale(.9, .9)
+    card_mod:
+      style: |
+        ha-card {
+          --ha-card-border-radius: 4px
+        }
+  - type: custom:digital-clock
+    dateFormat:
+      weekday: long
+      day: 2-digit
+      month: long
+    timeFormat:
+      hour: 2-digit
+      minute: 2-digit
+    style:
+      left: 87%
+      top: 1%
+      width: 11%
+      transform: scale(1.3,1.3)
+    background: (0, 0 , 0, 0)
+    card_mod:
+      style: |
+        ha-card {
+          border: none;
+          box-shadow: none;
+          color: rgba(255, 255, 255, 1);
+          transform: scale(.9.9);
+          font-size: 8px;
+          text: black;
+          background: rgba(255,255,255,0);
+          primary-text-color: rgba(1,1,1,1);
+          secondary-text-color: rgba(1,1,1,1);
+          style: |
+        }
+        span.first-line 
+        {
+          text-align: right;
+        }
+        span.second-line 
+        {
+          text-align: right;
+        }
+  - type: custom:kanji-clock-card
+    use_24h: true
+    invert_date: false
+    short_weekdays: true
+    kanji_numbers: false
+    style:
+      left: 68.5%
+      top: "-3.5%"
+      width: 22%
+      transform: scale(.56,.56)
+    card_mod:
+      style: |
+        ha-card {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+        }
+        .card-content {
+          text-align: right;
+          width: 100%;
+        }

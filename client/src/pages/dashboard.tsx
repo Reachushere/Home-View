@@ -21362,6 +21362,7 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
+            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 37) : 0;
             const leftWidth = (() => {
               if (homeworkSpacerRef.current && homeworkSectionRef.current) {
                 const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
@@ -21380,7 +21381,7 @@ export default function Dashboard() {
             })();
             const rightBgs = courseProgressDataRef.current.flatMap((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return [];
-              const rowTop = courseRowRects[idx].top - upcomingTop;
+              const rowTop = courseRowRects[idx].top - upcomingTop - firstRowOffset;
               const rowHeight = courseRowRects[idx].height;
               const halfHeight = rowHeight / 2;
               return [
@@ -21485,7 +21486,7 @@ export default function Dashboard() {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
               const rowHeight = courseRowRects[idx].height;
-              const offsetFromUpcoming = rowTop - upcomingTop;
+              const offsetFromUpcoming = rowTop - upcomingTop - firstRowOffset;
               const getProgressColor = (percent: number) => {
                 if (percent === 100) return '#22c55e';
                 if (percent > 0) return '#f97316';
@@ -21601,8 +21602,8 @@ export default function Dashboard() {
             if (courseRowRects.length > 0) {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
-                const upcomingTop = calendarBorderTop || (calendarTop + 15);
-                const otherTop = lastRect.top + lastRect.height - upcomingTop;
+                const upcomingTopLocal = calendarBorderTop || (calendarTop + 15);
+                const otherTop = lastRect.top + lastRect.height - upcomingTopLocal - firstRowOffset;
                 const calOtherRowHeight = gridSizes.courseRowHeight || 48;
                 const otherRowHeight = calOtherRowHeight;
                 rows.push(
@@ -21674,9 +21675,10 @@ export default function Dashboard() {
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
+              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 37) : 0;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
-                const lastBottom = lastRect.top + lastRect.height - upcomingTop;
+                const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
                 const otherRowH = gridSizes.courseRowHeight || 48;
                 return `${lastBottom + otherRowH - 34}px`;
               }
