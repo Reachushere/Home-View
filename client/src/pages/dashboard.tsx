@@ -1,8 +1,9 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo, startTransition } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
+import { FastInput, FastTextarea } from "@/components/FastInput";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -9016,7 +9017,7 @@ export default function Dashboard() {
                 type="date"
                 className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.startDate}
-                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, startDate: e.target.value }))}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, startDate: v }))); }}
                 data-testid="input-confirm-start-date"
               />
             </div>
@@ -9026,7 +9027,7 @@ export default function Dashboard() {
                 type="date"
                 className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.endDate}
-                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, endDate: e.target.value }))}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, endDate: v }))); }}
                 data-testid="input-confirm-end-date"
               />
             </div>
@@ -9036,7 +9037,7 @@ export default function Dashboard() {
                 type="date"
                 className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.breakStart}
-                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, breakStart: e.target.value }))}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, breakStart: v }))); }}
                 data-testid="input-confirm-break-start"
               />
             </div>
@@ -9046,7 +9047,7 @@ export default function Dashboard() {
                 type="date"
                 className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
                 value={confirmSemesterForm.breakEnd}
-                onChange={(e) => setConfirmSemesterForm(prev => ({ ...prev, breakEnd: e.target.value }))}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, breakEnd: v }))); }}
                 data-testid="input-confirm-break-end"
               />
             </div>
@@ -9150,7 +9151,7 @@ export default function Dashboard() {
                 id="semesterName"
                 placeholder="e.g., Spring/Summer 2026 Semester"
                 value={newSemesterForm.semesterName}
-                onChange={(e) => setNewSemesterForm(prev => ({ ...prev, semesterName: e.target.value }))}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, semesterName: v }))); }}
                 required
                 data-testid="input-semester-name"
               />
@@ -9162,7 +9163,7 @@ export default function Dashboard() {
                 id="semesterStartDate"
                 type="date"
                 value={newSemesterForm.semesterStartDate}
-                onChange={(e) => setNewSemesterForm(prev => ({ ...prev, semesterStartDate: e.target.value }))}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, semesterStartDate: v }))); }}
                 required
                 data-testid="input-semester-start"
               />
@@ -9176,7 +9177,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., CPPA122"
                     value={newSemesterForm.course1Code}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Code: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course1Code: v }))); }}
                     required
                     data-testid="input-course1-code"
                   />
@@ -9186,7 +9187,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., Local Politics"
                     value={newSemesterForm.course1Name}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Name: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course1Name: v }))); }}
                     required
                     data-testid="input-course1-name"
                   />
@@ -9198,7 +9199,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., Dr. Smith"
                     value={newSemesterForm.course1Professor}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Professor: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course1Professor: v }))); }}
                     data-testid="input-course1-professor"
                   />
                 </div>
@@ -9208,7 +9209,7 @@ export default function Dashboard() {
                     type="email"
                     placeholder="e.g., prof@university.edu"
                     value={newSemesterForm.course1ProfessorEmail}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1ProfessorEmail: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course1ProfessorEmail: v }))); }}
                     data-testid="input-course1-professor-email"
                   />
                 </div>
@@ -9223,7 +9224,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., CFNF400"
                     value={newSemesterForm.course2Code}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Code: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course2Code: v }))); }}
                     required
                     data-testid="input-course2-code"
                   />
@@ -9233,7 +9234,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., Human Sexuality"
                     value={newSemesterForm.course2Name}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Name: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course2Name: v }))); }}
                     required
                     data-testid="input-course2-name"
                   />
@@ -9245,7 +9246,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., Prof. Johnson"
                     value={newSemesterForm.course2Professor}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Professor: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course2Professor: v }))); }}
                     data-testid="input-course2-professor"
                   />
                 </div>
@@ -9255,7 +9256,7 @@ export default function Dashboard() {
                     type="email"
                     placeholder="e.g., prof@university.edu"
                     value={newSemesterForm.course2ProfessorEmail}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2ProfessorEmail: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course2ProfessorEmail: v }))); }}
                     data-testid="input-course2-professor-email"
                   />
                 </div>
@@ -9270,7 +9271,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., CASL101"
                     value={newSemesterForm.course3Code}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Code: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course3Code: v }))); }}
                     required
                     data-testid="input-course3-code"
                   />
@@ -9280,7 +9281,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., Sign Language"
                     value={newSemesterForm.course3Name}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Name: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course3Name: v }))); }}
                     required
                     data-testid="input-course3-name"
                   />
@@ -9292,7 +9293,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="e.g., Dr. Williams"
                     value={newSemesterForm.course3Professor}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Professor: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course3Professor: v }))); }}
                     data-testid="input-course3-professor"
                   />
                 </div>
@@ -9302,7 +9303,7 @@ export default function Dashboard() {
                     type="email"
                     placeholder="e.g., prof@university.edu"
                     value={newSemesterForm.course3ProfessorEmail}
-                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3ProfessorEmail: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, course3ProfessorEmail: v }))); }}
                     data-testid="input-course3-professor-email"
                   />
                 </div>
@@ -9629,7 +9630,7 @@ export default function Dashboard() {
                   <Input
                     placeholder="New folder name..."
                     value={newFolderName}
-                    onChange={(e) => setNewFolderName(e.target.value)}
+                    onChange={(e) => { const v = e.target.value; startTransition(() => setNewFolderName(v)); }}
                     className="flex-1 h-7 text-xs bg-[#3c3c3c] border-[#5c5c5c] text-white"
                     data-testid="input-new-folder-name"
                   />
@@ -9767,7 +9768,7 @@ export default function Dashboard() {
           <div className="space-y-4 py-4">
             <Input
               value={renameFileName}
-              onChange={(e) => setRenameFileName(e.target.value)}
+              onChange={(e) => { const v = e.target.value; startTransition(() => setRenameFileName(v)); }}
               placeholder="Enter new name..."
               className="bg-[#3c3c3c] border-[#5c5c5c] text-white"
               data-testid="input-rename-file"
@@ -10021,7 +10022,7 @@ export default function Dashboard() {
               <Input
                 id="folderName"
                 value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
+                onChange={(e) => { const v = e.target.value; startTransition(() => setNewFolderName(v)); }}
                 placeholder="Enter folder name"
                 className="bg-[#2a2d2e] text-white mt-1"
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
@@ -10537,11 +10538,11 @@ export default function Dashboard() {
                   {ttsShowReplace ? <ChevronDown className="h-3.5 w-3.5 text-gray-400" /> : <ChevronRight className="h-3.5 w-3.5 text-gray-400" />}
                 </button>
                 <Search className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-                <input
+                <FastInput
                   ref={ttsSearchInputRef}
                   type="text"
                   value={ttsSearchQuery}
-                  onChange={(e) => { setTtsSearchQuery(e.target.value); setTtsSearchMatchIndex(0); }}
+                  onValueChange={(v) => { setTtsSearchQuery(v); setTtsSearchMatchIndex(0); }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onPointerDown={(e) => e.stopPropagation()}
                   onKeyDown={(e) => {
@@ -10562,7 +10563,7 @@ export default function Dashboard() {
                   }}
                   placeholder="Find..."
                   className="flex-1 bg-transparent text-white text-xs outline-none placeholder:text-gray-500"
-                  style={{ touchAction: 'auto', WebkitUserSelect: 'text', userSelect: 'text' }}
+                  style={{ touchAction: 'auto', WebkitUserSelect: 'text', userSelect: 'text' } as any}
                   data-testid="input-tts-search"
                 />
                 {ttsSearchQuery.trim().length >= 2 && (
@@ -10587,10 +10588,10 @@ export default function Dashboard() {
               {ttsShowReplace && (
                 <div className="flex items-center gap-2 pl-[22px]">
                   <Replace className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-                  <input
+                  <FastInput
                     type="text"
                     value={ttsReplaceText}
-                    onChange={(e) => setTtsReplaceText(e.target.value)}
+                    onValueChange={(v) => setTtsReplaceText(v)}
                     onTouchStart={(e) => e.stopPropagation()}
                     onPointerDown={(e) => e.stopPropagation()}
                     onKeyDown={(e) => {
@@ -10885,11 +10886,11 @@ export default function Dashboard() {
                       </Button>
                     </div>
                   </div>
-                  <textarea
+                  <FastTextarea
                     ref={editTextareaRef}
                     data-testid="textarea-edit-tts-text"
                     value={editableTtsText}
-                    onChange={(e) => setEditableTtsText(e.target.value)}
+                    onValueChange={(v) => setEditableTtsText(v)}
                     onTouchStart={(e) => e.stopPropagation()}
                     onTouchEnd={(e) => e.stopPropagation()}
                     onPointerDown={(e) => e.stopPropagation()}
@@ -13296,7 +13297,7 @@ export default function Dashboard() {
                       <select
                         className="text-[9px] bg-white/10 border border-white/15 rounded px-1 py-0.5 text-white w-[85px]"
                         value={ev.type}
-                        onChange={(e) => setIcsImportEvents(prev => prev.map((item, i) => i === idx ? { ...item, type: e.target.value } : item))}
+                        onChange={(e) => { const v = e.target.value; startTransition(() => setIcsImportEvents(prev => prev.map((item, i) => i === idx ? { ...item, type: v } : item))); }}
                         data-testid={`ics-event-type-${idx}`}
                       >
                         {TASK_TYPES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
@@ -13304,7 +13305,7 @@ export default function Dashboard() {
                       <select
                         className="text-[9px] bg-white/10 border border-white/15 rounded px-1 py-0.5 text-white w-[85px]"
                         value={ev.courseName}
-                        onChange={(e) => setIcsImportEvents(prev => prev.map((item, i) => i === idx ? { ...item, courseName: e.target.value } : item))}
+                        onChange={(e) => { const v = e.target.value; startTransition(() => setIcsImportEvents(prev => prev.map((item, i) => i === idx ? { ...item, courseName: v } : item))); }}
                         data-testid={`ics-event-course-${idx}`}
                       >
                         <option value="">No course</option>
@@ -14482,10 +14483,10 @@ export default function Dashboard() {
                         <h3 className="text-sm font-medium text-white">Task Name</h3>
                         <p className="text-[9px] text-white/50 mt-1">Enter the {quickAddData.type} name</p>
                       </div>
-                      <input
+                      <FastInput
                         type="text"
                         value={quickAddData.title}
-                        onChange={(e) => setQuickAddData(p => ({ ...p, title: e.target.value }))}
+                        onValueChange={(v) => setQuickAddData(p => ({ ...p, title: v }))}
                         placeholder={`e.g. Chapter 5 ${quickAddData.type}`}
                         className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                         autoFocus
@@ -14534,7 +14535,7 @@ export default function Dashboard() {
                       <input
                         type="date"
                         value={quickAddData.dueDate}
-                        onChange={(e) => setQuickAddData(p => ({ ...p, dueDate: e.target.value }))}
+                        onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, dueDate: v }))); }}
                         className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 transition-colors [color-scheme:dark]"
                         data-testid="quick-add-due-date"
                       />
@@ -14542,7 +14543,7 @@ export default function Dashboard() {
                         <span className="text-white/50 text-[11px]">Due time:</span>
                         <select
                           value={quickAddData.dueDateHour}
-                          onChange={(e) => setQuickAddData(p => ({ ...p, dueDateHour: e.target.value }))}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, dueDateHour: v }))); }}
                           className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                           data-testid="quick-add-hour"
                         >
@@ -14555,7 +14556,7 @@ export default function Dashboard() {
                         <span className="text-white/40">:</span>
                         <select
                           value={quickAddData.dueDateMinute}
-                          onChange={(e) => setQuickAddData(p => ({ ...p, dueDateMinute: e.target.value }))}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, dueDateMinute: v }))); }}
                           className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                           data-testid="quick-add-minute"
                         >
@@ -14571,7 +14572,7 @@ export default function Dashboard() {
                           <input
                             type="time"
                             value={quickAddData.eventStartTime}
-                            onChange={(e) => setQuickAddData(p => ({ ...p, eventStartTime: e.target.value }))}
+                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, eventStartTime: v }))); }}
                             className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-start-time"
                           />
@@ -14581,7 +14582,7 @@ export default function Dashboard() {
                           <input
                             type="time"
                             value={quickAddData.eventEndTime}
-                            onChange={(e) => setQuickAddData(p => ({ ...p, eventEndTime: e.target.value }))}
+                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, eventEndTime: v }))); }}
                             className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-end-time"
                           />
@@ -14600,7 +14601,7 @@ export default function Dashboard() {
                       </div>
                       <select
                         value={quickAddData.prepDays}
-                        onChange={(e) => setQuickAddData(p => ({ ...p, prepDays: parseInt(e.target.value) }))}
+                        onChange={(e) => { const v = parseInt(e.target.value); startTransition(() => setQuickAddData(p => ({ ...p, prepDays: v }))); }}
                         className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                         data-testid="quick-add-prep-days"
                       >
@@ -14702,7 +14703,7 @@ export default function Dashboard() {
                         <input
                           type="url"
                           value={quickAddData.pasteUrl}
-                          onChange={(e) => setQuickAddData(p => ({ ...p, pasteUrl: e.target.value }))}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, pasteUrl: v }))); }}
                           placeholder="Paste URL to attach..."
                           className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                           data-testid="quick-add-paste-url"
@@ -14759,7 +14760,7 @@ export default function Dashboard() {
                         <span className="text-white/50 text-[11px]">Notes</span>
                         <textarea
                           value={quickAddData.notes}
-                          onChange={(e) => setQuickAddData(p => ({ ...p, notes: e.target.value }))}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, notes: v }))); }}
                           placeholder="Add any notes..."
                           rows={3}
                           className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors resize-none"
@@ -14771,7 +14772,7 @@ export default function Dashboard() {
                         <input
                           type="url"
                           value={quickAddData.referenceLink}
-                          onChange={(e) => setQuickAddData(p => ({ ...p, referenceLink: e.target.value }))}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, referenceLink: v }))); }}
                           placeholder="https://..."
                           className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                           data-testid="quick-add-reference-link"
@@ -14794,7 +14795,7 @@ export default function Dashboard() {
                           <input
                             type="text"
                             value={quickAddData.subtaskInput}
-                            onChange={(e) => setQuickAddData(p => ({ ...p, subtaskInput: e.target.value }))}
+                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, subtaskInput: v }))); }}
                             placeholder="Add a subtask..."
                             className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] placeholder-white/30 focus:outline-none focus:border-white/40 transition-colors"
                             data-testid="quick-add-subtask-input"
@@ -14838,7 +14839,7 @@ export default function Dashboard() {
                         <span className="text-white/50 text-[11px]">Link to project</span>
                         <select
                           value={quickAddData.projectId ?? ''}
-                          onChange={(e) => setQuickAddData(p => ({ ...p, projectId: e.target.value ? parseInt(e.target.value) : null }))}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, projectId: v ? parseInt(v) : null }))); }}
                           className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                           data-testid="quick-add-project"
                         >
@@ -14878,13 +14879,13 @@ export default function Dashboard() {
                             type="number"
                             min={1}
                             value={quickAddData.repeatInterval ?? 1}
-                            onChange={(e) => setQuickAddData(p => ({ ...p, repeatInterval: parseInt(e.target.value) || 1 }))}
+                            onChange={(e) => { const v = parseInt(e.target.value) || 1; startTransition(() => setQuickAddData(p => ({ ...p, repeatInterval: v }))); }}
                             className="w-16 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40"
                             data-testid="quick-add-repeat-interval"
                           />
                           <select
                             value={quickAddData.repeatIntervalUnit ?? 'days'}
-                            onChange={(e) => setQuickAddData(p => ({ ...p, repeatIntervalUnit: e.target.value }))}
+                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, repeatIntervalUnit: v }))); }}
                             className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-repeat-unit"
                           >
@@ -14900,7 +14901,7 @@ export default function Dashboard() {
                           <input
                             type="date"
                             value={quickAddData.repeatEndDate}
-                            onChange={(e) => setQuickAddData(p => ({ ...p, repeatEndDate: e.target.value }))}
+                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, repeatEndDate: v }))); }}
                             className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
                             data-testid="quick-add-repeat-end-date"
                           />
@@ -15345,7 +15346,7 @@ export default function Dashboard() {
                     <input
                       type="url"
                       value={scholarshipForm.applicationUrl}
-                      onChange={(e) => setScholarshipForm(p => ({ ...p, applicationUrl: e.target.value }))}
+                      onChange={(e) => { const v = e.target.value; startTransition(() => setScholarshipForm(p => ({ ...p, applicationUrl: v }))); }}
                       placeholder="Application URL (https://...)"
                       className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
                       data-testid="input-scholarship-url"
@@ -15353,7 +15354,7 @@ export default function Dashboard() {
                     <input
                       type="text"
                       value={scholarshipForm.contactInfo}
-                      onChange={(e) => setScholarshipForm(p => ({ ...p, contactInfo: e.target.value }))}
+                      onChange={(e) => { const v = e.target.value; startTransition(() => setScholarshipForm(p => ({ ...p, contactInfo: v }))); }}
                       placeholder="Contact info (email, phone, etc.)"
                       className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
                       data-testid="input-scholarship-contact"
@@ -15363,7 +15364,7 @@ export default function Dashboard() {
                   <div className="space-y-3">
                     <textarea
                       value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
-                      onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
+                      onChange={(e) => { const v = e.target.value; const field = wizardSteps[scholarshipWizardStep].field; startTransition(() => setScholarshipForm(p => ({ ...p, [field]: v }))); }}
                       placeholder={wizardSteps[scholarshipWizardStep].placeholder}
                       rows={4}
                       className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 resize-none"
@@ -15402,7 +15403,7 @@ export default function Dashboard() {
                     <input
                       type="text"
                       value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
-                      onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value.replace(/^\$/, '') }))}
+                      onChange={(e) => { const v = e.target.value.replace(/^\$/, ''); const field = wizardSteps[scholarshipWizardStep].field; startTransition(() => setScholarshipForm(p => ({ ...p, [field]: v }))); }}
                       placeholder={wizardSteps[scholarshipWizardStep].placeholder}
                       className="w-full pl-6 pr-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
                       autoFocus
@@ -15419,7 +15420,7 @@ export default function Dashboard() {
                   <input
                     type="text"
                     value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
-                    onChange={(e) => setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: e.target.value }))}
+                    onChange={(e) => { const v = e.target.value; const field = wizardSteps[scholarshipWizardStep].field; startTransition(() => setScholarshipForm(p => ({ ...p, [field]: v }))); }}
                     placeholder={wizardSteps[scholarshipWizardStep].placeholder}
                     className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40"
                     autoFocus
