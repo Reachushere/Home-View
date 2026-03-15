@@ -2142,6 +2142,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   0% { transform: translate3d(var(--ticker-start), 0, 0); }
   100% { transform: translate3d(var(--ticker-end), 0, 0); }
 }
+@keyframes tickerAlertBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
 
 .news-ticker-scroll {
   will-change: transform;
