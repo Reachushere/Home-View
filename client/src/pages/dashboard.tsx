@@ -11,6 +11,7 @@ import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_17691109
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import tmuDialogBg from "@assets/TMU2_1772839789326.png";
+import ctvLogoPath from "@assets/ctv_logo_cropped.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
@@ -13338,7 +13339,7 @@ export default function Dashboard() {
                   const logoMap: Record<string, string> = {
                     CNN: 'https://favicon.controld.com/edition.cnn.com',
                     CBC: 'https://favicon.controld.com/cbc.ca',
-                    CTV: 'https://favicon.controld.com/ctvnews.ca',
+                    CTV: ctvLogoPath,
                     Global: 'https://favicon.controld.com/globalnews.ca',
                     MSNBC: 'https://favicon.controld.com/msnbc.com',
                     Politico: 'https://favicon.controld.com/politico.com',
