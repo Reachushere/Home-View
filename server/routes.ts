@@ -3630,7 +3630,9 @@ html,body{height:100%;overflow:hidden;background:transparent}
       const results = { dueEvents: { created: 0, updated: 0, failed: 0 }, prepEvents: { created: 0, updated: 0, failed: 0, skipped: 0 } };
       const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
       
-      for (const task of tasks) {
+      for (let ti = 0; ti < tasks.length; ti++) {
+        const task = tasks[ti];
+        if (ti > 0 && ti % 5 === 0) await delay(1000);
         try {
           if (task.calendarEventId) {
             const updatedEvent = await updateCalendarEvent(task.calendarEventId, {

@@ -1296,7 +1296,7 @@ export default function Dashboard() {
     };
     
     checkKitchenStatus();
-    const interval = setInterval(checkKitchenStatus, 15000); // Check every 15 seconds
+    const interval = setInterval(checkKitchenStatus, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -4622,7 +4622,7 @@ export default function Dashboard() {
   const { data: calendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/events", { weekNumber: selectedWeek }],
     queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
-    refetchInterval: 60000,
+    refetchInterval: 5 * 60 * 1000,
     retry: 2,
     retryDelay: 1000,
   });
@@ -4630,7 +4630,7 @@ export default function Dashboard() {
   const { data: upcomingCalendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/upcoming-events"],
     queryFn: () => fetch('/api/calendar/upcoming-events', { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
-    refetchInterval: 5 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
     retry: 2,
     retryDelay: 1000,
   });
@@ -7357,8 +7357,8 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    const ACTIVE_INTERVAL = 3 * 60 * 1000;
-    const BACKGROUND_INTERVAL = 10 * 60 * 1000;
+    const ACTIVE_INTERVAL = 15 * 60 * 1000;
+    const BACKGROUND_INTERVAL = 30 * 60 * 1000;
     let intervalId: ReturnType<typeof setInterval> | null = null;
     const lastSyncRef = { current: Date.now() };
 
