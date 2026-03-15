@@ -14912,7 +14912,8 @@ export default function Dashboard() {
                         <th className="text-left px-3 py-2 font-medium text-white/80">Opens</th>
                         <th className="text-left px-3 py-2 font-medium text-white/80">Deadline</th>
                         <th className="text-left px-3 py-2 font-medium text-white/80">Winners Announced</th>
-                        <th className="text-center px-2 py-2 font-medium text-white/80" style={{ width: '60px' }}></th>
+                        <th className="text-center px-1 py-2 font-medium text-white/80" style={{ width: '70px' }}></th>
+                        <th className="text-center px-2 py-2 font-medium text-white/80" style={{ width: '36px' }}></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -14929,24 +14930,24 @@ export default function Dashboard() {
                         const barColor = daysRemaining === null ? 'rgba(255,255,255,0.2)' : daysRemaining <= 0 ? '#ef4444' : daysRemaining <= 3 ? '#ef4444' : daysRemaining <= 7 ? '#f97316' : daysRemaining <= 14 ? '#eab308' : '#22c55e';
                         return (
                         <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', applicationsOpen: s.applicationsOpen || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '', recurring: true }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
-                          <td className="px-3 py-2.5 font-medium">
-                            <div>{s.name}</div>
-                            {deadlineDate && (
-                              <div className="mt-1.5 flex items-center gap-2" data-testid={`scholarship-progress-${s.id}`}>
-                                <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: barColor }} />
-                                </div>
-                                <span className="text-[9px] font-medium whitespace-nowrap" style={{ color: barColor }}>
-                                  {daysRemaining !== null && daysRemaining <= 0 ? 'Past due' : `${daysRemaining}d left`}
-                                </span>
-                              </div>
-                            )}
-                          </td>
+                          <td className="px-3 py-2.5 font-medium">{s.name}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.applicationsOpen ? new Date(s.applicationsOpen + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.deadline ? new Date(s.deadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.winnersAnnounced ? new Date(s.winnersAnnounced + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</td>
+                          <td className="px-1 py-2.5" data-testid={`scholarship-progress-${s.id}`}>
+                            {deadlineDate ? (
+                              <div className="flex flex-col items-center gap-0.5" style={{ width: '60px' }}>
+                                <div className="h-[4px] rounded-full overflow-hidden" style={{ width: '40px', background: 'rgba(255,255,255,0.1)' }}>
+                                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: barColor }} />
+                                </div>
+                                <span className="text-[8px] font-medium whitespace-nowrap" style={{ color: barColor }}>
+                                  {daysRemaining !== null && daysRemaining <= 0 ? 'Past due' : `${daysRemaining}d`}
+                                </span>
+                              </div>
+                            ) : null}
+                          </td>
                           <td className="px-2 py-2.5 text-center">
                             <button onClick={(e) => { e.stopPropagation(); deleteScholarship(s.id); }} className="text-red-400 hover:text-red-300 transition-colors p-1" data-testid={`delete-scholarship-${s.id}`}>
                               <Trash2 className="h-3.5 w-3.5" />
