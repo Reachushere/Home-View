@@ -15,6 +15,7 @@ import ctvLogoPath from "@assets/ctv_logo_cropped.png";
 import cnnLogoPath from "@assets/CNN_1773536484180.png";
 import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
+import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
@@ -13344,7 +13345,7 @@ export default function Dashboard() {
                     CBC: cbcLogoPath,
                     CTV: ctvLogoPath,
                     Global: globalLogoPath,
-                    MSNBC: 'https://favicon.controld.com/msnbc.com',
+                    MSNBC: msnbcLogoPath,
                     Politico: 'https://favicon.controld.com/politico.com',
                   };
                   return logoMap[item.source] ? (
