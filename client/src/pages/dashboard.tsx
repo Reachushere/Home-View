@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
@@ -290,6 +290,37 @@ function getETHours(date: Date): number {
 function getETMinutes(date: Date): number {
   return parseInt(date.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
 }
+
+const TICKER_LOGO_MAP: Record<string, string> = {
+  CNN: cnnLogoPath,
+  CBC: cbcLogoPath,
+  CTV: ctvLogoPath,
+  Global: globalLogoPath,
+  MSNBC: msnbcLogoPath,
+  Politico: politicoLogoPath,
+};
+
+const NewsTicker = React.memo(function NewsTicker({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
+  const doubled = useMemo(() => [...headlines, ...headlines], [headlines]);
+  const animDuration = useMemo(() => `tickerScroll ${Math.max(15, headlines.length * 28)}s linear infinite`, [headlines.length]);
+  return (
+    <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '32px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
+      <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: animDuration }}>
+        {doubled.map((item, i) => (
+          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid={`news-headline-${i}`}>
+            {TICKER_LOGO_MAP[item.source] ? (
+              <img src={TICKER_LOGO_MAP[item.source]} alt={item.source} className="rounded-sm" style={{ height: '18px', width: 'auto', minWidth: '18px', objectFit: 'contain' }} />
+            ) : (
+              <span className="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
+            )}
+            <span className="text-[13px] text-white/90">{item.title}</span>
+            <span className="text-white/20 mx-2">|</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+});
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -13335,33 +13366,7 @@ export default function Dashboard() {
       </div>
 
       {/* News Ticker */}
-      {newsHeadlines.length > 0 && (
-        <div className="fixed left-0 right-0 z-[9998] overflow-hidden" style={{ bottom: '0px', height: '32px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.15)' }} data-testid="news-ticker">
-          <div className="flex items-center h-full whitespace-nowrap news-ticker-scroll" style={{ animation: `tickerScroll ${Math.max(15, newsHeadlines.length * 28)}s linear infinite` }}>
-            {[...newsHeadlines, ...newsHeadlines].map((item, i) => (
-              <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid={`news-headline-${i}`}>
-                {(() => {
-                  const logoMap: Record<string, string> = {
-                    CNN: cnnLogoPath,
-                    CBC: cbcLogoPath,
-                    CTV: ctvLogoPath,
-                    Global: globalLogoPath,
-                    MSNBC: msnbcLogoPath,
-                    Politico: politicoLogoPath,
-                  };
-                  return logoMap[item.source] ? (
-                    <img src={logoMap[item.source]} alt={item.source} className="rounded-sm" style={{ height: '18px', width: 'auto', minWidth: '18px', objectFit: 'contain' }} />
-                  ) : (
-                    <span className="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">{item.source}</span>
-                  );
-                })()}
-                <span className="text-[13px] text-white/90">{item.title}</span>
-                <span className="text-white/20 mx-2">|</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      {newsHeadlines.length > 0 && <NewsTicker headlines={newsHeadlines} />}
 
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {(() => {
