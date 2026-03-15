@@ -325,6 +325,10 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
   useEffect(() => {
     if (!containerRef.current || headlines.length === 0) return;
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:32px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
+      if (item.source === '_ALERT_') {
+        const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-alert-${i}"><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
+      }
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
         ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain" />`
@@ -928,6 +932,7 @@ export default function Dashboard() {
 
   const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; daily?: { date: string; high: number; low: number }[] } | null>(null);
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
+  const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; type: string }[]>([]);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
     left: Math.random() * 110 - 5,
     delay: Math.random() * 4,
@@ -969,11 +974,22 @@ export default function Dashboard() {
         console.error('[Pollen] Failed to fetch:', e);
       }
     };
+    const fetchWeatherAlerts = async () => {
+      try {
+        const res = await fetch('/api/weather-alerts');
+        const data = await res.json();
+        if (data.alerts) setWeatherAlerts(data.alerts);
+      } catch (e) {
+        console.error('[Weather Alerts] Failed to fetch:', e);
+      }
+    };
     fetchWeather();
     fetchPollen();
+    fetchWeatherAlerts();
     const weatherInterval = setInterval(fetchWeather, 15 * 60 * 1000);
     const pollenInterval = setInterval(fetchPollen, 30 * 60 * 1000);
-    return () => { clearInterval(weatherInterval); clearInterval(pollenInterval); };
+    const alertsInterval = setInterval(fetchWeatherAlerts, 5 * 60 * 1000);
+    return () => { clearInterval(weatherInterval); clearInterval(pollenInterval); clearInterval(alertsInterval); };
   }, []);
 
   const [isVoiceListening, setIsVoiceListening] = useState(false);
@@ -13419,7 +13435,10 @@ export default function Dashboard() {
       </div>
 
       {/* News Ticker */}
-      <NewsTickerPortal headlines={newsHeadlines} />
+      <NewsTickerPortal headlines={[
+        ...weatherAlerts.map(a => ({ title: `⚠️ ${a.title}`, source: '_ALERT_', link: '' })),
+        ...newsHeadlines,
+      ]} />
 
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {(() => {
