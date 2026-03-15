@@ -1708,8 +1708,6 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
   app.get("/api/ticker", async (req, res) => {
     try {
-      const authParam = req.query.auth ? `?auth=${req.query.auth}` : '';
-
       const LOGOS: Record<string, { file: string; height: number }> = {
         'CNN': { file: 'CNN_1773536484180.png', height: 26 },
         'CBC': { file: 'cbc-news-logo-black-and-white_1773536865600.png', height: 22 },
@@ -1722,7 +1720,72 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'BBC': { file: 'BBC_1773609711103.png', height: 15 },
         'Fox News': { file: 'Fox_News_1773610204651.png', height: 18 },
       };
-      const ALERT_LOGO = 'Weather_Alert_1773608511887.png';
+      const ALERT_LOGO_FILE = 'Weather_Alert_1773608511887.png';
+      const WMO: Record<number, string> = {0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm'};
+      const US_SOURCES = ['CNN','Politico','Raw Story','MSNBC','ABC News','Fox News'];
+      const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+      const internalBase = `http://localhost:${process.env.PORT || 5000}`;
+      const [alertRes, wxRes, pollenRes, newsRes] = await Promise.all([
+        fetch(`${internalBase}/api/weather-alerts`).then(r => r.json()).catch(() => null),
+        fetch(`${internalBase}/api/weather`).then(r => r.json()).catch(() => null),
+        fetch(`${internalBase}/api/pollen`).then(r => r.json()).catch(() => null),
+        fetch(`${internalBase}/api/news`).then(r => r.json()).catch(() => null),
+      ]);
+
+      let tickerItems = '';
+
+      if (alertRes && alertRes.alerts) {
+        for (const a of alertRes.alerts) {
+          tickerItems += `<span class="t-item t-alert"><img src="/api/ticker-assets/${ALERT_LOGO_FILE}" class="t-logo" style="height:28px"/><span class="t-alert-text">⚠️ ${a.title}</span></span>`;
+        }
+      }
+
+      if (wxRes && wxRes.current) {
+        const c = wxRes.current;
+        const temp = Math.round(c.temperature_2m);
+        const desc = WMO[c.weather_code as number] || 'Mixed';
+        const wind = Math.round(c.wind_speed_10m);
+        tickerItems += `<span class="t-item"><span class="t-forecast">🌡️ <b>TORONTO</b>: ${temp}°C — ${desc}  |  Wind: ${wind} km/h</span></span>`;
+        if (wxRes.daily && wxRes.daily.time && wxRes.daily.time.length >= 3) {
+          const parts = wxRes.daily.time.slice(0, 3).map((t: string, i: number) => {
+            const dt = new Date(t + 'T12:00:00');
+            return `${DAYS[dt.getDay()]}: ${Math.round(wxRes.daily.temperature_2m_max[i])}°/${Math.round(wxRes.daily.temperature_2m_min[i])}°`;
+          });
+          tickerItems += `<span class="t-item"><span class="t-forecast">📅 <b>3-DAY FORECAST</b>  |  ${parts.join('  •  ')}</span></span>`;
+        }
+      }
+
+      if (pollenRes && pollenRes.overall) {
+        tickerItems += `<span class="t-item"><span class="t-forecast">🌿 <b>POLLEN</b>: ${pollenRes.overall.level} (Tree: ${pollenRes.tree.level}, Grass: ${pollenRes.grass.level}, Weed: ${pollenRes.weed.level})  |  AQI: ${pollenRes.aqi}</span></span>`;
+      }
+
+      if (newsRes && Array.isArray(newsRes)) {
+        const ca: any[] = [], us: any[] = [], bbc: any[] = [];
+        newsRes.forEach((h: any) => {
+          if (h.source === 'BBC') bbc.push(h);
+          else if (US_SOURCES.includes(h.source)) us.push(h);
+          else ca.push(h);
+        });
+        const max = Math.max(ca.length, us.length, bbc.length);
+        const interleaved: any[] = [];
+        for (let i = 0; i < max; i++) {
+          if (i < ca.length) interleaved.push(ca[i]);
+          if (i < us.length) interleaved.push(us[i]);
+          if (i < bbc.length) interleaved.push(bbc[i]);
+        }
+        for (const item of interleaved) {
+          const logoInfo = LOGOS[item.source];
+          const escapedTitle = (item.title || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const escapedLink = (item.link || '#').replace(/"/g, '&quot;');
+          const logoHtml = logoInfo
+            ? `<img src="/api/ticker-assets/${logoInfo.file}" class="t-logo" style="height:${logoInfo.height}px"/>`
+            : `<span style="font-size:11px;font-weight:700;padding:0 4px;border-radius:3px;background:#555;color:#fff">${item.source}</span>`;
+          tickerItems += `<span class="t-item"><a href="${escapedLink}" target="_blank">${logoHtml}<span class="t-sep">|</span><span class="t-headline">${escapedTitle}</span></a></span>`;
+        }
+      }
+
+      const authQS = req.query.auth ? `?auth=${req.query.auth}` : '';
 
       const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1743,79 +1806,11 @@ html,body{height:100%;overflow:hidden;background:transparent}
 .t-sep{color:rgba(255,255,255,0.6);margin:0 4px;font-weight:800;font-size:15px;line-height:1;vertical-align:middle}
 .t-logo{border-radius:2px;object-fit:contain;vertical-align:middle}
 </style></head><body>
-<div class="ticker-wrap"><div class="ticker-track" id="track"></div></div>
+<div class="ticker-wrap"><div class="ticker-track" id="track">${tickerItems}</div></div>
 <script>
-const AUTH='${authParam}';
-const LOGOS=${JSON.stringify(Object.fromEntries(Object.entries(LOGOS).map(([k,v]) => [k, { src: '/api/ticker-assets/' + v.file, height: v.height }])))};
-const ALERT_LOGO='/api/ticker-assets/${ALERT_LOGO}';
-const WMO={0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm'};
-const US=['CNN','Politico','Raw Story','MSNBC','ABC News','Fox News'];
-const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
-async function fetchJSON(url){try{const r=await fetch(url);return await r.json()}catch(e){return null}}
-
-async function buildTicker(){
-  const [alertData,wxData,pollenData,newsData]=await Promise.all([
-    fetchJSON('/api/weather-alerts'+AUTH),
-    fetchJSON('/api/weather'+AUTH),
-    fetchJSON('/api/pollen'+AUTH),
-    fetchJSON('/api/news'+AUTH),
-  ]);
-  const items=[];
-
-  if(alertData&&alertData.alerts){
-    alertData.alerts.forEach(a=>{items.push({type:'alert',title:'⚠️ '+a.title})});
-  }
-
-  if(wxData&&wxData.current){
-    const c=wxData.current;
-    const temp=Math.round(c.temperature_2m);
-    const desc=WMO[c.weather_code]||'Mixed';
-    const wind=Math.round(c.wind_speed_10m);
-    items.push({type:'forecast',title:'🌡️ <b>TORONTO</b>: '+temp+'°C — '+desc+'  |  Wind: '+wind+' km/h'});
-    if(wxData.daily&&wxData.daily.time&&wxData.daily.time.length>=3){
-      const parts=wxData.daily.time.slice(0,3).map((t,i)=>{
-        const dt=new Date(t+'T12:00:00');
-        return DAYS[dt.getDay()]+': '+Math.round(wxData.daily.temperature_2m_max[i])+'°/'+Math.round(wxData.daily.temperature_2m_min[i])+'°';
-      });
-      items.push({type:'forecast',title:'📅 <b>3-DAY FORECAST</b>  |  '+parts.join('  •  ')});
-    }
-  }
-
-  if(pollenData&&pollenData.overall){
-    items.push({type:'forecast',title:'🌿 <b>POLLEN</b>: '+pollenData.overall.level+' (Tree: '+pollenData.tree.level+', Grass: '+pollenData.grass.level+', Weed: '+pollenData.weed.level+')  |  AQI: '+pollenData.aqi});
-  }
-
-  if(newsData&&Array.isArray(newsData)){
-    const ca=[],us=[],bbc=[];
-    newsData.forEach(h=>{
-      if(h.source==='BBC') bbc.push(h);
-      else if(US.includes(h.source)) us.push(h);
-      else ca.push(h);
-    });
-    const max=Math.max(ca.length,us.length,bbc.length);
-    for(let i=0;i<max;i++){
-      if(i<ca.length) items.push({type:'news',source:ca[i].source,title:ca[i].title,link:ca[i].link});
-      if(i<us.length) items.push({type:'news',source:us[i].source,title:us[i].title,link:us[i].link});
-      if(i<bbc.length) items.push({type:'news',source:bbc[i].source,title:bbc[i].title,link:bbc[i].link});
-    }
-  }
-
+(function(){
   const track=document.getElementById('track');
-  let html='';
-  items.forEach(item=>{
-    if(item.type==='alert'){
-      html+='<span class="t-item t-alert"><img src="'+ALERT_LOGO+'" class="t-logo" style="height:28px"/><span class="t-alert-text">'+item.title+'</span></span>';
-    }else if(item.type==='forecast'){
-      html+='<span class="t-item"><span class="t-forecast">'+item.title+'</span></span>';
-    }else{
-      const logo=LOGOS[item.source];
-      const lh=logo?'<img src="'+logo.src+'" class="t-logo" style="height:'+logo.height+'px"/>':'<span style="font-size:11px;font-weight:700;padding:0 4px;border-radius:3px;background:#555;color:#fff">'+item.source+'</span>';
-      html+='<span class="t-item"><a href="'+(item.link||'#')+'" target="_blank">'+lh+'<span class="t-sep">|</span><span class="t-headline">'+item.title+'</span></a></span>';
-    }
-  });
-  track.innerHTML=html;
-
+  if(!track) return;
   requestAnimationFrame(()=>{
     const cw=track.scrollWidth;
     const sw=window.innerWidth;
@@ -1824,29 +1819,18 @@ async function buildTicker(){
     track.style.setProperty('--ticker-start',sw+'px');
     track.style.setProperty('--ticker-end','-'+cw+'px');
     track.style.animation='tickerScroll '+dur+'s linear infinite';
+    track.addEventListener('animationiteration',function handler(){
+      track.removeEventListener('animationiteration',handler);
+      location.reload();
+    });
   });
-}
-
-let pendingRefresh=false;
-let lastBuild=0;
-function scheduleRefresh(){
-  const track=document.getElementById('track');
-  if(!track) return;
-  track.addEventListener('animationiteration',function handler(){
-    track.removeEventListener('animationiteration',handler);
-    if(Date.now()-lastBuild>=10*60*1000){
-      buildTicker().then(()=>{lastBuild=Date.now();scheduleRefresh();});
-    } else {
-      scheduleRefresh();
-    }
-  });
-}
-buildTicker().then(()=>{lastBuild=Date.now();scheduleRefresh();});
+})();
 </script></body></html>`;
       res.setHeader('Content-Type', 'text/html');
       res.setHeader('X-Frame-Options', 'ALLOWALL');
       res.setHeader('Content-Security-Policy', '');
       res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.send(html);
     } catch (err) {
       console.error("Error serving ticker:", err);
