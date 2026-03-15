@@ -15619,7 +15619,9 @@ export default function Dashboard() {
                                   </div>
                                   <div className="min-w-0 flex-1">
                                     <p className="text-[12px] font-medium text-white truncate">{c.name}</p>
-                                    {c.title && <p className="text-[10px] text-white/60 truncate">{c.title}</p>}
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium inline-block mt-0.5" style={{ backgroundColor: getCategoryColor(c.category) + '40', color: getCategoryColor(c.category), border: `1px solid ${getCategoryColor(c.category)}60` }}>
+                                      {categories.find(cat => cat.value === c.category)?.label || 'Other'}
+                                    </span>
                                   </div>
                                 </div>
                                 <div className="mt-2 space-y-0.5 text-[10px]">
