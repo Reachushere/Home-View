@@ -11,7 +11,7 @@ import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_17691109
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import tmuDialogBg from "@assets/TMU2_1772839789326.png";
-import ctvLogoPath from "@assets/ctv_logo_cropped.png";
+import ctvLogoPath from "@assets/CTV_1773544176026.png";
 import cnnLogoPath from "@assets/CNN_1773536484180.png";
 import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
