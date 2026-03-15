@@ -388,13 +388,64 @@ export default function Dashboard() {
       }
     });
 
+    let lastTouchStart: { id: string; time: number; x: number; y: number } | null = null;
+
+    const touchStartHandler = (e: TouchEvent) => {
+      if (Date.now() - perfStart > PERF_LOG_DURATION) return;
+      const touch = e.touches[0];
+      if (!touch) return;
+      const target = e.target as HTMLElement;
+      const cn = typeof target.className === 'string' ? target.className : (target.className as any)?.baseVal || '';
+      const id = target.getAttribute('data-testid') || target.id || target.tagName + '.' + cn.split(' ')[0];
+      const now = performance.now();
+      lastTouchStart = { id, time: now, x: touch.clientX, y: touch.clientY };
+      console.log(`[PERF] TOUCH START on "${id}" at ${now.toFixed(0)}ms (${touch.clientX.toFixed(0)},${touch.clientY.toFixed(0)})`);
+    };
+
+    const touchEndHandler = (e: TouchEvent) => {
+      if (Date.now() - perfStart > PERF_LOG_DURATION) return;
+      const now = performance.now();
+      const target = e.target as HTMLElement;
+      const cn = typeof target.className === 'string' ? target.className : (target.className as any)?.baseVal || '';
+      const id = target.getAttribute('data-testid') || target.id || target.tagName + '.' + cn.split(' ')[0];
+      const duration = lastTouchStart ? (now - lastTouchStart.time).toFixed(0) : '?';
+      console.log(`[PERF] TOUCH END on "${id}" at ${now.toFixed(0)}ms (held ${duration}ms)`);
+      if (lastTouchStart) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const responseTime = performance.now() - now;
+            console.log(`[PERF] TOUCH RESPONSE for "${id}": ${responseTime.toFixed(0)}ms after touchend`);
+          });
+        });
+      }
+    };
+
+    const touchMoveHandler = (e: TouchEvent) => {
+      if (Date.now() - perfStart > PERF_LOG_DURATION) return;
+      if (!lastTouchStart) return;
+      const touch = e.touches[0];
+      if (!touch) return;
+      const dx = Math.abs(touch.clientX - lastTouchStart.x);
+      const dy = Math.abs(touch.clientY - lastTouchStart.y);
+      if (dx > 10 || dy > 10) {
+        console.log(`[PERF] TOUCH MOVE delta (${dx.toFixed(0)},${dy.toFixed(0)}) from "${lastTouchStart.id}"`);
+        lastTouchStart = null;
+      }
+    };
+
     document.addEventListener('click', clickHandler, true);
+    document.addEventListener('touchstart', touchStartHandler, { capture: true, passive: true });
+    document.addEventListener('touchend', touchEndHandler, { capture: true, passive: true });
+    document.addEventListener('touchmove', touchMoveHandler, { capture: true, passive: true });
     try {
       longTaskObserver.observe({ entryTypes: ['longtask'] });
     } catch (e) {}
 
     const cleanupTimer = setTimeout(() => {
       document.removeEventListener('click', clickHandler, true);
+      document.removeEventListener('touchstart', touchStartHandler, true);
+      document.removeEventListener('touchend', touchEndHandler, true);
+      document.removeEventListener('touchmove', touchMoveHandler, true);
       try { longTaskObserver.disconnect(); } catch (e) {}
       console.log(`[PERF] Performance logging ended after 5 minutes.`);
     }, PERF_LOG_DURATION);
@@ -403,6 +454,9 @@ export default function Dashboard() {
 
     return () => {
       document.removeEventListener('click', clickHandler, true);
+      document.removeEventListener('touchstart', touchStartHandler, true);
+      document.removeEventListener('touchend', touchEndHandler, true);
+      document.removeEventListener('touchmove', touchMoveHandler, true);
       try { longTaskObserver.disconnect(); } catch (e) {}
       clearTimeout(cleanupTimer);
     };
