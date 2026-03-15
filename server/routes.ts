@@ -1515,7 +1515,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             if (titleMatch?.[1]) {
               let title = titleMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16))).trim();
               title = title.replace(/\s*-\s*(CTV News|Google News)$/i, '').trim();
-              const sportsFilter = /\b(NFL|NBA|NHL|MLB|CFL|MLS|FIFA|UEFA|NASCAR|PGA|ATP|WTA|Premier League|Super Bowl|Stanley Cup|World Series|World Cup|touchdown|quarterback|hockey|soccer|baseball|basketball|football score|playoff|championship game|draft pick|free agent signing|trade deadline|hat trick|grand slam|home run)\b/i;
+              const sportsFilter = /\b(NFL|NBA|NHL|MLB|CFL|MLS|FIFA|UEFA|NASCAR|PGA|ATP|WTA|Premier League|Super Bowl|Stanley Cup|World Series|World Cup|touchdown|quarterback|hockey|soccer|baseball|basketball|football score|playoff|championship game|draft pick|free agent signing|trade deadline|hat trick|grand slam|home run|Raptors|Maple Leafs|Blue Jays|Argonauts|Toronto FC|Canadiens|Senators|Oilers|Canucks|Flames|Jets|Bruins|Lakers|Warriors|Yankees|Dodgers|Chiefs|Eagles|coach|roster|medal|Olympic|athletics|tennis|boxing|UFC|MMA|wrestling|cricket|golf|curling|skiing|snowboard)\b/i;
               if (title && title !== feed.source && title !== 'Google News' && title !== 'MS NOW' && !sportsFilter.test(title)) {
                 results.push({
                   title,
