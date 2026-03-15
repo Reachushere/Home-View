@@ -18848,7 +18848,8 @@ export default function Dashboard() {
             </div>)}
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative flex flex-col" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', backgroundColor: '#faf8f5', scrollbarWidth: 'none' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
+              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -19323,6 +19324,7 @@ export default function Dashboard() {
                 })}
                 
                 
+              </div>
                 {/* Current time indicator line - rendered last to appear on top */}
                 {(() => {
                   const now = new Date();
