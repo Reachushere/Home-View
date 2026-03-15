@@ -18159,7 +18159,7 @@ export default function Dashboard() {
                             <span className="text-[10px] font-bold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
                           </div>
                           <div className="absolute z-20" style={{ left: '2px', bottom: '2px' }} data-testid={`weather-temp-low-${shiftDateStr}`}>
-                            <span className="text-[10px] font-medium leading-none" style={{ color: '#60a5fa' }}>{dayForecast.low}°</span>
+                            <span className="text-[10px] font-medium leading-none" style={{ color: '#ffffff' }}>{dayForecast.low}°</span>
                           </div>
                         </>
                       );
