@@ -161,6 +161,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path === "/api/debug-beacon") return next();
   if (req.path === "/tablet") return next();
   if (req.path.startsWith("/api/tts-audio/")) return next();
+  if (req.path === "/api/ticker" || req.path.startsWith("/api/ticker-assets/")) return next();
   if (req.path === "/api/client-error") return next();
   if (req.path === "/api/export" || req.path === "/api/import" || req.path === "/api/cleanup-duplicates") return next();
   if (req.path === "/api/shift-schedule" && req.method === "POST") return next();
