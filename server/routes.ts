@@ -1487,30 +1487,40 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       }
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
-      const response = await fetch('https://weather.gc.ca/rss/warning/on-143_e.xml', {
+      const response = await fetch('https://weather.gc.ca/warnings/report_e.html?on27=', {
         signal: controller.signal,
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' }
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' },
+        redirect: 'follow',
       });
       clearTimeout(timeout);
-      const xml = await response.text();
+      const html = await response.text();
 
       const alerts: { title: string; summary: string; type: string; updated: string }[] = [];
-      const entries = xml.split(/<entry>/i).slice(1);
-      for (const entry of entries) {
-        const titleMatch = entry.match(/<title[^>]*>(.*?)<\/title>/is);
-        const summaryMatch = entry.match(/<summary[^>]*>(.*?)<\/summary>/is);
-        const updatedMatch = entry.match(/<updated[^>]*>(.*?)<\/updated>/is);
-        const title = titleMatch?.[1]?.trim() || '';
-        if (title && !title.includes('No watches or warnings') && !title.includes('no alerts')) {
-          const isWarning = /warning/i.test(title);
-          const isWatch = /watch/i.test(title);
-          const isAdvisory = /advisory|statement|special/i.test(title);
-          alerts.push({
-            title: title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
-            summary: (summaryMatch?.[1] || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim().slice(0, 300),
-            type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
-            updated: updatedMatch?.[1]?.trim() || '',
-          });
+      const stateMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*\(/);
+      if (stateMatch) {
+        try {
+          const stateJson = stateMatch[1].replace(/\\u002F/g, '/');
+          const state = JSON.parse(stateJson);
+          const alertObj = state?.alert?.alert || {};
+          for (const key of Object.keys(alertObj)) {
+            const a = alertObj[key];
+            if (a && typeof a === 'object') {
+              const title = a.title || a.name || key;
+              if (title && !title.toLowerCase().includes('no watches or warnings') && !title.toLowerCase().includes('no alerts')) {
+                const isWarning = /warning/i.test(title);
+                const isWatch = /watch/i.test(title);
+                const isAdvisory = /advisory|statement|special/i.test(title);
+                alerts.push({
+                  title: title.replace(/&amp;/g, '&'),
+                  summary: (a.summary || a.description || '').slice(0, 300),
+                  type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
+                  updated: a.updated || a.issued || new Date().toISOString(),
+                });
+              }
+            }
+          }
+        } catch (parseErr) {
+          console.error('[Weather Alerts] Failed to parse __INITIAL_STATE__:', parseErr);
         }
       }
 
@@ -1530,29 +1540,39 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       if (!weatherAlertCache.data || now - weatherAlertCache.timestamp > 5 * 60 * 1000) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 8000);
-        const response = await fetch('https://weather.gc.ca/rss/warning/on-143_e.xml', {
+        const response = await fetch('https://weather.gc.ca/warnings/report_e.html?on27=', {
           signal: controller.signal,
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' }
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' },
+          redirect: 'follow',
         });
         clearTimeout(timeout);
-        const xml = await response.text();
+        const html = await response.text();
         const alerts: { title: string; summary: string; type: string; updated: string }[] = [];
-        const entries = xml.split(/<entry>/i).slice(1);
-        for (const entry of entries) {
-          const titleMatch = entry.match(/<title[^>]*>(.*?)<\/title>/is);
-          const summaryMatch = entry.match(/<summary[^>]*>(.*?)<\/summary>/is);
-          const updatedMatch = entry.match(/<updated[^>]*>(.*?)<\/updated>/is);
-          const title = titleMatch?.[1]?.trim() || '';
-          if (title && !title.includes('No watches or warnings') && !title.includes('no alerts')) {
-            const isWarning = /warning/i.test(title);
-            const isWatch = /watch/i.test(title);
-            const isAdvisory = /advisory|statement|special/i.test(title);
-            alerts.push({
-              title: title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
-              summary: (summaryMatch?.[1] || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim().slice(0, 300),
-              type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
-              updated: updatedMatch?.[1]?.trim() || '',
-            });
+        const stateMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*\(/);
+        if (stateMatch) {
+          try {
+            const stateJson = stateMatch[1].replace(/\\u002F/g, '/');
+            const state = JSON.parse(stateJson);
+            const alertObj = state?.alert?.alert || {};
+            for (const key of Object.keys(alertObj)) {
+              const a = alertObj[key];
+              if (a && typeof a === 'object') {
+                const title = a.title || a.name || key;
+                if (title && !title.toLowerCase().includes('no watches or warnings') && !title.toLowerCase().includes('no alerts')) {
+                  const isWarning = /warning/i.test(title);
+                  const isWatch = /watch/i.test(title);
+                  const isAdvisory = /advisory|statement|special/i.test(title);
+                  alerts.push({
+                    title: title.replace(/&amp;/g, '&'),
+                    summary: (a.summary || a.description || '').slice(0, 300),
+                    type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
+                    updated: a.updated || a.issued || new Date().toISOString(),
+                  });
+                }
+              }
+            }
+          } catch (parseErr) {
+            console.error('[Weather Alerts HA] Failed to parse __INITIAL_STATE__:', parseErr);
           }
         }
         weatherAlertCache.data = { alerts, count: alerts.length, hasAlerts: alerts.length > 0, timestamp: new Date().toISOString() };
