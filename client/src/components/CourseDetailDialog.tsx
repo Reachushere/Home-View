@@ -954,7 +954,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
                 <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="w-[30px] text-center leading-tight">Score<br/>received</span>
+                  <span className="w-[30px] text-center leading-tight" style={{ display: 'inline-flex', justifyContent: 'center' }}>Score<br/>received</span>
                   <span className="w-[30px] text-center leading-tight">Total</span>
                   <span className="w-[30px] text-center leading-tight">Wt%</span>
                   <span className="w-[30px] text-center leading-tight">%</span>
