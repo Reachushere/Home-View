@@ -16619,15 +16619,15 @@ export default function Dashboard() {
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <span className="text-[10px] text-white truncate min-w-0" style={{ flex: '1 1 0' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center flex-shrink-0" style={{ gap: '4px' }}>
-                        <div style={{ width: '40px', flexShrink: 0, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                        <div style={{ width: '28px', flexShrink: 0, position: 'relative', height: '20px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '39px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9, marginLeft: '-12px' }} />
-                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '22px', height: 'auto', opacity: 0.9, marginLeft: '-12px' }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '39px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9, position: 'absolute', left: '-12px', top: '50%', transform: 'translateY(-50%)' }} />
+                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '22px', height: 'auto', opacity: 0.9, position: 'absolute', left: '-12px', top: '50%', transform: 'translateY(-50%)' }} /> : null;
                         })()}
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
