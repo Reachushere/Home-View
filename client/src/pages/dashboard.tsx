@@ -12848,7 +12848,7 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
                     <div className="border-l border-black text-[9px] font-bold text-center leading-tight py-0.5" style={{ width: '38px', minWidth: '38px' }}>Status</div>
-                    <div className="w-5 border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Edit</div>
+                    <div className="border-l border-black text-[9px] font-bold text-center leading-tight py-0.5" style={{ width: '30px', minWidth: '30px' }}>Edit</div>
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
@@ -12869,7 +12869,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
                     <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={c.id} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
+                    <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
@@ -12897,7 +12897,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
                     <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={c.id} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
+                    <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
@@ -12924,7 +12924,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['LIBERAL']?.percent || '')}</span></div>
                   </div>
                   <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={"LIBERAL"} /></div>
-                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
+                  <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
                     <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
                 </div>
@@ -12950,7 +12950,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
                     <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={cid} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
+                    <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
@@ -12981,7 +12981,7 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
                     <div className="border-l border-black text-[9px] font-bold text-center leading-tight py-0.5" style={{ width: '38px', minWidth: '38px' }}>Status</div>
-                    <div className="w-5 border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Edit</div>
+                    <div className="border-l border-black text-[9px] font-bold text-center leading-tight py-0.5" style={{ width: '30px', minWidth: '30px' }}>Edit</div>
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
@@ -12997,7 +12997,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_PPA211']?.percent || '')}</span></div>
                   </div>
                   <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id="L2_PPA211" /></div>
-                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
+                  <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
                     <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
                 </div>
@@ -13025,7 +13025,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
                     </div>
                     <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={c.id} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
+                    <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
@@ -13052,7 +13052,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_LIBERAL']?.percent || '')}</span></div>
                   </div>
                   <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={"L2_LIBERAL"} /></div>
-                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
+                  <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                 </div>
                 </div>
                 <div style={isSectionAllGreen(3, 'L2') ? { opacity: 0.45 } : undefined}>
@@ -13079,7 +13079,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
                     </div>
                     <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={ecn.id} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
+                    <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                   </div>
                   );
                 })}
@@ -13103,7 +13103,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
                     <div className="border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}><TriStateToggle id={cid} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
+                    <div className="border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                   </div>
                 ))}
                 </div>
@@ -13135,7 +13135,7 @@ export default function Dashboard() {
                     <col />
                     <col style={{ width: '54px' }} />
                     <col style={{ width: '38px' }} />
-                    <col style={{ width: '20px' }} />
+                    <col style={{ width: '30px' }} />
                   </colgroup>
                   <thead className="sticky top-0 z-10">
                     <tr className="border-b border-black bg-gray-50">
@@ -13144,7 +13144,7 @@ export default function Dashboard() {
                       <th className="px-1 py-0.5 text-[9px] font-bold text-left">Title</th>
                       <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Grade</th>
                       <th className="border-l border-black text-[9px] font-bold text-center leading-tight py-0.5">Status</th>
-                      <th className="border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Edit</th>
+                      <th className="border-l border-black text-[9px] font-bold text-center leading-tight py-0.5">Edit</th>
                     </tr>
                   </thead>
                   <tbody>
