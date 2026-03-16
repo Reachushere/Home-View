@@ -14682,7 +14682,7 @@ export default function Dashboard() {
                           data-testid="quick-add-hour"
                         >
                           {Array.from({ length: 24 }, (_, i) => (
-                            <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>
+                            <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'white', backgroundColor: '#1e293b' }}>
                               {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
                             </option>
                           ))}
@@ -14695,7 +14695,7 @@ export default function Dashboard() {
                           data-testid="quick-add-minute"
                         >
                           {['00', '15', '30', '45'].map(m => (
-                            <option key={m} value={m} style={{ color: 'black' }}>{m}</option>
+                            <option key={m} value={m} style={{ color: 'white', backgroundColor: '#1e293b' }}>{m}</option>
                           ))}
                         </select>
                       </div>
