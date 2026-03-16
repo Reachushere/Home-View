@@ -689,8 +689,18 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
             <div><span className="text-white/40">Type:</span> <span className="text-white/80">{COURSE_TYPES.find(c => c.value === data.courseType)?.label || data.courseType}</span></div>
             <div><span className="text-white/40">Delivery:</span> <span className="text-white/80">{data.deliveryMode === 'virtual' ? 'Virtual (Live Zoom)' : data.deliveryMode === 'online' ? 'Online (Async)' : 'Not set'}</span></div>
             {data.deliveryMode === 'virtual' && data.zoomLink && <div className="col-span-2"><span className="text-white/40">Zoom:</span> <span className="text-white/80 break-all">{data.zoomLink}</span></div>}
-            {data.startDate && <div><span className="text-white/40">Start:</span> <span className="text-white/80">{data.startDate}</span></div>}
-            {data.endDate && <div><span className="text-white/40">End:</span> <span className="text-white/80">{data.endDate}</span></div>}
+          </div>
+        </div>
+
+        <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+          <div className="text-[10px] font-medium text-white mb-2">Semester & Schedule</div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px]">
+            <div><span className="text-white/40">Semester:</span> <span className="text-white/80">{data.semesterType === 'winter' ? 'Winter' : data.semesterType === 'spring_summer' ? 'Spring/Summer' : data.semesterType === 'fall' ? 'Fall' : data.semesterType || 'Not set'}</span></div>
+            {data.springSummerTerm && <div><span className="text-white/40">Term:</span> <span className="text-white/80">{data.springSummerTerm === 'term1' ? 'Term 1' : data.springSummerTerm === 'term2' ? 'Term 2' : 'Full'}</span></div>}
+            {data.startDate && <div><span className="text-white/40">Start Date:</span> <span className="text-white/80">{data.startDate}</span></div>}
+            {data.endDate && <div><span className="text-white/40">End Date:</span> <span className="text-white/80">{data.endDate}</span></div>}
+            {data.classDay && <div><span className="text-white/40">Class Day:</span> <span className="text-white/80">{data.classDay.charAt(0).toUpperCase() + data.classDay.slice(1)}{data.classDay2 ? `, ${data.classDay2.charAt(0).toUpperCase() + data.classDay2.slice(1)}` : ''}</span></div>}
+            {data.classTime && <div><span className="text-white/40">Class Time:</span> <span className="text-white/80">{data.classTime}{data.classEndTime ? ` – ${data.classEndTime}` : ''}</span></div>}
           </div>
         </div>
 
