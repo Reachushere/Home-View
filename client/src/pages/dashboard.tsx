@@ -16971,7 +16971,7 @@ export default function Dashboard() {
                           data-testid={`aas-status-${semCourse.code}`}
                           onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                         >
-                          <div className="flex items-center justify-center border-2 border-white rounded-sm" style={{ width: '14px', height: '14px', background: (aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'white' : 'transparent' }}>
+                          <div className="flex items-center justify-center border border-white rounded-sm" style={{ width: '14px', height: '14px', background: (aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'white' : 'transparent' }}>
                             {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && <span style={{ color: 'black', fontSize: '11px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
                           </div>
                           <span className="text-[7px] text-white font-medium" style={{ lineHeight: 1.1, marginTop: '1px' }}>AAS</span>
