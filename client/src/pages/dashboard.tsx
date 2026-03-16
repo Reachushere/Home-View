@@ -1768,6 +1768,16 @@ export default function Dashboard() {
       return saved ? JSON.parse(saved) : {};
     } catch { return {}; }
   });
+  const [coursePlayPriority, setCoursePlayPriority] = useState<Record<string, number>>(() => {
+    try {
+      const saved = localStorage.getItem('coursePlayPriority');
+      const parsed = saved ? JSON.parse(saved) : {};
+      if (Object.keys(parsed).length > 0) {
+        fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: saved! }).catch(() => {});
+      }
+      return parsed;
+    } catch { return {}; }
+  });
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
       'C1 - Mandatory Required Professional',
@@ -16355,7 +16365,7 @@ export default function Dashboard() {
                     return now <= w2026End && ['CPPA122', 'CFNF400', 'CASL101'].includes(code.toUpperCase().replace(/\s/g, ''));
                   };
 
-                  const renderCourseRow = (semCourse: { code: string; name: string; period: string }) => {
+                  const renderCourseRow = (semCourse: { code: string; name: string; period: string }, semKey: string, totalInSem: number) => {
                     const codeNorm = semCourse.code.toUpperCase().replace(/\s/g, '');
                     const currentCourse = currentCoursesMap.get(codeNorm);
                     const pastEntry = allPastEntries.get(codeNorm);
@@ -16371,6 +16381,8 @@ export default function Dashboard() {
                     const dotColor = currentCourse
                       ? (currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color)
                       : isCurrentCourse ? '#22c55e' : '#3b82f6';
+                    const priorityKey = `${semKey}:${semCourse.code}`;
+                    const currentPriority = coursePlayPriority[priorityKey] ?? 0;
 
                     return (
                       <div
@@ -16389,6 +16401,26 @@ export default function Dashboard() {
                         <span className="text-[9px] text-white/40 ml-1 whitespace-nowrap">{semCourse.period}</span>
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/50 whitespace-nowrap">{certType}</span>}
                         <div className="flex items-center gap-2 ml-auto">
+                          <select
+                            className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
+                            style={{ minWidth: '38px' }}
+                            value={currentPriority}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              const val = parseInt(e.target.value, 10);
+                              const updated = { ...coursePlayPriority, [priorityKey]: val };
+                              setCoursePlayPriority(updated);
+                              localStorage.setItem('coursePlayPriority', JSON.stringify(updated));
+                              fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
+                            }}
+                            data-testid={`select-priority-${semCourse.code}`}
+                          >
+                            <option value={0}>—</option>
+                            {Array.from({ length: totalInSem }, (_, i) => (
+                              <option key={i + 1} value={i + 1}>#{i + 1}</option>
+                            ))}
+                          </select>
                           {grade && <span className="text-[10px] text-white/70 font-medium">{grade}%</span>}
                           {(currentCourse?.professor || profInfo.professor) && (
                             <span className="text-[10px] text-white/60 underline">{currentCourse?.professor || profInfo.professor}</span>
@@ -16428,7 +16460,7 @@ export default function Dashboard() {
                               <span className="text-[9px] text-white/40">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                             </div>
                             <div className="p-2 space-y-1.5">
-                              {sem.courses.map(c => renderCourseRow(c))}
+                              {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
                             </div>
                           </div>
                         ))}

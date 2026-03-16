@@ -5336,9 +5336,55 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
+  let coursePlayPriority: Record<string, number> = {};
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 5 * 60 * 1000;
   let catLightsBypassCooldown = false;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
+
+  function getCoursePriorityForFile(f: any): number {
+    const folder = (f.folder || '').toLowerCase();
+    const name = (f.originalName || '').toLowerCase();
+    const courseCode = folder.includes('cppa') || name.includes('cppa') ? 'cppa' :
+                       folder.includes('cfnf') || name.includes('cfnf') ? 'cfnf' :
+                       folder.includes('casl') || name.includes('casl') ? 'casl' :
+                       folder.includes('cecn') || name.includes('cecn') ? 'cecn' :
+                       folder.includes('cphl') || name.includes('cphl') ? 'cphl' :
+                       folder.includes('chis') || name.includes('chis') ? 'chis' :
+                       folder.includes('cgcm') || name.includes('cgcm') ? 'cgcm' : '';
+    if (!courseCode) return 999;
+
+    const courseCodeUpper = courseCode.toUpperCase();
+    const codeWithNum = folder.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') ||
+                        name.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') || courseCodeUpper;
+
+    for (const [key, priority] of Object.entries(coursePlayPriority)) {
+      const keyCode = key.split(':')[1] || '';
+      if (keyCode.toUpperCase().replace(/\s/g, '') === codeWithNum && priority > 0) {
+        return priority;
+      }
+    }
+
+    return 999;
+  }
+
+  function orderFilesByCoursePriority(files: any[]): any[] {
+    const isModule = (f: any) =>
+      f.folder?.toLowerCase().includes('module') ||
+      f.originalName?.toLowerCase().includes('module');
+
+    const withPriority = files.map(f => ({
+      file: f,
+      coursePriority: getCoursePriorityForFile(f),
+      isModule: isModule(f) ? 0 : 1,
+    }));
+
+    withPriority.sort((a, b) => {
+      if (a.coursePriority !== b.coursePriority) return a.coursePriority - b.coursePriority;
+      return a.isModule - b.isModule;
+    });
+
+    return withPriority.map(w => w.file);
+  }
 
   const startToothbrushPolling = () => {
     if (toothbrushPollInterval) clearInterval(toothbrushPollInterval);
@@ -5925,28 +5971,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         return false;
       });
       
-      // Separate by course and type for priority ordering
-      // Priority: 1. CPPA modules, 2. CFNF modules, 3. CPPA readings, 4. CFNF readings
-      const isModule = (f: any) => 
-        f.folder?.toLowerCase().includes('module') || 
-        f.originalName?.toLowerCase().includes('module');
-      const isReading = (f: any) => 
-        f.folder?.toLowerCase().includes('reading') || 
-        f.originalName?.toLowerCase().includes('reading');
-      const isCPPA = (f: any) => 
-        f.folder?.toLowerCase().includes('cppa') || 
-        f.originalName?.toLowerCase().includes('cppa');
-      const isCFNF = (f: any) => 
-        f.folder?.toLowerCase().includes('cfnf') || 
-        f.originalName?.toLowerCase().includes('cfnf');
-      
-      const cppaModules = unlistenedFiles.filter(f => isCPPA(f) && isModule(f));
-      const cfnfModules = unlistenedFiles.filter(f => isCFNF(f) && isModule(f));
-      const cppaReadings = unlistenedFiles.filter(f => isCPPA(f) && isReading(f));
-      const cfnfReadings = unlistenedFiles.filter(f => isCFNF(f) && isReading(f));
-      
-      // Priority order: CPPA modules > CFNF modules > CPPA readings > CFNF readings
-      const orderedFiles = [...cppaModules, ...cfnfModules, ...cppaReadings, ...cfnfReadings];
+      const orderedFiles = orderFilesByCoursePriority(unlistenedFiles);
       
       if (orderedFiles.length === 0) {
         return res.json({ 
@@ -6912,13 +6937,7 @@ document.body.removeChild(a);
         return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
       });
       const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-      const isCPPAFile = (f: any) => f.folder?.toLowerCase().includes('cppa');
-      const isCFNFFile = (f: any) => f.folder?.toLowerCase().includes('cfnf');
-      const cppaModulesL = unlistenedFiles.filter((f: any) => isCPPAFile(f) && isModuleFile(f));
-      const cfnfModulesL = unlistenedFiles.filter((f: any) => isCFNFFile(f) && isModuleFile(f));
-      const cppaReadingsL = unlistenedFiles.filter((f: any) => isCPPAFile(f) && !isModuleFile(f));
-      const cfnfReadingsL = unlistenedFiles.filter((f: any) => isCFNFFile(f) && !isModuleFile(f));
-      const orderedFilesL = [...cppaModulesL, ...cfnfModulesL, ...cppaReadingsL, ...cfnfReadingsL];
+      const orderedFilesL = orderFilesByCoursePriority(unlistenedFiles);
 
       const cppaModule = orderedFilesL[0] || null;
 
@@ -7577,6 +7596,16 @@ document.body.removeChild(a);
     }
   });
 
+  app.get("/api/course-play-priority", (_req, res) => {
+    res.json(coursePlayPriority);
+  });
+
+  app.post("/api/course-play-priority", (req, res) => {
+    coursePlayPriority = req.body || {};
+    console.log(`[Course Priority] Updated: ${JSON.stringify(coursePlayPriority)}`);
+    res.json({ success: true });
+  });
+
   // POST /api/shower/trigger - Trigger automatic reading from Home Assistant
   // This is the endpoint Home Assistant should call when motion is detected
   app.post("/api/shower/trigger", async (req, res) => {
@@ -7712,17 +7741,7 @@ document.body.removeChild(a);
         return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
       });
       
-      // Priority order: CPPA modules > CFNF modules > CPPA readings > CFNF readings
-      const isModule = (f: any) => f.folder?.toLowerCase().includes('module');
-      const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa');
-      const isCFNF = (f: any) => f.folder?.toLowerCase().includes('cfnf');
-      
-      const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModule(f));
-      const cfnfModules = unlistenedFiles.filter((f: any) => isCFNF(f) && isModule(f));
-      const cppaReadings = unlistenedFiles.filter((f: any) => isCPPA(f) && !isModule(f));
-      const cfnfReadings = unlistenedFiles.filter((f: any) => isCFNF(f) && !isModule(f));
-      
-      const orderedFiles = [...cppaModules, ...cfnfModules, ...cppaReadings, ...cfnfReadings];
+      const orderedFiles = orderFilesByCoursePriority(unlistenedFiles);
       
       // If no files left, play CHUM FM radio
       if (orderedFiles.length === 0) {
@@ -8607,36 +8626,12 @@ document.body.removeChild(a);
         return fileWeek === currentWeekNumber;
       });
       
-      // Priority order: CPPA modules -> CFNF modules -> CPPA readings -> CFNF readings
-      // Exclude ASL (visual-only course)
-      const orderedFiles = weekFiles
-        .filter((f: any) => {
+      const orderedFiles = orderFilesByCoursePriority(
+        weekFiles.filter((f: any) => {
           const folder = (f.folder || '').toLowerCase();
           return !folder.includes('casl') && !folder.includes('asl');
         })
-        .sort((a: any, b: any) => {
-          const aFolder = (a.folder || '').toLowerCase();
-          const bFolder = (b.folder || '').toLowerCase();
-          
-          const aIsCPPA = aFolder.includes('cppa');
-          const bIsCPPA = bFolder.includes('cppa');
-          const aIsModule = aFolder.includes('module');
-          const bIsModule = bFolder.includes('module');
-          
-          // CPPA modules first
-          if (aIsCPPA && aIsModule && !(bIsCPPA && bIsModule)) return -1;
-          if (bIsCPPA && bIsModule && !(aIsCPPA && aIsModule)) return 1;
-          
-          // Then CFNF modules
-          if (!aIsCPPA && aIsModule && !(bIsModule)) return -1;
-          if (!bIsCPPA && bIsModule && !(aIsModule)) return 1;
-          
-          // Then CPPA readings
-          if (aIsCPPA && !aIsModule && !(bIsCPPA && !bIsModule)) return -1;
-          if (bIsCPPA && !bIsModule && !(aIsCPPA && !aIsModule)) return 1;
-          
-          return 0;
-        });
+      );
       
       // If no unlistened files, play radio
       if (orderedFiles.length === 0) {
