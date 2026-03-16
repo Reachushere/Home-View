@@ -21509,6 +21509,7 @@ export default function Dashboard() {
               <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
             </div>
           </div>
+          {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
             style={{ right: '-38px', top: '0px', pointerEvents: 'auto' }}
@@ -21530,6 +21531,8 @@ export default function Dashboard() {
               <ChevronDown style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
             </div>
           </div>
+          )}
+          {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
           <div
             className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
             style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto' }}
@@ -21538,6 +21541,7 @@ export default function Dashboard() {
           >
             <ChevronUp style={{ width: '22px', height: '22px', color: 'white' }} />
           </div>
+          )}
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
