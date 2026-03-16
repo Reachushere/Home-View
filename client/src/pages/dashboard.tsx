@@ -17170,13 +17170,6 @@ export default function Dashboard() {
                     CALENDAR SETTINGS
                   </h2>
                 </div>
-                <button 
-                  onClick={() => setIsSettingsDialogOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-settings-dialog"
-                >
-                  <X className="h-5 w-5" />
-                </button>
               </div>
               <div className="px-4 pb-3 pt-0 overflow-y-auto flex-1" style={{ marginTop: '-4px', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
               <div className="grid grid-cols-2 gap-3">
