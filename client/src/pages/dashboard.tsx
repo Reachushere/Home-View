@@ -16599,7 +16599,8 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[10px] text-white truncate flex-1 min-w-0"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] text-white truncate min-w-0" style={{ flex: '1 1 0%' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <div className="flex items-center flex-shrink-0" style={{ gap: '4px' }}>
                         <div style={{ width: '40px', flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
@@ -16665,6 +16666,7 @@ export default function Dashboard() {
                           >
                             <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" strokeWidth={2.5} />
                           </button>
+                        </div>
                         </div>
                       </div>
                     );
