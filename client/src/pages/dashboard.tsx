@@ -1740,12 +1740,16 @@ export default function Dashboard() {
   const [isRemainingCoursesDialogOpen, setIsRemainingCoursesDialogOpen] = useState(false);
   const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
     const courseInfoDefaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
-      'PPA101': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
-      'PPA102': { professor: '', email: '', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'PPA101': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'CPPA101': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'PPA102': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'CPPA102': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
       'PPA125': { professor: '', email: '', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
-      'PPA120': { professor: '', email: '', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
-      'PPA121': { professor: '', email: '', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
-      'CGCM738': { professor: '', email: '', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
+      'PPA120': { professor: 'Ryan Phillips', email: 'ryan.j.phillips@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'CPPA120': { professor: 'Ryan Phillips', email: 'ryan.j.phillips@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
+      'PPA121': { professor: 'Justin Rain', email: 'jrain@torontomu.ca', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
+      'CPPA121': { professor: 'Justin Rain', email: 'jrain@torontomu.ca', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
+      'CGCM738': { professor: 'Shelley Haines', email: 'shelley.haines@torontomu.ca', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
       'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CPPA122': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
@@ -1756,7 +1760,19 @@ export default function Dashboard() {
     try {
       const saved = localStorage.getItem('pastCourseInfo');
       const existing = saved ? JSON.parse(saved) : {};
-      const merged = { ...courseInfoDefaults, ...existing };
+      const merged: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = { ...courseInfoDefaults };
+      for (const [key, val] of Object.entries(existing) as [string, any][]) {
+        if (merged[key]) {
+          merged[key] = {
+            ...merged[key],
+            ...val,
+            professor: val.professor || merged[key].professor,
+            email: val.email || merged[key].email,
+          };
+        } else {
+          merged[key] = val;
+        }
+      }
       localStorage.setItem('pastCourseInfo', JSON.stringify(merged));
       return merged;
     } catch { return courseInfoDefaults; }
@@ -16411,24 +16427,24 @@ export default function Dashboard() {
                 {(() => {
                   const semesterDefs = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
-                      { code: 'CPPA101', name: 'CPPA 101', period: 'First Half (May 5 – Jun 20)' },
-                      { code: 'CPPA120', name: 'CPPA 120', period: 'First Half (May 5 – Jun 20)' },
-                      { code: 'CPPA102', name: 'CPPA 102', period: 'Second Half (Jun 23 – Aug 8)' },
+                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Introduction to Professional Communication', period: 'First Half (May 5 – Jun 20)' },
+                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Computers and Information Technology', period: 'First Half (May 5 – Jun 20)' },
+                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Professional Communication in Practice', period: 'Second Half (Jun 23 – Aug 8)' },
                     ]},
                     { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
-                      { code: 'CPPA125', name: 'CPPA 125', period: 'Full Semester' },
-                      { code: 'CGCM738', name: 'CGCM 738', period: 'Full Semester' },
-                      { code: 'CPPA121', name: 'CPPA 121', period: 'Full Semester' },
+                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Computer Apps in the Workplace', period: 'Full Semester' },
+                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped! The Art of Image Retouching', period: 'Full Semester' },
+                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Foundations for College Math', period: 'Full Semester' },
                     ]},
                     { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
-                      { code: 'CPPA122', name: 'CPPA 122', period: 'Full Semester' },
-                      { code: 'CFNF400', name: 'CFNF 400', period: 'Full Semester' },
-                      { code: 'CASL101', name: 'CASL 101', period: 'Full Semester' },
+                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'College Math', period: 'Full Semester' },
+                      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Contemporary Nutrition and Healthy Living', period: 'Full Semester' },
+                      { code: 'CASL101', name: 'CASL 101', fullName: 'Introduction to American Sign Language I', period: 'Full Semester' },
                     ]},
                     { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [
-                      { code: 'CECN210', name: 'CECN 210', period: 'Full Semester (May 4 – Jul 31)' },
-                      { code: 'CPHL110', name: 'CPHL 110 — Philosophy of Religion', period: 'First Half (May 5 – Jun 16)' },
-                      { code: 'CHIS105', name: 'CHIS 105 — Inventing Popular Culture', period: 'Second Half (Jun 23 – Aug 4)' },
+                      { code: 'CECN210', name: 'CECN 210', fullName: 'Introduction to Macroeconomics', period: 'Full Semester (May 4 – Jul 31)' },
+                      { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'First Half (May 5 – Jun 16)' },
+                      { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Second Half (Jun 23 – Aug 4)' },
                     ]},
                   ];
 
@@ -16476,7 +16492,7 @@ export default function Dashboard() {
                     return now <= w2026End && ['CPPA122', 'CFNF400', 'CASL101'].includes(code.toUpperCase().replace(/\s/g, ''));
                   };
 
-                  const renderCourseRow = (semCourse: { code: string; name: string; period: string }, semKey: string, totalInSem: number) => {
+                  const renderCourseRow = (semCourse: { code: string; name: string; fullName?: string; period: string }, semKey: string, totalInSem: number) => {
                     const codeNorm = semCourse.code.toUpperCase().replace(/\s/g, '');
                     const currentCourse = currentCoursesMap.get(codeNorm);
                     const pastEntry = allPastEntries.get(codeNorm);
@@ -16484,8 +16500,8 @@ export default function Dashboard() {
                     const grade = courseGrades[codeNorm]?.percent || courseGrades[semCourse.code]?.percent || profInfo.grade || '';
                     const isCurrentCourse = !!currentCourse || isCurrent(codeNorm);
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
-                    const displayName = semCourse.name.includes('—') ? semCourse.name.split('—')[0].trim() : semCourse.name;
-                    const subtitle = semCourse.name.includes('—') ? semCourse.name.split('—').slice(1).join('—').trim() : '';
+                    const displayName = semCourse.name;
+                    const subtitle = semCourse.fullName || '';
                     const bgColor = currentCourse
                       ? (currentCourse.colorEnd ? `linear-gradient(135deg, ${currentCourse.color}44, ${currentCourse.colorEnd}44)` : `${currentCourse.color}33`)
                       : isCurrentCourse ? 'rgba(34,197,94,0.15)' : 'rgba(59,130,246,0.12)';
@@ -16508,7 +16524,7 @@ export default function Dashboard() {
                       >
                         <div className="w-2 h-2 rounded-full flex-shrink-0 mr-2" style={{ background: dotColor }} />
                         <span className="text-[11px] font-bold text-white" style={{ width: '58px', minWidth: '58px' }}>{displayName}</span>
-                        {subtitle && <span className="text-[10px] text-white/80 truncate mr-1">{subtitle}</span>}
+                        {subtitle && <span className="text-[10px] text-white/80 truncate mr-1">— {subtitle}</span>}
                         <span className="text-[9px] text-white/60 ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
                         {isCurrentCourse && (
