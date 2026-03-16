@@ -387,16 +387,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     if (gradedTasks.length === 0) return null;
     let weightedSum = 0;
     let weightedTotal = 0;
+    let rawReceived = 0;
+    let rawTotal = 0;
     for (const t of gradedTasks) {
       const pct = (t.gradeValue! / t.gradeTotal!) * 100;
       weightedSum += pct * (t.gradeWeight! / 100);
       weightedTotal += t.gradeWeight!;
+      rawReceived += t.gradeValue!;
+      rawTotal += t.gradeTotal!;
     }
     const currentPercent = weightedTotal > 0 ? (weightedSum / weightedTotal) * 100 : 0;
     const projectedPercent = weightedTotal > 0 ? weightedSum / (totalWeight > 0 ? totalWeight : weightedTotal) * 100 : 0;
+    const rawPercent = rawTotal > 0 ? (rawReceived / rawTotal) * 100 : 0;
     return {
       currentPercent: Math.round(currentPercent * 100) / 100,
       projectedPercent: Math.round(projectedPercent * 100) / 100,
+      rawPercent: Math.round(rawPercent * 100) / 100,
       currentGrade: percentToLetterGrade(currentPercent),
       projectedGrade: percentToLetterGrade(projectedPercent),
       gradedWeight: weightedTotal,
@@ -409,9 +415,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
   useEffect(() => {
     if (onGradeCalculatedRef.current && gradeCalc) {
-      onGradeCalculatedRef.current(gradeCalc.currentGrade, String(gradeCalc.currentPercent));
+      onGradeCalculatedRef.current(gradeCalc.currentGrade, String(gradeCalc.rawPercent));
     }
-  }, [gradeCalc?.currentPercent, gradeCalc?.currentGrade]);
+  }, [gradeCalc?.rawPercent, gradeCalc?.currentGrade]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: Record<string, any>) => {
