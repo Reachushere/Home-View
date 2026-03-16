@@ -16590,7 +16590,7 @@ export default function Dashboard() {
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                         })()}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && (() => {
@@ -18768,7 +18768,7 @@ export default function Dashboard() {
                       if (!dm) {
                         try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cCode]?.deliveryMode || ''; } } catch {}
                       }
-                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', marginTop: '1px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', marginTop: '3px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                     })()}
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
