@@ -16631,13 +16631,14 @@ export default function Dashboard() {
                         })()}
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
-                          {(currentCourse?.professor || profInfo.professor) && (() => {
+                          {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
                             const profEmail = currentCourse?.professorEmail || profInfo.email;
+                            if (!profName) return <span style={{ width: '80px', marginRight: '3px', display: 'inline-block' }} />;
                             return profEmail ? (
                               <a
                                 className="text-[9px] text-white truncate underline cursor-pointer hover:text-white/80"
-                                style={{ marginRight: '3px', maxWidth: '80px', display: 'inline-block' }}
+                                style={{ marginRight: '3px', width: '80px', display: 'inline-block' }}
                                 href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(profEmail)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -16645,12 +16646,12 @@ export default function Dashboard() {
                                 data-testid={`link-professor-${semCourse.code}`}
                               >{profName}</a>
                             ) : (
-                              <span className="text-[9px] text-white truncate" style={{ marginRight: '3px', maxWidth: '80px', display: 'inline-block' }}>{profName}</span>
+                              <span className="text-[9px] text-white truncate" style={{ marginRight: '3px', width: '80px', display: 'inline-block' }}>{profName}</span>
                             );
                           })()}
                           <span
                             className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : hasSemStarted(semKey) ? 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
-                            style={{ marginRight: '3px' }}
+                            style={{ marginRight: '3px', width: '36px', textAlign: 'center', boxSizing: 'border-box' }}
                             data-testid={`aas-status-${semCourse.code}`}
                             onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                           >
