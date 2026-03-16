@@ -16634,11 +16634,11 @@ export default function Dashboard() {
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
                             const profEmail = currentCourse?.professorEmail || profInfo.email;
-                            if (!profName) return <span style={{ width: '80px', marginRight: '3px', display: 'inline-block' }} />;
+                            if (!profName) return <span style={{ width: '80px', marginLeft: '2px', marginRight: '3px', display: 'inline-block' }} />;
                             return profEmail ? (
                               <a
                                 className="text-[9px] text-white truncate underline cursor-pointer hover:text-white/80"
-                                style={{ marginRight: '3px', width: '80px', display: 'inline-block' }}
+                                style={{ marginLeft: '2px', marginRight: '3px', width: '80px', display: 'inline-block' }}
                                 href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(profEmail)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -16646,7 +16646,7 @@ export default function Dashboard() {
                                 data-testid={`link-professor-${semCourse.code}`}
                               >{profName}</a>
                             ) : (
-                              <span className="text-[9px] text-white truncate" style={{ marginRight: '3px', width: '80px', display: 'inline-block' }}>{profName}</span>
+                              <span className="text-[9px] text-white truncate" style={{ marginLeft: '2px', marginRight: '3px', width: '80px', display: 'inline-block' }}>{profName}</span>
                             );
                           })()}
                           <span
