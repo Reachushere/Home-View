@@ -84,7 +84,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string; semesterTerm?: string; year?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string; semesterTerm?: string; year?: string; color?: string; colorEnd?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -191,6 +191,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     zoomLink: courseInfo.zoomLink || '',
     semesterTerm: courseInfo.semesterTerm || '',
     year: courseInfo.year || '',
+    color: courseInfo.color || '#3b82f6',
+    colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
   });
 
   const CERTIFICATE_TYPE_OPTIONS = [
@@ -647,6 +649,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       </optgroup>
                     ))}
                   </select>
+                </div>
+                <div>
+                  <label className="text-white text-[9px] mb-0.5 block">Course Colour</label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-white/60 text-[8px]">Start</label>
+                      <input type="color" value={editInfo.color} onChange={(e) => setEditInfo({...editInfo, color: e.target.value})} className="w-7 h-7 rounded-full border border-white/30 cursor-pointer" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-edit-color-start" />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-white/60 text-[8px]">End</label>
+                      <input type="color" value={editInfo.colorEnd} onChange={(e) => setEditInfo({...editInfo, colorEnd: e.target.value})} className="w-7 h-7 rounded-full border border-white/30 cursor-pointer" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-edit-color-end" />
+                    </div>
+                    <div className="w-10 h-5 rounded-full" style={{ background: `linear-gradient(to right, ${editInfo.color}, ${editInfo.colorEnd})` }} />
+                  </div>
                 </div>
               </div>
             ) : (

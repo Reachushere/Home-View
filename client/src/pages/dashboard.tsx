@@ -13757,6 +13757,8 @@ export default function Dashboard() {
                   ...updatedCourses[matchIdx],
                   professor: updates.professor || updatedCourses[matchIdx].professor,
                   professorEmail: updates.professorEmail || updatedCourses[matchIdx].professorEmail,
+                  ...(updates.color ? { color: updates.color } : {}),
+                  ...(updates.colorEnd ? { colorEnd: updates.colorEnd } : {}),
                 };
                 saveCourses({ courses: updatedCourses });
               }
@@ -17023,7 +17025,7 @@ export default function Dashboard() {
                       </div>
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: year === 2025 ? 'end' : 'start' }}>
                         {year === 2025 && (
-                          <div className="rounded-lg border overflow-hidden flex flex-col" style={{ gridColumn: 1, gridRow: 1, background: 'transparent', borderColor: 'rgba(255,255,255,0.45)', borderWidth: '1px', minHeight: `${28 + 12 + 3 * 36}px`, alignSelf: 'stretch' }}>
+                          <div className="rounded-lg border overflow-hidden flex flex-col" style={{ gridColumn: 1, gridRow: 1, background: 'transparent', borderColor: 'rgba(255,255,255,0.45)', borderWidth: '1px', minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}>
                             <div className="px-2 py-1.5 border-b flex items-center justify-center flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
@@ -17070,7 +17072,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '2px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 36}px` }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '2px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px` }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
