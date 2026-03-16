@@ -12578,7 +12578,8 @@ export default function Dashboard() {
             </div>
             <div
               className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setIsSchoolCoursesDialogOpen(true);
               }}
               data-testid="button-degree-courses"
