@@ -1040,16 +1040,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
             {courseTasks.length > 0 && (
               <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white/40 uppercase tracking-wider">
-                <div className="w-4 flex-shrink-0" />
-                <div className="w-3 flex-shrink-0" />
+                <div className="flex-shrink-0 w-4" />
+                <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <span className="w-[28px] text-center">Wt%</span>
-                  <span className="w-[28px] text-center">Total</span>
-                  <span className="w-[28px] text-center">Score</span>
-                  <span className="w-[28px] text-center">%</span>
+                  <span className="w-[28px] text-center leading-none">Wt%</span>
+                  <span className="w-[28px] text-center leading-none">Total</span>
+                  <span className="w-[28px] text-center leading-none">Score</span>
+                  <span className="w-[28px] text-center leading-none">%</span>
                 </div>
-                <div className="w-6 flex-shrink-0" />
+                <div className="flex-shrink-0 w-[16px]" />
               </div>
             )}
             <div className="space-y-1" data-testid="assignments-list">
