@@ -3382,7 +3382,7 @@ export default function Dashboard() {
   const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'L1_PPA120', 'L1_PPA121', 'LIBERAL', 'OPEN1', 'OPEN2']
     .every(id => checkedCourses[id]);
 
-  const certSections = {
+  const certSections = useMemo(() => ({
     L1: [
       { required: 3, members: ['PPA101', 'PPA102', 'PPA125'] },
       { required: 2, members: ['L1_PPA120', 'L1_PPA121', 'L1_PPA122', 'L1_PPA124'] },
@@ -3403,7 +3403,7 @@ export default function Dashboard() {
       { required: 4, members: ['L3_LIBERAL1', 'L3_LIBERAL2', 'L3_LIBERAL3', 'L3_LIBERAL4'] },
       { required: 7, members: ['L3_OPEN1', 'L3_OPEN2', 'L3_OPEN3', 'L3_OPEN4', 'L3_OPEN5', 'L3_OPEN6', 'L3_OPEN7'] },
     ],
-  };
+  }), []);
 
   const sectionCheckedCount = (members: string[]) => members.filter(m => checkedCourses[m] || inProgressCourses[m]).length;
   const sectionCompletedCount = (members: string[]) => members.filter(m => checkedCourses[m]).length;
@@ -3729,7 +3729,7 @@ export default function Dashboard() {
     const elective = openElectives[certKey];
     const code = elective?.trim() ? elective.split(' ')[0] || info.code : info.code;
     const name = elective?.trim() ? elective : info.name;
-    setIsSettingsPanelOpen(false);
+    startTransition(() => setIsSettingsPanelOpen(false));
     setOpenedCourseFromDegreeTracking(true);
     setSelectedCertCourse({ courseCode: code, courseName: name, certKey });
   };
@@ -11910,7 +11910,7 @@ export default function Dashboard() {
               onClick={() => {
                 setDraftCoursePlayPriority({ ...coursePlayPriority });
                 setSchoolCoursesOpenSource('pill');
-                setIsSchoolCoursesDialogOpen(true);
+                startTransition(() => setIsSchoolCoursesDialogOpen(true));
               }}
             >
               <BookOpen className="text-white" style={{ height: '20px', width: '20px' }} />
@@ -11935,7 +11935,7 @@ export default function Dashboard() {
               title="Degree Tracking"
               onClick={() => {
                 triggerButtonGlow('settings');
-                setIsSettingsPanelOpen(true);
+                startTransition(() => setIsSettingsPanelOpen(true));
                 const activeCourses = coursesData.courses.filter(c => c.name.trim());
                 const uncheckedAas = activeCourses.filter(c => {
                   const code = c.name.split(' - ')[0];
@@ -12716,7 +12716,7 @@ export default function Dashboard() {
 
       {/* Settings Panel Popup - Degree Tracking */}
       {isSettingsPanelOpen && (
-        <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => setIsSettingsPanelOpen(false)} />
+        <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => startTransition(() => setIsSettingsPanelOpen(false))} />
       )}
       {isSettingsPanelOpen && (
         <div 
@@ -12736,7 +12736,7 @@ export default function Dashboard() {
                 e.stopPropagation();
                 setDraftCoursePlayPriority({ ...coursePlayPriority });
                 setSchoolCoursesOpenSource('degree');
-                setIsSchoolCoursesDialogOpen(true);
+                startTransition(() => setIsSchoolCoursesDialogOpen(true));
               }}
               data-testid="button-degree-courses"
             >
@@ -13298,7 +13298,7 @@ export default function Dashboard() {
                   variant="outline"
                   className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
                   style={{ fontSize: '12px', marginRight: '5px' }}
-                  onClick={() => setIsSettingsPanelOpen(false)}
+                  onClick={() => startTransition(() => setIsSettingsPanelOpen(false))}
                   data-testid="button-cancel-settings-panel"
                 >
                   Cancel
@@ -13317,7 +13317,7 @@ export default function Dashboard() {
                     saveDegreeToServer('checkedCourses', checkedCourses);
                     saveDegreeToServer('courseGrades', courseGrades);
                     toast({ title: "Settings saved", description: "Your progress has been saved." });
-                    setIsSettingsPanelOpen(false);
+                    startTransition(() => setIsSettingsPanelOpen(false));
                   }}
                   data-testid="button-save-settings-panel"
                 >
@@ -13440,7 +13440,7 @@ export default function Dashboard() {
                 // School Courses dialog is still open underneath, just go back to it
               } else if (openedCourseFromDegreeTracking) {
                 setOpenedCourseFromDegreeTracking(false);
-                setIsSettingsPanelOpen(true);
+                startTransition(() => setIsSettingsPanelOpen(true));
               }
             }}
             onSaveCourseInfo={(updates) => {
@@ -16519,7 +16519,7 @@ export default function Dashboard() {
           {/* Courses Dialog - All past + current courses organized by semester */}
           {isSchoolCoursesDialogOpen && createPortal(
             <div>
-            <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => setIsSchoolCoursesDialogOpen(false)} />
+            <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} />
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
               style={schoolCoursesOpenSource === 'pill' ? { top: 'calc(3vh - 6px)', width: 'calc(96vw + 24px)', maxWidth: 'calc(96vw + 24px)', bottom: 'calc(3vh + 32px)', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' } : { top: `${(calendarBorderTop || (calendarTop + 15)) - 7 - 30 - 4 - 9}px`, width: 'calc(96vw + 28px - 20px)', maxWidth: 'calc(96vw + 28px - 20px)', bottom: '50px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
@@ -16539,7 +16539,7 @@ export default function Dashboard() {
                     variant="outline"
                     className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
                     style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
-                    onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                    onClick={() => { startTransition(() => setIsSchoolCoursesDialogOpen(false)); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
                     data-testid="button-new-course-school-courses"
                   >
                     <Plus className="h-3 w-3 mr-1" />
@@ -16663,7 +16663,7 @@ export default function Dashboard() {
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
                           <span
-                            className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : hasSemStarted(sem.key) ? 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                            className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : hasSemStarted(semKey) ? 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
                             style={{ marginRight: '3px' }}
                             data-testid={`aas-status-${semCourse.code}`}
                             onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
@@ -16707,9 +16707,7 @@ export default function Dashboard() {
                   return years.map(year => (
                     <div key={year} className="mb-8">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="h-px flex-1 bg-white" />
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
-                        <div className="h-px flex-1 bg-white" />
                       </div>
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch' }}>
                         {semesterDefs.filter(s => s.year === year).map(sem => {
@@ -16816,12 +16814,12 @@ export default function Dashboard() {
               )}
               <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
                 <div className="flex gap-2">
-                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
+                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} data-testid="button-cancel-school-courses">Cancel</Button>
                   <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => {
                     setCoursePlayPriority(draftCoursePlayPriority);
                     localStorage.setItem('coursePlayPriority', JSON.stringify(draftCoursePlayPriority));
                     fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draftCoursePlayPriority) }).catch(() => {});
-                    setIsSchoolCoursesDialogOpen(false);
+                    startTransition(() => setIsSchoolCoursesDialogOpen(false));
                   }} data-testid="button-save-school-courses">Save</Button>
                 </div>
               </div>
