@@ -6603,7 +6603,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume"],
+      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press"],
     });
   });
 
@@ -7220,6 +7220,60 @@ document.body.removeChild(a);
     }
   });
 
+
+  // POST /api/webhook/cat-knob-press - Toggle CHUM FM on Nest speaker when knob is pressed
+  let catKnobRadioPlaying = false;
+  app.post("/api/webhook/cat-knob-press", async (req, res) => {
+    try {
+      console.log(`[Cat Knob] ====== KNOB PRESS RECEIVED ======`);
+      console.log(`[Cat Knob] Body: ${JSON.stringify(req.body)}`);
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+      const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, { headers: haHeaders });
+      const stateData = stateResp.ok ? await stateResp.json() : null;
+      const currentState = stateData?.state;
+      const isPlaying = currentState === 'playing' || currentState === 'buffering';
+      console.log(`[Cat Knob] Nest state: ${currentState}, isPlaying: ${isPlaying}, catKnobRadioPlaying: ${catKnobRadioPlaying}`);
+
+      const allCatSpeakers = [
+        NEST_SPEAKER_ENTITY,
+        "media_player.echo_cat_left_am",
+        "media_player.echo_cat_right_am",
+        "media_player.echo_cat_washroom_middle",
+      ];
+
+      if (isPlaying) {
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: allCatSpeakers }),
+        });
+        catKnobRadioPlaying = false;
+        console.log(`[Cat Knob] Stopped playback on all cat washroom speakers`);
+        res.json({ success: true, action: 'stopped' });
+      } else {
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
+        });
+        console.log(`[Cat Knob] Playing CHUM FM on Nest`);
+        try {
+          await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: ["media_player.echo_cat_left_am", "media_player.echo_cat_right_am", "media_player.echo_cat_washroom_middle"], media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
+          });
+          console.log(`[Cat Knob] Playing CHUM FM on Echo speakers`);
+        } catch (e: any) {
+          console.warn(`[Cat Knob] Echo speakers failed (non-fatal): ${e.message}`);
+        }
+        catKnobRadioPlaying = true;
+        res.json({ success: true, action: 'playing', station: 'CHUM FM 104.5' });
+      }
+    } catch (err: any) {
+      console.error(`[Cat Knob] Error: ${err.message}`);
+      res.status(500).json({ error: err.message });
+    }
+  });
 
   // GET /api/cat-wash/progress - Returns current playback state for the active session
   app.get("/api/cat-wash/progress", (_req, res) => {
