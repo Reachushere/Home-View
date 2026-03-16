@@ -16519,7 +16519,12 @@ export default function Dashboard() {
                             {aasSentStatus[semCourse.code] ? '✓ AAS' : '⚠ AAS'}
                           </span>
                         )}
-                        <div className="flex items-center gap-2" style={{ width: '130px', minWidth: '130px', justifyContent: 'flex-end' }}>
+                        <div className="flex items-center gap-2" style={{ width: '230px', minWidth: '230px', justifyContent: 'flex-end' }}>
+                          <span className="text-[10px] text-white/80 truncate" style={{ width: '120px', minWidth: '120px', textAlign: 'right' }}>
+                            {(currentCourse?.professor || profInfo.professor) ? <span className="underline">{currentCourse?.professor || profInfo.professor}</span> : ''}
+                          </span>
+                          {grade && <span className="text-[10px] text-white font-medium" style={{ width: '30px', minWidth: '30px', textAlign: 'right' }}>{grade}%</span>}
+                          {!grade && <span style={{ width: '30px', minWidth: '30px' }} />}
                           <select
                             className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
                             style={{ width: '42px', minWidth: '42px' }}
@@ -16537,11 +16542,6 @@ export default function Dashboard() {
                               <option key={i + 1} value={i + 1}>#{i + 1}</option>
                             ))}
                           </select>
-                          {grade && <span className="text-[10px] text-white font-medium" style={{ width: '30px', minWidth: '30px', textAlign: 'right' }}>{grade}%</span>}
-                          {!grade && <span style={{ width: '30px', minWidth: '30px' }} />}
-                          {(currentCourse?.professor || profInfo.professor) && (
-                            <span className="text-[10px] text-white/80 underline truncate" style={{ maxWidth: '80px' }}>{currentCourse?.professor || profInfo.professor}</span>
-                          )}
                         </div>
                         <button
                           className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 ml-1"
