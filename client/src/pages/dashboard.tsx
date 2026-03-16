@@ -16686,7 +16686,7 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-2">
                                   <span className="text-[11px] font-bold text-white">{sem.label}</span>
                                   <span className="text-[9px] text-white ml-1">{sem.dates}</span>
-                                  {isCurrentSem && <span className="text-[8px] font-bold text-white bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
+                                  {isCurrentSem && <span className="text-[8px] font-bold text-white bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
                                 <span className="text-[9px] text-white">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
