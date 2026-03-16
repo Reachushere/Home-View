@@ -5494,7 +5494,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await new Promise(r => setTimeout(r, checkInterval));
     }
     let consecutiveIdle = 0;
-    const IDLE_THRESHOLD = 3;
+    const IDLE_THRESHOLD = 5;
     while (Date.now() - startTime < maxWait) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) return false;
       const state = await getNestMediaState();
@@ -5509,7 +5509,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (consecutiveIdle > 0) console.log(`[Nest] State recovered to ${state.state}, resetting idle count`);
         consecutiveIdle = 0;
       }
-      await new Promise(r => setTimeout(r, 3000));
+      await new Promise(r => setTimeout(r, 4000));
     }
     console.log(`[Nest] Timed out waiting for playback to end after ${Math.round((Date.now() - startTime) / 1000)}s`);
     return true;
@@ -6934,18 +6934,26 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Started text extraction in background (will be ready when you confirm)`);
 
       {
-        const maxWaitMs = 65000;
-        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation via /api/webhook/cat-lights-confirm ...`);
+        const maxWaitMs = 90000;
+        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation via /api/webhook/cat-lights-confirm or input_boolean ...`);
 
         const confirmed = await new Promise<boolean>((resolve) => {
-          const timeout = setTimeout(() => {
-            catLightsConfirmResolve = null;
-            resolve(false);
-          }, maxWaitMs);
-          catLightsConfirmResolve = (value: boolean) => {
-            clearTimeout(timeout);
-            resolve(value);
-          };
+          let resolved = false;
+          const finish = (val: boolean) => { if (!resolved) { resolved = true; clearTimeout(timeout); clearInterval(boolPoll); catLightsConfirmResolve = null; resolve(val); } };
+          const timeout = setTimeout(() => finish(false), maxWaitMs);
+          catLightsConfirmResolve = () => finish(true);
+          const boolPoll = setInterval(async () => {
+            try {
+              const resp = await fetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
+              if (resp.ok) {
+                const data = await resp.json();
+                if (data.state === 'on') {
+                  console.log(`[Cat Lights] Confirmation received via input_boolean (${MODULE_READING_CONFIRMED} = on)`);
+                  finish(true);
+                }
+              }
+            } catch {}
+          }, 3000);
         });
 
         try {
