@@ -1733,8 +1733,6 @@ export default function Dashboard() {
     return localStorage.getItem('profilePhotoUrl');
   });
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
-  const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
-  const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const coursesScrollRef = useRef<HTMLDivElement>(null);
@@ -16140,14 +16138,7 @@ export default function Dashboard() {
                             className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSchoolEditCourseData({
-                                code: courseCode,
-                                name: courseName !== courseCode ? courseName : '',
-                                professor: course.professor || '',
-                                email: course.professorEmail || '',
-                                calendarLabel: courseDisplayNames[courseCode] || courseCode,
-                              });
-                              setSchoolEditCourseIdx(index);
+                              setSelectedCertCourse({ courseCode, courseName: courseName !== courseCode ? courseName : courseCode, certKey: courseCode });
                             }}
                             data-testid={`button-edit-course-${index}`}
                           >
@@ -16183,130 +16174,6 @@ export default function Dashboard() {
 
                 </div>
 
-                {/* Course Edit Dialog */}
-                {schoolEditCourseIdx !== null && (
-                  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setSchoolEditCourseIdx(null)}>
-                    <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg p-4 w-[280px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                      <h3 className="text-[11px] font-medium text-white">Edit Course</h3>
-                      <div className="space-y-2">
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Code</label>
-                          <input
-                            type="text"
-                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
-                            value={schoolEditCourseData.code}
-                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, code: e.target.value }))}
-                            data-testid="input-edit-course-code"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Course Name</label>
-                          <input
-                            type="text"
-                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
-                            value={schoolEditCourseData.name}
-                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, name: e.target.value }))}
-                            data-testid="input-edit-course-name"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Calendar Label</label>
-                          <input
-                            type="text"
-                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
-                            value={schoolEditCourseData.calendarLabel}
-                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, calendarLabel: e.target.value }))}
-                            placeholder={schoolEditCourseData.code}
-                            data-testid="input-edit-calendar-label"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
-                          <input
-                            type="text"
-                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
-                            value={schoolEditCourseData.professor}
-                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, professor: e.target.value }))}
-                            data-testid="input-edit-professor-name"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
-                          <input
-                            type="text"
-                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
-                            value={schoolEditCourseData.email}
-                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, email: e.target.value }))}
-                            data-testid="input-edit-professor-email"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Certificate Type</label>
-                          <select
-                            className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50"
-                            value={courseCertificateTypes[schoolEditCourseData.code] || ''}
-                            onChange={(e) => {
-                              const updated = { ...courseCertificateTypes, [schoolEditCourseData.code]: e.target.value };
-                              setCourseCertificateTypes(updated);
-                              localStorage.setItem('courseCertificateTypes', JSON.stringify(updated));
-                            }}
-                            data-testid="select-edit-certificate-type"
-                          >
-                            <option value="">-- Select --</option>
-                            {CERTIFICATE_TYPE_OPTIONS.map(g => (
-                              <optgroup key={g.group} label={g.group}>
-                                {g.options.map(o => <option key={o} value={o}>{o}</option>)}
-                              </optgroup>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                      <div className="flex gap-2 justify-end pt-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-[10px] h-6 px-2 text-white/70"
-                          onClick={() => setSchoolEditCourseIdx(null)}
-                          data-testid="button-cancel-edit-course"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="text-[10px] h-6 px-3 bg-blue-600 hover:bg-blue-700 text-white"
-                          onClick={() => {
-                            const updatedCourses = [...coursesData.courses];
-                            const fullName = schoolEditCourseData.name
-                              ? `${schoolEditCourseData.code} - ${schoolEditCourseData.name}`
-                              : schoolEditCourseData.code;
-                            updatedCourses[schoolEditCourseIdx] = {
-                              ...updatedCourses[schoolEditCourseIdx],
-                              name: fullName,
-                              professor: schoolEditCourseData.professor,
-                              professorEmail: schoolEditCourseData.email,
-                            };
-                            setCoursesData({ courses: updatedCourses });
-                            localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                            saveCourses({ courses: updatedCourses });
-                            const newDisplayNames = { ...courseDisplayNames };
-                            if (schoolEditCourseData.calendarLabel.trim()) {
-                              newDisplayNames[schoolEditCourseData.code] = schoolEditCourseData.calendarLabel.trim();
-                            } else {
-                              delete newDisplayNames[schoolEditCourseData.code];
-                            }
-                            setCourseDisplayNames(newDisplayNames);
-                            _courseDisplayNames = newDisplayNames;
-                            localStorage.setItem('courseDisplayNames', JSON.stringify(newDisplayNames));
-                            setSchoolEditCourseIdx(null);
-                          }}
-                          data-testid="button-save-edit-course"
-                        >
-                          Save
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
                 
                 {/* Weeks */}
                 <div className="border rounded-lg p-3 flex flex-col flex-1" style={{ marginTop: '-4px' }}>
@@ -16438,7 +16305,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
+              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
                 <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
                   <Button
                     type="button"
