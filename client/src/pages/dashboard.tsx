@@ -3060,6 +3060,7 @@ export default function Dashboard() {
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [hoveredCountdownTaskId, setHoveredCountdownTaskId] = useState<number | null>(null);
+  const [hoveredCalTaskId, setHoveredCalTaskId] = useState<number | null>(null);
   
   // Pomodoro Timer State
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -19611,7 +19612,9 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
+                                onMouseEnter={() => { if (totalItems > 1) setHoveredCalTaskId(task.id); }}
+                                onMouseLeave={() => { if (hoveredCalTaskId === task.id) setHoveredCalTaskId(null); }}
+                                className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -19620,15 +19623,15 @@ export default function Dashboard() {
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
-                                  left: `calc(${taskIdx * columnWidth}% + 2px)`,
-                                  width: `calc(${columnWidth}% - 4px)`,
+                                  left: hoveredCalTaskId === task.id ? '2px' : `calc(${taskIdx * columnWidth}% + 2px)`,
+                                  width: hoveredCalTaskId === task.id ? 'calc(100% - 4px)' : `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
+                                  zIndex: hoveredCalTaskId === task.id ? 56 : (hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43))),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
                                   border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
                                   transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
-                                  boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                  boxShadow: hoveredCalTaskId === task.id ? '0 4px 12px rgba(0,0,0,0.3)' : (hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined),
+                                  transition: 'left 0.15s ease, width 0.15s ease, box-shadow 0.15s ease, transform 0.2s ease',
                                   transformOrigin: 'center center',
                                 }}
                                 data-testid={`time-task-${task.id}`}
