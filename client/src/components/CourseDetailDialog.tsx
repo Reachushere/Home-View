@@ -115,28 +115,36 @@ interface NewTaskForm {
 }
 
 function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string }) {
-  const [local, setLocal] = useState(value ?? '');
-  const savedRef = useRef(value);
+  const fmt = (v: number | null | undefined) => v != null ? (Number.isInteger(v) ? v.toFixed(2) : String(v)) : '';
+  const [local, setLocal] = useState(fmt(value));
+  const lastPropRef = useRef(value);
+  const pendingRef = useRef<number | null | undefined>(undefined);
   useEffect(() => {
-    if (value !== savedRef.current) {
-      savedRef.current = value;
-      setLocal(value ?? '');
+    if (value !== lastPropRef.current) {
+      lastPropRef.current = value;
+      if (pendingRef.current !== undefined && value === pendingRef.current) {
+        pendingRef.current = undefined;
+      }
+      if (pendingRef.current === undefined) {
+        setLocal(fmt(value));
+      }
     }
   }, [value]);
   return (
     <input
       type="text"
-      inputMode="numeric"
-      pattern="[0-9]*"
+      inputMode="decimal"
+      pattern="[0-9]*\.?[0-9]*"
       className="w-[30px] h-5 text-[9px] text-center bg-white border border-white/30 rounded text-black placeholder:text-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       placeholder={placeholder}
       value={local}
       onChange={(e) => setLocal(e.target.value)}
       onBlur={() => {
-        const parsed = local !== '' ? parseInt(String(local)) : null;
-        if (parsed !== (value ?? null)) {
-          savedRef.current = parsed;
-          onSave(parsed);
+        const parsed = local !== '' ? parseFloat(String(local)) : null;
+        const finalVal = parsed !== null && !isNaN(parsed) ? Math.round(parsed * 100) / 100 : null;
+        if (finalVal !== (value ?? null)) {
+          pendingRef.current = finalVal;
+          onSave(finalVal);
         }
       }}
       onKeyDown={(e) => {
@@ -385,8 +393,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     const currentPercent = weightedTotal > 0 ? (weightedSum / weightedTotal) * 100 : 0;
     const projectedPercent = weightedTotal > 0 ? weightedSum / (totalWeight > 0 ? totalWeight : weightedTotal) * 100 : 0;
     return {
-      currentPercent: Math.round(currentPercent * 10) / 10,
-      projectedPercent: Math.round(projectedPercent * 10) / 10,
+      currentPercent: Math.round(currentPercent * 100) / 100,
+      projectedPercent: Math.round(projectedPercent * 100) / 100,
       currentGrade: percentToLetterGrade(currentPercent),
       projectedGrade: percentToLetterGrade(projectedPercent),
       gradedWeight: weightedTotal,
@@ -651,7 +659,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             testId={`input-grade-weight-${task.id}`}
           />
           <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
-            {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
+            {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
         <div className="flex items-center gap-0.5 flex-shrink-0">
@@ -1210,7 +1218,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white/60 uppercase tracking-wider">
+                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] text-white/60 uppercase tracking-wider">
                   <div className="flex-shrink-0" style={{ width: '14px' }} />
                   <div className="flex-shrink-0 w-4" />
                   <div className="flex-shrink-0 w-3" />
@@ -1231,7 +1239,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       %<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <div className="p-0.5"><div className="w-3" /></div>
+                    <div className="p-0.5"><div className="w-3" /></div>
+                  </div>
                 </div>
               );
             })()}
@@ -1287,8 +1298,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     >
                       {isCollapsed ? <ChevronRight className="h-3 w-3 text-white/60" /> : <ChevronDown className="h-3 w-3 text-white/60" />}
                       <span className="text-[9px] font-semibold text-white flex-1">{groupName}</span>
-                      <span className="text-[7px] text-white/50">{tasks.length} items · Wt: {groupWeight}%</span>
-                      {groupTotal > 0 && <span className="text-[7px] text-white/50">· {Math.round((groupValue / groupTotal) * 100)}%</span>}
+                      <span className="text-[7px] text-white/50">{tasks.length} items · Wt: {groupWeight.toFixed(2)}%</span>
+                      {groupTotal > 0 && <span className="text-[7px] text-white/50">· {((groupValue / groupTotal) * 100).toFixed(2)}%</span>}
                     </div>
                     {!isCollapsed && (
                       <div className="flex flex-col" style={{ gap: '3px', padding: '3px' }}>
@@ -1302,21 +1313,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               {ungroupedTasks.map(task => renderAssignmentRow(task, null))}
             </div>
             {courseTasks.length > 0 && (
-              <div className="flex items-center gap-2 px-2 py-1.5 mt-1 rounded-md border border-white/20 bg-white/10" data-testid="grade-totals-row">
+              <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-white/20 bg-white/10" data-testid="grade-totals-row">
+                <div className="flex-shrink-0" style={{ width: '14px' }} />
                 <div className="w-4 flex-shrink-0" />
                 <div className="w-3 flex-shrink-0" />
                 <div className="flex-1 min-w-0 text-[9px] font-semibold text-white">Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
                   <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-value">
-                    {courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0) || '—'}
+                    {(() => { const v = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-total">
-                    {courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0) || '—'}
+                    {(() => { const v = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className={`text-[9px] font-semibold w-[30px] text-center ${
                     totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
                   }`} data-testid="text-sum-weight">
-                    {totalWeight || '—'}
+                    {totalWeight ? totalWeight.toFixed(2) : '—'}
                   </span>
                   <span className={`text-[9px] font-semibold w-[30px] text-center ${
                     (() => {
@@ -1328,11 +1340,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     {(() => {
                       const sumTotal = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
                       const sumValue = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-                      return sumTotal > 0 ? `${Math.round((sumValue / sumTotal) * 100)}%` : '—';
+                      return sumTotal > 0 ? `${((sumValue / sumTotal) * 100).toFixed(2)}%` : '—';
                     })()}
                   </span>
                 </div>
-                <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
+                <div className="flex items-center gap-0.5 flex-shrink-0">
+                  <div className="p-0.5"><div className="w-3" /></div>
+                  <div className="p-0.5"><div className="w-3" /></div>
+                </div>
               </div>
             )}
           </div>
@@ -1342,12 +1357,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <div className="flex items-center gap-2 mb-2">
                 <GraduationCap className="h-3.5 w-3.5 text-white" />
                 <span className="text-[10px] font-semibold text-white">Grade Calculator</span>
-                <span className="text-[8px] text-white ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight}% of {totalWeight || gradeCalc.gradedWeight}% weight</span>
+                <span className="text-[8px] text-white ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(2)}% of {(totalWeight || gradeCalc.gradedWeight).toFixed(2)}% weight</span>
               </div>
               <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
                 <div className="text-[8px] text-white mb-1">Current Grade</div>
                 <div className="text-lg font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
-                <div className="text-[9px] text-white" data-testid="text-current-percent">{gradeCalc.currentPercent}%</div>
+                <div className="text-[9px] text-white" data-testid="text-current-percent">{gradeCalc.currentPercent.toFixed(2)}%</div>
               </div>
             </div>
           )}
