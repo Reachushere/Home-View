@@ -17033,10 +17033,10 @@ export default function Dashboard() {
                                     ['B+','77-79%','3.33'],['B','73-76%','3.0'],['B-','70-72%','2.67'],
                                     ['C+','67-69%','2.33'],
                                   ].map(([letter, pct, pts]) => (
-                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
-                                      <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
-                                      <td className="px-1 py-0.5 border border-white/20">{pct}</td>
-                                      <td className="px-1 py-0.5 border border-white/20">{pts}</td>
+                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '17px' }}>
+                                      <td className="px-1 font-semibold border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
+                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
+                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -17048,16 +17048,16 @@ export default function Dashboard() {
                                     ['D+','57-59%','1.33'],['D','53-56%','1.0'],['D-','50-52%','0.67'],
                                     ['F','0-49%','0'],
                                   ].map(([letter, pct, pts]) => (
-                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
-                                      <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
-                                      <td className="px-1 py-0.5 border border-white/20">{pct}</td>
-                                      <td className="px-1 py-0.5 border border-white/20">{pts}</td>
+                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '17px' }}>
+                                      <td className="px-1 font-semibold border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
+                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
+                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
-                                  <tr style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
-                                    <td className="px-1 py-0.5 border border-white/20">&nbsp;</td>
-                                    <td className="px-1 py-0.5 border border-white/20">&nbsp;</td>
-                                    <td className="px-1 py-0.5 border border-white/20">&nbsp;</td>
+                                  <tr style={{ background: 'rgba(255,255,255,0.05)', height: '17px' }}>
+                                    <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
                                   </tr>
                                 </tbody>
                               </table>
