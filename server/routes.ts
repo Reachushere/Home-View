@@ -2787,6 +2787,11 @@ html,body{height:100%;overflow:hidden;background:transparent}
         return res.status(404).json({ error: "File not found" });
       }
 
+      if (file.extractedText) {
+        console.log(`[TextAPI] Using cached extractedText for file ${file.id} (${file.extractedText.length} chars)`);
+        return res.json({ text: file.extractedText });
+      }
+
       const mediaUrl = file.objectPath;
       let textContent = "";
       let fileBuffer: Buffer | null = null;
@@ -2900,6 +2905,12 @@ html,body{height:100%;overflow:hidden;background:transparent}
         .replace(/\. {2,}/g, '.\n\n')
         .replace(/\s+/g, ' ')
         .trim();
+
+      if (textContent && file.id) {
+        storage.updateFile(file.id, { extractedText: textContent }).then(() => {
+          console.log(`[TextAPI] Cached ${textContent.length} chars for file ${file.id}`);
+        }).catch((e: any) => console.error(`[TextAPI] Cache save failed:`, e.message));
+      }
 
       res.json({ text: textContent, fileName: file.displayName || file.originalName });
     } catch (err) {
