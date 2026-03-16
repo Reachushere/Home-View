@@ -16524,17 +16524,17 @@ export default function Dashboard() {
                 {(() => {
                   const semesterDefs = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
-                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions (PPA322)', period: 'May 5 – Jun 20' },
-                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government (POL332, POG210)', period: 'May 5 – Jun 20' },
-                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes (PPA422)', period: 'Jun 23 – Aug 8' },
+                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions', period: 'May 5 – Jun 20' },
+                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government', period: 'May 5 – Jun 20' },
+                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes', period: 'Jun 23 – Aug 8' },
                     ]},
                     { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
-                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State (POG315, PPA521)', period: '' },
-                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped! The Art of Image Retouching', period: '' },
-                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government (POG310, PPA522)', period: '' },
+                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State', period: '' },
+                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped!', period: '' },
+                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government', period: '' },
                     ]},
                     { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
-                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government (POL122)', period: '' },
+                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government', period: '' },
                       { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: '' },
                       { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: '' },
                     ]},
@@ -16612,7 +16612,7 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="flex flex-col px-2 py-1.5 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all gap-0.5"
+                        className="flex items-center px-2 py-1 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all gap-1"
                         style={{ background: bgColor }}
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
@@ -16620,54 +16620,48 @@ export default function Dashboard() {
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                          <span className="text-[10px] font-bold text-white flex-shrink-0">{displayName}</span>
-                          {subtitle && <span className="text-[9px] text-white">- {subtitle}</span>}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            {semCourse.period && <span className="text-[8px] text-white/70">{semCourse.period}</span>}
-                            {(currentCourse?.professor || profInfo.professor) && <span className="text-[7px] text-white underline truncate" style={{ maxWidth: '90px' }}>{currentCourse?.professor || profInfo.professor}</span>}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <span
-                              className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
-                              data-testid={`aas-status-${semCourse.code}`}
-                              onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
-                            >
-                              {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
-                            </span>
-                            <select
-                              className="text-[8px] text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-                              style={{ width: '40px', minWidth: '40px' }}
-                              value={currentPriority}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                const val = parseInt(e.target.value, 10);
-                                setDraftCoursePlayPriority(prev => ({ ...prev, [priorityKey]: val }));
-                              }}
-                              data-testid={`select-priority-${semCourse.code}`}
-                            >
-                              <option value={0}>—</option>
-                              {Array.from({ length: totalInSem }, (_, i) => (
-                                <option key={i + 1} value={i + 1}>#{i + 1}</option>
-                              ))}
-                            </select>
-                            <button
-                              className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                              style={{ marginRight: '-5px' }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingSchoolCourseKey(semCourse.code);
-                                setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
-                              }}
-                              data-testid={`button-edit-course-${semCourse.code}`}
-                            >
-                              <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" />
-                            </button>
-                          </div>
+                        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
+                        <span className="text-[9px] font-bold text-white flex-shrink-0">{displayName}</span>
+                        {subtitle && <span className="text-[8px] text-white truncate">- {subtitle}</span>}
+                        {semCourse.period && <span className="text-[7px] text-white/70 whitespace-nowrap">{semCourse.period}</span>}
+                        <div className="flex items-center gap-1 ml-auto flex-shrink-0">
+                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[7px] text-white underline truncate" style={{ maxWidth: '80px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                          <span
+                            className={`text-[6px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                            data-testid={`aas-status-${semCourse.code}`}
+                            onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
+                          >
+                            {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
+                          </span>
+                          <select
+                            className="text-[7px] text-white bg-white/10 rounded px-0.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
+                            style={{ width: '36px', minWidth: '36px' }}
+                            value={currentPriority}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              const val = parseInt(e.target.value, 10);
+                              setDraftCoursePlayPriority(prev => ({ ...prev, [priorityKey]: val }));
+                            }}
+                            data-testid={`select-priority-${semCourse.code}`}
+                          >
+                            <option value={0}>—</option>
+                            {Array.from({ length: totalInSem }, (_, i) => (
+                              <option key={i + 1} value={i + 1}>#{i + 1}</option>
+                            ))}
+                          </select>
+                          <button
+                            className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                            style={{ marginRight: '-3px' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingSchoolCourseKey(semCourse.code);
+                              setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
+                            }}
+                            data-testid={`button-edit-course-${semCourse.code}`}
+                          >
+                            <Pencil className="w-2 h-2 text-white hover:text-white/80" />
+                          </button>
                         </div>
                       </div>
                     );
