@@ -898,19 +898,34 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="text-white text-[9px] mb-0.5 block">Course Colour</label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5">
-                      <label className="text-white/60 text-[8px]">Start</label>
-                      <input type="color" value={editInfo.color} onChange={(e) => setEditInfo({...editInfo, color: e.target.value})} className="w-7 h-7 rounded-full border border-white/30 cursor-pointer" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-edit-color-start" />
+                <div className="flex items-end justify-between">
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Course Colour</label>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1.5">
+                        <label className="text-white/60 text-[8px]">Start</label>
+                        <input type="color" value={editInfo.color} onChange={(e) => setEditInfo({...editInfo, color: e.target.value})} className="w-7 h-7 rounded-full border border-white/30 cursor-pointer" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-edit-color-start" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <label className="text-white/60 text-[8px]">End</label>
+                        <input type="color" value={editInfo.colorEnd} onChange={(e) => setEditInfo({...editInfo, colorEnd: e.target.value})} className="w-7 h-7 rounded-full border border-white/30 cursor-pointer" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-edit-color-end" />
+                      </div>
+                      <div className="w-10 h-5 rounded-full" style={{ background: `linear-gradient(to right, ${editInfo.color}, ${editInfo.colorEnd})` }} />
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <label className="text-white/60 text-[8px]">End</label>
-                      <input type="color" value={editInfo.colorEnd} onChange={(e) => setEditInfo({...editInfo, colorEnd: e.target.value})} className="w-7 h-7 rounded-full border border-white/30 cursor-pointer" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-edit-color-end" />
-                    </div>
-                    <div className="w-10 h-5 rounded-full" style={{ background: `linear-gradient(to right, ${editInfo.color}, ${editInfo.colorEnd})` }} />
                   </div>
+                  <label className="cursor-pointer" data-testid="button-upload-assignment">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      className="hidden"
+                      onChange={handleUploadAssignment}
+                      disabled={isParsingPdf || isUploading}
+                    />
+                    <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                      {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                      {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
+                    </div>
+                  </label>
                 </div>
               </div>
             ) : (
@@ -1372,20 +1387,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           )}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10 }}>
-          <label className="cursor-pointer" data-testid="button-upload-assignment">
-            <input
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={handleUploadAssignment}
-              disabled={isParsingPdf || isUploading}
-            />
-            <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-              {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-              {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
-            </div>
-          </label>
+        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10 }}>
           <div className="flex gap-2">
             <Button
               type="button"
