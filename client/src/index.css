@@ -1983,12 +1983,33 @@ select option {
 
 input[type="date"],
 input[type="time"] {
-  color: black !important;
+  color: white !important;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(0);
+  filter: invert(1);
+}
+
+input[type="time"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit {
+  color: white;
+}
+
+input[type="time"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  color: white;
+}
+
+input[type="time"]::-webkit-datetime-edit-text,
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field,
+input[type="time"]::-webkit-datetime-edit-ampm-field,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: white;
 }
 
 @keyframes soundWave {
