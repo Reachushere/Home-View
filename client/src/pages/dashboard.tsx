@@ -17059,7 +17059,24 @@ export default function Dashboard() {
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
-                                <span className="text-[10px] text-white whitespace-nowrap ml-1">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
+                                <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
+                                  const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                                  const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                                  const vals: number[] = [];
+                                  for (const c of sem.courses) {
+                                    const code = c.code.replace(/\s/g, '');
+                                    const info = pastCourseInfo[code];
+                                    const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, ''); return mc === code || ('C' + mc) === code || mc === code.replace(/^C(?=[A-Z]{2,})/, ''); });
+                                    const cg = certKey ? courseGrades[certKey] : null;
+                                    if (info?.grade && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
+                                    else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                                    else if (cg?.grade && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                                  }
+                                  if (vals.length === 0) return `${sem.courses.length} course${sem.courses.length !== 1 ? 's' : ''}`;
+                                  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+                                  const gpaLetter = avg >= 4.17 ? 'A+' : avg >= 3.84 ? 'A' : avg >= 3.5 ? 'A-' : avg >= 3.17 ? 'B+' : avg >= 2.84 ? 'B' : avg >= 2.5 ? 'B-' : avg >= 2.17 ? 'C+' : avg >= 1.84 ? 'C' : avg >= 1.34 ? 'C-' : avg >= 0.5 ? 'D' : 'F';
+                                  return `GPA: ${avg.toFixed(2)} (${gpaLetter})`;
+                                })()}</span>
                               </div>
                               <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
                                 {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
