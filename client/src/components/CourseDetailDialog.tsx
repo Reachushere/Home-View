@@ -1237,27 +1237,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             </Button>
             <Button
               variant="outline"
-              disabled={courseTasks.length > 0 && totalWeight !== 100}
               onClick={() => {
                 if (onSaveCourseInfo) {
                   onSaveCourseInfo(editInfo);
                 }
                 onClose();
               }}
-              className={`border text-white hover:text-white hover:bg-transparent transition-all duration-200 h-6 w-[110px] ${
-                courseTasks.length > 0 && totalWeight !== 100
-                  ? '!border-white/20 opacity-50 cursor-not-allowed'
-                  : '!border-white/50 hover:!border-white'
-              }`}
+              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
               style={{
-                boxShadow: courseTasks.length > 0 && totalWeight !== 100
-                  ? 'none'
-                  : '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                 fontSize: '12px'
               }}
               data-testid="button-save-course-detail"
             >
-              {courseTasks.length > 0 && totalWeight !== 100 ? `Wt: ${totalWeight}%` : 'Save'}
+              Save
             </Button>
           </div>
         </div>
