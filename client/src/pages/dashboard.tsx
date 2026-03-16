@@ -17025,13 +17025,13 @@ export default function Dashboard() {
                             <div className="px-2 py-1.5 border-b flex items-center justify-center flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
-                            <div className="p-1 flex gap-1">
+                            <div className="p-1 flex" style={{ gap: '10px' }}>
                               <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
                                 <thead>
                                   <tr style={{ background: '#1a4b7a' }}>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Ltr</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Letter</th>
                                     <th className="px-1 py-0.5 text-left font-bold border border-white/30">%</th>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GP</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GPA</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -17040,7 +17040,7 @@ export default function Dashboard() {
                                     ['B+','77-79','3.33'],['B','73-76','3.0'],['B-','70-72','2.67'],
                                     ['C+','67-69','2.33'],
                                   ].map(([letter, pct, pts]) => (
-                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)' }}>
+                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
                                       <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
                                       <td className="px-1 py-0.5 border border-white/20">{pct}</td>
                                       <td className="px-1 py-0.5 border border-white/20">{pts}</td>
@@ -17051,9 +17051,9 @@ export default function Dashboard() {
                               <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
                                 <thead>
                                   <tr style={{ background: '#1a4b7a' }}>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Ltr</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Letter</th>
                                     <th className="px-1 py-0.5 text-left font-bold border border-white/30">%</th>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GP</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GPA</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -17062,12 +17062,17 @@ export default function Dashboard() {
                                     ['D+','57-59','1.33'],['D','53-56','1.0'],['D-','50-52','0.67'],
                                     ['F','0-49','0'],
                                   ].map(([letter, pct, pts]) => (
-                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)' }}>
+                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
                                       <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
                                       <td className="px-1 py-0.5 border border-white/20">{pct}</td>
                                       <td className="px-1 py-0.5 border border-white/20">{pts}</td>
                                     </tr>
                                   ))}
+                                  <tr style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
+                                    <td className="px-1 py-0.5 border border-white/20">&nbsp;</td>
+                                    <td className="px-1 py-0.5 border border-white/20">&nbsp;</td>
+                                    <td className="px-1 py-0.5 border border-white/20">&nbsp;</td>
+                                  </tr>
                                 </tbody>
                               </table>
                             </div>
