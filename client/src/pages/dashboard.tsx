@@ -21482,7 +21482,7 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             overflow: 'visible',
-            right: '17px',
+            right: '14px',
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
