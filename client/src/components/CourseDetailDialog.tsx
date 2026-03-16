@@ -1044,10 +1044,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="w-3 flex-shrink-0" />
                 <div className="flex-1 min-w-0">Assignment</div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <span className="w-[28px] text-center">%</span>
+                  <span className="w-[28px] text-center">Wt%</span>
                   <span className="w-[28px] text-center">Total</span>
                   <span className="w-[28px] text-center">Score</span>
-                  <span className="w-[28px] text-center">Wt%</span>
+                  <span className="w-[28px] text-center">%</span>
                 </div>
                 <div className="w-6 flex-shrink-0" />
               </div>
@@ -1094,9 +1094,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       </div>
                     </div>
                     <div className="flex items-center gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <span className="text-[9px] text-white/70 w-[28px] text-center" data-testid={`text-grade-percent-${task.id}`}>
-                        {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
-                      </span>
+                      <input
+                        type="number"
+                        className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+                        placeholder="Wt"
+                        value={task.gradeWeight ?? ''}
+                        onChange={(e) => {
+                          const val = e.target.value ? parseInt(e.target.value) : null;
+                          updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } });
+                        }}
+                        data-testid={`input-grade-weight-${task.id}`}
+                      />
                       <input
                         type="number"
                         className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
@@ -1119,17 +1127,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         }}
                         data-testid={`input-grade-value-${task.id}`}
                       />
-                      <input
-                        type="number"
-                        className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
-                        placeholder="Wt"
-                        value={task.gradeWeight ?? ''}
-                        onChange={(e) => {
-                          const val = e.target.value ? parseInt(e.target.value) : null;
-                          updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } });
-                        }}
-                        data-testid={`input-grade-weight-${task.id}`}
-                      />
+                      <span className="text-[9px] text-white/70 w-[28px] text-center" data-testid={`text-grade-percent-${task.id}`}>
+                        {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
+                      </span>
                     </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate(task.id); }}
@@ -1149,6 +1149,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-1 min-w-0 text-[9px] font-semibold text-white">Totals</div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
                   <span className={`text-[9px] font-semibold w-[28px] text-center ${
+                    totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
+                  }`} data-testid="text-sum-weight">
+                    {totalWeight || '—'}
+                  </span>
+                  <span className="text-[9px] font-semibold text-white w-[28px] text-center" data-testid="text-sum-total">
+                    {courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0) || '—'}
+                  </span>
+                  <span className="text-[9px] font-semibold text-white w-[28px] text-center" data-testid="text-sum-value">
+                    {courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0) || '—'}
+                  </span>
+                  <span className={`text-[9px] font-semibold w-[28px] text-center ${
                     (() => {
                       const sumTotal = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
                       const sumValue = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
@@ -1160,17 +1171,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       const sumValue = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
                       return sumTotal > 0 ? `${Math.round((sumValue / sumTotal) * 100)}%` : '—';
                     })()}
-                  </span>
-                  <span className="text-[9px] font-semibold text-white w-[28px] text-center" data-testid="text-sum-total">
-                    {courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0) || '—'}
-                  </span>
-                  <span className="text-[9px] font-semibold text-white w-[28px] text-center" data-testid="text-sum-value">
-                    {courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0) || '—'}
-                  </span>
-                  <span className={`text-[9px] font-semibold w-[28px] text-center ${
-                    totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
-                  }`} data-testid="text-sum-weight">
-                    {totalWeight || '—'}
                   </span>
                 </div>
                 <div className="w-6 flex-shrink-0" />
