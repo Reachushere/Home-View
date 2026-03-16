@@ -16600,7 +16600,7 @@ export default function Dashboard() {
                           return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
+                        <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && (() => {
                             const profName = currentCourse?.professor || profInfo.professor;
                             const profEmail = currentCourse?.professorEmail || profInfo.email;
