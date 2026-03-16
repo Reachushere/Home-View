@@ -14392,6 +14392,18 @@ export default function Dashboard() {
                   >
                     Cancel
                   </Button>
+                  <button
+                    onClick={() => {
+                      setIsAddDialogOpen(false);
+                      setInitialStartTime("");
+                      setInitialEndTime("");
+                      setNewTaskType("module");
+                    }}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-x-close-add-task"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
               <div className="p-4 flex-1 overflow-y-auto [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&_span]:text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_svg]:text-white">
@@ -14416,16 +14428,18 @@ export default function Dashboard() {
 
           {/* Add Chooser Dialog */}
           {isAddChooserOpen && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => setIsAddChooserOpen(false)}>
+            <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={() => setIsAddChooserOpen(false)}>
               <div
                 className="rounded-xl w-[320px] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                  background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
                   border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15)' }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15)' }}>
                   <span className="text-[12px] font-normal text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>WHAT WOULD YOU LIKE TO ADD?</span>
                 </div>
                 <div className="flex flex-col gap-3 p-6">
@@ -14465,7 +14479,7 @@ export default function Dashboard() {
 
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
+            <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
                 className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
@@ -22960,7 +22974,7 @@ export default function Dashboard() {
         
         {/* Project Dialog - Burst from Center */}
         {projectDialogOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
+          <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }}>
             <div
               className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
               style={{
