@@ -18500,7 +18500,7 @@ export default function Dashboard() {
                       if (!dayForecast) return null;
                       return (
                         <>
-                          <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-2px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
+                          <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-4px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
                             <span className="text-[10px] font-bold leading-none" style={{ color: '#ffffff' }}>{dayForecast.high}°</span>
                           </div>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', bottom: '2px' }} data-testid={`weather-temp-low-${shiftDateStr}`}>
