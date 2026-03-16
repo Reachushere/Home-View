@@ -12742,7 +12742,7 @@ export default function Dashboard() {
                     {avgGpa !== null ? (
                       <>
                         <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
-                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(avgGpa)}, {gpaValues.length} {gpaValues.length === 1 ? 'course' : 'courses'})</span>
+                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(avgGpa)})</span>
                       </>
                     ) : (
                       <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
