@@ -16620,15 +16620,14 @@ export default function Dashboard() {
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                         <div className="h-px flex-1 bg-white/20" />
                       </div>
-                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch', gridAutoRows: '1fr' }}>
+                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch' }}>
                         {semesterDefs.filter(s => s.year === year).map(sem => {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
-                          const ref2026 = semesterDefs.find(s => s.key === 'w2026');
-                          const ref2026Height = ref2026 ? ref2026.courses.length : 3;
+                          const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.22)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.4)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), ...(sem.courses.length === 0 && sem.year >= 2026 ? { minHeight: '120px' } : {}) }}>
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.25)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.3)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.35)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.5)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.35)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.4)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
