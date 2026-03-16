@@ -17117,7 +17117,7 @@ export default function Dashboard() {
                                     else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                                     else if (cg?.grade && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
                                   }
-                                  if (vals.length === 0) return `${sem.courses.length} course${sem.courses.length !== 1 ? 's' : ''}`;
+                                  if (vals.length === 0) return sem.courses.length > 0 ? `${sem.courses.length} course${sem.courses.length !== 1 ? 's' : ''}` : '';
                                   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
                                   const gpaLetter = avg >= 4.17 ? 'A+' : avg >= 3.84 ? 'A' : avg >= 3.5 ? 'A-' : avg >= 3.17 ? 'B+' : avg >= 2.84 ? 'B' : avg >= 2.5 ? 'B-' : avg >= 2.17 ? 'C+' : avg >= 1.84 ? 'C' : avg >= 1.34 ? 'C-' : avg >= 0.5 ? 'D' : 'F';
                                   return `GPA: ${avg.toFixed(2)} (${gpaLetter})`;
