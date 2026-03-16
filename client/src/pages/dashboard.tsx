@@ -13599,14 +13599,17 @@ export default function Dashboard() {
           const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
           const ccBase = cc.replace(/^C(?=[A-Z]{2,})/, '');
           const allSlots = [...Object.keys(inProgressCourses), ...Object.keys(checkedCourses)];
+          let bestLevel = 0;
           for (const sk of allSlots) {
             const slotBase = sk.replace(/^L[123]_/, '').toUpperCase();
             if (sk.includes(cc) || slotBase === cc || slotBase === ccBase || sk.includes(ccBase)) {
-              if (sk.startsWith('L3_')) return 'Certificate 3';
-              if (sk.startsWith('L2_')) return 'Certificate 2';
-              return 'Certificate 1';
+              const lvl = sk.startsWith('L3_') ? 3 : sk.startsWith('L2_') ? 2 : 1;
+              if (lvl > bestLevel) bestLevel = lvl;
             }
           }
+          if (bestLevel === 3) return 'Certificate 3';
+          if (bestLevel === 2) return 'Certificate 2';
+          if (bestLevel === 1) return 'Certificate 1';
           for (const level of ['L1', 'L2', 'L3'] as const) {
             for (const section of certSections[level]) {
               for (const member of section.members) {
