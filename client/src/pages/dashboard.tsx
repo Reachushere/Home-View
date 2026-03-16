@@ -3562,8 +3562,8 @@ export default function Dashboard() {
     const prevCompleted = isPreviouslyCompleted(id);
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     const isCompleted = !activeInLater && (checkedCourses[id] || hasPercent);
-    const isDisabled = activeInLater || (!isCompleted && (sectionDone || greyed || prevCompleted));
-    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    const isDisabled = activeInLater || (!isCompleted && (sectionDone || greyed));
+    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : prevCompleted ? 'red' : 'red';
     const cycle = () => {
       if (isDisabled) return;
       if (state === 'red') {
@@ -3611,7 +3611,7 @@ export default function Dashboard() {
     const greyed = isCourseGreyedOut(id);
     const prevCompleted = isPreviouslyCompleted(id);
     const isCompletedAdj = !activeInLater && isCompleted;
-    const isDisabled = activeInLater || (!isCompletedAdj && (sectionDone || greyed || prevCompleted));
+    const isDisabled = activeInLater || (!isCompletedAdj && (sectionDone || greyed));
     if (isDisabled) return;
     const state = isCompletedAdj ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
     if (state === 'red') {
@@ -12925,7 +12925,7 @@ export default function Dashboard() {
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
+                      {isActiveInLaterLevel(c.id) ? <span className="text-[9px] text-gray-400 text-center">—</span> : <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
@@ -12953,7 +12953,7 @@ export default function Dashboard() {
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
+                      {isActiveInLaterLevel(c.id) ? <span className="text-[9px] text-gray-400 text-center">—</span> : <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
