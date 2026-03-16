@@ -13644,7 +13644,7 @@ export default function Dashboard() {
           bottom: '29px',
           left: '50%',
           transform: 'translateX(-50%)',
-          display: 'block',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block',
           textDecoration: 'none',
           zIndex: 10002,
         }}
@@ -13666,6 +13666,7 @@ export default function Dashboard() {
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined,
         }}
         onClick={() => {
           setIsAddChooserOpen(true);
@@ -13687,6 +13688,7 @@ export default function Dashboard() {
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined,
         }}
         onClick={() => {
           window.location.href = '/projects';
@@ -18349,7 +18351,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
-            style={{ bottom: `${calendarBottom - 23}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: isSettingsPanelOpen ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: `${calendarBottom - 23}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -18362,7 +18364,7 @@ export default function Dashboard() {
           </Button>
           <div
             className="fixed"
-            style={{ bottom: `${calendarBottom - 23}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: isSettingsPanelOpen ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 23}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)' }} />
             <Button
