@@ -1737,6 +1737,8 @@ export default function Dashboard() {
   const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
+  const coursesScrollRef = useRef<HTMLDivElement>(null);
+  const [coursesScrolled, setCoursesScrolled] = useState(false);
   const [draftCoursePlayPriority, setDraftCoursePlayPriority] = useState<Record<string, number>>({});
   const [isRemainingCoursesDialogOpen, setIsRemainingCoursesDialogOpen] = useState(false);
   const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
@@ -16458,7 +16460,7 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* School Courses Dialog - All past + current courses organized by semester */}
+          {/* Courses Dialog - All past + current courses organized by semester */}
           {isSchoolCoursesDialogOpen && createPortal(
             <div>
             <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => setIsSchoolCoursesDialogOpen(false)} />
@@ -16474,7 +16476,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white' }}>
+              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white', position: 'relative' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
                 <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
                   <Button
                     type="button"
@@ -16673,6 +16675,16 @@ export default function Dashboard() {
                   ));
                 })()}
               </div>
+              {coursesScrolled && (
+                <button
+                  className="absolute right-4 bottom-4 z-10 rounded-full flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+                  style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(8px)' }}
+                  onClick={() => coursesScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+                  data-testid="button-courses-scroll-top"
+                >
+                  <ChevronUp className="text-white" style={{ width: '18px', height: '18px' }} />
+                </button>
+              )}
               {editingSchoolCourseKey && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
                   <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg p-4 w-[300px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
