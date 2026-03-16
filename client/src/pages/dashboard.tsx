@@ -15903,13 +15903,6 @@ export default function Dashboard() {
                     SCHOOL SETTINGS
                   </h2>
                 </div>
-                <button 
-                  onClick={() => setIsSchoolDialogOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-school"
-                >
-                  <X className="h-5 w-5" />
-                </button>
               </div>
               <div className="px-4 py-2 border-b border-white/20" style={{ marginTop: '-9px', position: 'relative', zIndex: 1 }}>
                 <Button
