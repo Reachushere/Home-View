@@ -13463,7 +13463,7 @@ export default function Dashboard() {
         <button
           onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
           className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
-          style={{ padding: isVoiceListening ? '10px 16px 10px 12px' : '7.5px', minWidth: isVoiceListening ? '120px' : '35px' }}
+          style={{ padding: isVoiceListening ? '10px 16px 10px 12px' : '7px', minWidth: isVoiceListening ? '120px' : '34px' }}
           data-testid="button-voice-input"
         >
           {isVoiceListening ? (
@@ -21555,7 +21555,7 @@ export default function Dashboard() {
             const showParticles = particleCount > 0;
 
             return (
-              <div className="absolute overflow-hidden pointer-events-none" style={{ zIndex: 45, borderRadius: '12px 12px 0 0', top: 0, left: 0, right: 0, height: '37px' }}>
+              <div className="absolute overflow-hidden pointer-events-none" style={{ zIndex: 45, borderRadius: '12px 12px 0 0', top: 0, left: 0, right: 0, height: '48px' }}>
                 {isFog && (
                   <div className="absolute inset-0" style={{ background: 'rgba(200,200,210,0.15)', backdropFilter: 'blur(1px)' }} />
                 )}
