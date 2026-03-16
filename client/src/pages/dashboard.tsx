@@ -11418,18 +11418,35 @@ export default function Dashboard() {
             className="pill-button-hover"
             onClick={async () => {
               triggerButtonGlow('sync');
-              toast({ title: "Syncing...", description: "Pushing tasks & pulling events" });
+              toast({ title: "Syncing...", description: "Pushing settings, tasks & pulling events" });
               try {
-                const [syncResult, pullResult] = await Promise.all([
+                const syncKeys = [
+                  'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
+                  'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
+                  'coursePlayPriority', 'courseDisplayNames', 'profileData',
+                  'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
+                ];
+                const payload: Record<string, any> = {};
+                for (const key of syncKeys) {
+                  const val = localStorage.getItem(key);
+                  if (val) {
+                    try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
+                  }
+                }
+                const [syncResult, pullResult, bulkResult] = await Promise.all([
                   syncAllCalendarMutation.mutateAsync(),
-                  fetch('/api/calendar/pull', { method: 'POST' })
+                  fetch('/api/calendar/pull', { method: 'POST' }),
+                  Object.keys(payload).length > 0
+                    ? fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json())
+                    : Promise.resolve({ ok: true, saved: 0 }),
                 ]);
                 const syncData = syncResult as any;
                 const failCount = (syncData?.results?.dueEvents?.failed || 0) + (syncData?.results?.prepEvents?.failed || 0);
+                const settingsSaved = (bulkResult as any)?.saved || 0;
                 if (failCount > 0) {
-                  toast({ title: "Sync partially complete", description: `${failCount} event(s) failed (rate limit). Try again in a minute.` });
+                  toast({ title: "Sync partially complete", description: `${failCount} event(s) failed. ${settingsSaved} settings synced.` });
                 } else {
-                  toast({ title: "Sync complete", description: "Push & pull finished" });
+                  toast({ title: "Sync complete", description: `Push & pull finished. ${settingsSaved} settings synced.` });
                 }
                 queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
               } catch (error) {
