@@ -16875,14 +16875,17 @@ export default function Dashboard() {
                               <span className="text-[9px] text-white truncate" style={{ marginLeft: '2px', marginRight: '3px', width: '80px', display: 'inline-block', textAlign: 'right' }}>{profName}</span>
                             );
                           })()}
-                          <span
-                            className={`text-[9px] px-1.5 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : hasSemStarted(semKey) ? 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
-                            style={{ marginRight: '3px', width: '44px', textAlign: 'center', boxSizing: 'border-box' }}
+                          <div
+                            className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
+                            style={{ marginRight: '3px', width: '28px' }}
                             data-testid={`aas-status-${semCourse.code}`}
                             onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                           >
-                            {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
-                          </span>
+                            <div className="flex items-center justify-center border-2 border-white rounded-sm" style={{ width: '14px', height: '14px', background: (aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'white' : 'transparent' }}>
+                              {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && <span style={{ color: 'black', fontSize: '11px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
+                            </div>
+                            <span className="text-[7px] text-white font-medium" style={{ lineHeight: 1.1, marginTop: '1px' }}>AAS</span>
+                          </div>
                           <PrioritySelect
                             priorityKey={priorityKey}
                             initialValue={currentPriority}
