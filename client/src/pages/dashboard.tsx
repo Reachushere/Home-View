@@ -16543,6 +16543,7 @@ export default function Dashboard() {
                       { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'First Half (May 5 – Jun 16)' },
                       { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Second Half (Jun 23 – Aug 4)' },
                     ]},
+                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026', courses: [] },
                   ];
 
                   const currentSemKey = (() => {
