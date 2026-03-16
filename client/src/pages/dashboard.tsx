@@ -1877,13 +1877,12 @@ export default function Dashboard() {
       'CPPA101': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
       'PPA102': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
       'CPPA102': { professor: 'Tom McDowell', email: 'thomas.mcdowell@torontomu.ca', grade: 'A', semester: 'Spring/Summer 2025', credits: '1.00' },
-      'PPA125': { professor: '', email: '', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
+      'PPA125': { professor: 'Jennifer Zubick', email: 'jzubick@torontomu.ca', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
       'PPA120': { professor: 'Ryan Phillips', email: 'ryan.j.phillips@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
       'CPPA120': { professor: 'Ryan Phillips', email: 'ryan.j.phillips@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
       'PPA121': { professor: 'Justin Rain', email: 'jrain@torontomu.ca', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
       'CPPA121': { professor: 'Justin Rain', email: 'jrain@torontomu.ca', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
-      'PPA125': { professor: 'Jennifer Zubick', email: 'jzubick@torontomu.ca', grade: '', semester: 'Fall 2025', credits: '1.00' },
-      'CPPA125': { professor: 'Jennifer Zubick', email: 'jzubick@torontomu.ca', grade: '', semester: 'Fall 2025', credits: '1.00' },
+      'CPPA125': { professor: 'Jennifer Zubick', email: 'jzubick@torontomu.ca', grade: 'A+', semester: 'Fall 2025', credits: '1.00' },
       'CGCM738': { professor: 'Shelley Haines', email: 'shelley.haines@torontomu.ca', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
       'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
@@ -1903,6 +1902,7 @@ export default function Dashboard() {
             ...val,
             professor: val.professor || merged[key].professor,
             email: val.email || merged[key].email,
+            grade: val.grade || merged[key].grade,
           };
         } else {
           merged[key] = val;
@@ -13077,12 +13077,12 @@ export default function Dashboard() {
                   semAllCourses[semKey] = [...(semesterCourseAssignments[semKey] || [])];
                   semAllCourses[semKey].forEach(c => allDefCodes.add(c.code.toUpperCase().replace(/\s/g, '')));
                 }
-                const currentSemKey = relevantSemKeys[relevantSemKeys.length - 1] || '';
-                if (currentSemKey && semAllCourses[currentSemKey]) {
+                const currentSemKeyForEnrich = relevantSemKeys[relevantSemKeys.length - 1] || '';
+                if (currentSemKeyForEnrich && semAllCourses[currentSemKeyForEnrich]) {
                   coursesData.courses.filter(c => c.name.trim()).forEach(c => {
                     const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                     if (code && !allDefCodes.has(code)) {
-                      semAllCourses[currentSemKey].push({ code });
+                      semAllCourses[currentSemKeyForEnrich].push({ code });
                       allDefCodes.add(code);
                     }
                   });
@@ -13094,12 +13094,16 @@ export default function Dashboard() {
                   const vals: number[] = [];
                   for (const c of courses) {
                     const code = c.code.replace(/\s/g, '');
-                    const info = pastCourseInfo[code];
-                    const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, ''); return mc === code || ('C' + mc) === code || mc === code.replace(/^C(?=[A-Z]{2,})/, ''); });
+                    const codeNorm = code.toUpperCase();
+                    const codeNoC = codeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+                    const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
+                    const certKey = Object.keys(certCourseMap).find(k => {
+                      const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase();
+                      return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNoC;
+                    });
                     const cg = certKey ? courseGrades[certKey] : null;
                     let electiveGrade: { grade: string; percent: string } | null = null;
                     if (!cg?.percent && !cg?.grade) {
-                      const codeNorm = code.toUpperCase();
                       for (const [slot, elVal] of Object.entries(openElectives)) {
                         if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
                           if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
@@ -13109,11 +13113,11 @@ export default function Dashboard() {
                         }
                       }
                     }
-                    if (info?.grade && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
+                    if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
                     else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
-                    else if (cg?.grade && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                    else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
-                    else if (electiveGrade?.grade && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
+                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                   }
                   if (vals.length > 0) {
                     semGpas.push(vals.reduce((a, b) => a + b, 0) / vals.length);
@@ -17174,8 +17178,9 @@ export default function Dashboard() {
                                   const vals: number[] = [];
                                   for (const c of sem.courses) {
                                     const code = c.code.replace(/\s/g, '');
-                                    const info = pastCourseInfo[code];
-                                    const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, ''); return mc === code || ('C' + mc) === code || mc === code.replace(/^C(?=[A-Z]{2,})/, ''); });
+                                    const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
+                                    const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
+                                    const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
                                     const cg = certKey ? courseGrades[certKey] : null;
                                     let electiveGrade: { grade: string; percent: string } | null = null;
                                     if (!cg?.percent && !cg?.grade) {
@@ -17189,11 +17194,11 @@ export default function Dashboard() {
                                         }
                                       }
                                     }
-                                    if (info?.grade && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
+                                    if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
                                     else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
-                                    else if (cg?.grade && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                                    else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
                                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
-                                    else if (electiveGrade?.grade && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
+                                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                                   }
                                   if (vals.length === 0) return '';
                                   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
