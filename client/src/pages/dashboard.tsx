@@ -16653,19 +16653,19 @@ export default function Dashboard() {
                               <option key={i + 1} value={i + 1}>#{i + 1}</option>
                             ))}
                           </select>
+                          <button
+                            className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                            style={{ marginLeft: '2px' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingSchoolCourseKey(semCourse.code);
+                              setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
+                            }}
+                            data-testid={`button-edit-course-${semCourse.code}`}
+                          >
+                            <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" />
+                          </button>
                         </div>
-                        <button
-                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                          style={{ marginLeft: '-13px' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingSchoolCourseKey(semCourse.code);
-                            setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
-                          }}
-                          data-testid={`button-edit-course-${semCourse.code}`}
-                        >
-                          <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" />
-                        </button>
                         <ChevronRight className="text-white flex-shrink-0 ml-0.5" style={{ width: '12px', height: '12px' }} />
                       </div>
                     );
