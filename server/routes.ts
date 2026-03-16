@@ -5569,13 +5569,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     console.log(`${logPrefix} tablet-nav set for devices`);
 
     try {
-      for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255', 'input keyevent KEYCODE_F11']) {
+      for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
         await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
         });
       }
-      console.log(`${logPrefix} Tablet wakeup + brightness max + fullscreen sent`);
+      await new Promise(r => setTimeout(r, 1500));
+      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
+      });
+      await new Promise(r => setTimeout(r, 500));
+      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11' }),
+      });
+      console.log(`${logPrefix} Tablet wakeup + brightness + URL launch + fullscreen sent`);
     } catch (e: any) {
       console.log(`${logPrefix} Tablet setup error: ${e.message}`);
     }
