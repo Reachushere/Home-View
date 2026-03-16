@@ -28,6 +28,7 @@ import {
   Paperclip,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
+import wifiLogoPath from "@assets/Wifi_1773656534064.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
@@ -440,7 +441,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {courseInfo.deliveryMode === "virtual" ? (
               <span className="flex items-center gap-0.5"><img src={zoomLogoPath} alt="Zoom" style={{ width: '37px', height: 'auto', filter: 'brightness(0) invert(1)' }} /> Virtual</span>
             ) : courseInfo.deliveryMode === "online" ? (
-              <span className="flex items-center gap-0.5"><Globe className="h-2.5 w-2.5" /> Online</span>
+              <span className="flex items-center gap-0.5"><img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> Online</span>
             ) : null}
             {courseInfo.courseType && (
               <span className="bg-white/20 px-1.5 py-0.5 rounded text-[8px]">
@@ -592,7 +593,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    {courseInfo.deliveryMode === "virtual" ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '37px', height: 'auto', filter: 'brightness(0) invert(1)' }} /> : <Globe className="h-3 w-3 text-white" />}
+                    {courseInfo.deliveryMode === "virtual" ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '37px', height: 'auto', filter: 'brightness(0) invert(1)' }} /> : courseInfo.deliveryMode === "online" ? <img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> : <Globe className="h-3 w-3 text-white" />}
                     <span className="text-white">Mode:</span>
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
