@@ -971,7 +971,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     key={task.id}
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition-all ${
                       task.isCompleted
-                        ? "bg-white/5 border-white/5 opacity-60"
+                        ? "bg-white/5 border-white/5"
                         : overdue
                         ? "bg-red-500/10 border-red-500/20"
                         : "bg-white/5 border-white/10 hover:bg-white/8"
@@ -987,10 +987,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     >
                       {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
                     </button>
-                    <TypeIcon className="h-3 w-3 text-white flex-shrink-0" />
+                    <TypeIcon className={`h-3 w-3 flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} />
                     <div className="flex-1 min-w-0">
                       <div
-                        className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white" : "text-white"}`}
+                        className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
                         onClick={() => onOpenEditTask?.(task)}
                         data-testid={`link-edit-task-${task.id}`}
                       >
