@@ -12879,6 +12879,8 @@ export default function Dashboard() {
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                     <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
+                    <div className="border-l border-black" style={{ width: '54px', minWidth: '54px' }}></div>
+                    <div className="w-5 border-l border-black"></div>
                   </div>
                   <div className="flex border-b border-black bg-gray-50">
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
