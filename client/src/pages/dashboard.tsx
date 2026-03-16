@@ -12687,14 +12687,14 @@ export default function Dashboard() {
               <Button
                 type="button"
                 variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4 flex items-center gap-1.5 whitespace-nowrap"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
                 style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
                 onClick={() => courseListFileRef.current?.click()}
                 disabled={courseListParsing}
                 data-testid="button-upload-course-list"
                 title="Upload course list to scan for task changes"
               >
-                <Upload className="w-3 h-3" />
+                <Upload className="w-3 h-3 mr-1" />
                 {courseListParsing ? 'Scanning...' : 'Upload Course List'}
               </Button>
               </div>
