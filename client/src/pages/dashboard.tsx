@@ -14161,30 +14161,31 @@ export default function Dashboard() {
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border border-white/30 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
-              <DialogHeader>
-                <DialogTitle className="flex items-center justify-between text-white text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckSquare className="h-5 w-5" />
-                    Completed Tasks
-                  </div>
-                  {allTasks.filter(t => t.isCompleted).length > 0 && (
-                    <button
-                      className="text-xs text-white/70 hover:text-red-400 underline transition-colors font-normal"
-                      onClick={() => {
-                        if (confirm('Permanently delete ALL completed tasks? This cannot be undone.')) {
-                          const completed = allTasks.filter(t => t.isCompleted);
-                          completed.forEach(t => deleteMutation.mutate(t.id));
-                        }
-                      }}
-                      data-testid="button-delete-all-completed"
-                    >
-                      delete all
-                    </button>
-                  )}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border-0 text-white shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.05)] [&_*]:text-white [&_label]:text-white [&_input]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+                <div className="flex items-center gap-2">
+                  <CheckSquare className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    COMPLETED TASKS
+                  </h2>
+                </div>
+                {allTasks.filter(t => t.isCompleted).length > 0 && (
+                  <button
+                    className="text-xs text-white/70 hover:text-red-400 underline transition-colors font-normal"
+                    style={{ marginRight: '15px' }}
+                    onClick={() => {
+                      if (confirm('Permanently delete ALL completed tasks? This cannot be undone.')) {
+                        const completed = allTasks.filter(t => t.isCompleted);
+                        completed.forEach(t => deleteMutation.mutate(t.id));
+                      }
+                    }}
+                    data-testid="button-delete-all-completed"
+                  >
+                    Delete All
+                  </button>
+                )}
+              </div>
+              <div className="flex-1 overflow-y-auto space-y-2 pr-2 px-3 pt-2">
                 {(() => {
                   const completedTasks = allTasks
                     .filter(t => t.isCompleted)
@@ -14295,6 +14296,20 @@ export default function Dashboard() {
                     </div>
                   ));
                 })()}
+              </div>
+              <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCompletedTasksOpen(false)}
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                    fontSize: '12px'
+                  }}
+                  data-testid="button-done-completed-tasks"
+                >
+                  Done
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
