@@ -1083,17 +1083,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <span className="text-[10px] font-semibold text-white">Grade Calculator</span>
                 <span className="text-[8px] text-white ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight}% of {totalWeight || gradeCalc.gradedWeight}% weight</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                  <div className="text-[8px] text-white mb-1">Current Grade</div>
-                  <div className="text-lg font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
-                  <div className="text-[9px] text-white" data-testid="text-current-percent">{gradeCalc.currentPercent}%</div>
-                </div>
-                <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                  <div className="text-[8px] text-white mb-1">Projected Final</div>
-                  <div className="text-lg font-bold text-white/70" data-testid="text-projected-grade">{gradeCalc.projectedGrade}</div>
-                  <div className="text-[9px] text-white" data-testid="text-projected-percent">{gradeCalc.projectedPercent}%</div>
-                </div>
+              <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                <div className="text-[8px] text-white mb-1">Current Grade</div>
+                <div className="text-lg font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
+                <div className="text-[9px] text-white" data-testid="text-current-percent">{gradeCalc.currentPercent}%</div>
               </div>
             </div>
           )}
