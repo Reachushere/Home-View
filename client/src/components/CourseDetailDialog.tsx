@@ -591,13 +591,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       <span className="text-white">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
-                  {(certificateName || certificateType) && (
-                    <div className="flex items-center gap-1.5 col-span-2">
-                      <GraduationCap className="h-3 w-3 text-white" />
-                      <span className="text-white">Certificate:</span>
-                      <span className="text-white text-[9px]">{certificateName || certificateType}</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5 col-span-2">
+                    <GraduationCap className="h-3 w-3 text-white" />
+                    <span className="text-white">Certificate:</span>
+                    <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-3 w-3 text-white" />
                     <span className="text-white">Schedule:</span>
@@ -975,19 +973,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
           </div>
           <div className="flex gap-2">
-            <div
-              role="button"
-              tabIndex={0}
-              onMouseDown={(e) => { e.stopPropagation(); }}
-              onPointerDown={(e) => { e.stopPropagation(); }}
+            <Button
+              type="button"
+              variant="outline"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}
-              className="border border-white/30 text-white/70 hover:text-white hover:border-white/50 bg-transparent transition-all duration-200 rounded-md flex items-center justify-center select-none"
-              style={{ fontSize: '12px', height: '24px', width: '110px', cursor: 'pointer', pointerEvents: 'auto', position: 'relative', zIndex: 99999 }}
+              onPointerDown={(e) => { e.stopPropagation(); }}
+              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px] cursor-pointer"
+              style={{ fontSize: '12px', pointerEvents: 'auto', position: 'relative', zIndex: 99999 }}
               data-testid="button-cancel-course-detail"
             >
               Cancel
-            </div>
+            </Button>
             <Button
               variant="outline"
               onClick={onClose}
