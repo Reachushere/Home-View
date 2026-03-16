@@ -21616,7 +21616,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '40px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42 }}>
+          <div style={{ padding: '0 8px', height: '48px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42 }}>
             <h4
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
@@ -21633,7 +21633,7 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 40) : 0;
+            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 48) : 0;
             const leftWidth = (() => {
               if (homeworkSpacerRef.current && homeworkSectionRef.current) {
                 const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
@@ -21945,7 +21945,7 @@ export default function Dashboard() {
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 40) : 0;
+              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 48) : 0;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
