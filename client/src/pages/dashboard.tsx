@@ -3506,7 +3506,17 @@ export default function Dashboard() {
   const isActiveInLaterLevel = (courseId: string): boolean => {
     const laterIds = laterLevelMap[courseId];
     if (!laterIds) return false;
-    return laterIds.some(lid => inProgressCourses[lid] || checkedCourses[lid] || isL2InProgressFromL1(lid) || (courseGrades[lid]?.percent && courseGrades[lid]?.percent?.trim() !== ''));
+    return laterIds.some(lid => inProgressCourses[lid] || checkedCourses[lid] || isL2InProgressFromL1(lid));
+  };
+
+  const isActiveInEarlierLevel = (courseId: string): boolean => {
+    const prevIds = previousLevelMap[courseId];
+    if (!prevIds) return false;
+    return prevIds.some(pid => inProgressCourses[pid] || checkedCourses[pid]);
+  };
+
+  const isActiveInOtherLevel = (courseId: string): boolean => {
+    return isActiveInLaterLevel(courseId) || isActiveInEarlierLevel(courseId);
   };
 
   const isPreviouslyCompleted = (courseId: string): boolean => {
@@ -3553,8 +3563,7 @@ export default function Dashboard() {
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
     if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
-    if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
-    if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
+    if (isActiveInOtherLevel(id)) return 'bg-gray-200 text-gray-400';
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
     return '';
@@ -3562,13 +3571,12 @@ export default function Dashboard() {
   const shouldStrikethrough = (id: string) => {
     if (checkedCourses[id]) return false;
     if (isSectionFulfilledForCourse(id)) return true;
-    if (isPreviouslyCompleted(id)) return true;
-    if (isActiveInLaterLevel(id)) return true;
+    if (isActiveInOtherLevel(id)) return true;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
     if (isCourseGreyedOut(id)) return true;
     return false;
   };
-  const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
+  const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isActiveInOtherLevel(id);
   const getElectiveCode = (val: string) => {
     if (!val?.trim()) return '';
     const parts = val.split(' ');
@@ -3585,8 +3593,7 @@ export default function Dashboard() {
     if (isDropdownRow(id)) return null;
     if (checkedCourses[id]) return null;
     if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
-    if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Completed)</span>;
-    if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Later Certificate)</span>;
+    if (isActiveInOtherLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Other Certificate)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
   };
@@ -3606,14 +3613,13 @@ export default function Dashboard() {
   };
 
   const renderTriStateToggle = (id: string) => {
-    const activeInLater = isActiveInLaterLevel(id);
+    const activeInOther = isActiveInOtherLevel(id);
     const sectionDone = isSectionFulfilledForCourse(id);
     const greyed = isCourseGreyedOut(id);
-    const prevCompleted = isPreviouslyCompleted(id);
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     const isCompleted = checkedCourses[id];
     const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
-    const isDisabled = prevCompleted || sectionDone || (!isCompleted && !isInProgress && greyed);
+    const isDisabled = activeInOther || sectionDone || (!isCompleted && !isInProgress && greyed);
     const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : isInProgress ? 'yellow' : 'red';
     const cycle = () => {
       if (isDisabled) return;
@@ -3656,11 +3662,11 @@ export default function Dashboard() {
 
   const cycleTriState = (id: string) => {
     const isCompleted = checkedCourses[id];
-    const prevCompleted = isPreviouslyCompleted(id);
+    const activeInOther = isActiveInOtherLevel(id);
     const sectionDone = isSectionFulfilledForCourse(id);
     const greyed = isCourseGreyedOut(id);
     const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
-    const isDisabled = prevCompleted || sectionDone || (!isCompleted && !isInProgress && greyed);
+    const isDisabled = activeInOther || sectionDone || (!isCompleted && !isInProgress && greyed);
     if (isDisabled) return;
     const state = isCompleted ? 'green' : isInProgress ? 'yellow' : 'red';
     if (state === 'red') {
