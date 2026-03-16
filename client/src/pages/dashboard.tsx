@@ -11677,7 +11677,6 @@ export default function Dashboard() {
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
-                    className={prepDaysText === 'today' ? 'animate-zero-day-blink countdown-due-today' : ''}
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onMouseEnter={() => setHoveredCountdownTaskId(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
