@@ -18494,7 +18494,7 @@ export default function Dashboard() {
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
                       const isPastDay = day < startOfDay(new Date());
-                      const tempColor = isPastDay ? 'rgba(255,255,255,0.45)' : '#ffffff';
+                      const tempColor = isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff';
                       return (
                         <>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-6px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
