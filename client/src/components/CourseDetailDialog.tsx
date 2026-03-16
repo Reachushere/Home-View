@@ -395,7 +395,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      className="fixed inset-0 z-[10003] flex items-center justify-center"
       style={{ background: "rgba(0,0,0,0.5)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       data-testid="course-detail-overlay"
