@@ -16274,15 +16274,18 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* School Courses Dialog - All past + current courses */}
-          <Dialog open={isSchoolCoursesDialogOpen} onOpenChange={setIsSchoolCoursesDialogOpen}>
-            <DialogContent
-              className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
-              style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+          {/* School Courses Dialog - All past + current courses organized by semester */}
+          {isSchoolCoursesDialogOpen && (
+            <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
+          )}
+          {isSchoolCoursesDialogOpen && (
+            <div
+              className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10001] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
+              style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
             >
-              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-3 w-3 text-white" />
+                  <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     SCHOOL COURSES
                   </h2>
@@ -16292,100 +16295,148 @@ export default function Dashboard() {
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none' }}>
-                {/* Current Courses */}
-                <div className="mb-4">
-                  <Label className="text-[11px] font-bold mb-2 block" style={{ letterSpacing: '0.05em' }}>Current Courses</Label>
-                  <div className="space-y-1.5">
-                    {coursesData.courses.filter(c => c.name.trim()).map((course, idx) => {
-                      const code = course.name.split(' - ')[0]?.trim();
-                      const name = course.name.split(' - ').slice(1).join(' - ').trim();
-                      return (
-                        <div key={`current-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: course.colorEnd ? `linear-gradient(135deg, ${course.color}44, ${course.colorEnd}44)` : `${course.color}33` }}
-                          onClick={() => {
-                            setSelectedCertCourse({ courseCode: code, courseName: name, certKey: code });
-                          }}
-                          data-testid={`school-course-current-${code}`}
-                        >
-                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: course.colorEnd ? `linear-gradient(to right, ${course.color}, ${course.colorEnd})` : course.color }} />
-                          <span className="text-[11px] font-bold">{code}</span>
-                          {name && <span className="text-[10px] text-white/70">{name}</span>}
-                          {course.professor && (
-                            <span className="text-[10px] text-white/60 underline ml-auto">{course.professor}</span>
+                {(() => {
+                  const semesterDefs = [
+                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
+                      { code: 'CPPA101', name: 'CPPA 101', period: 'First Half (May 5 – Jun 20)' },
+                      { code: 'CPPA120', name: 'CPPA 120', period: 'First Half (May 5 – Jun 20)' },
+                      { code: 'CPPA102', name: 'CPPA 102', period: 'Second Half (Jun 23 – Aug 8)' },
+                    ]},
+                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
+                      { code: 'CPPA125', name: 'CPPA 125', period: 'Full Semester' },
+                      { code: 'CGCM738', name: 'CGCM 738', period: 'Full Semester' },
+                      { code: 'CPPA121', name: 'CPPA 121', period: 'Full Semester' },
+                    ]},
+                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
+                      { code: 'CPPA122', name: 'CPPA 122', period: 'Full Semester' },
+                      { code: 'CFNF400', name: 'CFNF 400', period: 'Full Semester' },
+                      { code: 'CASL101', name: 'CASL 101', period: 'Full Semester' },
+                    ]},
+                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [
+                      { code: 'CECN210', name: 'CECN 210', period: 'Full Semester (May 4 – Jul 31)' },
+                      { code: 'CPHL110', name: 'CPHL 110 — Philosophy of Religion', period: 'First Half (May 5 – Jun 16)' },
+                      { code: 'CHIS105', name: 'CHIS 105 — Inventing Popular Culture', period: 'Second Half (Jun 23 – Aug 4)' },
+                    ]},
+                  ];
+
+                  const years = [...new Set(semesterDefs.map(s => s.year))];
+                  const currentCodes = coursesData.courses.filter(c => c.name.trim()).map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, ''));
+                  const currentCoursesMap = new Map(coursesData.courses.filter(c => c.name.trim()).map(c => {
+                    const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+                    return [code, c];
+                  }));
+
+                  const allPastEntries = new Map<string, { certKey: string; code: string; name: string }>();
+                  Object.entries(checkedCourses).forEach(([certKey, isChecked]) => {
+                    if (!isChecked) return;
+                    const info = certCourseMap[certKey];
+                    if (!info) return;
+                    const elective = openElectives[certKey]?.trim();
+                    let actualCode = info.code;
+                    let actualName = info.name;
+                    if (elective) {
+                      const codeMatch = elective.match(/^([A-Z]{2,5}\s?\d{3}[A-Z]?)\s*(.*)/i);
+                      if (codeMatch) {
+                        actualCode = codeMatch[1].replace(/\s/g, '');
+                        actualName = codeMatch[2] || actualCode;
+                      } else {
+                        actualCode = elective.split(' ')[0];
+                        actualName = elective.split(' ').slice(1).join(' ');
+                      }
+                    }
+                    if (!allPastEntries.has(actualCode.toUpperCase().replace(/\s/g, ''))) {
+                      allPastEntries.set(actualCode.toUpperCase().replace(/\s/g, ''), { certKey, code: actualCode, name: actualName });
+                    }
+                  });
+
+                  const isCurrent = (code: string) => {
+                    const now = new Date();
+                    const w2026End = new Date('2026-04-30');
+                    return now <= w2026End && ['CPPA122', 'CFNF400', 'CASL101'].includes(code.toUpperCase().replace(/\s/g, ''));
+                  };
+
+                  const renderCourseRow = (semCourse: { code: string; name: string; period: string }) => {
+                    const codeNorm = semCourse.code.toUpperCase().replace(/\s/g, '');
+                    const currentCourse = currentCoursesMap.get(codeNorm);
+                    const pastEntry = allPastEntries.get(codeNorm);
+                    const profInfo = pastCourseInfo[semCourse.code] || pastCourseInfo[codeNorm] || { professor: '', email: '', grade: '', semester: '', credits: '1.00' };
+                    const grade = courseGrades[codeNorm]?.percent || courseGrades[semCourse.code]?.percent || profInfo.grade || '';
+                    const isCurrentCourse = !!currentCourse || isCurrent(codeNorm);
+                    const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
+                    const displayName = semCourse.name.includes('—') ? semCourse.name.split('—')[0].trim() : semCourse.name;
+                    const subtitle = semCourse.name.includes('—') ? semCourse.name.split('—').slice(1).join('—').trim() : '';
+                    const bgColor = currentCourse
+                      ? (currentCourse.colorEnd ? `linear-gradient(135deg, ${currentCourse.color}44, ${currentCourse.colorEnd}44)` : `${currentCourse.color}33`)
+                      : isCurrentCourse ? 'rgba(34,197,94,0.15)' : 'rgba(59,130,246,0.12)';
+                    const dotColor = currentCourse
+                      ? (currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color)
+                      : isCurrentCourse ? '#22c55e' : '#3b82f6';
+
+                    return (
+                      <div
+                        key={semCourse.code}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all"
+                        style={{ background: bgColor }}
+                        onClick={() => {
+                          const certKey = pastEntry?.certKey || semCourse.code;
+                          setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
+                        }}
+                        data-testid={`school-course-${semCourse.code}`}
+                      >
+                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: dotColor }} />
+                        <span className="text-[11px] font-bold min-w-[52px]">{displayName}</span>
+                        {subtitle && <span className="text-[10px] text-white/60 truncate">{subtitle}</span>}
+                        <span className="text-[9px] text-white/40 ml-1 whitespace-nowrap">{semCourse.period}</span>
+                        {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/50 whitespace-nowrap">{certType}</span>}
+                        <div className="flex items-center gap-2 ml-auto">
+                          {grade && <span className="text-[10px] text-white/70 font-medium">{grade}%</span>}
+                          {(currentCourse?.professor || profInfo.professor) && (
+                            <span className="text-[10px] text-white/60 underline">{currentCourse?.professor || profInfo.professor}</span>
                           )}
-                          <ChevronRight className="text-white/40 flex-shrink-0" style={{ width: '12px', height: '12px' }} />
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                {/* Past Courses from Degree Tracker */}
-                <div>
-                  <Label className="text-[11px] font-bold mb-2 block" style={{ letterSpacing: '0.05em' }}>Past Courses</Label>
-                  <div className="space-y-1.5">
-                    {(() => {
-                      const currentCodes = coursesData.courses.filter(c => c.name.trim()).map(c => c.name.split(' - ')[0]?.trim().toUpperCase());
-                      const pastEntries: Array<{ certKey: string; code: string; name: string }> = [];
-                      Object.entries(checkedCourses).forEach(([certKey, isChecked]) => {
-                        if (!isChecked) return;
-                        const info = certCourseMap[certKey];
-                        if (!info) return;
-                        const elective = openElectives[certKey]?.trim();
-                        let actualCode = info.code;
-                        let actualName = info.name;
-                        if (elective) {
-                          const codeMatch = elective.match(/^([A-Z]{2,5}\s?\d{3}[A-Z]?)\s*(.*)/i);
-                          if (codeMatch) {
-                            actualCode = codeMatch[1].replace(/\s/g, '');
-                            actualName = codeMatch[2] || actualCode;
-                          } else {
-                            actualCode = elective.split(' ')[0];
-                            actualName = elective.split(' ').slice(1).join(' ');
-                          }
-                        }
-                        if (currentCodes.includes(actualCode.toUpperCase())) return;
-                        if (pastEntries.some(p => p.code === actualCode)) return;
-                        pastEntries.push({ certKey, code: actualCode, name: actualName });
-                      });
-                      if (pastEntries.length === 0) return <div className="text-[10px] text-white/40 italic px-3">No past courses found. Check off completed courses in the Degree Tracker.</div>;
-                      return pastEntries.map((entry, idx) => {
-                        const profInfo = pastCourseInfo[entry.code] || { professor: '', email: '', grade: '', semester: '', credits: '1.00' };
-                        return (
-                          <div key={`past-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all" style={{ background: 'rgba(59,130,246,0.15)' }}
-                            onClick={() => {
-                              setSelectedCertCourse({ courseCode: entry.code, courseName: entry.name, certKey: entry.certKey });
-                            }}
-                            data-testid={`school-course-past-${entry.code}`}
-                          >
-                            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#3b82f6' }} />
-                            <span className="text-[11px] font-bold">{entry.code}</span>
-                            <span className="text-[10px] text-white/70">{entry.name}</span>
-                            {courseCertificateTypes[entry.code] && (
-                              <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/50 whitespace-nowrap">{courseCertificateTypes[entry.code]}</span>
-                            )}
-                            <div className="flex items-center gap-2 ml-auto">
-                              {profInfo.semester && <span className="text-[9px] text-white/50">{profInfo.semester}</span>}
-                              {profInfo.professor && <span className="text-[10px] text-white/60 underline">{profInfo.professor}</span>}
+                        <button
+                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingSchoolCourseKey(semCourse.code);
+                            setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
+                          }}
+                          data-testid={`button-edit-course-${semCourse.code}`}
+                        >
+                          <Pencil className="w-2.5 h-2.5 text-white/40 hover:text-white/80" />
+                        </button>
+                        <ChevronRight className="text-white/40 flex-shrink-0" style={{ width: '12px', height: '12px' }} />
+                      </div>
+                    );
+                  };
+
+                  return years.map(year => (
+                    <div key={year} className="mb-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="h-px flex-1 bg-white/20" />
+                        <span className="text-[13px] font-bold text-white/90 tracking-wide">{year}</span>
+                        <div className="h-px flex-1 bg-white/20" />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {semesterDefs.filter(s => s.year === year).map(sem => (
+                          <div key={sem.key} className="rounded-lg border border-white/15 overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                            <div className="px-3 py-2 border-b border-white/15 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                              <div>
+                                <span className="text-[11px] font-bold text-white/90">{sem.label}</span>
+                                <span className="text-[9px] text-white/40 ml-2">{sem.dates}</span>
+                              </div>
+                              <span className="text-[9px] text-white/40">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                             </div>
-                            <button
-                              className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingSchoolCourseKey(entry.code);
-                                setEditingSchoolCourseData({ professor: profInfo.professor, email: profInfo.email, grade: profInfo.grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: courseCertificateTypes[entry.code] || '' });
-                              }}
-                              data-testid={`button-edit-past-course-${entry.code}`}
-                            >
-                              <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" />
-                            </button>
-                            <ChevronRight className="text-white/40 flex-shrink-0" style={{ width: '12px', height: '12px' }} />
+                            <div className="p-2 space-y-1.5">
+                              {sem.courses.map(c => renderCourseRow(c))}
+                            </div>
                           </div>
-                        );
-                      });
-                    })()}
-                  </div>
-                </div>
+                        ))}
+                      </div>
+                    </div>
+                  ));
+                })()}
               </div>
-              {/* Edit Past Course Professor Dialog */}
               {editingSchoolCourseKey && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
                   <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg p-4 w-[300px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
@@ -16460,11 +16511,11 @@ export default function Dashboard() {
                 </Button>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="text-[10px] border-white/30 hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
-                  <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-save-school-courses">Save</Button>
+                  <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-save-school-courses">Done</Button>
                 </div>
               </div>
-            </DialogContent>
-          </Dialog>
+            </div>
+          )}
 
           {/* Remaining Courses Dialog */}
           <Dialog open={isRemainingCoursesDialogOpen} onOpenChange={setIsRemainingCoursesDialogOpen}>
