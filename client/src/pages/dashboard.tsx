@@ -21350,7 +21350,7 @@ export default function Dashboard() {
             const showParticles = particleCount > 0;
 
             return (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 45, borderRadius: '12px' }}>
+              <div className="absolute overflow-hidden pointer-events-none" style={{ zIndex: 45, borderRadius: '12px 12px 0 0', top: 0, left: 0, right: 0, height: '37px' }}>
                 {isFog && (
                   <div className="absolute inset-0" style={{ background: 'rgba(200,200,210,0.15)', backdropFilter: 'blur(1px)' }} />
                 )}
