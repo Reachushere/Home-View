@@ -3552,18 +3552,19 @@ export default function Dashboard() {
 
   const courseRowClass = (id: string) => {
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
+    if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
     if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
     if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
-    if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
-    if (checkedCourses[id] || inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
+    if (checkedCourses[id]) return false;
+    if (isSectionFulfilledForCourse(id)) return true;
     if (isPreviouslyCompleted(id)) return true;
     if (isActiveInLaterLevel(id)) return true;
-    if (isSectionFulfilledForCourse(id)) return true;
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
     if (isCourseGreyedOut(id)) return true;
     return false;
   };
@@ -3582,10 +3583,11 @@ export default function Dashboard() {
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (isDropdownRow(id)) return null;
-    if (checkedCourses[id] || inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
-    if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Completed)</span>;
+    if (checkedCourses[id]) return null;
     if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
+    if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Completed)</span>;
     if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Later Certificate)</span>;
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
   };
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
@@ -3611,7 +3613,7 @@ export default function Dashboard() {
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     const isCompleted = checkedCourses[id];
     const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
-    const isDisabled = prevCompleted || (!isCompleted && !isInProgress && (sectionDone || greyed));
+    const isDisabled = prevCompleted || sectionDone || (!isCompleted && !isInProgress && greyed);
     const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : isInProgress ? 'yellow' : 'red';
     const cycle = () => {
       if (isDisabled) return;
@@ -3658,7 +3660,7 @@ export default function Dashboard() {
     const sectionDone = isSectionFulfilledForCourse(id);
     const greyed = isCourseGreyedOut(id);
     const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
-    const isDisabled = prevCompleted || (!isCompleted && !isInProgress && (sectionDone || greyed));
+    const isDisabled = prevCompleted || sectionDone || (!isCompleted && !isInProgress && greyed);
     if (isDisabled) return;
     const state = isCompleted ? 'green' : isInProgress ? 'yellow' : 'red';
     if (state === 'red') {
@@ -4220,11 +4222,17 @@ export default function Dashboard() {
       for (const [ck, info] of Object.entries(certCourseMap)) {
         const mapCode = info.code.replace(/\s/g, '').toUpperCase();
         if (mapCode === cn || cn.endsWith(mapCode) || mapCode.endsWith(cn.replace(/^C/, ''))) {
-          updates[ck] = { grade, percent: String(currentPercent) };
+          if (!shouldStrikethrough(ck)) {
+            updates[ck] = { grade, percent: String(currentPercent) };
+          }
         }
       }
     }
-    if (Object.keys(updates).length > 0) {
+    const strikeClearKeys: string[] = [];
+    for (const ck of Object.keys(certCourseMap)) {
+      if (shouldStrikethrough(ck)) strikeClearKeys.push(ck);
+    }
+    if (Object.keys(updates).length > 0 || strikeClearKeys.length > 0) {
       setCourseGrades(prev => {
         const merged = { ...prev };
         let changed = false;
@@ -4232,6 +4240,15 @@ export default function Dashboard() {
           if (!merged[k]?.percent || merged[k].percent.trim() === '') {
             merged[k] = v;
             changed = true;
+          }
+        }
+        for (const sk of strikeClearKeys) {
+          if (merged[sk]?.percent && merged[sk].percent.trim() !== '') {
+            const isDefault = ['PPA101', 'PPA102', 'PPA125', 'L1_PPA120', 'L1_PPA121', 'LIBERAL'].includes(sk);
+            if (!isDefault) {
+              delete merged[sk];
+              changed = true;
+            }
           }
         }
         if (!changed) return prev;
@@ -13595,50 +13612,27 @@ export default function Dashboard() {
         const info = buildCourseInfoForCert();
         if (!info) return null;
         const ck = selectedCertCourse.certKey;
-        const certName = ck.startsWith('L3_') ? 'Certificate 3' : ck.startsWith('L2_') ? 'Certificate 2' : (certSections.L1.some(s => s.members.includes(ck)) || ck.startsWith('L1_') || ['LIBERAL', 'OPEN1', 'OPEN2'].includes(ck)) ? (() => {
-          const cc2 = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
-          const ccBase2 = cc2.replace(/^C(?=[A-Z]{2,})/, '');
-          const allSlots2 = [...Object.keys(inProgressCourses), ...Object.keys(checkedCourses)];
-          let best2 = 1;
-          for (const sk of allSlots2) {
-            const slotBase = sk.replace(/^L[123]_/, '').toUpperCase();
-            if (sk.includes(cc2) || slotBase === cc2 || slotBase === ccBase2 || sk.includes(ccBase2)) {
-              const lvl = sk.startsWith('L3_') ? 3 : sk.startsWith('L2_') ? 2 : 1;
-              if (lvl > best2) best2 = lvl;
-            }
-          }
-          return best2 === 3 ? 'Certificate 3' : best2 === 2 ? 'Certificate 2' : 'Certificate 1';
-        })() : (() => {
+        const certName = (() => {
           const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
           const ccBase = cc.replace(/^C(?=[A-Z]{2,})/, '');
-          const allSlots = [...Object.keys(inProgressCourses), ...Object.keys(checkedCourses)];
           let bestLevel = 0;
-          for (const sk of allSlots) {
-            const slotBase = sk.replace(/^L[123]_/, '').toUpperCase();
-            if (sk.includes(cc) || slotBase === cc || slotBase === ccBase || sk.includes(ccBase)) {
-              const lvl = sk.startsWith('L3_') ? 3 : sk.startsWith('L2_') ? 2 : 1;
-              if (lvl > bestLevel) bestLevel = lvl;
+          for (const level of ['L1', 'L2', 'L3'] as const) {
+            const lvl = level === 'L3' ? 3 : level === 'L2' ? 2 : 1;
+            for (const section of certSections[level]) {
+              for (const member of section.members) {
+                const memberBase = member.replace(/^L[123]_/, '').toUpperCase();
+                if (memberBase === cc || memberBase === ccBase || member === ck) {
+                  if (lvl > bestLevel) bestLevel = lvl;
+                }
+              }
             }
           }
           if (bestLevel === 3) return 'Certificate 3';
           if (bestLevel === 2) return 'Certificate 2';
           if (bestLevel === 1) return 'Certificate 1';
-          const ct = courseCertificateTypes[selectedCertCourse.courseCode] || courseCertificateTypes[ck] || '';
-          if (ct.includes('3')) return 'Certificate 3';
-          if (ct.includes('2')) return 'Certificate 2';
-          if (ct.includes('1') || ct) return 'Certificate 1';
-          for (const level of ['L1', 'L2', 'L3'] as const) {
-            for (const section of certSections[level]) {
-              for (const member of section.members) {
-                const memberBase = member.replace(/^L[123]_/, '').toUpperCase();
-                if (memberBase === cc || memberBase === ccBase) {
-                  return level === 'L3' ? 'Certificate 3' : level === 'L2' ? 'Certificate 2' : 'Certificate 1';
-                }
-              }
-            }
-          }
-          if (info.courseType === 'core') return 'Certificate 1';
-          return '';
+          if (ck.startsWith('L3_')) return 'Certificate 3';
+          if (ck.startsWith('L2_')) return 'Certificate 2';
+          return 'Certificate 1';
         })();
         return (
           <CourseDetailDialog
