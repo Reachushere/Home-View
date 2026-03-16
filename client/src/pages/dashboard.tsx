@@ -12656,7 +12656,7 @@ export default function Dashboard() {
       {/* Timer bar - no box, inline left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8}px`,
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5}px`,
         top: '5px',
         height: '22px',
         zIndex: 100,
