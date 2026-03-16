@@ -16689,7 +16689,7 @@ export default function Dashboard() {
                           const maxCoursesInAnyRow = Math.max(...semesterDefs.filter(s => s.year === 2026).map(s => s.courses.length), 3);
                           const minBoxHeight = maxCoursesInAnyRow * 34 + 38;
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.18)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.3)', minHeight: `${minBoxHeight}px`, ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.38)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.4)', minHeight: `${minBoxHeight}px`, ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
