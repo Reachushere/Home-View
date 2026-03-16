@@ -16594,7 +16594,7 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[10px] text-white/80 truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] text-white truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         {semCourse.period && <span className="text-[8px] text-white/50 whitespace-nowrap">{semCourse.period}</span>}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
