@@ -13918,6 +13918,7 @@ export default function Dashboard() {
               const codeNorm = courseCode.replace(/\s/g,'').toUpperCase();
               for (const [ck, info] of Object.entries(certCourseMap)) {
                 if (ck === certKey) continue;
+                if (shouldStrikethrough(ck)) continue;
                 const mapCode = info.code.replace(/\s/g,'').toUpperCase();
                 if (mapCode === codeNorm || codeNorm.endsWith(mapCode) || mapCode.endsWith(codeNorm.replace(/^C/,''))) {
                   updateGrade(ck, grade);
