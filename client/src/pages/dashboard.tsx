@@ -16653,8 +16653,8 @@ export default function Dashboard() {
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.05)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.08)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.15)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.10)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.10)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
@@ -18051,10 +18051,7 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {/* Second Google Account Connection */}
                 <div className="border rounded-lg p-3 space-y-2">
-                  <div className="border-b border-primary inline-block -mt-1 pb-0">
-                    <Label className="text-sm font-medium">Second Google Account</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Connect a second Google account to sync tasks to both accounts</span>
-                  </div>
+                  <Label className="text-[10px] font-medium">Second Google Account</Label>
                   {secondAccountStatus?.connected ? (
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs text-green-600 dark:text-green-400 font-medium">
@@ -18094,11 +18091,8 @@ export default function Dashboard() {
                   )}
                 </div>
 
-                <div>
-                  <div className="border-b border-primary inline-block -mt-1 pb-0">
-                    <Label className="text-sm font-medium">Secondary Calendar</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Select a secondary calendar to sync tasks to</span>
-                  </div>
+                <div className="border rounded-lg p-3 space-y-2">
+                  <Label className="text-[10px] font-medium">Secondary Calendar</Label>
                   <Select
                     value={selectedSecondaryCalendar}
                     onValueChange={(value) => {
@@ -18119,18 +18113,20 @@ export default function Dashboard() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  <p><strong>Primary Account:</strong> {availableCalendars?.find(c => c.primary)?.summary || "Not connected"}</p>
-                  <p><strong>Secondary Calendar:</strong> {selectedSecondaryCalendar && selectedSecondaryCalendar !== "none" ? availableCalendars?.find(c => c.id === selectedSecondaryCalendar)?.summary || selectedSecondaryCalendar : "None"}</p>
-                  <p><strong>Second Account:</strong> {secondAccountStatus?.connected ? secondAccountStatus.email : "Not connected"}</p>
+                <div className="border rounded-lg p-3 space-y-1">
+                  <Label className="text-[10px] font-medium">Connection Status</Label>
+                  <div className="text-[10px] text-white/60 space-y-0.5">
+                    <p><strong>Primary Account:</strong> {availableCalendars?.find(c => c.primary)?.summary || "Not connected"}</p>
+                    <p><strong>Secondary Calendar:</strong> {selectedSecondaryCalendar && selectedSecondaryCalendar !== "none" ? availableCalendars?.find(c => c.id === selectedSecondaryCalendar)?.summary || selectedSecondaryCalendar : "None"}</p>
+                    <p><strong>Second Account:</strong> {secondAccountStatus?.connected ? secondAccountStatus.email : "Not connected"}</p>
+                  </div>
                 </div>
 
                 {/* Show All Day Row Toggle */}
                 <div className="border rounded-lg p-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-sm font-medium">All Day Row</Label>
-                      <p className="text-xs text-muted-foreground">Show the all-day row at the top of the calendar</p>
+                      <Label className="text-[10px] font-medium">All Day Row</Label>
                     </div>
                     <input
                       type="checkbox"
@@ -18148,12 +18144,7 @@ export default function Dashboard() {
                 {/* Partner Shift Schedule */}
                 <div className="border rounded-lg p-3 space-y-2" data-shift-schedule-section-2="true">
                   <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !shiftScheduleOpen; setShiftScheduleOpen(opening); if (opening) { const tryScroll = (attempt: number) => { setTimeout(() => { const section = document.querySelector('[data-shift-schedule-section-2="true"]'); if (section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else if (attempt < 3) { tryScroll(attempt + 1); } }, attempt === 0 ? 200 : 400); }; tryScroll(0); } }} data-testid="toggle-shift-schedule">
-                    <div>
-                      <div className="border-b border-primary inline-block -mt-1 pb-0">
-                        <Label className="text-sm font-medium cursor-pointer">Partner Shift Schedule</Label>
-                        <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Set day/night shifts to adjust quiet hours</span>
-                      </div>
-                    </div>
+                    <Label className="text-[10px] font-medium cursor-pointer">Partner Shift Schedule</Label>
                     <span className="text-xs">{shiftScheduleOpen ? '▼' : '▶'}</span>
                   </div>
                   {shiftScheduleOpen && (() => {
