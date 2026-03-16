@@ -4793,6 +4793,8 @@ export default function Dashboard() {
     queryKey: ["/api/semesters"],
     queryFn: () => fetch("/api/semesters", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
+  const allSemesterSettingsRef = useRef(allSemesterSettings);
+  allSemesterSettingsRef.current = allSemesterSettings;
 
   const courseDeliveryModes = useMemo(() => {
     const map: Record<string, string> = {};
@@ -13520,12 +13522,15 @@ export default function Dashboard() {
                 };
                 saveCourses({ courses: updatedCourses });
               }
-              if (allSemesterSettings) {
+              const currentSemSettings = allSemesterSettingsRef.current;
+              if (currentSemSettings) {
                 const cc = courseCode.replace(/\s/g, '');
-                for (const sem of allSemesterSettings) {
+                let found = false;
+                for (const sem of currentSemSettings) {
                   for (let i = 1; i <= 3; i++) {
                     const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
                     if (semCode === cc) {
+                      found = true;
                       const prefix = `course${i}`;
                       const payload: Record<string, any> = {};
                       if (updates.deliveryMode !== undefined) payload[`${prefix}DeliveryMode`] = updates.deliveryMode;
