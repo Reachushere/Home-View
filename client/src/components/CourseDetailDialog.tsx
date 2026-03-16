@@ -953,11 +953,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-4" />
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="w-[30px] text-center leading-none">Wt%</span>
-                  <span className="w-[30px] text-center leading-none">Total</span>
-                  <span className="w-[30px] text-center leading-none">Score<br/>received</span>
-                  <span className="w-[30px] text-center leading-none">%</span>
+                <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
+                  <span className="w-[30px] text-center leading-tight">Wt%</span>
+                  <span className="w-[30px] text-center leading-tight">Total</span>
+                  <span className="w-[30px] text-center leading-tight">Score<br/>received</span>
+                  <span className="w-[30px] text-center leading-tight">%</span>
                 </div>
                 <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
               </div>
@@ -1071,7 +1071,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     })()}
                   </span>
                 </div>
-                <div className="w-6 flex-shrink-0" />
+                <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
               </div>
             )}
           </div>
