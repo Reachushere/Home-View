@@ -18977,7 +18977,7 @@ export default function Dashboard() {
                                       data-testid={`pdf-icon-prep-${task.id}`}
                                     />
                                   )}
-                                  {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ position: 'absolute', right: modulePdfUrl ? '32px' : '4px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', objectFit: 'contain', zIndex: 2, animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-prep-${task.id}`} /> : null; })()}
+                                  {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ position: 'absolute', right: modulePdfUrl ? '28px' : '0px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', objectFit: 'contain', zIndex: 2, animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-prep-${task.id}`} /> : null; })()}
                                 </div>
                               </div>
                             );
@@ -19032,16 +19032,16 @@ export default function Dashboard() {
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
                               )}
-                              {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', objectFit: 'contain', zIndex: 2, animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-task-${task.id}`} /> : null; })()}
                               {dueModulePdfUrl && (
                                 <img
                                   src={pdfIconPath}
                                   alt="Open PDF"
-                                  style={{ position: 'absolute', right: dueModulePdfUrl ? '18px' : '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
+                                  style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', zIndex: 2, animation: 'none' }}
                                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = dueModulePdfUrl; if (dueModuleFile) { window.open(`/pdf-reader/${dueModuleFile.id}`, '_blank'); } else if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
                               )}
+                              {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ position: 'absolute', right: dueModulePdfUrl ? '30px' : '2px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', objectFit: 'contain', zIndex: 2, animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-task-${task.id}`} /> : null; })()}
                             </div>
                             </div>
                           );
