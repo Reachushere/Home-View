@@ -13695,8 +13695,27 @@ export default function Dashboard() {
             }}
             onGradeCalculated={(grade, percent) => {
               const certKey = selectedCertCourse!.certKey;
+              const courseCode = selectedCertCourse!.courseCode;
               updateGrade(certKey, grade);
               updatePercent(certKey, percent);
+              const codeNorm = courseCode.replace(/\s/g,'').toUpperCase();
+              for (const [ck, info] of Object.entries(certCourseMap)) {
+                if (ck === certKey) continue;
+                const mapCode = info.code.replace(/\s/g,'').toUpperCase();
+                if (mapCode === codeNorm || codeNorm.endsWith(mapCode) || mapCode.endsWith(codeNorm.replace(/^C/,''))) {
+                  updateGrade(ck, grade);
+                  updatePercent(ck, percent);
+                }
+              }
+              const electiveSlots = ['LIBERAL','OPEN1','OPEN2','L2_LIBERAL','L2_OPEN1','L2_OPEN2','L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'];
+              for (const slot of electiveSlots) {
+                if (slot === certKey) continue;
+                const elVal = openElectives[slot];
+                if (elVal && elVal.replace(/\s/g,'').toUpperCase().startsWith(codeNorm)) {
+                  updateGrade(slot, grade);
+                  updatePercent(slot, percent);
+                }
+              }
             }}
             onDeleteCourse={() => {
               const courseCode = selectedCertCourse!.courseCode;
