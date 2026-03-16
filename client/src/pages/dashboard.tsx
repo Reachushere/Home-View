@@ -13464,7 +13464,7 @@ export default function Dashboard() {
       </div>
       
       {/* Voice Input Floating Button */}
-      <div className="fixed z-[9999]" style={{ bottom: '43px', left: '3px' }}>
+      <div className="fixed z-[9999]" style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 4}px`, left: '3px' }}>
         <button
           onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
           className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
@@ -21520,7 +21520,7 @@ export default function Dashboard() {
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '19px', height: '19px', color: 'white' }} />
+              <ChevronUp style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
@@ -21528,7 +21528,7 @@ export default function Dashboard() {
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '19px', height: '19px', color: 'white' }} />
+              <ChevronDown style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
             </div>
           </div>
           <div
