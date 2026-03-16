@@ -3670,20 +3670,10 @@ export default function Dashboard() {
 
   const renderGradeInput = (id: string) => {
     const struck = shouldStrikethrough(id);
-    const ownPercent = courseGrades[id]?.percent || '';
-    const resolvedPercent = ownPercent || (() => {
-      const prevIds = previousLevelMap[id];
-      if (prevIds) {
-        for (const pid of prevIds) {
-          if (courseGrades[pid]?.percent) return courseGrades[pid].percent;
-        }
-      }
-      return '';
-    })();
     return (
       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}>
-        <input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: struck ? '#e5e5e5' : 'white', color: struck ? '#999' : 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={resolvedPercent} onChange={(e) => { if (!struck) updatePercent(id, e.target.value); }} readOnly={struck} />
-        <span className="text-[9px] text-left leading-none" style={{ color: struck ? '#999' : '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(resolvedPercent)}</span>
+        <input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: struck ? '#e5e5e5' : 'white', color: struck ? '#999' : 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[id]?.percent || ''} onChange={(e) => { if (!struck) updatePercent(id, e.target.value); }} readOnly={struck} />
+        <span className="text-[9px] text-left leading-none" style={{ color: struck ? '#999' : '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[id]?.percent || '')}</span>
       </div>
     );
   };
