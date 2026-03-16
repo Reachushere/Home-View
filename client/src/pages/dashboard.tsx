@@ -1582,7 +1582,34 @@ export default function Dashboard() {
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
   // Shared AudioContext ref - only created by user interaction, reused for alarms
   const sharedAudioContextRef = useRef<AudioContext | null>(null);
-  
+
+  const playBoingSound = useCallback(() => {
+    try {
+      if (!sharedAudioContextRef.current) {
+        sharedAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = sharedAudioContextRef.current;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(200, now + 0.25);
+      osc.frequency.exponentialRampToValueAtTime(400, now + 0.35);
+      osc.frequency.exponentialRampToValueAtTime(150, now + 0.5);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.linearRampToValueAtTime(0.15, now + 0.08);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.25);
+      gain.gain.linearRampToValueAtTime(0.1, now + 0.35);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.55);
+    } catch {}
+  }, []);
+
   // Arrow connections from task boxes to calendar
   const [arrowConnections, setArrowConnections] = useState<Array<{
     taskId: number;
@@ -2817,26 +2844,6 @@ export default function Dashboard() {
     localStorage.setItem('aasSentStatus', JSON.stringify(updated));
   };
   
-  const playBoingSound = useCallback(() => {
-    try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(400, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.15);
-      osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.25);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.4);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-      osc.onended = () => ctx.close();
-    } catch {}
-  }, []);
-
   useEffect(() => {
     if (!isSchoolCoursesDialogOpen) return;
     const semStartDates: Record<string, string> = {
@@ -17032,7 +17039,7 @@ export default function Dashboard() {
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
                             <div className="p-1 flex" style={{ gap: '10px' }}>
-                              <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
+                              <table className="border-collapse text-[9px] text-white" style={{ flex: 1 }}>
                                 <tbody>
                                   {[
                                     ['A+','90-100%','4.33'],['A','85-89%','4.0'],['A-','80-84%','3.67'],
@@ -17047,7 +17054,7 @@ export default function Dashboard() {
                                   ))}
                                 </tbody>
                               </table>
-                              <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
+                              <table className="border-collapse text-[9px] text-white" style={{ flex: 1 }}>
                                 <tbody>
                                   {[
                                     ['C','63-66%','2.0'],['C-','60-62%','1.67'],
