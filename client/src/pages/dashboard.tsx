@@ -16623,19 +16623,20 @@ export default function Dashboard() {
                         <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <span className="text-[9px] font-bold text-white flex-shrink-0">{displayName}</span>
                         {subtitle && <span className="text-[8px] text-white truncate">- {subtitle}</span>}
-                        {semCourse.period && <span className="text-[7px] text-white/70 whitespace-nowrap">{semCourse.period}</span>}
-                        <div className="flex items-center gap-1 ml-auto flex-shrink-0">
-                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[7px] text-white underline truncate" style={{ maxWidth: '80px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                        {semCourse.period && <span className="text-[7px] text-white whitespace-nowrap">{semCourse.period}</span>}
+                        <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
+                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[8px] text-white underline truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
                           <span
-                            className={`text-[6px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                            className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                            style={{ marginRight: '3px' }}
                             data-testid={`aas-status-${semCourse.code}`}
                             onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                           >
                             {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
                           </span>
                           <select
-                            className="text-[7px] text-white bg-white/10 rounded px-0.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-                            style={{ width: '36px', minWidth: '36px' }}
+                            className="text-[8px] text-white bg-white/10 rounded px-0.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
+                            style={{ width: '36px', minWidth: '36px', marginRight: '3px' }}
                             value={currentPriority}
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => {
