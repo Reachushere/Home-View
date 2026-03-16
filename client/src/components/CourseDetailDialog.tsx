@@ -1044,12 +1044,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '3px' }}>
-                  <span className="w-[28px] text-center leading-none">Wt%</span>
-                  <span className="w-[28px] text-center leading-none">Total</span>
-                  <span className="w-[28px] text-center leading-none">Score</span>
-                  <span className="w-[28px] text-center leading-none">%</span>
+                  <span className="w-[28px] text-center leading-none box-content px-px">Wt%</span>
+                  <span className="w-[28px] text-center leading-none box-content px-px">Total</span>
+                  <span className="w-[28px] text-center leading-none box-content px-px">Score</span>
+                  <span className="w-[28px] text-center leading-none box-content px-px">%</span>
                 </div>
-                <div className="flex-shrink-0 w-[16px]" />
+                <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
               </div>
             )}
             <div className="space-y-1" data-testid="assignments-list">
