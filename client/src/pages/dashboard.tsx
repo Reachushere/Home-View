@@ -3476,8 +3476,8 @@ export default function Dashboard() {
     if (checkedCourses[id] || hasPercent) return null;
     if (isDropdownRow(id)) return null;
     if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (PREVIOUSLY COMPLETED)</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (SECTION FULFILLED)</span>;
-    if (isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (SECTION FULFILLED)</span>;
+    if (isSectionFulfilledForCourse(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (REQUIREMENTS FULFILLED)</span>;
+    if (isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (REQUIREMENTS FULFILLED)</span>;
     if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (PREVIOUSLY COMPLETED)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
