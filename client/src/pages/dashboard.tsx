@@ -1736,6 +1736,7 @@ export default function Dashboard() {
   const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
   const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '', calendarLabel: '' });
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
+  const [draftCoursePlayPriority, setDraftCoursePlayPriority] = useState<Record<string, number>>({});
   const [isRemainingCoursesDialogOpen, setIsRemainingCoursesDialogOpen] = useState(false);
   const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
     const courseInfoDefaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
@@ -12580,6 +12581,7 @@ export default function Dashboard() {
               className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={(e) => {
                 e.stopPropagation();
+                setDraftCoursePlayPriority({ ...coursePlayPriority });
                 setIsSchoolCoursesDialogOpen(true);
               }}
               data-testid="button-degree-courses"
@@ -15791,7 +15793,7 @@ export default function Dashboard() {
                       </div>
                       <div
                         className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsSchoolCoursesDialogOpen(true), 200); }}
+                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftCoursePlayPriority({ ...coursePlayPriority }); setIsSchoolCoursesDialogOpen(true); }, 200); }}
                         data-testid="button-past-courses"
                       >
                         <span className="text-[10px] text-white/70 font-medium">Past courses</span>
@@ -16291,8 +16293,8 @@ export default function Dashboard() {
           )}
           {isSchoolCoursesDialogOpen && (
             <div
-              className="fixed left-[50%] translate-x-[-50%] translate-y-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
-              style={{ top: 'calc(50% - 6px)', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              className="fixed left-[50%] translate-x-[-50%] translate-y-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
+              style={{ top: 'calc(50% - 6px)', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
@@ -16305,7 +16307,7 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white' }}>
                 {(() => {
                   const semesterDefs = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
@@ -16330,8 +16332,16 @@ export default function Dashboard() {
                     ]},
                   ];
 
+                  const currentSemKey = (() => {
+                    const now = new Date();
+                    if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
+                    if (now >= new Date('2025-09-01') && now <= new Date('2025-12-31')) return 'f2025';
+                    if (now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return 'w2026';
+                    if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return 'ss2026';
+                    return '';
+                  })();
+
                   const years = [...new Set(semesterDefs.map(s => s.year))];
-                  const currentCodes = coursesData.courses.filter(c => c.name.trim()).map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, ''));
                   const currentCoursesMap = new Map(coursesData.courses.filter(c => c.name.trim()).map(c => {
                     const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                     return [code, c];
@@ -16383,12 +16393,12 @@ export default function Dashboard() {
                       ? (currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color)
                       : isCurrentCourse ? '#22c55e' : '#3b82f6';
                     const priorityKey = `${semKey}:${semCourse.code}`;
-                    const currentPriority = coursePlayPriority[priorityKey] ?? 0;
+                    const currentPriority = draftCoursePlayPriority[priorityKey] ?? 0;
 
                     return (
                       <div
                         key={semCourse.code}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all"
+                        className="flex items-center px-3 py-1.5 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all"
                         style={{ background: bgColor }}
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
@@ -16396,24 +16406,21 @@ export default function Dashboard() {
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
-                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[11px] font-bold min-w-[52px]">{displayName}</span>
-                        {subtitle && <span className="text-[10px] text-white/60 truncate">{subtitle}</span>}
-                        <span className="text-[9px] text-white/40 ml-1 whitespace-nowrap">{semCourse.period}</span>
-                        {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/50 whitespace-nowrap">{certType}</span>}
-                        <div className="flex items-center gap-2 ml-auto">
+                        <div className="w-2 h-2 rounded-full flex-shrink-0 mr-2" style={{ background: dotColor }} />
+                        <span className="text-[11px] font-bold text-white" style={{ width: '58px', minWidth: '58px' }}>{displayName}</span>
+                        {subtitle && <span className="text-[10px] text-white/80 truncate mr-1">{subtitle}</span>}
+                        <span className="text-[9px] text-white/60 ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
+                        {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
+                        <div className="flex items-center gap-2" style={{ width: '130px', minWidth: '130px', justifyContent: 'flex-end' }}>
                           <select
                             className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-                            style={{ minWidth: '38px' }}
+                            style={{ width: '42px', minWidth: '42px' }}
                             value={currentPriority}
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => {
                               e.stopPropagation();
                               const val = parseInt(e.target.value, 10);
-                              const updated = { ...coursePlayPriority, [priorityKey]: val };
-                              setCoursePlayPriority(updated);
-                              localStorage.setItem('coursePlayPriority', JSON.stringify(updated));
-                              fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
+                              setDraftCoursePlayPriority(prev => ({ ...prev, [priorityKey]: val }));
                             }}
                             data-testid={`select-priority-${semCourse.code}`}
                           >
@@ -16422,13 +16429,14 @@ export default function Dashboard() {
                               <option key={i + 1} value={i + 1}>#{i + 1}</option>
                             ))}
                           </select>
-                          {grade && <span className="text-[10px] text-white/70 font-medium">{grade}%</span>}
+                          {grade && <span className="text-[10px] text-white font-medium" style={{ width: '30px', minWidth: '30px', textAlign: 'right' }}>{grade}%</span>}
+                          {!grade && <span style={{ width: '30px', minWidth: '30px' }} />}
                           {(currentCourse?.professor || profInfo.professor) && (
-                            <span className="text-[10px] text-white/60 underline">{currentCourse?.professor || profInfo.professor}</span>
+                            <span className="text-[10px] text-white/80 underline truncate" style={{ maxWidth: '80px' }}>{currentCourse?.professor || profInfo.professor}</span>
                           )}
                         </div>
                         <button
-                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 ml-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingSchoolCourseKey(semCourse.code);
@@ -16438,7 +16446,7 @@ export default function Dashboard() {
                         >
                           <Pencil className="w-2.5 h-2.5 text-white/40 hover:text-white/80" />
                         </button>
-                        <ChevronRight className="text-white/40 flex-shrink-0" style={{ width: '12px', height: '12px' }} />
+                        <ChevronRight className="text-white/40 flex-shrink-0 ml-0.5" style={{ width: '12px', height: '12px' }} />
                       </div>
                     );
                   };
@@ -16447,24 +16455,28 @@ export default function Dashboard() {
                     <div key={year} className="mb-5">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="h-px flex-1 bg-white/20" />
-                        <span className="text-[13px] font-bold text-white/90 tracking-wide">{year}</span>
+                        <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                         <div className="h-px flex-1 bg-white/20" />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {semesterDefs.filter(s => s.year === year).map(sem => (
-                          <div key={sem.key} className="rounded-lg border border-white/15 overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                            <div className="px-3 py-2 border-b border-white/15 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                              <div>
-                                <span className="text-[11px] font-bold text-white/90">{sem.label}</span>
-                                <span className="text-[9px] text-white/40 ml-2">{sem.dates}</span>
+                        {semesterDefs.filter(s => s.year === year).map(sem => {
+                          const isCurrentSem = sem.key === currentSemKey;
+                          return (
+                            <div key={sem.key} className="rounded-lg border overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.15)' }}>
+                              <div className="px-3 py-2 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.08)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)' }}>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[11px] font-bold text-white">{sem.label}</span>
+                                  <span className="text-[9px] text-white/60 ml-1">{sem.dates}</span>
+                                  {isCurrentSem && <span className="text-[8px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
+                                </div>
+                                <span className="text-[9px] text-white/60">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
-                              <span className="text-[9px] text-white/40">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
+                              <div className="p-2 space-y-1.5">
+                                {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
+                              </div>
                             </div>
-                            <div className="p-2 space-y-1.5">
-                              {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   ));
@@ -16543,8 +16555,13 @@ export default function Dashboard() {
                   New Course
                 </Button>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="text-[10px] border-white/30 hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
-                  <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-save-school-courses">Done</Button>
+                  <Button variant="outline" size="sm" className="text-[10px] border-white/30 text-white hover:text-white hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
+                  <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600 text-white" onClick={() => {
+                    setCoursePlayPriority(draftCoursePlayPriority);
+                    localStorage.setItem('coursePlayPriority', JSON.stringify(draftCoursePlayPriority));
+                    fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draftCoursePlayPriority) }).catch(() => {});
+                    setIsSchoolCoursesDialogOpen(false);
+                  }} data-testid="button-save-school-courses">Save</Button>
                 </div>
               </div>
             </div>
