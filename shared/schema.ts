@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, integer, timestamp, real } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, integer, timestamp, real, doublePrecision } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -323,9 +323,9 @@ export const tasks = pgTable("tasks", {
   repeatIntervalUnit: text("repeat_interval_unit"), // days or weeks (for custom)
   repeatEndDate: timestamp("repeat_end_date"), // Optional: when to stop repeating
   parentTaskId: integer("parent_task_id"), // Links repeated instances to original task
-  gradeWeight: real("grade_weight"), // Percentage of final grade (e.g., 25 = 25%, 0.4 = 0.4%)
-  gradeValue: real("grade_value"), // Score achieved (e.g., 4.45 out of 7.5)
-  gradeTotal: real("grade_total"), // Total possible points (e.g., 7.5)
+  gradeWeight: doublePrecision("grade_weight"), // Percentage of final grade (e.g., 25 = 25%, 0.4 = 0.4%)
+  gradeValue: doublePrecision("grade_value"), // Score achieved (e.g., 4.45 out of 7.5)
+  gradeTotal: doublePrecision("grade_total"), // Total possible points (e.g., 7.5)
   assignmentGroup: text("assignment_group"), // Group name for organizing assignments
   sortOrder: integer("sort_order").default(0), // Order within group or list
 });

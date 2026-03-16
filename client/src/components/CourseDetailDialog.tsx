@@ -117,19 +117,16 @@ interface NewTaskForm {
 function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string }) {
   const fmt = (v: number | null | undefined) => v != null ? (Number.isInteger(v) ? v.toFixed(2) : String(v)) : '';
   const [local, setLocal] = useState(fmt(value));
-  const lastPropRef = useRef(value);
-  const pendingRef = useRef<number | null | undefined>(undefined);
+  const [editing, setEditing] = useState(false);
+  const lastAcceptedRef = useRef(value);
+
   useEffect(() => {
-    if (value !== lastPropRef.current) {
-      lastPropRef.current = value;
-      if (pendingRef.current !== undefined && value === pendingRef.current) {
-        pendingRef.current = undefined;
-      }
-      if (pendingRef.current === undefined) {
-        setLocal(fmt(value));
-      }
+    if (!editing && value !== lastAcceptedRef.current) {
+      lastAcceptedRef.current = value;
+      setLocal(fmt(value));
     }
-  }, [value]);
+  }, [value, editing]);
+
   return (
     <input
       type="text"
@@ -138,14 +135,19 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: nu
       className="w-[30px] h-5 text-[9px] text-center bg-white border border-white/30 rounded text-black placeholder:text-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       placeholder={placeholder}
       value={local}
+      onFocus={() => setEditing(true)}
       onChange={(e) => setLocal(e.target.value)}
       onBlur={() => {
         const parsed = local !== '' ? parseFloat(String(local)) : null;
         const finalVal = parsed !== null && !isNaN(parsed) ? Math.round(parsed * 100) / 100 : null;
-        if (finalVal !== (value ?? null)) {
-          pendingRef.current = finalVal;
+        const current = value ?? null;
+        const changed = finalVal === null ? current !== null : Math.abs((finalVal) - (current || 0)) > 0.001;
+        if (changed) {
+          lastAcceptedRef.current = finalVal;
+          setLocal(fmt(finalVal));
           onSave(finalVal);
         }
+        setEditing(false);
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
