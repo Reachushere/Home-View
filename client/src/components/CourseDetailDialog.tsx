@@ -973,7 +973,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     )}
                     <button
                       onClick={() => deleteTaskMutation.mutate(task.id)}
-                      className="flex-shrink-0 text-white/20 hover:text-red-400 transition-colors p-0.5"
+                      className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
                       data-testid={`button-delete-task-${task.id}`}
                     >
                       <Trash2 className="h-3 w-3" />
