@@ -18923,7 +18923,8 @@ export default function Dashboard() {
                                     boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                                     overflow: 'hidden',
-                                    paddingRight: modulePdfUrl ? '30px' : undefined,
+                                    paddingRight: modulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : modulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
+                                    position: 'relative',
                                   }}
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
@@ -18967,7 +18968,8 @@ export default function Dashboard() {
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                paddingRight: dueModulePdfUrl ? '30px' : undefined,
+                                paddingRight: dueModulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : dueModulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
+                                position: 'relative',
                               }}
                               title={task.title}
                             >
