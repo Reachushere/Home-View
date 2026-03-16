@@ -16389,10 +16389,9 @@ export default function Dashboard() {
           </Dialog>
           
           {/* School Courses Dialog - All past + current courses organized by semester */}
-          {isSchoolCoursesDialogOpen && (
+          {isSchoolCoursesDialogOpen && createPortal(
+            <>
             <div className="fixed inset-0 z-[10002] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
-          )}
-          {isSchoolCoursesDialogOpen && (
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
               style={{ top: `${calendarBorderTop || (calendarTop + 15)}px`, width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', bottom: '8px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
@@ -16674,6 +16673,8 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+            </>,
+            document.body
           )}
 
           {/* Remaining Courses Dialog */}
