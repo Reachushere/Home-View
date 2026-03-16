@@ -16924,7 +16924,7 @@ export default function Dashboard() {
                     const subtitle = semCourse.fullName || '';
                     const dotColor = currentCourse
                       ? (currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color)
-                      : isCurrentCourse ? '#22c55e' : '#3b82f6';
+                      : isCurrentCourse ? '#22c55e' : '#1e40af';
                     const priorityKey = `${semKey}:${semCourse.code}`;
                     const currentPriority = draftCoursePlayPriority[priorityKey] ?? 0;
 
