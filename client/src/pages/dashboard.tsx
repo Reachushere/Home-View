@@ -4,6 +4,7 @@ import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
+import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -720,8 +721,6 @@ export default function Dashboard() {
   const [semesterChecklistItems, setSemesterChecklistItems] = useState<Array<{id: number; semesterSettingsId: number; courseCode: string; itemType: string; isChecked: boolean | null; checkedAt: string | null}>>([]);
   const [semesterChecklistId, setSemesterChecklistId] = useState<number | null>(null);
   const semesterChecklistShownRef = useRef(false);
-  const [checklistSnoozeValue, setChecklistSnoozeValue] = useState(30);
-  const [checklistSnoozeUnit, setChecklistSnoozeUnit] = useState<'minutes' | 'hours'>('minutes');
 
   const [showConfirmSemesterDialog, setShowConfirmSemesterDialog] = useState(false);
   const [upcomingSemester, setUpcomingSemester] = useState<FutureSemesterDates | null>(null);
@@ -8893,111 +8892,13 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showSemesterChecklist} onOpenChange={setShowSemesterChecklist}>
-        <DialogContent className="max-w-md text-white" data-testid="semester-checklist-dialog">
-          <DialogHeader>
-            <DialogTitle className="text-white text-lg font-semibold">Hey Bryn, have you...</DialogTitle>
-            <DialogDescription className="text-white/60 text-sm">Complete these items to get your semester started right.</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4 mt-2">
-            {(() => {
-              const grouped: Record<string, typeof semesterChecklistItems> = {};
-              semesterChecklistItems.forEach(item => {
-                if (!grouped[item.courseCode]) grouped[item.courseCode] = [];
-                grouped[item.courseCode].push(item);
-              });
-              return Object.entries(grouped).map(([courseCode, items]) => (
-                <div key={courseCode} className="flex flex-col gap-2">
-                  <span className="text-xs font-bold text-white/80 uppercase tracking-wider">{courseCode}</span>
-                  {items.map(item => {
-                    const label = item.itemType === 'tasks' ? 'Input all assignments, essays, projects and exams' : item.itemType === 'modules' ? 'Upload the modules' : 'Upload reading materials';
-                    return (
-                      <label key={item.id} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded px-2 py-1.5 transition-colors" data-testid={`checklist-${courseCode}-${item.itemType}`}>
-                        <Checkbox
-                          className="h-5 w-5 border-2"
-                          checked={!!item.isChecked}
-                          onCheckedChange={(checked) => {
-                            setSemesterChecklistItems(prev => prev.map(i => i.id === item.id ? { ...i, isChecked: !!checked } : i));
-                            fetch('/api/semester-checklist', {
-                              method: 'PATCH',
-                              headers: { 'Content-Type': 'application/json' },
-                              credentials: 'include',
-                              body: JSON.stringify({ semesterSettingsId: item.semesterSettingsId, courseCode: item.courseCode, itemType: item.itemType, isChecked: !!checked }),
-                            })
-                              .then(r => r.json())
-                              .then(data => {
-                                if (data.allChecked) {
-                                  toast({ title: "All done!", description: "Semester setup checklist complete." });
-                                  setShowSemesterChecklist(false);
-                                }
-                              })
-                              .catch(err => console.error('Error updating checklist:', err));
-                          }}
-                          data-testid={`checkbox-${courseCode}-${item.itemType}`}
-                        />
-                        <span className="text-sm text-white/90">{label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              ));
-            })()}
-          </div>
-          <DialogFooter className="mt-4 flex flex-col gap-3 sm:flex-col">
-            <div className="flex items-center gap-2 w-full" data-testid="checklist-snooze-section">
-              <button
-                className="px-4 py-2 text-sm font-medium bg-amber-600 hover:bg-amber-500 text-white rounded transition-colors whitespace-nowrap"
-                onClick={() => {
-                  const ms = checklistSnoozeUnit === 'hours' ? checklistSnoozeValue * 60 * 60 * 1000 : checklistSnoozeValue * 60 * 1000;
-                  const until = Date.now() + ms;
-                  if (semesterSettings?.id) {
-                    localStorage.setItem(`semChecklist_snoozeUntil_${semesterSettings.id}`, String(until));
-                  }
-                  setShowSemesterChecklist(false);
-                  toast({ title: "Snoozed", description: `Checklist snoozed for ${checklistSnoozeValue} ${checklistSnoozeUnit}.` });
-                }}
-                data-testid="button-snooze-checklist"
-              >
-                Snooze
-              </button>
-              <select
-                value={checklistSnoozeValue}
-                onChange={e => setChecklistSnoozeValue(parseInt(e.target.value, 10))}
-                className="border border-white/30 rounded px-2 py-2 text-sm w-16 text-center"
-                style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff', opacity: 1, WebkitAppearance: 'none' as any }}
-                data-testid="select-snooze-value"
-                size={1}
-              >
-                {checklistSnoozeUnit === 'minutes'
-                  ? Array.from({ length: 60 }, (_, i) => i + 1).map(v => <option key={v} value={v} style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>{v}</option>)
-                  : [1, 2, 3, 4, 6, 8, 12, 24].map(v => <option key={v} value={v} style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>{v}</option>)
-                }
-              </select>
-              <select
-                value={checklistSnoozeUnit}
-                onChange={e => {
-                  const unit = e.target.value as 'minutes' | 'hours';
-                  setChecklistSnoozeUnit(unit);
-                  setChecklistSnoozeValue(unit === 'minutes' ? 30 : 1);
-                }}
-                className="border border-white/30 rounded px-2 py-2 text-sm"
-                style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff', opacity: 1, WebkitAppearance: 'none' as any }}
-                data-testid="select-snooze-unit"
-              >
-                <option value="minutes" style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>minutes</option>
-                <option value="hours" style={{ backgroundColor: '#2a2a2a', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}>hours</option>
-              </select>
-            </div>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white/50 hover:text-white/80 transition-colors self-start"
-              onClick={() => setShowSemesterChecklist(false)}
-              data-testid="button-dismiss-checklist"
-            >
-              Dismiss for now
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SemesterChecklistDialog
+        open={showSemesterChecklist}
+        onOpenChange={setShowSemesterChecklist}
+        items={semesterChecklistItems}
+        onItemsChange={setSemesterChecklistItems}
+        semesterSettingsId={semesterSettings?.id}
+      />
 
       <Dialog open={showConfirmSemesterDialog} onOpenChange={setShowConfirmSemesterDialog}>
         <DialogContent className="max-w-md text-white" data-testid="confirm-semester-dialog">
