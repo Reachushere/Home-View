@@ -6766,7 +6766,20 @@ document.body.removeChild(a);
         const msSinceChunkStart = catWashPlaybackState.chunkStartedAt ? Date.now() - catWashPlaybackState.chunkStartedAt.getTime() : 0;
         const chunkStuck = msSinceChunkStart > 3 * 60 * 1000;
         const isTabletDriven = catWashPlaybackState.playbackMode !== 'server-tts';
-        const likelyStale = (msSinceStart > 3 * 60 * 1000 && chunkStillAtStart) || chunkStuck || isTabletDriven;
+        let nestActuallyIdle = false;
+        try {
+          const nestResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+          });
+          if (nestResp.ok) {
+            const nestData = await nestResp.json();
+            nestActuallyIdle = nestData.state !== 'playing' && nestData.state !== 'buffering';
+            if (nestActuallyIdle) console.log(`[Cat Wash] Nest speaker is ${nestData.state} — session is stale`);
+          }
+        } catch (e: any) {
+          console.log(`[Cat Wash] Could not check Nest state: ${e.message}`);
+        }
+        const likelyStale = (msSinceStart > 3 * 60 * 1000 && chunkStillAtStart) || chunkStuck || isTabletDriven || nestActuallyIdle;
 
         if (likelyStale) {
           console.log(`[Cat Wash] Clearing stale playback (started ${Math.round(msSinceStart / 1000)}s ago, chunk ${catWashPlaybackState.chunkIndex})`);
