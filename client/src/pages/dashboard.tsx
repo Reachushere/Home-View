@@ -1779,6 +1779,30 @@ export default function Dashboard() {
       return parsed;
     } catch { return {}; }
   });
+  const SEMESTER_COURSE_DEFS = [
+    { key: 'ss2025', start: '2025-05-05', end: '2025-08-08', codes: ['CPPA101','CPPA120','CPPA102'] },
+    { key: 'f2025', start: '2025-09-01', end: '2025-12-31', codes: ['CPPA125','CGCM738','CPPA121'] },
+    { key: 'w2026', start: '2026-01-01', end: '2026-04-30', codes: ['CPPA122','CFNF400','CASL101'] },
+    { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', codes: ['CECN210','CPHL110','CHIS105'] },
+  ];
+
+  useEffect(() => {
+    const now = new Date();
+    const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
+    if (!activeSem) return;
+    const allRanked = activeSem.codes.every(code => {
+      const key = `${activeSem.key}:${code}`;
+      return coursePlayPriority[key] && coursePlayPriority[key] > 0;
+    });
+    if (!allRanked) {
+      const dismissKey = `rankCoursesReminderDismissed_${activeSem.key}`;
+      const dismissed = localStorage.getItem(dismissKey);
+      if (!dismissed) {
+        setShowRankCoursesReminder(true);
+      }
+    }
+  }, [coursePlayPriority]);
+
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
       'C1 - Mandatory Required Professional',
@@ -2648,6 +2672,7 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : {};
   });
   const [showAasReminder, setShowAasReminder] = useState(false);
+  const [showRankCoursesReminder, setShowRankCoursesReminder] = useState(false);
 
   const toggleAasSent = (courseCode: string) => {
     const updated = { ...aasSentStatus, [courseCode]: !aasSentStatus[courseCode] };
@@ -15677,6 +15702,81 @@ export default function Dashboard() {
                 >
                   Got it
                 </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Rank Courses Reminder */}
+          <Dialog open={showRankCoursesReminder} onOpenChange={setShowRankCoursesReminder}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', borderRadius: '12px', overflow: 'hidden' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    RANK YOUR COURSES
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setShowRankCoursesReminder(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-rank-courses-reminder"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4 space-y-3">
+                <p className="text-[12px] text-white/90">
+                  The semester has started but you haven't ranked all your courses in order of importance yet.
+                </p>
+                {(() => {
+                  const now = new Date();
+                  const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
+                  if (!activeSem) return null;
+                  const unranked = activeSem.codes.filter(code => {
+                    const key = `${activeSem.key}:${code}`;
+                    return !coursePlayPriority[key] || coursePlayPriority[key] <= 0;
+                  });
+                  if (unranked.length === 0) return null;
+                  return (
+                    <div className="space-y-1.5">
+                      {unranked.map(code => (
+                        <div key={code} className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-md px-3 py-2">
+                          <span className="text-[11px] font-medium">{code}</span>
+                          <span className="text-[10px] text-white/50 ml-auto">Not ranked</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+                <p className="text-[11px] text-white/60">
+                  Open School Courses and assign a priority ranking to each course for this semester.
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 border-white/30 text-white hover:text-white hover:bg-white/10"
+                    onClick={() => {
+                      const now = new Date();
+                      const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
+                      if (activeSem) localStorage.setItem(`rankCoursesReminderDismissed_${activeSem.key}`, 'true');
+                      setShowRankCoursesReminder(false);
+                    }}
+                    data-testid="button-dismiss-rank-courses-reminder"
+                  >
+                    Dismiss
+                  </Button>
+                  <Button
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                    onClick={() => {
+                      setShowRankCoursesReminder(false);
+                      setDraftCoursePlayPriority({ ...coursePlayPriority });
+                      setIsSchoolCoursesDialogOpen(true);
+                    }}
+                    data-testid="button-rank-courses-now"
+                  >
+                    Rank Now
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
