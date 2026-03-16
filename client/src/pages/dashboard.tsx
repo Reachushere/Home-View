@@ -3142,6 +3142,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('courseGrades');
     const existing = saved ? JSON.parse(saved) : {};
     const merged = { ...existing, ...completedGrades };
+    delete merged['L1_PPA122'];
     localStorage.setItem('courseGrades', JSON.stringify(merged));
     return merged;
   });
@@ -3454,7 +3455,10 @@ export default function Dashboard() {
     return codes;
   };
 
+  const noGradeIds = new Set(['L1_PPA122']);
+
   const updateGrade = (courseId: string, grade: string) => {
+    if (noGradeIds.has(courseId)) return;
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], grade } };
       localStorage.setItem('courseGrades', JSON.stringify(updated));
@@ -3464,6 +3468,7 @@ export default function Dashboard() {
   };
 
   const updatePercent = (courseId: string, percent: string) => {
+    if (noGradeIds.has(courseId)) return;
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], percent } };
       localStorage.setItem('courseGrades', JSON.stringify(updated));
