@@ -2061,6 +2061,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
+.course-code-mono {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
 .l3-no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;

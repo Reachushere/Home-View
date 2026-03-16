@@ -3475,10 +3475,10 @@ export default function Dashboard() {
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     if (checkedCourses[id] || hasPercent) return null;
     if (isDropdownRow(id)) return null;
-    if (isActiveInLaterLevel(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (PREVIOUSLY COMPLETED)</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (SECTION FULFILLED)</span>;
-    if (isCourseGreyedOut(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (SECTION FULFILLED)</span>;
-    if (isPreviouslyCompleted(id)) return <span className="text-gray-400 font-bold text-[9px]" style={{ textDecoration: 'none' }}> (PREVIOUSLY COMPLETED)</span>;
+    if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (PREVIOUSLY COMPLETED)</span>;
+    if (isSectionFulfilledForCourse(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (SECTION FULFILLED)</span>;
+    if (isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (SECTION FULFILLED)</span>;
+    if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (PREVIOUSLY COMPLETED)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
   };
@@ -12779,7 +12779,7 @@ export default function Dashboard() {
                 ].map((c, i) => (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center course-code-mono"><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
@@ -12804,7 +12804,7 @@ export default function Dashboard() {
                   return (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(c.id)}>SELECT</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center course-code-mono"><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
@@ -12820,7 +12820,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('LIBERAL')}>SELECT</div>
-                  <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
+                  <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono">{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
@@ -12843,7 +12843,7 @@ export default function Dashboard() {
                 {['OPEN1','OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
@@ -12896,7 +12896,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">Prof-Req'd</div>
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center course-code-mono"><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0"><CourseName id="L2_PPA211">Public Policy (PPA623)</CourseName><StrikethroughLabel id="L2_PPA211" /></span><TriStateToggle id="L2_PPA211" inline /></div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_PPA211']?.percent || '')}</span></div>
@@ -12921,7 +12921,7 @@ export default function Dashboard() {
                   return (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)}`}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={c.id}>{c.code}</CourseName></div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center course-code-mono"><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span><TriStateToggle id={c.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
@@ -12937,7 +12937,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('L2_LIBERAL')}>SELECT</div>
-                  <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
+                  <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono">{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
@@ -12969,7 +12969,7 @@ export default function Dashboard() {
                   return (
                   <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)}`}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(ecn.id)}>SELECT</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
+                    <div className="w-14 px-1 py-0.5 border-r border-black flex items-center course-code-mono"><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span><TriStateToggle id={ecn.id} inline /></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
@@ -12984,7 +12984,7 @@ export default function Dashboard() {
                 {['L2_OPEN1','L2_OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center">{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="w-14 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono">{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
@@ -13042,7 +13042,7 @@ export default function Dashboard() {
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PPA333">Research Methods in Public Admin (POG230, PPA524)</CourseName><StrikethroughLabel id="L3_PPA333" /></span><TriStateToggle id="L3_PPA333" inline /></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -13053,7 +13053,7 @@ export default function Dashboard() {
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper (PPA 31 A/B)</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span><TriStateToggle id="L3_PRACTICUM1" inline /></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -13087,7 +13087,7 @@ export default function Dashboard() {
                             <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
                           </td>
                         )}
-                        <td className={`px-1 py-0.5 border-r border-black align-middle text-[9px]`}><CourseName id={course.id}>{course.code}</CourseName></td>
+                        <td className={`px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono`}><CourseName id={course.id}>{course.code}</CourseName></td>
                         <td className={`px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id={course.id}>{course.title}</CourseName><StrikethroughLabel id={course.id} /></span><TriStateToggle id={course.id} inline /></div></td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
@@ -13103,7 +13103,7 @@ export default function Dashboard() {
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
@@ -13127,7 +13127,7 @@ export default function Dashboard() {
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
@@ -13151,7 +13151,7 @@ export default function Dashboard() {
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-[15px] text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
