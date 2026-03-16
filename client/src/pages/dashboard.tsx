@@ -16727,7 +16727,7 @@ export default function Dashboard() {
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <span className="text-[10px] text-white truncate min-w-0 flex-1"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
-                        <div className="flex-shrink-0" style={{ width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                        <div className="flex-shrink-0" style={{ width: '15px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
