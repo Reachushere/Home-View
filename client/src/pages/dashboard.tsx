@@ -15904,7 +15904,23 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginTop: '-9px' }}>
+              <div className="px-4 py-2 border-b border-white/20" style={{ marginTop: '-9px', position: 'relative', zIndex: 1 }}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                    fontSize: '12px'
+                  }}
+                  onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                  data-testid="button-new-course-school"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  New Course
+                </Button>
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column - School & Semester Settings */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
@@ -15938,7 +15954,7 @@ export default function Dashboard() {
                         onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftCoursePlayPriority({ ...coursePlayPriority }); setIsSchoolCoursesDialogOpen(true); }, 200); }}
                         data-testid="button-past-courses"
                       >
-                        <span className="text-[10px] text-white/70 font-medium">All courses</span>
+                        <span className="text-[10px] text-white/70 font-medium">Past courses</span>
                         <ChevronRight className="text-white/70" style={{ width: '12px', height: '12px' }} />
                       </div>
                     </div>
@@ -16511,7 +16527,7 @@ export default function Dashboard() {
             <div className="fixed inset-0 z-[10002]" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 7 - 30 - 4 + 3 - 20 - 7}px`, width: 'calc(96vw + 24px)', maxWidth: 'calc(96vw + 24px)', bottom: '50px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 7 - 30 - 4 + 3}px`, width: 'calc(96vw + 28px - 26px)', maxWidth: 'calc(96vw + 28px - 26px)', bottom: '50px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
             >
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
@@ -16520,31 +16536,41 @@ export default function Dashboard() {
                     SCHOOL COURSES
                   </h2>
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
+                  style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                  onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                  data-testid="button-new-course-school-courses"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  New Course
+                </Button>
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white' }}>
-                <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
-                    style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
-                    onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
-                    data-testid="button-new-course-school-courses"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    New Course
-                  </Button>
-                </div>
                 {(() => {
                   const semesterDefs = [
-                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [] as { code: string; name: string; fullName: string; period: string }[] },
-                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [] as { code: string; name: string; fullName: string; period: string }[] },
+                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
+                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions', period: 'May 5 – Jun 20' },
+                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government', period: 'May 5 – Jun 20' },
+                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes', period: 'Jun 23 – Aug 8' },
+                    ]},
+                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
+                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State', period: '' },
+                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped!', period: '' },
+                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government', period: '' },
+                    ]},
                     { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
                       { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government', period: '' },
                       { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: '' },
                       { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: '' },
                     ]},
-                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [] as { code: string; name: string; fullName: string; period: string }[] },
+                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [
+                      { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'May 4 – Jul 31' },
+                      { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'May 5 – Jun 16' },
+                      { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Jun 23 – Aug 4' },
+                    ]},
                     { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026', courses: [] },
                     { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan – Apr 2027', courses: [] },
                     { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May – Aug 2027', courses: [] },
@@ -16686,10 +16712,10 @@ export default function Dashboard() {
                         {semesterDefs.filter(s => s.year === year).map(sem => {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
-                          const maxCoursesInAnyRow = Math.max(...semesterDefs.filter(s => s.year === 2026).map(s => s.courses.length), 3);
-                          const minBoxHeight = maxCoursesInAnyRow * 34 + 38;
+                          const ref2026 = semesterDefs.find(s => s.key === 'w2026');
+                          const ref2026Height = ref2026 ? ref2026.courses.length : 3;
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.38)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.4)', minHeight: `${minBoxHeight}px`, ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.12)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.25)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
@@ -21509,7 +21535,6 @@ export default function Dashboard() {
               <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
             </div>
           </div>
-          {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
             style={{ right: '-38px', top: '0px', pointerEvents: 'auto' }}
@@ -21531,8 +21556,6 @@ export default function Dashboard() {
               <ChevronDown style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
             </div>
           </div>
-          )}
-          {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
           <div
             className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
             style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto' }}
@@ -21541,7 +21564,6 @@ export default function Dashboard() {
           >
             <ChevronUp style={{ width: '22px', height: '22px', color: 'white' }} />
           </div>
-          )}
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
