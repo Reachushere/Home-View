@@ -16613,8 +16613,8 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2 h-2 rounded-full flex-shrink-0 mr-2" style={{ background: dotColor }} />
-                        <span className="text-[11px] font-bold text-white" style={{ width: '58px', minWidth: '58px' }}>{displayName}</span>
-                        {subtitle && <span className="text-[10px] text-white truncate mr-1">— {subtitle}</span>}
+                        <span className="text-[11px] font-bold text-white flex-shrink-0">{displayName}</span>
+                        {subtitle && <span className="text-[10px] text-white truncate mr-1 ml-0.5">- {subtitle}</span>}
                         <span className="text-[9px] text-white ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
                         <div className="flex items-center gap-2" style={{ justifyContent: 'flex-end', marginRight: '-10px' }}>
