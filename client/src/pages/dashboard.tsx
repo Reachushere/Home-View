@@ -4788,6 +4788,25 @@ export default function Dashboard() {
     retryDelay: 1000,
   });
 
+  const { data: allSemesterSettings } = useQuery<any[]>({
+    queryKey: ["/api/semesters"],
+    queryFn: () => fetch("/api/semesters", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+  });
+
+  const courseDeliveryModes = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (allSemesterSettings) {
+      for (const sem of allSemesterSettings) {
+        for (let i = 1; i <= 3; i++) {
+          const code = (sem[`course${i}Code`] || '').replace(/\s/g, '');
+          const mode = sem[`course${i}DeliveryMode`] || '';
+          if (code && mode) map[code] = mode;
+        }
+      }
+    }
+    return map;
+  }, [allSemesterSettings]);
+
   useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
 
@@ -16539,16 +16558,10 @@ export default function Dashboard() {
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <span className="text-[10px] text-white truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         {(() => {
-                          let dm = '';
-                          if (semesterSettings) {
-                            for (let i = 1; i <= 3; i++) {
-                              const cf = (semesterSettings as any)[`course${i}Code`] || '';
-                              if (cf.replace(/\s/g, '') === semCourse.code.replace(/\s/g, '')) { dm = (semesterSettings as any)[`course${i}DeliveryMode`] || ''; break; }
-                            }
-                          }
+                          const cc = semCourse.code.replace(/\s/g, '');
+                          let dm = courseDeliveryModes[cc] || '';
                           if (!dm) {
-                            const cd = localStorage.getItem('certCourseData');
-                            if (cd) { try { const sd = JSON.parse(cd); if (sd[semCourse.code]?.deliveryMode) dm = sd[semCourse.code].deliveryMode; } catch {} }
+                            try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
                           return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                         })()}
@@ -18724,16 +18737,9 @@ export default function Dashboard() {
                     })()}
                     {(() => {
                       const cCode = course.name.split(' - ')[0]?.trim().replace(/\s/g, '');
-                      let dm = '';
-                      if (semesterSettings) {
-                        for (let i = 1; i <= 3; i++) {
-                          const cf = (semesterSettings as any)[`course${i}Code`] || '';
-                          if (cf.replace(/\s/g, '') === cCode) { dm = (semesterSettings as any)[`course${i}DeliveryMode`] || ''; break; }
-                        }
-                      }
+                      let dm = courseDeliveryModes[cCode] || '';
                       if (!dm) {
-                        const certData = localStorage.getItem('certCourseData');
-                        if (certData) { const sd = JSON.parse(certData); if (sd[cCode]?.deliveryMode) dm = sd[cCode].deliveryMode; }
+                        try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cCode]?.deliveryMode || ''; } } catch {}
                       }
                       return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', marginTop: '1px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                     })()}
