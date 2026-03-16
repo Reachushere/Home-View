@@ -16394,7 +16394,7 @@ export default function Dashboard() {
             <div className="fixed inset-0 z-[10002] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ top: `${calendarBorderTop || (calendarTop + 15)}px`, width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', bottom: '8px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 7}px`, width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', bottom: '8px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
@@ -16513,7 +16513,7 @@ export default function Dashboard() {
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
                         {isCurrentCourse && (
                           <span
-                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap mr-2 font-medium ${aasSentStatus[semCourse.code] ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'}`}
+                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap mr-2 font-medium ${aasSentStatus[semCourse.code] ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
                             data-testid={`aas-status-${semCourse.code}`}
                           >
                             {aasSentStatus[semCourse.code] ? '✓ AAS' : '⚠ AAS'}
@@ -16552,9 +16552,9 @@ export default function Dashboard() {
                           }}
                           data-testid={`button-edit-course-${semCourse.code}`}
                         >
-                          <Pencil className="w-2.5 h-2.5 text-white/40 hover:text-white/80" />
+                          <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" />
                         </button>
-                        <ChevronRight className="text-white/40 flex-shrink-0 ml-0.5" style={{ width: '12px', height: '12px' }} />
+                        <ChevronRight className="text-white flex-shrink-0 ml-0.5" style={{ width: '12px', height: '12px' }} />
                       </div>
                     );
                   };
@@ -16574,8 +16574,8 @@ export default function Dashboard() {
                               <div className="px-3 py-2 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.08)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)' }}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-[11px] font-bold text-white">{sem.label}</span>
-                                  <span className="text-[9px] text-white/60 ml-1">{sem.dates}</span>
-                                  {isCurrentSem && <span className="text-[8px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
+                                  <span className="text-[9px] text-white ml-1">{sem.dates}</span>
+                                  {isCurrentSem && <span className="text-[8px] font-bold text-white bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
                                 </div>
                                 <span className="text-[9px] text-white/60">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
