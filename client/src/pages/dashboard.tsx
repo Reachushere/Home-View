@@ -12770,7 +12770,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
                 </div>
                 {[
                   { id: 'PPA101', code: 'CPPA 101', name: 'Cdn Public Admin I: Institutions (PPA322)', type: 'Prof-Req\'d' },
@@ -12791,7 +12791,7 @@ export default function Dashboard() {
                 ))}
                 
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-bold">({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: <span style={sectionRemaining(1, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
                 </div>
                 {[
                   { id: 'L1_PPA120', code: 'CPPA 120', name: 'Canadian Politics and Government (POL332, POG210)' },
@@ -12816,7 +12816,7 @@ export default function Dashboard() {
                   );
                 })}
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: Select one course from "Table A" <span className="font-bold">({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: <span style={sectionRemaining(2, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select one course from "Table A"</span> <span className="font-bold" style={sectionRemaining(2, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')}`}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('LIBERAL')}>SELECT</div>
@@ -12838,7 +12838,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Elective: Select two courses from "Table I" <span className="font-bold">({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Elective: <span style={sectionRemaining(3, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select two courses from "Table I"</span> <span className="font-bold" style={sectionRemaining(3, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
                 </div>
                 {['OPEN1','OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -12892,7 +12892,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold">({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold" style={sectionRemaining(0, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')}`}>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">Prof-Req'd</div>
@@ -12906,7 +12906,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: Select <span className="underline">three</span> courses from the list below, not previously completed <span className="font-bold">({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: <span style={sectionRemaining(1, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">three</span> courses from the list below, not previously completed</span> <span className="font-bold" style={sectionRemaining(1, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
                 </div>
                 {[
                   { id: 'L2_PPA120', code: 'CPPA 120', name: 'Canadian Politics and Government (POL332, POG210)', type: 'SELECT' },
@@ -12933,7 +12933,7 @@ export default function Dashboard() {
                   );
                 })}
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: Select one course from Table A <span className="font-bold">({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: <span style={sectionRemaining(2, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select one course from Table A</span> <span className="font-bold" style={sectionRemaining(2, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')}`}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('L2_LIBERAL')}>SELECT</div>
@@ -12953,17 +12953,17 @@ export default function Dashboard() {
                   <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                 </div>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Required: Select <span className="underline">one</span> course from the list below <span className="font-bold">({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Required: <span style={sectionRemaining(3, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">one</span> course from the list below</span> <span className="font-bold" style={sectionRemaining(3, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
                 </div>
                 {[
-                  { id: 'L2_ECN1', code: 'ECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
-                  { id: 'L2_ECN2', code: 'ECN 104', name: 'Introductory Microeconomics ** (Anti-req ECN110)' },
-                  { id: 'L2_ECN3', code: 'ECN 110', name: 'The Economy and Society ** (Anti-req ECN104)' },
-                  { id: 'L2_ECN4', code: 'ECN 201', name: 'Principles of Macroeconomics ** (Anti-req ECN204)' },
-                  { id: 'L2_ECN5', code: 'ECN 204', name: 'Introductory Macroeconomics ** (Anti-req ECN210)' },
-                  { id: 'L2_ECN6', code: 'ECN 210', name: 'Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
-                  { id: 'L2_ECN7', code: 'ECN 220', name: 'Evolution of the Global Economy' },
-                  { id: 'L2_ECN8', code: 'ECN 320', name: 'Introduction to Financial Economics' },
+                  { id: 'L2_ECN1', code: 'CECN 101', name: 'Principles of Microeconomics ** (Anti-req ECN104)' },
+                  { id: 'L2_ECN2', code: 'CECN 104', name: 'Introductory Microeconomics ** (Anti-req ECN110)' },
+                  { id: 'L2_ECN3', code: 'CECN 110', name: 'The Economy and Society ** (Anti-req ECN104)' },
+                  { id: 'L2_ECN4', code: 'CECN 201', name: 'Principles of Macroeconomics ** (Anti-req ECN204)' },
+                  { id: 'L2_ECN5', code: 'CECN 204', name: 'Introductory Macroeconomics ** (Anti-req ECN210)' },
+                  { id: 'L2_ECN6', code: 'CECN 210', name: 'Understanding Economics ** (Anti-req ECN101,104, 201 and 204)' },
+                  { id: 'L2_ECN7', code: 'CECN 220', name: 'Evolution of the Global Economy' },
+                  { id: 'L2_ECN8', code: 'CECN 320', name: 'Introduction to Financial Economics' },
                 ].map((ecn, i) => {
                   const disabled = isCheckDisabled(ecn.id);
                   return (
@@ -12979,7 +12979,7 @@ export default function Dashboard() {
                   );
                 })}
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally-Related Elective: Select <span className="underline">two</span> courses from Table I <span className="font-bold">({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
+                  <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally-Related Elective: <span style={sectionRemaining(4, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from Table I</span> <span className="font-bold" style={sectionRemaining(4, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
                 </div>
                 {['L2_OPEN1','L2_OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)}`}>
@@ -13038,7 +13038,7 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     <tr className="border-b border-black">
-                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
@@ -13063,7 +13063,7 @@ export default function Dashboard() {
                       <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="pencil-cert-L3_PRACTICUM1"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
                     <tr className="border-b border-black">
-                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: Select <span className="underline">eight</span> courses from the list below <span className="font-bold">({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">eight</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
                     </tr>
                     {[
                       { code: 'CPPA 235', title: 'Theories of the State (PPA525)', id: 'L3_PPA235' },
@@ -13098,7 +13098,7 @@ export default function Dashboard() {
                       </tr>
                     ))}
                     <tr className="border-b border-black">
-                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: Select <span className="underline">two</span> courses from the list below <span className="font-bold">({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
                     </tr>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`}>
@@ -13122,7 +13122,7 @@ export default function Dashboard() {
                     </tr>
                 ))}
                     <tr className="border-b border-black">
-                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Liberal Studies Electives: 1 Table A + 3 Table B <span className="font-bold">({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Liberal Studies Electives: <span style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>1 Table A + 3 Table B</span> <span className="font-bold" style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
                     </tr>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`}>
@@ -13146,7 +13146,7 @@ export default function Dashboard() {
                     </tr>
                 ))}
                     <tr className="border-b border-black">
-                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Professionally Related Electives: Select seven from PR table I <span className="font-bold">({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
+                      <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Professionally Related Electives: <span style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select seven from PR table I</span> <span className="font-bold" style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
                     </tr>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`}>
