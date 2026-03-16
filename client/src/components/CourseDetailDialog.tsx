@@ -954,9 +954,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
                 <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="w-[30px] text-center leading-tight">Wt%</span>
-                  <span className="w-[30px] text-center leading-tight">Total</span>
                   <span className="w-[30px] text-center leading-tight">Score<br/>received</span>
+                  <span className="w-[30px] text-center leading-tight">Total</span>
+                  <span className="w-[30px] text-center leading-tight">Wt%</span>
                   <span className="w-[30px] text-center leading-tight">%</span>
                 </div>
                 <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
@@ -1008,10 +1008,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </div>
                     <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
                       <DebouncedGradeInput
-                        value={task.gradeWeight}
-                        onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } })}
-                        placeholder="Wt"
-                        testId={`input-grade-weight-${task.id}`}
+                        value={task.gradeValue}
+                        onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val })}
+                        placeholder="Scr"
+                        testId={`input-grade-value-${task.id}`}
                       />
                       <DebouncedGradeInput
                         value={task.gradeTotal}
@@ -1020,10 +1020,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         testId={`input-grade-total-${task.id}`}
                       />
                       <DebouncedGradeInput
-                        value={task.gradeValue}
-                        onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val })}
-                        placeholder="Scr"
-                        testId={`input-grade-value-${task.id}`}
+                        value={task.gradeWeight}
+                        onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } })}
+                        placeholder="Wt"
+                        testId={`input-grade-weight-${task.id}`}
                       />
                       <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
                         {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
@@ -1046,16 +1046,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="w-3 flex-shrink-0" />
                 <div className="flex-1 min-w-0 text-[9px] font-semibold text-white">Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className={`text-[9px] font-semibold w-[30px] text-center ${
-                    totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
-                  }`} data-testid="text-sum-weight">
-                    {totalWeight || '—'}
+                  <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-value">
+                    {courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0) || '—'}
                   </span>
                   <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-total">
                     {courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0) || '—'}
                   </span>
-                  <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-value">
-                    {courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0) || '—'}
+                  <span className={`text-[9px] font-semibold w-[30px] text-center ${
+                    totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
+                  }`} data-testid="text-sum-weight">
+                    {totalWeight || '—'}
                   </span>
                   <span className={`text-[9px] font-semibold w-[30px] text-center ${
                     (() => {
