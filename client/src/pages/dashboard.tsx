@@ -16512,6 +16512,14 @@ export default function Dashboard() {
                         {subtitle && <span className="text-[10px] text-white/80 truncate mr-1">{subtitle}</span>}
                         <span className="text-[9px] text-white/60 ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
+                        {isCurrentCourse && (
+                          <span
+                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap mr-2 font-medium ${aasSentStatus[semCourse.code] ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'}`}
+                            data-testid={`aas-status-${semCourse.code}`}
+                          >
+                            {aasSentStatus[semCourse.code] ? '✓ AAS' : '⚠ AAS'}
+                          </span>
+                        )}
                         <div className="flex items-center gap-2" style={{ width: '130px', minWidth: '130px', justifyContent: 'flex-end' }}>
                           <select
                             className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
