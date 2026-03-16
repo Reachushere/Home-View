@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  X,
   Plus,
   Trash2,
   BookOpen,
@@ -414,38 +413,38 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         data-testid="course-detail-dialog"
       >
         <div
-          className="flex items-center justify-between px-4 py-3 border-b border-white/20 flex-shrink-0"
+          className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg"
           style={{
-            background: `linear-gradient(135deg, ${courseInfo.color} 0%, ${courseInfo.colorEnd || courseInfo.color} 100%)`,
+            backdropFilter: 'blur(30px)',
+            WebkitBackdropFilter: 'blur(30px)',
+            background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${courseInfo.color}cc 40%, ${courseInfo.colorEnd || courseInfo.color}bb 100%)`,
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)',
           }}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <GraduationCap className="h-4 w-4 text-white flex-shrink-0" />
+            <GraduationCap className="text-white flex-shrink-0" style={{ width: '15px', height: '15px' }} />
             <div className="min-w-0">
               <h2
-                className="text-xs font-semibold text-white truncate"
-                style={{ textShadow: "0 1px 3px rgba(0,0,0,0.3)" }}
+                className="font-normal text-white truncate"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}
                 data-testid="text-course-title"
               >
                 {courseInfo.courseCode} — {courseInfo.courseName}
               </h2>
-              <div className="flex items-center gap-2 text-[9px] text-white mt-0.5">
-                {courseInfo.deliveryMode === "virtual" ? (
-                  <span className="flex items-center gap-0.5"><Video className="h-2.5 w-2.5" /> Virtual</span>
-                ) : courseInfo.deliveryMode === "online" ? (
-                  <span className="flex items-center gap-0.5"><Globe className="h-2.5 w-2.5" /> Online</span>
-                ) : null}
-                {courseInfo.courseType && (
-                  <span className="bg-white/20 px-1.5 py-0.5 rounded text-[8px]">
-                    {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
-                  </span>
-                )}
-              </div>
             </div>
           </div>
-          <button onClick={onClose} className="text-white hover:text-white transition-colors p-1 flex-shrink-0" data-testid="button-close-course-detail">
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2 text-[9px] text-white flex-shrink-0">
+            {courseInfo.deliveryMode === "virtual" ? (
+              <span className="flex items-center gap-0.5"><Video className="h-2.5 w-2.5" /> Virtual</span>
+            ) : courseInfo.deliveryMode === "online" ? (
+              <span className="flex items-center gap-0.5"><Globe className="h-2.5 w-2.5" /> Online</span>
+            ) : null}
+            {courseInfo.courseType && (
+              <span className="bg-white/20 px-1.5 py-0.5 rounded text-[8px]">
+                {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
@@ -975,9 +974,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </div>
           <div className="flex gap-2">
             <Button
+              type="button"
               variant="outline"
-              onClick={onClose}
-              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px] cursor-pointer"
               style={{ fontSize: '12px' }}
               data-testid="button-cancel-course-detail"
             >
