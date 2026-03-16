@@ -22515,7 +22515,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? 'rgba(30,60,120,0.7)' : 'transparent', marginLeft: '-4px', marginRight: '-4px', paddingLeft: '4px', paddingRight: '4px' }}
                           onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskId(null)}
                           ref={(rowEl) => {
@@ -22537,9 +22537,9 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1 }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
+                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginRight: '-4px' }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                               <div>
                                 <button
@@ -22682,7 +22682,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(30,60,120,0.7)' : 'transparent', marginLeft: '-4px', marginRight: '-4px', paddingLeft: '4px', paddingRight: '4px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
@@ -22704,9 +22704,9 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1 }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginRight: '-4px' }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                                           <div>
                                             <button
@@ -22870,7 +22870,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(30,60,120,0.7)' : 'transparent', marginLeft: '-4px', marginRight: '-4px', paddingLeft: '4px', paddingRight: '4px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
@@ -22892,9 +22892,9 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1 }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginRight: '-4px' }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
                                           <div>
                                             <button
@@ -23060,7 +23060,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(30,60,120,0.7)' : 'transparent', marginLeft: '-4px', marginRight: '-4px', paddingLeft: '4px', paddingRight: '4px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
@@ -23082,9 +23082,9 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-2w-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '8px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1 }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginRight: '-4px' }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
                                           <div>
                                             <button
@@ -23223,8 +23223,8 @@ export default function Dashboard() {
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 return (
-                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', paddingRight: '4px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.08)' : 'none', backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent', marginLeft: '-8px', marginRight: '-4px' }}>
-                                    <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1 }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
+                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', paddingRight: '4px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.08)' : 'none', backgroundColor: taskIdx % 2 === 0 ? 'rgba(30,60,120,0.7)' : 'transparent', marginLeft: '-12px', marginRight: '-8px' }}>
+                                    <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginRight: '-4px' }}>{format(new Date(task.dueDate), 'EEEEE')}</span>
                                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                                       <button
                                         className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
