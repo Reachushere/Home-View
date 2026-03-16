@@ -16286,11 +16286,11 @@ export default function Dashboard() {
           
           {/* School Courses Dialog - All past + current courses organized by semester */}
           {isSchoolCoursesDialogOpen && (
-            <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
+            <div className="fixed inset-0 z-[10002] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
           )}
           {isSchoolCoursesDialogOpen && (
             <div
-              className="fixed left-[50%] translate-x-[-50%] translate-y-[-50%] z-[10001] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
+              className="fixed left-[50%] translate-x-[-50%] translate-y-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
               style={{ top: 'calc(50% - 6px)', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
