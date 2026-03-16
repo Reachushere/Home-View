@@ -2193,3 +2193,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .aas-unchecked-pulse {
   animation: aas-shimmer-pulse 10s ease-in-out infinite;
 }
+
+.section-dim > *:not(.no-dim) {
+  opacity: 0.45;
+}
+.section-dim-tr > td:not(.no-dim) {
+  opacity: 0.45;
+}
