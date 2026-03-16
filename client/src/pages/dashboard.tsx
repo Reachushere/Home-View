@@ -20297,7 +20297,7 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <button
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'absolute', right: '8px', bottom: '-14px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50, background: 'none', border: 'none', padding: 0 }}
+            style={{ position: 'absolute', right: '3px', bottom: '-14px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50, background: 'none', border: 'none', padding: 0 }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
@@ -21519,7 +21519,7 @@ export default function Dashboard() {
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronUp style={{ width: '19px', height: '19px', color: 'white' }} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
@@ -21527,7 +21527,7 @@ export default function Dashboard() {
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '19px', height: '19px', color: 'rgba(255,255,255,0.35)' }} />
+              <ChevronDown style={{ width: '19px', height: '19px', color: 'white' }} />
             </div>
           </div>
           <div
@@ -21536,7 +21536,7 @@ export default function Dashboard() {
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
-            <ChevronUp style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.35)' }} />
+            <ChevronUp style={{ width: '22px', height: '22px', color: 'white' }} />
           </div>
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
