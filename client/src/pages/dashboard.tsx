@@ -3932,6 +3932,8 @@ export default function Dashboard() {
     if (saved.zoomLink) zoomLink = saved.zoomLink;
     if (saved.professor) professor = saved.professor;
     if (saved.professorEmail) professorEmail = saved.professorEmail;
+    if (saved.color) color = saved.color;
+    if (saved.colorEnd) colorEnd = saved.colorEnd;
 
     return {
       courseCode,

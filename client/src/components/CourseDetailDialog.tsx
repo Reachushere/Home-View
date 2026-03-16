@@ -477,7 +477,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           style={{
             backdropFilter: 'blur(30px)',
             WebkitBackdropFilter: 'blur(30px)',
-            background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${courseInfo.color}cc 40%, ${courseInfo.colorEnd || courseInfo.color}bb 100%)`,
+            background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${editInfo.color || courseInfo.color}cc 40%, ${editInfo.colorEnd || courseInfo.colorEnd || courseInfo.color}bb 100%)`,
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)',
           }}
         >
