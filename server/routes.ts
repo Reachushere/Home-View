@@ -91,6 +91,7 @@ const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const NEST_SPEAKER_ENTITY = "media_player.nestaudio6787";
 const CAT_WR_HA_VOICE_ENTITY = "media_player.home_assistant_voice_097c38_media_player";
+const NON_ALEXA_ENTITIES = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY];
 const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
 const MODULE_READING_CONFIRMED = "input_boolean.module_reading_confirmed";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
@@ -497,28 +498,51 @@ async function sendNextChunk() {
   currentTTSSession.startTime = Date.now();
   
   const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
+  const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
   console.log("[TTS] Auto-continuing, chunk length:", chunkLength, 
     "new position:", currentTTSSession.currentPosition,
     "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition,
-    "to:", targetEntity);
+    "to:", targetEntity, isNonAlexa ? "(non-Alexa, using play_media)" : "(Alexa)");
   
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
+    let response: Response;
     
-    const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: ssmlChunk,
-        target: targetEntity,
-        data: { type: "tts" }
-      }),
-    });
+    if (isNonAlexa) {
+      const audioPath = await generateAndSaveTTSAudio(nextChunk, `tts-chunk-${Date.now()}`, "echo");
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const fullAudioUrl = `${appUrl}${audioPath}`;
+      console.log(`[TTS] Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`);
+      
+      response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+          media_content_id: fullAudioUrl,
+          media_content_type: "music",
+        }),
+      });
+    } else {
+      const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
+      
+      response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: ssmlChunk,
+          target: targetEntity,
+          data: { type: "tts" }
+        }),
+      });
+    }
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -7853,9 +7877,9 @@ document.body.removeChild(a);
       
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Validate entity_id against known Echo devices
+      // Validate entity_id against known speakers
       const allowedEntities = [
-        BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY,
+        BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY, NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY,
         "media_player.cat_wash_2",
         "media_player.echo_cat_left_am", "media_player.echo_cat_right_am",
         "media_player.echo_cat_washroom_middle", "media_player.echo_closet_am",
@@ -7899,19 +7923,24 @@ document.body.removeChild(a);
       
       if (orderedFiles.length === 0) {
         // Announce that all readings are complete
+        const isNonAlexaTarget = NON_ALEXA_ENTITIES.includes(targetEntity);
         console.log("[Webhook] No urgent PDFs found, announcing completion");
-        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: `All week ${currentWeekNumber} readings are complete. Great job!`,
-            target: targetEntity,
-            data: { type: "tts" }
-          }),
-        });
+        const completionMsg = `All week ${currentWeekNumber} readings are complete. Great job!`;
+        if (isNonAlexaTarget) {
+          const audioPath = await generateAndSaveTTSAudio(completionMsg, `tts-done-${Date.now()}`, "echo");
+          const appUrl = "https://home-view--bkh416.replit.app";
+          await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: targetEntity, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+          });
+        } else {
+          await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: completionMsg, target: targetEntity, data: { type: "tts" } }),
+          });
+        }
         return res.json({ action: "complete", message: `All week ${currentWeekNumber} readings done` });
       }
       
@@ -8028,22 +8057,30 @@ document.body.removeChild(a);
       let firstChunk = cleanTextForTTS(remainingText.substring(0, 3000));
       firstChunk = getChunkWithSentenceBoundary(firstChunk, CHUNK_SIZE);
       const fullFirstMessage = `${announcement} ... ${firstChunk}`;
-      const ssmlContent = `<speak><prosody rate="90%">${fullFirstMessage}</prosody></speak>`;
+      const isNonAlexaTarget = NON_ALEXA_ENTITIES.includes(targetEntity);
       
-      console.log(`[Webhook] Sending first chunk (${firstChunk.length} chars) to ${targetEntity}`);
+      console.log(`[Webhook] Sending first chunk (${firstChunk.length} chars) to ${targetEntity} ${isNonAlexaTarget ? '(non-Alexa)' : '(Alexa)'}`);
       
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: ssmlContent,
-          target: targetEntity,
-          data: { type: "tts" }
-        }),
-      });
+      let response: Response;
+      if (isNonAlexaTarget) {
+        const audioPath = await generateAndSaveTTSAudio(fullFirstMessage, `tts-first-${Date.now()}`, "echo");
+        const appUrl = "https://home-view--bkh416.replit.app";
+        const fullAudioUrl = `${appUrl}${audioPath}`;
+        console.log(`[Webhook] Non-Alexa: Generated audio at ${audioPath}`);
+        
+        response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: targetEntity, media_content_id: fullAudioUrl, media_content_type: "music" }),
+        });
+      } else {
+        const ssmlContent = `<speak><prosody rate="90%">${fullFirstMessage}</prosody></speak>`;
+        response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: ssmlContent, target: targetEntity, data: { type: "tts" } }),
+        });
+      }
       
       if (!response.ok) {
         const errorText = await response.text();

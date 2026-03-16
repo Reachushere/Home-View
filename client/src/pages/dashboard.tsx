@@ -241,6 +241,7 @@ const SPEAKERS = [
   { id: "media_player.byhome", name: "Apartment" },
   { id: "media_player.cat_wash", name: "Cat Wash" },
   { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
+  { id: "media_player.nestaudio6787", name: "Nest (Cat Washroom)" },
   { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
   { id: "media_player.echo_cat_right_am", name: "Cat Washroom Right" },
   { id: "media_player.echo_cat_washroom_middle", name: "Cat Washroom Middle" },
@@ -11871,6 +11872,7 @@ export default function Dashboard() {
                       <SelectItem value="media_player.byhome">Apartment</SelectItem>
                       <SelectItem value="media_player.cat_wash">Cat Wash</SelectItem>
                       <SelectItem value="media_player.cat_wr">Cat Washroom Speakers</SelectItem>
+                      <SelectItem value="media_player.nestaudio6787">Nest (Cat Washroom)</SelectItem>
                       <SelectItem value="media_player.echo_cat_left_am">Cat Washroom Left</SelectItem>
                       <SelectItem value="media_player.echo_cat_right_am">Cat Washroom Right</SelectItem>
                       <SelectItem value="media_player.echo_cat_washroom_middle">Cat Washroom Middle</SelectItem>
