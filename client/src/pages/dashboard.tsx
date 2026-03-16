@@ -39,6 +39,7 @@ import pdfLogo from "@assets/Adobe51_1772514760872.png";
 import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
+import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
 import readerIconPath from "@assets/Adobe65_1772615790465.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -16590,7 +16591,7 @@ export default function Dashboard() {
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '20px', height: '20px', flexShrink: 0, objectFit: 'contain', borderRadius: '50%' }} /> : null;
                         })()}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && (() => {
@@ -18936,6 +18937,7 @@ export default function Dashboard() {
                                       data-testid={`pdf-icon-prep-${task.id}`}
                                     />
                                   )}
+                                  {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ position: 'absolute', right: modulePdfUrl ? '30px' : '2px', top: '50%', transform: 'translateY(-50%)', width: '22px', height: '22px', objectFit: 'contain', zIndex: 2, animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-prep-${task.id}`} /> : null; })()}
                                 </div>
                               </div>
                             );
@@ -18998,6 +19000,7 @@ export default function Dashboard() {
                                   data-testid={`pdf-icon-task-${task.id}`}
                                 />
                               )}
+                              {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ position: 'absolute', right: dueModulePdfUrl ? '30px' : '2px', top: '50%', transform: 'translateY(-50%)', width: '22px', height: '22px', objectFit: 'contain', zIndex: 2, animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-task-${task.id}`} /> : null; })()}
                             </div>
                             </div>
                           );
@@ -19889,6 +19892,7 @@ export default function Dashboard() {
                           {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                         </span>
                         {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(pdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(p)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } }} data-testid={`pdf-icon-multi-${task.id}`} /> : null; })()}
+                        {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '22px', height: '22px', objectFit: 'contain', animation: 'none', flexShrink: 0, borderRadius: '50%' }} data-testid={`zoom-icon-multi-${task.id}`} /> : null; })()}
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
                         <div 
