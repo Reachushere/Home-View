@@ -16584,15 +16584,17 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[10px] text-white truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] text-white truncate flex-1 min-w-0"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <div style={{ width: '38px', flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                         })()}
+                        </div>
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && (() => {
                             const profName = currentCourse?.professor || profInfo.professor;
