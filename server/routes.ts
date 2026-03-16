@@ -1872,7 +1872,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
         { source: 'CNN', url: 'http://rss.cnn.com/rss/cnn_topstories.rss' },
         { source: 'CBC', url: 'https://www.cbc.ca/cmlink/rss-topstories' },
         { source: 'CTV', url: 'https://news.google.com/rss/search?q=site:ctvnews.ca+when:1d&hl=en-CA&gl=CA&ceid=CA:en' },
-        { source: 'Global', url: 'https://globalnews.ca/feed/' },
+        { source: 'Global', url: 'https://globalnews.ca/politics/feed/' },
         { source: 'MSNBC', url: 'https://msnbc.com/feed' },
         { source: 'Politico', url: 'https://rss.politico.com/politics-news.xml' },
         { source: 'Raw Story', url: 'https://www.rawstory.com/feed', count: 3 },
