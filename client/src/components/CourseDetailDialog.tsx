@@ -1043,7 +1043,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-4" />
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
-                <div className="flex items-center gap-0.5 flex-shrink-0">
+                <div className="flex items-center flex-shrink-0" style={{ gap: '3px' }}>
                   <span className="w-[28px] text-center leading-none">Wt%</span>
                   <span className="w-[28px] text-center leading-none">Total</span>
                   <span className="w-[28px] text-center leading-none">Score</span>
@@ -1093,7 +1093,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         <span className="capitalize">{task.type}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center flex-shrink-0" style={{ gap: '3px' }} onClick={(e) => e.stopPropagation()}>
                       <input
                         type="number"
                         className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
@@ -1147,7 +1147,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="w-4 flex-shrink-0" />
                 <div className="w-3 flex-shrink-0" />
                 <div className="flex-1 min-w-0 text-[9px] font-semibold text-white">Totals</div>
-                <div className="flex items-center gap-0.5 flex-shrink-0">
+                <div className="flex items-center flex-shrink-0" style={{ gap: '3px' }}>
                   <span className={`text-[9px] font-semibold w-[28px] text-center ${
                     totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
                   }`} data-testid="text-sum-weight">
