@@ -998,7 +998,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             </Button>
             <Button
               variant="outline"
-              onClick={onClose}
+              onClick={() => {
+                if (onSaveCourseInfo) {
+                  onSaveCourseInfo(editInfo);
+                }
+                onClose();
+              }}
               className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
               style={{
                 boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
