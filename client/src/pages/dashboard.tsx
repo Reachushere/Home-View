@@ -12687,8 +12687,8 @@ export default function Dashboard() {
               <Button
                 type="button"
                 variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
-                style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-4"
+                style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
                 onClick={() => courseListFileRef.current?.click()}
                 disabled={courseListParsing}
                 data-testid="button-upload-course-list"
