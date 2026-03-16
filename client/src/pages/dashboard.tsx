@@ -16813,21 +16813,19 @@ export default function Dashboard() {
                     COURSES
                   </h2>
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
+                  style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                  onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                  data-testid="button-new-course-school-courses"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  New Course
+                </Button>
               </div>
               <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
-                <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
-                    style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
-                    onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
-                    data-testid="button-new-course-school-courses"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    New Course
-                  </Button>
-                </div>
                 {(() => {
                   const semesterMeta = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025' },
@@ -17016,7 +17014,7 @@ export default function Dashboard() {
                   };
 
                   return years.map(year => (
-                    <div key={year} className="mb-8" style={{ marginTop: '-20px' }}>
+                    <div key={year} className="mb-8" style={{ marginTop: year === 2025 ? '-35px' : '15px' }}>
                       <div className="flex items-center justify-center gap-2 mb-3">
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                       </div>
