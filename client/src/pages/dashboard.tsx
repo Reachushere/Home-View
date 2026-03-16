@@ -12690,7 +12690,7 @@ export default function Dashboard() {
 
       {/* Time - fixed position */}
       <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', marginRight: '8px' }} />
+        <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', marginLeft: '-6px', marginRight: '11px' }} />
         <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
@@ -13428,6 +13428,16 @@ export default function Dashboard() {
           if (ct.includes('3')) return 'Certificate 3';
           if (ct.includes('2')) return 'Certificate 2';
           if (ct.includes('1') || ct) return 'Certificate 1';
+          const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
+          const allSlots = [...Object.keys(inProgressCourses), ...Object.keys(checkedCourses)];
+          for (const sk of allSlots) {
+            if (sk.includes(cc) || sk.replace(/^L[123]_/, '').toUpperCase() === cc) {
+              if (sk.startsWith('L3_')) return 'Certificate 3';
+              if (sk.startsWith('L2_')) return 'Certificate 2';
+              return 'Certificate 1';
+            }
+          }
+          if (info.courseType === 'core') return 'Certificate 1';
           return '';
         })();
         return (

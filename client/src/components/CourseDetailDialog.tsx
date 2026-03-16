@@ -591,11 +591,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       <span className="text-white">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-1.5 col-span-2">
-                    <GraduationCap className="h-3 w-3 text-white" />
-                    <span className="text-white">Certificate:</span>
-                    <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
-                  </div>
+                  {(certificateName || certificateType) && (
+                    <div className="flex items-center gap-1.5 col-span-2">
+                      <GraduationCap className="h-3 w-3 text-white" />
+                      <span className="text-white">Certificate:</span>
+                      <span className="text-white text-[9px]">{certificateName || certificateType}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-3 w-3 text-white" />
                     <span className="text-white">Schedule:</span>
@@ -968,21 +970,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           )}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
+        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10 }}>
           <div className="text-[9px] text-white">
             {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
           </div>
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
+            <div
+              role="button"
+              tabIndex={0}
+              onMouseDown={(e) => { e.stopPropagation(); }}
+              onPointerDown={(e) => { e.stopPropagation(); }}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
-              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px] cursor-pointer"
-              style={{ fontSize: '12px' }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}
+              className="border border-white/30 text-white/70 hover:text-white hover:border-white/50 bg-transparent transition-all duration-200 rounded-md flex items-center justify-center select-none"
+              style={{ fontSize: '12px', height: '24px', width: '110px', cursor: 'pointer', pointerEvents: 'auto', position: 'relative', zIndex: 99999 }}
               data-testid="button-cancel-course-detail"
             >
               Cancel
-            </Button>
+            </div>
             <Button
               variant="outline"
               onClick={onClose}
