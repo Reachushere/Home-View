@@ -21633,8 +21633,8 @@ export default function Dashboard() {
             </h4>
             {weatherData && (
               <div className="flex items-center gap-1.5 mr-1" style={{ flexShrink: 0 }}>
-                <span className="text-[9px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
-                <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.45)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+                <span className="text-[9px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
+                <span className="text-[9px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
                 {pollenData && (
                   <span className="text-[8px] font-medium" style={{ color: pollenData.overall.level === 'Low' ? 'rgba(74,222,128,0.7)' : pollenData.overall.level === 'Moderate' ? 'rgba(250,204,21,0.7)' : pollenData.overall.level === 'High' ? 'rgba(251,146,60,0.7)' : 'rgba(248,113,113,0.7)' }} data-testid="pollen-indicator">🌿 {pollenData.overall.level}</span>
                 )}
