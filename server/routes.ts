@@ -1877,7 +1877,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
         { source: 'Politico', url: 'https://rss.politico.com/politics-news.xml' },
         { source: 'Raw Story', url: 'https://www.rawstory.com/feed', count: 3 },
         { source: 'ABC News', url: 'https://abcnews.go.com/abcnews/topstories', count: 3 },
-        { source: 'BBC', url: 'https://feeds.bbci.co.uk/news/rss.xml', count: 2 },
+        { source: 'BBC', url: 'https://feeds.bbci.co.uk/news/politics/rss.xml', count: 2 },
         { source: 'Fox News', url: 'https://moxie.foxnews.com/google-publisher/politics.xml', count: 3 },
       ];
 
