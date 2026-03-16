@@ -16524,24 +16524,24 @@ export default function Dashboard() {
                 {(() => {
                   const semesterDefs = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
-                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions (PPA322)', period: 'First Half (May 5 – Jun 20)' },
-                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government (POL332, POG210)', period: 'First Half (May 5 – Jun 20)' },
-                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes (PPA422)', period: 'Second Half (Jun 23 – Aug 8)' },
+                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions (PPA322)', period: 'May 5 – Jun 20' },
+                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government (POL332, POG210)', period: 'May 5 – Jun 20' },
+                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes (PPA422)', period: 'Jun 23 – Aug 8' },
                     ]},
                     { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
-                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State (POG315, PPA521)', period: 'Full Semester' },
-                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped! The Art of Image Retouching', period: 'Full Semester' },
-                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government (POG310, PPA522)', period: 'Full Semester' },
+                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State (POG315, PPA521)', period: '' },
+                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped! The Art of Image Retouching', period: '' },
+                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government (POG310, PPA522)', period: '' },
                     ]},
                     { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
-                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government (POL122)', period: 'Full Semester' },
-                      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: 'Full Semester' },
-                      { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: 'Full Semester' },
+                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government (POL122)', period: '' },
+                      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: '' },
+                      { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: '' },
                     ]},
                     { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [
-                      { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'Full Semester (May 4 – Jul 31)' },
-                      { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'First Half (May 5 – Jun 16)' },
-                      { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Second Half (Jun 23 – Aug 4)' },
+                      { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'May 4 – Jul 31' },
+                      { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'May 5 – Jun 16' },
+                      { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Jun 23 – Aug 4' },
                     ]},
                     { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026', courses: [] },
                   ];
