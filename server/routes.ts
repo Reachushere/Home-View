@@ -968,6 +968,19 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.post("/api/tasks/reorder", async (req, res) => {
+    try {
+      const { updates } = req.body as { updates: { id: number; sortOrder: number; assignmentGroup?: string | null }[] };
+      if (!Array.isArray(updates)) return res.status(400).json({ message: 'updates must be an array' });
+      for (const u of updates) {
+        await storage.updateTask(u.id, { sortOrder: u.sortOrder, assignmentGroup: u.assignmentGroup ?? undefined });
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
   // PATCH /api/tasks/:id
   app.patch(api.tasks.update.path, async (req, res) => {
     try {

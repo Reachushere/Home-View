@@ -27,6 +27,10 @@ import {
   Loader2,
   Paperclip,
   X,
+  GripVertical,
+  FolderPlus,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -241,8 +245,91 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const courseTasks = useMemo(() => {
     return allTasks
       .filter((t) => t.courseName === courseInfo.fullName && t.type !== 'class' && t.type !== 'module')
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [allTasks, courseInfo.fullName]);
+
+  const [dragId, setDragId] = useState<number | null>(null);
+  const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
+  const [showGroupInput, setShowGroupInput] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [assignToGroup, setAssignToGroup] = useState<number | null>(null);
+
+  const groups = useMemo(() => {
+    const g = new Set<string>();
+    courseTasks.forEach(t => { if (t.assignmentGroup) g.add(t.assignmentGroup); });
+    return Array.from(g).sort();
+  }, [courseTasks]);
+
+  const ungroupedTasks = useMemo(() => courseTasks.filter(t => !t.assignmentGroup), [courseTasks]);
+
+  const groupedTasks = useMemo(() => {
+    const map: Record<string, Task[]> = {};
+    groups.forEach(g => { map[g] = courseTasks.filter(t => t.assignmentGroup === g); });
+    return map;
+  }, [courseTasks, groups]);
+
+  const reorderMutation = useMutation({
+    mutationFn: async (updates: { id: number; sortOrder: number; assignmentGroup?: string | null }[]) => {
+      await apiRequest('POST', '/api/tasks/reorder', { updates });
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); },
+  });
+
+  const handleDragStart = (taskId: number) => { setDragId(taskId); };
+  const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); setDragOverId(taskId); };
+  const handleDragEnd = () => { setDragId(null); setDragOverId(null); };
+
+  const handleDrop = (e: React.DragEvent, targetId: number, targetGroup?: string | null) => {
+    e.preventDefault();
+    if (dragId === null || dragId === targetId) { handleDragEnd(); return; }
+    const taskList = targetGroup ? (groupedTasks[targetGroup] || []) : ungroupedTasks;
+    const allList = [...taskList];
+    const dragIdx = allList.findIndex(t => t.id === dragId);
+    const targetIdx = allList.findIndex(t => t.id === targetId);
+    if (dragIdx < 0) {
+      const dragTask = courseTasks.find(t => t.id === dragId);
+      if (dragTask) allList.splice(targetIdx, 0, dragTask);
+    } else {
+      const [moved] = allList.splice(dragIdx, 1);
+      allList.splice(targetIdx, 0, moved);
+    }
+    const updates = allList.map((t, i) => ({ id: t.id, sortOrder: i, assignmentGroup: targetGroup ?? null }));
+    reorderMutation.mutate(updates);
+    handleDragEnd();
+  };
+
+  const handleDropOnGroup = (e: React.DragEvent, groupName: string) => {
+    e.preventDefault();
+    if (dragId === null) return;
+    const existing = groupedTasks[groupName] || [];
+    const updates = [{ id: dragId, sortOrder: existing.length, assignmentGroup: groupName }];
+    reorderMutation.mutate(updates);
+    handleDragEnd();
+  };
+
+  const [pendingGroups, setPendingGroups] = useState<string[]>([]);
+  const allGroups = useMemo(() => {
+    const merged = new Set([...groups, ...pendingGroups]);
+    return Array.from(merged).sort();
+  }, [groups, pendingGroups]);
+
+  const createGroup = () => {
+    if (!newGroupName.trim()) return;
+    setPendingGroups(prev => [...prev, newGroupName.trim()]);
+    setNewGroupName('');
+    setShowGroupInput(false);
+  };
+
+  const assignTaskToGroup = (taskId: number, groupName: string | null) => {
+    const updates = [{ id: taskId, sortOrder: 0, assignmentGroup: groupName }];
+    reorderMutation.mutate(updates);
+    setAssignToGroup(null);
+  };
+
+  const toggleGroupCollapse = (g: string) => {
+    setCollapsedGroups(prev => { const n = new Set(prev); if (n.has(g)) n.delete(g); else n.add(g); return n; });
+  };
 
   const completedCount = courseTasks.filter((t) => t.isCompleted).length;
   const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
@@ -452,6 +539,117 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const isOverdue = (d: string | Date) => new Date(d) < new Date() ;
 
   const deliveryLabel = courseInfo.deliveryMode === "virtual" ? "Virtual (Live Zoom)" : courseInfo.deliveryMode === "online" ? "Online (Async)" : courseInfo.deliveryMode || "Not set";
+
+  const renderAssignmentRow = (task: Task, currentGroup: string | null) => {
+    const TypeIcon = TASK_TYPE_OPTIONS.find((t) => t.value === task.type)?.icon || FileText;
+    const overdue = !task.isCompleted && isOverdue(task.dueDate);
+    const isDragging = dragId === task.id;
+    const isDragOver = dragOverId === task.id;
+    return (
+      <div
+        key={task.id}
+        draggable
+        onDragStart={() => handleDragStart(task.id)}
+        onDragOver={(e) => handleDragOver(e, task.id)}
+        onDrop={(e) => handleDrop(e, task.id, currentGroup)}
+        onDragEnd={handleDragEnd}
+        className={`flex items-center gap-1.5 px-1.5 py-1.5 rounded-md border transition-all ${
+          isDragging ? "opacity-40 border-blue-400/50" :
+          isDragOver ? "border-blue-400 bg-blue-400/10" :
+          task.isCompleted ? "bg-white/5 border-white/5" :
+          overdue ? "bg-red-500/10 border-red-500/20" :
+          "bg-white/5 border-white/10 hover:bg-white/8"
+        }`}
+        data-testid={`assignment-row-${task.id}`}
+      >
+        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" data-testid={`drag-handle-${task.id}`}>
+          <GripVertical className="h-3.5 w-3.5" />
+        </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted }); }}
+          className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+            task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
+          }`}
+          data-testid={`button-toggle-task-${task.id}`}
+        >
+          {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
+        </button>
+        <TypeIcon className={`h-3 w-3 flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} />
+        <div className="flex-1 min-w-0">
+          <div
+            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
+            onClick={() => onOpenEditTask?.(task)}
+            data-testid={`link-edit-task-${task.id}`}
+          >
+            {task.title}
+            {task.attachments && task.attachments.length > 0 && (
+              <Paperclip className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 inline" />
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-[8px] text-white">
+            <span className={overdue ? "text-red-400" : ""}>
+              {formatDate(task.dueDate)} {formatTime(task.dueDate)}
+            </span>
+            <span className="capitalize">{task.type}</span>
+          </div>
+        </div>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+          <DebouncedGradeInput
+            value={task.gradeValue}
+            onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val })}
+            placeholder="Scr"
+            testId={`input-grade-value-${task.id}`}
+          />
+          <DebouncedGradeInput
+            value={task.gradeTotal}
+            onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val } })}
+            placeholder="Tot"
+            testId={`input-grade-total-${task.id}`}
+          />
+          <DebouncedGradeInput
+            value={task.gradeWeight}
+            onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } })}
+            placeholder="Wt"
+            testId={`input-grade-weight-${task.id}`}
+          />
+          <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
+            {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
+          </span>
+        </div>
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          {assignToGroup === task.id ? (
+            <select
+              className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5"
+              value={task.assignmentGroup || ''}
+              onChange={(e) => assignTaskToGroup(task.id, e.target.value || null)}
+              autoFocus
+              onBlur={() => setAssignToGroup(null)}
+              data-testid={`select-group-${task.id}`}
+            >
+              <option value="">No Group</option>
+              {allGroups.map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
+          ) : (
+            <button
+              onClick={(e) => { e.stopPropagation(); setAssignToGroup(task.id); }}
+              className="flex-shrink-0 text-white/30 hover:text-white/60 transition-colors p-0.5"
+              title="Assign to group"
+              data-testid={`button-assign-group-${task.id}`}
+            >
+              <FolderPlus className="h-3 w-3" />
+            </button>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate(task.id); }}
+            className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
+            data-testid={`button-delete-task-${task.id}`}
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return createPortal(
     <div
@@ -968,6 +1166,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
             {courseTasks.length > 0 && (
               <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white uppercase tracking-wider">
+                <div className="flex-shrink-0" style={{ width: '14px' }} />
                 <div className="flex-shrink-0 w-4" />
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
@@ -980,83 +1179,71 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
               </div>
             )}
+
+            {courseTasks.length > 0 && (
+              <div className="flex items-center gap-1 px-2 mb-1">
+                <button
+                  onClick={() => setShowGroupInput(!showGroupInput)}
+                  className="flex items-center gap-1 text-[8px] text-white/50 hover:text-white/80 transition-colors"
+                  data-testid="button-create-group"
+                >
+                  <FolderPlus className="h-3 w-3" />
+                  <span>New Group</span>
+                </button>
+                {showGroupInput && (
+                  <div className="flex items-center gap-1 ml-1">
+                    <input
+                      type="text"
+                      value={newGroupName}
+                      onChange={(e) => setNewGroupName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') createGroup(); }}
+                      placeholder="Group name..."
+                      className="h-5 text-[9px] px-1.5 bg-white/10 border border-white/20 rounded text-white w-[120px]"
+                      autoFocus
+                      data-testid="input-group-name"
+                    />
+                    <button onClick={createGroup} className="text-[8px] text-white/60 hover:text-white px-1" data-testid="button-confirm-group">
+                      <Check className="h-3 w-3" />
+                    </button>
+                    <button onClick={() => { setShowGroupInput(false); setNewGroupName(''); }} className="text-[8px] text-white/60 hover:text-white px-1">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex flex-col" style={{ gap: '5px' }} data-testid="assignments-list">
-              {courseTasks.map((task) => {
-                const TypeIcon = TASK_TYPE_OPTIONS.find((t) => t.value === task.type)?.icon || FileText;
-                const overdue = !task.isCompleted && isOverdue(task.dueDate);
+              {allGroups.map(groupName => {
+                const tasks = groupedTasks[groupName] || [];
+                const isCollapsed = collapsedGroups.has(groupName);
+                const groupWeight = tasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+                const groupValue = tasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
+                const groupTotal = tasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
                 return (
-                  <div
-                    key={task.id}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition-all ${
-                      task.isCompleted
-                        ? "bg-white/5 border-white/5"
-                        : overdue
-                        ? "bg-red-500/10 border-red-500/20"
-                        : "bg-white/5 border-white/10 hover:bg-white/8"
-                    }`}
-                    data-testid={`assignment-row-${task.id}`}
-                  >
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted }); }}
-                      className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
-                      }`}
-                      data-testid={`button-toggle-task-${task.id}`}
+                  <div key={groupName} className="rounded-md border border-white/15 overflow-hidden" data-testid={`group-${groupName}`}>
+                    <div
+                      className="flex items-center gap-1.5 px-2 py-1 bg-white/10 cursor-pointer select-none"
+                      onClick={() => toggleGroupCollapse(groupName)}
+                      onDragOver={(e) => { e.preventDefault(); }}
+                      onDrop={(e) => handleDropOnGroup(e, groupName)}
+                      data-testid={`group-header-${groupName}`}
                     >
-                      {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
-                    </button>
-                    <TypeIcon className={`h-3 w-3 flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} />
-                    <div className="flex-1 min-w-0">
-                      <div
-                        className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
-                        onClick={() => onOpenEditTask?.(task)}
-                        data-testid={`link-edit-task-${task.id}`}
-                      >
-                        {task.title}
-                        {task.attachments && task.attachments.length > 0 && (
-                          <Paperclip className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 inline" />
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 text-[8px] text-white">
-                        <span className={overdue ? "text-red-400" : ""}>
-                          {formatDate(task.dueDate)} {formatTime(task.dueDate)}
-                        </span>
-                        <span className="capitalize">{task.type}</span>
-                      </div>
+                      {isCollapsed ? <ChevronRight className="h-3 w-3 text-white/60" /> : <ChevronDown className="h-3 w-3 text-white/60" />}
+                      <span className="text-[9px] font-semibold text-white flex-1">{groupName}</span>
+                      <span className="text-[7px] text-white/50">{tasks.length} items · Wt: {groupWeight}%</span>
+                      {groupTotal > 0 && <span className="text-[7px] text-white/50">· {Math.round((groupValue / groupTotal) * 100)}%</span>}
                     </div>
-                    <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
-                      <DebouncedGradeInput
-                        value={task.gradeValue}
-                        onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val })}
-                        placeholder="Scr"
-                        testId={`input-grade-value-${task.id}`}
-                      />
-                      <DebouncedGradeInput
-                        value={task.gradeTotal}
-                        onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val } })}
-                        placeholder="Tot"
-                        testId={`input-grade-total-${task.id}`}
-                      />
-                      <DebouncedGradeInput
-                        value={task.gradeWeight}
-                        onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } })}
-                        placeholder="Wt"
-                        testId={`input-grade-weight-${task.id}`}
-                      />
-                      <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
-                        {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
-                      </span>
-                    </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate(task.id); }}
-                      className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
-                      data-testid={`button-delete-task-${task.id}`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+                    {!isCollapsed && (
+                      <div className="flex flex-col" style={{ gap: '3px', padding: '3px' }}>
+                        {tasks.map(task => renderAssignmentRow(task, groupName))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
+
+              {ungroupedTasks.map(task => renderAssignmentRow(task, null))}
             </div>
             {courseTasks.length > 0 && (
               <div className="flex items-center gap-2 px-2 py-1.5 mt-1 rounded-md border border-white/20 bg-white/10" data-testid="grade-totals-row">

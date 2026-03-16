@@ -326,6 +326,8 @@ export const tasks = pgTable("tasks", {
   gradeWeight: real("grade_weight"), // Percentage of final grade (e.g., 25 = 25%, 0.4 = 0.4%)
   gradeValue: real("grade_value"), // Score achieved (e.g., 4.45 out of 7.5)
   gradeTotal: real("grade_total"), // Total possible points (e.g., 7.5)
+  assignmentGroup: text("assignment_group"), // Group name for organizing assignments
+  sortOrder: integer("sort_order").default(0), // Order within group or list
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
