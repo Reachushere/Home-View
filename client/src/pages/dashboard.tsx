@@ -13478,6 +13478,16 @@ export default function Dashboard() {
               updateGrade(certKey, grade);
               updatePercent(certKey, percent);
             }}
+            onDeleteCourse={() => {
+              const courseCode = selectedCertCourse!.courseCode;
+              const updatedCourses = coursesData.courses.filter(c => {
+                const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
+                return cCode !== courseCode.replace(/\s/g, '');
+              });
+              saveCourses({ courses: updatedCourses });
+              setSelectedCertCourse(null);
+              toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
+            }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}
           />
@@ -16545,8 +16555,8 @@ export default function Dashboard() {
                             style={{ marginRight: '-3px' }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setEditingSchoolCourseKey(semCourse.code);
-                              setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
+                              const certKey = pastEntry?.certKey || semCourse.code;
+                              setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
                             }}
                             data-testid={`button-edit-course-${semCourse.code}`}
                           >
@@ -16562,13 +16572,12 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-2 mb-3">
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                       </div>
-                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch' }}>
+                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'start' }}>
                         {semesterDefs.filter(s => s.year === year).map(sem => {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
-                          const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
@@ -16600,71 +16609,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               )}
-              {editingSchoolCourseKey && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
-                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg p-4 w-[300px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                    <h3 className="text-[11px] font-medium text-white">Edit Course — {editingSchoolCourseKey}</h3>
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Semester</label>
-                          <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.semester} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, semester: e.target.value }))} data-testid="select-edit-past-semester">
-                            <option value="">--</option>
-                            <option value="Fall 2024">Fall 2024</option>
-                            <option value="Winter 2025">Winter 2025</option>
-                            <option value="Spring/Summer 2025">Spring/Summer 2025</option>
-                            <option value="Fall 2025">Fall 2025</option>
-                            <option value="Winter 2026">Winter 2026</option>
-                            <option value="Spring/Summer 2026">Spring/Summer 2026</option>
-                            <option value="Fall 2026">Fall 2026</option>
-                            <option value="Winter 2027">Winter 2027</option>
-                            <option value="Spring/Summer 2027">Spring/Summer 2027</option>
-                            <option value="Fall 2027">Fall 2027</option>
-                            <option value="Winter 2028">Winter 2028</option>
-                            <option value="Spring/Summer 2028">Spring/Summer 2028</option>
-                            <option value="Fall 2028">Fall 2028</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-white/60 block mb-0.5">Credits</label>
-                          <input type="text" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.credits} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, credits: e.target.value }))} data-testid="input-edit-past-credits" />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
-                        <input type="text" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.professor} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, professor: e.target.value }))} data-testid="input-edit-past-professor" />
-                      </div>
-                      <div>
-                        <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
-                        <input type="email" className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.email} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, email: e.target.value }))} data-testid="input-edit-past-email" />
-                      </div>
-                      <div>
-                        <label className="text-[9px] text-white/60 block mb-0.5">Certificate Type</label>
-                        <select className="w-full text-[10px] text-white bg-white/10 rounded px-2 py-1 focus:outline-none focus:border-white/50" value={editingSchoolCourseData.certificateType} onChange={(e) => setEditingSchoolCourseData(prev => ({ ...prev, certificateType: e.target.value }))} data-testid="select-edit-past-certificate-type">
-                          <option value="">-- Select --</option>
-                          {CERTIFICATE_TYPE_OPTIONS.map(g => (
-                            <optgroup key={g.group} label={g.group}>
-                              {g.options.map(o => <option key={o} value={o}>{o}</option>)}
-                            </optgroup>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 justify-end">
-                      <button className="px-3 py-1 text-[9px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors" onClick={() => setEditingSchoolCourseKey(null)} data-testid="button-cancel-edit-past">Cancel</button>
-                      <button className="px-3 py-1 text-[9px] bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors" onClick={() => {
-                        const updated = { ...pastCourseInfo, [editingSchoolCourseKey]: { professor: editingSchoolCourseData.professor, email: editingSchoolCourseData.email, grade: editingSchoolCourseData.grade, semester: editingSchoolCourseData.semester, credits: editingSchoolCourseData.credits } };
-                        const updatedCerts = { ...courseCertificateTypes, [editingSchoolCourseKey]: editingSchoolCourseData.certificateType };
-                        setCourseCertificateTypes(updatedCerts);
-                        localStorage.setItem('courseCertificateTypes', JSON.stringify(updatedCerts));
-                        setPastCourseInfo(updated);
-                        localStorage.setItem('pastCourseInfo', JSON.stringify(updated));
-                        setEditingSchoolCourseKey(null);
-                      }} data-testid="button-save-edit-past">Save</button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              
               <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
                 <div className="flex gap-2">
                   <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>

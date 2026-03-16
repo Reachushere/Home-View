@@ -10127,7 +10127,23 @@ document.body.removeChild(a);
         return true;
       });
 
-      res.json(dedupedEvents);
+      // Further deduplicate: collapse events that match the same course + similar task type at the same time
+      const courseTaskSeen2 = new Set<string>();
+      const finalEvents2 = dedupedEvents.filter(e => {
+        const titleMatch = e.title.match(/^\[([A-Z]{2,5}\d{3}[A-Z]?\s*-\s*[^\]]+)\]\s*(.*)/i);
+        if (titleMatch) {
+          const courseId = titleMatch[1].split('-')[0].trim().toUpperCase().replace(/\s/g, '');
+          const taskPart = titleMatch[2].trim().toLowerCase();
+          const normalizedType = taskPart.includes('module') ? 'module' : taskPart.includes('reading') ? 'reading' : taskPart;
+          const startKey = e.startDate ? e.startDate.substring(0, 16) : '';
+          const dedupeKey = `${courseId}||${normalizedType}||${startKey}`;
+          if (courseTaskSeen2.has(dedupeKey)) return false;
+          courseTaskSeen2.add(dedupeKey);
+        }
+        return true;
+      });
+
+      res.json(finalEvents2);
     } catch (error) {
       console.error("Fetch upcoming calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch upcoming calendar events" });
@@ -10211,8 +10227,24 @@ document.body.removeChild(a);
         seen.add(key);
         return true;
       });
-      
-      res.json(dedupedEvents);
+
+      // Further deduplicate: collapse events that match the same course + similar task type at the same time
+      const courseTaskSeen = new Set<string>();
+      const finalEvents = dedupedEvents.filter(e => {
+        const titleMatch = e.title.match(/^\[([A-Z]{2,5}\d{3}[A-Z]?\s*-\s*[^\]]+)\]\s*(.*)/i);
+        if (titleMatch) {
+          const courseId = titleMatch[1].split('-')[0].trim().toUpperCase().replace(/\s/g, '');
+          const taskPart = titleMatch[2].trim().toLowerCase();
+          const normalizedType = taskPart.includes('module') ? 'module' : taskPart.includes('reading') ? 'reading' : taskPart;
+          const startKey = e.startDate ? e.startDate.substring(0, 16) : '';
+          const dedupeKey = `${courseId}||${normalizedType}||${startKey}`;
+          if (courseTaskSeen.has(dedupeKey)) return false;
+          courseTaskSeen.add(dedupeKey);
+        }
+        return true;
+      });
+
+      res.json(finalEvents);
     } catch (error) {
       console.error("Fetch Google Calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch Google Calendar events" });

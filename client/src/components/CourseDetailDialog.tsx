@@ -81,6 +81,7 @@ interface CourseDetailDialogProps {
   onClose: () => void;
   onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
+  onDeleteCourse?: () => void;
   semesterStart: Date;
   readingWeekStart: Date | null;
   certificateName?: string;
@@ -132,11 +133,12 @@ function percentToLetterGrade(pct: number): string {
   return 'F';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, semesterStart, readingWeekStart, certificateName }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, onDeleteCourse, semesterStart, readingWeekStart, certificateName }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
   const [isEditingInfo, setIsEditingInfo] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
@@ -443,6 +445,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <span className="bg-white/20 px-1.5 py-0.5 rounded text-[8px]">
                 {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
               </span>
+            )}
+            {onDeleteCourse && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="p-1 rounded hover:bg-white/15 transition-colors"
+                data-testid="button-delete-course"
+              >
+                <Trash2 className="w-3 h-3 text-white/60 hover:text-white" />
+              </button>
             )}
           </div>
         </div>
@@ -999,6 +1010,55 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </div>
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 z-[10004] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.6)' }}
+          onClick={() => setShowDeleteConfirm(false)}
+          data-testid="delete-course-confirm-overlay"
+        >
+          <div
+            className="rounded-lg overflow-hidden text-white w-[340px]"
+            style={{
+              background: 'linear-gradient(180deg, #1e1e2e 0%, #0d0d1a 100%)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            data-testid="delete-course-confirm-dialog"
+          >
+            <div className="px-5 py-4 border-b border-white/15 flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-red-400" />
+              <h3 className="text-sm font-semibold">Delete Course</h3>
+            </div>
+            <div className="px-5 py-4">
+              <p className="text-sm text-white/80 leading-relaxed">
+                Are you sure you want to delete <strong>{courseInfo.courseCode}</strong>? This will remove the course from your list.
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-3 px-5 py-3 border-t border-white/15">
+              <button
+                className="px-4 py-1.5 text-[11px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors"
+                onClick={() => setShowDeleteConfirm(false)}
+                data-testid="button-cancel-delete-course"
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-1.5 text-[11px] bg-red-500/80 hover:bg-red-500 rounded text-white transition-colors"
+                onClick={() => {
+                  onDeleteCourse?.();
+                  setShowDeleteConfirm(false);
+                }}
+                data-testid="button-confirm-delete-course"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   );
