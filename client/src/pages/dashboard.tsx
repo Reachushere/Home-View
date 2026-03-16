@@ -18786,6 +18786,45 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
+                        {/* Course-associated projects */}
+                        {allProjects.filter(proj => {
+                          if (!proj.courseName) return false;
+                          const projCourseCode = proj.courseName.split(' - ')[0]?.toUpperCase();
+                          if (projCourseCode !== course.name) return false;
+                          if (proj.status === 'completed' || proj.status === 'cancelled') return false;
+                          if (!proj.targetDate) return false;
+                          const projTargetDate = startOfDay(new Date(proj.targetDate));
+                          if (isSameDay(projTargetDate, cellDate)) return true;
+                          if (proj.startDate) {
+                            const projStartDate = startOfDay(new Date(proj.startDate));
+                            return cellDate >= projStartDate && cellDate < projTargetDate;
+                          }
+                          return false;
+                        }).map(proj => {
+                          const today = startOfDay(new Date());
+                          const tomorrow = addDays(today, 1);
+                          const projTarget = startOfDay(new Date(proj.targetDate!));
+                          const isDueToday = isSameDay(projTarget, today);
+                          const isDueTomorrow = isSameDay(projTarget, tomorrow);
+                          const isOnTargetDay = isSameDay(projTarget, cellDate);
+                          return (
+                            <div
+                              key={`proj-${proj.id}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              style={{
+                                backgroundColor: isOnTargetDay ? 'white' : 'white',
+                                borderColor: proj.color || course.darkColor,
+                                borderStyle: 'dashed',
+                              }}
+                              onClick={() => { setEditingProject(proj); setProjectDialogOpen(true); }}
+                              title={proj.name}
+                              data-testid={`course-project-${proj.id}`}
+                            >
+                              <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || course.darkColor }} />
+                              <span className="truncate text-gray-700 pl-0.5 flex-1 min-w-0">{proj.name}</span>
+                            </div>
+                          );
+                        })}
                         {slottedItems.map((item, itemIdx) => {
                           if (!item) {
                             return <div key={`empty-${itemIdx}`} style={{ minHeight: '18px' }} />;
@@ -19054,8 +19093,25 @@ export default function Dashboard() {
                   }
                   return false;
                 }) || [];
+                const activeCourseNames = filteredCourses.map(c => c.name.split(' - ')[0]?.toUpperCase()).filter(Boolean);
+                const otherProjects = allProjects.filter(proj => {
+                  if (proj.status === 'completed' || proj.status === 'cancelled') return false;
+                  if (!proj.targetDate) return false;
+                  const hasCourseMatch = proj.courseName && activeCourseNames.includes(proj.courseName.split(' - ')[0]?.toUpperCase());
+                  if (hasCourseMatch) return false;
+                  const projTargetDate = startOfDay(new Date(proj.targetDate));
+                  const weekStart = startOfDay(weekDays[0]);
+                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  if (projTargetDate >= weekStart && projTargetDate < weekEnd) return true;
+                  if (proj.startDate) {
+                    const projStartDate = startOfDay(new Date(proj.startDate));
+                    if (projStartDate < weekEnd && projTargetDate > weekStart) return true;
+                  }
+                  return false;
+                });
+                const totalOtherItems = otherTasks.length + otherProjects.length;
                 const calOtherHeight = gridSizes.courseRowHeight || 48;
-                const otherRowHeight = otherTasks.length === 0 ? calOtherHeight : Math.max(calOtherHeight, otherTasks.length * 20 + 4);
+                const otherRowHeight = totalOtherItems === 0 ? calOtherHeight : Math.max(calOtherHeight, totalOtherItems * 20 + 4);
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
@@ -19117,6 +19173,38 @@ export default function Dashboard() {
                                     <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
                                   </a>
                                 )}
+                              </div>
+                            );
+                          })}
+                          {otherProjects.filter(proj => {
+                            const projTargetDate = startOfDay(new Date(proj.targetDate!));
+                            if (isSameDay(projTargetDate, cellDate)) return true;
+                            if (proj.startDate) {
+                              const projStartDate = startOfDay(new Date(proj.startDate));
+                              return cellDate >= projStartDate && cellDate < projTargetDate;
+                            }
+                            return false;
+                          }).map(proj => {
+                            const today = startOfDay(new Date());
+                            const tomorrow = addDays(today, 1);
+                            const projTarget = startOfDay(new Date(proj.targetDate!));
+                            const isDueToday = isSameDay(projTarget, today);
+                            const isDueTomorrow = isSameDay(projTarget, tomorrow);
+                            return (
+                              <div
+                                key={`proj-${proj.id}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                style={{
+                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
+                                  borderColor: proj.color || 'rgba(107, 114, 128, 0.5)',
+                                  borderStyle: 'dashed',
+                                }}
+                                onClick={() => { setEditingProject(proj); setProjectDialogOpen(true); }}
+                                title={proj.name}
+                                data-testid={`other-project-${proj.id}`}
+                              >
+                                <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
+                                <span className="truncate font-bold text-black pl-0.5 flex-1 min-w-0">{proj.name}</span>
                               </div>
                             );
                           })}
