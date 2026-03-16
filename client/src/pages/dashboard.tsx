@@ -2935,14 +2935,14 @@ export default function Dashboard() {
   const [openElectives, setOpenElectives] = useState<Record<string, string>>(() => {
     const electiveDefaults: Record<string, string> = {
       'LIBERAL': 'CGCM 738 Photoshopped! The Art of Image Retouching',
-      'OPEN1': 'CASL 101 Intro to ASL I',
-      'OPEN2': 'CFNF 400 Socl Context Human Sexuality',
-      'L2_LIBERAL': 'CPHL 110 Philosophy of Religion I',
+      'OPEN1': 'CASL 101 Introductory American Sign Language I',
+      'OPEN2': 'CFNF 400 The Social Content of Human Sexuality',
+      'L2_LIBERAL': 'CPHL 110 Philosophy of Religion',
       'L2_OPEN1': 'CSOC 103 How Society Works',
     };
     const saved = localStorage.getItem('openElectives');
     const existing = saved ? JSON.parse(saved) : {};
-    const merged = { ...existing, ...electiveDefaults };
+    const merged = { ...electiveDefaults, ...existing };
     localStorage.setItem('openElectives', JSON.stringify(merged));
     return merged;
   });

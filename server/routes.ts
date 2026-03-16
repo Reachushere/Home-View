@@ -10,6 +10,7 @@ import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
 import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData } from "@shared/schema";
 import { z } from "zod";
+import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent } from "./googleCalendar";
@@ -5341,21 +5342,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsBypassCooldown = false;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
+  const PROF_REQD_COURSES = new Set(['CPPA101','CPPA102','CPPA120','CPPA121','CPPA122','CPPA124','CPPA125']);
+  const LIBERAL_CODES = new Set(LIBERAL_STUDIES_COURSES.map(c => c.code.replace(/\s/g, '')));
+  const OPEN_ELECTIVE_CODES = new Set(OPEN_ELECTIVE_COURSES.map(c => c.code.replace(/\s/g, '')));
+
   function getCoursePriorityForFile(f: any): number {
     const folder = (f.folder || '').toLowerCase();
     const name = (f.originalName || '').toLowerCase();
-    const courseCode = folder.includes('cppa') || name.includes('cppa') ? 'cppa' :
-                       folder.includes('cfnf') || name.includes('cfnf') ? 'cfnf' :
-                       folder.includes('casl') || name.includes('casl') ? 'casl' :
-                       folder.includes('cecn') || name.includes('cecn') ? 'cecn' :
-                       folder.includes('cphl') || name.includes('cphl') ? 'cphl' :
-                       folder.includes('chis') || name.includes('chis') ? 'chis' :
-                       folder.includes('cgcm') || name.includes('cgcm') ? 'cgcm' : '';
-    if (!courseCode) return 999;
-
-    const courseCodeUpper = courseCode.toUpperCase();
     const codeWithNum = folder.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') ||
-                        name.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') || courseCodeUpper;
+                        name.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') || '';
+    if (!codeWithNum) return 999;
 
     for (const [key, priority] of Object.entries(coursePlayPriority)) {
       const keyCode = key.split(':')[1] || '';
@@ -5364,6 +5360,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     }
 
+    if (PROF_REQD_COURSES.has(codeWithNum)) return 100;
+    if (LIBERAL_CODES.has(codeWithNum)) return 200;
+    if (OPEN_ELECTIVE_CODES.has(codeWithNum)) return 300;
     return 999;
   }
 
