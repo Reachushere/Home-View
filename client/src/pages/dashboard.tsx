@@ -16470,7 +16470,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                    SCHOOL COURSES
+                    COURSES
                   </h2>
                 </div>
               </div>
