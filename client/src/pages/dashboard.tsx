@@ -12808,7 +12808,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
-                <div style={isSectionAllGreen(0, 'L1') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(0, 'L1') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
                 </div>
@@ -12831,7 +12831,7 @@ export default function Dashboard() {
                 ))}
                 </div>
                 
-                <div style={isSectionAllGreen(1, 'L1') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(1, 'L1') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: <span style={sectionRemaining(1, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L1')}/{certSections.L1[1].required} remaining)</span></div>
                 </div>
@@ -12858,7 +12858,7 @@ export default function Dashboard() {
                   );
                 })}
                 </div>
-                <div style={isSectionAllGreen(2, 'L1') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(2, 'L1') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: <span style={sectionRemaining(2, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select one course from "Table A"</span> <span className="font-bold" style={sectionRemaining(2, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
                 </div>
@@ -12882,7 +12882,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 </div>
-                <div style={isSectionAllGreen(3, 'L1') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(3, 'L1') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Elective: <span style={sectionRemaining(3, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select two courses from "Table I"</span> <span className="font-bold" style={sectionRemaining(3, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
                 </div>
@@ -12936,7 +12936,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
-                <div style={isSectionAllGreen(0, 'L2') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(0, 'L2') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold" style={sectionRemaining(0, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
                 </div>
@@ -12952,7 +12952,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 </div>
-                <div style={isSectionAllGreen(1, 'L2') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(1, 'L2') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses: <span style={sectionRemaining(1, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">three</span> courses from the list below, not previously completed</span> <span className="font-bold" style={sectionRemaining(1, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L2')}/{certSections.L2[1].required} remaining)</span></div>
                 </div>
@@ -12981,7 +12981,7 @@ export default function Dashboard() {
                   );
                 })}
                 </div>
-                <div style={isSectionAllGreen(2, 'L2') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(2, 'L2') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: <span style={sectionRemaining(2, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select one course from Table A</span> <span className="font-bold" style={sectionRemaining(2, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
                 </div>
@@ -13003,7 +13003,7 @@ export default function Dashboard() {
                   <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
                 </div>
                 </div>
-                <div style={isSectionAllGreen(3, 'L2') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(3, 'L2') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Required: <span style={sectionRemaining(3, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">one</span> course from the list below</span> <span className="font-bold" style={sectionRemaining(3, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L2')}/{certSections.L2[3].required} remaining)</span></div>
                 </div>
@@ -13031,7 +13031,7 @@ export default function Dashboard() {
                   );
                 })}
                 </div>
-                <div style={isSectionAllGreen(4, 'L2') ? { opacity: 0.45 } : undefined}>
+                <div style={isSectionAllGreen(4, 'L2') ? {} : undefined}>
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally-Related Elective: <span style={sectionRemaining(4, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from Table I</span> <span className="font-bold" style={sectionRemaining(4, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
                 </div>
@@ -13092,10 +13092,10 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b border-black" style={isSectionAllGreen(0, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className="border-b border-black" style={isSectionAllGreen(0, 'L3') ? {} : undefined}>
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
                     </tr>
-                    <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`} style={isSectionAllGreen(0, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className={`border-b border-black ${courseRowClass('L3_PPA333')}`} style={isSectionAllGreen(0, 'L3') ? {} : undefined}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PPA333">Research Methods in Public Admin</CourseName><StrikethroughLabel id="L3_PPA333" /></span><TriStateToggle id="L3_PPA333" inline /></div></td>
@@ -13106,7 +13106,7 @@ export default function Dashboard() {
                       </td>
                       <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="pencil-cert-L3_PPA333"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
-                    <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`} style={isSectionAllGreen(0, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`} style={isSectionAllGreen(0, 'L3') ? {} : undefined}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span><TriStateToggle id="L3_PRACTICUM1" inline /></div></td>
@@ -13117,7 +13117,7 @@ export default function Dashboard() {
                       </td>
                       <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="pencil-cert-L3_PRACTICUM1"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
-                    <tr className="border-b border-black" style={isSectionAllGreen(1, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className="border-b border-black" style={isSectionAllGreen(1, 'L3') ? {} : undefined}>
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">eight</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
                     </tr>
                     {[
@@ -13136,7 +13136,7 @@ export default function Dashboard() {
                       { code: 'CPPA 490', title: 'Public Administration Themes', id: 'L3_PPA490' },
                       { code: 'CPPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
                     ].map((course, idx, arr) => (
-                      <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)}`} style={isSectionAllGreen(1, 'L3') ? { opacity: 0.45 } : undefined}>
+                      <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)}`} style={isSectionAllGreen(1, 'L3') ? {} : undefined}>
                         {idx === 0 && (
                           <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[9px] align-middle">
                             <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
@@ -13152,11 +13152,11 @@ export default function Dashboard() {
                         {idx === 0 && <td rowSpan={14} className="border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 ${i < 13 ? 'border-b border-black' : ''}`} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>))}</div></td>}
                       </tr>
                     ))}
-                    <tr className="border-b border-black" style={isSectionAllGreen(2, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className="border-b border-black" style={isSectionAllGreen(2, 'L3') ? {} : undefined}>
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
                     </tr>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
-                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`} style={isSectionAllGreen(2, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} data-testid={`cert-course-${cid}`} style={isSectionAllGreen(2, 'L3') ? {} : undefined}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
@@ -13176,11 +13176,11 @@ export default function Dashboard() {
                       <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
                 ))}
-                    <tr className="border-b border-black" style={isSectionAllGreen(3, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className="border-b border-black" style={isSectionAllGreen(3, 'L3') ? {} : undefined}>
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Liberal Studies Electives: <span style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>1 Table A + 3 Table B</span> <span className="font-bold" style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
                     </tr>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
-                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} style={isSectionAllGreen(3, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} style={isSectionAllGreen(3, 'L3') ? {} : undefined}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
@@ -13200,11 +13200,11 @@ export default function Dashboard() {
                       <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
                     </tr>
                 ))}
-                    <tr className="border-b border-black" style={isSectionAllGreen(4, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr className="border-b border-black" style={isSectionAllGreen(4, 'L3') ? {} : undefined}>
                       <td colSpan={5} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Professionally Related Electives: <span style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select seven from PR table I</span> <span className="font-bold" style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
                     </tr>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
-                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} style={isSectionAllGreen(4, 'L3') ? { opacity: 0.45 } : undefined}>
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)}`} style={isSectionAllGreen(4, 'L3') ? {} : undefined}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
