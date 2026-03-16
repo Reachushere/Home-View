@@ -17025,27 +17025,47 @@ export default function Dashboard() {
                             <div className="px-2 py-1.5 border-b flex items-center justify-center flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
-                            <div className="p-1.5">
-                              <table className="border-collapse text-[9px] text-white w-full">
+                            <div className="p-1 flex gap-1">
+                              <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
                                 <thead>
                                   <tr style={{ background: '#1a4b7a' }}>
-                                    <th className="px-2 py-1 text-left font-bold border border-white/30">Letter</th>
-                                    <th className="px-2 py-1 text-left font-bold border border-white/30">%</th>
-                                    <th className="px-2 py-1 text-left font-bold border border-white/30">GPA</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Ltr</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">%</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GP</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {[
-                                    ['A+','90-100%','4.33'],['A','85-89%','4'],['A-','80-84%','3.67'],
-                                    ['B+','77-79%','3.33'],['B','73-76%','3'],['B-','70-72%','2.67'],
-                                    ['C+','67-69%','2.33'],['C','63-66%','2'],['C-','60-62%','1.67'],
-                                    ['D+','57-59%','1.33'],['D','53-56%','1'],['D-','50-52%','0.67'],
-                                    ['F','0-49%','0'],
+                                    ['A+','90-100','4.33'],['A','85-89','4.0'],['A-','80-84','3.67'],
+                                    ['B+','77-79','3.33'],['B','73-76','3.0'],['B-','70-72','2.67'],
+                                    ['C+','67-69','2.33'],
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)' }}>
-                                      <td className="px-2 py-0.5 font-semibold border border-white/20">{letter}</td>
-                                      <td className="px-2 py-0.5 border border-white/20">{pct}</td>
-                                      <td className="px-2 py-0.5 border border-white/20">{pts}</td>
+                                      <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
+                                      <td className="px-1 py-0.5 border border-white/20">{pct}</td>
+                                      <td className="px-1 py-0.5 border border-white/20">{pts}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                              <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
+                                <thead>
+                                  <tr style={{ background: '#1a4b7a' }}>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Ltr</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">%</th>
+                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GP</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {[
+                                    ['C','63-66','2.0'],['C-','60-62','1.67'],
+                                    ['D+','57-59','1.33'],['D','53-56','1.0'],['D-','50-52','0.67'],
+                                    ['F','0-49','0'],
+                                  ].map(([letter, pct, pts]) => (
+                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)' }}>
+                                      <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
+                                      <td className="px-1 py-0.5 border border-white/20">{pct}</td>
+                                      <td className="px-1 py-0.5 border border-white/20">{pts}</td>
                                     </tr>
                                   ))}
                                 </tbody>
