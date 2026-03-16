@@ -101,6 +101,10 @@ function torontoDate(): Date {
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
 }
 
+function formatLocalDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 interface FlickDevice {
   id: string;
   name: string;
@@ -2307,10 +2311,10 @@ html,body{height:100%;overflow:hidden;background:transparent}
 
             const weekNum = getWeekNumber(taskDate, undefined, activeSemester?.readingWeekStart);
             if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
-              const dateStr = taskDate.toISOString().split('T')[0];
+              const dateStr = formatLocalDate(taskDate);
               const isDuplicate = existingClassTasks.some(t => {
                 if (!t.dueDate) return false;
-                const existingDateStr = new Date(t.dueDate).toISOString().split('T')[0];
+                const existingDateStr = formatLocalDate(new Date(t.dueDate));
                 return existingDateStr === dateStr 
                   && t.courseName === courseName 
                   && t.eventStartTime === classTime;
@@ -3714,7 +3718,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
             }
           } else {
             const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
-            const dateStr = new Date(task.dueDate).toISOString().split('T')[0];
+            const dateStr = formatLocalDate(new Date(task.dueDate));
             const existingId = await findExistingEventBySummary(summary, dateStr);
             if (existingId) {
               await storage.updateTask(task.id, { calendarEventId: existingId, calendarProvider: "google" });
@@ -3880,14 +3884,14 @@ html,body{height:100%;overflow:hidden;background:transparent}
   // GET /api/weeks/current
   app.get(api.weeks.current.path, async (_req, res) => {
     const activeSemester = await storage.getActiveSemesterSettings();
-    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : new Date(Date.UTC(2026, 0, 10, 12, 0, 0));
+    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : new Date(2026, 0, 10, 12, 0, 0);
     const readingWeek = activeSemester?.readingWeekStart || null;
     const now = new Date();
     const weekNum = getWeekNumber(now, semesterStart, readingWeek);
     const { start, end } = getWeekDates(weekNum, semesterStart, readingWeek);
-    // Format as YYYY-MM-DD using UTC
+    // Format as YYYY-MM-DD using local time
     const formatDateOnly = (d: Date) => {
-      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     };
     res.json({
       weekNumber: weekNum,
@@ -3899,14 +3903,14 @@ html,body{height:100%;overflow:hidden;background:transparent}
   // GET /api/weeks
   app.get(api.weeks.list.path, async (_req, res) => {
     const activeSemester = await storage.getActiveSemesterSettings();
-    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : new Date(Date.UTC(2026, 0, 10, 12, 0, 0));
+    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : new Date(2026, 0, 10, 12, 0, 0);
     const readingWeek = activeSemester?.readingWeekStart || null;
     const taskCounts = await storage.getTaskCountByWeek();
     const weeks = [];
     
-    // Format as YYYY-MM-DD using UTC
+    // Format as YYYY-MM-DD using local time
     const formatDateOnly = (d: Date) => {
-      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     };
     for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
       const { start, end } = getWeekDates(w, semesterStart, readingWeek);
@@ -5069,7 +5073,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       // Create Winter 2026 settings (Jan 12, 2026 start)
       const newSettings = await storage.createSemesterSettings({
         semesterName: "Winter 2026",
-        semesterStartDate: new Date("2026-01-12T00:00:00.000Z"),
+        semesterStartDate: new Date("2026-01-12T00:00:00"),
         course1Code: "CPPA122",
         course1Name: "Local Politics and Government",
         course2Code: "CFNF400", 
@@ -5232,8 +5236,8 @@ html,body{height:100%;overflow:hidden;background:transparent}
     try {
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
@@ -5845,8 +5849,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         try {
           const allFiles = await storage.getFiles();
           const semesterSettings = await storage.getActiveSemesterSettings();
-          const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
-          const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+          const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+          const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
           const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
           const unlistenedFiles = allFiles.filter((f: any) => {
@@ -6200,8 +6204,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       // Get current week number from semester settings
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       
       // Filter for unlistened files from current week
@@ -6990,8 +6994,8 @@ document.body.removeChild(a);
       }
 
       let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
       await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
@@ -7281,8 +7285,8 @@ document.body.removeChild(a);
 
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
@@ -10922,8 +10926,8 @@ Return ONLY the JSON object, no markdown formatting.`;
           matchedExistingIds.add(matchingTask.id);
           const diffs: Record<string, { old: string; new: string }> = {};
           if (item.dueDate && matchingTask.dueDate) {
-            const existingDate = new Date(matchingTask.dueDate).toISOString().split('T')[0];
-            const newDate = new Date(item.dueDate).toISOString().split('T')[0];
+            const existingDate = formatLocalDate(new Date(matchingTask.dueDate));
+            const newDate = formatLocalDate(new Date(item.dueDate));
             if (existingDate !== newDate) diffs['dueDate'] = { old: existingDate, new: newDate };
           }
           if (item.type !== 'other' && item.type !== matchingTask.type) {
