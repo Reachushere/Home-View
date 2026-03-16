@@ -2687,7 +2687,14 @@ export default function Dashboard() {
 
   const [aasSentStatus, setAasSentStatus] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('aasSentStatus');
-    return saved ? JSON.parse(saved) : {};
+    const parsed = saved ? JSON.parse(saved) : {};
+    const pastCourses = ['CPPA101', 'CPPA 101', 'CPPA120', 'CPPA 120', 'CPPA102', 'CPPA 102', 'CPPA125', 'CPPA 125', 'CGCM738', 'CGCM 738', 'CPPA121', 'CPPA 121'];
+    let changed = false;
+    for (const c of pastCourses) {
+      if (parsed[c] === undefined) { parsed[c] = true; changed = true; }
+    }
+    if (changed) localStorage.setItem('aasSentStatus', JSON.stringify(parsed));
+    return parsed;
   });
   const [showAasReminder, setShowAasReminder] = useState(false);
   const [showRankCoursesReminder, setShowRankCoursesReminder] = useState(false);
@@ -16621,15 +16628,13 @@ export default function Dashboard() {
                           <span className="text-[10px] text-white truncate" style={{ width: '120px', minWidth: '120px', textAlign: 'right' }}>
                             {(currentCourse?.professor || profInfo.professor) ? <span className="underline">{currentCourse?.professor || profInfo.professor}</span> : ''}
                           </span>
-                          {isCurrentCourse && (
-                            <span
-                              className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
-                              data-testid={`aas-status-${semCourse.code}`}
-                              onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
-                            >
-                              {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
-                            </span>
-                          )}
+                          <span
+                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                            data-testid={`aas-status-${semCourse.code}`}
+                            onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
+                          >
+                            {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
+                          </span>
                           <select
                             className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
                             style={{ width: '48px', minWidth: '48px', marginRight: '-7px' }}
