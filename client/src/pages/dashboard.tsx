@@ -16614,8 +16614,8 @@ export default function Dashboard() {
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <span className="text-[10px] text-white truncate min-w-0" style={{ flex: '1 1 0' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
-                        <div className="flex items-center flex-shrink-0" style={{ gap: '4px', marginLeft: 'auto' }}>
-                        <div style={{ width: '40px', flexShrink: 0, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginLeft: '-12px' }}>
+                        <div className="flex items-center flex-shrink-0" style={{ gap: '4px' }}>
+                        <div style={{ width: '40px', flexShrink: 0, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
@@ -16633,7 +16633,7 @@ export default function Dashboard() {
                             return profEmail ? (
                               <a
                                 className="text-[9px] text-white truncate underline cursor-pointer hover:text-white/80"
-                                style={{ marginRight: '3px' }}
+                                style={{ marginRight: '3px', maxWidth: '80px', display: 'inline-block' }}
                                 href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(profEmail)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -16641,7 +16641,7 @@ export default function Dashboard() {
                                 data-testid={`link-professor-${semCourse.code}`}
                               >{profName}</a>
                             ) : (
-                              <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{profName}</span>
+                              <span className="text-[9px] text-white truncate" style={{ marginRight: '3px', maxWidth: '80px', display: 'inline-block' }}>{profName}</span>
                             );
                           })()}
                           <span
