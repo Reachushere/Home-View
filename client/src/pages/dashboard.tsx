@@ -12737,7 +12737,7 @@ export default function Dashboard() {
                   return 'F';
                 };
                 return (
-                  <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: '#ffffff', height: '28px', minHeight: '28px' }} data-testid="l1-gpa-box">
+                  <div className="rounded-md flex items-center justify-center gap-1.5 px-3 h-7" style={{ background: '#ffffff' }} data-testid="l1-gpa-box">
                     <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
                     {avgGpa !== null ? (
                       <>
