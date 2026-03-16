@@ -15954,7 +15954,7 @@ export default function Dashboard() {
                         onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftCoursePlayPriority({ ...coursePlayPriority }); setIsSchoolCoursesDialogOpen(true); }, 200); }}
                         data-testid="button-past-courses"
                       >
-                        <span className="text-[10px] text-white/70 font-medium">Past courses</span>
+                        <span className="text-[10px] text-white/70 font-medium">All courses</span>
                         <ChevronRight className="text-white/70" style={{ width: '12px', height: '12px' }} />
                       </div>
                     </div>
