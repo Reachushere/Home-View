@@ -3469,7 +3469,12 @@ export default function Dashboard() {
   const isPreviouslyCompleted = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
-    return prevIds.some(pid => checkedCourses[pid] || (courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== ''));
+    return prevIds.some(pid => {
+      const pidCompleted = checkedCourses[pid] || !!(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '');
+      if (!pidCompleted) return false;
+      if (isActiveInLaterLevel(pid)) return false;
+      return true;
+    });
   };
 
   const isSectionFulfilledByCompleted = (courseId: string): boolean => {
