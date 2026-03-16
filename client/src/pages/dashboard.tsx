@@ -15896,9 +15896,9 @@ export default function Dashboard() {
               onFocusOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
             >
               {/* Header bar matching flyouts */}
-              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-3 w-3 text-white" />
+                  <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     SCHOOL SETTINGS
                   </h2>
@@ -16458,12 +16458,13 @@ export default function Dashboard() {
                 </div>
               </div>
               </div>
-              <div className="px-4 py-3 border-t bg-black/30 flex justify-end items-center gap-2">
+              <div className="px-2 pb-2 flex justify-end">
+                <div className="flex items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"
-                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6"
-                  style={{ fontSize: '12px', minWidth: '120px' }}
+                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                  style={{ fontSize: '12px', marginRight: '5px' }}
                   onClick={() => setIsSchoolDialogOpen(false)}
                   data-testid="button-cancel-school"
                 >
@@ -16473,16 +16474,16 @@ export default function Dashboard() {
                   type="submit" 
                   form="school-settings-form"
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" 
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
                   style={{
                     boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                    fontSize: '12px',
-                    minWidth: '120px'
+                    fontSize: '12px'
                   }}
                   data-testid="button-save-school"
                 >
                   Save
                 </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
