@@ -12688,11 +12688,11 @@ export default function Dashboard() {
             <SkipForward className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
           </button>
         </div>
-        <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', marginLeft: '4px' }} />
       </div>
 
       {/* Time - fixed position */}
-      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 8}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'baseline', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+        <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', marginRight: '8px' }} />
         <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
@@ -16045,56 +16045,21 @@ export default function Dashboard() {
                         endTime: s[`course${idx}ClassEndTime`],
                       };
                     })() : null;
+                    const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
+                    const gradedCompleted = courseTasks.filter(t => t.isCompleted && t.gradeValue !== null && t.gradeValue !== undefined);
+                    const totalWeightGraded = gradedCompleted.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
+                    const weightedScore = gradedCompleted.reduce((sum, t) => {
+                      const pct = (t.gradeTotal && t.gradeTotal > 0) ? ((t.gradeValue || 0) / t.gradeTotal) * 100 : (t.gradeValue || 0);
+                      return sum + (pct * (t.gradeWeight || 0) / 100);
+                    }, 0);
+                    const currentGrade = totalWeightGraded > 0 ? (weightedScore / totalWeightGraded) * 100 : null;
+                    const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
                     return (
                       <div key={index} className="space-y-0.5">
                         <div className="flex items-center gap-1.5">
-                          <label className="flex items-center gap-1 cursor-pointer" data-testid={`checkbox-school-completed-${courseCode}`} onClick={() => {
-                            const idx = index + 1;
-                            const key = `course${idx}Completed`;
-                            const newVal = !(semesterSettings as any)?.[key];
-                            apiRequest('PATCH', '/api/semester', { [key]: newVal }).then(() => {
-                              queryClient.invalidateQueries({ queryKey: ['/api/semester'] });
-                            });
-                            const codeUpper = courseCode.toUpperCase();
-                            const carouselKeys: string[] = [];
-                            if (codeUpper === 'CPPA122' || codeUpper === 'PPA122') {
-                              carouselKeys.push('L1_PPA122', 'L2_PPA122');
-                            } else if (codeUpper === 'CPPA124' || codeUpper === 'PPA124') {
-                              carouselKeys.push('L1_PPA124');
-                            } else if (codeUpper.startsWith('CPPA') || codeUpper.startsWith('PPA')) {
-                              const num = codeUpper.replace(/^C?PPA/, '');
-                              carouselKeys.push('PPA' + num);
-                            }
-                            const ct = (semesterSettings as any)?.[`course${idx}CourseType`];
-                            const savedMapping = JSON.parse(localStorage.getItem('courseCarouselMapping') || '{}');
-                            if (ct === 'open_elective' || ct === 'liberal_studies' || (!ct && carouselKeys.length === 0)) {
-                              if (savedMapping[codeUpper]) {
-                                carouselKeys.push(savedMapping[codeUpper]);
-                              } else if (newVal) {
-                                const slots = ct === 'liberal_studies' ? ['LIBERAL'] : ['L1_PPA120', 'L1_PPA121', 'OPEN1', 'OPEN2'];
-                                for (const slot of slots) {
-                                  if (!checkedCourses[slot]) { 
-                                    carouselKeys.push(slot); 
-                                    savedMapping[codeUpper] = slot;
-                                    localStorage.setItem('courseCarouselMapping', JSON.stringify(savedMapping));
-                                    break; 
-                                  }
-                                }
-                              }
-                            }
-                            if (carouselKeys.length > 0) {
-                              const updated = { ...checkedCourses };
-                              carouselKeys.forEach(k => { updated[k] = newVal; });
-                              setCheckedCourses(updated);
-                              localStorage.setItem('checkedCourses', JSON.stringify(updated));
-                              saveDegreeToServer('checkedCourses', updated);
-                            }
-                            if (!newVal && savedMapping[codeUpper]) {
-                              delete savedMapping[codeUpper];
-                              localStorage.setItem('courseCarouselMapping', JSON.stringify(savedMapping));
-                            }                          }}>
-                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(semesterSettings as any)?.[`course${index + 1}Completed`] ? 'bg-green-500 border-green-500' : 'border-green-400/50 bg-transparent'}`}>
-                              {(semesterSettings as any)?.[`course${index + 1}Completed`] && (
+                          <label className="flex items-center gap-1 cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
+                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
+                              {(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) && (
                                 <Check className="w-2.5 h-2.5 text-white" />
                               )}
                             </div>
@@ -16188,16 +16153,22 @@ export default function Dashboard() {
                           >
                             <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" strokeWidth={2.5} />
                           </button>
-                          <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
-                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
-                              {(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) && (
-                                <Check className="w-2.5 h-2.5 text-white" />
-                              )}
-                            </div>
-                            <span className={`text-[10px] ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'text-blue-400' : 'text-amber-400'}`}>
-                              AAS
-                            </span>
-                          </label>
+                          <div className="flex items-center gap-2 ml-auto text-[9px]" data-testid={`grade-display-${courseCode}`}>
+                            {courseTasks.length > 0 ? (
+                              <>
+                                {currentGrade !== null ? (
+                                  <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
+                                    {currentGrade.toFixed(1)}%
+                                  </span>
+                                ) : (
+                                  <span className="text-white/30">--</span>
+                                )}
+                                <span className="text-white/30">({totalWeightGraded}/{totalWeight}%)</span>
+                              </>
+                            ) : (
+                              <span className="text-white/30">--</span>
+                            )}
+                          </div>
                         </div>
                         {semCourse && (semCourse.delivery || semCourse.day || semCourse.time) && (
                           <div className="flex items-center gap-2 pl-4 text-[10px] text-white/50">
@@ -16206,31 +16177,6 @@ export default function Dashboard() {
                             {semCourse.time && <span>{semCourse.time}{semCourse.endTime ? `-${semCourse.endTime}` : ''}</span>}
                           </div>
                         )}
-                        {(() => {
-                          const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
-                          const gradedCompleted = courseTasks.filter(t => t.isCompleted && t.gradeValue !== null && t.gradeValue !== undefined);
-                          const totalWeightGraded = gradedCompleted.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                          const weightedScore = gradedCompleted.reduce((sum, t) => {
-                            const pct = (t.gradeTotal && t.gradeTotal > 0) ? ((t.gradeValue || 0) / t.gradeTotal) * 100 : (t.gradeValue || 0);
-                            return sum + (pct * (t.gradeWeight || 0) / 100);
-                          }, 0);
-                          const currentGrade = totalWeightGraded > 0 ? (weightedScore / totalWeightGraded) * 100 : null;
-                          const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                          if (courseTasks.length === 0) return null;
-                          return (
-                            <div className="flex items-center gap-2 pl-4 text-[10px]" data-testid={`grade-display-${courseCode}`}>
-                              <span className="text-white/40">Grade:</span>
-                              {currentGrade !== null ? (
-                                <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
-                                  {currentGrade.toFixed(1)}%
-                                </span>
-                              ) : (
-                                <span className="text-white/30">--</span>
-                              )}
-                              <span className="text-white/30">({totalWeightGraded}% of {totalWeight}% graded)</span>
-                            </div>
-                          );
-                        })()}
                       </div>
                     );
                   })}
@@ -16362,46 +16308,10 @@ export default function Dashboard() {
                   </div>
                 )}
                 
-                {/* Current Grades */}
-                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-3px' }}>
-                  <Label className="text-[10px] font-medium">Current Grades</Label>
-                  {coursesData.courses.filter(c => c.name.trim()).map((course, index) => {
-                    const courseCode = course.name.split(' - ')[0];
-                    const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
-                    const gradedCompleted = courseTasks.filter(t => t.isCompleted && t.gradeValue !== null && t.gradeValue !== undefined);
-                    const totalWeightGraded = gradedCompleted.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                    const weightedScore = gradedCompleted.reduce((sum, t) => {
-                      const pct = (t.gradeTotal && t.gradeTotal > 0) ? ((t.gradeValue || 0) / t.gradeTotal) * 100 : (t.gradeValue || 0);
-                      return sum + (pct * (t.gradeWeight || 0) / 100);
-                    }, 0);
-                    const currentGrade = totalWeightGraded > 0 ? (weightedScore / totalWeightGraded) * 100 : null;
-                    const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                    return (
-                      <div key={index} className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10" data-testid={`carousel-grade-${courseCode}`}>
-                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: course.color }} />
-                        <span className="text-[10px] text-white/80 flex-1">{courseCode}</span>
-                        <div className="flex items-center gap-2 text-[9px]">
-                          {currentGrade !== null ? (
-                            <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
-                              {currentGrade.toFixed(1)}%
-                            </span>
-                          ) : (
-                            <span className="text-white/30">No grades</span>
-                          )}
-                          <span className="text-white/30">({totalWeightGraded}% of {totalWeight}% graded)</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {coursesData.courses.filter(c => c.name.trim()).length === 0 && (
-                    <p className="text-[9px] text-white/40 italic">No courses set up</p>
-                  )}
-                </div>
-
                 {/* Weeks */}
                 <div className="border rounded-lg p-3 flex flex-col flex-1" style={{ marginTop: '-4px' }}>
                   <Label className="text-[10px] font-medium mb-1 block">Weeks</Label>
-                  <div className="flex flex-col flex-1 justify-evenly">
+                  <div className="flex flex-col flex-1 justify-evenly gap-1">
                   {[...weeks].sort((a, b) => {
                     const today = startOfDay(new Date());
                     const aEndDay = startOfDay(parseISO(a.endDate));
