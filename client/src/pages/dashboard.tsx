@@ -13578,6 +13578,10 @@ export default function Dashboard() {
               const certData = localStorage.getItem('certCourseData');
               const savedData = certData ? JSON.parse(certData) : {};
               savedData[certKey] = { ...savedData[certKey], ...updates };
+              const cc = courseCode.replace(/\s/g, '');
+              if (certKey !== cc && updates.deliveryMode) {
+                savedData[cc] = { ...(savedData[cc] || {}), deliveryMode: updates.deliveryMode };
+              }
               localStorage.setItem('certCourseData', JSON.stringify(savedData));
               setDeliveryModeVersion(v => v + 1);
             }}
