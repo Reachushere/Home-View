@@ -6791,10 +6791,6 @@ document.body.removeChild(a);
       if (bypassRequested) {
         console.log(`[Cat Lights] Cooldown BYPASSED via request`);
         catLightsPromptPending = false;
-      } else if (catLightsLastPromptAt && (Date.now() - catLightsLastPromptAt) < CAT_LIGHTS_PROMPT_COOLDOWN_MS) {
-        const remainingSec = Math.round((CAT_LIGHTS_PROMPT_COOLDOWN_MS - (Date.now() - catLightsLastPromptAt)) / 1000);
-        console.log(`[Cat Lights] Prompt cooldown active — skipping (${remainingSec}s remaining)`);
-        return res.json({ action: "skipped", reason: `Cooldown active (${remainingSec}s remaining)` });
       }
 
       if (catLightsPromptPending) {
@@ -6934,7 +6930,7 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Started text extraction in background (will be ready when you confirm)`);
 
       {
-        const maxWaitMs = 90000;
+        const maxWaitMs = 15000;
         console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation via /api/webhook/cat-lights-confirm or input_boolean ...`);
 
         const confirmed = await new Promise<boolean>((resolve) => {
