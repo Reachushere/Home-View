@@ -15889,7 +15889,7 @@ export default function Dashboard() {
             <DialogContent 
               data-settings-dialog
               className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
-              style={{ position: 'fixed', top: `${(calendarBorderTop || (calendarTop + 15)) - 16}px`, left: '50%', transform: 'translateX(-50%)', bottom: '8px', maxHeight: 'none', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)' }}
+              style={{ position: 'fixed', top: `${(calendarBorderTop || (calendarTop + 15)) - 16}px`, left: '50%', transform: 'translateX(-50%)', bottom: '8px', maxHeight: 'none', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}
               onInteractOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
               onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
               onPointerDownOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
