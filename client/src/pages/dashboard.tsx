@@ -16968,7 +16968,7 @@ export default function Dashboard() {
                           <Pencil className="w-3 h-3 text-white hover:text-white/80" strokeWidth={2.5} />
                         </button>
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <div className="flex-shrink-0" style={{ width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                        <div className="flex-shrink-0" style={{ width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: '2px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
