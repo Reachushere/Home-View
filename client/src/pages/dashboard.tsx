@@ -384,8 +384,8 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
   useEffect(() => { setVal(initialValue); }, [initialValue]);
   return (
     <select
-      className="text-[8px] text-white bg-white/10 rounded px-0.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-      style={{ width: '36px', minWidth: '36px', marginRight: '3px' }}
+      className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
+      style={{ width: '28px', minWidth: '28px', marginRight: '3px', WebkitAppearance: 'none', MozAppearance: 'none' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
@@ -398,7 +398,7 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
     >
       <option value={0}>—</option>
       {Array.from({ length: totalInSem }, (_, i) => (
-        <option key={i + 1} value={i + 1}>#{i + 1}</option>
+        <option key={i + 1} value={i + 1}>{i + 1}</option>
       ))}
     </select>
   );
