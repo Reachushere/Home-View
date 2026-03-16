@@ -16591,7 +16591,7 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10 hover:border-white/25 cursor-pointer transition-all"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10 hover:border-white/25 cursor-pointer transition-all overflow-hidden"
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
                           setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
@@ -16599,8 +16599,8 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[10px] text-white truncate min-w-0" style={{ flex: '1 1 0%' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
-                        <div className="flex items-center flex-shrink-0" style={{ gap: '4px' }}>
+                        <span className="text-[10px] text-white truncate min-w-0" style={{ flex: '1 1 0' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <div className="flex items-center flex-shrink-0" style={{ gap: '4px', marginLeft: 'auto' }}>
                         <div style={{ width: '40px', flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
