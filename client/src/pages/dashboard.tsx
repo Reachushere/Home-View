@@ -18510,7 +18510,7 @@ export default function Dashboard() {
                       );
                     })()}
                     {day.getDay() === 6 && (
-                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '4px' }}>NEW COURSE WEEK</div>
+                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '4px' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '5.5px' : undefined }}>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
