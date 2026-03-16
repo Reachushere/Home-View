@@ -16910,10 +16910,6 @@ export default function Dashboard() {
                 const fullName = `${wizardData.courseCode} - ${wizardData.courseName}`;
                 const updatedCourses = [...coursesData.courses];
                 const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
-                if (emptyIdx === -1 && updatedCourses.filter(c => c.name.trim()).length >= 3) {
-                  toast({ title: "Maximum courses reached", description: "You can only have up to 3 courses.", variant: "destructive" });
-                  return;
-                }
                 const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
                 if (emptyIdx !== -1) {
                   updatedCourses[emptyIdx] = {
