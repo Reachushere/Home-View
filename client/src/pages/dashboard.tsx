@@ -16615,9 +16615,9 @@ export default function Dashboard() {
                         <div className="w-2 h-2 rounded-full flex-shrink-0 mr-2" style={{ background: dotColor }} />
                         <span className="text-[11px] font-bold text-white" style={{ width: '58px', minWidth: '58px' }}>{displayName}</span>
                         {subtitle && <span className="text-[10px] text-white truncate mr-1">— {subtitle}</span>}
-                        <span className="text-[9px] text-white/60 ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
+                        <span className="text-[9px] text-white ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
-                        <div className="flex items-center gap-2" style={{ justifyContent: 'flex-end' }}>
+                        <div className="flex items-center gap-2" style={{ justifyContent: 'flex-end', marginRight: '-10px' }}>
                           <span className="text-[10px] text-white truncate" style={{ width: '120px', minWidth: '120px', textAlign: 'right' }}>
                             {(currentCourse?.professor || profInfo.professor) ? <span className="underline">{currentCourse?.professor || profInfo.professor}</span> : ''}
                           </span>
@@ -16650,7 +16650,7 @@ export default function Dashboard() {
                         </div>
                         <button
                           className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                          style={{ marginLeft: '-3px' }}
+                          style={{ marginLeft: '-13px' }}
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingSchoolCourseKey(semCourse.code);
@@ -16676,8 +16676,8 @@ export default function Dashboard() {
                         {semesterDefs.filter(s => s.year === year).map(sem => {
                           const isCurrentSem = sem.key === currentSemKey;
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.15)' }}>
-                              <div className="px-3 py-2 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.08)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.25)' }}>
+                              <div className="px-3 py-2 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-[11px] font-bold text-white">{sem.label}</span>
                                   <span className="text-[9px] text-white ml-1">{sem.dates}</span>
