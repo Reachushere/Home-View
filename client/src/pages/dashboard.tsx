@@ -355,7 +355,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain;vertical-align:middle" />`
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[15px]" style="line-height:1;vertical-align:middle;font-weight:900">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
+      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[15px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
     }).join('')}</div></div>`;
     containerRef.current.innerHTML = html;
     requestAnimationFrame(() => {
@@ -11599,7 +11599,7 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -11626,7 +11626,7 @@ export default function Dashboard() {
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                     data-testid="countdown-prep-task-number"
                   >
-                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for </span><span style={{ fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', color: '#000000' }}><b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b></span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
+                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for </span><span style={{ fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', color: '#000000' }}><b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b></span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
                   </div>
                 )}
                 {(() => {
@@ -11642,7 +11642,7 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number-after"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#000000', fontSize: '18px', fontWeight: 900, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -13612,7 +13612,7 @@ export default function Dashboard() {
         href="/files"
         className="fixed bottom-tab-bounce"
         style={{
-          bottom: '30px',
+          bottom: '29px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'block',
