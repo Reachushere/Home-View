@@ -13615,30 +13615,64 @@ export default function Dashboard() {
                               const endD = new Date(dates.endDate);
                               const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
                               const classDays = [updates.classDay, updates.classDay2].filter(Boolean).map(d => dayMap[d!] ?? -1).filter(d => d >= 0);
-                              const tasksToCreate: Array<{ title: string; type: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string; weekNumber: number }> = [];
-                              const current = new Date(startD);
-                              while (current <= endD) {
-                                if (classDays.includes(current.getDay())) {
-                                  const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
-                                  const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
-                                  tasksToCreate.push({
-                                    title: 'Class',
-                                    type: 'class',
-                                    dueDate: current.toISOString().split('T')[0],
-                                    courseName,
-                                    eventStartTime: updates.classTime!,
-                                    eventEndTime: updates.classEndTime!,
-                                    priority: 'medium',
-                                    weekNumber: weekNum,
+                              const existingTasks: any[] = queryClient.getQueryData(["/api/tasks"]) || [];
+                              const existingClassTasks = existingTasks.filter((t: any) =>
+                                t.title === 'Class' && t.type === 'class' && (t.courseName || '').includes(courseCode)
+                              );
+                              if (existingClassTasks.length > 0) {
+                                Promise.all(existingClassTasks.map((t: any) => apiRequest("DELETE", `/api/tasks/${t.id}`))).then(() => {
+                                  const tasksToCreate: Array<{ title: string; type: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string; weekNumber: number }> = [];
+                                  const current = new Date(startD);
+                                  while (current <= endD) {
+                                    if (classDays.includes(current.getDay())) {
+                                      const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
+                                      const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
+                                      tasksToCreate.push({
+                                        title: 'Class',
+                                        type: 'class',
+                                        dueDate: current.toISOString().split('T')[0],
+                                        courseName,
+                                        eventStartTime: updates.classTime!,
+                                        eventEndTime: updates.classEndTime!,
+                                        priority: 'medium',
+                                        weekNumber: weekNum,
+                                      });
+                                    }
+                                    current.setDate(current.getDate() + 1);
+                                  }
+                                  if (tasksToCreate.length > 0) {
+                                    Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
+                                      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                                      toast({ title: "Class tasks updated", description: `${tasksToCreate.length} class sessions refreshed on calendar.` });
+                                    });
+                                  }
+                                });
+                              } else {
+                                const tasksToCreate: Array<{ title: string; type: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string; weekNumber: number }> = [];
+                                const current = new Date(startD);
+                                while (current <= endD) {
+                                  if (classDays.includes(current.getDay())) {
+                                    const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
+                                    const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
+                                    tasksToCreate.push({
+                                      title: 'Class',
+                                      type: 'class',
+                                      dueDate: current.toISOString().split('T')[0],
+                                      courseName,
+                                      eventStartTime: updates.classTime!,
+                                      eventEndTime: updates.classEndTime!,
+                                      priority: 'medium',
+                                      weekNumber: weekNum,
+                                    });
+                                  }
+                                  current.setDate(current.getDate() + 1);
+                                }
+                                if (tasksToCreate.length > 0) {
+                                  Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
+                                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                                    toast({ title: "Class tasks created", description: `${tasksToCreate.length} class sessions added to calendar.` });
                                   });
                                 }
-                                current.setDate(current.getDate() + 1);
-                              }
-                              if (tasksToCreate.length > 0) {
-                                Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
-                                  queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-                                  toast({ title: "Class tasks created", description: `${tasksToCreate.length} class sessions added to calendar.` });
-                                });
                               }
                             }
                           }
