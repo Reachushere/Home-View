@@ -15844,7 +15844,7 @@ export default function Dashboard() {
                         <div className="w-3 h-2 rounded-full" style={{ background: course.colorEnd ? `linear-gradient(to right, ${course.color}, ${course.colorEnd})` : course.color }} />
                         <span className="text-[11px] font-medium">{code}</span>
                         {name && <span className="text-[11px] text-white/70">- {name}</span>}
-                        {course.professor && <span className="text-[10px] text-white/50 ml-auto">({course.professor})</span>}
+                        {course.professor && <span className="text-[10px] text-white ml-auto">({course.professor})</span>}
                       </div>
                     );
                   })}
