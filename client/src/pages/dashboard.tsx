@@ -16597,7 +16597,7 @@ export default function Dashboard() {
                         <span className="text-[10px] text-white/80 truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         {semCourse.period && <span className="text-[8px] text-white/50 whitespace-nowrap">{semCourse.period}</span>}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
-                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white/60 truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
                           <span
                             className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse'}`}
                             style={{ marginRight: '3px' }}
