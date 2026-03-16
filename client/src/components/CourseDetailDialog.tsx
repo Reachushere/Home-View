@@ -271,11 +271,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     return Math.round((sumValue / sumTotal) * 100);
   }, [courseTasks]);
 
+  const onGradeCalculatedRef = useRef(onGradeCalculated);
+  onGradeCalculatedRef.current = onGradeCalculated;
+
   useEffect(() => {
-    if (onGradeCalculated && overallPercent !== null) {
-      onGradeCalculated(percentToLetterGrade(overallPercent), String(overallPercent));
+    if (onGradeCalculatedRef.current && overallPercent !== null) {
+      onGradeCalculatedRef.current(percentToLetterGrade(overallPercent), String(overallPercent));
     }
-  }, [overallPercent, onGradeCalculated]);
+  }, [overallPercent]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: Record<string, any>) => {
