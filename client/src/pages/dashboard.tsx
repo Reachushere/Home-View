@@ -16538,6 +16538,20 @@ export default function Dashboard() {
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <span className="text-[10px] text-white truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        {(() => {
+                          let dm = '';
+                          if (semesterSettings) {
+                            for (let i = 1; i <= 3; i++) {
+                              const cf = (semesterSettings as any)[`course${i}Code`] || '';
+                              if (cf.replace(/\s/g, '') === semCourse.code.replace(/\s/g, '')) { dm = (semesterSettings as any)[`course${i}DeliveryMode`] || ''; break; }
+                            }
+                          }
+                          if (!dm) {
+                            const cd = localStorage.getItem('certCourseData');
+                            if (cd) { try { const sd = JSON.parse(cd); if (sd[semCourse.code]?.deliveryMode) dm = sd[semCourse.code].deliveryMode; } catch {} }
+                          }
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                        })()}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && (() => {
                             const profName = currentCourse?.professor || profInfo.professor;
