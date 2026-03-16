@@ -19,7 +19,7 @@ import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
-import wifiLogoPath from "@assets/Wifi_1773656534064.png";
+import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
 import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
