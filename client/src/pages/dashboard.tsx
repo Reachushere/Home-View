@@ -20302,18 +20302,15 @@ export default function Dashboard() {
               checked={localStorage.getItem('calendarDefaultSize') === 'true'}
               onChange={(e) => {
                 if (e.target.checked) {
-                  const defaultHeight = window.innerHeight - 70;
-                  const oldHeight = calendarHeight;
-                  const oldReduction = calendarReduction;
-                  setCalendarHeight(defaultHeight);
-                  setCalendarReduction(120);
-                  setCalendarReductionUserSet(false);
-                  localStorage.setItem('calendarHeight', String(defaultHeight));
-                  localStorage.setItem('calendarReduction', '120');
+                  localStorage.setItem('calendarHeight', String(calendarHeight));
+                  localStorage.setItem('calendarReduction', String(calendarReduction));
                   localStorage.setItem('calendarDefaultSize', 'true');
-                  setUndoStack(prev => [{ type: 'resize', description: 'Reset to default size', data: { resizeType: 'both', oldHeight, oldReduction, newHeight: defaultHeight, newReduction: 120 } }, ...prev]);
-                  setRedoStack([]);
-                  toast({ title: "Reset", description: "Calendar size reset to default" });
+                  const screenWidth = window.screen.width;
+                  const screenHeight = window.screen.height;
+                  const pixelRatio = window.devicePixelRatio || 1;
+                  const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+                  localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
+                  toast({ title: "Saved", description: "Calendar size saved as default" });
                 } else {
                   localStorage.removeItem('calendarDefaultSize');
                 }
