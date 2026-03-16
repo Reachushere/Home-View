@@ -3573,6 +3573,7 @@ export default function Dashboard() {
         if (!checkedCourses[id]) toggleCourse(id);
       } else {
         if (checkedCourses[id]) toggleCourse(id);
+        if (hasPercent) updatePercent(id, '');
       }
     };
     const bg = state === 'green' ? '#8cb44c' : state === 'yellow' ? '#f0b429' : '#e8526e';
@@ -3580,7 +3581,7 @@ export default function Dashboard() {
     const knobTransform = state === 'yellow' ? 'translateX(-50%)' : 'none';
     return (
       <div
-        className="cursor-pointer flex items-center justify-center"
+        className={`flex items-center justify-center ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
         style={{ fontSize: '7px', lineHeight: 1 }}
         onClick={(e) => { e.stopPropagation(); cycle(); }}
         title={state === 'red' ? 'Not started — click for In Progress' : state === 'yellow' ? 'In Progress — click for Completed' : 'Completed — click for Not Started'}
@@ -3621,6 +3622,8 @@ export default function Dashboard() {
       if (!checkedCourses[id]) toggleCourse(id);
     } else {
       if (checkedCourses[id]) toggleCourse(id);
+      const hp = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
+      if (hp) updatePercent(id, '');
     }
   };
 
