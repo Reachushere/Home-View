@@ -4265,6 +4265,24 @@ export default function Dashboard() {
   }, [allTasks]);
 
   useEffect(() => {
+    const defaultKeys = new Set(['PPA101', 'PPA102', 'PPA125', 'L1_PPA120', 'L1_PPA121', 'LIBERAL']);
+    setCourseGrades(prev => {
+      const cleaned = { ...prev };
+      let changed = false;
+      for (const ck of Object.keys(cleaned)) {
+        if (defaultKeys.has(ck)) continue;
+        if (shouldStrikethrough(ck) && cleaned[ck]?.percent && cleaned[ck].percent.trim() !== '') {
+          delete cleaned[ck];
+          changed = true;
+        }
+      }
+      if (!changed) return prev;
+      localStorage.setItem('courseGrades', JSON.stringify(cleaned));
+      return cleaned;
+    });
+  }, []);
+
+  useEffect(() => {
     const measure = () => {
       const els = document.querySelectorAll('[data-upcoming-task-name]');
       if (!els.length) return;
