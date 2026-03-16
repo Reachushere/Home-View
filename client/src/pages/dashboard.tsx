@@ -16597,7 +16597,7 @@ export default function Dashboard() {
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '37px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
@@ -16670,7 +16670,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 36}px` }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '2px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 36}px` }}>
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
@@ -18776,7 +18776,7 @@ export default function Dashboard() {
                       if (!dm) {
                         try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cCode]?.deliveryMode || ''; } } catch {}
                       }
-                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '36px', height: 'auto', marginTop: '3px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
+                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '37px', height: 'auto', marginTop: '3px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                     })()}
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
