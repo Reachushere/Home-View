@@ -3551,22 +3551,20 @@ export default function Dashboard() {
   };
 
   const courseRowClass = (id: string) => {
-    if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
     if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
+    if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
+    if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
     if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
-    if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
-    if (inProgressCourses[id]) return 'bg-amber-100 text-amber-800';
-    if (isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
+    if (checkedCourses[id] || inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
+    if (isPreviouslyCompleted(id)) return true;
     if (isActiveInLaterLevel(id)) return true;
-    if (checkedCourses[id]) return false;
     if (isSectionFulfilledForCourse(id)) return true;
     if (isCourseGreyedOut(id)) return true;
-    if (isPreviouslyCompleted(id)) return true;
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return false;
     return false;
   };
   const isCheckDisabled = (id: string) => isCourseGreyedOut(id) || isPreviouslyCompleted(id);
@@ -3584,20 +3582,25 @@ export default function Dashboard() {
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (isDropdownRow(id)) return null;
-    const activeLater = isActiveInLaterLevel(id);
-    if (activeLater) {
-      if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
-      return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Later Certificate)</span>;
-    }
-    if (checkedCourses[id]) return null;
+    if (checkedCourses[id] || inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
+    if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Completed)</span>;
     if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
-    if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Previously Completed)</span>;
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
+    if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Later Certificate)</span>;
     return null;
   };
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
     const strike = shouldStrikethrough(id);
     return strike ? <span style={{ textDecoration: 'line-through' }}>{children}</span> : <>{children}</>;
+  };
+
+  const renderGradeInput = (id: string) => {
+    const struck = shouldStrikethrough(id);
+    return (
+      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}>
+        <input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: struck ? '#e5e5e5' : 'white', color: struck ? '#999' : 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[id]?.percent || ''} onChange={(e) => { if (!struck) updatePercent(id, e.target.value); }} readOnly={struck} />
+        <span className="text-[9px] text-left leading-none" style={{ color: struck ? '#999' : '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[id]?.percent || '')}</span>
+      </div>
+    );
   };
 
   const renderTriStateToggle = (id: string) => {
@@ -3606,9 +3609,10 @@ export default function Dashboard() {
     const greyed = isCourseGreyedOut(id);
     const prevCompleted = isPreviouslyCompleted(id);
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
-    const isCompleted = !activeInLater && checkedCourses[id];
-    const isDisabled = activeInLater || (!isCompleted && (sectionDone || greyed));
-    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    const isCompleted = checkedCourses[id];
+    const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
+    const isDisabled = prevCompleted || (!isCompleted && !isInProgress && (sectionDone || greyed));
+    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : isInProgress ? 'yellow' : 'red';
     const cycle = () => {
       if (isDisabled) return;
       if (state === 'red') {
@@ -3650,13 +3654,13 @@ export default function Dashboard() {
 
   const cycleTriState = (id: string) => {
     const isCompleted = checkedCourses[id];
-    const activeInLater = isActiveInLaterLevel(id);
+    const prevCompleted = isPreviouslyCompleted(id);
     const sectionDone = isSectionFulfilledForCourse(id);
     const greyed = isCourseGreyedOut(id);
-    const isCompletedAdj = !activeInLater && isCompleted;
-    const isDisabled = activeInLater || (!isCompletedAdj && (sectionDone || greyed));
+    const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
+    const isDisabled = prevCompleted || (!isCompleted && !isInProgress && (sectionDone || greyed));
     if (isDisabled) return;
-    const state = isCompletedAdj ? 'green' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
+    const state = isCompleted ? 'green' : isInProgress ? 'yellow' : 'red';
     if (state === 'red') {
       if (!inProgressCourses[id]) toggleInProgress(id);
     } else if (state === 'yellow') {
@@ -13016,7 +13020,7 @@ export default function Dashboard() {
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
+                      {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
@@ -13044,7 +13048,7 @@ export default function Dashboard() {
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
+                      {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
@@ -13071,7 +13075,7 @@ export default function Dashboard() {
                     <StrikethroughLabel id="LIBERAL" />
                   </div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                    <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['LIBERAL']?.percent || '')}</span></div>
+                    {renderGradeInput('LIBERAL')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("LIBERAL")}</div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
@@ -13097,7 +13101,7 @@ export default function Dashboard() {
                       <StrikethroughLabel id={cid} />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                      {renderGradeInput(cid)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(cid)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
@@ -13144,7 +13148,7 @@ export default function Dashboard() {
                   <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0 truncate"><CourseName id="L2_PPA211">Public Policy</CourseName><StrikethroughLabel id="L2_PPA211" /></span></div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                    <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_PPA211']?.percent || ''} onChange={(e) => updatePercent('L2_PPA211', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_PPA211']?.percent || '')}</span></div>
+                    {renderGradeInput('L2_PPA211')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("L2_PPA211")}</div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
@@ -13172,7 +13176,7 @@ export default function Dashboard() {
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[c.id]?.percent || ''} onChange={(e) => updatePercent(c.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[c.id]?.percent || '')}</span></div>
+                      {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
@@ -13199,7 +13203,7 @@ export default function Dashboard() {
                     <StrikethroughLabel id="L2_LIBERAL" />
                   </div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                    <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_LIBERAL']?.percent || '')}</span></div>
+                    {renderGradeInput('L2_LIBERAL')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("L2_LIBERAL")}</div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
@@ -13226,7 +13230,7 @@ export default function Dashboard() {
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0 truncate"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
+                      {renderGradeInput(ecn.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(ecn.id)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
@@ -13250,7 +13254,7 @@ export default function Dashboard() {
                       <StrikethroughLabel id={cid} />
                     </div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
-                      <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                      {renderGradeInput(cid)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(cid)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
@@ -13307,7 +13311,7 @@ export default function Dashboard() {
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id="L3_PPA333">Research Methods in Public Admin</CourseName><StrikethroughLabel id="L3_PPA333" /></span></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                          <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L3_PPA333']?.percent || ''} onChange={(e) => updatePercent('L3_PPA333', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L3_PPA333']?.percent || '')}</span></div>
+                          {renderGradeInput('L3_PPA333')}
                         </div>
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle("L3_PPA333")}</td>
@@ -13319,7 +13323,7 @@ export default function Dashboard() {
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                          <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L3_PRACTICUM1']?.percent || ''} onChange={(e) => updatePercent('L3_PRACTICUM1', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L3_PRACTICUM1']?.percent || '')}</span></div>
+                          {renderGradeInput('L3_PRACTICUM1')}
                         </div>
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle("L3_PRACTICUM1")}</td>
@@ -13354,7 +13358,7 @@ export default function Dashboard() {
                         <td className={`px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id={course.id}>{course.title}</CourseName><StrikethroughLabel id={course.id} /></span></div></td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
-                            <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[course.id]?.percent || ''} onChange={(e) => updatePercent(course.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[course.id]?.percent || '')}</span></div>
+                            {renderGradeInput(course.id)}
                           </div>
                         </td>
                         {idx === 0 && <td rowSpan={14} className="no-dim border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''}`}>{renderTriStateToggle(cid)}</div>))}</div></td>}
@@ -13380,7 +13384,7 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="border-l border-black align-middle">
-                        <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                        {renderGradeInput(cid)}
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle(cid)}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
@@ -13405,7 +13409,7 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="border-l border-black align-middle">
-                        <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                        {renderGradeInput(cid)}
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle(cid)}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
@@ -13430,7 +13434,7 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="border-l border-black align-middle">
-                        <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
+                        {renderGradeInput(cid)}
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle(cid)}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
@@ -13591,11 +13595,20 @@ export default function Dashboard() {
         const info = buildCourseInfoForCert();
         if (!info) return null;
         const ck = selectedCertCourse.certKey;
-        const certName = ck.startsWith('L3_') ? 'Certificate 3' : ck.startsWith('L2_') ? 'Certificate 2' : (certSections.L1.some(s => s.members.includes(ck)) || ck.startsWith('L1_') || ['LIBERAL', 'OPEN1', 'OPEN2'].includes(ck)) ? 'Certificate 1' : (() => {
-          const ct = courseCertificateTypes[selectedCertCourse.courseCode] || courseCertificateTypes[ck] || '';
-          if (ct.includes('3')) return 'Certificate 3';
-          if (ct.includes('2')) return 'Certificate 2';
-          if (ct.includes('1') || ct) return 'Certificate 1';
+        const certName = ck.startsWith('L3_') ? 'Certificate 3' : ck.startsWith('L2_') ? 'Certificate 2' : (certSections.L1.some(s => s.members.includes(ck)) || ck.startsWith('L1_') || ['LIBERAL', 'OPEN1', 'OPEN2'].includes(ck)) ? (() => {
+          const cc2 = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
+          const ccBase2 = cc2.replace(/^C(?=[A-Z]{2,})/, '');
+          const allSlots2 = [...Object.keys(inProgressCourses), ...Object.keys(checkedCourses)];
+          let best2 = 1;
+          for (const sk of allSlots2) {
+            const slotBase = sk.replace(/^L[123]_/, '').toUpperCase();
+            if (sk.includes(cc2) || slotBase === cc2 || slotBase === ccBase2 || sk.includes(ccBase2)) {
+              const lvl = sk.startsWith('L3_') ? 3 : sk.startsWith('L2_') ? 2 : 1;
+              if (lvl > best2) best2 = lvl;
+            }
+          }
+          return best2 === 3 ? 'Certificate 3' : best2 === 2 ? 'Certificate 2' : 'Certificate 1';
+        })() : (() => {
           const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
           const ccBase = cc.replace(/^C(?=[A-Z]{2,})/, '');
           const allSlots = [...Object.keys(inProgressCourses), ...Object.keys(checkedCourses)];
@@ -13610,6 +13623,10 @@ export default function Dashboard() {
           if (bestLevel === 3) return 'Certificate 3';
           if (bestLevel === 2) return 'Certificate 2';
           if (bestLevel === 1) return 'Certificate 1';
+          const ct = courseCertificateTypes[selectedCertCourse.courseCode] || courseCertificateTypes[ck] || '';
+          if (ct.includes('3')) return 'Certificate 3';
+          if (ct.includes('2')) return 'Certificate 2';
+          if (ct.includes('1') || ct) return 'Certificate 1';
           for (const level of ['L1', 'L2', 'L3'] as const) {
             for (const section of certSections[level]) {
               for (const member of section.members) {
