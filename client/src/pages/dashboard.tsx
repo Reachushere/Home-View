@@ -385,7 +385,7 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
   return (
     <select
       className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
-      style={{ width: '28px', minWidth: '28px', marginLeft: '-3px', WebkitAppearance: 'none', MozAppearance: 'none' }}
+      style={{ width: '25px', minWidth: '25px', WebkitAppearance: 'none', MozAppearance: 'none' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
@@ -16949,6 +16949,13 @@ export default function Dashboard() {
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
+                        <PrioritySelect
+                          priorityKey={priorityKey}
+                          initialValue={currentPriority}
+                          totalInSem={totalInSem}
+                          draftRef={draftCoursePlayPriorityRef}
+                          courseCode={semCourse.code}
+                        />
                         <button
                           className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
                           onClick={(e) => {
@@ -16973,15 +16980,15 @@ export default function Dashboard() {
                         })()}
                         </div>
                         <span className="text-[10px] text-white truncate min-w-0 flex-1"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
-                        <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
                             const profEmail = currentCourse?.professorEmail || profInfo.email;
-                            if (!profName) return <span style={{ width: '80px', marginLeft: '2px', marginRight: '3px', display: 'inline-block' }} />;
+                            if (!profName) return null;
                             return profEmail ? (
                               <a
                                 className="text-[9px] text-white truncate underline cursor-pointer hover:text-white/80"
-                                style={{ marginLeft: '2px', marginRight: '3px', width: '80px', display: 'inline-block', textAlign: 'right' }}
+                                style={{ width: '80px', display: 'inline-block', textAlign: 'right' }}
                                 href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(profEmail)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -16989,7 +16996,7 @@ export default function Dashboard() {
                                 data-testid={`link-professor-${semCourse.code}`}
                               >{profName}</a>
                             ) : (
-                              <span className="text-[9px] text-white truncate" style={{ marginLeft: '2px', marginRight: '3px', width: '80px', display: 'inline-block', textAlign: 'right' }}>{profName}</span>
+                              <span className="text-[9px] text-white truncate" style={{ width: '80px', display: 'inline-block', textAlign: 'right' }}>{profName}</span>
                             );
                           })()}
                           <div
@@ -17003,13 +17010,6 @@ export default function Dashboard() {
                             </div>
                             <span className="text-[7px] text-white font-medium" style={{ lineHeight: 1.1, marginTop: '1px' }}>AAS</span>
                           </div>
-                          <PrioritySelect
-                            priorityKey={priorityKey}
-                            initialValue={currentPriority}
-                            totalInSem={totalInSem}
-                            draftRef={draftCoursePlayPriorityRef}
-                            courseCode={semCourse.code}
-                          />
                         </div>
                       </div>
                     );
@@ -17017,6 +17017,34 @@ export default function Dashboard() {
 
                   return years.map(year => (
                     <div key={year} className="mb-8" style={{ marginTop: '-20px' }}>
+                      {year === 2026 && (
+                        <div className="mb-4 flex justify-center">
+                          <table className="border-collapse text-[9px] text-white" style={{ width: '280px' }}>
+                            <thead>
+                              <tr style={{ background: '#1a4b7a' }}>
+                                <th className="px-2 py-1 text-left font-bold border border-white/30">Letter Grade</th>
+                                <th className="px-2 py-1 text-left font-bold border border-white/30">% Range</th>
+                                <th className="px-2 py-1 text-left font-bold border border-white/30">Grade Points</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {[
+                                ['A+','90-100%','4.33'],['A','85-89%','4'],['A-','80-84%','3.67'],
+                                ['B+','77-79%','3.33'],['B','73-76%','3'],['B-','70-72%','2.67'],
+                                ['C+','67-69%','2.33'],['C','63-66%','2'],['C-','60-62%','1.67'],
+                                ['D+','57-59%','1.33'],['D','53-56%','1'],['D-','50-52%','0.67'],
+                                ['F','0-49%','0'],
+                              ].map(([letter, pct, pts]) => (
+                                <tr key={letter} className="border border-white/20" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                                  <td className="px-2 py-0.5 font-semibold border border-white/20">{letter}</td>
+                                  <td className="px-2 py-0.5 border border-white/20">{pct}</td>
+                                  <td className="px-2 py-0.5 border border-white/20">{pts}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                       <div className="flex items-center justify-center gap-2 mb-3">
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                       </div>
