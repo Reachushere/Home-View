@@ -13431,7 +13431,8 @@ export default function Dashboard() {
       )}
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
-      <div className="fixed z-50 flex items-end justify-end gap-2" style={{ top: `${calendarTop - 28}px`, right: '20px', display: isSettingsPanelOpen ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      {!isSettingsPanelOpen && (
+      <div className="fixed z-50 flex items-end justify-end gap-2" style={{ top: `${calendarTop - 28}px`, right: '20px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
           <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
@@ -13457,6 +13458,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      )}
       
       {/* Voice Input Floating Button */}
       <div className="fixed z-[9999]" style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 30}px`, left: '5px' }}>
@@ -13601,7 +13603,7 @@ export default function Dashboard() {
       </a>
       {/* Left binder tab - Add */}
       <div
-        className="fixed z-[59] cursor-pointer left-tab-bounce"
+        className="fixed z-[10002] cursor-pointer left-tab-bounce"
         style={{
           left: '-10px',
           top: '50vh',
@@ -13622,13 +13624,12 @@ export default function Dashboard() {
 
       {/* Right binder tab - Projects */}
       <div
-        className="fixed z-[59] cursor-pointer right-tab-bounce"
+        className="fixed z-[10002] cursor-pointer right-tab-bounce"
         style={{
           right: '-9px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
-          display: isSettingsPanelOpen ? 'none' : undefined,
         }}
         onClick={() => {
           window.location.href = '/projects';
