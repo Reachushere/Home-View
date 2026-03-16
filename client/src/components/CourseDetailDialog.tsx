@@ -31,6 +31,8 @@ import {
   FolderPlus,
   ChevronDown,
   ChevronRight,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -248,6 +250,42 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
       .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [allTasks, courseInfo.fullName]);
 
+  type SortField = 'manual' | 'title' | 'dueDate' | 'score' | 'total' | 'weight' | 'percent';
+  const [sortField, setSortField] = useState<SortField>('manual');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortDir === 'asc') setSortDir('desc');
+      else { setSortField('manual'); setSortDir('asc'); }
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+  };
+
+  const sortedTasks = useMemo(() => {
+    if (sortField === 'manual') return courseTasks;
+    const sorted = [...courseTasks].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case 'title': cmp = (a.title || '').localeCompare(b.title || ''); break;
+        case 'dueDate': cmp = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); break;
+        case 'score': cmp = (a.gradeValue || 0) - (b.gradeValue || 0); break;
+        case 'total': cmp = (a.gradeTotal || 0) - (b.gradeTotal || 0); break;
+        case 'weight': cmp = (a.gradeWeight || 0) - (b.gradeWeight || 0); break;
+        case 'percent': {
+          const pA = a.gradeValue != null && a.gradeTotal ? (a.gradeValue / a.gradeTotal) : -1;
+          const pB = b.gradeValue != null && b.gradeTotal ? (b.gradeValue / b.gradeTotal) : -1;
+          cmp = pA - pB;
+          break;
+        }
+      }
+      return sortDir === 'desc' ? -cmp : cmp;
+    });
+    return sorted;
+  }, [courseTasks, sortField, sortDir]);
+
   const [dragId, setDragId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
@@ -261,13 +299,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     return Array.from(g).sort();
   }, [courseTasks]);
 
-  const ungroupedTasks = useMemo(() => courseTasks.filter(t => !t.assignmentGroup), [courseTasks]);
+  const ungroupedTasks = useMemo(() => sortedTasks.filter(t => !t.assignmentGroup), [sortedTasks]);
 
   const groupedTasks = useMemo(() => {
     const map: Record<string, Task[]> = {};
-    groups.forEach(g => { map[g] = courseTasks.filter(t => t.assignmentGroup === g); });
+    groups.forEach(g => { map[g] = sortedTasks.filter(t => t.assignmentGroup === g); });
     return map;
-  }, [courseTasks, groups]);
+  }, [sortedTasks, groups]);
 
   const reorderMutation = useMutation({
     mutationFn: async (updates: { id: number; sortOrder: number; assignmentGroup?: string | null }[]) => {
@@ -1164,21 +1202,39 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               </div>
             )}
 
-            {courseTasks.length > 0 && (
-              <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white uppercase tracking-wider">
-                <div className="flex-shrink-0" style={{ width: '14px' }} />
-                <div className="flex-shrink-0 w-4" />
-                <div className="flex-shrink-0 w-3" />
-                <div className="flex-1 min-w-0">Assignment</div>
-                <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="w-[30px] text-center leading-tight" style={{ display: 'inline-flex', justifyContent: 'center' }}>Score<br/>received</span>
-                  <span className="w-[30px] text-center leading-tight">Total</span>
-                  <span className="w-[30px] text-center leading-tight">Wt%</span>
-                  <span className="w-[30px] text-center leading-tight">%</span>
+            {courseTasks.length > 0 && (() => {
+              const SortIcon = ({ field }: { field: SortField }) => {
+                if (sortField !== field) return null;
+                return sortDir === 'asc' ? <ArrowUp className="h-2 w-2 inline ml-0.5" /> : <ArrowDown className="h-2 w-2 inline ml-0.5" />;
+              };
+              const hdrCls = (field: SortField) =>
+                `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
+              return (
+                <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white/60 uppercase tracking-wider">
+                  <div className="flex-shrink-0" style={{ width: '14px' }} />
+                  <div className="flex-shrink-0 w-4" />
+                  <div className="flex-shrink-0 w-3" />
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
+                    Assignment<SortIcon field="title" />
+                  </div>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
+                    <span className={`w-[30px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
+                      Score<br/>received<SortIcon field="score" />
+                    </span>
+                    <span className={`w-[30px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} data-testid="sort-total">
+                      Total<SortIcon field="total" />
+                    </span>
+                    <span className={`w-[30px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} data-testid="sort-weight">
+                      Wt%<SortIcon field="weight" />
+                    </span>
+                    <span className={`w-[30px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} data-testid="sort-percent">
+                      %<SortIcon field="percent" />
+                    </span>
+                  </div>
+                  <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
                 </div>
-                <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
-              </div>
-            )}
+              );
+            })()}
 
             {courseTasks.length > 0 && (
               <div className="flex items-center gap-1 px-2 mb-1">
