@@ -813,6 +813,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       value={newTask.dueDate}
                       onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
                       className="h-7 !text-[10px] text-white bg-white/10 border-white/15"
+                      style={{ colorScheme: 'dark' }}
                       data-testid="input-task-due-date"
                     />
                   </div>
@@ -823,6 +824,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       value={newTask.dueTime}
                       onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
                       className="h-7 !text-[10px] text-white bg-white/10 border-white/15"
+                      style={{ colorScheme: 'dark' }}
                       data-testid="input-task-due-time"
                     />
                   </div>
