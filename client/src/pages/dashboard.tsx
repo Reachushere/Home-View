@@ -17144,9 +17144,23 @@ export default function Dashboard() {
                                     const info = pastCourseInfo[code];
                                     const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, ''); return mc === code || ('C' + mc) === code || mc === code.replace(/^C(?=[A-Z]{2,})/, ''); });
                                     const cg = certKey ? courseGrades[certKey] : null;
+                                    let electiveGrade: { grade: string; percent: string } | null = null;
+                                    if (!cg?.percent && !cg?.grade) {
+                                      const codeNorm = code.toUpperCase();
+                                      for (const [slot, elVal] of Object.entries(openElectives)) {
+                                        if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
+                                          if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
+                                            electiveGrade = courseGrades[slot];
+                                            break;
+                                          }
+                                        }
+                                      }
+                                    }
                                     if (info?.grade && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
                                     else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                                     else if (cg?.grade && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                                    else if (electiveGrade?.grade && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                                   }
                                   if (vals.length === 0) return '';
                                   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
