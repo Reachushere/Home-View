@@ -18493,13 +18493,15 @@ export default function Dashboard() {
                     {(() => {
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
+                      const isPastDay = day < startOfDay(new Date());
+                      const tempColor = isPastDay ? 'rgba(255,255,255,0.45)' : '#ffffff';
                       return (
                         <>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-6px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
-                            <span className="text-[10px] font-bold leading-none" style={{ color: '#ffffff' }}>{dayForecast.high}°</span>
+                            <span className="text-[10px] font-bold leading-none" style={{ color: tempColor }}>{dayForecast.high}°</span>
                           </div>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', bottom: '2px' }} data-testid={`weather-temp-low-${shiftDateStr}`}>
-                            <span className="text-[10px] font-medium leading-none" style={{ color: '#ffffff' }}>{dayForecast.low}°</span>
+                            <span className="text-[10px] font-medium leading-none" style={{ color: tempColor }}>{dayForecast.low}°</span>
                           </div>
                         </>
                       );
