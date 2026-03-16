@@ -23585,7 +23585,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="absolute top-0 right-0 z-10 text-red-400/60 hover:text-red-400 hover:bg-transparent transition-opacity duration-200 h-6 w-6"
+                  className="absolute top-0 right-0 z-10 text-white/60 hover:text-white hover:bg-transparent transition-opacity duration-200 h-6 w-6"
                   onClick={() => {
                     deleteTaskWithUndo(editingTask.id);
                   }}
