@@ -13181,73 +13181,8 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="px-2 pb-2 flex gap-3 items-start">
-              <div className="flex-1 min-w-0" />
-              <div className="flex-1 min-w-0" />
-              <div className="flex-1 min-w-0 flex flex-col gap-2">
-                <div className="flex justify-end">
-                {(() => {
-                  const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
-                  const percentToGpa = (p: number): number => {
-                    if (p >= 90) return 4.33;
-                    if (p >= 85) return 4.0;
-                    if (p >= 80) return 3.67;
-                    if (p >= 77) return 3.33;
-                    if (p >= 73) return 3.0;
-                    if (p >= 70) return 2.67;
-                    if (p >= 67) return 2.33;
-                    if (p >= 63) return 2.0;
-                    if (p >= 60) return 1.67;
-                    if (p >= 50) return 1.0;
-                    return 0;
-                  };
-                  const gradeLetterToGpa = (g: string): number => {
-                    const map: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                    return map[g] ?? -1;
-                  };
-                  const gpaValues: number[] = [];
-                  for (const id of l1CourseIds) {
-                    const g = courseGrades[id];
-                    if (!g) continue;
-                    if (g.grade && g.grade.trim() !== '') {
-                      const gpa = gradeLetterToGpa(g.grade);
-                      if (gpa >= 0) gpaValues.push(gpa);
-                    } else if (g.percent && g.percent.trim() !== '') {
-                      const p = parseFloat(g.percent);
-                      if (!isNaN(p)) gpaValues.push(percentToGpa(p));
-                    }
-                  }
-                  const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
-                  const gpaToLetter = (gpa: number): string => {
-                    if (gpa >= 4.17) return 'A+';
-                    if (gpa >= 3.84) return 'A';
-                    if (gpa >= 3.5) return 'A-';
-                    if (gpa >= 3.17) return 'B+';
-                    if (gpa >= 2.84) return 'B';
-                    if (gpa >= 2.5) return 'B-';
-                    if (gpa >= 2.17) return 'C+';
-                    if (gpa >= 1.84) return 'C';
-                    if (gpa >= 1.34) return 'C-';
-                    if (gpa >= 0.5) return 'D';
-                    return 'F';
-                  };
-                  const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
-                  return (
-                      <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: '#ffffff', height: '32px', minHeight: '32px' }} data-testid="l1-gpa-box">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
-                        {avgGpa !== null ? (
-                          <>
-                            <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
-                            <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(avgGpa)}, {gpaValues.length} {gpaValues.length === 1 ? 'course' : 'courses'})</span>
-                          </>
-                        ) : (
-                          <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
-                        )}
-                      </div>
-                  );
-                })()}
-                </div>
-                <div className="flex justify-end items-center gap-2">
+          <div className="px-2 pb-2 flex justify-end">
+                <div className="flex items-center gap-2">
                 <Button 
                   type="button" 
                   variant="outline"
@@ -13279,7 +13214,6 @@ export default function Dashboard() {
                   Save
                 </Button>
                 </div>
-              </div>
           </div>
         </div>
       )}
@@ -21682,7 +21616,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '37px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42 }}>
+          <div style={{ padding: '0 8px', height: '40px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42 }}>
             <h4
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
@@ -21699,7 +21633,7 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 37) : 0;
+            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 40) : 0;
             const leftWidth = (() => {
               if (homeworkSpacerRef.current && homeworkSectionRef.current) {
                 const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
@@ -22011,7 +21945,7 @@ export default function Dashboard() {
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 37) : 0;
+              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 40) : 0;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
