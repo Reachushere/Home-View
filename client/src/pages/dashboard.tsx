@@ -16545,7 +16545,7 @@ export default function Dashboard() {
 
                   return years.map(year => (
                     <div key={year} className="mb-8">
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center justify-center gap-2 mb-3">
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                       </div>
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch' }}>
