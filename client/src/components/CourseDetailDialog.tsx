@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -105,6 +105,37 @@ interface NewTaskForm {
   gradeWeight: string;
   gradeTotal: string;
   gradeValue: string;
+}
+
+function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string }) {
+  const [local, setLocal] = useState(value ?? '');
+  const savedRef = useRef(value);
+  useEffect(() => {
+    if (value !== savedRef.current) {
+      savedRef.current = value;
+      setLocal(value ?? '');
+    }
+  }, [value]);
+  return (
+    <input
+      type="number"
+      className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+      placeholder={placeholder}
+      value={local}
+      onChange={(e) => setLocal(e.target.value)}
+      onBlur={() => {
+        const parsed = local !== '' ? parseInt(String(local)) : null;
+        if (parsed !== (value ?? null)) {
+          savedRef.current = parsed;
+          onSave(parsed);
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+      }}
+      data-testid={testId}
+    />
+  );
 }
 
 function createEmptyTaskForm(): NewTaskForm {
@@ -1094,38 +1125,23 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       </div>
                     </div>
                     <div className="flex items-center flex-shrink-0" style={{ gap: '3px' }} onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="number"
-                        className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+                      <DebouncedGradeInput
+                        value={task.gradeWeight}
+                        onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } })}
                         placeholder="Wt"
-                        value={task.gradeWeight ?? ''}
-                        onChange={(e) => {
-                          const val = e.target.value ? parseInt(e.target.value) : null;
-                          updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } });
-                        }}
-                        data-testid={`input-grade-weight-${task.id}`}
+                        testId={`input-grade-weight-${task.id}`}
                       />
-                      <input
-                        type="number"
-                        className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+                      <DebouncedGradeInput
+                        value={task.gradeTotal}
+                        onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val } })}
                         placeholder="Tot"
-                        value={task.gradeTotal ?? ''}
-                        onChange={(e) => {
-                          const val = e.target.value ? parseInt(e.target.value) : null;
-                          updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val } });
-                        }}
-                        data-testid={`input-grade-total-${task.id}`}
+                        testId={`input-grade-total-${task.id}`}
                       />
-                      <input
-                        type="number"
-                        className="w-[28px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+                      <DebouncedGradeInput
+                        value={task.gradeValue}
+                        onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val })}
                         placeholder="Scr"
-                        value={task.gradeValue ?? ''}
-                        onChange={(e) => {
-                          const val = e.target.value ? parseInt(e.target.value) : null;
-                          updateGradeValueMutation.mutate({ id: task.id, gradeValue: val });
-                        }}
-                        data-testid={`input-grade-value-${task.id}`}
+                        testId={`input-grade-value-${task.id}`}
                       />
                       <span className="text-[9px] text-white/70 w-[28px] text-center" data-testid={`text-grade-percent-${task.id}`}>
                         {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
