@@ -4797,8 +4797,20 @@ export default function Dashboard() {
   const allSemesterSettingsRef = useRef(allSemesterSettings);
   allSemesterSettingsRef.current = allSemesterSettings;
 
+  const [deliveryModeVersion, setDeliveryModeVersion] = useState(0);
   const courseDeliveryModes = useMemo(() => {
     const map: Record<string, string> = {};
+    try {
+      const cd = localStorage.getItem('certCourseData');
+      if (cd) {
+        const sd = JSON.parse(cd);
+        for (const [key, val] of Object.entries(sd)) {
+          if ((val as any)?.deliveryMode) {
+            map[key.replace(/\s/g, '')] = (val as any).deliveryMode;
+          }
+        }
+      }
+    } catch {}
     if (allSemesterSettings) {
       for (const sem of allSemesterSettings) {
         for (let i = 1; i <= 3; i++) {
@@ -4809,7 +4821,7 @@ export default function Dashboard() {
       }
     }
     return map;
-  }, [allSemesterSettings]);
+  }, [allSemesterSettings, deliveryModeVersion]);
 
   useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
@@ -13567,6 +13579,7 @@ export default function Dashboard() {
               const savedData = certData ? JSON.parse(certData) : {};
               savedData[certKey] = { ...savedData[certKey], ...updates };
               localStorage.setItem('certCourseData', JSON.stringify(savedData));
+              setDeliveryModeVersion(v => v + 1);
             }}
             onGradeCalculated={(grade, percent) => {
               const certKey = selectedCertCourse!.certKey;
