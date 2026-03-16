@@ -22515,7 +22515,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? 'rgba(25,55,105,0.5)' : 'rgba(15,35,75,0.5)' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
                           onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskId(null)}
                           ref={(rowEl) => {
@@ -22681,7 +22681,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.5)' : 'rgba(15,35,75,0.5)' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
                                     onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
@@ -22868,7 +22868,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.5)' : 'rgba(15,35,75,0.5)' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
                                     onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
@@ -23057,7 +23057,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.5)' : 'rgba(15,35,75,0.5)' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent' }}
                                     onMouseEnter={() => setHoveredCountdownTaskId(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                                     ref={(rowEl) => {
@@ -23219,7 +23219,7 @@ export default function Dashboard() {
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 return (
-                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', paddingRight: '4px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.08)' : 'none', backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.5)' : 'rgba(15,35,75,0.5)', marginLeft: '-8px', marginRight: '-4px' }}>
+                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '8px', paddingRight: '4px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.08)' : 'none', backgroundColor: taskIdx % 2 === 0 ? 'rgba(25,55,105,0.55)' : 'transparent', marginLeft: '-8px', marginRight: '-4px' }}>
                                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
                                       <button
                                         className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
