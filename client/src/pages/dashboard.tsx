@@ -4146,6 +4146,54 @@ export default function Dashboard() {
     retry: 2,
     retryDelay: 1000,
   });
+
+  useEffect(() => {
+    if (!allTasks || allTasks.length === 0) return;
+    const courseTasksMap: Record<string, Task[]> = {};
+    for (const t of allTasks) {
+      if (!t.courseName) continue;
+      const cn = t.courseName.split(' - ')[0]?.trim().replace(/\s/g, '').toUpperCase();
+      if (!cn) continue;
+      if (!courseTasksMap[cn]) courseTasksMap[cn] = [];
+      courseTasksMap[cn].push(t);
+    }
+    const updates: Record<string, { grade: string; percent: string }> = {};
+    for (const [cn, tasks] of Object.entries(courseTasksMap)) {
+      const graded = tasks.filter(t => t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined);
+      if (graded.length === 0) continue;
+      let wSum = 0, wTotal = 0;
+      for (const t of graded) {
+        const pct = (t.gradeValue! / t.gradeTotal!) * 100;
+        wSum += pct * (t.gradeWeight! / 100);
+        wTotal += t.gradeWeight!;
+      }
+      if (wTotal <= 0) continue;
+      const currentPercent = Math.round((wSum / wTotal) * 1000) / 10;
+      const grade = percentToGrade(String(currentPercent));
+      for (const [ck, info] of Object.entries(certCourseMap)) {
+        const mapCode = info.code.replace(/\s/g, '').toUpperCase();
+        if (mapCode === cn || cn.endsWith(mapCode) || mapCode.endsWith(cn.replace(/^C/, ''))) {
+          updates[ck] = { grade, percent: String(currentPercent) };
+        }
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      setCourseGrades(prev => {
+        const merged = { ...prev };
+        let changed = false;
+        for (const [k, v] of Object.entries(updates)) {
+          if (!merged[k]?.percent || merged[k].percent.trim() === '') {
+            merged[k] = v;
+            changed = true;
+          }
+        }
+        if (!changed) return prev;
+        localStorage.setItem('courseGrades', JSON.stringify(merged));
+        return merged;
+      });
+    }
+  }, [allTasks]);
+
   useEffect(() => {
     const measure = () => {
       const els = document.querySelectorAll('[data-upcoming-task-name]');
