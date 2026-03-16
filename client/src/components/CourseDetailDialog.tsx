@@ -196,7 +196,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
   const courseTasks = useMemo(() => {
     return allTasks
-      .filter((t) => t.courseName === courseInfo.fullName)
+      .filter((t) => t.courseName === courseInfo.fullName && t.type !== 'class')
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [allTasks, courseInfo.fullName]);
 
