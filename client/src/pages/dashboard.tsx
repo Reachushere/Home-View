@@ -16663,8 +16663,8 @@ export default function Dashboard() {
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,1)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,1)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
@@ -18350,7 +18350,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
-            style={{ bottom: `${calendarBottom - 23}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: `${calendarBottom - 20}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -18363,7 +18363,7 @@ export default function Dashboard() {
           </Button>
           <div
             className="fixed"
-            style={{ bottom: `${calendarBottom - 23}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 20}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)' }} />
             <Button

@@ -10119,7 +10119,15 @@ document.body.removeChild(a);
         };
       });
 
-      res.json(formattedEvents);
+      const seen = new Set<string>();
+      const dedupedEvents = formattedEvents.filter(e => {
+        const key = `${e.title}||${e.startDate}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      res.json(dedupedEvents);
     } catch (error) {
       console.error("Fetch upcoming calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch upcoming calendar events" });
@@ -10171,15 +10179,11 @@ document.body.removeChild(a);
       const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
       
       // Transform to a simpler format
-      // For all-day events, Google returns just a date (e.g., "2026-01-28")
-      // This gets parsed as midnight UTC, which shifts to previous day in some timezones
-      // We append T12:00:00 (noon) to keep the date stable across timezones
       const formattedEvents = externalEvents.map(event => {
         const isAllDay = !event.start?.dateTime;
         let startDate = event.start?.dateTime || event.start?.date;
         let endDate = event.end?.dateTime || event.end?.date;
         
-        // Fix all-day event dates by adding noon time to prevent timezone shift
         if (isAllDay && startDate && !startDate.includes('T')) {
           startDate = `${startDate}T12:00:00`;
         }
@@ -10199,7 +10203,16 @@ document.body.removeChild(a);
         };
       });
       
-      res.json(formattedEvents);
+      // Deduplicate events by title + startDate to prevent duplicates from multiple accounts
+      const seen = new Set<string>();
+      const dedupedEvents = formattedEvents.filter(e => {
+        const key = `${e.title}||${e.startDate}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      
+      res.json(dedupedEvents);
     } catch (error) {
       console.error("Fetch Google Calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch Google Calendar events" });
