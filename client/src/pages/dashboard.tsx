@@ -16400,6 +16400,7 @@ export default function Dashboard() {
                     { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep – Dec 2028', courses: [] },
                   ];
 
+                  const allDefCodes = new Set(semesterDefs.flatMap(s => s.courses.map(c => c.code.toUpperCase().replace(/\s/g, ''))));
                   const currentSemKey = (() => {
                     const now = new Date();
                     if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
@@ -16408,6 +16409,19 @@ export default function Dashboard() {
                     if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return 'ss2026';
                     return '';
                   })();
+                  if (currentSemKey) {
+                    const currentSem = semesterDefs.find(s => s.key === currentSemKey);
+                    if (currentSem) {
+                      coursesData.courses.filter(c => c.name.trim()).forEach(c => {
+                        const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+                        const name = c.name.split(' - ').slice(1).join(' - ').trim();
+                        if (code && !allDefCodes.has(code)) {
+                          currentSem.courses.push({ code, name: code, fullName: name, period: '' });
+                          allDefCodes.add(code);
+                        }
+                      });
+                    }
+                  }
 
                   const semStartDates: Record<string, string> = {
                     'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
