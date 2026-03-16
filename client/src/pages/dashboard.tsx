@@ -3867,18 +3867,21 @@ export default function Dashboard() {
       const now = new Date();
       const currentDate = now.getDate();
       
-      if (currentDate !== lastDateRef.current) {
-        lastDateRef.current = currentDate;
-        const isTravelling = !!(JSON.parse(localStorage.getItem('schoolData') || '{}').isTravelling);
-        if (!isTravelling) {
-          speakNewDay();
-        }
-      }
-      
       const weekNum = getWeekNumber(now);
-      if (weekNum !== lastWeekRef.current) {
+      const isNewWeek = weekNum !== lastWeekRef.current;
+      if (isNewWeek) {
         lastWeekRef.current = weekNum;
         speakNewWeek();
+      }
+      
+      if (currentDate !== lastDateRef.current) {
+        lastDateRef.current = currentDate;
+        if (!isNewWeek) {
+          const isTravelling = !!(JSON.parse(localStorage.getItem('schoolData') || '{}').isTravelling);
+          if (!isTravelling) {
+            speakNewDay();
+          }
+        }
       }
       const secEl = document.getElementById('clock-seconds');
       if (secEl) secEl.textContent = ':' + String(now.getSeconds()).padStart(2, '0');
@@ -12923,8 +12926,6 @@ export default function Dashboard() {
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
                     <div className="font-bold px-1 py-0.5 border-r border-black w-16 text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>LEVEL II</div>
                     <div className="font-bold px-1 py-0.5 flex-1 text-center text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>ADVANCED CERTIFICATE</div>
-                    <div className="border-l border-black" style={{ width: '54px', minWidth: '54px' }}></div>
-                    <div className="w-5 border-l border-black"></div>
                   </div>
                   <div className="flex border-b border-black bg-gray-50">
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Type</div>
@@ -16643,9 +16644,9 @@ export default function Dashboard() {
                   return years.map(year => (
                     <div key={year} className="mb-8">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="h-px flex-1 bg-white/20" />
+                        <div className="h-px flex-1 bg-white" />
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
-                        <div className="h-px flex-1 bg-white/20" />
+                        <div className="h-px flex-1 bg-white" />
                       </div>
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch' }}>
                         {semesterDefs.filter(s => s.year === year).map(sem => {
@@ -16653,8 +16654,8 @@ export default function Dashboard() {
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.10)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.10)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,1)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,1)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
@@ -19087,73 +19088,27 @@ export default function Dashboard() {
                       const endColor = courseHexColorEnd || courseHexColor;
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
-                    const handlePlayFiles = async (fileType: 'module' | 'reading') => {
-                      const newWindow = window.open('about:blank', '_blank');
+                    const handlePlayFiles = async (_fileType: 'module' | 'reading') => {
                       setIsLoadingOneDriveFiles(true);
-                      const courseId = courseCode.toLowerCase();
-                      const basePath = `/School/1. TMU/Courses/2026/Winter`;
                       try {
-                        const baseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(basePath)}`);
-                        const baseFolders = await baseResponse.json();
-                        if (!Array.isArray(baseFolders)) throw new Error('Failed to list course folders');
-                        const matchedFolder = baseFolders.find((f: any) => 
-                          f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
-                        );
-                        if (!matchedFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
-                        const coursePath = matchedFolder.path;
-                        const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                        const courseFolders = await courseResponse.json();
-                        const weekFolder = courseFolders.find((f: any) => 
-                          f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                        );
-                        if (!weekFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
-                        const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                        const weekContents = await weekResponse.json();
-                        const targetFolder = weekContents.find((f: any) => 
-                          f.type === 'folder' && f.name.toLowerCase().includes(fileType)
-                        );
-                        if (!targetFolder) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
-                        const filesResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(targetFolder.path)}`);
-                        const filesData = await filesResponse.json();
-                        const pdfFiles = filesData.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                        if (pdfFiles.length === 0) { if (newWindow) newWindow.close(); setIsLoadingOneDriveFiles(false); return; }
-                        const folder = `week-${selectedWeek}-${courseId}-${fileType}`;
-                        const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
-                          const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
-                          try {
-                            const resp = await fetch('/api/files/ensure', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ objectPath: stablePath, originalName: pdf.name, displayName: pdf.name, folder }),
-                            });
-                            if (resp.ok) {
-                              const dbFile = await resp.json();
-                              return { id: dbFile.id, originalName: dbFile.originalName, displayName: dbFile.displayName, objectPath: pdf.downloadUrl, folder: dbFile.folder, listened: dbFile.listened || false, checkedChunks: dbFile.checkedChunks || undefined, totalChunks: dbFile.totalChunks || undefined, lastChunkIndex: dbFile.lastChunkIndex || undefined } as FileItem;
-                            }
-                          } catch {}
-                          return { id: Date.now() + Math.random(), originalName: pdf.name, displayName: pdf.name, objectPath: pdf.downloadUrl, folder, listened: false } as FileItem;
-                        }));
-                        const unlistenedFiles = ensuredFiles.filter(f => !f.listened);
-                        const firstFile = unlistenedFiles.length > 0 ? unlistenedFiles[0] : ensuredFiles[0];
-                        if (firstFile) {
-                          const isOneDrive = firstFile.objectPath?.startsWith('http');
-                          const readerUrl = isOneDrive
-                            ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(firstFile.objectPath)}&name=${encodeURIComponent(firstFile.displayName || firstFile.originalName)}&fileId=${firstFile.id}&autoplay=false&resumeChunk=0`
-                            : `/pdf-reader/${firstFile.id}?autoplay=false&resumeChunk=0`;
-                          if (newWindow) {
-                            newWindow.location.href = window.location.origin + readerUrl;
-                          } else {
-                            window.location.href = readerUrl;
-                          }
+                        const resp = await fetch('/api/trigger-playback', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ weekNumber: selectedWeek }),
+                        });
+                        const data = await resp.json();
+                        if (data.action === 'playing') {
+                          toast({ title: `Playing: ${data.file?.name || 'file'}`, description: 'Sent to cat washroom speakers & tablet' });
+                        } else if (data.action === 'radio') {
+                          toast({ title: 'All readings complete', description: 'Playing CHUM FM 104.5' });
                         } else {
-                          if (newWindow) newWindow.close();
+                          toast({ title: data.reason || 'No files to play', variant: 'destructive' });
                         }
                         queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                         refreshFileCounts();
                       } catch (error) {
-                        console.error(`Error fetching ${fileType} files:`, error);
-                        if (newWindow) newWindow.close();
-                        try { fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `courseButton ${fileType} error: ${(error as any)?.message || error}`, stack: (error as any)?.stack, userAgent: navigator.userAgent, url: window.location.href, timestamp: new Date().toISOString() }) }).catch(() => {}); } catch {}
+                        console.error(`Error triggering playback:`, error);
+                        toast({ title: 'Playback failed', variant: 'destructive' });
                       } finally {
                         setIsLoadingOneDriveFiles(false);
                       }

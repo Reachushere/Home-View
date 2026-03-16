@@ -5338,7 +5338,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
   let coursePlayPriority: Record<string, number> = {};
-  const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 5 * 60 * 1000;
+  const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 3 * 60 * 1000;
   let catLightsBypassCooldown = false;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -5364,6 +5364,222 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (LIBERAL_CODES.has(codeWithNum)) return 200;
     if (OPEN_ELECTIVE_CODES.has(codeWithNum)) return 300;
     return 999;
+  }
+
+  function getSemesterTypeFolder(semType: string | null | undefined): string {
+    const t = (semType || 'winter').toLowerCase();
+    if (t.includes('spring') || t.includes('summer')) return 'Spring-Summer';
+    if (t.includes('fall')) return 'Fall';
+    return 'Winter';
+  }
+
+  async function getSemesterOneDriveCourses(semesterSettings: any): Promise<Array<{ code: string; path: string }>> {
+    if (!semesterSettings) return [];
+    const semType = getSemesterTypeFolder(semesterSettings.semesterType);
+    const startDate = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+    const year = startDate.getFullYear();
+    const basePath = `/School/1. TMU/Courses/${year}/${semType}`;
+    const courses: Array<{ code: string; path: string }> = [];
+    for (let i = 1; i <= 3; i++) {
+      const code = (semesterSettings as any)[`course${i}Code`];
+      const name = (semesterSettings as any)[`course${i}Name`];
+      if (!code || !code.trim()) continue;
+      const codeClean = code.replace(/\s/g, '');
+      const folderName = name ? `${codeClean} - ${name}` : codeClean;
+      courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
+    }
+    return courses;
+  }
+
+  async function syncOneDriveFilesForWeek(semesterSettings: any, currentWeekNumber: number, logPrefix: string = '[Sync]'): Promise<void> {
+    try {
+      const { listOneDriveItems } = await import("./onedrive");
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorageSync = new ObjectStorageService();
+      const courses = await getSemesterOneDriveCourses(semesterSettings);
+      console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
+      for (const course of courses) {
+        try {
+          const weekFolders = await listOneDriveItems(course.path);
+          const currentWeekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === currentWeekNumber);
+          if (!currentWeekFolder) continue;
+          const weekContents = await listOneDriveItems(currentWeekFolder.path);
+          for (const subType of ['module', 'reading']) {
+            const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === subType);
+            if (!subFolder) continue;
+            const subFiles = await listOneDriveItems(subFolder.path);
+            for (const file of subFiles) {
+              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              const existingFiles = await storage.getFiles();
+              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
+              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
+              const downloadResponse = await fetch(file.downloadUrl);
+              if (!downloadResponse.ok) continue;
+              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+              const uploadUrl = await objectStorageSync.getObjectEntityUploadURL();
+              const uploadResponse = await fetch(uploadUrl, { method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' } });
+              if (!uploadResponse.ok) continue;
+              const objectPath = objectStorageSync.normalizeObjectEntityPath(uploadUrl);
+              await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
+              console.log(`${logPrefix} Synced new file: ${file.name} → ${folderName}`);
+            }
+          }
+        } catch (e: any) { console.log(`${logPrefix} OneDrive sync error for ${course.code}: ${e.message}`); }
+      }
+      console.log(`${logPrefix} OneDrive sync complete`);
+    } catch (e: any) { console.log(`${logPrefix} OneDrive sync failed: ${e.message}`); }
+  }
+
+  function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
+    const weekFiles = allFiles.filter((f: any) => {
+      if (f.listened) return false;
+      if (excludeFileId && f.id === excludeFileId) return false;
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+    });
+    if (weekFiles.length === 0) return null;
+    const ordered = orderFilesByCoursePriority(weekFiles);
+    const partiallyListened = ordered.filter((f: any) => (f.lastChunkIndex || 0) > 0);
+    const fresh = ordered.filter((f: any) => (f.lastChunkIndex || 0) === 0);
+    const prioritized = [...partiallyListened, ...fresh];
+    return prioritized[0] || null;
+  }
+
+  const CAT_ECHO_ENTITIES = [
+    "media_player.echo_cat_left_am",
+    "media_player.echo_cat_right_am",
+    "media_player.echo_cat_washroom_middle",
+  ];
+
+  async function stopAllCatWashroomSpeakers(haUrl: string): Promise<void> {
+    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+    await Promise.allSettled([
+      fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+      }),
+      fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: CAT_ECHO_ENTITIES }),
+      }),
+    ]);
+    console.log(`[Speakers] Stopped Nest + cat washroom Echos`);
+  }
+
+  async function playChumFmRadio(haUrl: string): Promise<void> {
+    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+    await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      method: 'POST', headers: haHeaders,
+      body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
+    });
+    console.log(`[Radio] Playing CHUM FM 104.5 on Nest`);
+  }
+
+  async function startConfirmedPlaybackFlow(
+    fileToPlay: any,
+    logPrefix: string,
+    voice: string = "echo"
+  ): Promise<void> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const appUrl = "https://home-view--bkh416.replit.app";
+    const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+    const fileName = fileToPlay.displayName || fileToPlay.originalName || 'Unknown file';
+    const savedChunk = fileToPlay.lastChunkIndex || 0;
+    const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
+    console.log(`${logPrefix} Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk})`);
+
+    const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+    const tvFollowUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
+
+    await stopAllCatWashroomSpeakers(haUrl);
+
+    await Promise.all([
+      fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.75 }),
+      }),
+      fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
+      }),
+    ]);
+    console.log(`${logPrefix} Set volume to 0.75`);
+
+    catWashSessionId++;
+    const currentSession = catWashSessionId;
+    if (catWashPlaybackActive) {
+      console.log(`${logPrefix} Stopping previous playback session`);
+      if (nestPlaybackAbort) nestPlaybackAbort();
+    }
+    catWashPlaybackActive = true;
+    catWashPlaybackStartedAt = new Date();
+    startToothbrushPolling();
+
+    const fileText = await extractFileText(fileToPlay);
+    console.log(`${logPrefix} Text extraction ready (${fileText ? fileText.length : 0} chars)`);
+    const fileChunks = fileText ? chunkTextForNest(fileText) : [];
+    const totalChunksCalc = fileChunks.length;
+
+    if (fileToPlay.totalChunks !== totalChunksCalc && totalChunksCalc > 0) {
+      try { await storage.updateFile(fileToPlay.id, { totalChunks: totalChunksCalc }); } catch {}
+    }
+
+    catWashPlaybackState = {
+      fileId: fileToPlay.id,
+      fileName,
+      chunkIndex: resumeFromChunk,
+      totalChunks: totalChunksCalc,
+      chunks: fileChunks,
+      currentWords: [],
+      wordIndex: 0,
+      startedAt: new Date(),
+      chunkStartedAt: new Date(),
+      estimatedChunkDuration: 0,
+      playbackMode: 'server-tts',
+    };
+
+    const lightsNavTimestamp = Date.now();
+    await Promise.all([
+      setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
+      setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
+    ]);
+    console.log(`${logPrefix} tablet-nav set for devices`);
+
+    try {
+      for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
+        });
+      }
+      console.log(`${logPrefix} Tablet wakeup + brightness max sent`);
+    } catch (e: any) {
+      console.log(`${logPrefix} Tablet brightness error: ${e.message}`);
+    }
+
+    try {
+      const [fireStickRes, tvRes] = await Promise.allSettled([
+        fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
+        }),
+      ]);
+      console.log(`${logPrefix} Fire Stick: ${fireStickRes.status}, TV: ${tvRes.status}`);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
+      console.log(`${logPrefix} TV follow URL sent`);
+    } catch (e: any) {
+      console.log(`${logPrefix} TV setup error: ${e.message}`);
+    }
+
+    currentTabletReaderUrl = readerUrl;
+    startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice);
   }
 
   function orderFilesByCoursePriority(files: any[]): any[] {
@@ -5527,9 +5743,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function waitForNestPlaybackEnd(estimatedMs: number, sessionId: number): Promise<boolean> {
     const startTime = Date.now();
-    const maxWait = estimatedMs + 30000;
+    const maxWait = estimatedMs + 15000;
     const minPlaybackMs = Math.min(estimatedMs * 0.6, 60000);
-    const initialWait = Math.max(minPlaybackMs, 30000);
+    const initialWait = Math.max(minPlaybackMs, 20000);
     const checkInterval = 2000;
     for (let waited = 0; waited < initialWait; waited += checkInterval) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) {
@@ -5539,24 +5755,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await new Promise(r => setTimeout(r, checkInterval));
     }
     let consecutiveIdle = 0;
-    const IDLE_THRESHOLD = 5;
+    const IDLE_THRESHOLD = 2;
     while (Date.now() - startTime < maxWait) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) return false;
       const state = await getNestMediaState();
       if (state.state === 'idle' || state.state === 'off') {
         consecutiveIdle++;
-        console.log(`[Nest] State: ${state.state} (consecutive idle: ${consecutiveIdle}/${IDLE_THRESHOLD}, elapsed: ${Math.round((Date.now() - startTime) / 1000)}s)`);
         if (consecutiveIdle >= IDLE_THRESHOLD) {
-          console.log(`[Nest] Playback ended (${consecutiveIdle} consecutive idle checks after ${Math.round((Date.now() - startTime) / 1000)}s)`);
+          console.log(`[Nest] Chunk done (idle after ${Math.round((Date.now() - startTime) / 1000)}s)`);
           return true;
         }
       } else {
-        if (consecutiveIdle > 0) console.log(`[Nest] State recovered to ${state.state}, resetting idle count`);
         consecutiveIdle = 0;
       }
-      await new Promise(r => setTimeout(r, 4000));
+      await new Promise(r => setTimeout(r, 3000));
     }
-    console.log(`[Nest] Timed out waiting for playback to end after ${Math.round((Date.now() - startTime) / 1000)}s`);
+    console.log(`[Nest] Timed out waiting for playback after ${Math.round((Date.now() - startTime) / 1000)}s — moving to next chunk`);
     return true;
   }
 
@@ -5639,18 +5853,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         return;
       }
 
-      await Promise.allSettled([
-        fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
-        }),
-        fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: KITCHEN_ECHO_ENTITY }),
-        }),
-      ]);
+      await stopAllCatWashroomSpeakers(haUrl);
       console.log(`[Nest Playback] Stopped speakers`);
 
       const cleanName = fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -6460,13 +6663,13 @@ document.body.removeChild(a);
       console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");
       console.log("[Cat Wash] Timestamp:", new Date().toISOString());
       console.log("[Cat Wash] Request body:", JSON.stringify(req.body));
-      console.log("[Cat Wash] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)");
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
       const today = torontoDate();
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
 
       if (catWashManuallyStoppedAt) {
         const msSinceStopped = Date.now() - catWashManuallyStoppedAt.getTime();
@@ -6478,8 +6681,8 @@ document.body.removeChild(a);
       }
 
       if (catLightsPromptPending) {
-        console.log(`[Cat Wash] Cat lights prompt is pending — skipping shower webhook to avoid conflict`);
-        return res.json({ action: "skipped", reason: "Cat lights prompt pending — waiting for confirmation" });
+        console.log(`[Cat Wash] Cat lights prompt is pending — skipping to avoid conflict`);
+        return res.json({ action: "skipped", reason: "Cat lights prompt pending" });
       }
 
       if (catWashPlaybackActive && catWashPlaybackState) {
@@ -6488,207 +6691,60 @@ document.body.removeChild(a);
         const msSinceChunkStart = catWashPlaybackState.chunkStartedAt ? Date.now() - catWashPlaybackState.chunkStartedAt.getTime() : 0;
         const chunkStuck = msSinceChunkStart > 3 * 60 * 1000;
         const isTabletDriven = catWashPlaybackState.playbackMode !== 'server-tts';
-        const likelyStale = (msSinceStart > 2 * 60 * 1000 && chunkStillAtStart) || chunkStuck || isTabletDriven;
+        const likelyStale = (msSinceStart > 3 * 60 * 1000 && chunkStillAtStart) || chunkStuck || isTabletDriven;
 
         if (likelyStale) {
-          console.log(`[Cat Wash] Clearing stale/tablet playback state (started ${Math.round(msSinceStart / 1000)}s ago, chunk ${catWashPlaybackState.chunkIndex}, chunkAge=${Math.round(msSinceChunkStart / 1000)}s, mode=${catWashPlaybackState.playbackMode || 'unknown'})`);
+          console.log(`[Cat Wash] Clearing stale playback (started ${Math.round(msSinceStart / 1000)}s ago, chunk ${catWashPlaybackState.chunkIndex})`);
           if (nestPlaybackAbort) nestPlaybackAbort();
           catWashPlaybackActive = false;
           catWashPlaybackStartedAt = null;
           catWashPlaybackState = null;
         } else {
-          console.log(`[Cat Wash] Already playing via Nest: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks} (chunkAge=${Math.round(msSinceChunkStart / 1000)}s) - skipping`);
-          
-          const haUrlSkip = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          console.log(`[Cat Wash] Playback already active: "${catWashPlaybackState.fileName}" — letting it continue`);
           try {
-            const [fireStickSkip, tvSkip] = await Promise.allSettled([
-              fetch(`${haUrlSkip}/api/services/media_player/turn_on`, {
-                method: 'POST', headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-              }),
-              fetch(`${haUrlSkip}/api/services/media_player/turn_on`, {
-                method: 'POST', headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
-              }),
-            ]);
-            console.log(`[Cat Wash] Skipped but ensuring TV on - Fire Stick: ${fireStickSkip.status === 'fulfilled' ? fireStickSkip.value.status : 'failed'}, TV: ${tvSkip.status === 'fulfilled' ? tvSkip.value.status : 'failed'}`);
-            if (currentTvFollowUrl) {
-              await openUrlOnFireStick(haUrlSkip, 'media_player.fire_tv_172_24_0_88', currentTvFollowUrl);
-              console.log(`[Cat Wash] Re-sent TV follow URL: ${currentTvFollowUrl}`);
+            const tvState = await fetch(`${haUrl}/api/states/media_player.fire_tv_172_24_0_88`, {
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+            });
+            if (tvState.ok) {
+              const tvData = await tvState.json();
+              console.log(`[Cat Wash] TV/Fire Stick state: ${tvData.state} — confirmed following`);
             }
           } catch (e: any) {
-            console.log(`[Cat Wash] Error ensuring TV on during skip: ${e.message}`);
+            console.log(`[Cat Wash] Could not check TV state: ${e.message}`);
           }
-          
-          return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+          return res.json({ action: "skipped", reason: "Playback already active, continuing", currentFile: catWashPlaybackState.fileName });
         }
       }
 
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const appUrl = "https://home-view--bkh416.replit.app";
-      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      if (!semesterSettings) {
+        console.log(`[Cat Wash] No active semester — skipping`);
+        return res.json({ action: "skipped", reason: "No active semester" });
+      }
 
-      const [semesterSettings, allFiles] = await Promise.all([
-        storage.getActiveSemesterSettings(),
-        storage.getFiles(),
-      ]);
       let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00.000Z");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
-      console.log(`[Cat Wash] Week calc: semStart=${semStart.toISOString()}, rwStart=${rwStart.toISOString()}, today=${today.toISOString()}`);
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : semStart;
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
       console.log(`[Cat Wash] Calculated week: ${currentWeekNumber}`);
-      const cppaModule = allFiles.find((f: any) => {
-        if (f.listened) return false;
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNumber) return false;
-        const isCppa = f.folder?.toLowerCase().includes('cppa');
-        const isModule = f.folder?.toLowerCase().includes('module');
-        return isCppa && isModule;
-      });
 
-      if (!cppaModule) {
-        console.log(`[Cat Wash] No unlistened CPPA module for week ${currentWeekNumber}`);
-        return res.json({ action: "skipped", reason: `No unlistened CPPA module for week ${currentWeekNumber}` });
+      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Wash]');
+
+      const allFiles = await storage.getFiles();
+      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+
+      if (!nextFile) {
+        console.log(`[Cat Wash] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
+        await playChumFmRadio(haUrl);
+        return res.json({ action: "radio", reason: `All week ${currentWeekNumber} readings complete — playing CHUM FM 104.5` });
       }
 
-      const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
-      console.log(`[Cat Wash] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      console.log(`[Cat Wash] Found file: ${fileName} (id=${nextFile.id}) — starting confirmed playback flow`);
 
-      const savedChunk = cppaModule.lastChunkIndex || 0;
-      const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
-      console.log(`[Cat Wash] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}, starting 1 earlier)`);
+      res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
 
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
-
-      // === STEP 2: Open PDF reader on master tablet (main reader) and Samsung TV (visual follow only) ===
-      const tvFollowUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
-
-      const deviceResults: Record<string, string> = {};
-
-      // === STEP 1B: Stop any currently playing Alexa routines/media on cat washroom Echos ===
-      const catEchoEntities = [
-        "media_player.echo_cat_left_am",
-        "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle",
-      ];
-      try {
-        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: catEchoEntities }),
-        });
-        console.log(`[Cat Wash] Stopped media on cat washroom Echos: ${catEchoEntities.join(', ')}`);
-      } catch (err: any) {
-        console.warn(`[Cat Wash] Failed to stop cat washroom Echos (non-fatal): ${err.message}`);
-      }
-
-      const navTimestamp = Date.now();
-      await Promise.all([
-        setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: navTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: navTimestamp }, true, 'tv'),
-      ]);
-      console.log(`[Cat Wash] tablet-nav set for devices`);
-      console.log(`[Cat Wash] master (direct): ${readerUrl.substring(0, 100)}`);
-      console.log(`[Cat Wash] tv (direct): ${tvFollowUrl.substring(0, 100)}`);
-
-      currentTabletReaderUrl = readerUrl;
-
-      // Wake up tablet and set brightness to max
-      try {
-        for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
-          await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
-          });
-        }
-        console.log(`[Cat Wash] Tablet wakeup + brightness max sent`);
-      } catch (e: any) {
-        console.log(`[Cat Wash] Tablet brightness error: ${e.message}`);
-      }
-
-      const [masterResult, tvResult] = await Promise.allSettled([
-        (async () => {
-          // Navigate the existing tablet browser tab via tablet-nav polling (same tab, no new browser window)
-          await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
-          console.log(`[Cat Wash] Tablet navigate command sent via tablet-nav (same tab)`);
-          return true;
-        })(),
-        (async () => {
-          const [fireStickRes, tvRes] = await Promise.allSettled([
-            fetch(`${haUrl}/api/services/media_player/turn_on`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-            }),
-            fetch(`${haUrl}/api/services/media_player/turn_on`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
-            }),
-          ]);
-          console.log(`[Cat Wash] Fire Stick turn_on: ${fireStickRes.status === 'fulfilled' ? fireStickRes.value.status : 'failed'}`);
-          console.log(`[Cat Wash] Samsung TV turn_on: ${tvRes.status === 'fulfilled' ? tvRes.value.status : 'failed'}`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          console.log(`[Cat Wash] TV follow URL: ${tvFollowUrl}`);
-          return openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
-        })(),
-      ]);
-
-      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
-      deviceResults['samsung_tv'] = tvResult.status === 'fulfilled' && tvResult.value ? 'adb:fire_stick' : 'tablet-nav';
-
-      console.log(`[Cat Wash] Device results: ${JSON.stringify(deviceResults)}`);
-
-      // === STEP 3: Start server-side Nest speaker playback ===
-      catWashSessionId++;
-      const currentSession = catWashSessionId;
-      if (catWashPlaybackActive) {
-        console.log("[Cat Wash] Stopping previous playback session");
-        if (nestPlaybackAbort) nestPlaybackAbort();
-      }
-      catWashPlaybackActive = true;
-      catWashPlaybackStartedAt = new Date();
-      startToothbrushPolling();
-
-      const fileText = await extractFileText(cppaModule);
-      const fileChunks = fileText ? chunkTextForNest(fileText) : [];
-      const totalChunksCalc = fileChunks.length;
-
-      if (cppaModule.totalChunks !== totalChunksCalc && totalChunksCalc > 0) {
-        try { await storage.updateFile(cppaModule.id, { totalChunks: totalChunksCalc }); } catch {}
-      }
-
-      catWashPlaybackState = {
-        fileId: cppaModule.id,
-        fileName,
-        chunkIndex: resumeFromChunk,
-        totalChunks: totalChunksCalc,
-        chunks: fileChunks,
-        currentWords: [],
-        wordIndex: 0,
-        startedAt: new Date(),
-        chunkStartedAt: new Date(),
-        estimatedChunkDuration: 0,
-        playbackMode: 'server-tts',
-      };
-
-      console.log(`[Cat Wash] Session ${currentSession}: Nest speaker playback, ${totalChunksCalc} chunks`);
-      console.log(`[Cat Wash] Reader URL (visual follow): ${readerUrl}`);
-
-      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentSession, "echo");
-
-      res.json({
-        action: "playing",
-        file: { id: cppaModule.id, name: fileName },
-        resumeFromChunk,
-        readerUrl,
-        currentWeek: currentWeekNumber,
-        totalChunks: totalChunksCalc,
-        devices: deviceResults,
-        playbackMode: "nest-speaker",
-      });
+      await startConfirmedPlaybackFlow(nextFile, '[Cat Wash]', 'echo');
 
     } catch (error: any) {
       console.error("[Cat Wash] Error:", error);
@@ -6784,7 +6840,7 @@ document.body.removeChild(a);
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-        const likelyStale = msSinceStart > 5 * 60 * 1000 && chunkStillAtStart;
+        const likelyStale = msSinceStart > 3 * 60 * 1000 && chunkStillAtStart;
 
         if (likelyStale) {
           console.log(`[Cat Lights] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
@@ -6828,39 +6884,32 @@ document.body.removeChild(a);
         await Promise.all([
           fetch(`${haUrl}/api/services/media_player/volume_set`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 1.0 }),
+            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.75 }),
           }),
           fetch(`${haUrl}/api/services/media_player/volume_set`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 1.0 }),
+            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
           }),
         ]);
-        console.log(`[Cat Lights] Set HA Voice + Nest volume to 1.0`);
+        console.log(`[Cat Lights] Set HA Voice + Nest volume to 0.75`);
 
         let ttsSent = false;
 
         console.log(`[Cat Lights] Trying tts.speak with entity=tts.home_assistant_cloud, target=${CAT_WR_HA_VOICE_ENTITY}`);
-        const tts1 = await fetch(`${haUrl}/api/services/tts/speak`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
-        });
-        const tts1Body = await tts1.text();
-        console.log(`[Cat Lights] tts.speak response: ${tts1.status} body=${tts1Body.substring(0, 500)}`);
-        if (tts1.ok) ttsSent = true;
-
-        if (!ttsSent) {
-          console.log(`[Cat Lights] tts.speak failed — trying tts.cloud_say...`);
-          const tts2 = await fetch(`${haUrl}/api/services/tts/cloud_say`, {
+        try {
+          const tts1 = await fetch(`${haUrl}/api/services/tts/speak`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
           });
-          const tts2Status = tts2.status;
-          console.log(`[Cat Lights] tts.cloud_say response: ${tts2Status} body=${(await tts2.text()).substring(0, 500)}`);
-          if (tts2.ok) ttsSent = true;
+          const tts1Body = await tts1.text();
+          console.log(`[Cat Lights] tts.speak response: ${tts1.status} body=${tts1Body.substring(0, 500)}`);
+          if (tts1.ok) ttsSent = true;
+        } catch (e: any) {
+          console.log(`[Cat Lights] tts.speak error: ${e.message}`);
         }
 
         if (!ttsSent) {
-          console.log(`[Cat Lights] Both TTS methods failed — trying OpenAI TTS via play_media...`);
+          console.log(`[Cat Lights] tts.speak failed — trying OpenAI TTS via play_media on HA Voice only...`);
           try {
             const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
             const appUrl = "https://home-view--bkh416.replit.app";
@@ -6887,76 +6936,27 @@ document.body.removeChild(a);
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
-      // Sync OneDrive files first (same as shower trigger)
-      console.log(`[Cat Lights] Syncing OneDrive files for week ${currentWeekNumber}...`);
-      try {
-        const { listOneDriveItems } = await import("./onedrive");
-        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-        const objectStorageSync = new ObjectStorageService();
-        const courses = [
-          { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics and Government' },
-          { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
-        ];
-        for (const course of courses) {
-          try {
-            const weekFolders = await listOneDriveItems(course.path);
-            const currentWeekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === currentWeekNumber);
-            if (!currentWeekFolder) continue;
-            const weekContents = await listOneDriveItems(currentWeekFolder.path);
-            for (const subType of ['module', 'reading']) {
-              const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === subType);
-              if (!subFolder) continue;
-              const subFiles = await listOneDriveItems(subFolder.path);
-              for (const file of subFiles) {
-                if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
-                const existingFiles = await storage.getFiles();
-                const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
-                if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
-                const downloadResponse = await fetch(file.downloadUrl);
-                if (!downloadResponse.ok) continue;
-                const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-                const uploadUrl = await objectStorageSync.getObjectEntityUploadURL();
-                const uploadResponse = await fetch(uploadUrl, { method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' } });
-                if (!uploadResponse.ok) continue;
-                const objectPath = objectStorageSync.normalizeObjectEntityPath(uploadUrl);
-                await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
-                console.log(`[Cat Lights] Synced new file: ${file.name} → ${folderName}`);
-              }
-            }
-          } catch (e: any) { console.log(`[Cat Lights] OneDrive sync error for ${course.code}: ${e.message}`); }
-        }
-        console.log(`[Cat Lights] OneDrive sync complete`);
-      } catch (e: any) { console.log(`[Cat Lights] OneDrive sync failed: ${e.message}`); }
+      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
 
-      // Find next unlistened file across all courses, prioritizing modules over readings
       const allFiles = await storage.getFiles();
-      const unlistenedFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
-      });
-      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-      const orderedFilesL = orderFilesByCoursePriority(unlistenedFiles);
+      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
 
-      const cppaModule = orderedFilesL[0] || null;
-
-      if (!cppaModule) {
-        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber}`);
+      if (!nextFile) {
+        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
         catLightsPromptPending = false;
         try {
           await fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) });
         } catch {}
+        await playChumFmRadio(haUrl);
         return;
       }
 
-      const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
-      const courseMatchL = cppaModule.folder?.match(/(cppa|cfnf)\d*/i);
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
+      const courseMatchL = nextFile.folder?.match(/([a-z]{3,5}\d{3})/i);
       const courseNameL = courseMatchL ? courseMatchL[0].toUpperCase() : '';
-      const fileTypeL = isModuleFile(cppaModule) ? 'module' : 'reading';
-      console.log(`[Cat Lights] Found next file: ${courseNameL} ${fileTypeL} — ${fileName} (id=${cppaModule.id})`);
-
-      const extractionPromise = extractFileText(cppaModule);
-      console.log(`[Cat Lights] Started text extraction in background (will be ready when you confirm)`);
+      const fileTypeL = isModuleFile(nextFile) ? 'module' : 'reading';
+      console.log(`[Cat Lights] Found next file: ${courseNameL} ${fileTypeL} — ${fileName} (id=${nextFile.id})`);
 
       {
         const maxWaitMs = 15000;
@@ -6997,88 +6997,7 @@ document.body.removeChild(a);
         catLightsPromptPending = false;
       }
 
-      // === Confirmed — start playback ===
-
-      // Resume from saved progress if available (start 1 chunk earlier for context)
-      const savedChunkLights = cppaModule.lastChunkIndex || 0;
-      const resumeFromChunk = Math.max(0, savedChunkLights > 0 ? savedChunkLights - 1 : 0);
-      console.log(`[Cat Lights] Will resume from chunk ${resumeFromChunk} (saved: ${savedChunkLights}, starting 1 earlier)`);
-
-      // Build reader URL - tablet gets full controls, Nest handles audio
-      const readerUrl = `${appUrl}/pdf-reader/${cppaModule.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
-
-      catWashSessionId++;
-      const currentLightsSession = catWashSessionId;
-      if (catWashPlaybackActive) {
-        console.log("[Cat Lights] Stopping previous playback session");
-        if (nestPlaybackAbort) nestPlaybackAbort();
-      }
-      catWashPlaybackActive = true;
-      catWashPlaybackStartedAt = new Date();
-      startToothbrushPolling();
-
-      const fileText = await extractionPromise;
-      console.log(`[Cat Lights] Text extraction ready (${fileText ? fileText.length : 0} chars)`);
-      const fileChunks = fileText ? chunkTextForNest(fileText) : [];
-      const totalChunksCalc = fileChunks.length;
-
-      if (cppaModule.totalChunks !== totalChunksCalc && totalChunksCalc > 0) {
-        try { await storage.updateFile(cppaModule.id, { totalChunks: totalChunksCalc }); } catch {}
-      }
-
-      catWashPlaybackState = {
-        fileId: cppaModule.id,
-        fileName,
-        chunkIndex: resumeFromChunk,
-        totalChunks: totalChunksCalc,
-        chunks: fileChunks,
-        currentWords: [],
-        wordIndex: 0,
-        startedAt: new Date(),
-        chunkStartedAt: new Date(),
-        estimatedChunkDuration: 0,
-        playbackMode: 'server-tts',
-      };
-
-      const tvFollowUrl = readerUrl;
-
-      const deviceResults: Record<string, string> = {};
-
-      const lightsNavTimestamp = Date.now();
-      await Promise.all([
-        setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
-      ]);
-      console.log(`[Cat Lights] tablet-nav set for devices`);
-
-      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
-      console.log(`[Cat Lights] Tablet navigate command sent via tablet-nav (same tab)`);
-      deviceResults['tablet_cat_wall'] = 'tablet-nav';
-
-      try {
-        const fireStickTurnOn = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-        });
-        console.log(`[Cat Lights] Fire Stick turn_on: ${fireStickTurnOn.status}`);
-        const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
-        });
-        console.log(`[Cat Lights] Samsung TV turn_on: ${turnOnResp.status}`);
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
-      } catch (e: any) {
-        console.log(`[Cat Lights] Samsung TV error: ${e.message}`);
-        deviceResults['samsung_tv'] = 'error';
-      }
-
-      console.log(`[Cat Lights] Device results: ${JSON.stringify(deviceResults)}`);
-
-      startNestChunkPlayback(cppaModule.id, fileName, fileChunks, resumeFromChunk, currentLightsSession, "echo");
+      await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo');
 
     } catch (error: any) {
       console.error("[Cat Lights] Error:", error);
@@ -7118,7 +7037,7 @@ document.body.removeChild(a);
   });
 
   // POST /api/webhook/cat-door - Triggered when cat washroom door opens
-  // Stops playback and saves progress (same as toothbrush stop)
+  // Stops playback if the cat light is already on
   app.post("/api/webhook/cat-door", async (req, res) => {
     try {
       const rawNewState = req.body?.new_state;
@@ -7132,8 +7051,27 @@ document.body.removeChild(a);
         return res.json({ action: "ignored", reason: `Door state is ${doorState}, not open` });
       }
 
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      let lightIsOn = false;
+      try {
+        const lightResp = await fetch(`${haUrl}/api/states/light.cat_lights`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        });
+        if (lightResp.ok) {
+          const lightData = await lightResp.json();
+          lightIsOn = lightData?.state === 'on';
+        }
+      } catch (e: any) {
+        console.log(`[Cat Door] Failed to query light state: ${e.message}`);
+      }
+
+      if (!lightIsOn) {
+        console.log(`[Cat Door] Light is not on — ignoring door open`);
+        return res.json({ action: "ignored", reason: "Light is not on" });
+      }
+
       if (!catWashPlaybackActive && !currentTTSSession) {
-        console.log("[Cat Door] No active playback — ignoring");
+        console.log("[Cat Door] Light is on but no active playback — ignoring");
         return res.json({ action: "ignored", reason: "No active playback" });
       }
 
@@ -7147,12 +7085,12 @@ document.body.removeChild(a);
 
       if (currentTTSSession) {
         console.log(`[Cat Door] Stopping active TTS session`);
-        stopTTSSession("Door opened - stopping playback");
+        stopTTSSession("Door opened while light on - stopping playback");
         stopped.push("ttsSession");
       }
 
-      console.log(`[Cat Door] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
-      res.json({ action: "stopped", trigger: "door_opened", stoppedItems: stopped });
+      console.log(`[Cat Door] Stopped (light was on): ${stopped.join(', ') || 'nothing was playing'}`);
+      res.json({ action: "stopped", trigger: "door_opened_light_on", stoppedItems: stopped });
 
     } catch (error: any) {
       console.error("[Cat Door] Error:", error);
@@ -7605,233 +7543,54 @@ document.body.removeChild(a);
     res.json({ success: true });
   });
 
-  // POST /api/shower/trigger - Trigger automatic reading from Home Assistant
-  // This is the endpoint Home Assistant should call when motion is detected
-  app.post("/api/shower/trigger", async (req, res) => {
+  app.post("/api/trigger-playback", async (req, res) => {
     try {
-      const targetEntity = req.body?.entityId || NEST_SPEAKER_ENTITY;
-      
+      const { fileId, weekNumber } = req.body || {};
+      console.log(`[Trigger Playback] Manual trigger — fileId=${fileId}, week=${weekNumber}`);
+
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
-      
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      
-      // First, sync OneDrive to get latest files
-      console.log("Shower trigger: Syncing OneDrive files...");
-      const { listOneDriveItems } = await import("./onedrive");
-      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-      const objectStorage = new ObjectStorageService();
-      
-      // Get current week number
+
       const semesterSettings = await storage.getActiveSemesterSettings();
-      let currentWeekNumber = 1;
-      
-      if (semesterSettings?.semesterStartDate) {
-        currentWeekNumber = getWeekNumber(torontoDate(), new Date(semesterSettings.semesterStartDate));
+      if (!semesterSettings) {
+        return res.status(400).json({ error: "No active semester" });
       }
-      
-      // Sync OneDrive files for current week
-      const courses = [
-        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics and Government' },
-        { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
-      ];
-      
-      for (const course of courses) {
-        try {
-          const weekFolders = await listOneDriveItems(course.path);
-          const currentWeekFolder = weekFolders.find((f: any) => {
-            if (f.type !== 'folder') return false;
-            const weekMatch = f.name.match(/Week\s+(\d+)/i);
-            return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
-          });
-          
-          if (!currentWeekFolder) continue;
-          
-          const weekContents = await listOneDriveItems(currentWeekFolder.path);
-          
-          // Check Module folder
-          const moduleFolder = weekContents.find((f: any) => 
-            f.type === 'folder' && f.name.toLowerCase() === 'module'
-          );
-          
-          if (moduleFolder) {
-            const moduleFiles = await listOneDriveItems(moduleFolder.path);
-            for (const file of moduleFiles) {
-              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
-              
-              const existingFiles = await storage.getFiles();
-              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-module`;
-              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
-              
-              const downloadResponse = await fetch(file.downloadUrl);
-              if (!downloadResponse.ok) continue;
-              
-              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
-              const uploadResponse = await fetch(uploadUrl, {
-                method: 'PUT',
-                body: fileBuffer,
-                headers: { 'Content-Type': 'application/pdf' }
-              });
-              if (!uploadResponse.ok) continue;
-              
-              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
-              await storage.createFile({
-                originalName: file.name,
-                displayName: file.name,
-                objectPath: objectPath,
-                contentType: 'application/pdf',
-                size: file.size,
-                folder: folderName,
-                listened: false
-              });
-            }
-          }
-          
-          // Check Reading folder
-          const readingFolder = weekContents.find((f: any) => 
-            f.type === 'folder' && f.name.toLowerCase() === 'reading'
-          );
-          
-          if (readingFolder) {
-            const readingFiles = await listOneDriveItems(readingFolder.path);
-            for (const file of readingFiles) {
-              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
-              
-              const existingFiles = await storage.getFiles();
-              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-reading`;
-              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
-              
-              const downloadResponse = await fetch(file.downloadUrl);
-              if (!downloadResponse.ok) continue;
-              
-              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
-              const uploadResponse = await fetch(uploadUrl, {
-                method: 'PUT',
-                body: fileBuffer,
-                headers: { 'Content-Type': 'application/pdf' }
-              });
-              if (!uploadResponse.ok) continue;
-              
-              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
-              await storage.createFile({
-                originalName: file.name,
-                displayName: file.name,
-                objectPath: objectPath,
-                contentType: 'application/pdf',
-                size: file.size,
-                folder: folderName,
-                listened: false
-              });
-            }
-          }
-        } catch (e) {
-          console.error(`Shower trigger: Error syncing ${course.code}:`, e);
-        }
-      }
-      
-      // Get all files and filter for current week unlistened
+
+      const today = torontoDate();
+      const semStart = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+      const rwStart = semesterSettings.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : semStart;
+      const currentWeek = weekNumber || getWeekNumber(today, semStart, rwStart);
+
+      await syncOneDriveFilesForWeek(semesterSettings, currentWeek, '[Trigger Playback]');
+
+      let targetFile: any = null;
       const allFiles = await storage.getFiles();
-      const unlistenedFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
-      });
-      
-      const orderedFiles = orderFilesByCoursePriority(unlistenedFiles);
-      
-      // If no files left, play CHUM FM radio
-      if (orderedFiles.length === 0) {
-        console.log("Shower trigger: All files complete, playing CHUM FM radio");
-        
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: targetEntity,
-            media_content_type: "custom",
-            media_content_id: "play 104.5 chumfm"
-          }),
-        });
-        
-        return res.json({
-          action: "radio",
-          message: `All week ${currentWeekNumber} readings complete! Playing CHUM FM 104.5`,
-          currentWeek: currentWeekNumber
-        });
+
+      if (fileId) {
+        targetFile = allFiles.find((f: any) => f.id === fileId);
       }
-      
-      // Get next file to play
-      const nextFile = orderedFiles[0];
-      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
-      console.log(`Shower trigger: Playing ${fileName}`);
-      
-      // Extract text from PDF
-      const extractedText = await extractFileText(nextFile);
-      if (!extractedText || !extractedText.trim()) {
-        return res.status(400).json({ error: "File is empty or not readable" });
+      if (!targetFile) {
+        targetFile = findNextFileByPriority(allFiles, currentWeek);
       }
-      
-      // Clean and chunk the text
-      const cleanedContent = extractedText.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
-      const fileChunks = cleanedContent.match(/.{1,1500}[.!?]?\s*/g) || [cleanedContent];
-      
-      // Resume from saved progress (start 1 chunk earlier for context)
-      const savedChunk = nextFile.lastChunkIndex || 0;
-      const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
-      console.log(`Shower trigger: Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}), ${fileChunks.length} total chunks`);
-      
-      // Build reader URL for tablet
-      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
-      const appUrl = "https://home-view--bkh416.replit.app";
-      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
 
-      // Wake up tablet and navigate to reader
-      try {
-        for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
-          await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
-          });
-        }
-        console.log(`[Shower] Tablet wakeup + brightness max sent`);
-      } catch (e: any) {
-        console.log(`[Shower] Tablet brightness error: ${e.message}`);
+      if (!targetFile) {
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        console.log(`[Trigger Playback] No files — playing CHUM FM`);
+        await playChumFmRadio(haUrl);
+        return res.json({ action: "radio", reason: `All week ${currentWeek} readings complete — playing CHUM FM` });
       }
-      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
-      console.log(`[Shower] Tablet navigate command sent via tablet-nav (same tab)`);
 
-      // Set Nest volume
-      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 1.0 }),
-      });
+      const fileName = targetFile.displayName || targetFile.originalName || 'Unknown';
+      console.log(`[Trigger Playback] Starting playback: ${fileName} (id=${targetFile.id})`);
 
-      // Respond immediately then start playback in background
-      const currentShowerSession = ++catWashSessionId;
-      res.json({
-        action: "reading",
-        file: { id: nextFile.id, name: fileName, folder: nextFile.folder },
-        currentWeek: currentWeekNumber,
-        chunkIndex: resumeFromChunk,
-        totalChunks: fileChunks.length,
-        resuming: resumeFromChunk > 0,
-        remainingFiles: orderedFiles.length,
-      });
+      res.json({ action: "playing", file: { id: targetFile.id, name: fileName }, currentWeek });
 
-      // Start full chunk-by-chunk playback with attention prompts (same as voice prompt)
-      startNestChunkPlayback(nextFile.id, fileName, fileChunks, resumeFromChunk, currentShowerSession, "echo");
-      
+      await startConfirmedPlaybackFlow(targetFile, '[Trigger Playback]', 'echo');
+
     } catch (error: any) {
-      console.error("Shower trigger error:", error);
-      res.status(500).json({ error: "Failed to trigger shower reading", details: error.message });
+      console.error("[Trigger Playback] Error:", error);
+      res.status(500).json({ error: "Failed to trigger playback", details: error.message });
     }
   });
 
