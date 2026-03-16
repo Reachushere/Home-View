@@ -14488,7 +14488,7 @@ export default function Dashboard() {
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
+                className="rounded-xl w-[680px] max-w-[95vw] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -14512,7 +14512,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Step indicator */}
-                <div className="flex items-center gap-0.5 px-4 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)' }}>
+                <div className="flex items-center gap-0 px-3 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)' }}>
                   {[
                     { id: 0, label: "Type" },
                     { id: 1, label: "Name" },
@@ -14530,7 +14530,7 @@ export default function Dashboard() {
                     <div key={s.id} className="flex items-center flex-shrink-0">
                       <button
                         onClick={() => { if (s.id < quickAddStep) setQuickAddStep(s.id); }}
-                        className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full text-[8px] transition-all ${
+                        className={`flex items-center gap-0.5 px-1 py-1 rounded-full text-[8px] transition-all ${
                           s.id === quickAddStep
                             ? "bg-white/20 text-white font-medium"
                             : s.id < quickAddStep
