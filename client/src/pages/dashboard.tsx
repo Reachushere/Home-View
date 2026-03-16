@@ -12064,8 +12064,8 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Return-from-break reading prompt (admin only) */}
-          {isAdmin && (
+          {/* Return-from-break reading prompt (dev only) */}
+          {isAdmin && !window.location.hostname.endsWith('.replit.app') && (
             <Dialog open={showReturnReadingPrompt && returnReadingFiles.length > 0} onOpenChange={setShowReturnReadingPrompt}>
               <DialogContent className="max-w-[340px] text-[11px] text-white p-0 [&>button.absolute]:hidden [&_*]:text-white" style={{ top: '40%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
