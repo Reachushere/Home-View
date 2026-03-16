@@ -13519,6 +13519,33 @@ export default function Dashboard() {
                 };
                 saveCourses({ courses: updatedCourses });
               }
+              if (allSemesterSettings) {
+                const cc = courseCode.replace(/\s/g, '');
+                for (const sem of allSemesterSettings) {
+                  for (let i = 1; i <= 3; i++) {
+                    const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                    if (semCode === cc) {
+                      const prefix = `course${i}`;
+                      const payload: Record<string, any> = {};
+                      if (updates.deliveryMode !== undefined) payload[`${prefix}DeliveryMode`] = updates.deliveryMode;
+                      if (updates.classDay !== undefined) payload[`${prefix}ClassDay`] = updates.classDay;
+                      if (updates.classDay2 !== undefined) payload[`${prefix}ClassDay2`] = updates.classDay2;
+                      if (updates.classTime !== undefined) payload[`${prefix}ClassTime`] = updates.classTime;
+                      if (updates.classEndTime !== undefined) payload[`${prefix}ClassEndTime`] = updates.classEndTime;
+                      if (updates.zoomLink !== undefined) payload[`${prefix}ZoomLink`] = updates.zoomLink;
+                      if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
+                      if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
+                      if (Object.keys(payload).length > 0) {
+                        apiRequest("PATCH", `/api/semesters/${sem.id}`, payload).then(() => {
+                          queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                          queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                        });
+                      }
+                      break;
+                    }
+                  }
+                }
+              }
               const certData = localStorage.getItem('certCourseData');
               const savedData = certData ? JSON.parse(certData) : {};
               savedData[certKey] = { ...savedData[certKey], ...updates };

@@ -1421,6 +1421,26 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  // PATCH /api/semesters/:id - Update any semester settings row by ID
+  app.patch("/api/semesters/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
+      const dateFields = ['semesterStartDate', 'semesterEndDate', 'course1StartDate', 'course1EndDate', 'course2StartDate', 'course2EndDate', 'course3StartDate', 'course3EndDate', 'readingWeekStart', 'createdAt'];
+      const body = { ...req.body };
+      for (const field of dateFields) {
+        if (body[field] && typeof body[field] === 'string') {
+          body[field] = new Date(body[field]);
+        }
+      }
+      const updated = await storage.updateSemesterSettings(id, body);
+      res.json(updated);
+    } catch (err) {
+      console.error("Error updating semester settings by ID:", err);
+      res.status(500).json({ error: "Failed to update semester settings" });
+    }
+  });
+
   // PATCH /api/semester-settings/calendar - Update secondary calendar
   app.patch("/api/semester-settings/calendar", async (req, res) => {
     try {
