@@ -17631,7 +17631,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Task Boxes Background</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.boxBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -17699,7 +17699,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Upcoming Header, Date, and Time Label Background</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.headerBar}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -17734,7 +17734,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Today Column</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.todayCellBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -17762,7 +17762,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Current Time Row</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.currentHourRowBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -17790,7 +17790,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">Today Date & Current Hour</Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.todayCurrentHourCellBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -17898,7 +17898,7 @@ export default function Dashboard() {
                       <Label className="text-xs whitespace-nowrap flex-1">{colorSettings.mainBackgroundGradient ? 'Gradient Top (Lightest)' : 'Main Background Colour'} <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
                       <input
                         type="text"
-                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                        className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                         value={colorSettings.mainBackground}
                         onChange={(e) => {
                           let val = e.target.value;
@@ -17939,7 +17939,7 @@ export default function Dashboard() {
                         <Label className="text-xs whitespace-nowrap flex-1">Gradient Bottom (Darkest)</Label>
                         <input
                           type="text"
-                          className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-transparent rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
+                          className="text-xs font-mono w-[60px] text-right flex-shrink-0 bg-white/10 border border-white/30 rounded px-1 py-0.5 focus:outline-none focus:border-[#3b82f6] !text-white"
                           value={colorSettings.mainBackgroundGradientEnd}
                           onChange={(e) => {
                             let val = e.target.value;
