@@ -16991,7 +16991,7 @@ export default function Dashboard() {
                         })()}
                         </div>
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor, marginLeft: '8px' }} />
-                        <span className="text-[10px] text-white truncate min-w-0 flex-1" style={{ marginLeft: '7px' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] text-white truncate min-w-0 flex-1" style={{ marginLeft: '4px' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
