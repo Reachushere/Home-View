@@ -13583,13 +13583,14 @@ export default function Dashboard() {
       {/* Bottom binder tab - Files */}
       <a
         href="/files"
-        className="fixed z-[10002] bottom-tab-bounce"
+        className="fixed bottom-tab-bounce"
         style={{
           bottom: '-8px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'block',
           textDecoration: 'none',
+          zIndex: 10002,
         }}
         data-testid="bottom-tab-files"
         title="Files"
