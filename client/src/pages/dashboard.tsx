@@ -16570,6 +16570,12 @@ export default function Dashboard() {
                       { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Jun 23 – Aug 4' },
                     ]},
                     { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026', courses: [] },
+                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan – Apr 2027', courses: [] },
+                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May – Aug 2027', courses: [] },
+                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'Sep – Dec 2027', courses: [] },
+                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'Jan – Apr 2028', courses: [] },
+                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May – Aug 2028', courses: [] },
+                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep – Dec 2028', courses: [] },
                   ];
 
                   const currentSemKey = (() => {
@@ -16743,6 +16749,11 @@ export default function Dashboard() {
                             <option value="Spring/Summer 2026">Spring/Summer 2026</option>
                             <option value="Fall 2026">Fall 2026</option>
                             <option value="Winter 2027">Winter 2027</option>
+                            <option value="Spring/Summer 2027">Spring/Summer 2027</option>
+                            <option value="Fall 2027">Fall 2027</option>
+                            <option value="Winter 2028">Winter 2028</option>
+                            <option value="Spring/Summer 2028">Spring/Summer 2028</option>
+                            <option value="Fall 2028">Fall 2028</option>
                           </select>
                         </div>
                         <div>
