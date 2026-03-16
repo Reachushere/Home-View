@@ -18436,7 +18436,7 @@ export default function Dashboard() {
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
                     <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '16px', bottom: '1px', padding: '0 2px' }}>
-                      <span className="font-semibold text-black" style={{ fontSize: '9.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
+                      <span className="font-medium text-black" style={{ fontSize: '9.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
                     </div>
                   )}
                 </div>
@@ -18454,7 +18454,7 @@ export default function Dashboard() {
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid z-[44] h-[48px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '6px' }} />
+                <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-black/20 hover:bg-black/50"
