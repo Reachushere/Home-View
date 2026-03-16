@@ -13542,6 +13542,16 @@ export default function Dashboard() {
                       if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
                       if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
                       if (Object.keys(payload).length > 0) {
+                        queryClient.setQueryData(["/api/semesters"], (old: any[] | undefined) => {
+                          if (!old) return old;
+                          return old.map((s: any) => s.id === sem.id ? { ...s, ...payload } : s);
+                        });
+                        if (updates.deliveryMode !== undefined) {
+                          queryClient.setQueryData(["/api/semester"], (old: any) => {
+                            if (!old || old.id !== sem.id) return old;
+                            return { ...old, ...payload };
+                          });
+                        }
                         apiRequest("PATCH", `/api/semesters/${sem.id}`, payload).then(() => {
                           queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                           queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
