@@ -16390,7 +16390,7 @@ export default function Dashboard() {
           
           {/* School Courses Dialog - All past + current courses organized by semester */}
           {isSchoolCoursesDialogOpen && createPortal(
-            <>
+            <div>
             <div className="fixed inset-0 z-[10002] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
@@ -16673,7 +16673,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            </>,
+            </div>,
             document.body
           )}
 
