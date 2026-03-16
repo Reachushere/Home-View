@@ -17022,15 +17022,11 @@ export default function Dashboard() {
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: year === 2025 ? 'end' : 'start' }}>
                         {year === 2025 && (
                           <div className="rounded-lg border overflow-hidden flex flex-col" style={{ gridColumn: 1, gridRow: 1, background: 'transparent', borderColor: 'rgba(255,255,255,0.45)', borderWidth: '1px' }}>
+                            <div className="px-2 py-1.5 border-b flex items-center justify-center flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
+                              <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
+                            </div>
                             <div className="p-1 flex" style={{ gap: '10px' }}>
                               <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
-                                <thead>
-                                  <tr style={{ background: '#1a4b7a' }}>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Letter</th>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">%</th>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GPA</th>
-                                  </tr>
-                                </thead>
                                 <tbody>
                                   {[
                                     ['A+','90-100%','4.33'],['A','85-89%','4.0'],['A-','80-84%','3.67'],
@@ -17046,13 +17042,6 @@ export default function Dashboard() {
                                 </tbody>
                               </table>
                               <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
-                                <thead>
-                                  <tr style={{ background: '#1a4b7a' }}>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">Letter</th>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">%</th>
-                                    <th className="px-1 py-0.5 text-left font-bold border border-white/30">GPA</th>
-                                  </tr>
-                                </thead>
                                 <tbody>
                                   {[
                                     ['C','63-66%','2.0'],['C-','60-62%','1.67'],
