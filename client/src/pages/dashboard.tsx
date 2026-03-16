@@ -13615,17 +13615,21 @@ export default function Dashboard() {
                               const endD = new Date(dates.endDate);
                               const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
                               const classDays = [updates.classDay, updates.classDay2].filter(Boolean).map(d => dayMap[d!] ?? -1).filter(d => d >= 0);
-                              const tasksToCreate: Array<{ title: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string }> = [];
+                              const tasksToCreate: Array<{ title: string; type: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string; weekNumber: number }> = [];
                               const current = new Date(startD);
                               while (current <= endD) {
                                 if (classDays.includes(current.getDay())) {
+                                  const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
+                                  const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
                                   tasksToCreate.push({
                                     title: 'Class',
+                                    type: 'class',
                                     dueDate: current.toISOString().split('T')[0],
                                     courseName,
                                     eventStartTime: updates.classTime!,
                                     eventEndTime: updates.classEndTime!,
                                     priority: 'medium',
+                                    weekNumber: weekNum,
                                   });
                                 }
                                 current.setDate(current.getDate() + 1);
