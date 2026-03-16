@@ -18,6 +18,7 @@ import cnnLogoPath from "@assets/CNN_1773536484180.png";
 import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
+import zoomLogoPath from "@assets/Zoom_1773653841562.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
 import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
@@ -18706,6 +18707,21 @@ export default function Dashboard() {
                           {words.map((word, i) => <span key={i}>{word}</span>)}
                         </>
                       );
+                    })()}
+                    {(() => {
+                      const cCode = course.name.split(' - ')[0]?.trim().replace(/\s/g, '');
+                      let dm = '';
+                      if (semesterSettings) {
+                        for (let i = 1; i <= 3; i++) {
+                          const cf = (semesterSettings as any)[`course${i}Code`] || '';
+                          if (cf.replace(/\s/g, '') === cCode) { dm = (semesterSettings as any)[`course${i}DeliveryMode`] || ''; break; }
+                        }
+                      }
+                      if (!dm) {
+                        const certData = localStorage.getItem('certCourseData');
+                        if (certData) { const sd = JSON.parse(certData); if (sd[cCode]?.deliveryMode) dm = sd[cCode].deliveryMode; }
+                      }
+                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', marginTop: '1px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} /> : null;
                     })()}
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
