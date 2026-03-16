@@ -13070,9 +13070,27 @@ export default function Dashboard() {
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
                 const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
                 const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+
+                const semAllCourses: Record<string, { code: string }[]> = {};
+                const allDefCodes = new Set<string>();
+                for (const semKey of semKeyOrder) {
+                  semAllCourses[semKey] = [...(semesterCourseAssignments[semKey] || [])];
+                  semAllCourses[semKey].forEach(c => allDefCodes.add(c.code.toUpperCase().replace(/\s/g, '')));
+                }
+                const currentSemKey = relevantSemKeys[relevantSemKeys.length - 1] || '';
+                if (currentSemKey && semAllCourses[currentSemKey]) {
+                  coursesData.courses.filter(c => c.name.trim()).forEach(c => {
+                    const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+                    if (code && !allDefCodes.has(code)) {
+                      semAllCourses[currentSemKey].push({ code });
+                      allDefCodes.add(code);
+                    }
+                  });
+                }
+
                 const semGpas: number[] = [];
                 for (const semKey of relevantSemKeys) {
-                  const courses = semesterCourseAssignments[semKey] || [];
+                  const courses = semAllCourses[semKey] || [];
                   const vals: number[] = [];
                   for (const c of courses) {
                     const code = c.code.replace(/\s/g, '');
