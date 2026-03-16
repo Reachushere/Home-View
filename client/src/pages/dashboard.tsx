@@ -18436,7 +18436,7 @@ export default function Dashboard() {
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
                     <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '16px', bottom: '1px', padding: '0 2px' }}>
-                      <span className="font-bold text-black" style={{ fontSize: '9.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
+                      <span className="font-semibold text-black" style={{ fontSize: '9.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
                     </div>
                   )}
                 </div>
@@ -18501,7 +18501,7 @@ export default function Dashboard() {
                       return (
                         <>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-2px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
-                            <span className="text-[10px] font-bold leading-none" style={{ color: '#ef4444' }}>{dayForecast.high}°</span>
+                            <span className="text-[10px] font-bold leading-none" style={{ color: '#ffffff' }}>{dayForecast.high}°</span>
                           </div>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', bottom: '2px' }} data-testid={`weather-temp-low-${shiftDateStr}`}>
                             <span className="text-[10px] font-medium leading-none" style={{ color: '#ffffff' }}>{dayForecast.low}°</span>
@@ -18514,7 +18514,7 @@ export default function Dashboard() {
                     )}
                     <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '5.5px' : undefined }}>
                       <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                      <div className="font-bold" style={{ fontSize: isToday ? '25px' : '24px', color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
+                      <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                     </div>
                     {idx < 6 && (
                       <div
