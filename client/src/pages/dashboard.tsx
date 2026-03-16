@@ -12679,8 +12679,8 @@ export default function Dashboard() {
               <Button
                 type="button"
                 variant="outline"
-                className="!border-none transition-opacity duration-200 h-7 flex items-center gap-1.5 whitespace-nowrap"
-                style={{ fontSize: '11px', background: '#1e3a5f', color: '#ffffff' }}
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4 flex items-center gap-1.5 whitespace-nowrap"
+                style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
                 onClick={() => courseListFileRef.current?.click()}
                 disabled={courseListParsing}
                 data-testid="button-upload-course-list"
@@ -13120,8 +13120,11 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="px-2 pb-2 flex gap-3 items-center">
-              <div className="flex-1 min-w-0">
+          <div className="px-2 pb-2 flex gap-3 items-start">
+              <div className="flex-1 min-w-0" />
+              <div className="flex-1 min-w-0" />
+              <div className="flex-1 min-w-0 flex flex-col gap-2">
+                <div className="flex justify-end">
                 {(() => {
                   const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
                   const percentToGpa = (p: number): number => {
@@ -13169,7 +13172,6 @@ export default function Dashboard() {
                   };
                   const gpaColor = avgGpa === null ? '#999' : avgGpa >= 3.5 ? '#16a34a' : avgGpa >= 2.5 ? '#ca8a04' : '#dc2626';
                   return (
-                    <div className="flex items-center gap-2">
                       <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: '#ffffff', height: '32px', minHeight: '32px' }} data-testid="l1-gpa-box">
                         <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
                         {avgGpa !== null ? (
@@ -13181,12 +13183,10 @@ export default function Dashboard() {
                           <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
                         )}
                       </div>
-                    </div>
                   );
                 })()}
-              </div>
-              <div className="flex-1 min-w-0" />
-              <div className="flex-1 min-w-0 flex justify-end items-center gap-2">
+                </div>
+                <div className="flex justify-end items-center gap-2">
                 <Button 
                   type="button" 
                   variant="outline"
@@ -13217,6 +13217,7 @@ export default function Dashboard() {
                 >
                   Save
                 </Button>
+                </div>
               </div>
           </div>
         </div>
@@ -16771,8 +16772,8 @@ export default function Dashboard() {
                   New Course
                 </Button>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="text-[10px] border-white/30 text-white hover:text-white hover:bg-white/10" onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
-                  <Button size="sm" className="text-[10px] bg-blue-500 hover:bg-blue-600 text-white" onClick={() => {
+                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px' }} onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
+                  <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => {
                     setCoursePlayPriority(draftCoursePlayPriority);
                     localStorage.setItem('coursePlayPriority', JSON.stringify(draftCoursePlayPriority));
                     fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draftCoursePlayPriority) }).catch(() => {});
