@@ -12630,7 +12630,7 @@ export default function Dashboard() {
       {isSettingsPanelOpen && (
         <div 
           className="fixed z-[10001] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
-          style={{ left: '50%', transform: 'translateX(-50%)', top: 'calc(3vh - 7px)', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', bottom: 'calc(3vh + 31px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+          style={{ left: '50%', transform: 'translateX(-50%)', top: 'calc(3vh - 6px)', width: 'calc(96vw + 24px)', maxWidth: 'calc(96vw + 24px)', bottom: 'calc(3vh + 32px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
             <div className="flex items-center gap-2">
@@ -13431,7 +13431,7 @@ export default function Dashboard() {
       )}
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
-      <div className="fixed z-50 flex items-end justify-end gap-2" style={{ top: `${calendarTop - 28}px`, right: '20px', opacity: (isTopPillOpen || isSettingsPanelOpen) ? 0 : 1, transition: (isTopPillOpen || isSettingsPanelOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isSettingsPanelOpen) ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-end gap-2" style={{ top: `${calendarTop - 28}px`, right: '20px', display: isSettingsPanelOpen ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
           <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
@@ -13628,6 +13628,7 @@ export default function Dashboard() {
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
+          display: isSettingsPanelOpen ? 'none' : undefined,
         }}
         onClick={() => {
           window.location.href = '/projects';
@@ -18371,7 +18372,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight absolute"
-            style={{ bottom: '-39px', left: '-7px', opacity: (isTopPillOpen || isSettingsPanelOpen) ? 0 : 1, transition: (isTopPillOpen || isSettingsPanelOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isSettingsPanelOpen) ? 'none' : 'auto' }}
+            style={{ bottom: '-39px', left: '-7px', display: isSettingsPanelOpen ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -18384,7 +18385,7 @@ export default function Dashboard() {
           </Button>
           <div
             className="absolute"
-            style={{ bottom: '-39px', left: `${calendarView === "month" ? 62 : 70}px`, opacity: (isTopPillOpen || isSettingsPanelOpen) ? 0 : 1, transition: (isTopPillOpen || isSettingsPanelOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isSettingsPanelOpen) ? 'none' : 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: '-39px', left: `${calendarView === "month" ? 62 : 70}px`, display: isSettingsPanelOpen ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)' }} />
             <Button
