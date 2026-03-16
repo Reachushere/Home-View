@@ -3508,9 +3508,8 @@ export default function Dashboard() {
   };
 
   const courseRowClass = (id: string) => {
-    const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     if (isActiveInLaterLevel(id)) return 'bg-gray-200 text-gray-400';
-    if (checkedCourses[id] || hasPercent) return 'bg-emerald-100 text-emerald-700';
+    if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
     if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
     if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
     if (isPreviouslyCompleted(id)) return 'bg-gray-200 text-gray-400';
@@ -3519,9 +3518,8 @@ export default function Dashboard() {
     return '';
   };
   const shouldStrikethrough = (id: string) => {
-    const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     if (isActiveInLaterLevel(id)) return true;
-    if (checkedCourses[id] || hasPercent) return false;
+    if (checkedCourses[id]) return false;
     if (isSectionFulfilledForCourse(id)) return true;
     if (isCourseGreyedOut(id)) return true;
     if (isPreviouslyCompleted(id)) return true;
@@ -3542,14 +3540,13 @@ export default function Dashboard() {
     /^(LIBERAL|OPEN\d|L2_LIBERAL|L2_OPEN\d|L3_POG\d|L3_LIBERAL\d|L3_OPEN\d)$/.test(id);
 
   const StrikethroughLabel = ({ id }: { id: string }) => {
-    const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     if (isDropdownRow(id)) return null;
     const activeLater = isActiveInLaterLevel(id);
     if (activeLater) {
       if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
       return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Later Certificate)</span>;
     }
-    if (checkedCourses[id] || hasPercent) return null;
+    if (checkedCourses[id]) return null;
     if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
     if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Previously Completed)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
@@ -3566,9 +3563,9 @@ export default function Dashboard() {
     const greyed = isCourseGreyedOut(id);
     const prevCompleted = isPreviouslyCompleted(id);
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
-    const isCompleted = !activeInLater && (checkedCourses[id] || hasPercent);
+    const isCompleted = !activeInLater && checkedCourses[id];
     const isDisabled = activeInLater || (!isCompleted && (sectionDone || greyed));
-    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : prevCompleted ? 'red' : 'red';
+    const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : (inProgressCourses[id] || isL2InProgressFromL1(id)) ? 'yellow' : 'red';
     const cycle = () => {
       if (isDisabled) return;
       if (state === 'red') {
@@ -3578,7 +3575,6 @@ export default function Dashboard() {
         if (!checkedCourses[id]) toggleCourse(id);
       } else {
         if (checkedCourses[id]) toggleCourse(id);
-        if (hasPercent) updatePercent(id, '');
       }
     };
     const bg = state === 'green' ? '#8cb44c' : state === 'yellow' ? '#f0b429' : '#e8526e';
@@ -3610,12 +3606,10 @@ export default function Dashboard() {
   };
 
   const cycleTriState = (id: string) => {
-    const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
-    const isCompleted = checkedCourses[id] || hasPercent;
+    const isCompleted = checkedCourses[id];
     const activeInLater = isActiveInLaterLevel(id);
     const sectionDone = isSectionFulfilledForCourse(id);
     const greyed = isCourseGreyedOut(id);
-    const prevCompleted = isPreviouslyCompleted(id);
     const isCompletedAdj = !activeInLater && isCompleted;
     const isDisabled = activeInLater || (!isCompletedAdj && (sectionDone || greyed));
     if (isDisabled) return;
@@ -3627,8 +3621,6 @@ export default function Dashboard() {
       if (!checkedCourses[id]) toggleCourse(id);
     } else {
       if (checkedCourses[id]) toggleCourse(id);
-      const hp = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
-      if (hp) updatePercent(id, '');
     }
   };
 
