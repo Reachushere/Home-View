@@ -2714,6 +2714,50 @@ export default function Dashboard() {
     localStorage.setItem('aasSentStatus', JSON.stringify(updated));
   };
   
+  const playBoingSound = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.15);
+      osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.25);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+      osc.onended = () => ctx.close();
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!isSchoolCoursesDialogOpen) return;
+    const semStartDates: Record<string, string> = {
+      'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-01', 'w2027': '2027-01-01',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-01', 'w2028': '2028-01-01',
+    };
+    const semesterDefs = [
+      { key: 'ss2025', courses: ['CPPA101','CPPA120','CPPA102'] },
+      { key: 'f2025', courses: ['CPPA125','CGCM738','CPPA121'] },
+      { key: 'w2026', courses: ['CPPA122','CFNF400','CASL101'] },
+      { key: 'ss2026', courses: ['CECN210','CPHL110','CHIS105'] },
+    ];
+    const hasUncheckedStartedAas = semesterDefs.some(sem => {
+      const start = semStartDates[sem.key];
+      if (!start || new Date() < new Date(start)) return false;
+      return sem.courses.some(code => !aasSentStatus[code] && !aasSentStatus[code.replace(/^([A-Z]+)(\d)/, '$1 $2')]);
+    });
+    if (!hasUncheckedStartedAas) return;
+    const initialDelay = setTimeout(() => playBoingSound(), 500);
+    const interval = setInterval(() => playBoingSound(), 10000);
+    return () => { clearTimeout(initialDelay); clearInterval(interval); };
+  }, [isSchoolCoursesDialogOpen, aasSentStatus, playBoingSound]);
+
   // Get the display timezone (travel if set, otherwise home)
   const displayTimezone = profileData.travelTimezone || profileData.timezone;
   const displayTimezoneRef = useRef(displayTimezone);
@@ -16542,6 +16586,16 @@ export default function Dashboard() {
                     return '';
                   })();
 
+                  const semStartDates: Record<string, string> = {
+                    'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
+                    'ss2026': '2026-05-04', 'f2026': '2026-09-01', 'w2027': '2027-01-01',
+                    'ss2027': '2027-05-03', 'f2027': '2027-09-01', 'w2028': '2028-01-01', 'ss2028': '2028-05-01', 'f2028': '2028-09-01',
+                  };
+                  const hasSemStarted = (key: string) => {
+                    const start = semStartDates[key];
+                    return start ? new Date() >= new Date(start) : false;
+                  };
+
                   const years = [...new Set(semesterDefs.map(s => s.year))];
                   const currentCoursesMap = new Map(coursesData.courses.filter(c => c.name.trim()).map(c => {
                     const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
@@ -16609,7 +16663,7 @@ export default function Dashboard() {
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
                           <span
-                            className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse'}`}
+                            className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : hasSemStarted(sem.key) ? 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
                             style={{ marginRight: '3px' }}
                             data-testid={`aas-status-${semCourse.code}`}
                             onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
@@ -21442,7 +21496,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ right: '-38px', top: '0px', pointerEvents: 'auto' }}
+            style={{ right: '-38px', top: '0px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
@@ -21463,7 +21517,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
-            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto' }}
+            style={{ left: '50%', bottom: '4px', transform: 'translateX(-50%)', width: '26px', height: '26px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
