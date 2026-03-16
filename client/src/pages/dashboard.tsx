@@ -15904,23 +15904,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="px-4 py-2 border-b border-white/20" style={{ marginTop: '-9px', position: 'relative', zIndex: 1 }}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6"
-                  style={{
-                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                    fontSize: '12px'
-                  }}
-                  onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
-                  data-testid="button-new-course-school"
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1" />
-                  New Course
-                </Button>
-              </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginTop: '-9px' }}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column - School & Semester Settings */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
@@ -16538,6 +16522,19 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white' }}>
+                <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
+                    style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                    onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                    data-testid="button-new-course-school-courses"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    New Course
+                  </Button>
+                </div>
                 {(() => {
                   const semesterDefs = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [] as { code: string; name: string; fullName: string; period: string }[] },
