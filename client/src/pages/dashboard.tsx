@@ -13585,7 +13585,7 @@ export default function Dashboard() {
         href="/files"
         className="fixed bottom-tab-bounce"
         style={{
-          bottom: '-8px',
+          bottom: '30px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'block',
