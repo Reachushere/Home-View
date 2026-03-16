@@ -16923,7 +16923,7 @@ export default function Dashboard() {
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
-                                <span className="text-[8px] text-white whitespace-nowrap ml-1">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
+                                <span className="text-[10px] text-white whitespace-nowrap ml-1">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
                               <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
                                 {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
