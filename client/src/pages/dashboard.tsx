@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo, startTransition } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
