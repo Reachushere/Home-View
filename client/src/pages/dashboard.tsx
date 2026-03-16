@@ -16979,7 +16979,7 @@ export default function Dashboard() {
                           </div>
                           <span className="text-[7px] text-white font-medium" style={{ lineHeight: 1.1, marginTop: '1px' }}>AAS</span>
                         </div>
-                        <div className="flex-shrink-0" style={{ width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: '2px' }}>
+                        <div className="flex-shrink-0" style={{ width: '35px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: '2px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
