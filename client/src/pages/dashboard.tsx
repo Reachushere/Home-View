@@ -16541,6 +16541,17 @@ export default function Dashboard() {
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     SCHOOL COURSES
                   </h2>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
+                    style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                    onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                    data-testid="button-new-course-school-courses"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    New Course
+                  </Button>
                 </div>
                 <button onClick={() => setIsSchoolCoursesDialogOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-school-courses">
                   <X className="h-5 w-5" />
@@ -16798,18 +16809,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-              <div className="flex items-center justify-between px-4 py-3 border-t border-white/20">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
-                  style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
-                  onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
-                  data-testid="button-new-course-school-courses"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  New Course
-                </Button>
+              <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
                 <div className="flex gap-2">
                   <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
                   <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => {
