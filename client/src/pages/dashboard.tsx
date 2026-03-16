@@ -385,7 +385,7 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
   return (
     <select
       className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
-      style={{ width: '28px', minWidth: '28px', marginRight: '3px', WebkitAppearance: 'none', MozAppearance: 'none' }}
+      style={{ width: '28px', minWidth: '28px', marginLeft: '-3px', WebkitAppearance: 'none', MozAppearance: 'none' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
@@ -16843,6 +16843,17 @@ export default function Dashboard() {
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
+                        <button
+                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const certKey = pastEntry?.certKey || semCourse.code;
+                            setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
+                          }}
+                          data-testid={`button-edit-course-${semCourse.code}`}
+                        >
+                          <Pencil className="w-3 h-3 text-white hover:text-white/80" strokeWidth={2.5} />
+                        </button>
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         <div className="flex-shrink-0" style={{ width: '26px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                         {(() => {
@@ -16893,18 +16904,6 @@ export default function Dashboard() {
                             draftRef={draftCoursePlayPriorityRef}
                             courseCode={semCourse.code}
                           />
-                          <button
-                            className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                            style={{ marginRight: '-3px' }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const certKey = pastEntry?.certKey || semCourse.code;
-                              setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
-                            }}
-                            data-testid={`button-edit-course-${semCourse.code}`}
-                          >
-                            <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" strokeWidth={2.5} />
-                          </button>
                         </div>
                       </div>
                     );
