@@ -15904,23 +15904,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="px-4 py-2 border-b border-white/20" style={{ marginTop: '-9px', position: 'relative', zIndex: 1 }}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6"
-                  style={{
-                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                    fontSize: '12px'
-                  }}
-                  onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
-                  data-testid="button-new-course-school"
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1" />
-                  New Course
-                </Button>
-              </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginTop: '-2px' }}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column - School & Semester Settings */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
@@ -16170,80 +16154,6 @@ export default function Dashboard() {
                     );
                   })}
 
-                  {/* All Semester Courses - matching School Courses page */}
-                  {(() => {
-                    const allSemDefs = [
-                      { key: 'ss2025', label: 'Spring/Summer 2025', courses: [
-                        { code: 'CPPA101', name: 'CPPA 101 — Cdn Public Admin I: Institutions' },
-                        { code: 'CPPA120', name: 'CPPA 120 — Canadian Politics and Government' },
-                        { code: 'CPPA102', name: 'CPPA 102 — Cdn Public Admin II: Processes' },
-                      ]},
-                      { key: 'f2025', label: 'Fall 2025', courses: [
-                        { code: 'CPPA125', name: 'CPPA 125 — Rights, Equity and the State' },
-                        { code: 'CGCM738', name: 'CGCM 738 — Photoshopped! The Art of Image Retouching' },
-                        { code: 'CPPA121', name: 'CPPA 121 — Ontario Politics and Government' },
-                      ]},
-                      { key: 'w2026', label: 'Winter 2026', courses: [
-                        { code: 'CPPA122', name: 'CPPA 122 — Local Politics and Government' },
-                        { code: 'CFNF400', name: 'CFNF 400 — Human Sexuality' },
-                        { code: 'CASL101', name: 'CASL 101 — American Sign Language' },
-                      ]},
-                      { key: 'ss2026', label: 'Spring/Summer 2026', courses: [
-                        { code: 'CECN210', name: 'CECN 210 — Understanding Economics' },
-                        { code: 'CPHL110', name: 'CPHL 110 — Philosophy of Religion' },
-                        { code: 'CHIS105', name: 'CHIS 105 — Inventing Popular Culture' },
-                      ]},
-                    ];
-                    const activeCodes = new Set(coursesData.courses.filter(c => c.name.trim()).map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '')));
-                    const currentSemKey = (() => {
-                      const now = new Date();
-                      if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
-                      if (now >= new Date('2025-09-01') && now <= new Date('2025-12-31')) return 'f2025';
-                      if (now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return 'w2026';
-                      if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return 'ss2026';
-                      return '';
-                    })();
-                    return allSemDefs.map(sem => {
-                      const nonActiveCourses = sem.courses.filter(c => !activeCodes.has(c.code.toUpperCase().replace(/\s/g, '')));
-                      if (nonActiveCourses.length === 0 && sem.key === currentSemKey) return null;
-                      const isCurrentSem = sem.key === currentSemKey;
-                      const coursesToShow = sem.key === currentSemKey ? nonActiveCourses : sem.courses;
-                      if (coursesToShow.length === 0) return null;
-                      const profLookup = (code: string) => {
-                        const norm = code.replace(/\s/g, '');
-                        return pastCourseInfo[code] || pastCourseInfo[norm] || { professor: '', email: '', grade: '' };
-                      };
-                      return (
-                        <div key={sem.key} className="mt-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[9px] font-bold text-white/80">{sem.label}</span>
-                            {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
-                          </div>
-                          {coursesToShow.map(c => {
-                            const prof = profLookup(c.code);
-                            const norm = c.code.replace(/\s/g, '');
-                            const spaced = c.code.replace(/^([A-Z]+)(\d)/, '$1 $2');
-                            const aasChecked = aasSentStatus[norm] || aasSentStatus[spaced] || aasSentStatus[c.code];
-                            const grade = courseGrades[norm]?.percent || courseGrades[c.code]?.percent || (prof as any).grade || '';
-                            return (
-                              <div key={c.code} className="flex items-center gap-1.5 py-0.5 pl-1">
-                                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#3b82f6' }} />
-                                <span className="text-[10px] text-white/90 truncate flex-1">{c.name}</span>
-                                {grade && <span className="text-[9px] text-white/60 mr-1">{grade}%</span>}
-                                {(prof as any).professor && <span className="text-[9px] text-white/50 underline truncate" style={{ maxWidth: '80px' }}>{(prof as any).professor}</span>}
-                                <label className="flex items-center gap-0.5 ml-auto cursor-pointer flex-shrink-0" onClick={() => toggleAasSent(c.code)}>
-                                  <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasChecked ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
-                                    {aasChecked && <Check className="w-2.5 h-2.5 text-white" />}
-                                  </div>
-                                  <span className={`text-[9px] ${aasChecked ? 'text-blue-400' : 'text-amber-400'}`}>AAS</span>
-                                </label>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    });
-                  })()}
                 </div>
 
                 {/* Course Edit Dialog */}
