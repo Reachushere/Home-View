@@ -16626,8 +16626,8 @@ export default function Dashboard() {
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '41px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
-                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '16px', height: 'auto', opacity: 0.9 }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '40px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '15px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
