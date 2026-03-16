@@ -16627,7 +16627,7 @@ export default function Dashboard() {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
                           return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '39px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9, position: 'absolute', left: '-12px', top: '50%', transform: 'translateY(-50%)' }} />
-                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '22px', height: 'auto', opacity: 0.9, position: 'absolute', left: '-12px', top: '50%', transform: 'translateY(-50%)' }} /> : null;
+                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '22px', height: 'auto', opacity: 0.9, position: 'absolute', left: '-3px', top: '50%', transform: 'translateY(-50%)' }} /> : null;
                         })()}
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
