@@ -76,12 +76,14 @@ interface CourseInfo {
   courseType: string;
   startDate?: string;
   endDate?: string;
+  semesterTerm?: string;
+  year?: string;
 }
 
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string; semesterTerm?: string; year?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   semesterStart: Date;
@@ -152,6 +154,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     classTime: courseInfo.classTime || '',
     classEndTime: courseInfo.classEndTime || '',
     zoomLink: courseInfo.zoomLink || '',
+    semesterTerm: courseInfo.semesterTerm || '',
+    year: courseInfo.year || '',
   });
 
   const CERTIFICATE_TYPE_OPTIONS = [
@@ -523,18 +527,40 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professorEmail} onChange={(e) => setEditInfo({...editInfo, professorEmail: e.target.value})} placeholder="professor@email.com" data-testid="input-edit-email" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-white text-[9px] mb-0.5 block">Zoom Link</label>
+                  <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder="https://zoom.us/..." data-testid="input-edit-zoom" />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Semester</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.semesterTerm} onChange={(e) => setEditInfo({...editInfo, semesterTerm: e.target.value})} data-testid="select-edit-semester-term">
+                      <option value="" className="bg-gray-800">—</option>
+                      <option value="fall" className="bg-gray-800">Fall</option>
+                      <option value="winter" className="bg-gray-800">Winter</option>
+                      <option value="spring_summer_full" className="bg-gray-800">Spring/Summer (Full)</option>
+                      <option value="spring_summer_first" className="bg-gray-800">Spring/Summer (1st Half)</option>
+                      <option value="spring_summer_second" className="bg-gray-800">Spring/Summer (2nd Half)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Year</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.year} onChange={(e) => setEditInfo({...editInfo, year: e.target.value})} data-testid="select-edit-year">
+                      <option value="" className="bg-gray-800">—</option>
+                      <option value="2026" className="bg-gray-800">2026</option>
+                      <option value="2027" className="bg-gray-800">2027</option>
+                      <option value="2028" className="bg-gray-800">2028</option>
+                      <option value="2029" className="bg-gray-800">2029</option>
+                    </select>
+                  </div>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Delivery Mode</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.deliveryMode} onChange={(e) => setEditInfo({...editInfo, deliveryMode: e.target.value})} data-testid="select-edit-delivery">
                       <option value="" className="bg-gray-800">Not set</option>
                       <option value="virtual" className="bg-gray-800">Virtual (Live Zoom)</option>
                       <option value="online" className="bg-gray-800">Online (Async)</option>
+                      <option value="in-person" className="bg-gray-800">In-Person</option>
                     </select>
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Zoom Link</label>
-                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder="https://zoom.us/..." data-testid="input-edit-zoom" />
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -554,11 +580,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Start</label>
-                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
+                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
                   </div>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">End</label>
-                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
+                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
                   </div>
                 </div>
                 <div>

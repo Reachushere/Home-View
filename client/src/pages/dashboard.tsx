@@ -3756,6 +3756,8 @@ export default function Dashboard() {
     let color = matchedCourse?.color || '#6366F1';
     let colorEnd = (matchedCourse as any)?.colorEnd || '';
     let courseType = '';
+    let semesterTerm = '';
+    let year = '';
 
     const semSearchList = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
     for (const sem of semSearchList) {
@@ -3773,6 +3775,17 @@ export default function Dashboard() {
           courseType = (sem as any)[`${prefix}CourseType`] || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
           if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
+          const semType = (sem as any).semesterType || '';
+          const ssTerm = (sem as any)[`${prefix}SpringSummerTerm`] || '';
+          if (semType === 'spring_summer') {
+            semesterTerm = ssTerm === 'first_half' ? 'spring_summer_first' : ssTerm === 'second_half' ? 'spring_summer_second' : 'spring_summer_full';
+          } else if (semType === 'fall' || semType === 'winter') {
+            semesterTerm = semType;
+          }
+          const semStart = (sem as any).semesterStartDate;
+          if (semStart) {
+            year = new Date(semStart).getFullYear().toString();
+          }
           foundInSem = true;
           break;
         }
@@ -3803,6 +3816,8 @@ export default function Dashboard() {
       classEndTime,
       zoomLink,
       courseType,
+      semesterTerm,
+      year,
     };
   };
 
@@ -13539,6 +13554,18 @@ export default function Dashboard() {
                 };
                 saveCourses({ courses: updatedCourses });
               }
+              const computeSemesterDates = (term: string, yr: string) => {
+                const y = parseInt(yr);
+                if (!y) return { startDate: '', endDate: '', semesterType: '', springSummerTerm: '' };
+                switch (term) {
+                  case 'fall': return { startDate: `${y}-09-08`, endDate: `${y}-12-07`, semesterType: 'fall', springSummerTerm: '' };
+                  case 'winter': return { startDate: `${y}-01-13`, endDate: `${y}-04-17`, semesterType: 'winter', springSummerTerm: '' };
+                  case 'spring_summer_full': return { startDate: `${y}-05-05`, endDate: `${y}-08-04`, semesterType: 'spring_summer', springSummerTerm: 'full' };
+                  case 'spring_summer_first': return { startDate: `${y}-05-05`, endDate: `${y}-06-20`, semesterType: 'spring_summer', springSummerTerm: 'first_half' };
+                  case 'spring_summer_second': return { startDate: `${y}-06-23`, endDate: `${y}-08-04`, semesterType: 'spring_summer', springSummerTerm: 'second_half' };
+                  default: return { startDate: '', endDate: '', semesterType: '', springSummerTerm: '' };
+                }
+              };
               const currentSemSettings = allSemesterSettingsRef.current;
               if (currentSemSettings) {
                 const cc = courseCode.replace(/\s/g, '');
@@ -13558,6 +13585,14 @@ export default function Dashboard() {
                       if (updates.zoomLink !== undefined) payload[`${prefix}ZoomLink`] = updates.zoomLink;
                       if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
                       if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
+                      if (updates.semesterTerm && updates.year) {
+                        const dates = computeSemesterDates(updates.semesterTerm, updates.year);
+                        if (dates.startDate) {
+                          payload[`${prefix}StartDate`] = new Date(dates.startDate).toISOString();
+                          payload[`${prefix}EndDate`] = new Date(dates.endDate).toISOString();
+                          if (dates.springSummerTerm) payload[`${prefix}SpringSummerTerm`] = dates.springSummerTerm;
+                        }
+                      }
                       if (Object.keys(payload).length > 0) {
                         queryClient.setQueryData(["/api/semesters"], (old: any[] | undefined) => {
                           if (!old) return old;
@@ -13572,6 +13607,37 @@ export default function Dashboard() {
                         apiRequest("PATCH", `/api/semesters/${sem.id}`, payload).then(() => {
                           queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                           queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                          if (updates.classDay && updates.classTime && updates.classEndTime && updates.semesterTerm && updates.year) {
+                            const dates = computeSemesterDates(updates.semesterTerm, updates.year);
+                            if (dates.startDate) {
+                              const courseName = updatedCourses[matchIdx >= 0 ? matchIdx : 0]?.name || `${courseCode}`;
+                              const startD = new Date(dates.startDate);
+                              const endD = new Date(dates.endDate);
+                              const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+                              const classDays = [updates.classDay, updates.classDay2].filter(Boolean).map(d => dayMap[d!] ?? -1).filter(d => d >= 0);
+                              const tasksToCreate: Array<{ title: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string }> = [];
+                              const current = new Date(startD);
+                              while (current <= endD) {
+                                if (classDays.includes(current.getDay())) {
+                                  tasksToCreate.push({
+                                    title: 'Class',
+                                    dueDate: current.toISOString().split('T')[0],
+                                    courseName,
+                                    eventStartTime: updates.classTime!,
+                                    eventEndTime: updates.classEndTime!,
+                                    priority: 'medium',
+                                  });
+                                }
+                                current.setDate(current.getDate() + 1);
+                              }
+                              if (tasksToCreate.length > 0) {
+                                Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                                  toast({ title: "Class tasks created", description: `${tasksToCreate.length} class sessions added to calendar.` });
+                                });
+                              }
+                            }
+                          }
                         });
                       }
                       break;
