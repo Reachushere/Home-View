@@ -20293,33 +20293,23 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
-          <label
-            className="cursor-pointer select-none"
-            style={{ position: 'absolute', right: '8px', bottom: '-14px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50 }}
-            data-testid="checkbox-set-default-size"
+          <button
+            className="cursor-pointer select-none hover:opacity-80 transition-opacity"
+            style={{ position: 'absolute', right: '8px', bottom: '-14px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50, background: 'none', border: 'none', padding: 0 }}
+            onClick={() => {
+              localStorage.setItem('calendarHeight', String(calendarHeight));
+              localStorage.setItem('calendarReduction', String(calendarReduction));
+              const screenWidth = window.screen.width;
+              const screenHeight = window.screen.height;
+              const pixelRatio = window.devicePixelRatio || 1;
+              const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+              localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
+              toast({ title: "Saved", description: "Calendar size saved as default" });
+            }}
+            data-testid="button-set-default-size"
           >
-            <input
-              type="checkbox"
-              checked={localStorage.getItem('calendarDefaultSize') === 'true'}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  localStorage.setItem('calendarHeight', String(calendarHeight));
-                  localStorage.setItem('calendarReduction', String(calendarReduction));
-                  localStorage.setItem('calendarDefaultSize', 'true');
-                  const screenWidth = window.screen.width;
-                  const screenHeight = window.screen.height;
-                  const pixelRatio = window.devicePixelRatio || 1;
-                  const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-                  localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
-                  toast({ title: "Saved", description: "Calendar size saved as default" });
-                } else {
-                  localStorage.removeItem('calendarDefaultSize');
-                }
-              }}
-              style={{ width: '10px', height: '10px', accentColor: '#ffffff' }}
-            />
-            <span style={{ fontSize: '8px', fontWeight: 400, color: '#ffffff', whiteSpace: 'nowrap' }}>Set Default</span>
-          </label>
+            <span style={{ fontSize: '8px', fontWeight: 400, color: '#ffffff', whiteSpace: 'nowrap', textDecoration: 'underline' }}>Save Default</span>
+          </button>
           </div>
           </div>
           
