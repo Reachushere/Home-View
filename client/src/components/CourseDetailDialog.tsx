@@ -861,21 +861,23 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className={`grid gap-2 ${editInfo.semesterTerm === 'Summer' ? 'grid-cols-4' : 'grid-cols-3'}`}>
                   <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Day 1</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Day</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay} onChange={(e) => setEditInfo({...editInfo, classDay: e.target.value})} data-testid="select-edit-day1">
                       <option value="" className="bg-gray-800">—</option>
                       {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Day 2</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
-                      <option value="" className="bg-gray-800">—</option>
-                      {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
-                    </select>
-                  </div>
+                  {editInfo.semesterTerm === 'Summer' && (
+                    <div>
+                      <label className="text-white text-[9px] mb-0.5 block">Day 2</label>
+                      <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
+                        <option value="" className="bg-gray-800">—</option>
+                        {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
+                      </select>
+                    </div>
+                  )}
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Start</label>
                     <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
