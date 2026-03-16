@@ -1832,6 +1832,7 @@ export default function Dashboard() {
   const saveSemesterAssignments = (assignments: Record<string, SemCourse[]>) => {
     setSemesterCourseAssignments(assignments);
     localStorage.setItem('semesterCourseAssignments', JSON.stringify(assignments));
+    saveDegreeToServer('semesterCourseAssignments', assignments);
   };
   const semesterKeyOrder = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028'];
   const addCourseToNextAvailableSemester = (courseCode: string, courseName: string, fullName: string) => {
@@ -2707,6 +2708,7 @@ export default function Dashboard() {
           const updated = { ...schoolData, isTravelling: false, travelTimezone: undefined, travelStartDate: undefined, travelEndDate: undefined };
           setSchoolData(updated);
           localStorage.setItem('schoolData', JSON.stringify(updated));
+          saveDegreeToServer('schoolData', updated);
           setProfileData(prev => {
             const updatedProfile = { ...prev, travelTimezone: null };
             localStorage.setItem('profileData', JSON.stringify(updatedProfile));
@@ -2894,6 +2896,7 @@ export default function Dashboard() {
     const { semesterType: semType, ...schoolOnly } = data;
     setSchoolData(schoolOnly);
     localStorage.setItem('schoolData', JSON.stringify(schoolOnly));
+    saveDegreeToServer('schoolData', schoolOnly);
     if (semType && semesterSettings) {
       saveSemesterScheduleMutation.mutate({ semesterType: semType });
     }
@@ -2913,6 +2916,7 @@ export default function Dashboard() {
   const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }) => {
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
+    saveDegreeToServer('coursesData', data);
     setIsCoursesDialogOpen(false);
     toast({ title: "Courses saved", description: "Your courses have been updated." });
     const colorPayload: Record<string, string | null> = {};
@@ -3448,8 +3452,92 @@ export default function Dashboard() {
             return merged;
           });
         }
+        if (data.coursesData) {
+          setCoursesData(prev => {
+            const merged = { ...prev, courses: data.coursesData.courses || prev.courses };
+            localStorage.setItem('coursesData', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.schoolData) {
+          setSchoolData(prev => {
+            const merged = { ...prev, ...data.schoolData };
+            localStorage.setItem('schoolData', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.semesterCourseAssignments) {
+          setSemesterCourseAssignments(prev => {
+            const merged = { ...prev, ...data.semesterCourseAssignments };
+            localStorage.setItem('semesterCourseAssignments', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.colorSettings) {
+          setColorSettings(prev => {
+            const merged = { ...prev, ...data.colorSettings };
+            localStorage.setItem('colorSettings', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.blinkSettings) {
+          setBlinkSettings(prev => {
+            const merged = { ...prev, ...data.blinkSettings };
+            localStorage.setItem('blinkSettings', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.certCourseData) {
+          localStorage.setItem('certCourseData', JSON.stringify(data.certCourseData));
+        }
+        if (data.pastCourseInfo) {
+          setPastCourseInfo(prev => {
+            const merged = { ...prev, ...data.pastCourseInfo };
+            localStorage.setItem('pastCourseInfo', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.coursePlayPriority) {
+          setCoursePlayPriority(data.coursePlayPriority);
+          localStorage.setItem('coursePlayPriority', JSON.stringify(data.coursePlayPriority));
+        }
+        if (data.profileData) {
+          setProfileData(prev => {
+            const merged = { ...prev, ...data.profileData };
+            localStorage.setItem('profileData', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.courseDisplayNames) {
+          localStorage.setItem('courseDisplayNames', JSON.stringify(data.courseDisplayNames));
+        }
       })
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const syncKeys = [
+      'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
+      'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
+      'coursePlayPriority', 'courseDisplayNames', 'profileData',
+      'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
+    ];
+    const payload: Record<string, any> = {};
+    for (const key of syncKeys) {
+      const val = localStorage.getItem(key);
+      if (val) {
+        try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
+      }
+    }
+    if (Object.keys(payload).length > 0) {
+      fetch('/api/degree-tracking/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(r => r.json()).then(d => {
+        if (d.ok) console.log(`[Sync] Pushed ${d.saved} localStorage keys to server`);
+      }).catch(() => {});
+    }
   }, []);
 
   const getSelectedCodes = (siblingIds: string[], currentId: string): Set<string> => {
@@ -5095,6 +5183,7 @@ export default function Dashboard() {
           return course;
         })};
         localStorage.setItem('coursesData', JSON.stringify(updated));
+        saveDegreeToServer('coursesData', updated);
         return updated;
       });
     }
@@ -12560,6 +12649,7 @@ export default function Dashboard() {
                 savedData[cc] = { ...(savedData[cc] || {}), deliveryMode: updates.deliveryMode };
               }
               localStorage.setItem('certCourseData', JSON.stringify(savedData));
+              saveDegreeToServer('certCourseData', savedData);
               setDeliveryModeVersion(v => v + 1);
             }}
             onGradeCalculated={(grade, percent) => {
@@ -16026,6 +16116,7 @@ export default function Dashboard() {
                   }
                   setCoursesData({ courses: updatedCourses });
                   localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                  saveDegreeToServer('coursesData', { courses: updatedCourses });
 
                   const prefix = `course${targetIdx + 1}`;
                   if (targetIdx < 3) {
@@ -16122,6 +16213,7 @@ export default function Dashboard() {
                 }
                 setCoursesData({ courses: updatedCourses });
                 localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                saveDegreeToServer('coursesData', { courses: updatedCourses });
 
                 const prefix = `course${targetIdx + 1}`;
                 if (targetIdx < 3) {
@@ -17139,6 +17231,8 @@ export default function Dashboard() {
                       });
                       localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                       localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+                      saveDegreeToServer('colorSettings', colorSettings);
+                      saveDegreeToServer('blinkSettings', blinkSettings);
                       setOriginalColorSettings({...colorSettings});
                       setOriginalBlinkSettings({...blinkSettings});
                       toast({ title: "Settings saved", description: "Your settings have been applied." });

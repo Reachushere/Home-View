@@ -678,6 +678,22 @@ export async function registerRoutes(
     }
   });
 
+  app.post('/api/degree-tracking/bulk', async (req, res) => {
+    try {
+      const data = req.body;
+      if (!data || typeof data !== 'object') return res.status(400).json({ error: 'Object required' });
+      let saved = 0;
+      for (const [key, value] of Object.entries(data)) {
+        const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
+        await db.insert(degreeTrackingData).values({ key, value: valueStr }).onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: valueStr } });
+        saved++;
+      }
+      res.json({ ok: true, saved });
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to bulk save degree tracking data' });
+    }
+  });
+
   app.get('/api/version', (_req, res) => {
     res.json({ version: BUILD_VERSION });
   });
