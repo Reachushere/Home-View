@@ -383,7 +383,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
 
   const gradeCalc = useMemo(() => {
-    const gradedTasks = courseTasks.filter(t => t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined);
+    const gradedTasks = courseTasks.filter(t => t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
     if (gradedTasks.length === 0) return null;
     let weightedSum = 0;
     let weightedTotal = 0;
@@ -987,7 +987,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <h3 className="text-[11px] font-medium text-white">Assignments</h3>
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
-                  {totalWeight > 0 && ` · ${totalWeight}% weight`}
+                  {totalWeight > 0 && ` · ${totalWeight.toFixed(2)}% weight`}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -1007,8 +1007,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <div className="mb-2">
                 <div className="flex items-center gap-2 text-[9px] mb-1">
                   <span className="text-white">Grade Weight</span>
-                  <span className={`font-medium ${totalWeight === 100 ? "text-green-400" : totalWeight > 100 ? "text-red-400" : "text-amber-400"}`}>
-                    {totalWeight}%{totalWeight === 100 ? " ✓" : totalWeight > 100 ? " !" : ""}
+                  <span className={`font-medium ${Math.abs(totalWeight - 100) < 0.005 ? "text-green-400" : totalWeight > 100 ? "text-red-400" : "text-amber-400"}`}>
+                    {totalWeight.toFixed(2)}%{Math.abs(totalWeight - 100) < 0.005 ? " ✓" : totalWeight > 100 ? " !" : ""}
                   </span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-1.5">
