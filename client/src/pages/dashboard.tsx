@@ -768,6 +768,11 @@ export default function Dashboard() {
     if (returnPromptShown.current) return;
     returnPromptShown.current = true;
 
+    if (window.location.hostname.endsWith('.replit.app')) {
+      localStorage.setItem('replitLastActiveTime', String(Date.now()));
+      return;
+    }
+
     const lastActive = parseInt(localStorage.getItem('replitLastActiveTime') || '0', 10);
     const now = Date.now();
     const twoHoursMs = 2 * 60 * 60 * 1000;
