@@ -16612,7 +16612,7 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="flex items-center px-3 py-1.5 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all"
+                        className="flex flex-col px-2 py-1.5 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all gap-0.5"
                         style={{ background: bgColor }}
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
@@ -16620,53 +16620,54 @@ export default function Dashboard() {
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
-                        <div className="w-2 h-2 rounded-full flex-shrink-0 mr-2" style={{ background: dotColor }} />
-                        <span className="text-[11px] font-bold text-white flex-shrink-0">{displayName}</span>
-                        {subtitle && <span className="text-[10px] text-white truncate mr-1 ml-0.5">- {subtitle}</span>}
-                        <span className="text-[9px] text-white ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
-                        {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
-                        <div className="flex items-center gap-2" style={{ justifyContent: 'flex-end', marginRight: '-10px' }}>
-                          <span className="text-[10px] text-white truncate" style={{ width: '120px', minWidth: '120px', textAlign: 'right' }}>
-                            {(currentCourse?.professor || profInfo.professor) ? <span className="underline">{currentCourse?.professor || profInfo.professor}</span> : ''}
-                          </span>
-                          <span
-                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
-                            data-testid={`aas-status-${semCourse.code}`}
-                            onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
-                          >
-                            {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
-                          </span>
-                          <select
-                            className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-                            style={{ width: '48px', minWidth: '48px', marginRight: '-7px' }}
-                            value={currentPriority}
-                            onClick={(e) => e.stopPropagation()}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              const val = parseInt(e.target.value, 10);
-                              setDraftCoursePlayPriority(prev => ({ ...prev, [priorityKey]: val }));
-                            }}
-                            data-testid={`select-priority-${semCourse.code}`}
-                          >
-                            <option value={0}>—</option>
-                            {Array.from({ length: totalInSem }, (_, i) => (
-                              <option key={i + 1} value={i + 1}>#{i + 1}</option>
-                            ))}
-                          </select>
-                          <button
-                            className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                            style={{ marginLeft: '2px' }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingSchoolCourseKey(semCourse.code);
-                              setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
-                            }}
-                            data-testid={`button-edit-course-${semCourse.code}`}
-                          >
-                            <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" />
-                          </button>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: dotColor }} />
+                          <span className="text-[10px] font-bold text-white flex-shrink-0">{displayName}</span>
+                          {subtitle && <span className="text-[9px] text-white truncate">- {subtitle}</span>}
                         </div>
-                        <ChevronRight className="text-white flex-shrink-0 ml-0.5" style={{ width: '12px', height: '12px' }} />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            {semCourse.period && <span className="text-[8px] text-white/70">{semCourse.period}</span>}
+                            {(currentCourse?.professor || profInfo.professor) && <span className="text-[8px] text-white underline truncate" style={{ maxWidth: '90px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span
+                              className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                              data-testid={`aas-status-${semCourse.code}`}
+                              onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
+                            >
+                              {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
+                            </span>
+                            <select
+                              className="text-[8px] text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
+                              style={{ width: '40px', minWidth: '40px' }}
+                              value={currentPriority}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                const val = parseInt(e.target.value, 10);
+                                setDraftCoursePlayPriority(prev => ({ ...prev, [priorityKey]: val }));
+                              }}
+                              data-testid={`select-priority-${semCourse.code}`}
+                            >
+                              <option value={0}>—</option>
+                              {Array.from({ length: totalInSem }, (_, i) => (
+                                <option key={i + 1} value={i + 1}>#{i + 1}</option>
+                              ))}
+                            </select>
+                            <button
+                              className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingSchoolCourseKey(semCourse.code);
+                                setEditingSchoolCourseData({ professor: currentCourse?.professor || profInfo.professor, email: profInfo.email, grade: grade, semester: profInfo.semester, credits: profInfo.credits, certificateType: certType });
+                              }}
+                              data-testid={`button-edit-course-${semCourse.code}`}
+                            >
+                              <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     );
                   };
@@ -16678,21 +16679,21 @@ export default function Dashboard() {
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                         <div className="h-px flex-1 bg-white/20" />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         {semesterDefs.filter(s => s.year === year).map(sem => {
                           const isCurrentSem = sem.key === currentSemKey;
                           return (
                             <div key={sem.key} className="rounded-lg border overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.25)' }}>
-                              <div className="px-3 py-2 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[11px] font-bold text-white">{sem.label}</span>
-                                  <span className="text-[9px] text-white ml-1">{sem.dates}</span>
-                                  {isCurrentSem && <span className="text-[8px] font-bold text-white bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-white">CURRENT</span>}
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
+                                  {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
-                                <span className="text-[9px] text-white">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
+                                <span className="text-[8px] text-white whitespace-nowrap ml-1">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
-                              <div className="p-2 space-y-1.5">
+                              <div className="p-1.5 space-y-1">
                                 {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
+                                {sem.courses.length === 0 && <div className="text-[9px] text-white/40 text-center py-3">No courses yet</div>}
                               </div>
                             </div>
                           );
