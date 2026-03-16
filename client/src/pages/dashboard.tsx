@@ -12786,7 +12786,7 @@ export default function Dashboard() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className="pill-button-hover"
-            onClick={() => { triggerButtonGlow('refresh'); queryClient.invalidateQueries(); }}
+            onClick={() => { triggerButtonGlow('refresh'); queryClient.invalidateQueries().then(() => queryClient.refetchQueries()); refreshFileCounts(); }}
             data-testid="button-refresh-data"
             title="Refresh"
           >
@@ -12914,8 +12914,8 @@ export default function Dashboard() {
           left: '50%',
           transform: 'translateX(-50%)',
           top: '-8px',
-          width: '84px',
-          height: '25px',
+          width: '120px',
+          height: '35px',
           cursor: 'pointer',
           pointerEvents: isTopPillOpen ? 'none' : 'auto',
           zIndex: 10002,
@@ -12923,9 +12923,10 @@ export default function Dashboard() {
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          const delay = 'ontouchstart' in window ? 6000 : 1800;
           topPillTimeoutRef.current = setTimeout(() => {
             closeTopPill();
-          }, 1800);
+          }, delay);
         }}
         onMouseEnter={() => {
           openTopPill();
