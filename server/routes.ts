@@ -6586,51 +6586,10 @@ document.body.removeChild(a);
 
       const [masterResult, tvResult] = await Promise.allSettled([
         (async () => {
-          // Primary: ADB to open /tablet wrapper with reader URL (fullscreen iframe, no caching issues)
-          const tabletWrapperUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}`;
-          try {
-            const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                entity_id: 'media_player.tablet_cat',
-                command: `am start -n com.amazon.cloud9/.BrowserActivity -a android.intent.action.VIEW -d "${tabletWrapperUrl}"`
-              }),
-            });
-            console.log(`[Cat Wash] Tablet ADB Silk /tablet wrapper: ${adbResp.status}`);
-            if (adbResp.ok) {
-              console.log(`[Cat Wash] Tablet opened via ADB Silk (fullscreen wrapper)`);
-              return true;
-            }
-          } catch (e: any) {
-            console.log(`[Cat Wash] Tablet ADB Silk ERROR: ${e.message}`);
-          }
-
-          // Fallback: browser_mod
-          const browserModOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall');
-          if (browserModOpened) {
-            console.log(`[Cat Wash] Tablet opened via browser_mod`);
-            return true;
-          }
-          console.log(`[Cat Wash] browser_mod failed for tablet, trying ADB generic`);
-
-          // Fallback: ADB generic intent
-          try {
-            const adbResp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                entity_id: 'media_player.tablet_cat',
-                command: `am start -a android.intent.action.VIEW -d "${tabletWrapperUrl}"`
-              }),
-            });
-            console.log(`[Cat Wash] Tablet ADB generic: ${adbResp.status}`);
-          } catch (e: any) {
-            console.log(`[Cat Wash] Tablet ADB generic ERROR: ${e.message}`);
-          }
-
-          console.log(`[Cat Wash] Relying on tablet-nav polling as final fallback`);
-          return false;
+          // Navigate the existing tablet browser tab via tablet-nav polling (same tab, no new browser window)
+          await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
+          console.log(`[Cat Wash] Tablet navigate command sent via tablet-nav (same tab)`);
+          return true;
         })(),
         (async () => {
           const [fireStickRes, tvRes] = await Promise.allSettled([
@@ -7022,10 +6981,9 @@ document.body.removeChild(a);
       ]);
       console.log(`[Cat Lights] tablet-nav set for devices`);
 
-      const [masterResult] = await Promise.allSettled([
-        openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], readerUrl, 'tablet_cat_wall'),
-      ]);
-      deviceResults['tablet_cat_wall'] = masterResult.status === 'fulfilled' && masterResult.value ? 'browser_mod' : 'tablet-nav';
+      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
+      console.log(`[Cat Lights] Tablet navigate command sent via tablet-nav (same tab)`);
+      deviceResults['tablet_cat_wall'] = 'tablet-nav';
 
       try {
         const fireStickTurnOn = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
@@ -7218,8 +7176,9 @@ document.body.removeChild(a);
 
       const deviceResults: Record<string, string> = {};
 
-      const masterOpened = await openUrlOnFireDevice(haUrl, ['6507d68f-6563ca6c'], newReaderUrl, 'tablet_cat_wall');
-      deviceResults['tablet_cat_wall'] = masterOpened ? 'silk_intent' : 'pending_nav';
+      await setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: Date.now() }, true, 'master');
+      console.log(`[Cat Wash Dry] Tablet navigate command sent via tablet-nav (same tab)`);
+      deviceResults['tablet_cat_wall'] = 'tablet-nav';
 
       // Also re-open on Samsung TV with follower URL
       try {
