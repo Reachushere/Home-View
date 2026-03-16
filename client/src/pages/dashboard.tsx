@@ -25386,11 +25386,11 @@ function SchoolForm({
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">Number of School Weeks</Label>
+                <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">School Weeks</Label>
                 <select
                   value={String(numberOfWeeks)}
                   onChange={(e) => setNumberOfWeeks(Number(e.target.value))}
-                  className="h-8 w-24 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+                  className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
                   data-testid="select-number-of-weeks"
                 >
                   {[10, 11, 12, 13, 14, 15, 16].map(w => (
