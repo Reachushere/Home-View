@@ -1778,7 +1778,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         const temp = Math.round(c.temperature_2m);
         const desc = WMO[c.weather_code as number] || 'Mixed';
         const wind = Math.round(c.wind_speed_10m);
-        tickerItems += `<span class="t-item"><span class="t-forecast">🌡️ <b>TORONTO</b>:</span> <span class="t-data">${temp}°C — ${desc}  |  Wind: ${wind} km/h</span></span>`;
+        tickerItems += `<span class="t-item"><span class="t-forecast">🌡️ <b>TORONTO FORECAST</b>:</span> <span class="t-data">${temp}°C — ${desc}  |  Wind: ${wind} km/h</span></span>`;
         if (wxRes.daily && wxRes.daily.time && wxRes.daily.time.length >= 3) {
           const parts = wxRes.daily.time.slice(0, 3).map((t: string, i: number) => {
             const dt = new Date(t + 'T12:00:00');
