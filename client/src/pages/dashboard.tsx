@@ -1770,6 +1770,65 @@ export default function Dashboard() {
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const coursesScrollRef = useRef<HTMLDivElement>(null);
   const [coursesScrolled, setCoursesScrolled] = useState(false);
+
+  type SemCourse = { code: string; name: string; fullName?: string; period: string };
+  const defaultSemesterCourses: Record<string, SemCourse[]> = {
+    'ss2025': [
+      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions', period: 'May 5 – Jun 20' },
+      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government', period: 'May 5 – Jun 20' },
+      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes', period: 'Jun 23 – Aug 8' },
+    ],
+    'f2025': [
+      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State', period: '' },
+      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped!', period: '' },
+      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government', period: '' },
+    ],
+    'w2026': [
+      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government', period: '' },
+      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: '' },
+      { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: '' },
+    ],
+    'ss2026': [
+      { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'May 4 – Jul 31' },
+      { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'May 5 – Jun 16' },
+      { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Jun 23 – Aug 4' },
+    ],
+  };
+  const [semesterCourseAssignments, setSemesterCourseAssignments] = useState<Record<string, SemCourse[]>>(() => {
+    const saved = localStorage.getItem('semesterCourseAssignments');
+    if (saved) {
+      try { return JSON.parse(saved); } catch {}
+    }
+    return defaultSemesterCourses;
+  });
+  const saveSemesterAssignments = (assignments: Record<string, SemCourse[]>) => {
+    setSemesterCourseAssignments(assignments);
+    localStorage.setItem('semesterCourseAssignments', JSON.stringify(assignments));
+  };
+  const semesterKeyOrder = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028'];
+  const addCourseToNextAvailableSemester = (courseCode: string, courseName: string, fullName: string) => {
+    const codeNorm = courseCode.toUpperCase().replace(/\s/g, '');
+    const allAssigned = Object.values(semesterCourseAssignments).flat();
+    if (allAssigned.some(c => c.code.toUpperCase().replace(/\s/g, '') === codeNorm)) return;
+    const now = new Date();
+    const semStartDatesMap: Record<string, string> = {
+      'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-01', 'w2027': '2027-01-01',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-01', 'w2028': '2028-01-01', 'ss2028': '2028-05-01', 'f2028': '2028-09-01',
+    };
+    const futureSems = semesterKeyOrder.filter(k => {
+      const start = semStartDatesMap[k];
+      return start && new Date(start) >= new Date(now.getFullYear(), now.getMonth(), 1);
+    });
+    const targetSem = futureSems.find(k => (semesterCourseAssignments[k] || []).length < 3) || futureSems[0] || semesterKeyOrder[semesterKeyOrder.length - 1];
+    if (!targetSem) return;
+    const updated = { ...semesterCourseAssignments };
+    const courses = [...(updated[targetSem] || [])];
+    courses.push({ code: courseCode, name: courseName, fullName, period: '' });
+    updated[targetSem] = courses;
+    saveSemesterAssignments(updated);
+  };
+  const dragCourseRef = useRef<{ code: string; fromSemKey: string } | null>(null);
   const [draftCoursePlayPriority, setDraftCoursePlayPriority] = useState<Record<string, number>>({});
   const draftCoursePlayPriorityRef = useRef<Record<string, number>>({});
   const setDraftPriorityBoth = useCallback((val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => {
@@ -3625,6 +3684,13 @@ export default function Dashboard() {
       if (isDisabled) return;
       if (state === 'red') {
         if (!inProgressCourses[id]) toggleInProgress(id);
+        const info = certCourseMap[id];
+        if (info && /^[A-Z]{2,}\d{3}/.test(info.code.replace(/\s/g, '')) && !isDropdownRow(id)) {
+          const rawCode = info.code.replace(/\s/g, '');
+          const semCode = /^[A-Z]{3,}\d/.test(rawCode) && !rawCode.startsWith('C') ? 'C' + rawCode : rawCode;
+          const displayCode = semCode.replace(/([A-Z]+)(\d+)/, '$1 $2');
+          addCourseToNextAvailableSemester(semCode, displayCode, info.name);
+        }
       } else if (state === 'yellow') {
         if (inProgressCourses[id]) toggleInProgress(id);
         if (!checkedCourses[id]) toggleCourse(id);
@@ -3671,6 +3737,13 @@ export default function Dashboard() {
     const state = isCompleted ? 'green' : isInProgress ? 'yellow' : 'red';
     if (state === 'red') {
       if (!inProgressCourses[id]) toggleInProgress(id);
+      const info = certCourseMap[id];
+      if (info && /^[A-Z]{2,}\d{3}/.test(info.code.replace(/\s/g, '')) && !isDropdownRow(id)) {
+        const rawCode = info.code.replace(/\s/g, '');
+        const semCode = /^[A-Z]{3,}\d/.test(rawCode) && !rawCode.startsWith('C') ? 'C' + rawCode : rawCode;
+        const displayCode = semCode.replace(/([A-Z]+)(\d+)/, '$1 $2');
+        addCourseToNextAvailableSemester(semCode, displayCode, info.name);
+      }
     } else if (state === 'yellow') {
       if (inProgressCourses[id]) toggleInProgress(id);
       if (!checkedCourses[id]) toggleCourse(id);
@@ -16756,35 +16829,20 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 {(() => {
-                  const semesterDefs = [
-                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
-                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions', period: 'May 5 – Jun 20' },
-                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government', period: 'May 5 – Jun 20' },
-                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes', period: 'Jun 23 – Aug 8' },
-                    ]},
-                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
-                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State', period: '' },
-                      { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped!', period: '' },
-                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government', period: '' },
-                    ]},
-                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
-                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government', period: '' },
-                      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: '' },
-                      { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: '' },
-                    ]},
-                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [
-                      { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'May 4 – Jul 31' },
-                      { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'May 5 – Jun 16' },
-                      { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Jun 23 – Aug 4' },
-                    ]},
-                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026', courses: [] },
-                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan – Apr 2027', courses: [] },
-                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May – Aug 2027', courses: [] },
-                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'Sep – Dec 2027', courses: [] },
-                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'Jan – Apr 2028', courses: [] },
-                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May – Aug 2028', courses: [] },
-                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep – Dec 2028', courses: [] },
+                  const semesterMeta = [
+                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025' },
+                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025' },
+                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026' },
+                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026' },
+                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026' },
+                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan – Apr 2027' },
+                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May – Aug 2027' },
+                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'Sep – Dec 2027' },
+                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'Jan – Apr 2028' },
+                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May – Aug 2028' },
+                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep – Dec 2028' },
                   ];
+                  const semesterDefs = semesterMeta.map(m => ({ ...m, courses: semesterCourseAssignments[m.key] || [] }));
 
                   const allDefCodes = new Set(semesterDefs.flatMap(s => s.courses.map(c => c.code.toUpperCase().replace(/\s/g, ''))));
                   const currentSemKey = (() => {
@@ -16873,8 +16931,18 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="items-center px-2 py-1.5 rounded bg-white/5 border border-white/10 hover:border-white/25 cursor-pointer transition-all overflow-hidden"
+                        className="items-center px-2 py-1.5 rounded bg-white/5 border border-white/10 hover:border-white/25 cursor-grab transition-all overflow-hidden"
                         style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        draggable
+                        onDragStart={(e) => {
+                          dragCourseRef.current = { code: semCourse.code, fromSemKey: semKey };
+                          e.dataTransfer.effectAllowed = 'move';
+                          if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = '0.5';
+                        }}
+                        onDragEnd={(e) => {
+                          if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = '1';
+                          dragCourseRef.current = null;
+                        }}
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
                           setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
@@ -16957,7 +17025,35 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '2px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 36}px` }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '2px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 36}px` }}
+                              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
+                              onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.style.boxShadow = 'none';
+                                const drag = dragCourseRef.current;
+                                if (!drag || drag.fromSemKey === sem.key) return;
+                                const updated = { ...semesterCourseAssignments };
+                                const fromCourses = [...(updated[drag.fromSemKey] || [])];
+                                const courseIdx = fromCourses.findIndex(c => c.code === drag.code);
+                                if (courseIdx === -1) return;
+                                const [movedCourse] = fromCourses.splice(courseIdx, 1);
+                                updated[drag.fromSemKey] = fromCourses;
+                                const toCourses = [...(updated[sem.key] || [])];
+                                toCourses.push(movedCourse);
+                                updated[sem.key] = toCourses;
+                                saveSemesterAssignments(updated);
+                                dragCourseRef.current = null;
+                                const semLabel = sem.label;
+                                const semTerm = sem.key.startsWith('ss') ? 'spring_summer_full' : sem.key.startsWith('f') ? 'fall' : 'winter';
+                                const courseCode = movedCourse.code.replace(/\s/g, '');
+                                const matchIdx = coursesData.courses.findIndex(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === courseCode.toUpperCase());
+                                if (matchIdx !== -1 && matchIdx < 3) {
+                                  const prefix = `course${matchIdx + 1}`;
+                                  saveSemesterScheduleMutation.mutate({ [`${prefix}SpringSummerTerm`]: semTerm.startsWith('spring') ? semTerm.replace('spring_summer_', '') : null, semesterType: semTerm.startsWith('spring') ? 'spring_summer' : semTerm });
+                                }
+                              }}
+                            >
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
@@ -17290,6 +17386,26 @@ export default function Dashboard() {
 
                 setIsNewCourseWizardOpen(false);
                 toast({ title: "Course added", description: `${fullName} has been added.` });
+
+                const newCodeNorm = wizardData.courseCode.replace(/\s/g, '').toUpperCase();
+                const newCodeBase = newCodeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+                for (const [ck, info] of Object.entries(certCourseMap)) {
+                  const mapCode = info.code.replace(/\s/g, '').toUpperCase();
+                  if (!/^[A-Z]+\d+$/.test(mapCode)) continue;
+                  if (mapCode === newCodeNorm || mapCode === newCodeBase || ('C' + mapCode) === newCodeNorm) {
+                    if (!checkedCourses[ck] && !inProgressCourses[ck] && !shouldStrikethrough(ck)) {
+                      if (isDropdownRow(ck)) {
+                        setOpenElectives(prev => {
+                          const updated = { ...prev, [ck]: fullName };
+                          localStorage.setItem('openElectives', JSON.stringify(updated));
+                          return updated;
+                        });
+                      }
+                      toggleInProgress(ck);
+                      break;
+                    }
+                  }
+                }
 
                 if (wizardData.tasks.length > 0) {
                   (async () => {
