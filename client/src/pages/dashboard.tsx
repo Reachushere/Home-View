@@ -1749,6 +1749,8 @@ export default function Dashboard() {
       'CPPA120': { professor: 'Ryan Phillips', email: 'ryan.j.phillips@torontomu.ca', grade: 'A-', semester: 'Spring/Summer 2025', credits: '1.00' },
       'PPA121': { professor: 'Justin Rain', email: 'jrain@torontomu.ca', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
       'CPPA121': { professor: 'Justin Rain', email: 'jrain@torontomu.ca', grade: 'B+', semester: 'Fall 2025', credits: '1.00' },
+      'PPA125': { professor: 'Jennifer Zubick', email: 'jzubick@torontomu.ca', grade: '', semester: 'Fall 2025', credits: '1.00' },
+      'CPPA125': { professor: 'Jennifer Zubick', email: 'jzubick@torontomu.ca', grade: '', semester: 'Fall 2025', credits: '1.00' },
       'CGCM738': { professor: 'Shelley Haines', email: 'shelley.haines@torontomu.ca', grade: 'A-', semester: 'Fall 2025', credits: '1.00' },
       'CASL101': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
       'CFNF400': { professor: '', email: '', grade: '', semester: 'Winter 2026', credits: '1.00' },
@@ -16146,22 +16148,22 @@ export default function Dashboard() {
                   {(() => {
                     const allSemDefs = [
                       { key: 'ss2025', label: 'Spring/Summer 2025', courses: [
-                        { code: 'CPPA101', name: 'CPPA 101 — Introduction to Professional Communication' },
-                        { code: 'CPPA120', name: 'CPPA 120 — Computers and Information Technology' },
-                        { code: 'CPPA102', name: 'CPPA 102 — Professional Communication in Practice' },
+                        { code: 'CPPA101', name: 'CPPA 101 — Cdn Public Admin I: Institutions (PPA322)' },
+                        { code: 'CPPA120', name: 'CPPA 120 — Canadian Politics and Government (POL332, POG210)' },
+                        { code: 'CPPA102', name: 'CPPA 102 — Cdn Public Admin II: Processes (PPA422)' },
                       ]},
                       { key: 'f2025', label: 'Fall 2025', courses: [
-                        { code: 'CPPA125', name: 'CPPA 125 — Computer Apps in the Workplace' },
+                        { code: 'CPPA125', name: 'CPPA 125 — Rights, Equity and the State (POG315, PPA521)' },
                         { code: 'CGCM738', name: 'CGCM 738 — Photoshopped! The Art of Image Retouching' },
-                        { code: 'CPPA121', name: 'CPPA 121 — Foundations for College Math' },
+                        { code: 'CPPA121', name: 'CPPA 121 — Ontario Politics and Government (POG310, PPA522)' },
                       ]},
                       { key: 'w2026', label: 'Winter 2026', courses: [
-                        { code: 'CPPA122', name: 'CPPA 122 — College Math' },
-                        { code: 'CFNF400', name: 'CFNF 400 — Contemporary Nutrition and Healthy Living' },
-                        { code: 'CASL101', name: 'CASL 101 — Introduction to American Sign Language I' },
+                        { code: 'CPPA122', name: 'CPPA 122 — Local Politics and Government (POL122)' },
+                        { code: 'CFNF400', name: 'CFNF 400 — Human Sexuality' },
+                        { code: 'CASL101', name: 'CASL 101 — American Sign Language' },
                       ]},
                       { key: 'ss2026', label: 'Spring/Summer 2026', courses: [
-                        { code: 'CECN210', name: 'CECN 210 — Introduction to Macroeconomics' },
+                        { code: 'CECN210', name: 'CECN 210 — Understanding Economics' },
                         { code: 'CPHL110', name: 'CPHL 110 — Philosophy of Religion' },
                         { code: 'CHIS105', name: 'CHIS 105 — Inventing Popular Culture' },
                       ]},
@@ -16515,22 +16517,22 @@ export default function Dashboard() {
                 {(() => {
                   const semesterDefs = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', courses: [
-                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Introduction to Professional Communication', period: 'First Half (May 5 – Jun 20)' },
-                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Computers and Information Technology', period: 'First Half (May 5 – Jun 20)' },
-                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Professional Communication in Practice', period: 'Second Half (Jun 23 – Aug 8)' },
+                      { code: 'CPPA101', name: 'CPPA 101', fullName: 'Cdn Public Admin I: Institutions (PPA322)', period: 'First Half (May 5 – Jun 20)' },
+                      { code: 'CPPA120', name: 'CPPA 120', fullName: 'Canadian Politics and Government (POL332, POG210)', period: 'First Half (May 5 – Jun 20)' },
+                      { code: 'CPPA102', name: 'CPPA 102', fullName: 'Cdn Public Admin II: Processes (PPA422)', period: 'Second Half (Jun 23 – Aug 8)' },
                     ]},
                     { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025', courses: [
-                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Computer Apps in the Workplace', period: 'Full Semester' },
+                      { code: 'CPPA125', name: 'CPPA 125', fullName: 'Rights, Equity and the State (POG315, PPA521)', period: 'Full Semester' },
                       { code: 'CGCM738', name: 'CGCM 738', fullName: 'Photoshopped! The Art of Image Retouching', period: 'Full Semester' },
-                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Foundations for College Math', period: 'Full Semester' },
+                      { code: 'CPPA121', name: 'CPPA 121', fullName: 'Ontario Politics and Government (POG310, PPA522)', period: 'Full Semester' },
                     ]},
                     { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026', courses: [
-                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'College Math', period: 'Full Semester' },
-                      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Contemporary Nutrition and Healthy Living', period: 'Full Semester' },
-                      { code: 'CASL101', name: 'CASL 101', fullName: 'Introduction to American Sign Language I', period: 'Full Semester' },
+                      { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government (POL122)', period: 'Full Semester' },
+                      { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: 'Full Semester' },
+                      { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: 'Full Semester' },
                     ]},
                     { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026', courses: [
-                      { code: 'CECN210', name: 'CECN 210', fullName: 'Introduction to Macroeconomics', period: 'Full Semester (May 4 – Jul 31)' },
+                      { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'Full Semester (May 4 – Jul 31)' },
                       { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'First Half (May 5 – Jun 16)' },
                       { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Second Half (Jun 23 – Aug 4)' },
                     ]},
@@ -16612,27 +16614,25 @@ export default function Dashboard() {
                       >
                         <div className="w-2 h-2 rounded-full flex-shrink-0 mr-2" style={{ background: dotColor }} />
                         <span className="text-[11px] font-bold text-white" style={{ width: '58px', minWidth: '58px' }}>{displayName}</span>
-                        {subtitle && <span className="text-[10px] text-white/80 truncate mr-1">— {subtitle}</span>}
+                        {subtitle && <span className="text-[10px] text-white truncate mr-1">— {subtitle}</span>}
                         <span className="text-[9px] text-white/60 ml-1 whitespace-nowrap flex-1">{semCourse.period}</span>
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
-                        {isCurrentCourse && (
-                          <span
-                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap mr-2 font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
-                            data-testid={`aas-status-${semCourse.code}`}
-                            onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
-                          >
-                            {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
-                          </span>
-                        )}
-                        <div className="flex items-center gap-2" style={{ width: '230px', minWidth: '230px', justifyContent: 'flex-end' }}>
-                          <span className="text-[10px] text-white/80 truncate" style={{ width: '120px', minWidth: '120px', textAlign: 'right' }}>
+                        <div className="flex items-center gap-2" style={{ justifyContent: 'flex-end' }}>
+                          <span className="text-[10px] text-white truncate" style={{ width: '120px', minWidth: '120px', textAlign: 'right' }}>
                             {(currentCourse?.professor || profInfo.professor) ? <span className="underline">{currentCourse?.professor || profInfo.professor}</span> : ''}
                           </span>
-                          {grade && <span className="text-[10px] text-white font-medium" style={{ width: '30px', minWidth: '30px', textAlign: 'right' }}>{grade}%</span>}
-                          {!grade && <span style={{ width: '30px', minWidth: '30px' }} />}
+                          {isCurrentCourse && (
+                            <span
+                              className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                              data-testid={`aas-status-${semCourse.code}`}
+                              onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
+                            >
+                              {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
+                            </span>
+                          )}
                           <select
                             className="text-[9px] text-white bg-white/10 rounded px-1.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-                            style={{ width: '42px', minWidth: '42px' }}
+                            style={{ width: '48px', minWidth: '48px', marginRight: '-7px' }}
                             value={currentPriority}
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => {
@@ -16649,7 +16649,8 @@ export default function Dashboard() {
                           </select>
                         </div>
                         <button
-                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 ml-1"
+                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                          style={{ marginLeft: '-3px' }}
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingSchoolCourseKey(semCourse.code);
@@ -16682,7 +16683,7 @@ export default function Dashboard() {
                                   <span className="text-[9px] text-white ml-1">{sem.dates}</span>
                                   {isCurrentSem && <span className="text-[8px] font-bold text-white bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
                                 </div>
-                                <span className="text-[9px] text-white/60">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
+                                <span className="text-[9px] text-white">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
                               <div className="p-2 space-y-1.5">
                                 {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
