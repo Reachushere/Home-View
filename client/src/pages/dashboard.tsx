@@ -2914,6 +2914,15 @@ export default function Dashboard() {
     localStorage.setItem('coursesData', JSON.stringify(data));
     setIsCoursesDialogOpen(false);
     toast({ title: "Courses saved", description: "Your courses have been updated." });
+    const colorPayload: Record<string, string | null> = {};
+    for (let i = 0; i < 3; i++) {
+      const course = data.courses[i];
+      if (course) {
+        colorPayload[`course${i + 1}Color`] = course.color || null;
+        colorPayload[`course${i + 1}ColorEnd`] = course.colorEnd || null;
+      }
+    }
+    fetch('/api/semester', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(colorPayload) }).catch(() => {});
   };
 
   const saveSemesterScheduleMutation = useMutation({
@@ -5068,6 +5077,27 @@ export default function Dashboard() {
     }
     return map;
   }, [allSemesterSettings, deliveryModeVersion]);
+
+  useEffect(() => {
+    if (!semesterSettings) return;
+    const dbColors: Record<number, { color?: string; colorEnd?: string }> = {};
+    for (let i = 1; i <= 3; i++) {
+      const c = (semesterSettings as any)[`course${i}Color`];
+      const ce = (semesterSettings as any)[`course${i}ColorEnd`];
+      if (c) dbColors[i - 1] = { color: c, colorEnd: ce || undefined };
+    }
+    if (Object.keys(dbColors).length > 0) {
+      setCoursesData(prev => {
+        const updated = { ...prev, courses: prev.courses.map((course, idx) => {
+          const db = dbColors[idx];
+          if (db) return { ...course, color: db.color || course.color, colorEnd: db.colorEnd || course.colorEnd };
+          return course;
+        })};
+        localStorage.setItem('coursesData', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  }, [semesterSettings]);
 
   useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
@@ -17429,6 +17459,8 @@ export default function Dashboard() {
                       [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
                       [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
                       [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
+                      [`${prefix}Color`]: courseData.color || null,
+                      [`${prefix}ColorEnd`]: courseData.colorEnd || null,
                     };
                     saveSemesterScheduleMutation.mutate(schedulePayload);
                   }
@@ -17525,6 +17557,8 @@ export default function Dashboard() {
                     [`${prefix}EndDate`]: wizardData.endDate ? new Date(wizardData.endDate).toISOString() : null,
                     [`${prefix}CourseType`]: wizardData.courseType || null,
                     [`${prefix}ZoomLink`]: wizardData.zoomLink || null,
+                    [`${prefix}Color`]: wizardData.color || null,
+                    [`${prefix}ColorEnd`]: wizardData.colorEnd || null,
                   };
                   saveSemesterScheduleMutation.mutate(schedulePayload);
                 }
