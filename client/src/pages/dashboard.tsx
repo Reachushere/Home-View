@@ -8032,7 +8032,7 @@ export default function Dashboard() {
   // Track calendar wrapper and course rows positions for course button alignment
   useEffect(() => {
     const updatePositions = () => {
-      if (isResizingThisWeek) return;
+      if (isResizingThisWeek || isResizingHomework) return;
       if (calendarWrapperRef.current) {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
         const newTop = Math.round(rect.top + window.scrollY);
@@ -8092,7 +8092,7 @@ export default function Dashboard() {
     let rafId: number;
     let lastRunTime = 0;
     const rafUpdatePositions = () => {
-      if (isResizingThisWeek) return;
+      if (isResizingThisWeek || isResizingHomework) return;
       const now = performance.now();
       if (now - lastRunTime < 500) return;
       cancelAnimationFrame(rafId);
@@ -8106,7 +8106,7 @@ export default function Dashboard() {
       window.removeEventListener('resize', rafUpdatePositions);
       cancelAnimationFrame(rafId);
     };
-  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, gridSizes.allDayRowHeight]);
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, isResizingHomework, gridSizes.allDayRowHeight]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
@@ -21472,7 +21472,7 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             overflow: 'visible',
-            right: '14px',
+            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
