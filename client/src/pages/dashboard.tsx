@@ -13708,6 +13708,10 @@ export default function Dashboard() {
               setSelectedCertCourse(null);
               toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
             }}
+            onOpenEditTask={(task) => {
+              setSelectedCertCourse(null);
+              setEditingTask(task);
+            }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}
           />

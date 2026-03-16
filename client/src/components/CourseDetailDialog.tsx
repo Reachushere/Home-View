@@ -87,6 +87,7 @@ interface CourseDetailDialogProps {
   onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string; semesterTerm?: string; year?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
+  onOpenEditTask?: (task: Task) => void;
   semesterStart: Date;
   readingWeekStart: Date | null;
   certificateName?: string;
@@ -171,7 +172,7 @@ function percentToLetterGrade(pct: number): string {
   return 'F';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, onDeleteCourse, semesterStart, readingWeekStart, certificateName }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -266,21 +267,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     };
   }, [courseTasks, totalWeight]);
 
-  const overallPercent = useMemo(() => {
-    const sumTotal = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
-    const sumValue = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-    if (sumTotal === 0) return null;
-    return Math.round((sumValue / sumTotal) * 100);
-  }, [courseTasks]);
-
   const onGradeCalculatedRef = useRef(onGradeCalculated);
   onGradeCalculatedRef.current = onGradeCalculated;
 
   useEffect(() => {
-    if (onGradeCalculatedRef.current && overallPercent !== null) {
-      onGradeCalculatedRef.current(percentToLetterGrade(overallPercent), String(overallPercent));
+    if (onGradeCalculatedRef.current && gradeCalc) {
+      onGradeCalculatedRef.current(gradeCalc.currentGrade, String(gradeCalc.currentPercent));
     }
-  }, [overallPercent]);
+  }, [gradeCalc?.currentPercent]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: Record<string, any>) => {
@@ -325,124 +319,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     },
   });
 
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [editTaskData, setEditTaskData] = useState<{
-    title: string;
-    type: string;
-    dueDate: string;
-    dueTime: string;
-    eventStartTime: string;
-    eventEndTime: string;
-    prepDays: number;
-    priority: string;
-    description: string;
-    reminder1: number;
-    reminder2: number;
-    reminder3: number | null;
-    reminder4: number | null;
-    gradeWeight: string;
-    gradeTotal: string;
-    gradeValue: string;
-    notes: string;
-    referenceLink: string;
-    attachments: string[];
-    pasteUrl: string;
-    repeatType: string;
-    repeatInterval: number | null;
-    repeatIntervalUnit: string | null;
-    repeatEndDate: string;
-  } | null>(null);
-
-  const openEditTask = (task: Task) => {
-    const d = new Date(task.dueDate);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-    let prepDays = 0;
-    if (task.startDate) {
-      const diff = Math.round((d.getTime() - new Date(task.startDate).getTime()) / (1000 * 60 * 60 * 24));
-      if (diff > 0) prepDays = diff;
-    }
-    setEditingTask(task);
-    setEditTaskData({
-      title: task.title,
-      type: task.type,
-      dueDate: dateStr,
-      dueTime: timeStr,
-      eventStartTime: task.eventStartTime || '',
-      eventEndTime: task.eventEndTime || '',
-      prepDays,
-      priority: task.priority || 'medium',
-      description: task.description || '',
-      reminder1: task.reminder1 ?? 30,
-      reminder2: task.reminder2 ?? 120,
-      reminder3: task.reminder3 ?? null,
-      reminder4: task.reminder4 ?? null,
-      gradeWeight: task.gradeWeight?.toString() || '',
-      gradeTotal: task.gradeTotal?.toString() || '',
-      gradeValue: task.gradeValue?.toString() || '',
-      notes: task.notes || '',
-      referenceLink: task.referenceLink || '',
-      attachments: task.attachments || [],
-      pasteUrl: '',
-      repeatType: task.repeatType || 'none',
-      repeatInterval: task.repeatInterval || null,
-      repeatIntervalUnit: task.repeatIntervalUnit || null,
-      repeatEndDate: task.repeatEndDate ? (() => { const rd = new Date(task.repeatEndDate!); return `${rd.getFullYear()}-${String(rd.getMonth() + 1).padStart(2, '0')}-${String(rd.getDate()).padStart(2, '0')}`; })() : '',
-    });
-  };
-
   const updateTaskMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Record<string, any> }) => {
       return apiRequest("PATCH", `/api/tasks/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-      setEditingTask(null);
-      setEditTaskData(null);
-      toast({ title: "Updated", description: "Assignment updated successfully." });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to update task.", variant: "destructive" });
     },
   });
-
-  const handleSaveEditTask = () => {
-    if (!editingTask || !editTaskData) return;
-    const dueDate = new Date(`${editTaskData.dueDate}T${editTaskData.dueTime}`);
-    let startDate: string | null = null;
-    if (editTaskData.prepDays > 0) {
-      const sd = new Date(dueDate);
-      sd.setDate(sd.getDate() - editTaskData.prepDays);
-      startDate = sd.toISOString();
-    }
-    updateTaskMutation.mutate({
-      id: editingTask.id,
-      data: {
-        title: editTaskData.title,
-        type: editTaskData.type,
-        dueDate: dueDate.toISOString(),
-        startDate,
-        eventStartTime: editTaskData.eventStartTime || null,
-        eventEndTime: editTaskData.eventEndTime || null,
-        priority: editTaskData.priority,
-        description: editTaskData.description || '',
-        reminder1: editTaskData.reminder1,
-        reminder2: editTaskData.reminder2,
-        reminder3: editTaskData.reminder3,
-        reminder4: editTaskData.reminder4,
-        gradeWeight: editTaskData.gradeWeight ? parseInt(editTaskData.gradeWeight) : null,
-        gradeTotal: editTaskData.gradeTotal ? parseInt(editTaskData.gradeTotal) : null,
-        gradeValue: editTaskData.gradeValue ? parseInt(editTaskData.gradeValue) : null,
-        notes: editTaskData.notes || null,
-        referenceLink: editTaskData.referenceLink || '',
-        attachments: editTaskData.attachments.length > 0 ? editTaskData.attachments : [],
-        repeatType: editTaskData.repeatType,
-        repeatInterval: editTaskData.repeatType === 'custom' ? editTaskData.repeatInterval : null,
-        repeatIntervalUnit: editTaskData.repeatType === 'custom' ? editTaskData.repeatIntervalUnit : null,
-        repeatEndDate: editTaskData.repeatEndDate ? new Date(editTaskData.repeatEndDate + 'T00:00').toISOString() : null,
-      },
-    });
-  };
 
   const handleUploadAssignment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1082,14 +969,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 return (
                   <div
                     key={task.id}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition-all cursor-pointer ${
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition-all ${
                       task.isCompleted
                         ? "bg-white/5 border-white/5 opacity-60"
                         : overdue
                         ? "bg-red-500/10 border-red-500/20"
                         : "bg-white/5 border-white/10 hover:bg-white/8"
                     }`}
-                    onClick={() => openEditTask(task)}
                     data-testid={`assignment-row-${task.id}`}
                   >
                     <button
@@ -1103,7 +989,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </button>
                     <TypeIcon className="h-3 w-3 text-white flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className={`text-[10px] font-medium truncate flex items-center gap-1 ${task.isCompleted ? "line-through text-white" : "text-white"}`}>
+                      <div
+                        className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white" : "text-white"}`}
+                        onClick={() => onOpenEditTask?.(task)}
+                        data-testid={`link-edit-task-${task.id}`}
+                      >
                         {task.title}
                         {task.attachments && task.attachments.length > 0 && (
                           <Paperclip className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 inline" />
@@ -1255,385 +1145,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </div>
         </div>
       </div>
-
-      {editingTask && editTaskData && (
-        <div
-          className="fixed inset-0 z-[10004] flex items-center justify-center bg-black/50"
-          onClick={() => { setEditingTask(null); setEditTaskData(null); }}
-          data-testid="edit-task-overlay"
-        >
-          <div
-            className="rounded-xl w-[480px] max-w-[95vw] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl"
-            style={{
-              fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-              background: 'linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-            data-testid="edit-task-popup"
-          >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <div className="flex items-center gap-2">
-                <Pencil className="h-3.5 w-3.5 text-white" />
-                <h3 className="text-[12px] font-medium text-white">Edit Assignment</h3>
-              </div>
-              <button onClick={() => { setEditingTask(null); setEditTaskData(null); }} className="text-white/60 hover:text-white transition-colors p-1" data-testid="button-close-edit-task">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="overflow-y-auto flex-1 p-4 space-y-4" style={{ scrollbarWidth: 'thin' }}>
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Type</Label>
-                <div className="flex flex-wrap gap-1.5">
-                  {TASK_TYPE_OPTIONS.map(opt => {
-                    const Icon = opt.icon;
-                    return (
-                      <button
-                        key={opt.value}
-                        className={`px-2 py-1 rounded text-[10px] flex items-center gap-1 transition-colors ${editTaskData.type === opt.value ? 'bg-white/20 border border-white/30 text-white' : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10'}`}
-                        onClick={() => setEditTaskData(p => p ? { ...p, type: opt.value } : p)}
-                        data-testid={`edit-task-type-${opt.value}`}
-                      >
-                        <Icon className="h-2.5 w-2.5" />
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Title</Label>
-                <Input
-                  value={editTaskData.title}
-                  onChange={(e) => setEditTaskData(p => p ? { ...p, title: e.target.value } : p)}
-                  className="h-8 text-[11px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
-                  data-testid="edit-task-title"
-                />
-              </div>
-
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Description</Label>
-                <textarea
-                  value={editTaskData.description}
-                  onChange={(e) => setEditTaskData(p => p ? { ...p, description: e.target.value } : p)}
-                  placeholder="Optional description..."
-                  rows={2}
-                  className="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-[11px] placeholder:text-white/25 focus:outline-none focus:border-white/30 resize-none"
-                  data-testid="edit-task-description"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Due Date</Label>
-                  <input
-                    type="date"
-                    value={editTaskData.dueDate}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, dueDate: e.target.value } : p)}
-                    className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                    data-testid="edit-task-due-date"
-                  />
-                </div>
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Due Time</Label>
-                  <input
-                    type="time"
-                    value={editTaskData.dueTime}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, dueTime: e.target.value } : p)}
-                    className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                    data-testid="edit-task-due-time"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Event Start Time</Label>
-                  <input
-                    type="time"
-                    value={editTaskData.eventStartTime}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, eventStartTime: e.target.value } : p)}
-                    className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                    data-testid="edit-task-start-time"
-                  />
-                </div>
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Event End Time</Label>
-                  <input
-                    type="time"
-                    value={editTaskData.eventEndTime}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, eventEndTime: e.target.value } : p)}
-                    className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                    data-testid="edit-task-end-time"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Prep Days</Label>
-                  <select
-                    value={editTaskData.prepDays}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, prepDays: parseInt(e.target.value) } : p)}
-                    className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                    data-testid="edit-task-prep-days"
-                  >
-                    {Array.from({ length: 15 }, (_, i) => (
-                      <option key={i} value={i} style={{ color: 'black' }}>{i === 0 ? 'None' : `${i} day${i > 1 ? 's' : ''}`}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Priority</Label>
-                  <select
-                    value={editTaskData.priority}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, priority: e.target.value } : p)}
-                    className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                    data-testid="edit-task-priority"
-                  >
-                    <option value="low" style={{ color: 'black' }}>Low</option>
-                    <option value="medium" style={{ color: 'black' }}>Medium</option>
-                    <option value="high" style={{ color: 'black' }}>High</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Grade Weight (%)</Label>
-                  <Input
-                    type="number"
-                    value={editTaskData.gradeWeight}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, gradeWeight: e.target.value } : p)}
-                    placeholder="e.g. 20"
-                    className="h-8 text-[11px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
-                    data-testid="edit-task-weight"
-                  />
-                </div>
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Total Points</Label>
-                  <Input
-                    type="number"
-                    value={editTaskData.gradeTotal}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, gradeTotal: e.target.value } : p)}
-                    placeholder="e.g. 100"
-                    className="h-8 text-[11px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
-                    data-testid="edit-task-total"
-                  />
-                </div>
-                <div>
-                  <Label className="text-[9px] text-white/60 mb-1 block">Score Earned</Label>
-                  <Input
-                    type="number"
-                    value={editTaskData.gradeValue}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, gradeValue: e.target.value } : p)}
-                    placeholder="e.g. 85"
-                    className="h-8 text-[11px] bg-white/10 border-white/15 text-white placeholder:text-white/25"
-                    data-testid="edit-task-value"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { label: 'Reminder 1', key: 'reminder1' as const },
-                  { label: 'Reminder 2', key: 'reminder2' as const },
-                  { label: 'Reminder 3', key: 'reminder3' as const },
-                  { label: 'Reminder 4', key: 'reminder4' as const },
-                ].map(r => (
-                  <div key={r.key}>
-                    <Label className="text-[9px] text-white/60 mb-1 block">{r.label}</Label>
-                    <select
-                      value={editTaskData[r.key] ?? 0}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value);
-                        setEditTaskData(p => p ? { ...p, [r.key]: val === 0 && (r.key === 'reminder3' || r.key === 'reminder4') ? null : val } : p);
-                      }}
-                      className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                      data-testid={`edit-task-${r.key}`}
-                    >
-                      {REMINDER_OPTIONS.map(opt => (
-                        <option key={opt.value} value={opt.value} style={{ color: 'black' }}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Attachments</Label>
-                <div className="flex gap-2 mb-2">
-                  <label className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer text-[10px] text-white/60">
-                    <Upload className="h-3 w-3" />
-                    Upload file
-                    <input
-                      type="file"
-                      className="hidden"
-                      multiple
-                      onChange={async (e) => {
-                        const files = e.target.files;
-                        if (!files) return;
-                        for (const file of Array.from(files)) {
-                          try {
-                            const result = await uploadFile(file);
-                            if (result?.objectPath) {
-                              setEditTaskData(p => p ? { ...p, attachments: [...p.attachments, result.objectPath] } : p);
-                            }
-                          } catch {
-                            toast({ title: "Upload failed", variant: "destructive" });
-                          }
-                        }
-                      }}
-                      data-testid="edit-task-file-upload"
-                    />
-                  </label>
-                </div>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="url"
-                    value={editTaskData.pasteUrl}
-                    onChange={(e) => setEditTaskData(p => p ? { ...p, pasteUrl: e.target.value } : p)}
-                    placeholder="Paste URL to attach..."
-                    className="flex-1 bg-white/10 border border-white/15 rounded-md px-2 py-1.5 text-white text-[10px] placeholder:text-white/25 focus:outline-none focus:border-white/30"
-                    data-testid="edit-task-paste-url"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && editTaskData.pasteUrl.trim()) {
-                        setEditTaskData(p => p ? { ...p, attachments: [...p.attachments, p.pasteUrl.trim()], pasteUrl: '' } : p);
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      if (editTaskData.pasteUrl.trim()) {
-                        setEditTaskData(p => p ? { ...p, attachments: [...p.attachments, p.pasteUrl.trim()], pasteUrl: '' } : p);
-                      }
-                    }}
-                    className="px-2 py-1.5 rounded-md text-[10px] bg-white/15 text-white hover:bg-white/25 transition-colors"
-                    data-testid="edit-task-paste-url-add"
-                  >
-                    Add
-                  </button>
-                </div>
-                {editTaskData.attachments.length > 0 && (
-                  <div className="flex flex-col gap-1">
-                    {editTaskData.attachments.map((att, idx) => (
-                      <div key={idx} className="flex items-center gap-2 bg-white/5 rounded px-2 py-1 border border-white/10">
-                        <Paperclip className="h-2.5 w-2.5 text-white/40 flex-shrink-0" />
-                        <span className="text-white/70 text-[10px] truncate flex-1">{att.split('/').pop() || att}</span>
-                        <button
-                          onClick={() => setEditTaskData(p => p ? { ...p, attachments: p.attachments.filter((_, i) => i !== idx) } : p)}
-                          className="text-white/30 hover:text-red-400 transition-colors"
-                          data-testid={`edit-task-remove-attachment-${idx}`}
-                        >
-                          <X className="h-2.5 w-2.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Notes</Label>
-                <textarea
-                  value={editTaskData.notes}
-                  onChange={(e) => setEditTaskData(p => p ? { ...p, notes: e.target.value } : p)}
-                  placeholder="Add any notes..."
-                  rows={2}
-                  className="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-[11px] placeholder:text-white/25 focus:outline-none focus:border-white/30 resize-none"
-                  data-testid="edit-task-notes"
-                />
-              </div>
-
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Reference Link</Label>
-                <input
-                  type="url"
-                  value={editTaskData.referenceLink}
-                  onChange={(e) => setEditTaskData(p => p ? { ...p, referenceLink: e.target.value } : p)}
-                  placeholder="https://..."
-                  className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] placeholder:text-white/25 focus:outline-none focus:border-white/30"
-                  data-testid="edit-task-reference-link"
-                />
-              </div>
-
-              <div>
-                <Label className="text-[9px] text-white/60 mb-1 block">Repeat</Label>
-                <select
-                  value={editTaskData.repeatType}
-                  onChange={(e) => setEditTaskData(p => p ? { ...p, repeatType: e.target.value } : p)}
-                  className="w-full h-8 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[11px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                  data-testid="edit-task-repeat-type"
-                >
-                  {REPEAT_TYPES.map(rt => (
-                    <option key={rt} value={rt} style={{ color: 'black' }}>{rt.charAt(0).toUpperCase() + rt.slice(1)}</option>
-                  ))}
-                </select>
-                {editTaskData.repeatType === 'custom' && (
-                  <div className="flex gap-2 items-center mt-2">
-                    <span className="text-white/50 text-[10px]">Every</span>
-                    <input
-                      type="number"
-                      min={1}
-                      value={editTaskData.repeatInterval ?? 1}
-                      onChange={(e) => setEditTaskData(p => p ? { ...p, repeatInterval: parseInt(e.target.value) || 1 } : p)}
-                      className="w-14 h-7 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[10px] focus:outline-none focus:border-white/30"
-                      data-testid="edit-task-repeat-interval"
-                    />
-                    <select
-                      value={editTaskData.repeatIntervalUnit ?? 'days'}
-                      onChange={(e) => setEditTaskData(p => p ? { ...p, repeatIntervalUnit: e.target.value } : p)}
-                      className="h-7 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[10px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                      data-testid="edit-task-repeat-unit"
-                    >
-                      {REPEAT_INTERVAL_UNITS.map(u => (
-                        <option key={u} value={u} style={{ color: 'black' }}>{u}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                {editTaskData.repeatType !== 'none' && (
-                  <div className="mt-2">
-                    <span className="text-white/50 text-[10px]">End date (optional)</span>
-                    <input
-                      type="date"
-                      value={editTaskData.repeatEndDate}
-                      onChange={(e) => setEditTaskData(p => p ? { ...p, repeatEndDate: e.target.value } : p)}
-                      className="w-full h-7 mt-1 bg-white/10 border border-white/15 rounded-md px-2 text-white text-[10px] focus:outline-none focus:border-white/30 [color-scheme:dark]"
-                      data-testid="edit-task-repeat-end-date"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-white/20 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.2)' }}>
-              <button
-                onClick={() => { setEditingTask(null); setEditTaskData(null); }}
-                className="px-4 py-1.5 text-[11px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors"
-                data-testid="button-cancel-edit-task"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveEditTask}
-                disabled={updateTaskMutation.isPending || !editTaskData.title.trim() || !editTaskData.dueDate}
-                className="px-4 py-1.5 text-[11px] rounded text-white transition-colors disabled:opacity-30"
-                style={{
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  border: '1px solid rgba(255,255,255,0.4)',
-                  boxShadow: '0 0 6px rgba(255,255,255,0.4)',
-                }}
-                data-testid="button-save-edit-task"
-              >
-                {updateTaskMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showDeleteConfirm && (
         <div
