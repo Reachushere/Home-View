@@ -16626,7 +16626,7 @@ export default function Dashboard() {
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9, marginLeft: '-12px' }} />
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '39px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9, marginLeft: '-12px' }} />
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '22px', height: 'auto', opacity: 0.9, marginLeft: '-14px' }} /> : null;
                         })()}
                         </div>
@@ -18807,7 +18807,7 @@ export default function Dashboard() {
                       if (!dm) {
                         try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cCode]?.deliveryMode || ''; } } catch {}
                       }
-                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '37px', height: 'auto', marginTop: '3px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', marginTop: '3px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
                         : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '18px', height: 'auto', marginTop: '3px', opacity: 0.9 }} /> : null;
                     })()}
                   </div>
