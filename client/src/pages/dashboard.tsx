@@ -16711,7 +16711,7 @@ export default function Dashboard() {
                             const levelDone = levelTotal - levelNeeded;
                             return (
                               <div key={level} className="flex flex-col">
-                                <div className="px-3 py-2 border-b border-white/10 flex items-center justify-between" style={{ borderTop: `3px solid ${levelColors[level]}` }}>
+                                <div className="px-3 py-2 flex items-center justify-between" style={{ borderTop: `3px solid ${levelColors[level]}` }}>
                                   <span className="text-[9px] font-bold text-white">{levelLabels[level]}</span>
                                   <span className="text-[8px] text-white/60 font-semibold">{levelDone}/{levelTotal}</span>
                                 </div>
