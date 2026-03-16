@@ -14441,6 +14441,13 @@ export default function Dashboard() {
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15)' }}>
                   <span className="text-[12px] font-normal text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>WHAT WOULD YOU LIKE TO ADD?</span>
+                  <button
+                    onClick={() => setIsAddChooserOpen(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-chooser"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
                 <div className="flex flex-col gap-3 p-6">
                   <Button
