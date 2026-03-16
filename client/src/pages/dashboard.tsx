@@ -16478,7 +16478,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white', position: 'relative' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
+              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'none', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
                 <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
                   <Button
                     type="button"
@@ -16657,7 +16657,7 @@ export default function Dashboard() {
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.35)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.5)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.45)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.55)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.35)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.4)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
@@ -16678,14 +16678,16 @@ export default function Dashboard() {
                 })()}
               </div>
               {coursesScrolled && (
-                <button
-                  className="absolute right-4 bottom-4 z-10 rounded-full flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
-                  style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(8px)' }}
-                  onClick={() => coursesScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-                  data-testid="button-courses-scroll-top"
-                >
-                  <ChevronUp className="text-white" style={{ width: '18px', height: '18px' }} />
-                </button>
+                <div style={{ position: 'absolute', right: '16px', bottom: '16px', zIndex: 10 }}>
+                  <button
+                    className="rounded-full flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+                    style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(8px)' }}
+                    onClick={() => coursesScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+                    data-testid="button-courses-scroll-top"
+                  >
+                    <ChevronUp className="text-white" style={{ width: '18px', height: '18px' }} />
+                  </button>
+                </div>
               )}
               {editingSchoolCourseKey && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setEditingSchoolCourseKey(null)}>
