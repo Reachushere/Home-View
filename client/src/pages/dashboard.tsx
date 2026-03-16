@@ -13187,7 +13187,7 @@ export default function Dashboard() {
                   type="button" 
                   variant="outline"
                   className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: '12px', marginRight: '5px' }}
                   onClick={() => setIsSettingsPanelOpen(false)}
                   data-testid="button-cancel-settings-panel"
                 >
