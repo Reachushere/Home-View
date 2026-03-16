@@ -2691,7 +2691,13 @@ export default function Dashboard() {
   const [showRankCoursesReminder, setShowRankCoursesReminder] = useState(false);
 
   const toggleAasSent = (courseCode: string) => {
-    const updated = { ...aasSentStatus, [courseCode]: !aasSentStatus[courseCode] };
+    const norm = courseCode.replace(/\s/g, '');
+    const withSpace = courseCode.includes(' ') ? courseCode : courseCode.replace(/^([A-Z]+)(\d)/, '$1 $2');
+    const updated = { ...aasSentStatus };
+    const newVal = !(updated[norm] || updated[withSpace] || updated[courseCode]);
+    updated[norm] = newVal;
+    updated[withSpace] = newVal;
+    updated[courseCode] = newVal;
     setAasSentStatus(updated);
     localStorage.setItem('aasSentStatus', JSON.stringify(updated));
   };
@@ -16084,12 +16090,12 @@ export default function Dashboard() {
                             <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" />
                           </button>
                           <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
-                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
-                              {aasSentStatus[courseCode] && (
+                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
+                              {(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) && (
                                 <Check className="w-2.5 h-2.5 text-white" />
                               )}
                             </div>
-                            <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-blue-400' : 'text-amber-400'}`}>
+                            <span className={`text-[10px] ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'text-blue-400' : 'text-amber-400'}`}>
                               AAS
                             </span>
                           </label>
@@ -16129,6 +16135,81 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
+
+                  {/* All Semester Courses - matching School Courses page */}
+                  {(() => {
+                    const allSemDefs = [
+                      { key: 'ss2025', label: 'Spring/Summer 2025', courses: [
+                        { code: 'CPPA101', name: 'CPPA 101 — Introduction to Professional Communication' },
+                        { code: 'CPPA120', name: 'CPPA 120 — Computers and Information Technology' },
+                        { code: 'CPPA102', name: 'CPPA 102 — Professional Communication in Practice' },
+                      ]},
+                      { key: 'f2025', label: 'Fall 2025', courses: [
+                        { code: 'CPPA125', name: 'CPPA 125 — Computer Apps in the Workplace' },
+                        { code: 'CGCM738', name: 'CGCM 738 — Photoshopped! The Art of Image Retouching' },
+                        { code: 'CPPA121', name: 'CPPA 121 — Foundations for College Math' },
+                      ]},
+                      { key: 'w2026', label: 'Winter 2026', courses: [
+                        { code: 'CPPA122', name: 'CPPA 122 — College Math' },
+                        { code: 'CFNF400', name: 'CFNF 400 — Contemporary Nutrition and Healthy Living' },
+                        { code: 'CASL101', name: 'CASL 101 — Introduction to American Sign Language I' },
+                      ]},
+                      { key: 'ss2026', label: 'Spring/Summer 2026', courses: [
+                        { code: 'CECN210', name: 'CECN 210 — Introduction to Macroeconomics' },
+                        { code: 'CPHL110', name: 'CPHL 110 — Philosophy of Religion' },
+                        { code: 'CHIS105', name: 'CHIS 105 — Inventing Popular Culture' },
+                      ]},
+                    ];
+                    const activeCodes = new Set(coursesData.courses.filter(c => c.name.trim()).map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '')));
+                    const currentSemKey = (() => {
+                      const now = new Date();
+                      if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
+                      if (now >= new Date('2025-09-01') && now <= new Date('2025-12-31')) return 'f2025';
+                      if (now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return 'w2026';
+                      if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return 'ss2026';
+                      return '';
+                    })();
+                    return allSemDefs.map(sem => {
+                      const nonActiveCourses = sem.courses.filter(c => !activeCodes.has(c.code.toUpperCase().replace(/\s/g, '')));
+                      if (nonActiveCourses.length === 0 && sem.key === currentSemKey) return null;
+                      const isCurrentSem = sem.key === currentSemKey;
+                      const coursesToShow = sem.key === currentSemKey ? nonActiveCourses : sem.courses;
+                      if (coursesToShow.length === 0) return null;
+                      const profLookup = (code: string) => {
+                        const norm = code.replace(/\s/g, '');
+                        return pastCourseInfo[code] || pastCourseInfo[norm] || { professor: '', email: '', grade: '' };
+                      };
+                      return (
+                        <div key={sem.key} className="mt-2">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[9px] font-bold text-white/80">{sem.label}</span>
+                            {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-emerald-500/30">CURRENT</span>}
+                          </div>
+                          {coursesToShow.map(c => {
+                            const prof = profLookup(c.code);
+                            const norm = c.code.replace(/\s/g, '');
+                            const spaced = c.code.replace(/^([A-Z]+)(\d)/, '$1 $2');
+                            const aasChecked = aasSentStatus[norm] || aasSentStatus[spaced] || aasSentStatus[c.code];
+                            const grade = courseGrades[norm]?.percent || courseGrades[c.code]?.percent || (prof as any).grade || '';
+                            return (
+                              <div key={c.code} className="flex items-center gap-1.5 py-0.5 pl-1">
+                                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#3b82f6' }} />
+                                <span className="text-[10px] text-white/90 truncate flex-1">{c.name}</span>
+                                {grade && <span className="text-[9px] text-white/60 mr-1">{grade}%</span>}
+                                {(prof as any).professor && <span className="text-[9px] text-white/50 underline truncate" style={{ maxWidth: '80px' }}>{(prof as any).professor}</span>}
+                                <label className="flex items-center gap-0.5 ml-auto cursor-pointer flex-shrink-0" onClick={() => toggleAasSent(c.code)}>
+                                  <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasChecked ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
+                                    {aasChecked && <Check className="w-2.5 h-2.5 text-white" />}
+                                  </div>
+                                  <span className={`text-[9px] ${aasChecked ? 'text-blue-400' : 'text-amber-400'}`}>AAS</span>
+                                </label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
 
                 {/* Course Edit Dialog */}
@@ -16530,10 +16611,11 @@ export default function Dashboard() {
                         {certType && <span className="text-[7px] px-1 py-0.5 rounded-full bg-white/10 text-white/70 whitespace-nowrap mr-2">{certType}</span>}
                         {isCurrentCourse && (
                           <span
-                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap mr-2 font-medium ${aasSentStatus[semCourse.code] ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
+                            className={`text-[7px] px-1.5 py-0.5 rounded-full whitespace-nowrap mr-2 font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
                             data-testid={`aas-status-${semCourse.code}`}
+                            onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                           >
-                            {aasSentStatus[semCourse.code] ? '✓ AAS' : '⚠ AAS'}
+                            {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
                           </span>
                         )}
                         <div className="flex items-center gap-2" style={{ width: '230px', minWidth: '230px', justifyContent: 'flex-end' }}>
