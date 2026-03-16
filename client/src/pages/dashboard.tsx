@@ -22560,52 +22560,35 @@ export default function Dashboard() {
             }}
             data-testid="section-todo"
           >
-            {/* Header bar matching projects/files flyouts */}
-            <div 
-              className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20"
-            >
-              <Button 
-                variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
-                style={{
-                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)';
-                }}
-                onClick={() => {
-                  const newItems = [...todoItems, ''];
-                  setTodoItems(newItems);
-                  setTimeout(() => {
-                    const inputEl = document.querySelector(`[data-todo-idx="${newItems.length - 1}"]`) as HTMLInputElement;
-                    if (inputEl) inputEl.focus();
-                  }, 50);
-                }}
-                data-testid="button-add-item-flyout"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add To Do
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <CheckSquare className="h-3 w-3 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    TO DO ({todoItems.filter(item => item.trim() && !item.startsWith('✓')).length})
-                  </h2>
-                </div>
-                <button 
-                  onClick={() => setIsTodoFlyoutOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-todo-flyout"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+              <div className="flex items-center gap-2">
+                <ListTodo className="text-white" style={{ width: '15px', height: '15px' }} />
+                <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                  TO DO ({todoItems.filter(item => item.trim() && !item.startsWith('✓')).length})
+                </h2>
               </div>
             </div>
             <div className="flex-1 p-4 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+              <div className="mb-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-4"
+                  style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                  onClick={() => {
+                    const newItems = [...todoItems, ''];
+                    setTodoItems(newItems);
+                    setTimeout(() => {
+                      const inputEl = document.querySelector(`[data-todo-idx="${newItems.length - 1}"]`) as HTMLInputElement;
+                      if (inputEl) inputEl.focus();
+                    }, 50);
+                  }}
+                  data-testid="button-add-item-flyout"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add To Do
+                </Button>
+              </div>
               {todoItems.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-white/40 text-sm">
                   Click "Add To Do" to create an item
@@ -22655,6 +22638,20 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+            </div>
+            <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <Button
+                variant="outline"
+                onClick={() => setIsTodoFlyoutOpen(false)}
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+                style={{
+                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                  fontSize: '12px'
+                }}
+                data-testid="button-save-todo"
+              >
+                Save
+              </Button>
             </div>
           </section>
         </div>
