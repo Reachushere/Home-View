@@ -842,19 +842,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <label className="cursor-pointer" data-testid="button-upload-assignment">
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    className="hidden"
-                    onChange={handleUploadAssignment}
-                    disabled={isParsingPdf || isUploading}
-                  />
-                  <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                    {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                    {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
-                  </div>
-                </label>
                 <Button
                   size="sm"
                   onClick={() => setShowAddForm(!showAddForm)}
@@ -1223,9 +1210,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         </div>
 
         <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10 }}>
-          <div className="text-[9px] text-white">
-            {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
-          </div>
+          <label className="cursor-pointer" data-testid="button-upload-assignment">
+            <input
+              type="file"
+              accept=".pdf"
+              className="hidden"
+              onChange={handleUploadAssignment}
+              disabled={isParsingPdf || isUploading}
+            />
+            <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+              {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+              {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
+            </div>
+          </label>
           <div className="flex gap-2">
             <Button
               type="button"
