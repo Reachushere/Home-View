@@ -12689,8 +12689,8 @@ export default function Dashboard() {
       </div>
 
       {/* Time - fixed position */}
+      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25}px`, top: '10px', width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
       <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', marginLeft: '-14px', marginRight: '11px' }} />
         <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
