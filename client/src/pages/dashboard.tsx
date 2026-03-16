@@ -19676,29 +19676,16 @@ export default function Dashboard() {
                       const endColor = courseHexColorEnd || courseHexColor;
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
-                    const handlePlayFiles = async (_fileType: 'module' | 'reading') => {
-                      setIsLoadingOneDriveFiles(true);
-                      try {
-                        const resp = await fetch('/api/trigger-playback', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ weekNumber: selectedWeek }),
-                        });
-                        const data = await resp.json();
-                        if (data.action === 'playing') {
-                          toast({ title: `Playing: ${data.file?.name || 'file'}`, description: 'Sent to cat washroom speakers & tablet' });
-                        } else if (data.action === 'radio') {
-                          toast({ title: 'All readings complete', description: 'Playing CHUM FM 104.5' });
-                        } else {
-                          toast({ title: data.reason || 'No files to play', variant: 'destructive' });
-                        }
-                        queryClient.invalidateQueries({ queryKey: ["/api/files"] });
-                        refreshFileCounts();
-                      } catch (error) {
-                        console.error(`Error triggering playback:`, error);
-                        toast({ title: 'Playback failed', variant: 'destructive' });
-                      } finally {
-                        setIsLoadingOneDriveFiles(false);
+                    const handlePlayFiles = async (fileType: 'module' | 'reading') => {
+                      const courseCodeLower = courseCode.toLowerCase();
+                      const folderKey = `week-${selectedWeek}-${courseCodeLower}-${fileType}`;
+                      const filesForType = allFiles.filter(f => f.folder === folderKey);
+                      const unreadFile = filesForType.find(f => !f.listened);
+                      const targetFile = unreadFile || filesForType[0];
+                      if (targetFile) {
+                        setPreviewFile(targetFile);
+                      } else {
+                        toast({ title: `No ${fileType} files found for week ${selectedWeek}`, variant: 'destructive' });
                       }
                     };
                     if (courseProgressDataRef.current.length <= courseIdx) {
