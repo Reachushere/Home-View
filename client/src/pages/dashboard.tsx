@@ -12013,6 +12013,13 @@ export default function Dashboard() {
                     RADIO CONTROLS
                   </h2>
                 </div>
+                <button
+                  onClick={() => setIsRadioDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-radio"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
               <div className="flex flex-col gap-3 p-4">
                 {/* Speaker Selection */}
@@ -22673,55 +22680,38 @@ export default function Dashboard() {
               boxShadow: '10px 0 40px rgba(0,0,0,0.3)'
             }}
           >
-              {/* Header */}
-              <div 
-                className="flex items-center justify-between px-6 py-3 bg-black/30 border-b border-white/20"
-              >
-                <Button 
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200"
-                  style={{
-                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)';
-                  }}
-                  onClick={() => {
-                    setEditingProject(null);
-                    setProjectWizardStep(0);
-                    setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' });
-                    setProjectDialogOpen(true);
-                  }}
-                  data-testid="button-new-project-flyout"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Project
-                </Button>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <FolderOpen className="h-3 w-3 text-white" />
-                    <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                      PROJECTS ({allProjects.length})
-                    </h2>
-                    <span className="text-[10px] text-white/70">
-                      {allTasks.filter(t => t.projectId).length} tasks assigned
-                    </span>
-                  </div>
-                  <button 
-                    onClick={() => setIsProjectsFlyoutOpen(false)}
-                    className="text-white hover:text-white/80 transition-colors p-1"
-                    data-testid="button-close-projects-flyout"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+                <div className="flex items-center gap-2">
+                  <FolderOpen className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    PROJECTS ({allProjects.length})
+                  </h2>
+                  <span className="text-white/70" style={{ fontSize: '10px' }}>
+                    {allTasks.filter(t => t.projectId).length} tasks assigned
+                  </span>
                 </div>
               </div>
               
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin' }}>
+                <div className="mb-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-4"
+                    style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                    onClick={() => {
+                      setEditingProject(null);
+                      setProjectWizardStep(0);
+                      setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' });
+                      setProjectDialogOpen(true);
+                    }}
+                    data-testid="button-new-project-flyout"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    New Project
+                  </Button>
+                </div>
                 {/* Status Filter Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                   {[
