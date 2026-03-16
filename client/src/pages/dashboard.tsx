@@ -12517,7 +12517,7 @@ export default function Dashboard() {
           height: '25px',
           cursor: 'pointer',
           pointerEvents: isTopPillOpen ? 'none' : 'auto',
-          zIndex: 111,
+          zIndex: 10002,
         }}
         onClick={() => {
           openTopPill();
@@ -12542,7 +12542,7 @@ export default function Dashboard() {
           pointerEvents: 'none',
           opacity: isTopPillOpen ? 0 : 0.9,
           transition: 'opacity 0.3s ease-in-out',
-          zIndex: 110,
+          zIndex: 10002,
         }}
       >
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
