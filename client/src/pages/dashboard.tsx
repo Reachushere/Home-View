@@ -12847,8 +12847,8 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                    <div className="w-5 border-l border-black"></div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Status</div>
+                    <div className="w-5 border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Edit</div>
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
@@ -12980,8 +12980,8 @@ export default function Dashboard() {
                     <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</div>
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
-                    <div className="w-5 border-l border-black"></div>
-                    <div className="w-5 border-l border-black"></div>
+                    <div className="w-5 border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Status</div>
+                    <div className="w-5 border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Edit</div>
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto l3-no-scrollbar">
@@ -13143,8 +13143,8 @@ export default function Dashboard() {
                       <th className="px-1 py-0.5 border-r border-black text-[9px] font-bold text-center">Code</th>
                       <th className="px-1 py-0.5 text-[9px] font-bold text-left">Title</th>
                       <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Grade</th>
-                      <th className="border-l border-black"></th>
-                      <th className="border-l border-black"></th>
+                      <th className="border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Status</th>
+                      <th className="border-l border-black text-[7px] font-bold text-center leading-tight py-0.5">Edit</th>
                     </tr>
                   </thead>
                   <tbody>
