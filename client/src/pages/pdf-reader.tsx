@@ -228,8 +228,8 @@ export default function PDFReaderPage() {
   const [showFlickMenu, setShowFlickMenu] = useState(false);
   const [flickDeviceGroups, setFlickDeviceGroups] = useState<Array<{room: string; icon: string; devices: Array<{id: string; name: string; entityId: string; type: string; canDisplay: boolean; room: string}>}>>([]);
   const [isFlicking, setIsFlicking] = useState(false);
-  const [selectedSpeaker, setSelectedSpeaker] = useState("browser_tts");
-  const selectedSpeakerRef = useRef("browser_tts");
+  const [selectedSpeaker, setSelectedSpeaker] = useState(speakerParam || "browser_tts");
+  const selectedSpeakerRef = useRef(selectedSpeaker);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -1874,7 +1874,7 @@ export default function PDFReaderPage() {
           <div className="ml-auto flex items-center gap-2" style={{ marginRight: '-1px' }}>
             {isPreloading && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
             <span className="text-[13px] text-white">Speaker:</span>
-            <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; }}>
+            <Select value={selectedSpeaker} onValueChange={(val) => { setSelectedSpeaker(val); selectedSpeakerRef.current = val; localStorage.setItem('pdf-reader-speaker', val); }}>
               <SelectTrigger className="h-8 text-[11px] px-2.5 bg-white/10 border !border-white focus:ring-0 focus:ring-offset-0 text-white w-[190px]" data-testid="select-speaker">
                 <SelectValue placeholder="Select Speaker" />
               </SelectTrigger>
