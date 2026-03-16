@@ -118,8 +118,10 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: nu
   }, [value]);
   return (
     <input
-      type="number"
-      className="w-[30px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      className="w-[30px] h-5 text-[9px] text-center bg-white/10 border border-white/30 rounded text-white placeholder:text-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       placeholder={placeholder}
       value={local}
       onChange={(e) => setLocal(e.target.value)}
@@ -1073,7 +1075,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             )}
 
             {courseTasks.length > 0 && (
-              <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white/40 uppercase tracking-wider">
+              <div className="flex items-center gap-2 px-2 py-1 text-[7px] text-white uppercase tracking-wider">
                 <div className="flex-shrink-0 w-4" />
                 <div className="flex-shrink-0 w-3" />
                 <div className="flex-1 min-w-0">Assignment</div>
@@ -1146,7 +1148,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         placeholder="Scr"
                         testId={`input-grade-value-${task.id}`}
                       />
-                      <span className="text-[9px] text-white/70 w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
+                      <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
                         {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
                       </span>
                     </div>
