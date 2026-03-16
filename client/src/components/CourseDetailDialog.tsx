@@ -274,7 +274,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     if (onGradeCalculatedRef.current && gradeCalc) {
       onGradeCalculatedRef.current(gradeCalc.currentGrade, String(gradeCalc.currentPercent));
     }
-  }, [gradeCalc?.currentPercent]);
+  }, [gradeCalc?.currentPercent, gradeCalc?.currentGrade]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: Record<string, any>) => {
