@@ -12653,7 +12653,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0 flex flex-col" style={{ color: '#000' }}>
-            <div className="shrink-0 flex items-center pb-2">
+            <div className="shrink-0 flex items-center justify-between pb-2">
+              <div className="flex items-center">
               <input
                 type="file"
                 ref={courseListFileRef}
@@ -12689,6 +12690,66 @@ export default function Dashboard() {
                 <Upload className="w-3 h-3" />
                 {courseListParsing ? 'Scanning...' : 'Upload Course List'}
               </Button>
+              </div>
+              {(() => {
+                const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
+                const percentToGpa = (p: number): number => {
+                  if (p >= 90) return 4.33;
+                  if (p >= 85) return 4.0;
+                  if (p >= 80) return 3.67;
+                  if (p >= 77) return 3.33;
+                  if (p >= 73) return 3.0;
+                  if (p >= 70) return 2.67;
+                  if (p >= 67) return 2.33;
+                  if (p >= 63) return 2.0;
+                  if (p >= 60) return 1.67;
+                  if (p >= 50) return 1.0;
+                  return 0;
+                };
+                const gradeLetterToGpa = (g: string): number => {
+                  const map: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                  return map[g] ?? -1;
+                };
+                const gpaValues: number[] = [];
+                for (const id of l1CourseIds) {
+                  const g = courseGrades[id];
+                  if (!g) continue;
+                  if (g.grade && g.grade.trim() !== '') {
+                    const gpa = gradeLetterToGpa(g.grade);
+                    if (gpa >= 0) gpaValues.push(gpa);
+                  } else if (g.percent && g.percent.trim() !== '') {
+                    const p = parseFloat(g.percent);
+                    if (!isNaN(p)) gpaValues.push(percentToGpa(p));
+                  }
+                }
+                const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
+                const gpaToLetter = (gpa: number): string => {
+                  if (gpa >= 4.17) return 'A+';
+                  if (gpa >= 3.84) return 'A';
+                  if (gpa >= 3.5) return 'A-';
+                  if (gpa >= 3.17) return 'B+';
+                  if (gpa >= 2.84) return 'B';
+                  if (gpa >= 2.5) return 'B-';
+                  if (gpa >= 2.17) return 'C+';
+                  if (gpa >= 1.84) return 'C';
+                  if (gpa >= 1.34) return 'C-';
+                  if (gpa >= 0.5) return 'D';
+                  return 'F';
+                };
+                return (
+                  <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ background: '#ffffff', height: '28px', minHeight: '28px' }} data-testid="l1-gpa-box">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
+                    {avgGpa !== null ? (
+                      <>
+                        <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
+                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(avgGpa)}, {gpaValues.length} {gpaValues.length === 1 ? 'course' : 'courses'})</span>
+                      </>
+                    ) : (
+                      <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div className="flex gap-3 items-stretch flex-1 min-h-0">
               {/* Level I */}
@@ -18446,7 +18507,7 @@ export default function Dashboard() {
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip', height: '100%' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[4px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
+            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
             
