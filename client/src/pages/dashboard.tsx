@@ -13056,37 +13056,52 @@ export default function Dashboard() {
               </Button>
               </div>
               {(() => {
-                const l1CourseIds = ['PPA101','PPA102','PPA125','L1_PPA120','L1_PPA121','L1_PPA122','L1_PPA124','LIBERAL','OPEN1','OPEN2'];
-                const percentToGpa = (p: number): number => {
-                  if (p >= 90) return 4.33;
-                  if (p >= 85) return 4.0;
-                  if (p >= 80) return 3.67;
-                  if (p >= 77) return 3.33;
-                  if (p >= 73) return 3.0;
-                  if (p >= 70) return 2.67;
-                  if (p >= 67) return 2.33;
-                  if (p >= 63) return 2.0;
-                  if (p >= 60) return 1.67;
-                  if (p >= 50) return 1.0;
-                  return 0;
-                };
-                const gradeLetterToGpa = (g: string): number => {
-                  const map: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                  return map[g] ?? -1;
-                };
-                const gpaValues: number[] = [];
-                for (const id of l1CourseIds) {
-                  const g = courseGrades[id];
-                  if (!g) continue;
-                  if (g.grade && g.grade.trim() !== '') {
-                    const gpa = gradeLetterToGpa(g.grade);
-                    if (gpa >= 0) gpaValues.push(gpa);
-                  } else if (g.percent && g.percent.trim() !== '') {
-                    const p = parseFloat(g.percent);
-                    if (!isNaN(p)) gpaValues.push(percentToGpa(p));
+                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028'];
+                const now = new Date();
+                const currentSemIdx = (() => {
+                  if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return semKeyOrder.indexOf('ss2025');
+                  if (now >= new Date('2025-09-01') && now <= new Date('2025-12-31')) return semKeyOrder.indexOf('f2025');
+                  if (now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return semKeyOrder.indexOf('w2026');
+                  if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return semKeyOrder.indexOf('ss2026');
+                  if (now >= new Date('2026-09-01') && now <= new Date('2026-12-31')) return semKeyOrder.indexOf('f2026');
+                  if (now >= new Date('2027-01-01') && now <= new Date('2027-04-30')) return semKeyOrder.indexOf('w2027');
+                  return -1;
+                })();
+                const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
+                const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                const semGpas: number[] = [];
+                for (const semKey of relevantSemKeys) {
+                  const courses = semesterCourseAssignments[semKey] || [];
+                  const vals: number[] = [];
+                  for (const c of courses) {
+                    const code = c.code.replace(/\s/g, '');
+                    const info = pastCourseInfo[code];
+                    const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, ''); return mc === code || ('C' + mc) === code || mc === code.replace(/^C(?=[A-Z]{2,})/, ''); });
+                    const cg = certKey ? courseGrades[certKey] : null;
+                    let electiveGrade: { grade: string; percent: string } | null = null;
+                    if (!cg?.percent && !cg?.grade) {
+                      const codeNorm = code.toUpperCase();
+                      for (const [slot, elVal] of Object.entries(openElectives)) {
+                        if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
+                          if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
+                            electiveGrade = courseGrades[slot];
+                            break;
+                          }
+                        }
+                      }
+                    }
+                    if (info?.grade && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
+                    else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                    else if (cg?.grade && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                    else if (electiveGrade?.grade && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
+                  }
+                  if (vals.length > 0) {
+                    semGpas.push(vals.reduce((a, b) => a + b, 0) / vals.length);
                   }
                 }
-                const avgGpa = gpaValues.length > 0 ? (gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length) : null;
+                const avgGpa = semGpas.length > 0 ? semGpas.reduce((a, b) => a + b, 0) / semGpas.length : null;
                 const gpaToLetter = (gpa: number): string => {
                   if (gpa >= 4.17) return 'A+';
                   if (gpa >= 3.84) return 'A';
