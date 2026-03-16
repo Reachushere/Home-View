@@ -14341,7 +14341,7 @@ export default function Dashboard() {
               {/* Header bar matching calendar settings */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
-                  <CheckSquare className="h-3 w-3 text-white" />
+                  <CheckSquare className="text-white" style={{ width: '15px', height: '15px' }} />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     ADD TASK
                   </h2>
@@ -14499,15 +14499,15 @@ export default function Dashboard() {
                 data-testid="quick-add-wizard"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backgroundColor: colorSettings.headerBar }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                   <div className="flex items-center gap-2">
-                    <Plus className="h-3.5 w-3.5 text-white" />
-                    <h2 className="text-xs font-normal text-white tracking-wide uppercase">
-                      {quickAddStep === 0 ? 'Add Task' : quickAddStep === 1 ? 'Task Name' : quickAddStep === 2 ? 'Course' : quickAddStep === 3 ? 'Date & Time' : quickAddStep === 4 ? 'Prep Days' : quickAddStep === 5 ? 'Priority' : quickAddStep === 6 ? 'Reminders' : quickAddStep === 7 ? 'Attachments' : quickAddStep === 8 ? 'Notes & Links' : quickAddStep === 9 ? 'Subtasks & Project' : quickAddStep === 10 ? 'Repeat' : 'Review'}
+                    <Plus className="text-white" style={{ width: '15px', height: '15px' }} />
+                    <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                      {quickAddStep === 0 ? 'ADD TASK' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'PREP DAYS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : 'REVIEW'}
                     </h2>
                   </div>
-                  <button onClick={handleQuickAddClose} className="text-white/60 hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
-                    <X className="h-5 w-5" />
+                  <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
 
