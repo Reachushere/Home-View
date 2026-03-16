@@ -12870,7 +12870,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={c.id} /></div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
-                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                      <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
                 ))}
@@ -12898,7 +12898,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={c.id} /></div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
-                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                      <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
                   );
@@ -12925,7 +12925,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={"LIBERAL"} /></div>
                   <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
-                    <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                    <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
                 </div>
                 </div>
@@ -12951,7 +12951,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={cid} /></div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
-                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                      <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
                 ))}
@@ -12998,7 +12998,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id="L2_PPA211" /></div>
                   <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
-                    <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                    <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
                 </div>
                 </div>
@@ -13026,7 +13026,7 @@ export default function Dashboard() {
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={c.id} /></div>
                     <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
-                      <Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" />
+                      <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
                   </div>
                   );
@@ -13052,7 +13052,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades['L2_LIBERAL']?.percent || ''} onChange={(e) => updatePercent('L2_LIBERAL', e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades['L2_LIBERAL']?.percent || '')}</span></div>
                   </div>
                   <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={"L2_LIBERAL"} /></div>
-                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
+                  <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                 </div>
                 </div>
                 <div style={isSectionAllGreen(3, 'L2') ? { opacity: 0.45 } : undefined}>
@@ -13079,7 +13079,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[ecn.id]?.percent || ''} onChange={(e) => updatePercent(ecn.id, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[ecn.id]?.percent || '')}</span></div>
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={ecn.id} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                   </div>
                   );
                 })}
@@ -13103,7 +13103,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                     </div>
                     <div className="w-5 border-l border-black flex items-center justify-center"><TriStateToggle id={cid} /></div>
-                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>
+                    <div className="w-5 border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                   </div>
                 ))}
                 </div>
@@ -13161,7 +13161,7 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="border-l border-black text-center align-middle"><TriStateToggle id="L3_PPA333" /></td>
-                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="pencil-cert-L3_PPA333"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="pencil-cert-L3_PPA333"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')}`} style={isSectionAllGreen(0, 'L3') ? { opacity: 0.45 } : undefined}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
@@ -13173,7 +13173,7 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="border-l border-black text-center align-middle"><TriStateToggle id="L3_PRACTICUM1" /></td>
-                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="pencil-cert-L3_PRACTICUM1"><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="pencil-cert-L3_PRACTICUM1"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                     <tr className="border-b border-black" style={isSectionAllGreen(1, 'L3') ? { opacity: 0.45 } : undefined}>
                       <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">eight</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
@@ -13197,7 +13197,7 @@ export default function Dashboard() {
                       <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)}`} style={isSectionAllGreen(1, 'L3') ? { opacity: 0.45 } : undefined}>
                         {idx === 0 && (
                           <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[9px] align-middle">
-                            <div className="leading-tight">Prof-Req'd<br/>SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
+                            <div className="leading-tight">SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
                           </td>
                         )}
                         <td className={`px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono`}><CourseName id={course.id}>{course.code}</CourseName></td>
@@ -13208,7 +13208,7 @@ export default function Dashboard() {
                           </div>
                         </td>
                         {idx === 0 && <td rowSpan={14} className="border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''}`}><TriStateToggle id={cid} /></div>))}</div></td>}
-                        {idx === 0 && <td rowSpan={14} className="border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 ${i < 13 ? 'border-b border-black' : ''}`} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700" /></div>))}</div></td>}
+                        {idx === 0 && <td rowSpan={14} className="border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 ${i < 13 ? 'border-b border-black' : ''}`} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>))}</div></td>}
                       </tr>
                     ))}
                     <tr className="border-b border-black" style={isSectionAllGreen(2, 'L3') ? { opacity: 0.45 } : undefined}>
@@ -13233,7 +13233,7 @@ export default function Dashboard() {
                         <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                       </td>
                       <td className="border-l border-black text-center align-middle"><TriStateToggle id={cid} /></td>
-                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                 ))}
                     <tr className="border-b border-black" style={isSectionAllGreen(3, 'L3') ? { opacity: 0.45 } : undefined}>
@@ -13258,7 +13258,7 @@ export default function Dashboard() {
                         <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                       </td>
                       <td className="border-l border-black text-center align-middle"><TriStateToggle id={cid} /></td>
-                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                 ))}
                     <tr className="border-b border-black" style={isSectionAllGreen(4, 'L3') ? { opacity: 0.45 } : undefined}>
@@ -13283,7 +13283,7 @@ export default function Dashboard() {
                         <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}><input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: 'white', color: 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} /><span className="text-[9px] text-left leading-none" style={{ color: '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[cid]?.percent || '')}</span></div>
                       </td>
                       <td className="border-l border-black text-center align-middle"><TriStateToggle id={cid} /></td>
-                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-2.5 h-2.5 text-gray-400 hover:text-gray-700 inline-block" /></td>
+                      <td className="border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                 ))}
                   </tbody>
