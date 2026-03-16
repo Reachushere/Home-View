@@ -15140,7 +15140,6 @@ export default function Dashboard() {
 
                 {/* Footer with navigation */}
                 <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
-                  <div style={{ flex: 1 }} />
                   <button
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
                     className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-opacity duration-200"
