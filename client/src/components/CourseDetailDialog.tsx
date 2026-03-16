@@ -962,7 +962,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 p-0.5"><div className="w-3" /></div>
               </div>
             )}
-            <div className="space-y-1" data-testid="assignments-list">
+            <div className="flex flex-col" style={{ gap: '5px' }} data-testid="assignments-list">
               {courseTasks.map((task) => {
                 const TypeIcon = TASK_TYPE_OPTIONS.find((t) => t.value === task.type)?.icon || FileText;
                 const overdue = !task.isCompleted && isOverdue(task.dueDate);
