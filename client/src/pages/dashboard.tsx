@@ -379,6 +379,31 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
   return null;
 }
 
+const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue, totalInSem, draftRef, courseCode }: { priorityKey: string; initialValue: number; totalInSem: number; draftRef: React.MutableRefObject<Record<string, number>>; courseCode: string }) {
+  const [val, setVal] = useState(initialValue);
+  useEffect(() => { setVal(initialValue); }, [initialValue]);
+  return (
+    <select
+      className="text-[8px] text-white bg-white/10 rounded px-0.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
+      style={{ width: '36px', minWidth: '36px', marginRight: '3px' }}
+      value={val}
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => {
+        e.stopPropagation();
+        const v = parseInt(e.target.value, 10);
+        setVal(v);
+        draftRef.current = { ...draftRef.current, [priorityKey]: v };
+      }}
+      data-testid={`select-priority-${courseCode}`}
+    >
+      <option value={0}>—</option>
+      {Array.from({ length: totalInSem }, (_, i) => (
+        <option key={i + 1} value={i + 1}>#{i + 1}</option>
+      ))}
+    </select>
+  );
+});
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -1741,6 +1766,19 @@ export default function Dashboard() {
   const coursesScrollRef = useRef<HTMLDivElement>(null);
   const [coursesScrolled, setCoursesScrolled] = useState(false);
   const [draftCoursePlayPriority, setDraftCoursePlayPriority] = useState<Record<string, number>>({});
+  const draftCoursePlayPriorityRef = useRef<Record<string, number>>({});
+  const setDraftPriorityBoth = useCallback((val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => {
+    if (typeof val === 'function') {
+      setDraftCoursePlayPriority(prev => {
+        const next = val(prev);
+        draftCoursePlayPriorityRef.current = next;
+        return next;
+      });
+    } else {
+      draftCoursePlayPriorityRef.current = val;
+      setDraftCoursePlayPriority(val);
+    }
+  }, []);
   const [isRemainingCoursesDialogOpen, setIsRemainingCoursesDialogOpen] = useState(false);
   const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
     const courseInfoDefaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
@@ -12013,7 +12051,7 @@ export default function Dashboard() {
               data-testid="button-courses-pill"
               title="Courses"
               onClick={() => {
-                setDraftCoursePlayPriority({ ...coursePlayPriority });
+                setDraftPriorityBoth({ ...coursePlayPriority });
                 setSchoolCoursesOpenSource('pill');
                 setIsSchoolCoursesDialogOpen(true);
               }}
@@ -12831,7 +12869,7 @@ export default function Dashboard() {
               className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={(e) => {
                 e.stopPropagation();
-                setDraftCoursePlayPriority({ ...coursePlayPriority });
+                setDraftPriorityBoth({ ...coursePlayPriority });
                 setSchoolCoursesOpenSource('degree');
                 setIsSchoolCoursesDialogOpen(true);
               }}
@@ -16266,7 +16304,7 @@ export default function Dashboard() {
                     className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
                       setShowRankCoursesReminder(false);
-                      setDraftCoursePlayPriority({ ...coursePlayPriority });
+                      setDraftPriorityBoth({ ...coursePlayPriority });
                       setIsSchoolCoursesDialogOpen(true);
                     }}
                     data-testid="button-rank-courses-now"
@@ -16369,7 +16407,7 @@ export default function Dashboard() {
                       </div>
                       <div
                         className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftCoursePlayPriority({ ...coursePlayPriority }); setIsSchoolCoursesDialogOpen(true); }, 200); }}
+                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftPriorityBoth({ ...coursePlayPriority }); setIsSchoolCoursesDialogOpen(true); }, 200); }}
                         data-testid="button-past-courses"
                       >
                         <span className="text-[10px] text-white/70 font-bold">ALL COURSES</span>
@@ -16840,23 +16878,13 @@ export default function Dashboard() {
                           >
                             {(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? '✓ AAS' : '⚠ AAS'}
                           </span>
-                          <select
-                            className="text-[8px] text-white bg-white/10 rounded px-0.5 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer"
-                            style={{ width: '36px', minWidth: '36px', marginRight: '3px' }}
-                            value={currentPriority}
-                            onClick={(e) => e.stopPropagation()}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              const val = parseInt(e.target.value, 10);
-                              setDraftCoursePlayPriority(prev => ({ ...prev, [priorityKey]: val }));
-                            }}
-                            data-testid={`select-priority-${semCourse.code}`}
-                          >
-                            <option value={0}>—</option>
-                            {Array.from({ length: totalInSem }, (_, i) => (
-                              <option key={i + 1} value={i + 1}>#{i + 1}</option>
-                            ))}
-                          </select>
+                          <PrioritySelect
+                            priorityKey={priorityKey}
+                            initialValue={currentPriority}
+                            totalInSem={totalInSem}
+                            draftRef={draftCoursePlayPriorityRef}
+                            courseCode={semCourse.code}
+                          />
                           <button
                             className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
                             style={{ marginRight: '-3px' }}
@@ -16921,9 +16949,10 @@ export default function Dashboard() {
                 <div className="flex gap-2">
                   <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
                   <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => {
-                    setCoursePlayPriority(draftCoursePlayPriority);
-                    localStorage.setItem('coursePlayPriority', JSON.stringify(draftCoursePlayPriority));
-                    fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draftCoursePlayPriority) }).catch(() => {});
+                    const draft = draftCoursePlayPriorityRef.current;
+                    setCoursePlayPriority(draft);
+                    localStorage.setItem('coursePlayPriority', JSON.stringify(draft));
+                    fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draft) }).catch(() => {});
                     setIsSchoolCoursesDialogOpen(false);
                   }} data-testid="button-save-school-courses">Save</Button>
                 </div>
