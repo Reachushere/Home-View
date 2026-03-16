@@ -87,7 +87,7 @@ const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.cas
 const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
-const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
+const BATHROOM_ECHO_ENTITY = "media_player.nestaudio6787";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const NEST_SPEAKER_ENTITY = "media_player.nestaudio6787";
 const CAT_WR_HA_VOICE_ENTITY = "media_player.home_assistant_voice_097c38_media_player";
@@ -497,7 +497,7 @@ async function sendNextChunk() {
   currentTTSSession.currentPosition += chunkLength;
   currentTTSSession.startTime = Date.now();
   
-  const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
+  const targetEntity = currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY;
   const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
   console.log("[TTS] Auto-continuing, chunk length:", chunkLength, 
     "new position:", currentTTSSession.currentPosition,
@@ -5598,7 +5598,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: BATHROOM_ECHO_ENTITY }),
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST',
@@ -5606,7 +5606,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           body: JSON.stringify({ entity_id: KITCHEN_ECHO_ENTITY }),
         }),
       ]);
-      console.log(`[Nest Playback] Stopped Echo devices`);
+      console.log(`[Nest Playback] Stopped speakers`);
 
       const cleanName = fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
       const hour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });
@@ -7574,7 +7574,7 @@ document.body.removeChild(a);
   // This is the endpoint Home Assistant should call when motion is detected
   app.post("/api/shower/trigger", async (req, res) => {
     try {
-      const targetEntity = req.body?.entityId || BATHROOM_ECHO_ENTITY;
+      const targetEntity = req.body?.entityId || NEST_SPEAKER_ENTITY;
       
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -7898,8 +7898,8 @@ document.body.removeChild(a);
         "media_player.echo_kitchen_hutch_am", "media_player.echo_kitchen_island_corner_am",
         "media_player.echo_kitchen_studio_black_am", "media_player.echo_lr_hub_am"
       ];
-      const requestedEntity = req.body?.entity_id || BATHROOM_ECHO_ENTITY;
-      const targetEntity = allowedEntities.includes(requestedEntity) ? requestedEntity : BATHROOM_ECHO_ENTITY;
+      const requestedEntity = req.body?.entity_id || NEST_SPEAKER_ENTITY;
+      const targetEntity = allowedEntities.includes(requestedEntity) ? requestedEntity : NEST_SPEAKER_ENTITY;
       
       // Get current week number
       const semesterSettings = await storage.getActiveSemesterSettings();
@@ -8173,7 +8173,7 @@ document.body.removeChild(a);
               headers: {
                 "x-webhook-secret": "YOUR_SITE_PASSWORD_HERE"
               },
-              payload: '{"entity_id": "media_player.cat_wr"}'
+              payload: '{"entity_id": "media_player.nestaudio6787"}'
             }
           },
           step2: "Add this script to your configuration.yaml under script:",
@@ -8294,7 +8294,7 @@ document.body.removeChild(a);
   app.post("/api/shower/next-chunk", async (req, res) => {
     try {
       const { fileId, entityId } = req.body;
-      const targetEntity = entityId || BATHROOM_ECHO_ENTITY;
+      const targetEntity = entityId || NEST_SPEAKER_ENTITY;
       
       if (!fileId) {
         return res.status(400).json({ error: "File ID required" });
@@ -8379,18 +8379,23 @@ document.body.removeChild(a);
       const chunk = chunks[nextChunkIndex];
       
       // Send TTS
-      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `Section ${nextChunkIndex + 1} of ${chunks.length}. ${chunk}`,
-          target: targetEntity,
-          data: { type: "tts" }
-        }),
-      });
+      const chunkMessage = `Section ${nextChunkIndex + 1} of ${chunks.length}. ${chunk}`;
+      const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
+      if (isNonAlexa) {
+        const audioPath = await generateAndSaveTTSAudio(chunkMessage, `next-chunk-${fileId}-${nextChunkIndex}`, "echo");
+        const appUrl = "https://home-view--bkh416.replit.app";
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: targetEntity, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+        });
+      } else {
+        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: chunkMessage, target: targetEntity, data: { type: "tts" } }),
+        });
+      }
       
       // Update progress
       playbackProgress[progressKey] = {
@@ -8966,19 +8971,24 @@ document.body.removeChild(a);
       
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Send TTS to Echo
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: chunk,
-          target: BATHROOM_ECHO_ENTITY,
-          data: { type: "tts" }
-        }),
-      });
+      // Send TTS to Nest speaker
+      const isNonAlexa = NON_ALEXA_ENTITIES.includes(NEST_SPEAKER_ENTITY);
+      let response: Response;
+      if (isNonAlexa) {
+        const audioPath = await generateAndSaveTTSAudio(chunk, `start-reading-${Date.now()}`, "echo");
+        const appUrl = "https://home-view--bkh416.replit.app";
+        response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+        });
+      } else {
+        response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: chunk, target: NEST_SPEAKER_ENTITY, data: { type: "tts" } }),
+        });
+      }
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -9384,20 +9394,13 @@ document.body.removeChild(a);
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Use notify.alexa_media for Echo devices via Alexa Media Player integration
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      // Use Nest speaker (non-Alexa) for cat washroom TTS
+      const audioPath = await generateAndSaveTTSAudio(message, `echo-tts-${Date.now()}`, "echo");
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: message,
-          target: BATHROOM_ECHO_ENTITY,
-          data: {
-            type: "tts"
-          }
-        }),
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
       });
 
       if (!response.ok) {
@@ -9406,7 +9409,7 @@ document.body.removeChild(a);
         return res.status(response.status).json({ error: "Failed to send TTS to Home Assistant" });
       }
 
-      res.json({ success: true, message: "Text-to-speech sent to bathroom Echo" });
+      res.json({ success: true, message: "Text-to-speech sent to Nest speaker" });
     } catch (error) {
       console.error("TTS error:", error);
       res.status(500).json({ error: "Failed to send text-to-speech" });
@@ -9417,7 +9420,7 @@ document.body.removeChild(a);
   app.post("/api/media/play", async (req, res) => {
     try {
       const { mediaUrl, entityId } = req.body;
-      const targetEntity = entityId || BATHROOM_ECHO_ENTITY;
+      const targetEntity = entityId || NEST_SPEAKER_ENTITY;
       
       if (!mediaUrl) {
         return res.status(400).json({ error: "Media URL is required" });
@@ -9581,29 +9584,31 @@ document.body.removeChild(a);
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
-      // Use 90% speaking rate
-      const ssmlContent = `<speak><prosody rate="90%">${cleanedContent}</prosody></speak>`;
-      
       console.log("=== TTS PLAY REQUEST ===");
       console.log("Target entity:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
       console.log("HA URL:", haUrl);
       console.log("Message preview:", cleanedContent.substring(0, 100));
       
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: ssmlContent,
-          target: targetEntity,
-          data: {
-            type: "tts"
-          }
-        }),
-      });
+      const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
+      let response: Response;
+      if (isNonAlexa) {
+        const audioPath = await generateAndSaveTTSAudio(cleanedContent, `tts-play-${Date.now()}`, "echo");
+        const appUrl = "https://home-view--bkh416.replit.app";
+        console.log(`[TTS Play] Non-Alexa: Generated audio at ${audioPath}`);
+        response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: targetEntity, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+        });
+      } else {
+        const ssmlContent = `<speak><prosody rate="90%">${cleanedContent}</prosody></speak>`;
+        response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: ssmlContent, target: targetEntity, data: { type: "tts" } }),
+        });
+      }
 
       const responseText = await response.text();
       console.log("HA Response status:", response.status);
@@ -9633,7 +9638,7 @@ document.body.removeChild(a);
   app.post("/api/media/stop", async (req, res) => {
     try {
       const { entityId } = req.body || {};
-      const targetEntity = entityId || currentTTSSession?.targetEntity || BATHROOM_ECHO_ENTITY;
+      const targetEntity = entityId || currentTTSSession?.targetEntity || NEST_SPEAKER_ENTITY;
       
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -9680,25 +9685,17 @@ document.body.removeChild(a);
       
       console.log("Stopped media player");
       
-      // Also try the Alexa-specific stop command
-      try {
-        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: "stop",
-            target: targetEntity,
-            data: {
-              type: "tts"
-            }
-          }),
-        });
-      } catch (e) {
-        // Alexa media command may not be available
-        console.log("Alexa media stop command not available");
+      // Also try the Alexa-specific stop command (only for Alexa devices)
+      if (!NON_ALEXA_ENTITIES.includes(targetEntity)) {
+        try {
+          await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: "stop", target: targetEntity, data: { type: "tts" } }),
+          });
+        } catch (e) {
+          console.log("Alexa media stop command not available");
+        }
       }
 
       res.json({ success: true, canResume: false });
@@ -9729,7 +9726,7 @@ document.body.removeChild(a);
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY,
+          entity_id: currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY,
           volume_level: 0.5
         }),
       });
@@ -9764,23 +9761,25 @@ document.body.removeChild(a);
       
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
-      // Use 90% speaking rate
-      const ssmlContent = `<speak><prosody rate="90%">${remainingText}</prosody></speak>`;
-      
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: ssmlContent,
-          target: BATHROOM_ECHO_ENTITY,
-          data: {
-            type: "tts"
-          }
-        }),
-      });
+      const targetEntity = currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY;
+      const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
+      let response: Response;
+      if (isNonAlexa) {
+        const audioPath = await generateAndSaveTTSAudio(remainingText, `tts-resume-${Date.now()}`, "echo");
+        const appUrl = "https://home-view--bkh416.replit.app";
+        response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: targetEntity, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+        });
+      } else {
+        const ssmlContent = `<speak><prosody rate="90%">${remainingText}</prosody></speak>`;
+        response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: ssmlContent, target: targetEntity, data: { type: "tts" } }),
+        });
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -9802,7 +9801,7 @@ document.body.removeChild(a);
   app.post("/api/media/restart", async (req, res) => {
     try {
       const { mediaUrl, entityId } = req.body;
-      const targetEntity = entityId || BATHROOM_ECHO_ENTITY;
+      const targetEntity = entityId || NEST_SPEAKER_ENTITY;
       
       if (!mediaUrl) {
         return res.status(400).json({ error: "Media URL is required" });
@@ -9848,7 +9847,7 @@ document.body.removeChild(a);
   app.post("/api/media/skip-chunk", async (req, res) => {
     try {
       const { direction, entityId } = req.body; // "forward" or "backward"
-      const targetEntity = entityId || currentTTSSession?.targetEntity || BATHROOM_ECHO_ENTITY;
+      const targetEntity = entityId || currentTTSSession?.targetEntity || NEST_SPEAKER_ENTITY;
       
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -9921,7 +9920,7 @@ document.body.removeChild(a);
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: BATHROOM_ECHO_ENTITY,
+          entity_id: NEST_SPEAKER_ENTITY,
         }),
       });
 
@@ -9988,7 +9987,7 @@ document.body.removeChild(a);
       
       // All Echo devices (excluding lr studio and lr couch left)
       const devices = [
-        "media_player.cat_wr",
+        "media_player.nestaudio6787",
         "media_player.echo_cat_left_am",
         "media_player.echo_cat_right_am",
         "media_player.echo_cat_washroom_middle",
@@ -10048,7 +10047,7 @@ document.body.removeChild(a);
       
       // Stop ALL devices that might be playing
       const devices = [
-        "media_player.cat_wr",
+        "media_player.nestaudio6787",
         "media_player.echo_cat_left_am",
         "media_player.echo_cat_right_am",
         "media_player.echo_cat_washroom_middle",
@@ -10183,7 +10182,7 @@ document.body.removeChild(a);
       
       // All Echo devices
       const devices = [
-        "media_player.cat_wr",
+        "media_player.nestaudio6787",
         "media_player.echo_cat_left_am",
         "media_player.echo_cat_right_am",
         "media_player.echo_cat_washroom_middle",
