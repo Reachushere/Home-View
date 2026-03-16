@@ -16958,7 +16958,7 @@ export default function Dashboard() {
                         />
                         <button
                           className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                          style={{ marginRight: '2px' }}
+                          style={{ marginLeft: '4px' }}
                           onClick={(e) => {
                             e.stopPropagation();
                             const certKey = pastEntry?.certKey || semCourse.code;
