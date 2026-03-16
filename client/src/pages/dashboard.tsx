@@ -3463,7 +3463,7 @@ export default function Dashboard() {
   const isActiveInLaterLevel = (courseId: string): boolean => {
     const laterIds = laterLevelMap[courseId];
     if (!laterIds) return false;
-    return laterIds.some(lid => inProgressCourses[lid] || checkedCourses[lid] || (courseGrades[lid]?.percent && courseGrades[lid]?.percent?.trim() !== ''));
+    return laterIds.some(lid => inProgressCourses[lid] || checkedCourses[lid] || isL2InProgressFromL1(lid) || (courseGrades[lid]?.percent && courseGrades[lid]?.percent?.trim() !== ''));
   };
 
   const isPreviouslyCompleted = (courseId: string): boolean => {
@@ -3540,9 +3540,8 @@ export default function Dashboard() {
     const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
     if (checkedCourses[id] || hasPercent) return null;
     if (isDropdownRow(id)) return null;
-    if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Previously Completed)</span>;
-    if (isSectionFulfilledForCourse(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
-    if (isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
+    if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirements Fulfilled)</span>;
+    if (isActiveInLaterLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Taking in Later Certificate)</span>;
     if (isPreviouslyCompleted(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Previously Completed)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
