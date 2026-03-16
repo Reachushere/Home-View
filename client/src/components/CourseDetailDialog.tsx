@@ -27,6 +27,7 @@ import {
   Loader2,
   Paperclip,
 } from "lucide-react";
+import { SiZoom } from "react-icons/si";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
@@ -437,7 +438,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </div>
           <div className="flex items-center gap-2 text-[9px] text-white flex-shrink-0">
             {courseInfo.deliveryMode === "virtual" ? (
-              <span className="flex items-center gap-0.5"><Video className="h-2.5 w-2.5" /> Virtual</span>
+              <span className="flex items-center gap-0.5"><SiZoom style={{ width: '12px', height: '12px' }} /> Virtual</span>
             ) : courseInfo.deliveryMode === "online" ? (
               <span className="flex items-center gap-0.5"><Globe className="h-2.5 w-2.5" /> Online</span>
             ) : null}
@@ -591,7 +592,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white" /> : <Globe className="h-3 w-3 text-white" />}
+                    {courseInfo.deliveryMode === "virtual" ? <SiZoom className="text-white" style={{ width: '14px', height: '14px' }} /> : <Globe className="h-3 w-3 text-white" />}
                     <span className="text-white">Mode:</span>
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
@@ -632,7 +633,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/10 border border-white/20 rounded px-2 py-1.5"
                     data-testid="link-zoom"
                   >
-                    <Video className="h-3 w-3" />
+                    <SiZoom style={{ width: '14px', height: '14px' }} />
                     <span className="truncate">{courseInfo.zoomLink}</span>
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
