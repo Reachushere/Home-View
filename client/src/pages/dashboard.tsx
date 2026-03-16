@@ -3757,23 +3757,27 @@ export default function Dashboard() {
     let colorEnd = (matchedCourse as any)?.colorEnd || '';
     let courseType = '';
 
-    if (semesterSettings) {
+    const semSearchList = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+    for (const sem of semSearchList) {
+      let foundInSem = false;
       for (let i = 1; i <= 3; i++) {
         const prefix = `course${i}` as const;
-        const codeField = (semesterSettings as any)[`${prefix}Code`] || '';
+        const codeField = ((sem as any)[`${prefix}Code`] || '');
         if (codeField.replace(/\s/g, '') === courseCode.replace(/\s/g, '')) {
-          deliveryMode = (semesterSettings as any)[`${prefix}DeliveryMode`] || '';
-          classDay = (semesterSettings as any)[`${prefix}ClassDay`] || '';
-          classDay2 = (semesterSettings as any)[`${prefix}ClassDay2`] || '';
-          classTime = (semesterSettings as any)[`${prefix}ClassTime`] || '';
-          classEndTime = (semesterSettings as any)[`${prefix}ClassEndTime`] || '';
-          zoomLink = (semesterSettings as any)[`${prefix}ZoomLink`] || '';
-          courseType = (semesterSettings as any)[`${prefix}CourseType`] || '';
-          if (!professor) professor = (semesterSettings as any)[`${prefix}Professor`] || '';
-          if (!professorEmail) professorEmail = (semesterSettings as any)[`${prefix}ProfessorEmail`] || '';
+          deliveryMode = (sem as any)[`${prefix}DeliveryMode`] || '';
+          classDay = (sem as any)[`${prefix}ClassDay`] || '';
+          classDay2 = (sem as any)[`${prefix}ClassDay2`] || '';
+          classTime = (sem as any)[`${prefix}ClassTime`] || '';
+          classEndTime = (sem as any)[`${prefix}ClassEndTime`] || '';
+          zoomLink = (sem as any)[`${prefix}ZoomLink`] || '';
+          courseType = (sem as any)[`${prefix}CourseType`] || '';
+          if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
+          if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
+          foundInSem = true;
           break;
         }
       }
+      if (foundInSem) break;
     }
 
     const certData = localStorage.getItem('certCourseData');
