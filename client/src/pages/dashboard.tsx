@@ -385,7 +385,7 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
   return (
     <select
       className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
-      style={{ width: '25px', minWidth: '25px', WebkitAppearance: 'none', MozAppearance: 'none' }}
+      style={{ width: '22px', minWidth: '22px', WebkitAppearance: 'none', MozAppearance: 'none' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
@@ -16956,6 +16956,7 @@ export default function Dashboard() {
                         />
                         <button
                           className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                          style={{ marginLeft: '2px' }}
                           onClick={(e) => {
                             e.stopPropagation();
                             const certKey = pastEntry?.certKey || semCourse.code;
@@ -16983,12 +16984,12 @@ export default function Dashboard() {
                           if (!dm) {
                             try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
                           }
-                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '22px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
-                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '16px', height: 'auto', opacity: 0.9 }} /> : null;
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '25px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[10px] text-white truncate min-w-0 flex-1"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor, marginLeft: '2px' }} />
+                        <span className="text-[10px] text-white truncate min-w-0 flex-1" style={{ marginLeft: '7px' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
