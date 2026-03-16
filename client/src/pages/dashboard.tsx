@@ -16990,8 +16990,8 @@ export default function Dashboard() {
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[10px] text-white truncate min-w-0 flex-1" style={{ marginLeft: '10px' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor, marginLeft: '-3px' }} />
+                        <span className="text-[10px] text-white truncate min-w-0 flex-1" style={{ marginLeft: '7px' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
