@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,34 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
   const { toast } = useToast();
   const [snoozeValue, setSnoozeValue] = useState(30);
   const [snoozeUnit, setSnoozeUnit] = useState<'minutes' | 'hours'>('minutes');
+  const [localChecked, setLocalChecked] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    const map: Record<number, boolean> = {};
+    items.forEach(i => { map[i.id] = !!i.isChecked; });
+    setLocalChecked(map);
+  }, [items]);
+
+  const handleCheck = useCallback((item: ChecklistItem, checked: boolean) => {
+    setLocalChecked(prev => ({ ...prev, [item.id]: checked }));
+
+    fetch('/api/semester-checklist', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ semesterSettingsId: item.semesterSettingsId, courseCode: item.courseCode, itemType: item.itemType, isChecked: checked }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        const updated = items.map(i => i.id === item.id ? { ...i, isChecked: checked } : i);
+        onItemsChange(updated);
+        if (data.allChecked) {
+          toast({ title: "All done!", description: "Semester setup checklist complete." });
+          onOpenChange(false);
+        }
+      })
+      .catch(err => console.error('Error updating checklist:', err));
+  }, [items, onItemsChange, onOpenChange, toast]);
 
   const grouped: Record<string, ChecklistItem[]> = {};
   items.forEach(item => {
@@ -54,25 +82,8 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
                   <label key={item.id} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded px-2 py-1.5 transition-colors" data-testid={`checklist-${courseCode}-${item.itemType}`}>
                     <Checkbox
                       className="h-5 w-5 border-2"
-                      checked={!!item.isChecked}
-                      onCheckedChange={(checked) => {
-                        const updated = items.map(i => i.id === item.id ? { ...i, isChecked: !!checked } : i);
-                        onItemsChange(updated);
-                        fetch('/api/semester-checklist', {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({ semesterSettingsId: item.semesterSettingsId, courseCode: item.courseCode, itemType: item.itemType, isChecked: !!checked }),
-                        })
-                          .then(r => r.json())
-                          .then(data => {
-                            if (data.allChecked) {
-                              toast({ title: "All done!", description: "Semester setup checklist complete." });
-                              onOpenChange(false);
-                            }
-                          })
-                          .catch(err => console.error('Error updating checklist:', err));
-                      }}
+                      checked={!!localChecked[item.id]}
+                      onCheckedChange={(checked) => handleCheck(item, !!checked)}
                       data-testid={`checkbox-${courseCode}-${item.itemType}`}
                     />
                     <span className="text-sm text-white/90">{label}</span>
