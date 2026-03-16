@@ -16904,6 +16904,7 @@ export default function Dashboard() {
           {isNewCourseWizardOpen && (
             <NewCourseWizard
               existingSemesterType={newSemesterForm.semesterType || "winter"}
+              colorSettings={{ mainBackground: colorSettings.mainBackground, mainBackgroundGradientEnd: colorSettings.mainBackgroundGradientEnd, headerBar: colorSettings.headerBar }}
               onClose={() => setIsNewCourseWizardOpen(false)}
               onSave={(wizardData) => {
                 const fullName = `${wizardData.courseCode} - ${wizardData.courseName}`;

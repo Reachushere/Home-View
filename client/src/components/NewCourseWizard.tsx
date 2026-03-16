@@ -88,6 +88,7 @@ interface NewCourseWizardProps {
   onSave: (data: WizardData) => void;
   onClose: () => void;
   existingSemesterType?: string;
+  colorSettings?: { mainBackground: string; mainBackgroundGradientEnd: string; headerBar: string };
 }
 
 const COLORS = [
@@ -122,7 +123,7 @@ function createEmptyTask(): WizardTask {
   };
 }
 
-export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCourseWizardProps) {
+export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSettings }: NewCourseWizardProps) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<WizardData>({
     courseCode: "",
@@ -725,27 +726,25 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType }: NewCo
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[250] flex items-center justify-center bg-black/60"
+      className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/60"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="border border-white/30 backdrop-blur-[3px] bg-white/[0.4] rounded-lg w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.4)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white"
+        className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white"
+        style={{
+          background: colorSettings ? `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` : 'linear-gradient(180deg, #0a0f1e 0%, #060b14 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: 'linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.1) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: colorSettings ? `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)` : 'linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.1) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
           <div className="flex items-center gap-2">
-            <GraduationCap className="h-3.5 w-3.5 text-white" />
-            <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+            <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
               NEW COURSE WIZARD
             </h2>
           </div>
-          <button
-            onClick={onClose}
-            className="text-white hover:text-white/80 transition-colors p-1"
-            data-testid="wizard-close"
-          >
-            <X className="h-5 w-5" />
-          </button>
         </div>
 
         {renderStepIndicator()}
