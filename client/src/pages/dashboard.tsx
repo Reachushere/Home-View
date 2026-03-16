@@ -13423,7 +13423,13 @@ export default function Dashboard() {
         const info = buildCourseInfoForCert();
         if (!info) return null;
         const ck = selectedCertCourse.certKey;
-        const certName = ck.startsWith('L3_') ? 'Certificate 3' : ck.startsWith('L2_') ? 'Certificate 2' : (certSections.L1.some(s => s.members.includes(ck)) || ck.startsWith('L1_') || ['LIBERAL', 'OPEN1', 'OPEN2'].includes(ck)) ? 'Certificate 1' : '';
+        const certName = ck.startsWith('L3_') ? 'Certificate 3' : ck.startsWith('L2_') ? 'Certificate 2' : (certSections.L1.some(s => s.members.includes(ck)) || ck.startsWith('L1_') || ['LIBERAL', 'OPEN1', 'OPEN2'].includes(ck)) ? 'Certificate 1' : (() => {
+          const ct = courseCertificateTypes[selectedCertCourse.courseCode] || courseCertificateTypes[ck] || '';
+          if (ct.includes('3')) return 'Certificate 3';
+          if (ct.includes('2')) return 'Certificate 2';
+          if (ct.includes('1') || ct) return 'Certificate 1';
+          return '';
+        })();
         return (
           <CourseDetailDialog
             courseInfo={info}
