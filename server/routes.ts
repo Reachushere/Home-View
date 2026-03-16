@@ -6863,18 +6863,67 @@ document.body.removeChild(a);
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00.000Z");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
+      // Sync OneDrive files first (same as shower trigger)
+      console.log(`[Cat Lights] Syncing OneDrive files for week ${currentWeekNumber}...`);
+      try {
+        const { listOneDriveItems } = await import("./onedrive");
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const objectStorageSync = new ObjectStorageService();
+        const courses = [
+          { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics and Government' },
+          { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
+        ];
+        for (const course of courses) {
+          try {
+            const weekFolders = await listOneDriveItems(course.path);
+            const currentWeekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === currentWeekNumber);
+            if (!currentWeekFolder) continue;
+            const weekContents = await listOneDriveItems(currentWeekFolder.path);
+            for (const subType of ['module', 'reading']) {
+              const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === subType);
+              if (!subFolder) continue;
+              const subFiles = await listOneDriveItems(subFolder.path);
+              for (const file of subFiles) {
+                if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+                const existingFiles = await storage.getFiles();
+                const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
+                if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
+                const downloadResponse = await fetch(file.downloadUrl);
+                if (!downloadResponse.ok) continue;
+                const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+                const uploadUrl = await objectStorageSync.getObjectEntityUploadURL();
+                const uploadResponse = await fetch(uploadUrl, { method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' } });
+                if (!uploadResponse.ok) continue;
+                const objectPath = objectStorageSync.normalizeObjectEntityPath(uploadUrl);
+                await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
+                console.log(`[Cat Lights] Synced new file: ${file.name} → ${folderName}`);
+              }
+            }
+          } catch (e: any) { console.log(`[Cat Lights] OneDrive sync error for ${course.code}: ${e.message}`); }
+        }
+        console.log(`[Cat Lights] OneDrive sync complete`);
+      } catch (e: any) { console.log(`[Cat Lights] OneDrive sync failed: ${e.message}`); }
+
+      // Find next unlistened file across all courses, prioritizing modules over readings
       const allFiles = await storage.getFiles();
-      const cppaModule = allFiles.find((f: any) => {
+      const unlistenedFiles = allFiles.filter((f: any) => {
         if (f.listened) return false;
         const weekMatch = f.folder?.match(/week-(\d+)/i);
-        if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNumber) return false;
-        const isCppa = f.folder?.toLowerCase().includes('cppa');
-        const isModule = f.folder?.toLowerCase().includes('module');
-        return isCppa && isModule;
+        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
       });
+      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
+      const isCPPAFile = (f: any) => f.folder?.toLowerCase().includes('cppa');
+      const isCFNFFile = (f: any) => f.folder?.toLowerCase().includes('cfnf');
+      const cppaModulesL = unlistenedFiles.filter((f: any) => isCPPAFile(f) && isModuleFile(f));
+      const cfnfModulesL = unlistenedFiles.filter((f: any) => isCFNFFile(f) && isModuleFile(f));
+      const cppaReadingsL = unlistenedFiles.filter((f: any) => isCPPAFile(f) && !isModuleFile(f));
+      const cfnfReadingsL = unlistenedFiles.filter((f: any) => isCFNFFile(f) && !isModuleFile(f));
+      const orderedFilesL = [...cppaModulesL, ...cfnfModulesL, ...cppaReadingsL, ...cfnfReadingsL];
+
+      const cppaModule = orderedFilesL[0] || null;
 
       if (!cppaModule) {
-        console.log(`[Cat Lights] No unlistened CPPA module for week ${currentWeekNumber}`);
+        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber}`);
         catLightsPromptPending = false;
         try {
           await fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) });
@@ -6883,7 +6932,10 @@ document.body.removeChild(a);
       }
 
       const fileName = cppaModule.displayName || cppaModule.originalName || 'Unknown file';
-      console.log(`[Cat Lights] Found CPPA module: ${fileName} (id=${cppaModule.id})`);
+      const courseMatchL = cppaModule.folder?.match(/(cppa|cfnf)\d*/i);
+      const courseNameL = courseMatchL ? courseMatchL[0].toUpperCase() : '';
+      const fileTypeL = isModuleFile(cppaModule) ? 'module' : 'reading';
+      console.log(`[Cat Lights] Found next file: ${courseNameL} ${fileTypeL} — ${fileName} (id=${cppaModule.id})`);
 
       const extractionPromise = extractFileText(cppaModule);
       console.log(`[Cat Lights] Started text extraction in background (will be ready when you confirm)`);
@@ -7698,120 +7750,66 @@ document.body.removeChild(a);
       
       // Get next file to play
       const nextFile = orderedFiles[0];
-      console.log(`Shower trigger: Playing ${nextFile.displayName || nextFile.originalName}`);
-      
-      // Check for resume progress
-      const progressKey = `file-${nextFile.id}`;
-      const progress = playbackProgress[progressKey];
-      const resumeFromChunk = progress?.chunkIndex || 0;
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      console.log(`Shower trigger: Playing ${fileName}`);
       
       // Extract text from PDF
-      let textContent = "";
-      try {
-        const objectFile = await objectStorage.getObjectEntityFile(nextFile.objectPath);
-        const [content] = await objectFile.download();
-        
-        const isPDF = content.slice(0, 4).toString() === '%PDF';
-        if (isPDF) {
-          const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(content) });
-          await parser.load();
-          const pdfText = await parser.getText();
-          
-          if (pdfText && typeof pdfText === 'object') {
-            if (pdfText.pages && Array.isArray(pdfText.pages)) {
-              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
-            } else if (Array.isArray(pdfText)) {
-              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
-            } else if (pdfText.text) {
-              textContent = pdfText.text;
-            } else {
-              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join(' ');
-            }
-          } else {
-            textContent = String(pdfText || '');
-          }
-          await parser.destroy();
-        } else {
-          textContent = content.toString('utf-8');
-        }
-      } catch (error) {
-        console.error("Shower trigger: Error extracting text:", error);
-        return res.status(500).json({ error: "Failed to extract text from file" });
-      }
-      
-      if (!textContent.trim()) {
+      const extractedText = await extractFileText(nextFile);
+      if (!extractedText || !extractedText.trim()) {
         return res.status(400).json({ error: "File is empty or not readable" });
       }
       
-      // Clean and chunk the text for TTS (larger chunks for OpenAI - up to 4096 chars)
-      let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
-      const chunks = cleanedContent.match(/.{1,1500}[.!?]?\s*/g) || [cleanedContent];
+      // Clean and chunk the text
+      const cleanedContent = extractedText.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+      const fileChunks = cleanedContent.match(/.{1,1500}[.!?]?\s*/g) || [cleanedContent];
       
-      // Start from resume point
-      const chunk = chunks[resumeFromChunk] || chunks[0];
+      // Resume from saved progress (start 1 chunk earlier for context)
+      const savedChunk = nextFile.lastChunkIndex || 0;
+      const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
+      console.log(`Shower trigger: Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk}), ${fileChunks.length} total chunks`);
       
-      // Announce which file we're reading
-      const fileName = nextFile.displayName || nextFile.originalName;
-      const courseMatch = nextFile.folder?.match(/(cppa|cfnf)\d*/i);
-      const courseName = courseMatch ? courseMatch[0].toUpperCase() : '';
-      const announcement = resumeFromChunk > 0 
-        ? `Resuming ${courseName} reading, chunk ${resumeFromChunk + 1} of ${chunks.length}.`
-        : `Now reading ${courseName} ${isModule(nextFile) ? 'module' : 'reading'}: ${fileName.replace('.pdf', '')}. ${chunks.length} sections total.`;
-      
-      // Combine announcement with content for a single audio file
-      const fullTextForTTS = `${announcement} ... ${chunk}`;
-      
-      console.log(`Shower trigger: Generating OpenAI TTS for chunk ${resumeFromChunk + 1}/${chunks.length}`);
-      
-      // Generate OpenAI TTS audio and save to object storage
-      const audioPath = await generateAndSaveTTSAudio(fullTextForTTS, `shower-${nextFile.id}-chunk-${resumeFromChunk}`);
-      const audioUrl = `https://home-view--bkh416.replit.app${audioPath}`;
-      
-      console.log(`Shower trigger: Playing audio on Echo: ${audioUrl}`);
-      
-      // Play the audio on the Echo via Home Assistant media_player
-      const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entity_id: targetEntity,
-          media_content_id: audioUrl,
-          media_content_type: "audio/mp3"
-        }),
-      });
-      
-      if (!playResponse.ok) {
-        const errorText = await playResponse.text();
-        console.error(`Shower trigger: Failed to play audio: ${playResponse.status} - ${errorText}`);
-      } else {
-        console.log(`Shower trigger: Audio playback started successfully`);
+      // Build reader URL for tablet
+      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const readerUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
+
+      // Wake up tablet and navigate to reader
+      try {
+        for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
+          await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
+          });
+        }
+        console.log(`[Shower] Tablet wakeup + brightness max sent`);
+      } catch (e: any) {
+        console.log(`[Shower] Tablet brightness error: ${e.message}`);
       }
-      
-      // Save progress
-      playbackProgress[progressKey] = {
-        chunkIndex: resumeFromChunk,
-        totalChunks: chunks.length,
-        lastPlayed: new Date()
-      };
-      
+      await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
+      console.log(`[Shower] Tablet navigate command sent via tablet-nav (same tab)`);
+
+      // Set Nest volume
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 1.0 }),
+      });
+
+      // Respond immediately then start playback in background
+      const currentShowerSession = ++catWashSessionId;
       res.json({
         action: "reading",
-        file: {
-          id: nextFile.id,
-          name: fileName,
-          folder: nextFile.folder
-        },
+        file: { id: nextFile.id, name: fileName, folder: nextFile.folder },
         currentWeek: currentWeekNumber,
         chunkIndex: resumeFromChunk,
-        totalChunks: chunks.length,
+        totalChunks: fileChunks.length,
         resuming: resumeFromChunk > 0,
         remainingFiles: orderedFiles.length,
-        audioUrl: audioUrl
       });
+
+      // Start full chunk-by-chunk playback with attention prompts (same as voice prompt)
+      startNestChunkPlayback(nextFile.id, fileName, fileChunks, resumeFromChunk, currentShowerSession, "echo");
       
     } catch (error: any) {
       console.error("Shower trigger error:", error);
