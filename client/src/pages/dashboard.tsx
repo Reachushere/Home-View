@@ -16530,7 +16530,7 @@ export default function Dashboard() {
           {/* School Courses Dialog - All past + current courses organized by semester */}
           {isSchoolCoursesDialogOpen && createPortal(
             <div>
-            <div className="fixed inset-0 z-[10002] bg-black/50" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
+            <div className="fixed inset-0 z-[10002]" onClick={() => setIsSchoolCoursesDialogOpen(false)} />
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
               style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 7 - 30 - 4}px`, width: 'calc(96vw + 28px - 26px)', maxWidth: 'calc(96vw + 28px - 26px)', bottom: '50px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
@@ -16706,20 +16706,22 @@ export default function Dashboard() {
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                         <div className="h-px flex-1 bg-white/20" />
                       </div>
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: 'stretch' }}>
                         {semesterDefs.filter(s => s.year === year).map(sem => {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
+                          const ref2026 = semesterDefs.find(s => s.key === 'w2026');
+                          const ref2026Height = ref2026 ? ref2026.courses.length : 3;
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.25)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.12)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.25)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}) }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.15)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.2)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
                                 <span className="text-[8px] text-white whitespace-nowrap ml-1">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
                               </div>
-                              <div className="p-1.5 space-y-1">
+                              <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
                                 {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
                                 {sem.courses.length === 0 && <div className="text-[9px] text-white/40 text-center py-3">No courses yet</div>}
                               </div>
