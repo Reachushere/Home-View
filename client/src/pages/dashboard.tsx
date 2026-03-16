@@ -21515,7 +21515,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ right: '-32px', top: '0px', pointerEvents: 'auto' }}
+            style={{ right: '-36px', top: '0px', pointerEvents: 'auto' }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
