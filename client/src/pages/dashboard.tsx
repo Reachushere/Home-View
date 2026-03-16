@@ -12648,7 +12648,7 @@ export default function Dashboard() {
               }}
               data-testid="button-degree-courses"
             >
-              <span className="text-white/80 text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>COURSES</span>
+              <span className="text-white text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>COURSES</span>
               <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
             </div>
           </div>
