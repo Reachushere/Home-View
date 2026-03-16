@@ -1070,28 +1070,38 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           {formatDate(task.dueDate)} {formatTime(task.dueDate)}
                         </span>
                         {task.gradeWeight && <span>{task.gradeWeight}%</span>}
-                        {task.gradeTotal && (
-                          <span className={task.gradeValue !== null && task.gradeValue !== undefined ? 'text-emerald-400' : 'text-white/30'}>
-                            {task.gradeValue !== null && task.gradeValue !== undefined ? `${task.gradeValue}/${task.gradeTotal}` : `—/${task.gradeTotal}`}
-                          </span>
-                        )}
                         <span className="capitalize">{task.type}</span>
                       </div>
                     </div>
-                    {task.gradeTotal && (
+                    <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <span className="text-[7px] text-white/40">%</span>
+                      <span className="text-[9px] text-white/70 w-[28px] text-center" data-testid={`text-grade-percent-${task.id}`}>
+                        {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${Math.round((task.gradeValue / task.gradeTotal) * 100)}%` : '—'}
+                      </span>
                       <input
                         type="number"
-                        className="w-10 h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20 flex-shrink-0"
-                        placeholder="Score"
+                        className="w-[30px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+                        placeholder="Tot"
+                        value={task.gradeTotal ?? ''}
+                        onChange={(e) => {
+                          const val = e.target.value ? parseInt(e.target.value) : null;
+                          updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val } });
+                        }}
+                        data-testid={`input-grade-total-${task.id}`}
+                      />
+                      <span className="text-[8px] text-white/30">/</span>
+                      <input
+                        type="number"
+                        className="w-[30px] h-5 text-[9px] text-center bg-white/10 border border-white/20 rounded text-white placeholder:text-white/20"
+                        placeholder="Scr"
                         value={task.gradeValue ?? ''}
-                        onClick={(e) => e.stopPropagation()}
                         onChange={(e) => {
                           const val = e.target.value ? parseInt(e.target.value) : null;
                           updateGradeValueMutation.mutate({ id: task.id, gradeValue: val });
                         }}
                         data-testid={`input-grade-value-${task.id}`}
                       />
-                    )}
+                    </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate(task.id); }}
                       className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
