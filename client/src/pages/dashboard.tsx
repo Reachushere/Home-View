@@ -17022,9 +17022,6 @@ export default function Dashboard() {
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: year === 2025 ? 'end' : 'start' }}>
                         {year === 2025 && (
                           <div className="rounded-lg border overflow-hidden flex flex-col" style={{ gridColumn: 1, gridRow: 1, background: 'transparent', borderColor: 'rgba(255,255,255,0.45)', borderWidth: '1px' }}>
-                            <div className="px-2 py-1.5 border-b flex items-center justify-center flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
-                              <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
-                            </div>
                             <div className="p-1 flex" style={{ gap: '10px' }}>
                               <table className="border-collapse text-[8px] text-white" style={{ flex: 1 }}>
                                 <thead>
@@ -17036,9 +17033,9 @@ export default function Dashboard() {
                                 </thead>
                                 <tbody>
                                   {[
-                                    ['A+','90-100','4.33'],['A','85-89','4.0'],['A-','80-84','3.67'],
-                                    ['B+','77-79','3.33'],['B','73-76','3.0'],['B-','70-72','2.67'],
-                                    ['C+','67-69','2.33'],
+                                    ['A+','90-100%','4.33'],['A','85-89%','4.0'],['A-','80-84%','3.67'],
+                                    ['B+','77-79%','3.33'],['B','73-76%','3.0'],['B-','70-72%','2.67'],
+                                    ['C+','67-69%','2.33'],
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
                                       <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
@@ -17058,9 +17055,9 @@ export default function Dashboard() {
                                 </thead>
                                 <tbody>
                                   {[
-                                    ['C','63-66','2.0'],['C-','60-62','1.67'],
-                                    ['D+','57-59','1.33'],['D','53-56','1.0'],['D-','50-52','0.67'],
-                                    ['F','0-49','0'],
+                                    ['C','63-66%','2.0'],['C-','60-62%','1.67'],
+                                    ['D+','57-59%','1.33'],['D','53-56%','1.0'],['D-','50-52%','0.67'],
+                                    ['F','0-49%','0'],
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '18px' }}>
                                       <td className="px-1 py-0.5 font-semibold border border-white/20">{letter}</td>
