@@ -3943,20 +3943,28 @@ export default function Dashboard() {
     resizeRef.current = { startY: clientY, startHeight: calendarHeight, _undoHeight: calendarHeight };
   }, [calendarHeight]);
 
+  const calendarHeightRef = useRef(calendarHeight);
+  calendarHeightRef.current = calendarHeight;
+
   useEffect(() => {
+    if (!isResizing) return;
+
+    let lastHeight = calendarHeightRef.current;
+
     const handleMove = (e: MouseEvent | TouchEvent) => {
-      if (!isResizing || !resizeRef.current) return;
+      if (!resizeRef.current) return;
       const { clientY } = getPointerXY(e);
       const delta = clientY - resizeRef.current.startY;
       const newHeight = Math.max(200, Math.min(window.innerHeight - 60, resizeRef.current.startHeight + delta));
+      lastHeight = newHeight;
       setCalendarHeight(newHeight);
     };
 
     const handleEnd = () => {
       if (resizeRef.current && resizeRef.current._undoHeight !== undefined) {
         const oldHeight = resizeRef.current._undoHeight;
-        if (oldHeight !== calendarHeight) {
-          setUndoStack(prev => [{ type: 'resize', description: 'Resize calendar height', data: { resizeType: 'height', oldValue: oldHeight, newValue: calendarHeight } }, ...prev]);
+        if (oldHeight !== lastHeight) {
+          setUndoStack(prev => [{ type: 'resize', description: 'Resize calendar height', data: { resizeType: 'height', oldValue: oldHeight, newValue: lastHeight } }, ...prev]);
           setRedoStack([]);
         }
       }
@@ -3964,18 +3972,16 @@ export default function Dashboard() {
       resizeRef.current = null;
     };
 
-    if (isResizing) {
-      document.addEventListener('mousemove', handleMove);
-      document.addEventListener('mouseup', handleEnd);
-      document.addEventListener('touchmove', handleMove, { passive: false });
-      document.addEventListener('touchend', handleEnd);
-    }
+    document.addEventListener('mousemove', handleMove, true);
+    document.addEventListener('mouseup', handleEnd, true);
+    document.addEventListener('touchmove', handleMove, { passive: false, capture: true });
+    document.addEventListener('touchend', handleEnd, true);
 
     return () => {
-      document.removeEventListener('mousemove', handleMove);
-      document.removeEventListener('mouseup', handleEnd);
-      document.removeEventListener('touchmove', handleMove);
-      document.removeEventListener('touchend', handleEnd);
+      document.removeEventListener('mousemove', handleMove, true);
+      document.removeEventListener('mouseup', handleEnd, true);
+      document.removeEventListener('touchmove', handleMove, true);
+      document.removeEventListener('touchend', handleEnd, true);
     };
   }, [isResizing]);
 
