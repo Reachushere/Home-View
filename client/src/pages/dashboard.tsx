@@ -16136,7 +16136,7 @@ export default function Dashboard() {
                             }}
                             data-testid={`button-edit-course-${index}`}
                           >
-                            <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" />
+                            <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" strokeWidth={2.5} />
                           </button>
                           <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
                             <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
@@ -16637,7 +16637,7 @@ export default function Dashboard() {
                             }}
                             data-testid={`button-edit-course-${semCourse.code}`}
                           >
-                            <Pencil className="w-2 h-2 text-white hover:text-white/80" />
+                            <Pencil className="w-2.5 h-2.5 text-white hover:text-white/80" strokeWidth={2.5} />
                           </button>
                         </div>
                       </div>
