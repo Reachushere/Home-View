@@ -344,18 +344,18 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:38px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[15px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_') {
         const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?)/, '<span style="color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)">$1</span>');
-        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold text-white/95">${forecastHtml}</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[15px] font-semibold text-white/95">${forecastHtml}</span></span>`;
       }
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
         ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain;vertical-align:middle" />`
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[15px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
+      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[15px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[15px] text-white/90">${safeTitle}</span></a>`;
     }).join('')}</div></div>`;
     containerRef.current.innerHTML = html;
     requestAnimationFrame(() => {
@@ -12655,7 +12655,7 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Timer bar - rectangle left of time */}
+      {/* Timer bar - no box, inline left of time */}
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8}px`,
@@ -12666,15 +12666,7 @@ export default function Dashboard() {
         alignItems: 'center',
         justifyContent: 'flex-end',
         gap: '7px',
-        paddingLeft: '11px',
-        paddingRight: '9px',
-        borderRadius: '6px',
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)',
-        border: '0.5px solid rgba(255,255,255,0.5)',
-        borderTop: '0.5px solid rgba(255,255,255,0.7)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+        paddingRight: '0px',
         opacity: isTopPillOpen ? 0 : 1,
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
@@ -12696,6 +12688,7 @@ export default function Dashboard() {
             <SkipForward className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
           </button>
         </div>
+        <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', marginLeft: '4px' }} />
       </div>
 
       {/* Time - fixed position */}
@@ -13431,9 +13424,12 @@ export default function Dashboard() {
       {selectedCertCourse && (() => {
         const info = buildCourseInfoForCert();
         if (!info) return null;
+        const ck = selectedCertCourse.certKey;
+        const certName = ck.startsWith('L3_') ? 'Certificate 3' : ck.startsWith('L2_') ? 'Certificate 2' : (certSections.L1.some(s => s.members.includes(ck)) || ck.startsWith('L1_') || ['LIBERAL', 'OPEN1', 'OPEN2'].includes(ck)) ? 'Certificate 1' : '';
         return (
           <CourseDetailDialog
             courseInfo={info}
+            certificateName={certName}
             onClose={() => {
               setSelectedCertCourse(null);
               if (isSchoolCoursesDialogOpen) {
@@ -16661,7 +16657,23 @@ export default function Dashboard() {
                         <span className="text-[10px] text-white truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         {semCourse.period && <span className="text-[8px] text-white/50 whitespace-nowrap">{semCourse.period}</span>}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
-                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                          {(currentCourse?.professor || profInfo.professor) && (() => {
+                            const profName = currentCourse?.professor || profInfo.professor;
+                            const profEmail = currentCourse?.professorEmail || profInfo.email;
+                            return profEmail ? (
+                              <a
+                                className="text-[9px] text-white truncate underline cursor-pointer hover:text-white/80"
+                                style={{ marginRight: '3px' }}
+                                href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(profEmail)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                data-testid={`link-professor-${semCourse.code}`}
+                              >{profName}</a>
+                            ) : (
+                              <span className="text-[9px] text-white truncate" style={{ marginRight: '3px' }}>{profName}</span>
+                            );
+                          })()}
                           <span
                             className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : hasSemStarted(semKey) ? 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse' : 'bg-amber-500/15 text-white border border-amber-500/30'}`}
                             style={{ marginRight: '3px' }}
@@ -18402,7 +18414,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
-            style={{ bottom: `${calendarBottom - 20}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
                 setCurrentMonth(new Date());
@@ -18415,7 +18427,7 @@ export default function Dashboard() {
           </Button>
           <div
             className="fixed"
-            style={{ bottom: `${calendarBottom - 20}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)' }} />
             <Button

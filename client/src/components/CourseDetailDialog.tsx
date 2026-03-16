@@ -84,6 +84,7 @@ interface CourseDetailDialogProps {
   onGradeCalculated?: (grade: string, percent: string) => void;
   semesterStart: Date;
   readingWeekStart: Date | null;
+  certificateName?: string;
 }
 
 interface NewTaskForm {
@@ -132,7 +133,7 @@ function percentToLetterGrade(pct: number): string {
   return 'F';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, semesterStart, readingWeekStart }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, semesterStart, readingWeekStart, certificateName }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -428,7 +429,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               >
                 {courseInfo.courseCode} — {courseInfo.courseName}
               </h2>
-              <div className="flex items-center gap-2 text-[9px] text-white/80 mt-0.5">
+              <div className="flex items-center gap-2 text-[9px] text-white mt-0.5">
                 {courseInfo.deliveryMode === "virtual" ? (
                   <span className="flex items-center gap-0.5"><Video className="h-2.5 w-2.5" /> Virtual</span>
                 ) : courseInfo.deliveryMode === "online" ? (
@@ -442,7 +443,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="text-white hover:text-white/80 transition-colors p-1 flex-shrink-0" data-testid="button-close-course-detail">
+          <button onClick={onClose} className="text-white hover:text-white transition-colors p-1 flex-shrink-0" data-testid="button-close-course-detail">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -450,11 +451,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
           <div className="p-3 border-b border-white/10 space-y-2">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] text-white/40 uppercase tracking-wider font-semibold">Course Info</span>
+              <span className="text-[9px] text-white uppercase tracking-wider font-semibold">Course Info</span>
               {!isEditingInfo ? (
                 <button
                   onClick={() => setIsEditingInfo(true)}
-                  className="flex items-center gap-1 text-[9px] text-white/50 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-1 text-[9px] text-white hover:text-white transition-colors"
                   data-testid="button-edit-course-info"
                 >
                   <Pencil className="w-2.5 h-2.5" />
@@ -476,7 +477,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       });
                       setIsEditingInfo(false);
                     }}
-                    className="text-[9px] text-white/50 hover:text-white/80 transition-colors px-1.5 py-0.5 rounded border border-white/20"
+                    className="text-[9px] text-white hover:text-white transition-colors px-1.5 py-0.5 rounded border border-white/20"
                     data-testid="button-cancel-edit-info"
                   >
                     Cancel
@@ -502,17 +503,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <div className="space-y-2 text-[10px]">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Professor</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Professor</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professor} onChange={(e) => setEditInfo({...editInfo, professor: e.target.value})} placeholder="Professor name" data-testid="input-edit-professor" />
                   </div>
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Email</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Email</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professorEmail} onChange={(e) => setEditInfo({...editInfo, professorEmail: e.target.value})} placeholder="professor@email.com" data-testid="input-edit-email" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Delivery Mode</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Delivery Mode</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.deliveryMode} onChange={(e) => setEditInfo({...editInfo, deliveryMode: e.target.value})} data-testid="select-edit-delivery">
                       <option value="" className="bg-gray-800">Not set</option>
                       <option value="virtual" className="bg-gray-800">Virtual (Live Zoom)</option>
@@ -520,36 +521,36 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Zoom Link</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Zoom Link</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder="https://zoom.us/..." data-testid="input-edit-zoom" />
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Day 1</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Day 1</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay} onChange={(e) => setEditInfo({...editInfo, classDay: e.target.value})} data-testid="select-edit-day1">
                       <option value="" className="bg-gray-800">—</option>
                       {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Day 2</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Day 2</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
                       <option value="" className="bg-gray-800">—</option>
                       {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">Start</label>
+                    <label className="text-white text-[9px] mb-0.5 block">Start</label>
                     <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
                   </div>
                   <div>
-                    <label className="text-white/50 text-[9px] mb-0.5 block">End</label>
+                    <label className="text-white text-[9px] mb-0.5 block">End</label>
                     <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-white/50 text-[9px] mb-0.5 block">Certificate Type</label>
+                  <label className="text-white text-[9px] mb-0.5 block">Certificate Type</label>
                   <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={certificateType} onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-edit-certificate-type-detail">
                     <option value="" className="bg-gray-800">-- Select --</option>
                     {CERTIFICATE_TYPE_OPTIONS.map(g => (
@@ -564,53 +565,42 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <>
                 <div className="grid grid-cols-2 gap-2 text-[10px]">
                   <div className="flex items-center gap-1.5">
-                    <User className="h-3 w-3 text-white/40" />
-                    <span className="text-white/60">Professor:</span>
-                    <span className="text-white/90">{courseInfo.professor || "Not set"}</span>
+                    <User className="h-3 w-3 text-white" />
+                    <span className="text-white">Professor:</span>
+                    <span className="text-white">{courseInfo.professor || "Not set"}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Mail className="h-3 w-3 text-white/40" />
-                    <span className="text-white/60">Email:</span>
+                    <Mail className="h-3 w-3 text-white" />
+                    <span className="text-white">Email:</span>
                     {courseInfo.professorEmail ? (
-                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-blue-300 hover:text-blue-200 underline" data-testid="link-professor-email">
+                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-white hover:text-white/80 underline" data-testid="link-professor-email">
                         {courseInfo.professorEmail}
                       </a>
                     ) : (
-                      <span className="text-white/90">Not set</span>
+                      <span className="text-white">Not set</span>
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white/40" /> : <Globe className="h-3 w-3 text-white/40" />}
-                    <span className="text-white/60">Mode:</span>
-                    <span className="text-white/90">{deliveryLabel}</span>
+                    {courseInfo.deliveryMode === "virtual" ? <Video className="h-3 w-3 text-white" /> : <Globe className="h-3 w-3 text-white" />}
+                    <span className="text-white">Mode:</span>
+                    <span className="text-white">{deliveryLabel}</span>
                   </div>
                   {courseInfo.courseType && (
                     <div className="flex items-center gap-1.5">
-                      <BookOpen className="h-3 w-3 text-white/40" />
-                      <span className="text-white/60">Type:</span>
-                      <span className="text-white/90">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
+                      <BookOpen className="h-3 w-3 text-white" />
+                      <span className="text-white">Type:</span>
+                      <span className="text-white">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-1.5 col-span-2">
-                    <GraduationCap className="h-3 w-3 text-white/40" />
-                    <span className="text-white/60">Certificate:</span>
-                    {certificateType ? (
-                      <span className="text-white/90 text-[9px]">{certificateType}</span>
-                    ) : (
-                      <select className="text-[9px] bg-white/10 border border-white/15 text-white/70 rounded px-1 py-0.5" value="" onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-cert-type-inline">
-                        <option value="" className="bg-gray-800">-- Select --</option>
-                        {CERTIFICATE_TYPE_OPTIONS.map(g => (
-                          <optgroup key={g.group} label={g.group}>
-                            {g.options.map(o => <option key={o} value={o} className="bg-gray-800">{o}</option>)}
-                          </optgroup>
-                        ))}
-                      </select>
-                    )}
+                    <GraduationCap className="h-3 w-3 text-white" />
+                    <span className="text-white">Certificate:</span>
+                    <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="h-3 w-3 text-white/40" />
-                    <span className="text-white/60">Schedule:</span>
-                    <span className="text-white/90 capitalize">
+                    <Calendar className="h-3 w-3 text-white" />
+                    <span className="text-white">Schedule:</span>
+                    <span className="text-white capitalize">
                       {courseInfo.classDay
                         ? `${courseInfo.classDay}${courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}${courseInfo.classTime ? ` ${courseInfo.classTime}` : ""}${courseInfo.classEndTime ? `–${courseInfo.classEndTime}` : ""}`
                         : "Not set"}
@@ -618,9 +608,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                   {courseInfo.deliveryMode === "online" && (
                     <div className="flex items-center gap-1.5">
-                      <Clock className="h-3 w-3 text-white/40" />
-                      <span className="text-white/60">Modules:</span>
-                      <span className="text-white/90">Weekly (change every Saturday)</span>
+                      <Clock className="h-3 w-3 text-white" />
+                      <span className="text-white">Modules:</span>
+                      <span className="text-white">Weekly (change every Saturday)</span>
                     </div>
                   )}
                 </div>
@@ -629,7 +619,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     href={courseInfo.zoomLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-[10px] text-blue-300 hover:text-blue-200 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1.5"
+                    className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/10 border border-white/20 rounded px-2 py-1.5"
                     data-testid="link-zoom"
                   >
                     <Video className="h-3 w-3" />
@@ -644,8 +634,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <h3 className="text-[11px] font-medium text-white/90">Assignments</h3>
-                <span className="text-[9px] text-white/50">
+                <h3 className="text-[11px] font-medium text-white">Assignments</h3>
+                <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
                   {totalWeight > 0 && ` · ${totalWeight}% weight`}
                 </span>
@@ -679,7 +669,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {totalWeight > 0 && (
               <div className="mb-2">
                 <div className="flex items-center gap-2 text-[9px] mb-1">
-                  <span className="text-white/50">Grade Weight</span>
+                  <span className="text-white">Grade Weight</span>
                   <span className={`font-medium ${totalWeight === 100 ? "text-green-400" : totalWeight > 100 ? "text-red-400" : "text-amber-400"}`}>
                     {totalWeight}%{totalWeight === 100 ? " ✓" : totalWeight > 100 ? " !" : ""}
                   </span>
@@ -700,7 +690,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <div className="bg-white/5 border border-white/15 rounded-lg p-3 mb-3 space-y-2" data-testid="add-assignment-form">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Title *</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Title *</Label>
                     <Input
                       value={newTask.title}
                       onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
@@ -710,7 +700,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     />
                   </div>
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Type</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Type</Label>
                     <select
                       value={newTask.type}
                       onChange={(e) => setNewTask({ ...newTask, type: e.target.value })}
@@ -726,7 +716,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Due Date *</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Due Date *</Label>
                     <Input
                       type="date"
                       value={newTask.dueDate}
@@ -736,7 +726,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     />
                   </div>
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Due Time</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Due Time</Label>
                     <Input
                       type="time"
                       value={newTask.dueTime}
@@ -748,7 +738,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 </div>
 
                 <div>
-                  <Label className="text-[9px] text-white/50 mb-0.5 block">Description</Label>
+                  <Label className="text-[9px] text-white mb-0.5 block">Description</Label>
                   <Input
                     value={newTask.description}
                     onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
@@ -760,7 +750,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Grade Weight (%)</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Grade Weight (%)</Label>
                     <Input
                       type="number"
                       value={newTask.gradeWeight}
@@ -771,7 +761,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     />
                   </div>
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Total Points</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Total Points</Label>
                     <Input
                       type="number"
                       value={newTask.gradeTotal}
@@ -782,7 +772,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     />
                   </div>
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Score Earned</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Score Earned</Label>
                     <Input
                       type="number"
                       value={newTask.gradeValue}
@@ -796,7 +786,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 1</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Reminder 1</Label>
                     <select
                       value={newTask.reminder1}
                       onChange={(e) => setNewTask({ ...newTask, reminder1: parseInt(e.target.value) })}
@@ -809,7 +799,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 2</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Reminder 2</Label>
                     <select
                       value={newTask.reminder2}
                       onChange={(e) => setNewTask({ ...newTask, reminder2: parseInt(e.target.value) })}
@@ -825,7 +815,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 3</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Reminder 3</Label>
                     <select
                       value={newTask.reminder3}
                       onChange={(e) => setNewTask({ ...newTask, reminder3: parseInt(e.target.value) })}
@@ -838,7 +828,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                   <div>
-                    <Label className="text-[9px] text-white/50 mb-0.5 block">Reminder 4</Label>
+                    <Label className="text-[9px] text-white mb-0.5 block">Reminder 4</Label>
                     <select
                       value={newTask.reminder4}
                       onChange={(e) => setNewTask({ ...newTask, reminder4: parseInt(e.target.value) })}
@@ -857,7 +847,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     size="sm"
                     variant="ghost"
                     onClick={() => { setShowAddForm(false); setNewTask(createEmptyTaskForm()); }}
-                    className="h-7 text-[10px] text-white/60 hover:text-white hover:bg-white/10"
+                    className="h-7 text-[10px] text-white hover:text-white hover:bg-white/10"
                     data-testid="button-cancel-add"
                   >
                     Cancel
@@ -908,15 +898,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     >
                       {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
                     </button>
-                    <TypeIcon className="h-3 w-3 text-white/40 flex-shrink-0" />
+                    <TypeIcon className="h-3 w-3 text-white flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className={`text-[10px] font-medium truncate flex items-center gap-1 ${task.isCompleted ? "line-through text-white/40" : "text-white/90"}`}>
+                      <div className={`text-[10px] font-medium truncate flex items-center gap-1 ${task.isCompleted ? "line-through text-white" : "text-white"}`}>
                         {task.title}
                         {task.attachments && task.attachments.length > 0 && (
                           <Paperclip className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 inline" />
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-[8px] text-white/40">
+                      <div className="flex items-center gap-2 text-[8px] text-white">
                         <span className={overdue ? "text-red-400" : ""}>
                           {formatDate(task.dueDate)} {formatTime(task.dueDate)}
                         </span>
@@ -959,20 +949,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           {gradeCalc && (
             <div className="mx-3 mb-3 p-3 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }} data-testid="grade-calculator-box">
               <div className="flex items-center gap-2 mb-2">
-                <GraduationCap className="h-3.5 w-3.5 text-white/60" />
-                <span className="text-[10px] font-semibold text-white/80">Grade Calculator</span>
-                <span className="text-[8px] text-white/40 ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight}% of {totalWeight || gradeCalc.gradedWeight}% weight</span>
+                <GraduationCap className="h-3.5 w-3.5 text-white" />
+                <span className="text-[10px] font-semibold text-white">Grade Calculator</span>
+                <span className="text-[8px] text-white ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight}% of {totalWeight || gradeCalc.gradedWeight}% weight</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                  <div className="text-[8px] text-white/40 mb-1">Current Grade</div>
+                  <div className="text-[8px] text-white mb-1">Current Grade</div>
                   <div className="text-lg font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
-                  <div className="text-[9px] text-white/60" data-testid="text-current-percent">{gradeCalc.currentPercent}%</div>
+                  <div className="text-[9px] text-white" data-testid="text-current-percent">{gradeCalc.currentPercent}%</div>
                 </div>
                 <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                  <div className="text-[8px] text-white/40 mb-1">Projected Final</div>
+                  <div className="text-[8px] text-white mb-1">Projected Final</div>
                   <div className="text-lg font-bold text-white/70" data-testid="text-projected-grade">{gradeCalc.projectedGrade}</div>
-                  <div className="text-[9px] text-white/50" data-testid="text-projected-percent">{gradeCalc.projectedPercent}%</div>
+                  <div className="text-[9px] text-white" data-testid="text-projected-percent">{gradeCalc.projectedPercent}%</div>
                 </div>
               </div>
             </div>
@@ -980,7 +970,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         </div>
 
         <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
-          <div className="text-[9px] text-white/50">
+          <div className="text-[9px] text-white">
             {courseTasks.length} assignment{courseTasks.length !== 1 ? "s" : ""} · {completedCount} completed
           </div>
           <div className="flex gap-2">
