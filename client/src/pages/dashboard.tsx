@@ -16970,7 +16970,7 @@ export default function Dashboard() {
                         </button>
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
-                          style={{ width: '28px', marginLeft: '-2px' }}
+                          style={{ width: '28px', marginLeft: '-2px', marginTop: '2px' }}
                           data-testid={`aas-status-${semCourse.code}`}
                           onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                         >
