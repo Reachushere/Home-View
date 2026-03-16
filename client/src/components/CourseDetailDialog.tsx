@@ -122,7 +122,7 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: nu
       type="text"
       inputMode="numeric"
       pattern="[0-9]*"
-      className="w-[30px] h-5 text-[9px] text-center bg-white/10 border border-white/30 rounded text-white placeholder:text-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      className="w-[30px] h-5 text-[9px] text-center bg-white border border-white/30 rounded text-black placeholder:text-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       placeholder={placeholder}
       value={local}
       onChange={(e) => setLocal(e.target.value)}
