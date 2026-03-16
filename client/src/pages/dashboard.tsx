@@ -16623,12 +16623,12 @@ export default function Dashboard() {
                         <div className="flex items-center gap-1.5">
                           <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                           <span className="text-[10px] font-bold text-white flex-shrink-0">{displayName}</span>
-                          {subtitle && <span className="text-[9px] text-white truncate">- {subtitle}</span>}
+                          {subtitle && <span className="text-[9px] text-white">- {subtitle}</span>}
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1">
                             {semCourse.period && <span className="text-[8px] text-white/70">{semCourse.period}</span>}
-                            {(currentCourse?.professor || profInfo.professor) && <span className="text-[8px] text-white underline truncate" style={{ maxWidth: '90px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                            {(currentCourse?.professor || profInfo.professor) && <span className="text-[7px] text-white underline truncate" style={{ maxWidth: '90px' }}>{currentCourse?.professor || profInfo.professor}</span>}
                           </div>
                           <div className="flex items-center gap-1">
                             <span
@@ -16657,6 +16657,7 @@ export default function Dashboard() {
                             </select>
                             <button
                               className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                              style={{ marginRight: '-5px' }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingSchoolCourseKey(semCourse.code);
