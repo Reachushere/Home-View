@@ -16577,9 +16577,6 @@ export default function Dashboard() {
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
                     const displayName = semCourse.name;
                     const subtitle = semCourse.fullName || '';
-                    const bgColor = currentCourse
-                      ? (currentCourse.colorEnd ? `linear-gradient(135deg, ${currentCourse.color}44, ${currentCourse.colorEnd}44)` : `${currentCourse.color}33`)
-                      : isCurrentCourse ? 'rgba(34,197,94,0.15)' : 'rgba(59,130,246,0.12)';
                     const dotColor = currentCourse
                       ? (currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color)
                       : isCurrentCourse ? '#22c55e' : '#3b82f6';
@@ -16589,19 +16586,18 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="flex items-center px-2 py-1 rounded-lg border border-white/15 hover:border-white/30 cursor-pointer transition-all gap-1"
-                        style={{ background: bgColor }}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10 hover:border-white/25 cursor-pointer transition-all"
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
                           setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
-                        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <span className="text-[9px] text-white truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
-                        {semCourse.period && <span className="text-[7px] text-white whitespace-nowrap">{semCourse.period}</span>}
+                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
+                        <span className="text-[10px] text-white/80 truncate"><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        {semCourse.period && <span className="text-[8px] text-white/50 whitespace-nowrap">{semCourse.period}</span>}
                         <div className="flex items-center gap-1 ml-auto flex-shrink-0" style={{ marginRight: '-3px' }}>
-                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white underline truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
+                          {(currentCourse?.professor || profInfo.professor) && <span className="text-[9px] text-white/60 truncate" style={{ marginRight: '3px' }}>{currentCourse?.professor || profInfo.professor}</span>}
                           <span
                             className={`text-[7px] px-1 py-0.5 rounded-full whitespace-nowrap font-medium cursor-pointer hover:opacity-80 transition-opacity ${(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) ? 'bg-blue-500/20 text-white border border-blue-500/30' : 'bg-amber-500/15 text-white border border-amber-500/30 aas-unchecked-pulse'}`}
                             style={{ marginRight: '3px' }}
@@ -16657,8 +16653,8 @@ export default function Dashboard() {
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           const maxCourses = Math.max(...semesterDefs.filter(s => s.courses.length > 0).map(s => s.courses.length), 3);
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.45)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.55)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.35)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.4)' }}>
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'rgba(255,255,255,0.05)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + maxCourses * 32 + 12}px` }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.08)', borderColor: isCurrentSem ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.15)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
