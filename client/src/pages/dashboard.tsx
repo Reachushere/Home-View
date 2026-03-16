@@ -16933,9 +16933,23 @@ export default function Dashboard() {
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
                     const displayName = semCourse.name;
                     const subtitle = semCourse.fullName || '';
-                    const dotColor = currentCourse
-                      ? (currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color)
-                      : isCurrentCourse ? '#22c55e' : '#1e40af';
+                    const dotColor = (() => {
+                      if (currentCourse) {
+                        return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
+                      }
+                      try {
+                        const cd = localStorage.getItem('certCourseData');
+                        if (cd) {
+                          const sd = JSON.parse(cd);
+                          const certKey = pastEntry?.certKey || semCourse.code;
+                          const saved = sd[certKey] || sd[codeNorm] || sd[semCourse.code];
+                          if (saved?.color) {
+                            return saved.colorEnd ? `linear-gradient(to right, ${saved.color}, ${saved.colorEnd})` : saved.color;
+                          }
+                        }
+                      } catch {}
+                      return isCurrentCourse ? '#22c55e' : '#1e40af';
+                    })();
                     const priorityKey = `${semKey}:${semCourse.code}`;
                     const currentPriority = draftCoursePlayPriority[priorityKey] ?? 0;
 
