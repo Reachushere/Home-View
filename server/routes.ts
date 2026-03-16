@@ -5354,6 +5354,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catWashSessionId = 0;
   let catWashPlaybackStartedAt: Date | null = null;
   let catWashManuallyStoppedAt: Date | null = null;
+  let catWashPlaybackTrigger: 'lights' | 'water' | 'manual' | null = null;
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
@@ -5568,15 +5569,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     console.log(`${logPrefix} tablet-nav set for devices`);
 
     try {
-      for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
+      for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255', 'input keyevent KEYCODE_F11']) {
         await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
         });
       }
-      console.log(`${logPrefix} Tablet wakeup + brightness max sent`);
+      console.log(`${logPrefix} Tablet wakeup + brightness max + fullscreen sent`);
     } catch (e: any) {
-      console.log(`${logPrefix} Tablet brightness error: ${e.message}`);
+      console.log(`${logPrefix} Tablet setup error: ${e.message}`);
     }
 
     try {
@@ -6564,7 +6565,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-wash-dry", "/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume"],
+      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume"],
     });
   });
 
@@ -6764,6 +6765,7 @@ document.body.removeChild(a);
 
       res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
 
+      catWashPlaybackTrigger = 'water';
       await startConfirmedPlaybackFlow(nextFile, '[Cat Wash]', 'echo');
 
     } catch (error: any) {
@@ -6834,10 +6836,23 @@ document.body.removeChild(a);
       const appUrl = "https://home-view--bkh416.replit.app";
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
-      // === LIGHT TURNED OFF → Playback continues (door sensor handles stop) ===
+      // === LIGHT TURNED OFF → Stop all playback + save progress ===
       if (lightState === 'off') {
-        console.log("[Cat Lights] Light off - playback continues (stop is handled by door sensor)");
-        return res.json({ action: "ignored", reason: "Light off does not stop playback; door sensor does" });
+        console.log("[Cat Lights] Light off — stopping all playback and saving progress");
+        const stopped: string[] = [];
+        if (catWashPlaybackActive) {
+          stopped.push(`playback:${catWashPlaybackState?.fileName || ''}`);
+          await stopNestPlaybackWithGoodbye('light_off');
+        }
+        if (currentTTSSession) {
+          console.log(`[Cat Lights] Stopping active TTS session (light off)`);
+          stopTTSSession("Light turned off - stopping playback");
+          stopped.push("ttsSession");
+        }
+        catLightsPromptPending = false;
+        catWashPlaybackTrigger = null;
+        console.log(`[Cat Lights] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
+        return res.json({ action: "stopped", reason: "Light turned off", stoppedItems: stopped });
       }
 
       // === LIGHT TURNED ON → Check if CPPA module needs playing ===
@@ -7009,14 +7024,16 @@ document.body.removeChild(a);
         } catch {}
 
         if (!confirmed) {
-          console.log(`[Cat Lights] No confirmation received — skipping playback`);
+          console.log(`[Cat Lights] No confirmation received — playing CHUM FM`);
           catLightsPromptPending = false;
+          await playChumFmRadio(haUrl);
           return;
         }
         console.log(`[Cat Lights] Confirmation received — starting playback`);
         catLightsPromptPending = false;
       }
 
+      catWashPlaybackTrigger = 'lights';
       await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo');
 
     } catch (error: any) {
@@ -7095,6 +7112,11 @@ document.body.removeChild(a);
         return res.json({ action: "ignored", reason: "No active playback" });
       }
 
+      if (catWashPlaybackTrigger === 'water') {
+        console.log("[Cat Door] Playback was triggered by water sensor — door open does not stop it");
+        return res.json({ action: "ignored", reason: "Water sensor triggered playback — door does not stop it" });
+      }
+
       const stopped: string[] = [];
       const fileName = catWashPlaybackState?.fileName || '';
 
@@ -7109,6 +7131,7 @@ document.body.removeChild(a);
         stopped.push("ttsSession");
       }
 
+      catWashPlaybackTrigger = null;
       console.log(`[Cat Door] Stopped (light was on): ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", trigger: "door_opened_light_on", stoppedItems: stopped });
 
@@ -7159,81 +7182,6 @@ document.body.removeChild(a);
     }
   });
 
-  // POST /api/webhook/cat-wash-dry - Triggered when water_sensor_cat_shower changes to dry
-  // Switches cat wash TTS playback from tablet Bluetooth (Echo Cat Left) to Echo Cat Middle speaker
-  app.post("/api/webhook/cat-wash-dry", async (req, res) => {
-    try {
-      const rawSensorNewState = req.body?.new_state;
-      const sensorState = req.body?.state || (typeof rawSensorNewState === 'string' ? rawSensorNewState : rawSensorNewState?.state) || 'unknown';
-      console.log(`[Cat Wash Dry] ====== WEBHOOK TRIGGERED ======`);
-      console.log(`[Cat Wash Dry] Timestamp: ${new Date().toISOString()}`);
-      console.log(`[Cat Wash Dry] Sensor state: ${sensorState}`);
-      console.log(`[Cat Wash Dry] Architecture: switching from tablet Bluetooth → Echo Cat Middle speaker`);
-
-      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
-        return res.status(500).json({ error: "Home Assistant not configured" });
-      }
-
-      if (!catWashPlaybackActive || !catWashPlaybackState) {
-        console.log("[Cat Wash Dry] No active cat wash playback to switch - ignoring");
-        return res.json({ action: "ignored", reason: "No active cat wash playback" });
-      }
-
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const appUrl = "https://home-view--bkh416.replit.app";
-      const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
-      const newSpeaker = "media_player.echo_cat_washroom_middle";
-
-      const currentFileId = catWashPlaybackState.fileId;
-      const currentFileName = catWashPlaybackState.fileName;
-      const currentChunk = catWashPlaybackState.chunkIndex;
-      const totalChunks = catWashPlaybackState.totalChunks;
-
-      console.log(`[Cat Wash Dry] Current playback: "${currentFileName}" chunk ${currentChunk}/${totalChunks}`);
-      console.log(`[Cat Wash Dry] Switching speaker to: ${newSpeaker}`);
-
-      // Build new URL with speaker param and resume chunk
-      const newReaderUrl = `${appUrl}/pdf-reader/${currentFileId}?catWashFollow=true&autoplay=true&speaker=${encodeURIComponent(newSpeaker)}&resumeChunk=${currentChunk}&auth=${authParam}`;
-
-      const skipTimestamp = Date.now();
-      const newFollowerUrl = newReaderUrl.replace('autoplay=true', 'autoplay=false').replace('catWashFollow=true', 'catWashFollow=true&followOnly=true');
-      await Promise.all([
-        setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: skipTimestamp }, true, 'master'),
-        setTabletCommand({ action: 'navigate', url: newFollowerUrl, timestamp: skipTimestamp }, true, 'tv'),
-      ]);
-
-      const deviceResults: Record<string, string> = {};
-
-      await setTabletCommand({ action: 'navigate', url: newReaderUrl, timestamp: Date.now() }, true, 'master');
-      console.log(`[Cat Wash Dry] Tablet navigate command sent via tablet-nav (same tab)`);
-      deviceResults['tablet_cat_wall'] = 'tablet-nav';
-
-      // Also re-open on Samsung TV with follower URL
-      try {
-        const fireStickSuccess = await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', newFollowerUrl);
-        deviceResults['samsung_tv'] = fireStickSuccess ? 'adb:media_player.fire_tv_172_24_0_88' : 'failed';
-      } catch (e: any) {
-        console.log(`[Cat Wash Dry] Samsung TV error: ${e.message}`);
-        deviceResults['samsung_tv'] = 'error';
-      }
-
-      console.log(`[Cat Wash Dry] Device results: ${JSON.stringify(deviceResults)}`);
-      console.log(`[Cat Wash Dry] Switched to ${newSpeaker} - tablet will now send TTS to speaker instead of Bluetooth`);
-
-      res.json({
-        action: "switched_speaker",
-        file: { id: currentFileId, name: currentFileName },
-        resumeFromChunk: currentChunk,
-        totalChunks,
-        newSpeaker,
-        devices: deviceResults,
-      });
-
-    } catch (error: any) {
-      console.error("[Cat Wash Dry] Error:", error);
-      res.status(500).json({ error: "Failed to handle cat wash dry webhook", details: error.message });
-    }
-  });
 
   // GET /api/cat-wash/progress - Returns current playback state for the active session
   app.get("/api/cat-wash/progress", (_req, res) => {
