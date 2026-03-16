@@ -11833,6 +11833,30 @@ export default function Dashboard() {
             </div>
           )}
 
+          {/* Courses Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-courses-pill"
+              title="Courses"
+              onClick={() => {
+                setDraftCoursePlayPriority({ ...coursePlayPriority });
+                setIsSchoolCoursesDialogOpen(true);
+              }}
+            >
+              <BookOpen className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
           {/* Graduation Hat - Swapped with Completed Tasks */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
