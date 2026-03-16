@@ -12768,7 +12768,7 @@ export default function Dashboard() {
                     <div className="w-5 border-l border-black"></div>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                <div className="flex-1 overflow-y-auto l3-no-scrollbar">
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Courses <span className="font-bold">({sectionRemaining(0, 'L1')}/{certSections.L1[0].required} remaining)</span></div>
                 </div>
@@ -12888,7 +12888,7 @@ export default function Dashboard() {
                     <div className="w-5 border-l border-black"></div>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                <div className="flex-1 overflow-y-auto l3-no-scrollbar">
                 <div className="flex border-b border-black" style={{ backgroundColor: '#e5e5e5' }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold">({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
                 </div>
