@@ -3704,7 +3704,7 @@ export default function Dashboard() {
   const isActiveInEarlierLevel = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
-    return prevIds.some(pid => inProgressCourses[pid] || checkedCourses[pid]);
+    return prevIds.some(pid => checkedCourses[pid]);
   };
 
   const isActiveInOtherLevel = (courseId: string): boolean => {
