@@ -804,6 +804,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </button>
                   <button
                     onClick={() => {
+                      if (editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim()) {
+                        toast({ title: "URL is required for virtual courses", variant: "destructive" });
+                        return;
+                      }
                       if (onSaveCourseInfo) {
                         onSaveCourseInfo(editInfo);
                       }
@@ -839,8 +843,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                 </div>
                 <div>
-                  <label className="text-white text-[9px] mb-0.5 block">Zoom Link</label>
-                  <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder="https://zoom.us/..." data-testid="input-edit-zoom" />
+                  <label className="text-white text-[9px] mb-0.5 block">Zoom Link{editInfo.deliveryMode === 'virtual' && <span className="text-red-400 ml-0.5">*</span>}</label>
+                  <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
