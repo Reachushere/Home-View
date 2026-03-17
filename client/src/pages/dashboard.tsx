@@ -3807,7 +3807,7 @@ export default function Dashboard() {
   const StrikethroughLabel = ({ id }: { id: string }) => {
     if (isDropdownRow(id)) return null;
     if (checkedCourses[id]) return null;
-    if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirement met)</span>;
+    if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirement Met)</span>;
     if (isActiveInOtherLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Prev. Completed)</span>;
     if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
     return null;
