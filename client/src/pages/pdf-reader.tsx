@@ -2460,6 +2460,18 @@ export default function PDFReaderPage() {
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
                       className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                      style={{ padding: '14px', outline: '2px solid rgba(255,255,255,0.25)', outlineOffset: '3px' }}
+                      onClick={restartFromBeginning}
+                      disabled={isLoading || numPages === 0}
+                      title="Restart from beginning (clears all progress)"
+                      data-testid="button-restart"
+                    >
+                      <SkipBack className="h-8 w-8 text-white" />
+                    </button>
+                  )}
+                  {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                    <button
+                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
                       style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                       onClick={resumeFromLast}
                       disabled={isLoading || numPages === 0}
