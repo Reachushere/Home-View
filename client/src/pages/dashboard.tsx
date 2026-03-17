@@ -12840,29 +12840,29 @@ export default function Dashboard() {
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
-      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 28}px`, right: '20px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 24}px`, right: '14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
           <span className="text-[11px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10.5px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
-            className="cursor-pointer hover:bg-white/20 rounded p-0.5"
-            style={{ marginLeft: '2px' }}
+            className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
+            style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
             onClick={() => { const newWeek = selectedWeek - 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-prev-week"
             data-date-nav
           >
-            <ChevronLeft style={{ width: '18px', height: '18px' }} className="text-white" strokeWidth={2.5} />
+            <ChevronLeft style={{ width: '20px', height: '20px' }} className="text-white" strokeWidth={2.5} />
           </div>
           <span className="text-[12px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
-            className="cursor-pointer hover:bg-white/20 rounded p-0.5"
-            style={{ marginLeft: '2px' }}
+            className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
+            style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
             onClick={() => { const newWeek = selectedWeek + 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-next-week"
             data-date-nav
           >
-            <ChevronRight style={{ width: '18px', height: '18px' }} className="text-white" strokeWidth={2.5} />
+            <ChevronRight style={{ width: '20px', height: '20px' }} className="text-white" strokeWidth={2.5} />
           </div>
         </div>
       </div>
@@ -19407,12 +19407,12 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            style={{ position: 'absolute', left: '50%', bottom: '-11px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-height-resize-handle"
           >
             <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '9px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '9px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -20808,15 +20808,19 @@ export default function Dashboard() {
                 }}>
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
-                    const nowDate = startOfDay(new Date());
                     const courseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
-                      if (tc !== cCode || t.isCompleted || new Date(t.dueDate) < nowDate) return false;
+                      if (tc !== cCode || t.isCompleted) return false;
                       const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
                       if (!knownCourseCodes.includes(tc)) return false;
-                      return true;
+                      if (t.weekNumber !== undefined && t.weekNumber !== null) return t.weekNumber === selectedWeek;
+                      if (semesterSettings?.semesterStartDate) {
+                        const taskWeek = getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+                        return taskWeek === selectedWeek;
+                      }
+                      return false;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-                    if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No upcoming items</span>;
+                    if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No items for Week {selectedWeek}</span>;
                     const isCFNF = cCode.startsWith('CFNF');
                     const isCASL = cCode.startsWith('CASL');
                     const textColor = '#ffffff';
@@ -20977,13 +20981,16 @@ export default function Dashboard() {
             const rows = [...rightBgs, ...courseRows];
 
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
-            const nowDate = startOfDay(new Date());
             const otherProgressTasks = (allTasks || []).filter(t => {
               if (t.isCompleted) return false;
-              if (new Date(t.dueDate) < nowDate) return false;
               const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
               if (knownCourseCodes.includes(tc)) return false;
-              return true;
+              if (t.weekNumber !== undefined && t.weekNumber !== null) return t.weekNumber === selectedWeek;
+              if (semesterSettings?.semesterStartDate) {
+                const taskWeek = getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
+                return taskWeek === selectedWeek;
+              }
+              return false;
             }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
             if (courseRowRects.length > 0) {
