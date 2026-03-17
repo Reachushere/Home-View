@@ -3670,7 +3670,7 @@ export default function Dashboard() {
   const sectionRemaining = (sectionIndex: number, level: 'L1' | 'L2' | 'L3') => {
     const section = certSections[level][sectionIndex];
     if (!section) return 0;
-    const active = section.members.filter(m => checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m) || (courseGrades[m]?.percent && courseGrades[m]?.percent?.trim() !== '')).length;
+    const active = section.members.filter(m => !isActiveInOtherLevel(m) && (checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m) || (courseGrades[m]?.percent && courseGrades[m]?.percent?.trim() !== ''))).length;
     return Math.max(0, section.required - active);
   };
   const isSectionAllGreen = (sectionIndex: number, level: 'L1' | 'L2' | 'L3') => {
@@ -15678,7 +15678,7 @@ export default function Dashboard() {
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ height: '19px' }}>
                                       <td className="font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '4px', paddingRight: '2px' }}>{letter}</td>
-                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '2px' }}>{pct}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '20px', paddingRight: '2px' }}>{pct}</td>
                                       <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
@@ -15693,7 +15693,7 @@ export default function Dashboard() {
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ height: '19px' }}>
                                       <td className="font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '0px', paddingRight: '2px' }}>{letter}</td>
-                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '2px' }}>{pct}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '20px', paddingRight: '2px' }}>{pct}</td>
                                       <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
