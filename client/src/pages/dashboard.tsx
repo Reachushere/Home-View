@@ -20663,28 +20663,28 @@ export default function Dashboard() {
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ width: '19px', height: '19px' }}
+              style={{ width: '18px', height: '18px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-to-top"
             >
-              <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={3.5} />
+              <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={3.5} />
             </div>
             <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '6px 3px 1px auto' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '19px', height: '19px' }}
+              style={{ width: '18px', height: '18px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
+              <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={2.5} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '19px', height: '19px' }}
+              style={{ width: '18px', height: '18px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
+              <ChevronDown style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={2.5} />
             </div>
           </div>
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
