@@ -19364,7 +19364,7 @@ export default function Dashboard() {
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
             className="cursor-ns-resize group"
-            style={{ position: 'absolute', left: '-16px', top: '-14px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '-16px', top: '-20px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             onMouseDown={handleTopResizeStart}
             onTouchStart={handleTopResizeStart}
             data-testid="calendar-top-resize-handle"
