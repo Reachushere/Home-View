@@ -15289,6 +15289,18 @@ export default function Dashboard() {
                     COURSES
                   </h2>
                 </div>
+                <div
+                  className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSchoolCoursesDialogOpen(false);
+                    setTimeout(() => setIsSettingsPanelOpen(true), 100);
+                  }}
+                  data-testid="button-courses-degree-tracking"
+                >
+                  <span className="text-white text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>DEGREE TRACKING</span>
+                  <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
+                </div>
               </div>
               <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
                 <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
