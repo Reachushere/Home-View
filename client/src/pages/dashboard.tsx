@@ -15668,8 +15668,8 @@ export default function Dashboard() {
                             <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
-                            <div className="p-1.5 flex" style={{ gap: '10px' }}>
-                              <table className="text-[11px] text-white" style={{ flex: 1, borderSpacing: '0 1px', borderCollapse: 'separate' }}>
+                            <div className="p-1.5 flex" style={{ gap: '30px' }}>
+                              <table className="text-[11px] text-white" style={{ borderSpacing: '0 1px', borderCollapse: 'separate' }}>
                                 <tbody>
                                   {[
                                     ['A+','90-100%','4.33'],['A','85-89%','4.0'],['A-','80-84%','3.67'],
@@ -15677,14 +15677,14 @@ export default function Dashboard() {
                                     ['C+','67-69%','2.33'],
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ height: '19px' }}>
-                                      <td className="px-1 font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
-                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
-                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
+                                      <td className="font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '4px', paddingRight: '2px' }}>{letter}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '2px' }}>{pct}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
                                 </tbody>
                               </table>
-                              <table className="text-[11px] text-white" style={{ flex: 1, borderSpacing: '0 1px', borderCollapse: 'separate' }}>
+                              <table className="text-[11px] text-white" style={{ borderSpacing: '0 1px', borderCollapse: 'separate' }}>
                                 <tbody>
                                   {[
                                     ['C','63-66%','2.0'],['C-','60-62%','1.67'],
@@ -15692,15 +15692,15 @@ export default function Dashboard() {
                                     ['F','0-49%','0'],
                                   ].map(([letter, pct, pts]) => (
                                     <tr key={letter} style={{ height: '19px' }}>
-                                      <td className="px-1 font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
-                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
-                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
+                                      <td className="font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '0px', paddingRight: '2px' }}>{letter}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '2px' }}>{pct}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
                                   <tr style={{ height: '19px' }}>
-                                    <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
-                                    <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
-                                    <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
                                   </tr>
                                 </tbody>
                               </table>
