@@ -20658,18 +20658,18 @@ export default function Dashboard() {
             </div>
           </div>
           <div
-            className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ right: '-17px', bottom: '5px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            className="absolute z-50 flex flex-col items-center cursor-pointer"
+            style={{ right: '-17px', bottom: '0px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ width: '18px', height: '18px' }}
+              style={{ width: '18px', height: '18px', marginBottom: '5px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-to-top"
             >
               <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={3.5} />
             </div>
-            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '4px 4px 5px auto' }} />
+            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '0px 4px 14px auto' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '18px', height: '18px' }}
