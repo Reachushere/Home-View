@@ -12866,7 +12866,7 @@ export default function Dashboard() {
       )}
       
       {/* Voice Input Floating Button */}
-      <div className="fixed z-[9999]" style={{ bottom: '44px', left: '3px' }}>
+      <div className="fixed z-[9999]" style={{ bottom: '44px', left: '4px' }}>
         <button
           onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
           className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
