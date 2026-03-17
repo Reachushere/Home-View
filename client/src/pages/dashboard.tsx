@@ -15711,7 +15711,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? '#ffffff' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px` }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? '#ffffff' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
