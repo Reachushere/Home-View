@@ -11742,13 +11742,13 @@ export default function Dashboard() {
       {/* Time - fixed position */}
       <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1}px`, top: '8px', width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
       <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '700', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
-        <span id="clock-seconds" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
+        <span id="clock-seconds" className="text-white" style={{ fontSize: '14px', fontWeight: '700', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           :{String(currentTime.getSeconds()).padStart(2, '0')}
         </span>
-        <span id="clock-ampm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
+        <span id="clock-ampm" className="text-white" style={{ fontSize: '14px', fontWeight: '700', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
         </span>
         {profileData.travelTimezone && (
@@ -12642,8 +12642,10 @@ export default function Dashboard() {
                             const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                             if (dates.startDate) {
                               const courseName = updatedCourses[matchIdx >= 0 ? matchIdx : 0]?.name || `${courseCode}`;
-                              const startD = new Date(dates.startDate);
-                              const endD = new Date(dates.endDate);
+                              const [sY, sM, sD] = dates.startDate.split('-').map(Number);
+                              const startD = new Date(sY, sM - 1, sD);
+                              const [eY, eM, eD] = dates.endDate.split('-').map(Number);
+                              const endD = new Date(eY, eM - 1, eD);
                               const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
                               const classDays = [updates.classDay, updates.classDay2].filter(Boolean).map(d => dayMap[d!] ?? -1).filter(d => d >= 0);
                               const existingTasks: any[] = queryClient.getQueryData(["/api/tasks"]) || [];
@@ -12661,7 +12663,7 @@ export default function Dashboard() {
                                       tasksToCreate.push({
                                         title: 'Class',
                                         type: 'class',
-                                        dueDate: current.toISOString().split('T')[0],
+                                        dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}`,
                                         courseName,
                                         eventStartTime: updates.classTime!,
                                         eventEndTime: updates.classEndTime!,
@@ -12688,7 +12690,7 @@ export default function Dashboard() {
                                     tasksToCreate.push({
                                       title: 'Class',
                                       type: 'class',
-                                      dueDate: current.toISOString().split('T')[0],
+                                      dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}`,
                                       courseName,
                                       eventStartTime: updates.classTime!,
                                       eventEndTime: updates.classEndTime!,
@@ -24941,7 +24943,7 @@ function CoursesForm({
                   )}
                   {classDay && deliveryMode === 'virtual' && (
                     <span>
-                      {dayNames[classDay] || classDay}{classDay2 ? `/${dayNames[classDay2] || classDay2}` : ''} {classTime && classEndTime ? `${classTime}-${classEndTime}` : ''}
+                      {dayNames[classDay] || classDay}{classDay2 ? `/${dayNames[classDay2] || classDay2}` : ''} {classTime && classEndTime ? `${formatTimeTo12Hour(classTime)}-${formatTimeTo12Hour(classEndTime)}` : ''}
                     </span>
                   )}
                 </div>
