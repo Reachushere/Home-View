@@ -17575,7 +17575,7 @@ export default function Dashboard() {
                             <span className="text-[10px] font-medium leading-none" style={{ color: tempColor }}>{dayForecast.low}°</span>
                           </div>
                           {wIcon && (
-                            <div className="absolute z-20" style={{ right: '3px', top: '-4px', fontSize: '11px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
+                            <div className="absolute z-20" style={{ right: '3px', top: '-1px', fontSize: '11px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
                               {wIcon}
                             </div>
                           )}
@@ -19390,7 +19390,7 @@ export default function Dashboard() {
             data-testid="calendar-top-resize-handle"
           >
             <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}>▲</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▲</span>
               <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▼</span>
             </div>
           </div>
@@ -19411,7 +19411,7 @@ export default function Dashboard() {
             data-testid="calendar-height-resize-handle"
           >
             <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}>▼</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
               <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
             </div>
           </div>
