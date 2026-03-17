@@ -12837,7 +12837,7 @@ export default function Dashboard() {
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
-      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 26}px`, right: '21px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 26}px`, right: '27px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
           <span className="text-[10.5px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
