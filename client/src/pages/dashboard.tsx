@@ -171,7 +171,7 @@ import StickyNoteItem from "@/components/StickyNoteItem";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
-import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel } from "@shared/electiveCourses";
+import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel, type ElectiveCourse } from "@shared/electiveCourses";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -3574,6 +3574,28 @@ export default function Dashboard() {
       }
     }
     return codes;
+  };
+
+  const buildElectiveOptions = (courseList: ElectiveCourse[], slotId: string, siblingIds?: string[]) => {
+    const sorted = [...courseList].sort((a, b) => {
+      const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0;
+      const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0;
+      return numA - numB || a.code.localeCompare(b.code);
+    });
+    const used = siblingIds ? getSelectedCodes(siblingIds, slotId) : new Set<string>();
+    const filtered = sorted.filter(c => !used.has(c.code));
+    const currentVal = openElectives[slotId];
+    const options = filtered.map(c => ({ key: c.code, value: `${c.code} ${c.name}`, label: `${c.code} - ${c.name}` }));
+    if (currentVal?.trim()) {
+      const alreadyInList = options.some(o => o.value === currentVal);
+      if (!alreadyInList) {
+        const parts = currentVal.split(' ');
+        const code = parts.slice(0, 2).join(' ');
+        const name = parts.slice(2).join(' ');
+        options.unshift({ key: `saved-${code}`, value: currentVal, label: `${code} - ${name}` });
+      }
+    }
+    return options;
   };
 
   const noGradeIds = new Set(['L1_PPA122']);
@@ -11973,8 +11995,8 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
-                      {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
-                        <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                      {buildElectiveOptions(getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES), 'LIBERAL').map(o => (
+                        <option key={o.key} value={o.value}>{o.label}</option>
                       ))}
                     </select>
                     <StrikethroughLabel id="LIBERAL" />
@@ -11999,9 +12021,9 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
-                        {(() => { const used = getSelectedCodes(['OPEN1','OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
-                          <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                        )); })()}
+                        {buildElectiveOptions(OPEN_ELECTIVE_COURSES, cid, ['OPEN1','OPEN2']).map(o => (
+                          <option key={o.key} value={o.value}>{o.label}</option>
+                        ))}
                       </select>
                       <StrikethroughLabel id={cid} />
                     </div>
@@ -12101,8 +12123,8 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
-                      {getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).map(c => (
-                        <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
+                      {buildElectiveOptions(getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES), 'L2_LIBERAL').map(o => (
+                        <option key={o.key} value={o.value}>{o.label}</option>
                       ))}
                     </select>
                     <StrikethroughLabel id="L2_LIBERAL" />
@@ -12154,7 +12176,9 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
-                        {(() => { const used = getSelectedCodes(['L2_OPEN1','L2_OPEN2'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (<option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>)); })()}
+                        {buildElectiveOptions(OPEN_ELECTIVE_COURSES, cid, ['L2_OPEN1','L2_OPEN2']).map(o => (
+                          <option key={o.key} value={o.value}>{o.label}</option>
+                        ))}
                       </select>
                       <StrikethroughLabel id={cid} />
                     </div>
@@ -12281,9 +12305,9 @@ export default function Dashboard() {
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
                             <option value="">{`Select POG Course ${i+1}...`}</option>
-                            {(() => { const used = getSelectedCodes(['L3_POG1','L3_POG2'], cid); return POG_COURSES.filter(c => !used.has(c.code)).map(c => (
-                              <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                            )); })()}
+                            {buildElectiveOptions(POG_COURSES, cid, ['L3_POG1','L3_POG2']).map(o => (
+                              <option key={o.key} value={o.value}>{o.label}</option>
+                            ))}
                           </select>
                           <StrikethroughLabel id={cid} />
                         </div>
@@ -12306,9 +12330,9 @@ export default function Dashboard() {
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
                             <option value="">{i === 0 ? 'Select Lower Level Table A Course...' : 'Select Upper Level Table B Course...'}</option>
-                            {(() => { const used = getSelectedCodes(['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'], cid); return (i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES)).sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
-                              <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                            )); })()}
+                            {buildElectiveOptions(i === 0 ? getCoursesForLevel('LOWER', LIBERAL_STUDIES_COURSES) : getCoursesForLevel('UPPER', LIBERAL_STUDIES_COURSES), cid, ['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4']).map(o => (
+                              <option key={o.key} value={o.value}>{o.label}</option>
+                            ))}
                           </select>
                           <StrikethroughLabel id={cid} />
                         </div>
@@ -12331,9 +12355,9 @@ export default function Dashboard() {
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
                             <option value="">{`Select PR Elective ${i+1}...`}</option>
-                            {(() => { const used = getSelectedCodes(['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'], cid); return [...OPEN_ELECTIVE_COURSES].sort((a, b) => { const numA = parseInt(a.code.replace(/[^0-9]/g, '')) || 0; const numB = parseInt(b.code.replace(/[^0-9]/g, '')) || 0; return numA - numB || a.code.localeCompare(b.code); }).filter(c => !used.has(c.code)).map(c => (
-                              <option key={c.code} value={`${c.code} ${c.name}`}>{c.code} - {c.name}</option>
-                            )); })()}
+                            {buildElectiveOptions(OPEN_ELECTIVE_COURSES, cid, ['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7']).map(o => (
+                              <option key={o.key} value={o.value}>{o.label}</option>
+                            ))}
                           </select>
                           <StrikethroughLabel id={cid} />
                         </div>
