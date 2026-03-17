@@ -20,6 +20,7 @@ import {
   ChevronRight,
   FileText,
   Loader2,
+  RefreshCw,
   RotateCcw,
   RotateCw,
   Pencil,
@@ -1576,6 +1577,19 @@ export default function PDFReaderPage() {
     startReading();
   };
 
+  const restartCurrentChunk = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    const idx = currentChunkRef.current;
+    console.log(`[TTS] Restart current chunk ${idx}`);
+    setIsPlaying(true);
+    isPlayingRef.current = true;
+    setIsPaused(false);
+    isPausedRef.current = false;
+    playNextChunk(idx);
+  };
+
   const skipBack = () => {
     if (currentChunkRef.current > 0) {
       if (audioRef.current) {
@@ -2530,6 +2544,9 @@ export default function PDFReaderPage() {
               </button>
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
+              </button>
+              <button className="p-3 rounded-full hover:bg-white/10" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
+                <RefreshCw className="h-5 w-5 text-white" />
               </button>
               <button className="p-3 rounded-full hover:bg-white/10" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning" data-testid="button-restart-inline">
                 <RotateCcw className="h-5 w-5 text-white" />
