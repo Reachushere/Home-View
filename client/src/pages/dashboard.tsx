@@ -11706,7 +11706,7 @@ export default function Dashboard() {
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
           data-tpo data-tpo-opacity="1"
-          style={{ height: '16px', width: '16px', position: 'fixed', left: '5px', top: '5px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '16px', width: '16px', position: 'fixed', left: '4px', top: '6px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
