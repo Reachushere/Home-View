@@ -1021,7 +1021,23 @@ export default function Dashboard() {
     }, 2200);
     return () => clearTimeout(sideTimeout);
   }, []);
-  const [isTopPillOpen, setIsTopPillOpen] = useState(false);
+  const isTopPillOpenRef = useRef(false);
+  const [isTopPillOpen, _rawSetIsTopPillOpen] = useState(false);
+  const setIsTopPillOpen = useCallback((val: boolean) => {
+    if (isTopPillOpenRef.current === val) return;
+    isTopPillOpenRef.current = val;
+    const pill = document.getElementById('top-pill-container');
+    if (pill) {
+      pill.style.transform = `translateY(${val ? '14px' : '-77px'})`;
+      pill.style.animation = 'none';
+    }
+    document.querySelectorAll<HTMLElement>('[data-tpo]').forEach(el => {
+      el.style.opacity = val ? '0' : (el.dataset.tpoOpacity || '1');
+      el.style.pointerEvents = val ? 'none' : 'auto';
+      el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
+    });
+    startTransition(() => _rawSetIsTopPillOpen(val));
+  }, []);
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string }[]>([]);
 
   useEffect(() => {
@@ -10492,7 +10508,7 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <div className="fixed flex items-center" style={{ left: '23px', top: '8px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed flex items-center" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: '8px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '42px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
@@ -10523,6 +10539,7 @@ export default function Dashboard() {
           return (
             <div
               className="font-raleway"
+              data-tpo data-tpo-opacity="1"
               style={{
                 position: 'fixed',
                 top: '25px',
@@ -10583,6 +10600,7 @@ export default function Dashboard() {
         return (
           <div
             className="font-raleway"
+            data-tpo data-tpo-opacity="1"
             style={{
               position: 'fixed',
               top: '25px',
@@ -10683,6 +10701,7 @@ export default function Dashboard() {
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div 
         ref={topPillRef}
+        id="top-pill-container"
         style={{
           position: 'fixed',
           zIndex: 110,
@@ -11621,6 +11640,7 @@ export default function Dashboard() {
         }}
       />
       <div
+        data-tpo data-tpo-opacity="0.9"
         style={{
           position: 'fixed',
           left: '50%',
@@ -11647,6 +11667,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
+          data-tpo data-tpo-opacity="1"
           style={{ height: '16px', width: '16px', position: 'fixed', left: '6px', bottom: '44px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
@@ -11668,7 +11689,7 @@ export default function Dashboard() {
         opacity: isTopPillOpen ? 0 : 1,
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
-      }} data-testid="timer-bar">
+      }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
         <div ref={clockContainerRef} className={`flex ${
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
@@ -11689,8 +11710,8 @@ export default function Dashboard() {
       </div>
 
       {/* Time - fixed position */}
-      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1}px`, top: '8px', width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
-      <div style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1}px`, top: '8px', width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
+      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
         <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '500', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
@@ -12784,7 +12805,7 @@ export default function Dashboard() {
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
-      <div className="fixed z-50 flex items-end justify-end gap-2" style={{ top: `${calendarTop - 28}px`, right: '20px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 28}px`, right: '20px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
           <span className="text-[12px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[9px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
@@ -17367,6 +17388,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
+            data-tpo data-tpo-opacity="1"
             style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft - 7}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
             onClick={() => {
               if (calendarView === "week") {
@@ -17380,6 +17402,7 @@ export default function Dashboard() {
           </Button>
           <div
             className="fixed"
+            data-tpo data-tpo-opacity="1"
             style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + (calendarView === "month" ? 62 : 70)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)' }} />
@@ -17402,7 +17425,7 @@ export default function Dashboard() {
           </div>
           
           {/* BRYN reminder - positioned above today column outside the card */}
-          <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
+          <div className="grid w-full h-[15px] flex-shrink-0" data-tpo data-tpo-opacity="1" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
             {weekDays.map((day, idx) => {
