@@ -14624,7 +14624,7 @@ export default function Dashboard() {
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               <DialogTitle className="sr-only">Key Contacts</DialogTitle>
-              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ background: `linear-gradient(180deg, ${colorSettings.headerBar} 0%, ${colorSettings.headerBar} 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <Contact className="h-3.5 w-3.5 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Key Contacts</h2>
@@ -14661,7 +14661,7 @@ export default function Dashboard() {
                     <>
                       <div className="flex flex-col py-2 overflow-y-auto flex-shrink-0" style={{ width: '130px', borderRight: '1px solid rgba(255,255,255,0.15)', scrollbarWidth: 'none', background: 'rgba(0,0,0,0.15)' }}>
                         <button
-                          onClick={() => setContactFilter('all')}
+                          onClick={() => startTransition(() => setContactFilter('all'))}
                           className="text-left px-3 py-2 text-[10px] font-medium transition-colors"
                           style={{ color: contactFilter === 'all' ? 'white' : 'rgba(255,255,255,0.5)', background: contactFilter === 'all' ? 'rgba(255,255,255,0.1)' : 'transparent', borderLeft: contactFilter === 'all' ? '2px solid white' : '2px solid transparent' }}
                           data-testid="tab-contacts-all"
@@ -14672,7 +14672,7 @@ export default function Dashboard() {
                           <button
                             key={g.value}
                             onClick={() => {
-                              setContactFilter(g.value);
+                              startTransition(() => setContactFilter(g.value));
                               if (contactFilter === 'all') {
                                 setTimeout(() => sectionRef.current[g.value]?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                               }
