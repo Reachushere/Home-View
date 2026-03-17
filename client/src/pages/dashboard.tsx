@@ -3767,7 +3767,7 @@ export default function Dashboard() {
     const sections = certSections[level];
     for (let i = 0; i < sections.length; i++) {
       if (sections[i].members.includes(id)) {
-        const otherActive = sections[i].members.filter(m => m !== id && (checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m) || (courseGrades[m]?.percent && courseGrades[m]?.percent?.trim() !== ''))).length;
+        const otherActive = sections[i].members.filter(m => m !== id && !isActiveInOtherLevel(m) && (checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m))).length;
         return otherActive >= sections[i].required;
       }
     }
