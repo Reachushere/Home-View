@@ -3727,7 +3727,7 @@ export default function Dashboard() {
   const isActiveInEarlierLevel = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
-    return prevIds.some(pid => checkedCourses[pid]);
+    return prevIds.some(pid => checkedCourses[pid] || inProgressCourses[pid] || !!(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== ''));
   };
 
   const isActiveInOtherLevel = (courseId: string): boolean => {
@@ -15662,7 +15662,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-2 mb-3">
                         <span className="text-[13px] font-bold text-white tracking-wide">{year}</span>
                       </div>
-                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: year === 2025 ? 'end' : 'start' }}>
+                      <div className="grid grid-cols-3 gap-3" style={{ alignItems: year === 2025 ? 'stretch' : 'start' }}>
                         {year === 2025 && (
                           <div className="rounded-lg border overflow-hidden flex flex-col" style={{ gridColumn: 1, gridRow: 1, background: 'transparent', borderColor: 'rgba(255,255,255,0.45)', borderWidth: '1px', minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}>
                             <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
