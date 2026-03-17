@@ -4328,6 +4328,13 @@ export default function Dashboard() {
     resizeRef.current = { startY: clientY, startHeight: calendarHeight, _undoHeight: calendarHeight };
   }, [calendarHeight]);
 
+  const handleTopResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const { clientY } = getPointerXY(e);
+    setIsResizing(true);
+    resizeRef.current = { startY: clientY, startHeight: calendarHeight, _undoHeight: calendarHeight, invertDirection: true } as any;
+  }, [calendarHeight]);
+
   const calendarHeightRef = useRef(calendarHeight);
   calendarHeightRef.current = calendarHeight;
 
@@ -4339,7 +4346,8 @@ export default function Dashboard() {
     const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!resizeRef.current) return;
       const { clientY } = getPointerXY(e);
-      const delta = clientY - resizeRef.current.startY;
+      const rawDelta = clientY - resizeRef.current.startY;
+      const delta = (resizeRef.current as any).invertDirection ? -rawDelta : rawDelta;
       const newHeight = Math.max(200, Math.min(window.innerHeight - 60, resizeRef.current.startHeight + delta));
       lastHeight = newHeight;
       setCalendarHeight(newHeight);
@@ -19350,6 +19358,20 @@ export default function Dashboard() {
               document.body
             );
           })()}
+          </div>
+          {/* Calendar Top Resize Handle — top-left side of glass box */}
+          <div
+            className="cursor-ns-resize group"
+            style={{ position: 'absolute', left: '-16px', top: '-14px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            onMouseDown={handleTopResizeStart}
+            onTouchStart={handleTopResizeStart}
+            data-testid="calendar-top-resize-handle"
+          >
+            <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            </div>
           </div>
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
