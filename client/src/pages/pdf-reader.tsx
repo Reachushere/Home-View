@@ -1559,6 +1559,23 @@ export default function PDFReaderPage() {
     setIsLoading(false);
   };
 
+  const restartFromBeginning = async () => {
+    const key = getFileKey();
+    const emptySet = new Set<number>();
+    setCheckedChunks(emptySet);
+    saveCheckedChunks(key, emptySet, totalChunks);
+    setCurrentChunk(0);
+    currentChunkRef.current = 0;
+    if (fileId) {
+      fetch(`/api/files/${fileId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
+      }).catch(() => {});
+    }
+    startReading();
+  };
+
   const skipBack = () => {
     if (currentChunkRef.current > 0) {
       if (audioRef.current) {
