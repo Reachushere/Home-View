@@ -34,7 +34,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import zoomLogoPath from "@assets/Zoom_1773653841562.png";
+import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
