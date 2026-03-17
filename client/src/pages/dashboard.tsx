@@ -20659,7 +20659,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ right: '-17px', bottom: '0px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-17px', bottom: '10px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
@@ -20669,7 +20669,7 @@ export default function Dashboard() {
             >
               <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={3.5} />
             </div>
-            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '6px 3px 1px auto' }} />
+            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '6px 4px 1px auto' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '18px', height: '18px' }}
