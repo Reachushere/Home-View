@@ -15668,7 +15668,7 @@ export default function Dashboard() {
                             <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
-                            <div className="p-1.5 flex justify-center" style={{ gap: '50px' }}>
+                            <div className="p-1.5 flex justify-center" style={{ gap: '100px' }}>
                               <table className="text-[11px] text-white" style={{ borderSpacing: '0 1px', borderCollapse: 'separate' }}>
                                 <tbody>
                                   {[
