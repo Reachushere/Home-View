@@ -1,0 +1,103 @@
+rest:
+  - resource: "https://home-view--bkh416.replit.app/api/ha/sensor/pollen?auth=5747"
+    scan_interval: 1800
+    sensor:
+      - name: "Pollen Index (Open-Meteo)"
+        value_template: "{{ value_json.attributes.level }}"
+  - resource: "https://home-view--bkh416.replit.app/api/ha/sensor/weather-alerts?auth=5747"
+    scan_interval: 300
+    sensor:
+      - name: "Weather Alerts Toronto"
+        value_template: "{{ value_json.attributes.alert_1_title }}"
+      - name: "Weather Alert Count Toronto"
+        value_template: "{{ value_json.state }}"
+      - name: "Weather Alert 2 Toronto"
+        value_template: "{{ value_json.attributes.alert_2_title }}"
+
+rest_command:
+  speak_text:
+    url: "https://home-view--bkh416.replit.app/api/tts/speaker"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"text": "{{ message_med }}"}'
+  cat_door_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-door"
+    method: POST
+    content_type: "application/json"
+    payload: '{"state": "open"}'
+
+  cat_knob_press:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-knob-press"
+    method: POST
+    content_type: "application/json"
+    payload: "{}"
+
+  cat_knob_confirm:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"
+    method: POST
+    content_type: "application/json"
+    payload: "{}"
+
+  cat_knob_play:
+    url: "https://home-view--bkh416.replit.app/api/trigger-playback"
+    method: POST
+    content_type: "application/json"
+    payload: "{}"
+
+  cat_knob_volume:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-volume"
+    method: POST
+    content_type: "application/json"
+    payload: '{"direction": "{{ direction }}", "step": {{ step }}}'
+
+  cat_volume_control:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-volume"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"direction": "{{ direction }}", "step": {{ step }}}'
+
+  unical_cat_lights:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"state": "on"}'
+
+  unical_cat_lights_confirm:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: "{}"
+
+  unical_cat_wash_stop:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash-stop"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"state": "stopped"}'
+
+  unical_cat_wash:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash"
+    method: POST
+    content_type: "application/json"
+
+  unical_cat_wash_dry:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash-dry"
+    method: POST
+    content_type: "application/json"
+    payload: '{"state":"dry"}'
+
+  kitchen_volume:
+    url: "https://home-view--bkh416.replit.app/api/webhook/kitchen-volume"
+    method: POST
+    content_type: "application/json"
+    payload: '{"direction": "{{ direction }}", "speed": "{{ speed }}"}'
+
+  play_radio:
+    url: "https://home-view--bkh416.replit.app/api/media/play-radio"
+    method: POST
+    content_type: "application/json"
+    payload: '{"entityId": "media_player.echo_lr_studio_white_am"}'

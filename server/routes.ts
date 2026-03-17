@@ -7208,48 +7208,6 @@ document.body.removeChild(a);
     }
   });
 
-  app.post("/api/webhook/cat-volume", async (req, res) => {
-    try {
-      const { direction, step = 0.05, volume } = req.body || {};
-      console.log(`[Cat Volume] ====== WEBHOOK TRIGGERED ======`);
-      console.log(`[Cat Volume] Body: ${JSON.stringify(req.body)}`);
-
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-
-      let newVolume: number;
-
-      if (typeof volume === 'number') {
-        newVolume = Math.max(0, Math.min(1, volume));
-      } else {
-        const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, { headers: haHeaders });
-        const stateData = stateResp.ok ? await stateResp.json() : null;
-        const currentVolume = stateData?.attributes?.volume_level ?? 0.5;
-        console.log(`[Cat Volume] Current Nest volume: ${currentVolume}`);
-
-        if (direction === 'up') {
-          newVolume = Math.min(1, currentVolume + step);
-        } else if (direction === 'down') {
-          newVolume = Math.max(0, currentVolume - step);
-        } else {
-          return res.status(400).json({ error: "Provide 'direction' (up/down) or 'volume' (0-1)" });
-        }
-      }
-
-      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: newVolume }),
-      });
-      console.log(`[Cat Volume] Set Nest volume to ${newVolume}`);
-
-      res.json({ success: true, volume: newVolume, entity: NEST_SPEAKER_ENTITY });
-    } catch (err: any) {
-      console.error(`[Cat Volume] Error: ${err.message}`);
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-
   // POST /api/webhook/kitchen-volume - Control Kitchen Echo Studio volume (fire-and-forget for HA automations)
   app.post("/api/webhook/kitchen-volume", async (req, res) => {
     try {
