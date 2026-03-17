@@ -20659,11 +20659,11 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col items-center cursor-pointer"
-            style={{ right: '-17px', bottom: '7px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-17px', bottom: '14px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ position: 'absolute', bottom: '52px', right: '0px', width: '18px', height: '18px' }}
+              style={{ position: 'absolute', bottom: '59px', right: '0px', width: '18px', height: '18px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-to-top"
             >
