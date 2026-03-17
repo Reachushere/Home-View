@@ -1,0 +1,70 @@
+alias: Kitchen Echo Studio - Volume Control
+description: Control Kitchen Echo Studio volume with knob rotation
+triggers:
+  - device_id: d16219c62f83c1965c3b58b025af692c
+    domain: zha
+    type: device_rotated_slow
+    subtype: left
+    trigger: device
+    id: slow_left
+  - device_id: d16219c62f83c1965c3b58b025af692c
+    domain: zha
+    type: device_rotated_slow
+    subtype: right
+    trigger: device
+    id: slow_right
+  - device_id: d16219c62f83c1965c3b58b025af692c
+    domain: zha
+    type: device_rotated_fast
+    subtype: left
+    trigger: device
+    id: fast_left
+  - device_id: d16219c62f83c1965c3b58b025af692c
+    domain: zha
+    type: device_rotated_fast
+    subtype: right
+    trigger: device
+    id: fast_right
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: slow_right
+        sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.echo_kitchen_studio_black_am
+            data:
+              volume_level: >
+                {{ [1.0, state_attr('media_player.echo_kitchen_studio_black_am', 'volume_level') | float + 0.05] | min }}
+      - conditions:
+          - condition: trigger
+            id: slow_left
+        sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.echo_kitchen_studio_black_am
+            data:
+              volume_level: >
+                {{ [0.0, state_attr('media_player.echo_kitchen_studio_black_am', 'volume_level') | float - 0.05] | max }}
+      - conditions:
+          - condition: trigger
+            id: fast_right
+        sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.echo_kitchen_studio_black_am
+            data:
+              volume_level: >
+                {{ [1.0, state_attr('media_player.echo_kitchen_studio_black_am', 'volume_level') | float + 0.15] | min }}
+      - conditions:
+          - condition: trigger
+            id: fast_left
+        sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.echo_kitchen_studio_black_am
+            data:
+              volume_level: >
+                {{ [0.0, state_attr('media_player.echo_kitchen_studio_black_am', 'volume_level') | float - 0.15] | max }}
+mode: single
