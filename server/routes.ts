@@ -988,6 +988,55 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.post("/api/tasks/bulk-import", async (req, res) => {
+    try {
+      const { tasks: incoming } = req.body as { tasks: any[] };
+      if (!Array.isArray(incoming)) return res.status(400).json({ message: 'tasks must be an array' });
+      
+      const existing = await storage.getTasks({});
+      const existingMap = new Map<string, any>();
+      existing.forEach(t => {
+        const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
+        existingMap.set(key, t);
+      });
+      
+      let created = 0, updated = 0, skipped = 0;
+      for (const t of incoming) {
+        const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
+        const { id, isMissed, subtaskCount, completedSubtaskCount, calendarEventId, calendarProvider, prepCalendarEventId, secondaryCalendarEventId, secondAccountCalendarEventId, secondAccountPrepEventId, ...taskData } = t;
+        
+        const existingTask = existingMap.get(key);
+        if (existingTask) {
+          if (taskData.gradeWeight !== undefined || taskData.gradeValue !== undefined || taskData.gradeTotal !== undefined || taskData.assignmentGroup !== undefined) {
+            await storage.updateTask(existingTask.id, {
+              gradeWeight: taskData.gradeWeight,
+              gradeValue: taskData.gradeValue,
+              gradeTotal: taskData.gradeTotal,
+              assignmentGroup: taskData.assignmentGroup,
+              sortOrder: taskData.sortOrder,
+              dueDate: taskData.dueDate,
+            });
+            updated++;
+          } else {
+            skipped++;
+          }
+        } else {
+          try {
+            await storage.createTask(taskData);
+            created++;
+          } catch (e: any) {
+            console.error(`Bulk import failed for "${t.title}":`, e.message);
+            skipped++;
+          }
+        }
+      }
+      
+      res.json({ success: true, created, updated, skipped, total: incoming.length });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
   app.post("/api/tasks/reorder", async (req, res) => {
     try {
       const { updates } = req.body as { updates: { id: number; sortOrder: number; assignmentGroup?: string | null }[] };
