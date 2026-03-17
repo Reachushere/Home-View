@@ -1568,11 +1568,16 @@ export default function PDFReaderPage() {
     setCurrentChunk(0);
     currentChunkRef.current = 0;
     if (fileId) {
-      fetch(`/api/files/${fileId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
-      }).catch(() => {});
+      try {
+        await fetch(`/api/files/${fileId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
+        });
+        console.log(`[Reset] Server progress cleared for file ${fileId}`);
+      } catch (e) {
+        console.error(`[Reset] Failed to clear server progress:`, e);
+      }
     }
     startReading();
   };
@@ -2473,7 +2478,7 @@ export default function PDFReaderPage() {
                 <div className="flex items-center" style={{ marginTop: '-30px', gap: '30px' }}>
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
-                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex flex-col items-center"
                       style={{ padding: '14px', outline: '2px solid rgba(255,255,255,0.25)', outlineOffset: '3px' }}
                       onClick={restartFromBeginning}
                       disabled={isLoading || numPages === 0}
@@ -2481,11 +2486,12 @@ export default function PDFReaderPage() {
                       data-testid="button-restart"
                     >
                       <SkipBack className="h-8 w-8 text-white" />
+                      <span className="text-[10px] text-white/70 mt-1">Reset</span>
                     </button>
                   )}
                   {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
                     <button
-                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex flex-col items-center"
                       style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                       onClick={resumeFromLast}
                       disabled={isLoading || numPages === 0}
@@ -2493,16 +2499,18 @@ export default function PDFReaderPage() {
                       data-testid="button-resume"
                     >
                       {isLoading ? <Loader2 className="h-10 w-10 text-white animate-spin" /> : <RotateCcw className="h-10 w-10 text-white" />}
+                      <span className="text-[10px] text-white/70 mt-1">Resume</span>
                     </button>
                   )}
                   <button
-                    className="rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
+                    className="rounded-full bg-white hover:bg-white/90 disabled:opacity-30 flex flex-col items-center"
                     style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                     onClick={startReading}
                     disabled={isLoading || numPages === 0}
                     data-testid="button-play"
                   >
                     {isLoading ? <Loader2 className="h-10 w-10 text-gray-900 animate-spin" /> : <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />}
+                    <span className="text-[10px] text-gray-500 mt-1">Play</span>
                   </button>
                 </div>
               ) : isPaused ? (
@@ -2545,14 +2553,17 @@ export default function PDFReaderPage() {
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
+              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
                 <RefreshCw className="h-5 w-5 text-white" />
+                <span className="text-[9px] text-white/70 leading-none">Redo</span>
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning" data-testid="button-restart-inline">
+              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning (resets all progress)" data-testid="button-restart-inline">
                 <RotateCcw className="h-5 w-5 text-white" />
+                <span className="text-[9px] text-white/70 leading-none">Reset</span>
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
                 <Square className="h-5 w-5 text-white fill-white" />
+                <span className="text-[9px] text-white/70 leading-none">Stop</span>
               </button>
             </div>
 

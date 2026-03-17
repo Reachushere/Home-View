@@ -7431,23 +7431,13 @@ document.body.removeChild(a);
 
   app.post("/api/webhook/cat-volume", async (req, res) => {
     try {
-      const { direction, speed, action, volume } = req.body || {};
-      console.log(`[Cat Volume] ====== WEBHOOK TRIGGERED ====== direction=${direction} speed=${speed} action=${action} volume=${volume}`);
-      console.log(`[Cat Volume] Body: ${JSON.stringify(req.body)}`);
+      const { direction, speed } = req.body || {};
+      console.log(`[Cat Volume] ====== WEBHOOK TRIGGERED ====== direction=${direction} speed=${speed}`);
 
       res.json({ success: true, direction, speed });
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-      if (typeof volume === 'number') {
-        const clampedVolume = Math.max(0, Math.min(1, volume));
-        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: clampedVolume }),
-        });
-        console.log(`[Cat Volume] Set absolute volume: ${clampedVolume}`);
-        return;
-      }
 
       const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, { headers: haHeaders });
       const stateData = stateResp.ok ? await stateResp.json() : null;
@@ -7456,27 +7446,23 @@ document.body.removeChild(a);
       const step = speed === 'fast' ? 0.15 : 0.05;
       let newVolume: number;
 
-      if (direction === 'up' || action === 'volume_up') {
+      if (direction === 'up') {
         newVolume = Math.min(1, currentVolume + step);
-      } else if (direction === 'down' || action === 'volume_down') {
-        newVolume = Math.max(0, currentVolume - step);
       } else {
-        console.log(`[Cat Volume] Unknown direction/action, ignoring`);
-        return;
+        newVolume = Math.max(0, currentVolume - step);
       }
 
       await fetch(`${haUrl}/api/services/media_player/volume_set`, {
         method: 'POST', headers: haHeaders,
         body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: newVolume }),
       });
-      console.log(`[Cat Volume] Set volume: ${currentVolume.toFixed(2)} → ${newVolume.toFixed(2)} (${direction || action}, ${speed || 'normal'})`);
+      console.log(`[Cat Volume] Set volume: ${currentVolume} → ${newVolume} (${direction}, ${speed})`);
     } catch (err: any) {
       console.error(`[Cat Volume] Error: ${err.message}`);
     }
   });
 
-  // POST /api/webhook/cat-knob-press - Toggle CHUM FM on Nest speaker when knob is pressed
-  let catKnobRadioPlaying = false;
+  // POST /api/webhook/cat-knob-press - Press knob to start PDF playback (same queue as cat-lights/water sensor), or stop if already playing
   app.post("/api/webhook/cat-knob-press", async (req, res) => {
     try {
       console.log(`[Cat Knob] ====== KNOB PRESS RECEIVED ======`);
@@ -7484,45 +7470,63 @@ document.body.removeChild(a);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
+      if (catWashPlaybackActive) {
+        console.log(`[Cat Knob] Playback active — stopping via cat-wash-stop`);
+        try {
+          await fetch(`http://localhost:${process.env.PORT || 5000}/api/webhook/cat-wash-stop`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trigger: 'knob_press' }),
+          });
+        } catch (e: any) {
+          console.error(`[Cat Knob] Error calling stop: ${e.message}`);
+        }
+        res.json({ success: true, action: 'stopped' });
+        return;
+      }
+
       const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, { headers: haHeaders });
       const stateData = stateResp.ok ? await stateResp.json() : null;
       const currentState = stateData?.state;
       const isPlaying = currentState === 'playing' || currentState === 'buffering';
-      console.log(`[Cat Knob] Nest state: ${currentState}, isPlaying: ${isPlaying}, catKnobRadioPlaying: ${catKnobRadioPlaying}`);
-
-      const allCatSpeakers = [
-        NEST_SPEAKER_ENTITY,
-        "media_player.echo_cat_left_am",
-        "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle",
-      ];
+      console.log(`[Cat Knob] Nest state: ${currentState}, isPlaying: ${isPlaying}`);
 
       if (isPlaying) {
-        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: allCatSpeakers }),
-        });
-        catKnobRadioPlaying = false;
-        console.log(`[Cat Knob] Stopped playback on all cat washroom speakers`);
+        await stopAllCatWashroomSpeakers(haUrl);
+        console.log(`[Cat Knob] Stopped all cat washroom speakers`);
         res.json({ success: true, action: 'stopped' });
-      } else {
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
-        });
-        console.log(`[Cat Knob] Playing CHUM FM on Nest`);
-        try {
-          await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: ["media_player.echo_cat_left_am", "media_player.echo_cat_right_am", "media_player.echo_cat_washroom_middle"], media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
-          });
-          console.log(`[Cat Knob] Playing CHUM FM on Echo speakers`);
-        } catch (e: any) {
-          console.warn(`[Cat Knob] Echo speakers failed (non-fatal): ${e.message}`);
-        }
-        catKnobRadioPlaying = true;
-        res.json({ success: true, action: 'playing', station: 'CHUM FM 104.5' });
+        return;
       }
+
+      res.json({ success: true, action: 'finding_file' });
+
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      const today = torontoDate();
+      const currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+      console.log(`[Cat Knob] Current week: ${currentWeekNumber}`);
+
+      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Knob]');
+
+      const allFiles = await storage.getFiles();
+      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+
+      if (!nextFile) {
+        console.log(`[Cat Knob] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
+        await playChumFmRadio(haUrl);
+        return;
+      }
+
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
+      const courseMatch = nextFile.folder?.match(/([a-z]{3,5}\d{3})/i);
+      const courseName = courseMatch ? courseMatch[0].toUpperCase() : '';
+      const fileType = isModuleFile(nextFile) ? 'module' : 'reading';
+      console.log(`[Cat Knob] Found next file: ${courseName} ${fileType} — ${fileName} (id=${nextFile.id})`);
+
+      catWashPlaybackTrigger = 'knob';
+      await startConfirmedPlaybackFlow(nextFile, '[Cat Knob]', 'echo');
     } catch (err: any) {
       console.error(`[Cat Knob] Error: ${err.message}`);
       res.status(500).json({ error: err.message });
