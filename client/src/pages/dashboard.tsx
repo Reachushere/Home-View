@@ -19384,25 +19384,25 @@ export default function Dashboard() {
           </div>
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
-            style={{ position: 'absolute', left: '-10px', top: '-26px', width: '72px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '-10px', top: '-26px', width: '72px', height: '11px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-top-resize-handle"
           >
-            <div style={{ width: '72px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '72px', height: '11px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▲</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▼</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 4px' }}>⋮⋮</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 4px', writingMode: 'vertical-lr' }}>⋮⋮</span>
             </div>
           </div>
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
             className="z-50"
-            style={{ position: 'absolute', right: '-10px', top: '14px', width: '10px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'absolute', right: '-11px', top: '14px', width: '11px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ width: '10px', height: '72px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', writingMode: 'vertical-lr', padding: '2px 0 5px 0' }}>⋮⋮</span>
+            <div style={{ width: '11px', height: '72px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', padding: '2px 0 5px 0' }}>⋮⋮</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
@@ -19411,15 +19411,15 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '72px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '50%', bottom: '-11px', transform: 'translateX(-50%)', width: '72px', height: '11px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '72px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '72px', height: '11px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 5px' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 5px' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 5px' }}>⋮⋮</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 5px', writingMode: 'vertical-lr' }}>⋮⋮</span>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -20621,15 +20621,15 @@ export default function Dashboard() {
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
-            style={{ left: '-11px', bottom: '14px', width: '10px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ left: '-12px', bottom: '14px', width: '11px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '10px', height: '72px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '11px', height: '72px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', writingMode: 'vertical-lr', padding: '5px 0 2px 0' }}>⋮⋮</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', padding: '5px 0 2px 0' }}>⋮⋮</span>
             </div>
           </div>
           <div
