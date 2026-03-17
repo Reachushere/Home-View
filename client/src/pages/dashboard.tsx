@@ -17430,7 +17430,7 @@ export default function Dashboard() {
             }}
             data-testid="button-month-view"
           >
-            {calendarView === "month" ? "Week View" : <span style={{ textDecoration: 'underline' }}>Month View</span>}
+            {calendarView === "month" ? "Week View" : "Month View"}
           </Button>
           <div
             className="fixed"
@@ -17452,7 +17452,7 @@ export default function Dashboard() {
               }}
               data-testid="button-current-view"
             >
-              <span style={{ textDecoration: 'underline' }}>Current</span>
+              Current
             </Button>
           </div>
           
