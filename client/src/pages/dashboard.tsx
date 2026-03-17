@@ -5116,6 +5116,23 @@ export default function Dashboard() {
         }).catch(() => {});
       }
     }
+    try {
+      const certData = localStorage.getItem('certCourseData');
+      if (certData) {
+        const savedData = JSON.parse(certData);
+        const currentCodes = new Set(coursesData.courses.map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '')));
+        for (const [certKey, info] of Object.entries(savedData)) {
+          const ci = info as any;
+          if (ci.professor?.trim() && !currentCodes.has(certKey.toUpperCase().replace(/\s/g, ''))) {
+            fetch('/api/key-contacts/sync-professor', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ professorName: ci.professor, professorEmail: ci.professorEmail || '', courseCode: certKey }),
+            }).catch(() => {});
+          }
+        }
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -14535,13 +14552,13 @@ export default function Dashboard() {
             };
 
             const categories = [
-              { value: 'professor', label: 'Professor' },
-              { value: 'advisor', label: 'Academic Advisor' },
-              { value: 'ta', label: 'Teaching Assistant' },
+              { value: 'professor', label: 'Professors' },
+              { value: 'advisor', label: 'Academic Advisors' },
+              { value: 'ta', label: 'Teaching Assistants' },
               { value: 'admin', label: 'Administration' },
               { value: 'accessibility', label: 'Accessibility Services' },
               { value: 'financial', label: 'Financial Aid' },
-              { value: 'classmate', label: 'Classmate' },
+              { value: 'classmate', label: 'Classmates' },
               { value: 'other', label: 'Other' },
             ];
 
@@ -14613,97 +14630,127 @@ export default function Dashboard() {
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Key Contacts</h2>
                 </div>
                   <div className="flex items-center gap-2">
-                    <select
-                      value={contactFilter}
-                      onChange={(e) => setContactFilter(e.target.value)}
-                      className="px-2 py-1 rounded text-[10px] bg-white/10 border border-white/20 text-white focus:outline-none"
-                      data-testid="select-contact-filter"
-                    >
-                      <option value="all">All Categories</option>
-                      {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                    </select>
                     <button
-                      onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: 'professor', notes: '' }); }}
+                      onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: contactFilter !== 'all' ? contactFilter : 'professor', notes: '' }); }}
                       className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
                       data-testid="button-add-contact"
                     >
                       <Plus className="h-3 w-3" /> Add Contact
                     </button>
-                    <button onClick={() => setIsKeyContactsOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-key-contacts">
-                      <X className="h-4 w-4" />
-                    </button>
                   </div>
               </div>
-              <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'none' }}>
-                {filteredContacts.length === 0 ? (
-                  <div className="text-center py-10">
-                    <Contact className="h-10 w-10 text-blue-400 mx-auto mb-3" />
-                    <p className="text-[13px] font-medium text-white mb-1">Key Contacts Directory</p>
-                    <p className="text-[11px] text-white/60 mb-4">Store important academic contacts — professors, advisors, TAs, and more.</p>
-                    <button
-                      onClick={() => { setContactFormOpen(true); setEditingContactId(null); }}
-                      className="px-3 py-1.5 rounded text-[11px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
-                      data-testid="button-add-contact-empty"
-                    >
-                      <Plus className="h-3 w-3 inline mr-1" /> Add Your First Contact
-                    </button>
-                  </div>
-                ) : (
-                  <div className="p-3 space-y-4">
-                    {(() => {
-                      const grouped = categories
-                        .map(cat => ({
-                          ...cat,
-                          contacts: filteredContacts.filter(c => c.category === cat.value),
-                        }))
-                        .filter(g => g.contacts.length > 0);
-                      const ungrouped = filteredContacts.filter(c => !categories.some(cat => cat.value === c.category));
-                      if (ungrouped.length > 0) grouped.push({ value: 'other', label: 'Other', contacts: ungrouped });
-                      return grouped.map(group => (
-                        <div key={group.value}>
-                          <div className="flex items-center gap-2 mb-2 px-1">
-                            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getCategoryColor(group.value) }} />
-                            <span className="text-[11px] font-medium text-white/80 uppercase tracking-wider">{group.label}</span>
-                            <span className="text-[9px] text-white/40">({group.contacts.length})</span>
-                            <div className="flex-1 border-b border-white/10" />
-                          </div>
-                          <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-                            {group.contacts.map(c => (
-                              <div
-                                key={c.id}
-                                className="rounded-lg border border-white/15 p-3 hover:bg-white/5 transition-colors cursor-pointer relative group"
-                                onClick={() => { setEditingContactId(c.id); setContactForm({ name: c.name, title: c.title || '', organization: c.organization || '', department: c.department || '', email: c.email || '', phone: c.phone || '', office: c.office || '', category: c.category || 'other', notes: c.notes || '' }); setContactFormOpen(true); }}
-                                data-testid={`contact-card-${c.id}`}
-                              >
-                                <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 p-1" data-testid={`delete-contact-${c.id}`}>
-                                  <Trash2 className="h-3 w-3" />
+              <div className="flex-1 overflow-hidden flex" style={{ minHeight: 0 }}>
+                {(() => {
+                  const grouped = categories
+                    .map(cat => ({
+                      ...cat,
+                      contacts: contactsList.filter(c => c.category === cat.value),
+                    }));
+                  const ungrouped = contactsList.filter(c => !categories.some(cat => cat.value === c.category));
+                  if (ungrouped.length > 0) grouped.push({ value: 'uncategorized', label: 'Other', contacts: ungrouped });
+                  const activeGroup = grouped.find(g => g.value === contactFilter) || grouped[0];
+                  const sectionRef = useRef<Record<string, HTMLDivElement | null>>({});
+                  return (
+                    <>
+                      <div className="flex flex-col py-2 overflow-y-auto flex-shrink-0" style={{ width: '130px', borderRight: '1px solid rgba(255,255,255,0.15)', scrollbarWidth: 'none', background: 'rgba(0,0,0,0.15)' }}>
+                        <button
+                          onClick={() => setContactFilter('all')}
+                          className="text-left px-3 py-2 text-[10px] font-medium transition-colors"
+                          style={{ color: contactFilter === 'all' ? 'white' : 'rgba(255,255,255,0.5)', background: contactFilter === 'all' ? 'rgba(255,255,255,0.1)' : 'transparent', borderLeft: contactFilter === 'all' ? '2px solid white' : '2px solid transparent' }}
+                          data-testid="tab-contacts-all"
+                        >
+                          All ({contactsList.length})
+                        </button>
+                        {grouped.map(g => (
+                          <button
+                            key={g.value}
+                            onClick={() => {
+                              setContactFilter(g.value);
+                              if (contactFilter === 'all') {
+                                setTimeout(() => sectionRef.current[g.value]?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                              }
+                            }}
+                            className="text-left px-3 py-2 text-[10px] font-medium transition-colors flex items-center gap-1.5"
+                            style={{ color: contactFilter === g.value ? 'white' : 'rgba(255,255,255,0.5)', background: contactFilter === g.value ? 'rgba(255,255,255,0.1)' : 'transparent', borderLeft: contactFilter === g.value ? `2px solid ${getCategoryColor(g.value)}` : '2px solid transparent' }}
+                            data-testid={`tab-contacts-${g.value}`}
+                          >
+                            <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: getCategoryColor(g.value) }} />
+                            <span className="truncate">{g.label}</span>
+                            {g.contacts.length > 0 && <span className="text-[8px] text-white/30 ml-auto">{g.contacts.length}</span>}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+                        {(() => {
+                          const displayGroups = contactFilter === 'all' ? grouped.filter(g => g.contacts.length > 0) : [activeGroup].filter(g => g && g.contacts.length > 0);
+                          if (displayGroups.length === 0 || displayGroups.every(g => g.contacts.length === 0)) {
+                            return (
+                              <div className="text-center py-10">
+                                <Contact className="h-10 w-10 text-blue-400 mx-auto mb-3" />
+                                <p className="text-[13px] font-medium text-white mb-1">{contactFilter === 'all' ? 'Key Contacts Directory' : `No ${categories.find(c => c.value === contactFilter)?.label || 'contacts'} yet`}</p>
+                                <p className="text-[11px] text-white/60 mb-4">Store important academic contacts — professors, advisors, TAs, and more.</p>
+                                <button
+                                  onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm(p => ({ ...p, category: contactFilter !== 'all' ? contactFilter : 'professor' })); }}
+                                  className="px-3 py-1.5 rounded text-[11px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                                  data-testid="button-add-contact-empty"
+                                >
+                                  <Plus className="h-3 w-3 inline mr-1" /> Add Contact
                                 </button>
-                                <div className="flex items-start gap-2">
-                                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: getCategoryColor(c.category) }}>
-                                    {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-[12px] font-medium text-white truncate">{c.name}</p>
-                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium inline-block mt-0.5" style={{ backgroundColor: getCategoryColor(c.category) + '40', color: getCategoryColor(c.category), border: `1px solid ${getCategoryColor(c.category)}60` }}>
-                                      {categories.find(cat => cat.value === c.category)?.label || 'Other'}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="mt-2 space-y-0.5 text-[10px]">
-                                  {c.organization && <p className="text-white/50 truncate">{c.organization}{c.department ? ` — ${c.department}` : ''}</p>}
-                                  {c.email && <p className="text-blue-300/80 truncate cursor-pointer hover:text-blue-200" onClick={(e) => { e.stopPropagation(); window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`, '_blank'); }}>{c.email}</p>}
-                                  {c.phone && <p className="text-white/50">{c.phone}</p>}
-                                  {c.office && <p className="text-white/50">Office: {c.office}</p>}
-                                  {c.notes && <p className="text-white/40 italic truncate">{c.notes}</p>}
-                                </div>
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                )}
+                            );
+                          }
+                          return displayGroups.map(group => (
+                            <div key={group.value} ref={(el) => { sectionRef.current[group.value] = el; }} className="mb-5">
+                              <div className="flex items-center gap-2 mb-3 px-1 sticky top-0 py-1.5" style={{ background: 'inherit', zIndex: 1 }}>
+                                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: getCategoryColor(group.value) }} />
+                                <span className="text-[12px] font-semibold text-white uppercase tracking-wider">{group.label}</span>
+                                <span className="text-[9px] text-white/40 font-medium">({group.contacts.length})</span>
+                                <div className="flex-1 border-b border-white/15" />
+                              </div>
+                              <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                                {group.contacts.map(c => (
+                                  <div
+                                    key={c.id}
+                                    className="rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer relative group"
+                                    style={{ border: `1px solid ${getCategoryColor(c.category)}25`, background: `${getCategoryColor(c.category)}08` }}
+                                    onClick={() => { setEditingContactId(c.id); setContactForm({ name: c.name, title: c.title || '', organization: c.organization || '', department: c.department || '', email: c.email || '', phone: c.phone || '', office: c.office || '', category: c.category || 'other', notes: c.notes || '' }); setContactFormOpen(true); }}
+                                    data-testid={`contact-card-${c.id}`}
+                                  >
+                                    <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 p-1" data-testid={`delete-contact-${c.id}`}>
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                    <div className="flex items-start gap-2">
+                                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: getCategoryColor(c.category) }}>
+                                        {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-[12px] font-medium text-white truncate">{c.name}</p>
+                                        {c.title && <p className="text-[10px] text-white/50">{c.title}</p>}
+                                      </div>
+                                    </div>
+                                    <div className="mt-2 space-y-0.5 text-[10px]">
+                                      {c.organization && <p className="text-white/50 truncate">{c.organization}{c.department ? ` — ${c.department}` : ''}</p>}
+                                      {c.email && <p className="text-blue-300/80 truncate cursor-pointer hover:text-blue-200" onClick={(e) => { e.stopPropagation(); window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`, '_blank'); }}>{c.email}</p>}
+                                      {c.phone && <p className="text-white/50">{c.phone}</p>}
+                                      {c.office && <p className="text-white/50">Office: {c.office}</p>}
+                                      {c.notes && <p className="text-white/40 italic truncate">{c.notes}</p>}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="flex items-center justify-end px-4 py-3 border-t border-white/20 flex-shrink-0">
+                <div className="flex gap-2">
+                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => setIsKeyContactsOpen(false)} data-testid="button-cancel-key-contacts">Cancel</Button>
+                  <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => setIsKeyContactsOpen(false)} data-testid="button-save-key-contacts">Save</Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
