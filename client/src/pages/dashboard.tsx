@@ -1951,12 +1951,15 @@ export default function Dashboard() {
       const key = `${activeSem.key}:${code}`;
       return coursePlayPriority[key] && coursePlayPriority[key] > 0;
     });
-    if (!allRanked) {
-      const dismissKey = `rankCoursesReminderDismissed_${activeSem.key}`;
-      const dismissed = localStorage.getItem(dismissKey);
-      if (!dismissed) {
-        setShowRankCoursesReminder(true);
-      }
+    if (allRanked) {
+      setShowRankCoursesReminder(false);
+      return;
+    }
+    const dismissKey = `rankCoursesReminderDismissed_${activeSem.key}`;
+    const dismissed = localStorage.getItem(dismissKey);
+    if (!dismissed) {
+      const timer = setTimeout(() => setShowRankCoursesReminder(true), 3000);
+      return () => clearTimeout(timer);
     }
   }, [coursePlayPriority]);
 
