@@ -1057,7 +1057,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; daily?: { date: string; high: number; low: number }[] } | null>(null);
+  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; daily?: { date: string; high: number; low: number; weatherCode?: number }[] } | null>(null);
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; type: string }[]>([]);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
@@ -1079,6 +1079,7 @@ export default function Dashboard() {
             date: d,
             high: Math.round(data.daily.temperature_2m_max[i]),
             low: Math.round(data.daily.temperature_2m_min[i]),
+            weatherCode: data.daily.weather_code?.[i] ?? undefined,
           })) : [];
           setWeatherData({
             code: data.current.weather_code,
@@ -17548,6 +17549,23 @@ export default function Dashboard() {
                       if (!dayForecast) return null;
                       const isPastDay = day < startOfDay(new Date());
                       const tempColor = isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff';
+                      const wIcon = ((wc: number | undefined) => {
+                        if (wc === undefined) return null;
+                        if (wc === 0) return '☀️';
+                        if (wc === 1) return '🌤️';
+                        if (wc === 2) return '⛅';
+                        if (wc === 3) return '☁️';
+                        if (wc === 45 || wc === 48) return '🌫️';
+                        if (wc >= 51 && wc <= 55) return '🌦️';
+                        if (wc >= 56 && wc <= 57) return '🌧️';
+                        if (wc >= 61 && wc <= 65) return '🌧️';
+                        if (wc >= 66 && wc <= 67) return '🧊';
+                        if (wc >= 71 && wc <= 77) return '❄️';
+                        if (wc >= 80 && wc <= 82) return '🌦️';
+                        if (wc >= 85 && wc <= 86) return '🌨️';
+                        if (wc >= 95) return '⛈️';
+                        return null;
+                      })(dayForecast.weatherCode);
                       return (
                         <>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-6px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
@@ -17556,6 +17574,11 @@ export default function Dashboard() {
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', bottom: '2px' }} data-testid={`weather-temp-low-${shiftDateStr}`}>
                             <span className="text-[10px] font-medium leading-none" style={{ color: tempColor }}>{dayForecast.low}°</span>
                           </div>
+                          {wIcon && (
+                            <div className="absolute z-20" style={{ right: '3px', top: '-4px', fontSize: '11px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
+                              {wIcon}
+                            </div>
+                          )}
                         </>
                       );
                     })()}
@@ -19363,52 +19386,35 @@ export default function Dashboard() {
           </div>
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
-            className="cursor-ns-resize group"
-            style={{ position: 'absolute', left: '-16px', top: '-20px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
-            onMouseDown={handleTopResizeStart}
-            onTouchStart={handleTopResizeStart}
+            className="cursor-pointer group"
+            style={{ position: 'absolute', left: '-16px', top: '-26px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}
             data-testid="calendar-top-resize-handle"
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>▲</span>
             </div>
           </div>
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
-            className="cursor-col-resize z-50 group"
+            className="cursor-pointer z-50 group"
             style={{ position: 'absolute', right: '-10px', top: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              setIsResizingHomework(true);
-              resizingHomeworkRef.current = { startX: e.clientX, startReduction: calendarReduction };
-            }}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              setIsResizingHomework(true);
-              resizingHomeworkRef.current = { startX: touch.clientX, startReduction: calendarReduction };
-            }}
+            onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ width: '10px', height: '48px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            <div style={{ width: '10px', height: '48px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>▶</span>
             </div>
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            className="cursor-ns-resize group"
+            className="cursor-pointer group"
             style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
-            onMouseDown={handleResizeStart}
-            onTouchStart={handleResizeStart}
+            onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>▼</span>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -20609,24 +20615,13 @@ export default function Dashboard() {
         >
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
-            className="absolute z-[60] cursor-col-resize group"
+            className="absolute z-[60] cursor-pointer group"
             style={{ left: '-10px', bottom: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              setIsResizingHomework(true);
-              resizingHomeworkRef.current = { startX: e.clientX, startReduction: calendarReduction };
-            }}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              setIsResizingHomework(true);
-              resizingHomeworkRef.current = { startX: touch.clientX, startReduction: calendarReduction };
-            }}
+            onClick={() => setCalendarReduction(prev => prev + 30)}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
-              <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(100,100,100,0.5)' }} />
+            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
+              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>◀</span>
             </div>
           </div>
           <div
