@@ -20680,7 +20680,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
-            style={{ left: '-16px', bottom: '92px', width: '19px', height: '19px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ left: '-18px', bottom: '92px', width: '19px', height: '19px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
