@@ -11699,7 +11699,7 @@ export default function Dashboard() {
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
           data-tpo data-tpo-opacity="1"
-          style={{ height: '16px', width: '16px', position: 'fixed', left: '6px', bottom: '44px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '16px', width: '16px', position: 'fixed', left: '3px', bottom: '42px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -15668,42 +15668,42 @@ export default function Dashboard() {
                       <div className="grid grid-cols-3 gap-3" style={{ alignItems: year === 2025 ? 'end' : 'start' }}>
                         {year === 2025 && (
                           <div className="rounded-lg border overflow-hidden flex flex-col" style={{ gridColumn: 1, gridRow: 1, background: 'transparent', borderColor: 'rgba(255,255,255,0.45)', borderWidth: '1px', minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}>
-                            <div className="px-2 py-1.5 border-b flex items-center justify-center flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
+                            <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.3)' }}>
                               <span className="text-[10px] font-bold text-white whitespace-nowrap">Grading Rubric</span>
                             </div>
-                            <div className="p-1 flex" style={{ gap: '10px' }}>
-                              <table className="border-collapse text-[9px] text-white" style={{ flex: 1 }}>
+                            <div className="p-1.5 flex" style={{ gap: '10px' }}>
+                              <table className="text-[11px] text-white" style={{ flex: 1, borderSpacing: '0 1px', borderCollapse: 'separate' }}>
                                 <tbody>
                                   {[
                                     ['A+','90-100%','4.33'],['A','85-89%','4.0'],['A-','80-84%','3.67'],
                                     ['B+','77-79%','3.33'],['B','73-76%','3.0'],['B-','70-72%','2.67'],
                                     ['C+','67-69%','2.33'],
                                   ].map(([letter, pct, pts]) => (
-                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '17px' }}>
-                                      <td className="px-1 font-semibold border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
-                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
-                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
+                                    <tr key={letter} style={{ height: '19px' }}>
+                                      <td className="px-1 font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
+                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
+                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
                                 </tbody>
                               </table>
-                              <table className="border-collapse text-[9px] text-white" style={{ flex: 1 }}>
+                              <table className="text-[11px] text-white" style={{ flex: 1, borderSpacing: '0 1px', borderCollapse: 'separate' }}>
                                 <tbody>
                                   {[
                                     ['C','63-66%','2.0'],['C-','60-62%','1.67'],
                                     ['D+','57-59%','1.33'],['D','53-56%','1.0'],['D-','50-52%','0.67'],
                                     ['F','0-49%','0'],
                                   ].map(([letter, pct, pts]) => (
-                                    <tr key={letter} style={{ background: 'rgba(255,255,255,0.05)', height: '17px' }}>
-                                      <td className="px-1 font-semibold border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
-                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
-                                      <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
+                                    <tr key={letter} style={{ height: '19px' }}>
+                                      <td className="px-1 font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{letter}</td>
+                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pct}</td>
+                                      <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
-                                  <tr style={{ background: 'rgba(255,255,255,0.05)', height: '17px' }}>
-                                    <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
-                                    <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
-                                    <td className="px-1 border border-white/20" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                  <tr style={{ height: '19px' }}>
+                                    <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
+                                    <td className="px-1" style={{ paddingTop: '1px', paddingBottom: '0px' }}>&nbsp;</td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -19386,35 +19386,33 @@ export default function Dashboard() {
           </div>
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
-            className="cursor-pointer group"
-            style={{ position: 'absolute', left: '-16px', top: '-26px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
-            onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}
+            style={{ position: 'absolute', left: '-16px', top: '-28px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-top-resize-handle"
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>▲</span>
+            <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}>▲</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▼</span>
             </div>
           </div>
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
-            className="cursor-pointer z-50 group"
+            className="z-50"
             style={{ position: 'absolute', right: '-10px', top: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ width: '10px', height: '48px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>▶</span>
+            <div style={{ width: '10px', height: '48px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
             </div>
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            className="cursor-pointer group"
-            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
-            onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}
+            style={{ position: 'absolute', left: '50%', bottom: '-11px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>▼</span>
+            <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 60, prev + 30))}>▼</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -20615,13 +20613,13 @@ export default function Dashboard() {
         >
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
-            className="absolute z-[60] cursor-pointer group"
-            style={{ left: '-10px', bottom: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onClick={() => setCalendarReduction(prev => prev + 30)}
+            className="absolute z-[60]"
+            style={{ left: '-11px', bottom: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', transition: 'background 0.15s' }} className="group-hover:!bg-white/70">
-              <span style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }}>◀</span>
+            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
             </div>
           </div>
           <div
