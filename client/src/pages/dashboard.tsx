@@ -1036,7 +1036,7 @@ export default function Dashboard() {
       el.style.pointerEvents = val ? 'none' : 'auto';
       el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
-    startTransition(() => _rawSetIsTopPillOpen(val));
+    _rawSetIsTopPillOpen(val);
   }, []);
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string }[]>([]);
 
