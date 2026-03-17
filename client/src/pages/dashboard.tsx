@@ -167,6 +167,7 @@ import {
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
+import StickyNoteItem from "@/components/StickyNoteItem";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
@@ -4523,11 +4524,6 @@ export default function Dashboard() {
   const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
   const [resizeStartSize, setResizeStartSize] = useState({ width: 0, height: 0 });
   
-  // Local state for sticky note content to prevent cursor jumping
-  const [localStickyNoteContent, setLocalStickyNoteContent] = useState<Record<number, string>>({});
-  const [localStickyNoteTitle, setLocalStickyNoteTitle] = useState<Record<number, string>>({});
-  const stickyNoteContentTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
-  const stickyNoteTitleTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
 
   // Sticky note mutations
   const createStickyNoteMutation = useMutation({
@@ -4816,116 +4812,6 @@ export default function Dashboard() {
     }
   }, [resizingStickyNote, handleStickyNoteResizeMove, handleStickyNoteResizeEnd]);
 
-  // Handle sticky note content change with debounce to prevent cursor jumping
-  const handleStickyNoteContentChange = useCallback((noteId: number, newContent: string) => {
-    // Update local state immediately for responsive typing
-    setLocalStickyNoteContent(prev => ({ ...prev, [noteId]: newContent }));
-    
-    // Clear any existing timeout for this note
-    if (stickyNoteContentTimeouts.current[noteId]) {
-      clearTimeout(stickyNoteContentTimeouts.current[noteId]);
-    }
-    
-    // Debounce the save to server (500ms after user stops typing)
-    stickyNoteContentTimeouts.current[noteId] = setTimeout(() => {
-      updateStickyNoteMutation.mutate({ id: noteId, updates: { content: newContent } });
-    }, 500);
-  }, [updateStickyNoteMutation]);
-
-  // Get the content to display for a sticky note (local state takes precedence)
-  const getStickyNoteContent = useCallback((note: StickyNoteType) => {
-    return localStickyNoteContent[note.id] !== undefined 
-      ? localStickyNoteContent[note.id] 
-      : note.content;
-  }, [localStickyNoteContent]);
-
-  const toggleStickyNoteBullets = useCallback((noteId: number, textareaEl: HTMLTextAreaElement | null) => {
-    const note = stickyNotes?.find(n => n.id === noteId);
-    const currentContent = localStickyNoteContent[noteId] !== undefined ? localStickyNoteContent[noteId] : (note?.content ?? '');
-    const lines = currentContent.split('\n');
-    const hasBullets = lines.some(line => line.trimStart().startsWith('\u25CF ') || line.trimStart().startsWith('\u2022 '));
-    
-    let newContent: string;
-    if (hasBullets) {
-      newContent = lines.map(line => {
-        const trimmed = line.trimStart();
-        if (trimmed.startsWith('\u25CF ')) {
-          return line.replace(/\u25CF /, '');
-        }
-        if (trimmed.startsWith('\u2022 ')) {
-          return line.replace(/\u2022 /, '');
-        }
-        return line;
-      }).join('\n');
-    } else {
-      newContent = lines.map(line => {
-        if (line.trim() === '') return line;
-        return '\u25CF ' + line;
-      }).join('\n');
-    }
-    
-    handleStickyNoteContentChange(noteId, newContent);
-    if (textareaEl) {
-      setTimeout(() => textareaEl.focus(), 0);
-    }
-  }, [stickyNotes, localStickyNoteContent, handleStickyNoteContentChange]);
-
-  const handleStickyNoteKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>, noteId: number) => {
-    if (e.key === 'Enter') {
-      const textarea = e.currentTarget;
-      const { selectionStart } = textarea;
-      const content = textarea.value;
-      const lineStart = content.lastIndexOf('\n', selectionStart - 1) + 1;
-      const currentLine = content.substring(lineStart, selectionStart);
-      
-      if (currentLine.trimStart().startsWith('\u25CF ') || currentLine.trimStart().startsWith('\u2022 ')) {
-        const bulletChar = currentLine.trimStart().startsWith('\u25CF ') ? '\u25CF' : '\u2022';
-        if (currentLine.trim() === bulletChar) {
-          e.preventDefault();
-          const before = content.substring(0, lineStart);
-          const after = content.substring(selectionStart);
-          const newContent = before + after;
-          handleStickyNoteContentChange(noteId, newContent);
-          setTimeout(() => {
-            textarea.selectionStart = textarea.selectionEnd = lineStart;
-          }, 0);
-        } else {
-          e.preventDefault();
-          const before = content.substring(0, selectionStart);
-          const after = content.substring(selectionStart);
-          const newContent = before + '\n' + bulletChar + ' ' + after;
-          handleStickyNoteContentChange(noteId, newContent);
-          setTimeout(() => {
-            const newPos = selectionStart + 3;
-            textarea.selectionStart = textarea.selectionEnd = newPos;
-          }, 0);
-        }
-      }
-    }
-  }, [handleStickyNoteContentChange]);
-
-  // Handle sticky note title change with debounce to prevent cursor jumping
-  const handleStickyNoteTitleChange = useCallback((noteId: number, newTitle: string) => {
-    // Update local state immediately for responsive typing
-    setLocalStickyNoteTitle(prev => ({ ...prev, [noteId]: newTitle }));
-    
-    // Clear any existing timeout for this note
-    if (stickyNoteTitleTimeouts.current[noteId]) {
-      clearTimeout(stickyNoteTitleTimeouts.current[noteId]);
-    }
-    
-    // Debounce the save to server (500ms after user stops typing)
-    stickyNoteTitleTimeouts.current[noteId] = setTimeout(() => {
-      updateStickyNoteMutation.mutate({ id: noteId, updates: { title: newTitle } });
-    }, 500);
-  }, [updateStickyNoteMutation]);
-
-  // Get the title to display for a sticky note (local state takes precedence)
-  const getStickyNoteTitle = useCallback((note: StickyNoteType) => {
-    return localStickyNoteTitle[note.id] !== undefined 
-      ? localStickyNoteTitle[note.id] 
-      : (note.title || "Note Name");
-  }, [localStickyNoteTitle]);
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
   interface WeeklyFile {
@@ -13064,326 +12950,32 @@ export default function Dashboard() {
       
 
       {/* Render Sticky Notes (admin only) */}
-      {isAdmin && stickyNotes.map((note) => {
-        const noteColors: Record<string, { bg: string; border: string; header: string }> = {
-          yellow: { bg: '#FFFACD', border: '#E6D200', header: '#FFFF00' },
-          pink: { bg: '#FFE4EC', border: '#FF69B4', header: '#FFB6C1' },
-          blue: { bg: '#E0F0FF', border: '#4DA6FF', header: '#87CEEB' },
-          green: { bg: '#E0FFE0', border: '#32CD32', header: '#98FB98' },
-          orange: { bg: '#FFE4CC', border: '#FF8C00', header: '#FFCC99' },
-          purple: { bg: '#F0E0FF', border: '#9370DB', header: '#DDA0DD' },
-        };
-        const hexToRgba = (hex: string, alpha: number) => {
-          const r = parseInt(hex.slice(1, 3), 16);
-          const g = parseInt(hex.slice(3, 5), 16);
-          const b = parseInt(hex.slice(5, 7), 16);
-          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        };
-        const colors = note.customColor 
-          ? { 
-              bg: hexToRgba(note.customColor, 0.3), 
-              border: note.customColor, 
-              header: note.customColor 
-            }
-          : (noteColors[note.color] || noteColors.yellow);
-        
-        // Use local drag position during drag for smooth movement
-        const isDragging = draggingStickyNote === note.id;
-        const rawX = isDragging && dragPosition ? dragPosition.x : note.positionX;
-        const rawY = isDragging && dragPosition ? dragPosition.y : note.positionY;
-        const displayX = Math.max(0, Math.min(rawX, window.innerWidth - 50));
-        const displayY = Math.max(0, Math.min(rawY, window.innerHeight - 30));
-        
-        return (
-          <div
-            key={note.id}
-            data-sticky-note
-            data-sticky-note-id={note.id}
-            className="fixed shadow-lg rounded-md overflow-hidden"
-            style={{
-              left: `${displayX}px`,
-              top: `${displayY}px`,
-              width: `${note.width}px`,
-              height: note.isMinimized ? '28px' : `${note.height}px`,
-              zIndex: isDragging ? 10000 : (note.zIndex || 100),
-              backgroundColor: colors.bg,
-              border: `1px solid ${colors.border}`,
-              pointerEvents: 'auto',
-              willChange: isDragging ? 'left, top' : 'auto',
-              transition: isDragging ? 'none' : undefined,
-            }}
-            data-testid={`sticky-note-${note.id}`}
-          >
-            {/* Header bar - draggable from anywhere */}
-            <div
-              className="flex items-center justify-between px-1 py-1 select-none cursor-move"
-              style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}`, touchAction: 'none' }}
-              onMouseDown={(e) => handleStickyNotePointerDown(e, note.id, note)}
-              onTouchStart={(e) => handleStickyNotePointerDown(e, note.id, note)}
-            >
-              <div className="flex items-center gap-1 flex-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button 
-                      className="flex items-center justify-center text-gray-600 hover:text-gray-800"
-                      onMouseDown={(e) => e.stopPropagation()}
-                    >
-                      <Palette className="h-3 w-3" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="min-w-0 p-2" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex gap-2">
-                      <button
-                        className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
-                        style={{ backgroundColor: '#4ade80' }}
-                        title="CPPA122"
-                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: '#4ade80', color: 'custom' } })}
-                      />
-                      <button
-                        className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
-                        style={{ backgroundColor: '#f472b6' }}
-                        title="CFNF400"
-                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: '#f472b6', color: 'custom' } })}
-                      />
-                      <button
-                        className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
-                        style={{ backgroundColor: '#818cf8' }}
-                        title="CASL101"
-                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: '#818cf8', color: 'custom' } })}
-                      />
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <input
-                  type="text"
-                  value={getStickyNoteTitle(note)}
-                  onChange={(e) => handleStickyNoteTitleChange(note.id, e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className="text-[10px] text-gray-700 font-medium border-none outline-none w-20 cursor-text rounded px-0.5"
-                  style={{ backgroundColor: 'white', marginRight: '-8px' }}
-                  placeholder="Note Name"
-                  data-testid={`sticky-note-title-${note.id}`}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                {/* Attachment indicator */}
-                {(note.taskId || note.projectId) && (
-                  <span className="text-[8px] text-gray-600 truncate max-w-[60px]" title={
-                    note.taskId 
-                      ? tasks.find(t => t.id === note.taskId)?.title || 'Task'
-                      : allProjects?.find(p => p.id === note.projectId)?.name || 'Project'
-                  }>
-                    <Link2 className="h-2 w-2 inline" />
-                  </span>
-                )}
-                {/* Reminder settings */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button 
-                      className={`flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
-                      title="Set reminder"
-                    >
-                      <Bell className="h-3 w-3" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuLabel className="text-[9px] py-1" style={{ marginLeft: '0px' }}>Reminder Settings</DropdownMenuLabel>
-                    <div className="space-y-2 p-1">
-                      <div className="space-y-1">
-                        <Label className="text-[9px]">Reminder Time</Label>
-                        <Input
-                          type="datetime-local"
-                          className="h-6 text-[8px] px-1"
-                          value={note.reminderTime ? format(new Date(note.reminderTime), "yyyy-MM-dd'T'HH:mm") : ''}
-                          onChange={(e) => {
-                            const value = e.target.value ? new Date(e.target.value) : null;
-                            updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderTime: value } });
-                          }}
-                        />
-                      </div>
-                      <DropdownMenuSeparator />
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Volume2 className="h-3 w-3" />
-                          <span className="text-[10px]">Alarm</span>
-                        </div>
-                        <Checkbox
-                          checked={note.reminderAlarm}
-                          onCheckedChange={(checked) => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderAlarm: !!checked } })}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          <span className="text-[10px]">Email</span>
-                        </div>
-                        <Checkbox
-                          checked={note.reminderEmail}
-                          onCheckedChange={(checked) => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderEmail: !!checked } })}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Smartphone className="h-3 w-3" />
-                          <span className="text-[10px]">Push</span>
-                        </div>
-                        <Checkbox
-                          checked={note.reminderPush}
-                          onCheckedChange={(checked) => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderPush: !!checked } })}
-                        />
-                      </div>
-                      {note.reminderTime && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full h-6 text-[10px] text-red-600 hover:text-red-700"
-                          onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderTime: null, reminderAlarm: false, reminderEmail: false, reminderPush: false } })}
-                        >
-                          Clear Reminder
-                        </Button>
-                      )}
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {/* Attach to task/project */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button 
-                      className="flex items-center justify-center text-gray-600 hover:text-gray-800"
-                      title="Attach to task or project"
-                    >
-                      <Paperclip className="h-3 w-3" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="max-h-[300px] overflow-y-auto w-48">
-                    <DropdownMenuLabel className="text-[10px] py-1">Attach to Task</DropdownMenuLabel>
-                    <DropdownMenuItem 
-                      className="text-[10px] py-1"
-                      onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { taskId: null } })}
-                    >
-                      <span className="text-gray-500">None</span>
-                    </DropdownMenuItem>
-                    {tasks.slice(0, 20).map((task) => (
-                      <DropdownMenuItem 
-                        key={task.id}
-                        className="text-[10px] py-1 truncate"
-                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { taskId: task.id, projectId: null } })}
-                      >
-                        <span className={note.taskId === task.id ? "font-semibold" : ""}>
-                          {task.title}
-                        </span>
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-[10px] py-1">Attach to Project</DropdownMenuLabel>
-                    <DropdownMenuItem 
-                      className="text-[10px] py-1"
-                      onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { projectId: null } })}
-                    >
-                      <span className="text-gray-500">None</span>
-                    </DropdownMenuItem>
-                    {allProjects?.map((project) => (
-                      <DropdownMenuItem 
-                        key={project.id}
-                        className="text-[10px] py-1 truncate"
-                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { projectId: project.id, taskId: null } })}
-                      >
-                        <span className={note.projectId === project.id ? "font-semibold" : ""}>
-                          {project.name}
-                        </span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {/* Color picker */}
-                <div className="relative">
-                  <input
-                    type="color"
-                    value={note.customColor || noteColors[note.color]?.header || '#FFFACD'}
-                    onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: e.target.value, color: 'custom' } })}
-                    className="absolute opacity-0 w-0 h-0"
-                    id={`color-picker-${note.id}`}
-                  />
-                  <label
-                    htmlFor={`color-picker-${note.id}`}
-                    className="h-3 w-3 rounded-full border border-gray-400 hover:opacity-80 cursor-pointer block"
-                    style={{ backgroundColor: note.customColor || colors.header }}
-                  />
-                </div>
-                {/* Bullet list toggle */}
-                <button
-                  className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
-                  onClick={() => {
-                    const textarea = document.querySelector(`[data-testid="sticky-note-content-${note.id}"]`) as HTMLTextAreaElement | null;
-                    toggleStickyNoteBullets(note.id, textarea);
-                  }}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  title="Toggle bullet list"
-                  data-testid={`sticky-note-bullets-${note.id}`}
-                >
-                  <List className="h-3 w-3" />
-                </button>
-                {/* Minimize button */}
-                <button
-                  className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
-                  onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { isMinimized: !note.isMinimized } })}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                >
-                  {note.isMinimized ? <Plus className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
-                </button>
-                {/* Delete button */}
-                <button
-                  className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-red-600"
-                  onClick={() => {
-                    pushUndo({
-                      type: 'sticky-delete',
-                      description: `Deleted sticky note`,
-                      data: { noteId: note.id, content: note.content, title: note.title, color: note.color, customColor: note.customColor, posX: note.posX, posY: note.posY, width: note.width, height: note.height, isMinimized: note.isMinimized, zIndex: note.zIndex, taskId: note.taskId, projectId: note.projectId }
-                    });
-                    deleteStickyNoteMutation.mutate(note.id);
-                  }}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  title="Delete note"
-                  data-testid={`sticky-note-delete-${note.id}`}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              </div>
-            </div>
-            {/* Content area */}
-            {!note.isMinimized && (
-              <>
-                <textarea
-                  className="w-full h-[calc(100%-28px)] p-2 text-[11px] resize-none border-0 outline-none !font-normal"
-                  style={{ backgroundColor: 'transparent', fontFamily: 'inherit' }}
-                  value={getStickyNoteContent(note)}
-                  onChange={(e) => handleStickyNoteContentChange(note.id, e.target.value)}
-                  onKeyDown={(e) => handleStickyNoteKeyDown(e, note.id)}
-                  placeholder="Write your note here..."
-                  data-testid={`sticky-note-content-${note.id}`}
-                />
-                {/* Resize handle - bottom right corner */}
-                <div
-                  className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-                  style={{
-                    background: `linear-gradient(135deg, transparent 50%, ${colors.header} 50%)`,
-                  }}
-                  onMouseDown={(e) => handleStickyNoteResizeStart(e, note.id, note)}
-                  onTouchStart={(e) => handleStickyNoteResizeStart(e, note.id, note)}
-                  data-testid={`sticky-note-resize-${note.id}`}
-                />
-              </>
-            )}
-          </div>
-        );
-      })}
+      {isAdmin && stickyNotes.map((note) => (
+        <StickyNoteItem
+          key={note.id}
+          note={note}
+          isDragging={draggingStickyNote === note.id}
+          dragPosition={dragPosition}
+          maxStickyZIndex={maxStickyZIndex}
+          tasks={tasks}
+          allProjects={allProjects}
+          onPointerDown={handleStickyNotePointerDown}
+          onResizeStart={handleStickyNoteResizeStart}
+          onDelete={(n) => {
+            pushUndo({
+              type: 'sticky-delete',
+              description: `Deleted sticky note`,
+              data: { noteId: n.id, content: n.content, title: n.title, color: n.color, customColor: n.customColor, posX: (n as any).posX, posY: (n as any).posY, width: n.width, height: n.height, isMinimized: n.isMinimized, zIndex: n.zIndex, taskId: n.taskId, projectId: n.projectId }
+            });
+            deleteStickyNoteMutation.mutate(n.id);
+          }}
+          onBringToFront={(noteId) => {
+            const newZIndex = maxStickyZIndex + 1;
+            setMaxStickyZIndex(newZIndex);
+            updateStickyNoteMutation.mutate({ id: noteId, updates: { zIndex: newZIndex } });
+          }}
+        />
+      ))}
 
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '26px', paddingRight: '0px', marginTop: '63px' }}>
