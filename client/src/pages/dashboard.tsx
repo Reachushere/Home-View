@@ -15679,7 +15679,7 @@ export default function Dashboard() {
                                     <tr key={letter} style={{ height: '19px' }}>
                                       <td className="font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '4px', paddingRight: '2px' }}>{letter}</td>
                                       <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '20px', paddingRight: '2px' }}>{pct}</td>
-                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '0px' }}>{pts}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '20px', paddingRight: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -15694,7 +15694,7 @@ export default function Dashboard() {
                                     <tr key={letter} style={{ height: '19px' }}>
                                       <td className="font-semibold" style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '0px', paddingRight: '2px' }}>{letter}</td>
                                       <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '20px', paddingRight: '2px' }}>{pct}</td>
-                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '2px', paddingRight: '0px' }}>{pts}</td>
+                                      <td style={{ paddingTop: '1px', paddingBottom: '0px', paddingLeft: '20px', paddingRight: '0px' }}>{pts}</td>
                                     </tr>
                                   ))}
                                   <tr style={{ height: '19px' }}>
