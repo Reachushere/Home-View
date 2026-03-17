@@ -10591,7 +10591,7 @@ export default function Dashboard() {
                 <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }} data-testid="countdown-empty-state">
-                    <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>No upcoming tasks this week</span>
+                    <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>No upcoming tasks this week</span>
                   </div>
                 </div>
               </div>
@@ -10664,7 +10664,7 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -10672,10 +10672,10 @@ export default function Dashboard() {
                         </>
                       ) : (
                         <>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#ffffff', fontSize: '9.25px' }}>.</span>
                         </>
                       )}
                     </div>
@@ -10690,7 +10690,7 @@ export default function Dashboard() {
                     onMouseLeave={() => setHoveredCountdownTaskId(null)}
                     data-testid="countdown-prep-task-number"
                   >
-                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for </span><span style={{ fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', color: '#000000' }}><b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b></span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
+                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for </span><span style={{ fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', color: '#ffffff' }}><b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b></span><span style={{ color: '#ffffff', fontSize: '9.25px' }}>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
                   </div>
                 )}
                 {(() => {
@@ -10706,7 +10706,7 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskId(null)}
                       data-testid="countdown-next-task-number-after"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#000000', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#dc2626', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -10714,10 +10714,10 @@ export default function Dashboard() {
                         </>
                       ) : (
                         <>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#000000', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#000000', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#000000', fontSize: '9.25px' }}>.</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span><span style={{ color: '#ffffff', fontSize: '9.25px' }}>.</span>
                         </>
                       )}
                     </div>
