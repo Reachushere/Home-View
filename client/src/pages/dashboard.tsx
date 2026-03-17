@@ -19388,9 +19388,9 @@ export default function Dashboard() {
             data-testid="calendar-top-resize-handle"
           >
             <div style={{ width: '72px', height: '11px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▲</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 4px' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)))}>▲</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▼</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 4px' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.max(200, prev - 30)))}>▼</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 4px', writingMode: 'vertical-lr' }}>⋮⋮</span>
             </div>
@@ -19404,9 +19404,9 @@ export default function Dashboard() {
             <div style={{ width: '11px', height: '72px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', padding: '2px 0 5px 0' }}>⋮⋮</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30)))}>▶</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => prev + 30))}>◀</span>
             </div>
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
@@ -19415,9 +19415,9 @@ export default function Dashboard() {
             data-testid="calendar-height-resize-handle"
           >
             <div style={{ width: '72px', height: '11px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 5px' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 5px' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)))}>▼</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 5px' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 5px' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.max(200, prev - 30)))}>▲</span>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 5px', writingMode: 'vertical-lr' }}>⋮⋮</span>
             </div>
@@ -20625,9 +20625,9 @@ export default function Dashboard() {
             data-testid="resize-handle-homework"
           >
             <div style={{ width: '11px', height: '72px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => prev + 30))}>◀</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '5px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30)))}>▶</span>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: '#000', padding: '5px 0 2px 0' }}>⋮⋮</span>
             </div>
