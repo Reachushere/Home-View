@@ -20667,7 +20667,7 @@ export default function Dashboard() {
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-to-top"
             >
-              <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={3.5} />
+              <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={4} />
             </div>
             <div style={{ position: 'absolute', bottom: '54px', right: '4px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
             <div
