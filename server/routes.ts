@@ -6735,6 +6735,7 @@ document.body.removeChild(a);
 
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
+      const { bypass_cooldown, retry } = req.body || {};
       console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");
       console.log("[Cat Wash] Timestamp:", new Date().toISOString());
       console.log("[Cat Wash] Request body:", JSON.stringify(req.body));
@@ -6746,16 +6747,19 @@ document.body.removeChild(a);
       const today = torontoDate();
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
 
-      if (catWashManuallyStoppedAt) {
+      if (catWashManuallyStoppedAt && !bypass_cooldown && !retry) {
         const msSinceStopped = Date.now() - catWashManuallyStoppedAt.getTime();
         if (msSinceStopped < 5 * 60 * 1000) {
           console.log(`[Cat Wash] Manually stopped ${Math.round(msSinceStopped / 1000)}s ago — ignoring webhook (5min cooldown)`);
           return res.json({ action: "skipped", reason: `Manually stopped ${Math.round(msSinceStopped / 1000)}s ago, cooldown active` });
         }
         catWashManuallyStoppedAt = null;
+      } else if ((bypass_cooldown || retry) && catWashManuallyStoppedAt) {
+        console.log(`[Cat Wash] Bypass/retry requested — clearing cooldown`);
+        catWashManuallyStoppedAt = null;
       }
 
-      if (catLightsPromptPending) {
+      if (catLightsPromptPending && !retry) {
         console.log(`[Cat Wash] Cat lights prompt is pending — skipping to avoid conflict`);
         return res.json({ action: "skipped", reason: "Cat lights prompt pending" });
       }
