@@ -47,32 +47,35 @@ declare module "http" {
 
 app.use(cookieParser());
 
-app.use(
-  express.json({
-    limit: '50mb',
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
+app.use((req: any, res: any, next: any) => {
+  const contentType = (req.headers['content-type'] || '').toLowerCase();
+  if (req.method !== 'GET' && req.method !== 'HEAD' && contentType.includes('application/json')) {
+    let chunks: Buffer[] = [];
+    const origOn = req.on.bind(req);
+    let rawData = '';
+    express.text({ limit: '50mb', type: 'application/json' })(req, res, (err: any) => {
+      if (typeof req.body === 'string') {
+        const raw = req.body;
+        req.rawBody = Buffer.from(raw);
+        try {
+          req.body = JSON.parse(raw);
+        } catch {
+          try {
+            const fixed = raw.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+            req.body = JSON.parse(fixed);
+          } catch {
+            req.body = {};
+          }
+        }
+      }
+      next();
+    });
+  } else {
+    express.json({ limit: '50mb', verify: (req: any, _res: any, buf: Buffer) => { req.rawBody = buf; } })(req, res, next);
+  }
+});
 
 app.use(express.urlencoded({ extended: false }));
-
-app.use((err: any, req: any, res: any, next: any) => {
-  if (err.type === 'entity.parse.failed' && req.rawBody) {
-    try {
-      const fixed = req.rawBody.toString().replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
-      req.body = JSON.parse(fixed);
-      return next();
-    } catch {}
-  }
-  if (err.type === 'entity.parse.failed') {
-    console.error(`[JSON Parse Error] ${req.method} ${req.url}: ${err.message}`);
-    req.body = {};
-    return next();
-  }
-  next(err);
-});
 
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
