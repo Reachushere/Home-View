@@ -269,10 +269,14 @@ async function generateAndSaveTTSAudio(text: string, fileId: string, voice: stri
   
   console.log(`Generating OpenAI TTS for ${normalizedText.length} chars, file: ${fileId}`);
   
-  // Generate audio using OpenAI TTS
+  const ttsStart = Date.now();
   const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3");
+  console.log(`OpenAI TTS completed in ${Date.now() - ttsStart}ms, ${audioBuffer.length} bytes`);
   
-  // Save to object storage
+  if (audioBuffer.length === 0) {
+    throw new Error(`TTS returned empty audio buffer for file: ${fileId}`);
+  }
+  
   const audioFileName = `tts-audio/${fileId}-${Date.now()}.mp3`;
   const { bucketName, objectName } = parsePublicObjectPath(`${publicPath}/${audioFileName}`);
   
@@ -6091,11 +6095,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const action = startChunk > 0 ? 'resume' : 'play';
       const introText = `${greeting} Bryn. I will now ${action} ${cleanName}.`;
       console.log(`[Nest Playback] Announcing: "${introText}"`);
-      const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`, voice);
-      await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
-      const introWords = introText.split(/\s+/).length;
-      const introWaitMs = Math.max(3000, (introWords / 115) * 60 * 1000 + 1500);
-      await new Promise(r => setTimeout(r, introWaitMs));
+      try {
+        const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`, voice);
+        console.log(`[Nest Playback] Intro TTS generated: ${introAudioPath}`);
+        await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
+        console.log(`[Nest Playback] Intro sent to Nest speaker`);
+        const introWords = introText.split(/\s+/).length;
+        const introWaitMs = Math.max(3000, (introWords / 115) * 60 * 1000 + 1500);
+        await new Promise(r => setTimeout(r, introWaitMs));
+      } catch (introErr: any) {
+        console.error(`[Nest Playback] Intro TTS/playback failed (non-fatal, continuing to chunks): ${introErr.message}`);
+        await new Promise(r => setTimeout(r, 1000));
+      }
 
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 5;
@@ -6208,7 +6219,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
 
     } catch (err: any) {
-      console.error(`[Nest Playback] Fatal error: ${err.message}`);
+      console.error(`[Nest Playback] Fatal error: ${err.message}`, err.stack?.split('\n').slice(0, 3).join(' | '));
     } finally {
       if (catWashSessionId === sessionId) {
         catWashPlaybackActive = false;
