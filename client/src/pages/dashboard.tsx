@@ -18180,7 +18180,7 @@ export default function Dashboard() {
                         const readerUrl = targetFile.objectPath?.startsWith('http')
                           ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(targetFile.objectPath || '')}&name=${encodeURIComponent(targetFile.displayName || targetFile.originalName)}&autoplay=1`
                           : `/pdf-reader/${targetFile.id}?autoplay=1`;
-                        window.open(readerUrl, '_blank');
+                        window.location.href = readerUrl;
                       } else {
                         toast({ title: `No ${fileType} files found for week ${selectedWeek}`, variant: 'destructive' });
                       }
