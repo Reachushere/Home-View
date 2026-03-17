@@ -2150,6 +2150,35 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  app.get("/api/key-contacts/export.vcf", async (_req, res) => {
+    try {
+      const contacts = await storage.getKeyContacts();
+      const vcards = contacts.map(c => {
+        const nameParts = c.name.trim().split(/\s+/);
+        const lastName = nameParts.length > 1 ? nameParts.pop() : '';
+        const firstName = nameParts.join(' ');
+        let vcard = 'BEGIN:VCARD\r\nVERSION:3.0\r\n';
+        vcard += `N:${lastName};${firstName};;;\r\n`;
+        vcard += `FN:${c.name}\r\n`;
+        if (c.title) vcard += `TITLE:${c.title}\r\n`;
+        if (c.organization) vcard += `ORG:${c.organization}${c.department ? ';' + c.department : ''}\r\n`;
+        if (c.email) vcard += `EMAIL;TYPE=INTERNET:${c.email}\r\n`;
+        if (c.phone) vcard += `TEL;TYPE=CELL:${c.phone}\r\n`;
+        if (c.office) vcard += `ADR;TYPE=WORK:;;${c.office};;;;\r\n`;
+        if (c.notes) vcard += `NOTE:${c.notes.replace(/\n/g, '\\n')}\r\n`;
+        if (c.category) vcard += `CATEGORIES:${c.category}\r\n`;
+        vcard += 'END:VCARD';
+        return vcard;
+      }).join('\r\n');
+      res.setHeader('Content-Type', 'text/vcard; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="contacts.vcf"');
+      res.send(vcards);
+    } catch (err) {
+      console.error("Error exporting contacts:", err);
+      res.status(500).json({ error: "Failed to export contacts" });
+    }
+  });
+
   app.post("/api/key-contacts", async (req, res) => {
     try {
       const created = await storage.createKeyContact(req.body);

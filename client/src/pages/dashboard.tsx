@@ -14631,6 +14631,13 @@ export default function Dashboard() {
                 </div>
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => { window.open('/api/key-contacts/export.vcf', '_blank'); }}
+                      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                      data-testid="button-export-contacts-vcf"
+                    >
+                      <Download className="h-3 w-3" /> iPhone
+                    </button>
+                    <button
                       onClick={() => { setContactFormOpen(true); setEditingContactId(null); setContactForm({ name: '', title: '', organization: '', department: '', email: '', phone: '', office: '', category: contactFilter !== 'all' ? contactFilter : 'professor', notes: '' }); }}
                       className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
                       data-testid="button-add-contact"
