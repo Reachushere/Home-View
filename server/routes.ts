@@ -7250,6 +7250,41 @@ document.body.removeChild(a);
   });
 
 
+  // POST /api/webhook/kitchen-volume - Control Kitchen Echo Studio volume (fire-and-forget for HA automations)
+  app.post("/api/webhook/kitchen-volume", async (req, res) => {
+    try {
+      const { direction, speed } = req.body || {};
+      console.log(`[Kitchen Volume] ====== WEBHOOK TRIGGERED ====== direction=${direction} speed=${speed}`);
+
+      res.json({ success: true, direction, speed });
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      const entity = KITCHEN_ECHO_ENTITY;
+
+      const stateResp = await fetch(`${haUrl}/api/states/${entity}`, { headers: haHeaders });
+      const stateData = stateResp.ok ? await stateResp.json() : null;
+      const currentVolume = stateData?.attributes?.volume_level ?? 0.5;
+
+      const step = speed === 'fast' ? 0.15 : 0.05;
+      let newVolume: number;
+
+      if (direction === 'up') {
+        newVolume = Math.min(1, currentVolume + step);
+      } else {
+        newVolume = Math.max(0, currentVolume - step);
+      }
+
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: entity, volume_level: newVolume }),
+      });
+      console.log(`[Kitchen Volume] Set volume: ${currentVolume} → ${newVolume} (${direction}, ${speed})`);
+    } catch (err: any) {
+      console.error(`[Kitchen Volume] Error: ${err.message}`);
+    }
+  });
+
   // POST /api/webhook/cat-knob-press - Toggle CHUM FM on Nest speaker when knob is pressed
   let catKnobRadioPlaying = false;
   app.post("/api/webhook/cat-knob-press", async (req, res) => {
