@@ -18121,12 +18121,12 @@ export default function Dashboard() {
                           const dueModulePdfUrl = dueAttachmentUrl || dueRefLinkPdf || dueModuleFile?.objectPath || null;
                           const hasPrepDays = task.startDate && !isSameDay(startOfDay(new Date(task.startDate)), startOfDay(new Date(task.dueDate)));
                           return (
-                            <div key={task.id} className="relative" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
+                            <div key={task.id} className="relative w-full min-w-0" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
                             {hasPrepDays && (
                               <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
                             <div 
-                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -18363,7 +18363,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
                                   backgroundColor: 'rgba(107, 114, 128, 0.25)',
                                   borderColor: 'rgba(107, 114, 128, 0.5)',
@@ -18379,7 +18379,7 @@ export default function Dashboard() {
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
                                 <span
-                                  className={`truncate font-bold text-black ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`truncate font-bold text-black flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
