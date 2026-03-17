@@ -5512,6 +5512,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 </html>`);
   });
 
+  const SERVER_START_TIME = Date.now();
+  const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
+
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
@@ -6865,6 +6868,12 @@ document.body.removeChild(a);
       console.log("[Cat Wash] Timestamp:", new Date().toISOString());
       console.log("[Cat Wash] Request body:", JSON.stringify(body));
 
+      const timeSinceStart = Date.now() - SERVER_START_TIME;
+      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS && !retry) {
+        console.log(`[Cat Wash] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown: ${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
+        return res.json({ action: "ignored", reason: "Server startup cooldown" });
+      }
+
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
@@ -7008,6 +7017,12 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Lights] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
+
+      const timeSinceStart = Date.now() - SERVER_START_TIME;
+      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
+        console.log(`[Cat Lights] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown: ${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
+        return res.json({ action: "ignored", reason: "Server startup cooldown" });
+      }
 
       const haUrl0 = HOME_ASSISTANT_URL?.replace(/\/$/, '') || '';
       const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
