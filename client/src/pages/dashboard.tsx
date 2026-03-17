@@ -4609,10 +4609,10 @@ export default function Dashboard() {
   };
 
   const handleAddStickyNote = () => {
+    if (createStickyNoteMutation.isPending) return;
     const newZIndex = maxStickyZIndex + 1;
     setMaxStickyZIndex(newZIndex);
     const homePos = getStickyNoteHomePosition();
-    // Offset each new note slightly to avoid stacking exactly
     const existingCount = stickyNotes?.length || 0;
     const offsetX = (existingCount % 3) * 15;
     const offsetY = Math.floor(existingCount / 3) * 15;
