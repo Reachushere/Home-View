@@ -6869,7 +6869,7 @@ document.body.removeChild(a);
       console.log("[Cat Wash] Request body:", JSON.stringify(body));
 
       const timeSinceStart = Date.now() - SERVER_START_TIME;
-      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS && !retry) {
+      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
         console.log(`[Cat Wash] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown: ${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
         return res.json({ action: "ignored", reason: "Server startup cooldown" });
       }
