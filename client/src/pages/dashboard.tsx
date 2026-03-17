@@ -1022,7 +1022,7 @@ export default function Dashboard() {
     return () => clearTimeout(sideTimeout);
   }, []);
   const isTopPillOpenRef = useRef(false);
-  const [isTopPillOpen, _rawSetIsTopPillOpen] = useState(false);
+  const isTopPillOpen = false;
   const setIsTopPillOpen = useCallback((val: boolean) => {
     if (isTopPillOpenRef.current === val) return;
     isTopPillOpenRef.current = val;
@@ -1036,7 +1036,6 @@ export default function Dashboard() {
       el.style.pointerEvents = val ? 'none' : 'auto';
       el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
-    requestAnimationFrame(() => { _rawSetIsTopPillOpen(val); });
   }, []);
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string }[]>([]);
 
