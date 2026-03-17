@@ -17437,7 +17437,7 @@ export default function Dashboard() {
             data-tpo data-tpo-opacity="1"
             style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + (calendarView === "month" ? 77 : 85)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '2px' }} />
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '2px', marginBottom: '5px' }} />
             <Button
               variant="ghost"
               className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
@@ -20669,7 +20669,7 @@ export default function Dashboard() {
             >
               <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={3.5} />
             </div>
-            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '1px 3px 1px auto' }} />
+            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '6px 3px 1px auto' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '19px', height: '19px' }}
