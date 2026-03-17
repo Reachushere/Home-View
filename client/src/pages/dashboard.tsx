@@ -20663,7 +20663,7 @@ export default function Dashboard() {
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ position: 'absolute', bottom: '75px', right: '0px', width: '18px', height: '18px' }}
+              style={{ position: 'absolute', bottom: '75px', left: '50%', transform: 'translateX(-50%)', width: '18px', height: '18px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-to-top"
             >
