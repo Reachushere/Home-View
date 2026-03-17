@@ -20669,7 +20669,7 @@ export default function Dashboard() {
             >
               <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={3.5} />
             </div>
-            <div style={{ width: '13px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '1px auto' }} />
+            <div style={{ width: '11px', height: '1px', background: 'rgba(255,255,255,0.3)', margin: '1px auto' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '19px', height: '19px' }}
