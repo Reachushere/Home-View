@@ -746,6 +746,9 @@ export default function Dashboard() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackSending, setFeedbackSending] = useState(false);
   const [showRemainingList, setShowRemainingList] = useState(false);
   
   const [showSemesterChecklist, setShowSemesterChecklist] = useState(false);
@@ -10909,6 +10912,27 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Feedback Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-feedback"
+              title="Send Feedback to Agent"
+              onClick={() => setIsFeedbackOpen(true)}
+            >
+              <MessageSquare className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
             <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
@@ -14534,6 +14558,48 @@ export default function Dashboard() {
 
             return (
             <>
+          <Dialog open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen}>
+            <DialogContent className="max-w-[320px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
+              <DialogTitle className="sr-only">Send Feedback</DialogTitle>
+              <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="text-white" style={{ width: '14px', height: '14px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>SEND NOTE TO AGENT</h2>
+                </div>
+                <button onClick={() => setIsFeedbackOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-feedback"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="flex flex-col gap-3 p-4">
+                <textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder="Describe a change, bug, or feature request..."
+                  className="w-full h-[120px] bg-black/40 border border-white/30 rounded-lg p-3 text-[11px] text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-white/60"
+                  data-testid="input-feedback-note"
+                />
+                <Button
+                  disabled={!feedbackText.trim() || feedbackSending}
+                  data-testid="button-send-feedback"
+                  className="w-full h-8 text-[11px] font-medium"
+                  style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 100%)', border: '1px solid rgba(255,255,255,0.3)' }}
+                  onClick={async () => {
+                    if (!feedbackText.trim()) return;
+                    setFeedbackSending(true);
+                    try {
+                      const resp = await fetch('/api/feedback-notes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ note: feedbackText.trim() }) });
+                      if (resp.ok) {
+                        toast({ title: "Note Saved", description: "Your feedback has been saved for the agent." });
+                        setFeedbackText('');
+                        setIsFeedbackOpen(false);
+                      }
+                    } catch {} finally { setFeedbackSending(false); }
+                  }}
+                >
+                  {feedbackSending ? 'Sending...' : 'Send Note'}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               <DialogTitle className="sr-only">Key Contacts</DialogTitle>

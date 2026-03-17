@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -2182,6 +2182,34 @@ html,body{height:100%;overflow:hidden;background:transparent}
     } catch (err) {
       console.error("Error resetting files:", err);
       res.status(500).json({ error: "Failed to reset files" });
+    }
+  });
+
+  app.get("/api/feedback-notes", async (_req, res) => {
+    try {
+      const notes = await db.select().from(feedbackNotes).orderBy(sql`created_at DESC`);
+      res.json(notes);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to fetch feedback notes" });
+    }
+  });
+
+  app.post("/api/feedback-notes", async (req, res) => {
+    try {
+      const parsed = insertFeedbackNoteSchema.parse(req.body);
+      const [note] = await db.insert(feedbackNotes).values(parsed).returning();
+      res.json(note);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to save feedback note" });
+    }
+  });
+
+  app.delete("/api/feedback-notes/:id", async (req, res) => {
+    try {
+      await db.delete(feedbackNotes).where(eq(feedbackNotes.id, parseInt(req.params.id)));
+      res.json({ ok: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to delete feedback note" });
     }
   });
 

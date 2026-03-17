@@ -540,5 +540,16 @@ export const degreeTrackingData = pgTable("degree_tracking_data", {
   value: text("value").notNull(),
 });
 
+export const feedbackNotes = pgTable("feedback_notes", {
+  id: serial("id").primaryKey(),
+  note: text("note").notNull(),
+  status: text("status").default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertFeedbackNoteSchema = createInsertSchema(feedbackNotes).omit({ id: true, status: true, createdAt: true });
+export type FeedbackNote = typeof feedbackNotes.$inferSelect;
+export type InsertFeedbackNote = z.infer<typeof insertFeedbackNoteSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";
