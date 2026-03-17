@@ -10565,7 +10565,14 @@ export default function Dashboard() {
             return true;
           })
           .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
-        const next = upcoming[0];
+        const overdue = upcoming.length === 0 ? allTasks
+          .filter(t => {
+            if (!t.dueDate || t.isCompleted) return false;
+            if (isCASL101Finished(t)) return false;
+            return true;
+          })
+          .sort((a, b) => new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()) : [];
+        const next = upcoming[0] || overdue[0];
         if (!next) {
           return (
             <div
@@ -10591,7 +10598,7 @@ export default function Dashboard() {
                 <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }} data-testid="countdown-empty-state">
-                    <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>No upcoming tasks this week</span>
+                    <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
                   </div>
                 </div>
               </div>
@@ -12830,7 +12837,7 @@ export default function Dashboard() {
       
       {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
       {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
-      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 26}px`, right: '14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 26}px`, right: '21px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
           <span className="text-[10.5px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
@@ -18122,7 +18129,7 @@ export default function Dashboard() {
                               <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
                             <div 
-                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: 'white',
                                 borderColor: course.darkColor,
@@ -18134,6 +18141,7 @@ export default function Dashboard() {
                               }}
                               title={task.title}
                             >
+                              <div className="flex items-center gap-0.5">
                               <Checkbox
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -18156,6 +18164,23 @@ export default function Dashboard() {
                                   <ExternalLink className="h-3 w-3 text-black/60 hover:text-black" />
                                 </a>
                               )}
+                              </div>
+                              {!task.isCompleted && (() => {
+                                const dueD = startOfDay(new Date(task.dueDate));
+                                const todayD = startOfDay(new Date());
+                                const dUntil = Math.round((dueD.getTime() - todayD.getTime()) / (1000 * 60 * 60 * 24));
+                                const barColor = dUntil <= 0 ? '#ef4444' : dUntil <= 1 ? '#eab308' : dUntil <= 2 ? '#f97316' : '#22c55e';
+                                const barW = Math.min(Math.max(Math.round((dUntil / 14) * 100), 5), 100);
+                                return (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingLeft: '16px', marginTop: '-1px' }}>
+                                    <span style={{ fontSize: '7px', fontWeight: 600, color: barColor, lineHeight: 1 }}>{dUntil <= 0 ? 'DUE' : `${dUntil}d`}</span>
+                                    <div style={{ flex: 1, height: '2px', borderRadius: '1px', backgroundColor: '#e5e7eb', overflow: 'hidden' }}>
+                                      <div style={{ width: `${barW}%`, height: '100%', borderRadius: '1px', backgroundColor: barColor }} />
+                                    </div>
+                                    <span style={{ fontSize: '7px', color: '#888', lineHeight: 1, flexShrink: 0 }}>{format(new Date(task.dueDate), 'MMM d')}</span>
+                                  </div>
+                                );
+                              })()}
                               <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '2px', zIndex: 2 }}>
                                 {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-task-${task.id}`} /> : null; })()}
                                 {dueModulePdfUrl && (
@@ -19384,7 +19409,7 @@ export default function Dashboard() {
           </div>
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
-            style={{ position: 'absolute', left: '-6px', top: '-27px', width: '72px', height: '11px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '-4px', top: '-27px', width: '72px', height: '11px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-top-resize-handle"
           >
             <div style={{ width: '72px', height: '11px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
@@ -19398,7 +19423,7 @@ export default function Dashboard() {
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
             className="z-50"
-            style={{ position: 'absolute', right: '-11px', top: '14px', width: '11px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'absolute', right: '-11px', top: '11px', width: '11px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-calendar-right"
           >
             <div style={{ width: '11px', height: '72px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
@@ -20621,7 +20646,7 @@ export default function Dashboard() {
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
-            style={{ left: '-12px', bottom: '14px', width: '11px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ left: '-12px', bottom: '16px', width: '11px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-homework"
           >
             <div style={{ width: '11px', height: '72px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
