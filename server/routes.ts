@@ -7429,6 +7429,52 @@ document.body.removeChild(a);
     }
   });
 
+  app.post("/api/webhook/cat-volume", async (req, res) => {
+    try {
+      const { direction, speed, action, volume } = req.body || {};
+      console.log(`[Cat Volume] ====== WEBHOOK TRIGGERED ====== direction=${direction} speed=${speed} action=${action} volume=${volume}`);
+      console.log(`[Cat Volume] Body: ${JSON.stringify(req.body)}`);
+
+      res.json({ success: true, direction, speed });
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      if (typeof volume === 'number') {
+        const clampedVolume = Math.max(0, Math.min(1, volume));
+        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: clampedVolume }),
+        });
+        console.log(`[Cat Volume] Set absolute volume: ${clampedVolume}`);
+        return;
+      }
+
+      const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, { headers: haHeaders });
+      const stateData = stateResp.ok ? await stateResp.json() : null;
+      const currentVolume = stateData?.attributes?.volume_level ?? 0.5;
+
+      const step = speed === 'fast' ? 0.15 : 0.05;
+      let newVolume: number;
+
+      if (direction === 'up' || action === 'volume_up') {
+        newVolume = Math.min(1, currentVolume + step);
+      } else if (direction === 'down' || action === 'volume_down') {
+        newVolume = Math.max(0, currentVolume - step);
+      } else {
+        console.log(`[Cat Volume] Unknown direction/action, ignoring`);
+        return;
+      }
+
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: newVolume }),
+      });
+      console.log(`[Cat Volume] Set volume: ${currentVolume.toFixed(2)} → ${newVolume.toFixed(2)} (${direction || action}, ${speed || 'normal'})`);
+    } catch (err: any) {
+      console.error(`[Cat Volume] Error: ${err.message}`);
+    }
+  });
+
   // POST /api/webhook/cat-knob-press - Toggle CHUM FM on Nest speaker when knob is pressed
   let catKnobRadioPlaying = false;
   app.post("/api/webhook/cat-knob-press", async (req, res) => {
