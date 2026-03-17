@@ -20680,11 +20680,11 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 cursor-pointer hover:bg-white/20 rounded-full flex items-center justify-center"
-            style={{ left: '-16px', bottom: '92px', width: '22px', height: '22px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ left: '-16px', bottom: '92px', width: '19px', height: '19px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
-            <ChevronUp style={{ width: '20px', height: '20px', color: 'white' }} />
+            <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
           </div>
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
