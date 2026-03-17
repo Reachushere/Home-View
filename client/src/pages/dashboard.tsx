@@ -18032,8 +18032,12 @@ export default function Dashboard() {
                             </div>
                           );
                         })}
-                        {slottedItems.map((item, itemIdx) => {
+                        {(() => {
+                          const firstFilledIdx = slottedItems.findIndex(item => item !== null);
+                          const lastFilledIdx = (() => { for (let i = slottedItems.length - 1; i >= 0; i--) { if (slottedItems[i] !== null) return i; } return -1; })();
+                          return slottedItems.map((item, itemIdx) => {
                           if (!item) {
+                            if (itemIdx < firstFilledIdx || itemIdx > lastFilledIdx) return null;
                             return <div key={`empty-${itemIdx}`} style={{ minHeight: '18px' }} />;
                           }
                           const task = item.task;
@@ -18167,10 +18171,11 @@ export default function Dashboard() {
                             </div>
                             </div>
                           );
-                        })}
+                        });
+                        })()}
                       </div>
                     );
-                    });
+                  });
                   })()}
                   {/* Progress column - half-width black with M/R/O bars */}
                   {(() => {
