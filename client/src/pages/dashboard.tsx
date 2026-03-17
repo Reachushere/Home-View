@@ -5116,6 +5116,7 @@ export default function Dashboard() {
         }).catch(() => {});
       }
     }
+    const syncedNames = new Set(coursesData.courses.filter(c => c.professor?.trim()).map(c => c.professor!.toLowerCase()));
     try {
       const certData = localStorage.getItem('certCourseData');
       if (certData) {
@@ -5124,6 +5125,7 @@ export default function Dashboard() {
         for (const [certKey, info] of Object.entries(savedData)) {
           const ci = info as any;
           if (ci.professor?.trim() && !currentCodes.has(certKey.toUpperCase().replace(/\s/g, ''))) {
+            syncedNames.add(ci.professor.toLowerCase());
             fetch('/api/key-contacts/sync-professor', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -5134,6 +5136,33 @@ export default function Dashboard() {
       }
     } catch {}
   }, []);
+
+  useEffect(() => {
+    if (!pastCourseInfo || Object.keys(pastCourseInfo).length === 0) return;
+    const synced = sessionStorage.getItem('pastProfContactsSynced');
+    if (synced) return;
+    sessionStorage.setItem('pastProfContactsSynced', '1');
+    const existingNames = new Set(coursesData.courses.filter(c => c.professor?.trim()).map(c => c.professor!.toLowerCase()));
+    try {
+      const certData = localStorage.getItem('certCourseData');
+      if (certData) {
+        for (const info of Object.values(JSON.parse(certData))) {
+          const ci = info as any;
+          if (ci.professor?.trim()) existingNames.add(ci.professor.toLowerCase());
+        }
+      }
+    } catch {}
+    for (const [courseKey, info] of Object.entries(pastCourseInfo)) {
+      if (info.professor?.trim() && !existingNames.has(info.professor.toLowerCase())) {
+        existingNames.add(info.professor.toLowerCase());
+        fetch('/api/key-contacts/sync-professor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ professorName: info.professor, professorEmail: info.email || '', courseCode: courseKey }),
+        }).catch(() => {});
+      }
+    }
+  }, [pastCourseInfo]);
 
   useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
