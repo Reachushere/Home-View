@@ -58,6 +58,22 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+app.use((err: any, req: any, res: any, next: any) => {
+  if (err.type === 'entity.parse.failed' && req.rawBody) {
+    try {
+      const fixed = req.rawBody.toString().replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      req.body = JSON.parse(fixed);
+      return next();
+    } catch {}
+  }
+  if (err.type === 'entity.parse.failed') {
+    console.error(`[JSON Parse Error] ${req.method} ${req.url}: ${err.message}`);
+    req.body = {};
+    return next();
+  }
+  next(err);
+});
+
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
 

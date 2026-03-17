@@ -6773,10 +6773,16 @@ document.body.removeChild(a);
 
   app.post("/api/webhook/cat-wash", async (req, res) => {
     try {
-      const { bypass_cooldown, retry } = req.body || {};
+      let body = req.body || {};
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null'));
+        } catch { body = {}; }
+      }
+      const { bypass_cooldown, retry } = body;
       console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");
       console.log("[Cat Wash] Timestamp:", new Date().toISOString());
-      console.log("[Cat Wash] Request body:", JSON.stringify(req.body));
+      console.log("[Cat Wash] Request body:", JSON.stringify(body));
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
