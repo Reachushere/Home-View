@@ -10843,7 +10843,11 @@ export default function Dashboard() {
               onClick={() => {
                 triggerButtonGlow('settings');
                 setIsSettingsPanelOpen(true);
-                const activeCourses = coursesData.courses.filter(c => c.name.trim());
+                const currentSemCodes = semesterSettings ? [1,2,3].map(i => (semesterSettings as any)[`course${i}Code`]).filter(Boolean) : [];
+                const activeCourses = coursesData.courses.filter(c => {
+                  const code = c.name.split(' - ')[0];
+                  return c.name.trim() && currentSemCodes.includes(code);
+                });
                 const uncheckedAas = activeCourses.filter(c => {
                   const code = c.name.split(' - ')[0];
                   return !aasSentStatus[code];
@@ -14795,10 +14799,13 @@ export default function Dashboard() {
                   You haven't confirmed sending your AAS letter via the portal for the following course(s):
                 </p>
                 <div className="space-y-2">
-                  {coursesData.courses.filter(c => c.name.trim()).filter(c => {
-                    const code = c.name.split(' - ')[0];
-                    return !aasSentStatus[code];
-                  }).map((course, idx) => {
+                  {(() => {
+                    const currentCodes = semesterSettings ? [1,2,3].map(i => (semesterSettings as any)[`course${i}Code`]).filter(Boolean) : [];
+                    return coursesData.courses.filter(c => {
+                      const code = c.name.split(' - ')[0];
+                      return c.name.trim() && currentCodes.includes(code) && !aasSentStatus[code];
+                    });
+                  })().map((course, idx) => {
                     const code = course.name.split(' - ')[0];
                     const name = course.name.split(' - ').slice(1).join(' - ');
                     return (
