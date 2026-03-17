@@ -20684,7 +20684,7 @@ export default function Dashboard() {
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
-            <ChevronUp style={{ width: '22px', height: '22px', color: 'white' }} />
+            <ChevronUp style={{ width: '20px', height: '20px', color: 'white' }} />
           </div>
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
