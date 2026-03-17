@@ -12651,37 +12651,13 @@ export default function Dashboard() {
                               const classDays = [updates.classDay, updates.classDay2].filter(Boolean).map(d => dayMap[d!] ?? -1).filter(d => d >= 0);
                               const existingTasks: any[] = queryClient.getQueryData(["/api/tasks"]) || [];
                               const existingClassTasks = existingTasks.filter((t: any) =>
-                                t.title === 'Class' && t.type === 'class' && (t.courseName || '').includes(courseCode)
+                                t.type === 'class' && (t.courseName || '').includes(courseCode)
                               );
-                              if (existingClassTasks.length > 0) {
-                                Promise.all(existingClassTasks.map((t: any) => apiRequest("DELETE", `/api/tasks/${t.id}`))).then(() => {
-                                  const tasksToCreate: Array<{ title: string; type: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string; weekNumber: number }> = [];
-                                  const current = new Date(startD);
-                                  while (current <= endD) {
-                                    if (classDays.includes(current.getDay())) {
-                                      const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
-                                      const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
-                                      tasksToCreate.push({
-                                        title: 'Class',
-                                        type: 'class',
-                                        dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}`,
-                                        courseName,
-                                        eventStartTime: updates.classTime!,
-                                        eventEndTime: updates.classEndTime!,
-                                        priority: 'medium',
-                                        weekNumber: weekNum,
-                                      });
-                                    }
-                                    current.setDate(current.getDate() + 1);
-                                  }
-                                  if (tasksToCreate.length > 0) {
-                                    Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
-                                      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-                                      toast({ title: "Class tasks updated", description: `${tasksToCreate.length} class sessions refreshed on calendar.` });
-                                    });
-                                  }
-                                });
-                              } else {
+                              const effectiveDM = updates.deliveryMode || (sem as any)[`${prefix}DeliveryMode`] || '';
+                              const dmLabel = effectiveDM === 'virtual' ? 'Online' : effectiveDM === 'online' ? 'Online' : effectiveDM === 'in-person' ? 'In-Person' : '';
+                              const cNameShort = courseName.split(' - ').slice(1).join(' - ') || courseName;
+                              const classTitle = dmLabel ? `${dmLabel} ${cNameShort} Class` : `${cNameShort} Class`;
+                              const buildClassTasks = () => {
                                 const tasksToCreate: Array<{ title: string; type: string; dueDate: string; courseName: string; eventStartTime: string; eventEndTime: string; priority: string; weekNumber: number }> = [];
                                 const current = new Date(startD);
                                 while (current <= endD) {
@@ -12689,9 +12665,9 @@ export default function Dashboard() {
                                     const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
                                     const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
                                     tasksToCreate.push({
-                                      title: 'Class',
+                                      title: classTitle,
                                       type: 'class',
-                                      dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}`,
+                                      dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}T12:00:00`,
                                       courseName,
                                       eventStartTime: updates.classTime!,
                                       eventEndTime: updates.classEndTime!,
@@ -12701,6 +12677,20 @@ export default function Dashboard() {
                                   }
                                   current.setDate(current.getDate() + 1);
                                 }
+                                return tasksToCreate;
+                              };
+                              if (existingClassTasks.length > 0) {
+                                Promise.all(existingClassTasks.map((t: any) => apiRequest("DELETE", `/api/tasks/${t.id}`))).then(() => {
+                                  const tasksToCreate = buildClassTasks();
+                                  if (tasksToCreate.length > 0) {
+                                    Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
+                                      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                                      toast({ title: "Class tasks updated", description: `${tasksToCreate.length} class sessions refreshed on calendar.` });
+                                    });
+                                  }
+                                });
+                              } else {
+                                const tasksToCreate = buildClassTasks();
                                 if (tasksToCreate.length > 0) {
                                   Promise.all(tasksToCreate.map(t => apiRequest("POST", "/api/tasks", t))).then(() => {
                                     queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -15635,7 +15625,7 @@ export default function Dashboard() {
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <span className="text-[10px] text-white truncate min-w-0 flex-1" style={{ marginLeft: '4px' }}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] text-white truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
@@ -18061,7 +18051,8 @@ export default function Dashboard() {
                             const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                             const taskCourseCodeLower = taskCourseCode.toLowerCase();
                             const moduleFolderName = `week-${task.weekNumber}-${taskCourseCodeLower}-module`;
-                            const moduleFile = weeklyFiles.find(f => f.folder === moduleFolderName && f.objectPath);
+                            const readingFolderName = `week-${task.weekNumber}-${taskCourseCodeLower}-reading`;
+                            const moduleFile = weeklyFiles.find(f => f.folder === moduleFolderName && f.objectPath) || weeklyFiles.find(f => f.folder === readingFolderName && f.objectPath);
                             const moduleAttachmentPdf = !moduleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
                             const moduleRefLinkPdf = !moduleFile && !moduleAttachmentPdf && task.referenceLink ? task.referenceLink : null;
                             const modulePdfUrl = moduleFile?.objectPath || moduleAttachmentPdf || moduleRefLinkPdf || null;
@@ -18114,7 +18105,8 @@ export default function Dashboard() {
                           const dueTaskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                           const dueTaskCourseCodeLower = dueTaskCourseCode.toLowerCase();
                           const dueModuleFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-module`;
-                          const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) : null;
+                          const dueReadingFolderName = `week-${task.weekNumber}-${dueTaskCourseCodeLower}-reading`;
+                          const dueModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'reading' || task.type === 'Reading' || task.type === 'essay') ? (weeklyFiles.find(f => f.folder === dueModuleFolderName && f.objectPath) || weeklyFiles.find(f => f.folder === dueReadingFolderName && f.objectPath)) : null;
                           const dueAttachmentUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
                           const dueAttachmentLink = !dueAttachmentUrl && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
                           const dueRefLinkPdf = !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
@@ -18461,7 +18453,8 @@ export default function Dashboard() {
                       const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                       const adCourseCodeLower = courseCode.toLowerCase();
                       const adModuleFolderName = `week-${task.weekNumber}-${adCourseCodeLower}-module`;
-                      const adModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'Reading' || task.type === 'essay') ? weeklyFiles.find(f => f.folder === adModuleFolderName && f.objectPath) : null;
+                      const adReadingFolderName = `week-${task.weekNumber}-${adCourseCodeLower}-reading`;
+                      const adModuleFile = (task.type === 'discussion' || task.type === 'module' || task.type === 'reading' || task.type === 'Reading' || task.type === 'essay') ? (weeklyFiles.find(f => f.folder === adModuleFolderName && f.objectPath) || weeklyFiles.find(f => f.folder === adReadingFolderName && f.objectPath)) : null;
                       const adAttachmentPdf = !adModuleFile && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && (url.toLowerCase().endsWith('.pdf') || url.includes('/pdf'))) return url; } return null; })() : null;
                       const adRefLinkPdf = !adModuleFile && !adAttachmentPdf && task.referenceLink ? task.referenceLink : null;
                       const adPdfUrl = adModuleFile?.objectPath || adAttachmentPdf || adRefLinkPdf || null;
@@ -19386,33 +19379,42 @@ export default function Dashboard() {
           </div>
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
-            style={{ position: 'absolute', left: '-16px', top: '-28px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '-16px', top: '-26px', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-top-resize-handle"
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▲</span>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▼</span>
+            <div style={{ width: '72px', height: '10px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: 'rgba(80,80,80,0.7)', letterSpacing: '-1px', padding: '0 3px 0 2px' }}>⋮⋮</span>
+              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▲</span>
+              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▼</span>
             </div>
           </div>
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
             className="z-50"
-            style={{ position: 'absolute', right: '-10px', top: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'absolute', right: '-10px', top: '14px', width: '10px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ width: '10px', height: '48px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
+            <div style={{ width: '10px', height: '72px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: 'rgba(80,80,80,0.7)', writingMode: 'vertical-lr', padding: '2px 0 3px 0' }}>⋮⋮</span>
+              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '4px 0' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
+              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '4px 0' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
             </div>
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '48px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '50%', bottom: '-10px', transform: 'translateX(-50%)', width: '72px', height: '10px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '48px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '9px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '9px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
+            <div style={{ width: '72px', height: '10px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '9px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))}>▼</span>
+              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '9px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '0 4px' }} onClick={() => setCalendarHeight(prev => Math.max(200, prev - 30))}>▲</span>
+              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: 'rgba(80,80,80,0.7)', letterSpacing: '-1px', padding: '0 2px 0 3px' }}>⋮⋮</span>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -20594,7 +20596,7 @@ export default function Dashboard() {
         {/* Coming Up box - positioned to the right of the calendar in the reduction gap */}
         <section
           ref={homeworkSectionRef}
-          className="rounded-[12px] flex flex-col fixed"
+          className={`rounded-[12px] flex flex-col fixed${dueTodayTasks.length > 0 ? ' homework-due-today-pulse' : ''}`}
           style={{
             zIndex: 35,
             overflow: 'visible',
@@ -20603,7 +20605,7 @@ export default function Dashboard() {
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
+            boxShadow: dueTodayTasks.length > 0 ? undefined : '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
@@ -20614,33 +20616,36 @@ export default function Dashboard() {
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
-            style={{ left: '-11px', bottom: '8px', width: '10px', height: '48px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ left: '-11px', bottom: '14px', width: '10px', height: '72px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '10px', height: '48px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
-              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
+            <div style={{ width: '10px', height: '72px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '4px 0' }} onClick={() => setCalendarReduction(prev => prev + 30)}>◀</span>
+              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-pointer hover:text-black" style={{ fontSize: '8px', lineHeight: '1', color: 'rgba(100,100,100,0.7)', padding: '4px 0' }} onClick={() => setCalendarReduction(prev => Math.max(0, prev - 30))}>▶</span>
+              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '11px', lineHeight: '1', color: 'rgba(80,80,80,0.7)', writingMode: 'vertical-lr', padding: '3px 0 2px 0' }}>⋮⋮</span>
             </div>
           </div>
           <div
             className="absolute z-50 flex flex-col gap-1 cursor-pointer"
-            style={{ right: '-38px', top: '0px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-32px', bottom: '0px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '23px', height: '23px' }}
+              style={{ width: '19px', height: '19px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-top"
             >
-              <ChevronUp style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
+              <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
             </div>
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '23px', height: '23px' }}
+              style={{ width: '19px', height: '19px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-bottom"
             >
-              <ChevronDown style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
+              <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
             </div>
           </div>
           <div

@@ -2216,6 +2216,21 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: aas-shimmer-pulse 10s ease-in-out infinite;
 }
 
+@keyframes homework-due-today-pulse {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08);
+    border-color: white;
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(255,80,80,0.45), 0 0 36px rgba(255,80,80,0.2), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08);
+    border-color: rgba(255,100,100,0.7);
+  }
+}
+
+.homework-due-today-pulse {
+  animation: homework-due-today-pulse 4s ease-in-out infinite;
+}
+
 .section-dim > *:not(.no-dim) {
   opacity: 0.45;
 }

@@ -2385,10 +2385,10 @@ html,body{height:100%;overflow:hidden;background:transparent}
         if (courseTasksForWeek.length > 0) continue;
 
         const title = hasModuleFiles && hasReadingFiles
-          ? "Module & Reading"
+          ? `${course.code} Module & Reading`
           : hasModuleFiles
-            ? "Module"
-            : "Reading";
+            ? `${course.code} Module`
+            : `${course.code} Reading`;
 
         const newTask = await storage.createTask({
           title,
@@ -2433,7 +2433,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
         thursday: 4, friday: 5, saturday: 6,
       };
 
-      const allTasks = await storage.getAllTasks();
+      const allTasks = await storage.getTasks();
       const existingClassTasks = allTasks.filter(t => t.type === 'class');
 
       const createdTasks: any[] = [];
@@ -2464,6 +2464,8 @@ html,body{height:100%;overflow:hidden;background:transparent}
           : (activeSemester.semesterEndDate ? new Date(activeSemester.semesterEndDate) : new Date(semesterStart.getTime() + 13 * 7 * 24 * 60 * 60 * 1000));
 
         const courseName = `${config.code} - ${config.name}`;
+        const dmLabel = deliveryMode === 'virtual' ? 'Online' : deliveryMode === 'online' ? 'Online' : deliveryMode === 'in-person' ? 'In-Person' : '';
+        const classTitle = dmLabel ? `${dmLabel} ${config.name} Class` : `${config.name} Class`;
         const [startHour, startMinute] = classTime.split(':').map(Number);
         const [endHour, endMinute] = classEndTime.split(':').map(Number);
 
@@ -2471,7 +2473,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
         while (current <= semesterEnd) {
           if (classDays.includes(current.getDay())) {
             const taskDate = new Date(current);
-            taskDate.setHours(endHour, endMinute, 0, 0);
+            taskDate.setHours(12, 0, 0, 0);
 
             const weekNum = getWeekNumber(taskDate, undefined, activeSemester?.readingWeekStart);
             if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
@@ -2488,7 +2490,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
                 skippedCount++;
               } else {
                 const task = await storage.createTask({
-                  title: `${config.code} Class`,
+                  title: classTitle,
                   type: "class",
                   courseName,
                   dueDate: taskDate,
