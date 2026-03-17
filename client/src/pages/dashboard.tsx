@@ -11693,13 +11693,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Share Button - fixed position, bottom left */}
+      {/* Share Button - fixed position, top left */}
       {isAdmin && (
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
           data-tpo data-tpo-opacity="1"
-          style={{ height: '16px', width: '16px', position: 'fixed', left: '3px', bottom: '42px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '16px', width: '16px', position: 'fixed', left: '5px', top: `${(calendarBorderTop || (calendarTop + 15)) - 30}px`, zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -12859,7 +12859,7 @@ export default function Dashboard() {
       )}
       
       {/* Voice Input Floating Button */}
-      <div className="fixed z-[9999]" style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 30}px`, left: '5px' }}>
+      <div className="fixed z-[9999]" style={{ bottom: '42px', left: '3px' }}>
         <button
           onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
           className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
