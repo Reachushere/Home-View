@@ -1004,6 +1004,10 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       for (const t of incoming) {
         const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
         const { id, isMissed, subtaskCount, completedSubtaskCount, calendarEventId, calendarProvider, prepCalendarEventId, secondaryCalendarEventId, secondAccountCalendarEventId, secondAccountPrepEventId, ...taskData } = t;
+        if (taskData.dueDate && typeof taskData.dueDate === 'string') taskData.dueDate = new Date(taskData.dueDate);
+        if (taskData.startDate && typeof taskData.startDate === 'string') taskData.startDate = new Date(taskData.startDate);
+        if (taskData.completedAt && typeof taskData.completedAt === 'string') taskData.completedAt = new Date(taskData.completedAt);
+        if (taskData.repeatEndDate && typeof taskData.repeatEndDate === 'string') taskData.repeatEndDate = new Date(taskData.repeatEndDate);
         
         const existingTask = existingMap.get(key);
         if (existingTask) {
