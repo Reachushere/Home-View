@@ -5076,6 +5076,30 @@ export default function Dashboard() {
   }, [semesterSettings]);
 
   useEffect(() => {
+    try {
+      const cd = localStorage.getItem('certCourseData');
+      if (!cd) return;
+      const savedData = JSON.parse(cd);
+      let changed = false;
+      for (const course of coursesData.courses) {
+        if (!course.name?.trim()) continue;
+        const code = course.name.split(' - ')[0]?.trim();
+        if (savedData[code] && course.color) {
+          if (savedData[code].color !== course.color || savedData[code].colorEnd !== (course.colorEnd || '')) {
+            savedData[code].color = course.color;
+            savedData[code].colorEnd = course.colorEnd || '';
+            changed = true;
+          }
+        }
+      }
+      if (changed) {
+        localStorage.setItem('certCourseData', JSON.stringify(savedData));
+        saveDegreeToServer('certCourseData', savedData);
+      }
+    } catch {}
+  }, [coursesData]);
+
+  useEffect(() => {
     const synced = sessionStorage.getItem('professorContactsSynced');
     if (synced) return;
     sessionStorage.setItem('professorContactsSynced', '1');
