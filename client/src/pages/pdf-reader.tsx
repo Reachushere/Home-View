@@ -2531,6 +2531,9 @@ export default function PDFReaderPage() {
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
               </button>
+              <button className="p-3 rounded-full hover:bg-white/10" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning" data-testid="button-restart-inline">
+                <RotateCcw className="h-5 w-5 text-white" />
+              </button>
               <button className="p-3 rounded-full hover:bg-white/10" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
                 <Square className="h-5 w-5 text-white fill-white" />
               </button>
