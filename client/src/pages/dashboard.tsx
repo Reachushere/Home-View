@@ -5076,6 +5076,22 @@ export default function Dashboard() {
   }, [semesterSettings]);
 
   useEffect(() => {
+    const synced = sessionStorage.getItem('professorContactsSynced');
+    if (synced) return;
+    sessionStorage.setItem('professorContactsSynced', '1');
+    for (const course of coursesData.courses) {
+      if (course.professor?.trim()) {
+        const code = course.name.split(' - ')[0]?.trim();
+        fetch('/api/key-contacts/sync-professor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ professorName: course.professor, professorEmail: course.professorEmail, courseCode: code }),
+        }).catch(() => {});
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
 
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));

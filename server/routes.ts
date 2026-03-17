@@ -2129,6 +2129,44 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  app.post("/api/key-contacts/sync-professor", async (req, res) => {
+    try {
+      const { professorName, professorEmail, courseCode } = req.body;
+      if (!professorName?.trim()) {
+        return res.json({ synced: false, reason: 'no name' });
+      }
+      const existing = await storage.getKeyContacts();
+      const match = existing.find(c => 
+        c.category === 'professor' && (
+          (c.email && professorEmail && c.email.toLowerCase() === professorEmail.toLowerCase()) ||
+          c.name.toLowerCase() === professorName.toLowerCase()
+        )
+      );
+      if (match) {
+        const updates: Record<string, string> = {};
+        if (professorEmail && match.email !== professorEmail) updates.email = professorEmail;
+        if (courseCode && (!match.organization || !match.organization.includes(courseCode))) {
+          updates.organization = match.organization ? `${match.organization}, ${courseCode}` : courseCode;
+        }
+        if (Object.keys(updates).length > 0) {
+          await storage.updateKeyContact(match.id, updates);
+        }
+        res.json({ synced: true, action: 'updated', id: match.id });
+      } else {
+        const created = await storage.createKeyContact({
+          name: professorName.trim(),
+          email: professorEmail?.trim() || null,
+          category: 'professor',
+          organization: courseCode || null,
+        });
+        res.json({ synced: true, action: 'created', id: created.id });
+      }
+    } catch (err) {
+      console.error("Error syncing professor to contacts:", err);
+      res.status(500).json({ error: "Failed to sync professor" });
+    }
+  });
+
   app.post("/api/semester-reset-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();

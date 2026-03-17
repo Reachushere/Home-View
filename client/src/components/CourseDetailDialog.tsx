@@ -807,6 +807,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       if (onSaveCourseInfo) {
                         onSaveCourseInfo(editInfo);
                       }
+                      if (editInfo.professor?.trim()) {
+                        fetch('/api/key-contacts/sync-professor', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ professorName: editInfo.professor, professorEmail: editInfo.professorEmail, courseCode: courseInfo.courseCode }),
+                        }).catch(() => {});
+                      }
                       setIsEditingInfo(false);
                       toast({ title: "Course info updated" });
                     }}
@@ -1411,6 +1418,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               onClick={() => {
                 if (onSaveCourseInfo) {
                   onSaveCourseInfo(editInfo);
+                }
+                if (editInfo.professor?.trim()) {
+                  fetch('/api/key-contacts/sync-professor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ professorName: editInfo.professor, professorEmail: editInfo.professorEmail, courseCode: courseInfo.courseCode }),
+                  }).catch(() => {});
                 }
                 onClose();
               }}
