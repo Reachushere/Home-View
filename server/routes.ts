@@ -6165,7 +6165,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
 
       let chunksPlayedSinceLastPrompt = 0;
-      const ATTENTION_INTERVAL = 5;
+      const ATTENTION_INTERVAL = 3;
 
       for (let i = startChunk; i < chunks.length; i++) {
         if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
