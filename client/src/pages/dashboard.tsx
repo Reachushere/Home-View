@@ -11724,7 +11724,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3}px`, zIndex: 70 }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -17522,7 +17522,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
-          <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip', height: 'calc(100% - 2px)', width: 'calc(100% - 1px)', marginLeft: '1px', marginTop: '1px' }}>
+          <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'clip', height: 'calc(100% - 2px)', width: 'calc(100%)', marginLeft: '1px', marginTop: '1px' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
@@ -19454,7 +19454,7 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <button
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 3}px`, bottom: `${calendarBottom - 18}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: 0, pointerEvents: 'auto' }}
+            style={{ position: 'fixed', right: `${calendarRight + calendarReduction}px`, bottom: `${calendarBottom - 18}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: 0, pointerEvents: 'auto' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
