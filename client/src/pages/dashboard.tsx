@@ -3729,7 +3729,11 @@ export default function Dashboard() {
   const isActiveInEarlierLevel = (courseId: string): boolean => {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
-    return prevIds.some(pid => checkedCourses[pid] || inProgressCourses[pid] || !!(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== ''));
+    return prevIds.some(pid => {
+      if (!checkedCourses[pid] && !inProgressCourses[pid] && !(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '')) return false;
+      if (checkedCourses[pid] && !inProgressCourses[pid] && !(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '') && isSectionFulfilledForCourse(pid)) return false;
+      return true;
+    });
   };
 
   const isActiveInOtherLevel = (courseId: string): boolean => {
@@ -3742,6 +3746,7 @@ export default function Dashboard() {
     return prevIds.some(pid => {
       const pidCompleted = checkedCourses[pid] || !!(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '');
       if (!pidCompleted) return false;
+      if (checkedCourses[pid] && !(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '') && !inProgressCourses[pid] && isSectionFulfilledForCourse(pid)) return false;
       if (isActiveInLaterLevel(pid)) return false;
       return true;
     });
