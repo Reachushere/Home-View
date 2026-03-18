@@ -4682,29 +4682,127 @@ export default function Dashboard() {
     });
   };
 
-  // Handle sticky note drag
+  // Handle sticky note drag - refs for RAF-based smooth dragging
+  const stickyDragRafRef = useRef<number | null>(null);
+  const stickyDragElRef = useRef<HTMLElement | null>(null);
+  const stickyDragPendingPos = useRef<{ x: number; y: number } | null>(null);
+
   const handleStickyNotePointerDown = (e: React.MouseEvent | React.TouchEvent, noteId: number, note: StickyNoteType) => {
     e.preventDefault();
     const { clientX, clientY } = getPointerXY(e);
-    setDraggingStickyNote(noteId);
     draggingStickyNoteRef.current = noteId;
     
-    const rect = (e.target as HTMLElement).closest('[data-sticky-note]')?.getBoundingClientRect();
-    if (rect) {
-      const offset = { x: clientX - rect.left, y: clientY - rect.top };
-      setStickyNoteOffset(offset);
-      stickyNoteOffsetRef.current = offset;
-      
-      const initialPos = { x: note.positionX, y: note.positionY };
-      setDragPosition(initialPos);
-      dragPositionRef.current = initialPos;
-      const el = document.querySelector(`[data-sticky-note-id="${noteId}"]`) as HTMLElement;
-      if (el) {
-        el.style.left = `${note.positionX}px`;
-        el.style.top = `${note.positionY}px`;
-      }
+    const el = (e.target as HTMLElement).closest('[data-sticky-note]') as HTMLElement;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      stickyNoteOffsetRef.current = { x: clientX - rect.left, y: clientY - rect.top };
+      dragPositionRef.current = { x: note.positionX, y: note.positionY };
+      stickyDragElRef.current = el;
+      el.style.zIndex = '10000';
+      el.style.transition = 'none';
     }
-    // Bring to front and restore size if it was snapped (small)
+
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      if (draggingStickyNoteRef.current === null) return;
+      if ('touches' in ev) ev.preventDefault();
+      const { clientX: cx, clientY: cy } = getPointerXY(ev);
+      const offset = stickyNoteOffsetRef.current;
+      const newX = Math.max(0, cx - offset.x);
+      const newY = Math.max(0, cy - offset.y);
+      dragPositionRef.current = { x: newX, y: newY };
+      stickyDragPendingPos.current = { x: newX, y: newY };
+      if (stickyDragRafRef.current === null) {
+        stickyDragRafRef.current = requestAnimationFrame(() => {
+          stickyDragRafRef.current = null;
+          const pos = stickyDragPendingPos.current;
+          const dragEl = stickyDragElRef.current;
+          if (pos && dragEl) {
+            dragEl.style.left = `${pos.x}px`;
+            dragEl.style.top = `${pos.y}px`;
+          }
+        });
+      }
+    };
+
+    const onUp = (ev: MouseEvent | TouchEvent) => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+      if (stickyDragRafRef.current !== null) {
+        cancelAnimationFrame(stickyDragRafRef.current);
+        stickyDragRafRef.current = null;
+      }
+
+      const currentDragPosition = dragPositionRef.current;
+      const currentNoteId = draggingStickyNoteRef.current;
+
+      if (currentNoteId !== null && currentDragPosition !== null) {
+        if (allDayRowRef.current) {
+          const allDayRect = allDayRowRef.current.getBoundingClientRect();
+          const { clientX: mouseX, clientY: mouseY } = getPointerXY(ev);
+          if (mouseY >= allDayRect.top - 20 && mouseY <= allDayRect.bottom + 20 && 
+              mouseX >= allDayRect.left && mouseX <= allDayRect.right) {
+            const today = startOfDay(new Date());
+            const weekStart = startOfWeek(today, { weekStartsOn: 6 });
+            const todayIdx = Math.floor((today.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24));
+            const targetIdx = Math.max(0, todayIdx - 1);
+            const targetDate = new Date(weekStart);
+            targetDate.setDate(targetDate.getDate() + targetIdx);
+            const dateStr = format(targetDate, "yyyy-MM-dd");
+            const targetCell = document.querySelector(`[data-testid="all-day-slot-${dateStr}"]`);
+            if (targetCell) {
+              const cellRect = targetCell.getBoundingClientRect();
+              const snapWidth = Math.round(cellRect.width - 4);
+              const snapHeight = Math.round(cellRect.height - 4);
+              const clamped = clampPosition(cellRect.left + 2, cellRect.top + 2, snapWidth, snapHeight);
+              updateStickyNoteMutation.mutate({ 
+                id: currentNoteId, 
+                updates: { 
+                  positionX: Math.round(clamped.x),
+                  positionY: Math.round(clamped.y),
+                  width: snapWidth,
+                  height: snapHeight,
+                  lastMovedAt: new Date(),
+                  homePositionX: Math.round(clamped.x),
+                  homePositionY: Math.round(clamped.y)
+                } 
+              });
+              draggingStickyNoteRef.current = null;
+              stickyDragElRef.current = null;
+              dragPositionRef.current = null;
+              setDraggingStickyNote(null);
+              return;
+            }
+          }
+        }
+        const currentNote = stickyNotes?.find(n => n.id === currentNoteId);
+        const wasSnapped = currentNote && (currentNote.width < 200 || currentNote.height < 200);
+        const noteW = wasSnapped ? 271 : (currentNote?.width || 271);
+        const noteH = wasSnapped ? 250 : (currentNote?.height || 250);
+        const clampedPos = clampPosition(currentDragPosition.x, currentDragPosition.y, noteW, noteH);
+        updateStickyNoteMutation.mutate({ 
+          id: currentNoteId, 
+          updates: { 
+            positionX: Math.round(clampedPos.x),
+            positionY: Math.round(clampedPos.y),
+            ...(wasSnapped ? { width: 271, height: 250 } : {}),
+            lastMovedAt: new Date() 
+          } 
+        });
+      }
+      draggingStickyNoteRef.current = null;
+      stickyDragElRef.current = null;
+      dragPositionRef.current = null;
+      setDraggingStickyNote(null);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+
+    setDraggingStickyNote(noteId);
     const newZIndex = maxStickyZIndex + 1;
     setMaxStickyZIndex(newZIndex);
     const wasSnapped = note.width < 200 || note.height < 200;
@@ -4716,118 +4814,6 @@ export default function Dashboard() {
       } 
     });
   };
-
-  const handleStickyNotePointerMove = useCallback((e: MouseEvent | TouchEvent) => {
-    if (draggingStickyNoteRef.current !== null) {
-      if ('touches' in e) e.preventDefault();
-      const { clientX, clientY } = getPointerXY(e);
-      const offset = stickyNoteOffsetRef.current;
-      const newX = Math.max(0, clientX - offset.x);
-      const newY = Math.max(0, clientY - offset.y);
-      const newPos = { x: newX, y: newY };
-      dragPositionRef.current = newPos;
-      const el = document.querySelector(`[data-sticky-note-id="${draggingStickyNoteRef.current}"]`) as HTMLElement;
-      if (el) {
-        el.style.left = `${newX}px`;
-        el.style.top = `${newY}px`;
-      }
-    }
-  }, []);
-
-  const handleStickyNotePointerUp = useCallback((e: MouseEvent | TouchEvent) => {
-    const currentDragPosition = dragPositionRef.current;
-    const currentNoteId = draggingStickyNoteRef.current;
-    
-    // Mark the note as moved with current timestamp
-    if (currentNoteId !== null && currentDragPosition !== null) {
-      // Check if dropped in all-day row area - snap to cell left of today
-      if (allDayRowRef.current) {
-        const allDayRect = allDayRowRef.current.getBoundingClientRect();
-        const { clientX: mouseX, clientY: mouseY } = getPointerXY(e);
-        
-        // Check if mouse is within the all-day row area (with some tolerance)
-        if (mouseY >= allDayRect.top - 20 && mouseY <= allDayRect.bottom + 20 && 
-            mouseX >= allDayRect.left && mouseX <= allDayRect.right) {
-          
-          // Find today's column index (0-6)
-          const today = startOfDay(new Date());
-          const weekStart = startOfWeek(today, { weekStartsOn: 6 }); // Saturday start
-          const todayIdx = Math.floor((today.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24));
-          
-          // Target is day before today (or today if it's Saturday)
-          const targetIdx = Math.max(0, todayIdx - 1);
-          
-          // Find the target cell by looking for the all-day slot element
-          const targetDate = new Date(weekStart);
-          targetDate.setDate(targetDate.getDate() + targetIdx);
-          const dateStr = format(targetDate, "yyyy-MM-dd");
-          const targetCell = document.querySelector(`[data-testid="all-day-slot-${dateStr}"]`);
-          
-          if (targetCell) {
-            const cellRect = targetCell.getBoundingClientRect();
-            const snapWidth = Math.round(cellRect.width - 4);
-            const snapHeight = Math.round(cellRect.height - 4);
-            const clamped = clampPosition(cellRect.left + 2, cellRect.top + 2, snapWidth, snapHeight);
-            
-            updateStickyNoteMutation.mutate({ 
-              id: currentNoteId, 
-              updates: { 
-                positionX: Math.round(clamped.x),
-                positionY: Math.round(clamped.y),
-                width: snapWidth,
-                height: snapHeight,
-                lastMovedAt: new Date(),
-                homePositionX: Math.round(clamped.x),
-                homePositionY: Math.round(clamped.y)
-              } 
-            });
-            setDraggingStickyNote(null);
-            draggingStickyNoteRef.current = null;
-            setDragPosition(null);
-            dragPositionRef.current = null;
-            return;
-          }
-        }
-      }
-      
-      // Check if note was previously snapped (small size) and reset to default size
-      const currentNote = stickyNotes?.find(n => n.id === currentNoteId);
-      const wasSnapped = currentNote && (currentNote.width < 200 || currentNote.height < 200);
-      
-      // Save final position to database, resizing to default if it was snapped
-      const noteW = wasSnapped ? 271 : (currentNote?.width || 271);
-      const noteH = wasSnapped ? 250 : (currentNote?.height || 250);
-      const clampedPos = clampPosition(currentDragPosition.x, currentDragPosition.y, noteW, noteH);
-      updateStickyNoteMutation.mutate({ 
-        id: currentNoteId, 
-        updates: { 
-          positionX: Math.round(clampedPos.x),
-          positionY: Math.round(clampedPos.y),
-          ...(wasSnapped ? { width: 271, height: 250 } : {}),
-          lastMovedAt: new Date() 
-        } 
-      });
-    }
-    setDraggingStickyNote(null);
-    draggingStickyNoteRef.current = null;
-    setDragPosition(null);
-    dragPositionRef.current = null;
-  }, [updateStickyNoteMutation, stickyNotes]);
-
-  useEffect(() => {
-    if (draggingStickyNote !== null) {
-      window.addEventListener('mousemove', handleStickyNotePointerMove);
-      window.addEventListener('mouseup', handleStickyNotePointerUp);
-      window.addEventListener('touchmove', handleStickyNotePointerMove, { passive: false });
-      window.addEventListener('touchend', handleStickyNotePointerUp);
-      return () => {
-        window.removeEventListener('mousemove', handleStickyNotePointerMove);
-        window.removeEventListener('mouseup', handleStickyNotePointerUp);
-        window.removeEventListener('touchmove', handleStickyNotePointerMove);
-        window.removeEventListener('touchend', handleStickyNotePointerUp);
-      };
-    }
-  }, [draggingStickyNote, handleStickyNotePointerMove, handleStickyNotePointerUp]);
 
   // Auto-return sticky notes to home position after 2 hours
   useEffect(() => {

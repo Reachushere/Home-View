@@ -181,15 +181,14 @@ const StickyNoteItem = memo(function StickyNoteItem({
       data-sticky-note-id={note.id}
       className="fixed shadow-lg rounded-md overflow-hidden"
       style={{
-        ...(isDragging ? {} : { left: `${displayX}px`, top: `${displayY}px` }),
+        left: `${displayX}px`,
+        top: `${displayY}px`,
         width: `${note.width}px`,
         height: note.isMinimized ? '28px' : `${note.height}px`,
         zIndex: isDragging ? 10000 : (note.zIndex || 100),
         backgroundColor: colors.bg,
         border: `1px solid ${colors.border}`,
         pointerEvents: 'auto',
-        willChange: isDragging ? 'left, top' : 'auto',
-        transition: isDragging ? 'none' : undefined,
       }}
       data-testid={`sticky-note-${note.id}`}
     >
