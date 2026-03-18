@@ -18164,22 +18164,6 @@ export default function Dashboard() {
                                 </a>
                               )}
                               </div>
-                              {!task.isCompleted && (() => {
-                                const dueD = startOfDay(new Date(task.dueDate));
-                                const todayD = startOfDay(new Date());
-                                const dUntil = Math.round((dueD.getTime() - todayD.getTime()) / (1000 * 60 * 60 * 24));
-                                const barColor = dUntil <= 0 ? '#ef4444' : dUntil <= 1 ? '#eab308' : dUntil <= 2 ? '#f97316' : '#22c55e';
-                                const barW = Math.min(Math.max(Math.round((dUntil / 14) * 100), 5), 100);
-                                return (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingLeft: '16px', marginTop: '-1px' }}>
-                                    <span style={{ fontSize: '7px', fontWeight: 600, color: barColor, lineHeight: 1 }}>{dUntil <= 0 ? 'DUE' : `${dUntil}d`}</span>
-                                    <div style={{ flex: 1, height: '2px', borderRadius: '1px', backgroundColor: '#e5e7eb', overflow: 'hidden' }}>
-                                      <div style={{ width: `${barW}%`, height: '100%', borderRadius: '1px', backgroundColor: barColor }} />
-                                    </div>
-                                    <span style={{ fontSize: '7px', color: '#888', lineHeight: 1, flexShrink: 0 }}>{format(new Date(task.dueDate), 'MMM d')}</span>
-                                  </div>
-                                );
-                              })()}
                               <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '2px', zIndex: 2 }}>
                                 {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-task-${task.id}`} /> : null; })()}
                                 {dueModulePdfUrl && (
