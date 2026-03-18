@@ -20614,7 +20614,7 @@ export default function Dashboard() {
             zIndex: 35,
             overflow: 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 2}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom + 1}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -20642,7 +20642,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col items-center cursor-pointer"
-            style={{ right: '-16px', bottom: '14px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-15px', bottom: '14px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
@@ -20652,7 +20652,7 @@ export default function Dashboard() {
             >
               <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={4} />
             </div>
-            <div style={{ position: 'absolute', bottom: '54px', right: '5px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
+            <div style={{ position: 'absolute', bottom: '54px', right: '6px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '18px', height: '18px' }}
