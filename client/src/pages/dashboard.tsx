@@ -17414,7 +17414,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-hidden overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, order: 1, paddingTop: '10px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, flexShrink: 0, order: 1, paddingTop: '10px' }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -17546,7 +17546,7 @@ export default function Dashboard() {
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '16px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 100, prev + 30); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 50, prev + 30); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
                 <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
@@ -19477,7 +19477,7 @@ export default function Dashboard() {
             data-testid="calendar-height-resize-handle"
           >
             <div style={{ width: '191px', height: '15px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 100, prev + 30); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 50, prev + 30); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleResizeStart} onTouchStart={handleResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
@@ -20167,7 +20167,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, order: 1, marginLeft: '-4px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, flexShrink: 0, order: 1, marginLeft: '-4px' }}>
           <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 10px)', marginTop: '6px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
