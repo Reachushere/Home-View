@@ -19418,11 +19418,11 @@ export default function Dashboard() {
             data-testid="resize-handle-calendar-right"
           >
             <div style={{ width: '17px', height: '191px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReduction(prev => Math.max(0, prev - 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => Math.max(0, prev - 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleWidthResizeStart} onTouchStart={handleWidthResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReduction(prev => prev + 30); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => prev + 30); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
             </div>
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
@@ -20640,11 +20640,11 @@ export default function Dashboard() {
             data-testid="resize-handle-homework"
           >
             <div style={{ width: '17px', height: '191px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReduction(prev => prev + 30); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => prev + 30); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleWidthResizeStart} onTouchStart={handleWidthResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReduction(prev => Math.max(0, prev - 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => Math.max(0, prev - 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>
           <div
