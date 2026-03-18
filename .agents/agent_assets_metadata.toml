@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "YFf1AFzLkqTG8aZXkvxoF"
+uri = "file://.local/cat-washroom-automation-report.md"
+type = "text"
+title = "Cat Washroom Automation Report"
