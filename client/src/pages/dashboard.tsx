@@ -18209,7 +18209,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFFFF', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFFFF', alignSelf: 'stretch' }}>PREP</span>
+                                  <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFF00', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFF00', alignSelf: 'stretch' }}>PREP</span>
                                   <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
                                   <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '2px', zIndex: 2 }}>
                                     {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-prep-${task.id}`} /> : null; })()}
