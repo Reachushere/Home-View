@@ -7255,9 +7255,7 @@ document.body.removeChild(a);
         }
 
       } catch (e: any) {
-        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message}`);
-        catLightsPromptPending = false;
-        return;
+        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message} — will still wait for confirmation`);
       }
 
       await new Promise(r => setTimeout(r, 2000));
