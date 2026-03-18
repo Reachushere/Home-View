@@ -5547,7 +5547,9 @@ export default function Dashboard() {
       const chunkWordCount = chunkWords.length;
       
       let lastSaveTime = 0;
-      audio.ontimeupdate = () => {
+      let highlightRafId: number | null = null;
+      const pollHighlight = () => {
+        if (!audio || audio.paused || audio.ended) return;
         const now = Date.now();
         if (now - lastSaveTime > 5000) {
           lastSaveTime = now;
@@ -5556,7 +5558,6 @@ export default function Dashboard() {
             saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
           }
         }
-        
         if (audio.duration && audio.duration > 0 && chunkWordCount > 0) {
           const progress = audio.currentTime / audio.duration;
           const estimatedWordIdx = Math.min(
@@ -5565,9 +5566,14 @@ export default function Dashboard() {
           );
           setCurrentWordIndex(wordOffset + estimatedWordIdx);
         }
+        highlightRafId = requestAnimationFrame(pollHighlight);
       };
+      audio.onplay = () => { highlightRafId = requestAnimationFrame(pollHighlight); };
+      audio.onpause = () => { if (highlightRafId) { cancelAnimationFrame(highlightRafId); highlightRafId = null; } };
+      audio.ontimeupdate = null;
       
       audio.onended = () => {
+        if (highlightRafId) { cancelAnimationFrame(highlightRafId); highlightRafId = null; }
         URL.revokeObjectURL(audioUrl);
         setCurrentWordIndex(wordOffset + chunkWordCount - 1);
         const currentFile = previewFileRef.current;
@@ -5601,6 +5607,7 @@ export default function Dashboard() {
       };
       
       audio.onerror = (e) => {
+        if (highlightRafId) { cancelAnimationFrame(highlightRafId); highlightRafId = null; }
         console.error('[TTS audio.onerror]', e);
         URL.revokeObjectURL(audioUrl);
         setIsPlaying(false);
