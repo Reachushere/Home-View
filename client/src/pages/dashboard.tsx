@@ -11749,7 +11749,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '15px', width: '15px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1}px`, zIndex: 70 }}
+          style={{ height: '19px', width: '19px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1}px`, zIndex: 70 }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
@@ -12872,7 +12872,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -17448,7 +17448,7 @@ export default function Dashboard() {
             className="absolute pointer-events-none"
             style={{ 
               top: '-4px', 
-              left: '-16px', 
+              left: '-15px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
               bottom: '-16px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
@@ -20658,8 +20658,8 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             overflow: 'visible',
-            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2}px`,
+            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1}px`,
             top: `${calendarBorderTop || (calendarTop + 15)}px`,
             bottom: `${calendarBottom + 1}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -20674,10 +20674,10 @@ export default function Dashboard() {
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
-            style={{ left: '-17px', bottom: '9px', width: '16px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
+            style={{ left: '-16px', bottom: '9px', width: '15px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '16px', height: '191px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '15px', height: '191px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => prev + 30); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleWidthResizeStart} onTouchStart={handleWidthResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
@@ -20691,7 +20691,7 @@ export default function Dashboard() {
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ position: 'absolute', bottom: '75px', left: '50%', transform: 'translateX(-50%)', width: '18px', height: '18px' }}
+              style={{ position: 'absolute', bottom: '79px', left: '50%', transform: 'translateX(-50%)', width: '18px', height: '18px' }}
               onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
               data-testid="button-homework-scroll-to-top"
             >
