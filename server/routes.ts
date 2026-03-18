@@ -6946,48 +6946,9 @@ document.body.removeChild(a);
         return res.json({ action: "skipped", reason: "Cat lights prompt pending" });
       }
 
-      if (catWashPlaybackActive && catWashPlaybackState) {
-        const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
-        const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-        const msSinceChunkStart = catWashPlaybackState.chunkStartedAt ? Date.now() - catWashPlaybackState.chunkStartedAt.getTime() : 0;
-        const chunkStuck = msSinceChunkStart > 3 * 60 * 1000;
-        const isTabletDriven = catWashPlaybackState.playbackMode !== 'server-tts';
-        let nestActuallyIdle = false;
-        try {
-          const nestResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-          });
-          if (nestResp.ok) {
-            const nestData = await nestResp.json();
-            nestActuallyIdle = nestData.state !== 'playing' && nestData.state !== 'buffering';
-            if (nestActuallyIdle) console.log(`[Cat Wash] Nest speaker is ${nestData.state} — session is stale`);
-          }
-        } catch (e: any) {
-          console.log(`[Cat Wash] Could not check Nest state: ${e.message}`);
-        }
-        const likelyStale = (msSinceStart > 3 * 60 * 1000 && chunkStillAtStart) || chunkStuck || isTabletDriven || nestActuallyIdle;
-
-        if (likelyStale) {
-          console.log(`[Cat Wash] Clearing stale playback (started ${Math.round(msSinceStart / 1000)}s ago, chunk ${catWashPlaybackState.chunkIndex})`);
-          if (nestPlaybackAbort) nestPlaybackAbort();
-          catWashPlaybackActive = false;
-          catWashPlaybackStartedAt = null;
-          catWashPlaybackState = null;
-        } else {
-          console.log(`[Cat Wash] Playback already active: "${catWashPlaybackState.fileName}" — letting it continue`);
-          try {
-            const tvState = await fetch(`${haUrl}/api/states/media_player.fire_tv_172_24_0_88`, {
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-            });
-            if (tvState.ok) {
-              const tvData = await tvState.json();
-              console.log(`[Cat Wash] TV/Fire Stick state: ${tvData.state} — confirmed following`);
-            }
-          } catch (e: any) {
-            console.log(`[Cat Wash] Could not check TV state: ${e.message}`);
-          }
-          return res.json({ action: "skipped", reason: "Playback already active, continuing", currentFile: catWashPlaybackState.fileName });
-        }
+      if (catWashPlaybackActive) {
+        console.log(`[Cat Wash] Playback already active: "${catWashPlaybackState?.fileName}" — skipping retry`);
+        return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState?.fileName });
       }
 
       const semesterSettings = await storage.getActiveSemesterSettings();
