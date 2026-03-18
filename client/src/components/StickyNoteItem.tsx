@@ -172,10 +172,8 @@ const StickyNoteItem = memo(function StickyNoteItem({
     ? { bg: hexToRgba(note.customColor, 0.3), border: note.customColor, header: note.customColor }
     : (NOTE_COLORS[note.color] || NOTE_COLORS.yellow);
 
-  const rawX = isDragging && dragPosition ? dragPosition.x : note.positionX;
-  const rawY = isDragging && dragPosition ? dragPosition.y : note.positionY;
-  const displayX = Math.max(0, Math.min(rawX, window.innerWidth - 50));
-  const displayY = Math.max(0, Math.min(rawY, window.innerHeight - 30));
+  const displayX = Math.max(0, Math.min(note.positionX, window.innerWidth - 50));
+  const displayY = Math.max(0, Math.min(note.positionY, window.innerHeight - 30));
 
   return (
     <div
@@ -183,8 +181,7 @@ const StickyNoteItem = memo(function StickyNoteItem({
       data-sticky-note-id={note.id}
       className="fixed shadow-lg rounded-md overflow-hidden"
       style={{
-        left: `${displayX}px`,
-        top: `${displayY}px`,
+        ...(isDragging ? {} : { left: `${displayX}px`, top: `${displayY}px` }),
         width: `${note.width}px`,
         height: note.isMinimized ? '28px' : `${note.height}px`,
         zIndex: isDragging ? 10000 : (note.zIndex || 100),

@@ -4698,6 +4698,11 @@ export default function Dashboard() {
       const initialPos = { x: note.positionX, y: note.positionY };
       setDragPosition(initialPos);
       dragPositionRef.current = initialPos;
+      const el = document.querySelector(`[data-sticky-note-id="${noteId}"]`) as HTMLElement;
+      if (el) {
+        el.style.left = `${note.positionX}px`;
+        el.style.top = `${note.positionY}px`;
+      }
     }
     // Bring to front and restore size if it was snapped (small)
     const newZIndex = maxStickyZIndex + 1;
@@ -18662,19 +18667,32 @@ export default function Dashboard() {
                       );
                     })}
                     {/* All-day Google Calendar events */}
-                    {allDayEvents.map(event => (
-                      <a
-                        key={event.id}
-                        href={event.htmlLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0"
-                        data-testid={`all-day-gcal-${event.id}`}
-                      >
-                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
-                      </a>
-                    ))}
+                    {allDayEvents.map(event => {
+                      const isPrepEvent = event.title.startsWith('[PREP]');
+                      const displayTitle = isPrepEvent ? event.title.replace(/^\[PREP\]\s*/, '') : event.title;
+                      return (
+                        <a
+                          key={event.id}
+                          href={event.htmlLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0' : 'gap-1 px-1'} bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500`}
+                          data-testid={`all-day-gcal-${event.id}`}
+                        >
+                          {isPrepEvent ? (
+                            <>
+                              <span className="bg-black flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ color: '#FFFF00', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #FFFF00', alignSelf: 'stretch' }}>PREP</span>
+                              <span className="truncate font-bold flex-1 min-w-0 pl-1">{displayTitle}</span>
+                            </>
+                          ) : (
+                            <>
+                              <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
+                              <span className="truncate font-bold flex-1 min-w-0">{displayTitle}</span>
+                            </>
+                          )}
+                        </a>
+                      );
+                    })}
                     {/* Projects with target date on this day */}
                     {getProjectsForDay(day).map(project => {
                       const isCompleted = project.status === 'completed';
