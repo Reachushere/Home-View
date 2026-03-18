@@ -1193,6 +1193,7 @@ export default function PDFReaderPage() {
     }
   };
 
+  const skipCheckedReloadRef = useRef(false);
   const startReading = async () => {
     beacon("startReading-begin", { fileId });
     await unlockAudio();
@@ -1241,19 +1242,24 @@ export default function PDFReaderPage() {
     setChunksList(newChunks);
     setTotalChunks(newChunks.length);
     const key = getFileKey();
-    let serverChecked = new Set<number>();
-    if (file?.checkedChunks) {
-      try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+    if (skipCheckedReloadRef.current) {
+      skipCheckedReloadRef.current = false;
+    } else {
+      let serverChecked = new Set<number>();
+      if (file?.checkedChunks) {
+        try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+      }
+      const finalChecked = serverChecked.size > 0 ? serverChecked : new Set<number>();
+      setCheckedChunks(finalChecked);
+      if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, newChunks.length);
     }
-    const finalChecked = serverChecked.size > 0 ? serverChecked : new Set<number>();
-    setCheckedChunks(finalChecked);
-    if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, newChunks.length);
+    const mergedForStart = checkedChunks;
     let startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
-    if (finalChecked.size > 0 && startChunk === 0) {
-      const firstUnchecked = newChunks.findIndex((_, idx) => !finalChecked.has(idx));
+    if (mergedForStart.size > 0 && startChunk === 0) {
+      const firstUnchecked = newChunks.findIndex((_, idx) => !mergedForStart.has(idx));
       if (firstUnchecked >= 0) {
         startChunk = firstUnchecked;
-        console.log(`[TTS] Skipping ${finalChecked.size} checked chunks, starting at chunk ${startChunk}`);
+        console.log(`[TTS] Skipping ${mergedForStart.size} checked chunks, starting at chunk ${startChunk}`);
       }
     }
     if (startChunk > 0) {
@@ -1579,6 +1585,7 @@ export default function PDFReaderPage() {
         console.error(`[Reset] Failed to clear server progress:`, e);
       }
     }
+    skipCheckedReloadRef.current = true;
     startReading();
   };
 
