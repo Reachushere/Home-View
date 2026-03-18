@@ -11757,7 +11757,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '19px', width: '19px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1}px`, zIndex: 70 }}
+          style={{ height: '18px', width: '18px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1}px`, zIndex: 70 }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
