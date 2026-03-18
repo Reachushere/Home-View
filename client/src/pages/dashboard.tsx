@@ -19411,12 +19411,10 @@ export default function Dashboard() {
             style={{ position: 'absolute', left: '-4px', top: '-27px', width: '186px', height: '13px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-top-resize-handle"
           >
-            <div style={{ width: '186px', height: '13px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 8px' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)))}>▲</span>
-              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 8px' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.max(200, prev - 30)))}>▼</span>
-              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0, margin: '0 4px' }} />
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 6px', writingMode: 'vertical-lr' }}>⋮⋮</span>
+            <div style={{ width: '186px', height: '13px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)))}>▲</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={() => startTransition(() => setCalendarHeight(prev => Math.max(200, prev - 30)))}>▼</span>
             </div>
           </div>
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
@@ -19425,12 +19423,10 @@ export default function Dashboard() {
             style={{ position: 'absolute', right: '-13px', top: '11px', width: '13px', height: '186px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ width: '13px', height: '186px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', padding: '2px 0 10px 0' }}>⋮⋮</span>
-              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0, margin: '4px 0' }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '8px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30)))}>▶</span>
-              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '8px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => prev + 30))}>◀</span>
+            <div style={{ width: '13px', height: '186px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={() => startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30)))}>▶</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={() => startTransition(() => setCalendarReduction(prev => prev + 30))}>◀</span>
             </div>
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
@@ -19438,12 +19434,10 @@ export default function Dashboard() {
             style={{ position: 'absolute', left: '50%', bottom: '-13px', transform: 'translateX(-50%)', width: '186px', height: '13px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '186px', height: '13px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 8px' }} onClick={(e) => { e.stopPropagation(); setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)); }}>▼</span>
-              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '0 8px' }} onClick={(e) => { e.stopPropagation(); setCalendarHeight(prev => Math.max(200, prev - 30)); }}>▲</span>
-              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0, margin: '0 4px' }} />
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', padding: '0 2px 0 6px', writingMode: 'vertical-lr' }}>⋮⋮</span>
+            <div style={{ width: '186px', height: '13px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={(e) => { e.stopPropagation(); setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)); }}>▼</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={(e) => { e.stopPropagation(); setCalendarHeight(prev => Math.max(200, prev - 30)); }}>▲</span>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -20648,12 +20642,10 @@ export default function Dashboard() {
             style={{ left: '-14px', bottom: '16px', width: '13px', height: '186px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '13px', height: '186px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px', backdropFilter: 'blur(8px)' }}>
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '8px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => prev + 30))}>◀</span>
-              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000', padding: '8px 0' }} onClick={() => startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30)))}>▶</span>
-              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0, margin: '4px 0' }} />
-              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', padding: '10px 0 2px 0' }}>⋮⋮</span>
+            <div style={{ width: '13px', height: '186px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', backdropFilter: 'blur(8px)' }}>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={() => startTransition(() => setCalendarReduction(prev => prev + 30))}>◀</span>
+              <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span>
+              <span className="cursor-pointer" style={{ fontSize: '8px', lineHeight: '1', color: '#000' }} onClick={() => startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30)))}>▶</span>
             </div>
           </div>
           <div
