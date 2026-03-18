@@ -17406,7 +17406,7 @@ export default function Dashboard() {
               top: '-4px', 
               left: '-16px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
-              bottom: '-11px', 
+              bottom: '-21px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.5)',
@@ -20832,27 +20832,36 @@ export default function Dashboard() {
                       if (tc !== cCode || t.isCompleted) return false;
                       const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
                       if (!knownCourseCodes.includes(tc)) return false;
-                      if (t.weekNumber !== undefined && t.weekNumber !== null) return t.weekNumber === selectedWeek;
-                      if (semesterSettings?.semesterStartDate) {
-                        const taskWeek = getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart);
-                        return taskWeek === selectedWeek;
-                      }
-                      return false;
+                      return true;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-                    if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No items for Week {selectedWeek}</span>;
-                    const isCFNF = cCode.startsWith('CFNF');
-                    const isCASL = cCode.startsWith('CASL');
+                    if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No tasks</span>;
                     const textColor = '#ffffff';
                     const dateColor = '#ffffff';
+                    let firstSelectedWeekIdx = -1;
                     return courseTasks.map((t, tIdx) => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
+                      const taskWeek = (t.weekNumber !== undefined && t.weekNumber !== null) ? t.weekNumber : (semesterSettings?.semesterStartDate ? getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null);
+                      const isSelectedWeek = taskWeek === selectedWeek;
+                      if (isSelectedWeek && firstSelectedWeekIdx === -1) firstSelectedWeekIdx = tIdx;
                       return (
                         <div
                           key={t.id}
                           className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
+                          data-hw-week={taskWeek}
+                          ref={isSelectedWeek && firstSelectedWeekIdx === tIdx ? (el) => {
+                            if (el) {
+                              requestAnimationFrame(() => {
+                                const parent = el.parentElement;
+                                if (parent) {
+                                  parent.scrollTop = el.offsetTop - 2;
+                                }
+                              });
+                            }
+                          } : undefined}
                           style={{
                             lineHeight: '1.3',
                             marginBottom: '1px',
+                            opacity: isSelectedWeek ? 1 : 0.45,
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
