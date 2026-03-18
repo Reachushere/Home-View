@@ -19419,10 +19419,10 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            style={{ position: 'absolute', left: '50%', bottom: '-15px', transform: 'translateX(-50%)', width: '191px', height: '16px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
+            style={{ position: 'absolute', left: '50%', bottom: '-14px', transform: 'translateX(-50%)', width: '191px', height: '15px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '191px', height: '16px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '191px', height: '15px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} onClick={(e) => { e.stopPropagation(); setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
@@ -20642,7 +20642,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col items-center cursor-pointer"
-            style={{ right: '-15px', bottom: '14px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-17px', bottom: '14px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
@@ -20652,7 +20652,7 @@ export default function Dashboard() {
             >
               <ChevronUp style={{ width: '13px', height: '13px', color: 'white' }} strokeWidth={4} />
             </div>
-            <div style={{ position: 'absolute', bottom: '54px', right: '6px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
+            <div style={{ position: 'absolute', bottom: '54px', right: '4px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center"
               style={{ width: '18px', height: '18px' }}
