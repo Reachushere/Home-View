@@ -283,11 +283,17 @@ async function generateAndSaveTTSAudio(text: string, fileId: string, voice: stri
   const bucket = objectStorageClient.bucket(bucketName);
   const file = bucket.file(objectName);
   
-  await file.save(audioBuffer, {
-    contentType: 'audio/mpeg',
-    metadata: {
-      cacheControl: 'public, max-age=3600',
-    },
+  await new Promise<void>((resolve, reject) => {
+    const stream = file.createWriteStream({
+      contentType: 'audio/mpeg',
+      metadata: {
+        cacheControl: 'public, max-age=3600',
+      },
+      resumable: false,
+    });
+    stream.on('finish', () => resolve());
+    stream.on('error', (err: any) => reject(err));
+    stream.end(audioBuffer);
   });
   
   // Return a proxy URL through the app (object storage public access is blocked)
