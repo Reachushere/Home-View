@@ -703,7 +703,12 @@ export default function Dashboard() {
       return next;
     });
   };
-  const [calendarReductionUserSet, setCalendarReductionUserSet] = useState(() => !!localStorage.getItem('calendarReduction'));
+  const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => !!localStorage.getItem('calendarReduction'));
+  const calendarReductionUserSetRef = useRef(calendarReductionUserSet);
+  const setCalendarReductionUserSet = (val: boolean) => {
+    calendarReductionUserSetRef.current = val;
+    setCalendarReductionUserSetRaw(val);
+  };
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
@@ -1776,6 +1781,9 @@ export default function Dashboard() {
     };
     const saved = localStorage.getItem('checkedCourses');
     const existing = saved ? JSON.parse(saved) : {};
+    delete existing['OPEN1'];
+    delete existing['OPEN2'];
+    delete existing['L2_OPEN1'];
     const merged = { ...existing, ...completedDefaults };
     localStorage.setItem('checkedCourses', JSON.stringify(merged));
     return merged;
@@ -8574,7 +8582,7 @@ export default function Dashboard() {
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
         const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
-        if (!calendarReductionUserSet) {
+        if (!calendarReductionUserSetRef.current) {
           setCalendarReduction(prev => prev === reduction ? prev : reduction);
         }
         const origLeft = Math.round(rect.left - Math.max(0, curReduction - 3));
