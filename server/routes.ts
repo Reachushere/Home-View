@@ -5722,6 +5722,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
     console.log(`${logPrefix} Will resume from chunk ${resumeFromChunk} (saved: ${savedChunk})`);
 
+    if (savedChunk > 0 && resumeFromChunk < savedChunk) {
+      try {
+        let currentChecked: number[] = [];
+        if (fileToPlay.checkedChunks) {
+          try { currentChecked = JSON.parse(fileToPlay.checkedChunks); } catch {}
+        }
+        const contextIdx = resumeFromChunk;
+        if (currentChecked.includes(contextIdx)) {
+          currentChecked = currentChecked.filter(c => c !== contextIdx);
+          await storage.updateFile(fileToPlay.id, { checkedChunks: JSON.stringify(currentChecked) });
+          console.log(`${logPrefix} Removed checkmark from context chunk ${contextIdx} for replay`);
+        }
+      } catch (e: any) {
+        console.log(`${logPrefix} Error removing context chunk checkmark: ${e.message}`);
+      }
+    }
+
     const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
     const tvFollowUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
 
@@ -6192,7 +6209,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           chunksPlayedSinceLastPrompt++;
 
           if (fileId) {
-            try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
+            const existingFile = await storage.getFile(fileId);
+            let currentChecked: number[] = [];
+            if (existingFile?.checkedChunks) {
+              try { currentChecked = JSON.parse(existingFile.checkedChunks); } catch {}
+            }
+            if (!currentChecked.includes(i)) {
+              currentChecked.push(i);
+              currentChecked.sort((a, b) => a - b);
+            }
+            try {
+              await storage.updateFile(fileId, {
+                lastChunkIndex: i,
+                checkedChunks: JSON.stringify(currentChecked),
+              });
+              console.log(`[Nest Playback] Saved chunk ${i} as checked (${currentChecked.length}/${chunks.length} total)`);
+            } catch {}
           }
         } catch (chunkErr: any) {
           console.error(`[Nest Playback] Error on chunk ${i + 1}: ${chunkErr.message}`);
@@ -6202,7 +6234,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       if (!aborted && catWashPlaybackActive && catWashSessionId === sessionId) {
         console.log(`[Nest Playback] All chunks complete for "${fileName}"`);
-        try { await storage.updateFile(fileId, { listened: true, lastChunkIndex: chunks.length }); } catch {}
+        const allChecked = Array.from({ length: chunks.length }, (_, i) => i);
+        try { await storage.updateFile(fileId, { listened: true, lastChunkIndex: chunks.length, checkedChunks: JSON.stringify(allChecked) }); } catch {}
 
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
@@ -7160,7 +7193,7 @@ document.body.removeChild(a);
       const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
 
       if (!nextFile) {
-        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
+        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
         catLightsPromptPending = false;
         await playChumFmRadio(haUrl);
         return;
