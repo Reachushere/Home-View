@@ -7255,37 +7255,29 @@ document.body.removeChild(a);
         }
 
       } catch (e: any) {
-        console.error(`[Cat Lights] Failed to send TTS prompt (attempt 1): ${e.message} — retrying`);
-        let ttsSuccess = false;
-        for (let retry = 2; retry <= 5; retry++) {
-          await new Promise(r => setTimeout(r, 2000));
-          try {
-            const lightCheck = await fetch(`${haUrl}/api/states/light.cat_lights`, { headers: haHeaders });
-            if (lightCheck.ok) {
-              const ld = await lightCheck.json();
-              if (ld?.state === 'off') {
-                console.log(`[Cat Lights] Light turned off during TTS retry — aborting`);
-                catLightsPromptPending = false;
-                return;
-              }
+        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message} — retrying in 10s`);
+        await new Promise(r => setTimeout(r, 10000));
+        try {
+          const lightCheck = await fetch(`${haUrl}/api/states/light.cat_lights`, { headers: haHeaders });
+          if (lightCheck.ok) {
+            const ld = await lightCheck.json();
+            if (ld?.state === 'off') {
+              console.log(`[Cat Lights] Light turned off during TTS retry — aborting`);
+              catLightsPromptPending = false;
+              return;
             }
-          } catch {}
-          try {
-            console.log(`[Cat Lights] TTS retry attempt ${retry}/5...`);
-            const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-retry-${Date.now()}`);
-            await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
-            });
-            console.log(`[Cat Lights] TTS prompt sent on retry ${retry}`);
-            ttsSuccess = true;
-            break;
-          } catch (retryErr: any) {
-            console.error(`[Cat Lights] TTS retry ${retry} failed: ${retryErr.message}`);
           }
-        }
-        if (!ttsSuccess) {
-          console.error(`[Cat Lights] All TTS retries failed — falling back to CHUM FM`);
+        } catch {}
+        try {
+          console.log(`[Cat Lights] TTS retry attempt 2/2...`);
+          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-retry-${Date.now()}`);
+          await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+          });
+          console.log(`[Cat Lights] TTS prompt sent on retry`);
+        } catch (retryErr: any) {
+          console.error(`[Cat Lights] TTS retry also failed: ${retryErr.message} — falling back to CHUM FM`);
           catLightsPromptPending = false;
           await playChumFmRadio(haUrl);
           return;
