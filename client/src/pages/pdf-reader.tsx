@@ -2494,7 +2494,15 @@ export default function PDFReaderPage() {
                 <button
                   className="rounded-full bg-red-600 hover:bg-red-500"
                   style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,100,100,0.5)', outlineOffset: '3px' }}
-                  onClick={() => fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null))}
+                  onClick={() => {
+                    fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null));
+                    try {
+                      const utterance = new SpeechSynthesisUtterance('Stop received');
+                      utterance.rate = 1.1;
+                      utterance.volume = 0.8;
+                      speechSynthesis.speak(utterance);
+                    } catch {}
+                  }}
                   data-testid="button-stop-catwash"
                 >
                   <Square className="h-10 w-10 text-white fill-white" />
@@ -2588,7 +2596,19 @@ export default function PDFReaderPage() {
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
+              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={() => {
+                if (catWashFollow && followState?.active) {
+                  fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null));
+                  try {
+                    const utterance = new SpeechSynthesisUtterance('Stop received');
+                    utterance.rate = 1.1;
+                    utterance.volume = 0.8;
+                    speechSynthesis.speak(utterance);
+                  } catch {}
+                } else {
+                  stopReading();
+                }
+              }} disabled={!isPlaying && !(catWashFollow && followState?.active)} data-testid="button-stop">
                 <Square className="h-5 w-5 text-white fill-white" />
                 <span className="text-[9px] text-white/70 leading-none">Stop</span>
               </button>

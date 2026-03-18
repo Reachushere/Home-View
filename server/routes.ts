@@ -5759,7 +5759,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     ]);
     console.log(`${logPrefix} tablet-nav set for devices`);
 
-    try { await stopAllCatWashroomSpeakers(haUrl); } catch (e: any) { console.warn(`${logPrefix} stopAllSpeakers error (non-fatal): ${e.message}`); }
+    const textExtractionPromise = extractFileText(fileToPlay);
 
     try {
       await Promise.all([
@@ -5775,7 +5775,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.log(`${logPrefix} Set volume to 0.75`);
     } catch (e: any) { console.warn(`${logPrefix} Volume set error (non-fatal): ${e.message}`); }
 
-    const fileText = await extractFileText(fileToPlay);
+    const fileText = await textExtractionPromise;
     console.log(`${logPrefix} Text extraction ready (${fileText ? fileText.length : 0} chars)`);
     const fileChunks = fileText ? chunkTextForNest(fileText) : [];
     const totalChunksCalc = fileChunks.length;
@@ -5783,6 +5783,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (fileToPlay.totalChunks !== totalChunksCalc && totalChunksCalc > 0) {
       try { await storage.updateFile(fileToPlay.id, { totalChunks: totalChunksCalc }); } catch {}
     }
+
+    let preGeneratedChunk0Path: string | null = null;
+    const chunk0PreGenPromise = (fileChunks.length > resumeFromChunk)
+      ? generateAndSaveTTSAudio(fileChunks[resumeFromChunk], `nest-chunk-${fileToPlay.id}-${resumeFromChunk}-${Date.now()}`, voice)
+          .then(p => { preGeneratedChunk0Path = p; console.log(`${logPrefix} Pre-generated chunk ${resumeFromChunk} TTS`); })
+          .catch(e => { console.warn(`${logPrefix} Chunk 0 pre-gen failed (will retry): ${e.message}`); })
+      : Promise.resolve();
 
     catWashPlaybackState = {
       fileId: fileToPlay.id,
@@ -5798,64 +5805,70 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       playbackMode: 'server-tts',
     };
 
-    try {
-      for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
+    const tabletSetupPromise = (async () => {
+      try {
+        for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
+          await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
+          });
+        }
+        await new Promise(r => setTimeout(r, 1500));
         await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
+          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-top -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
         });
-      }
-      await new Promise(r => setTimeout(r, 1500));
-      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-top -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
-      });
-      await new Promise(r => setTimeout(r, 1000));
-      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
-      });
-      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11' }),
-      });
-      console.log(`${logPrefix} Tablet: wakeup + brightness + Silk same-tab URL + immersive + F11 fullscreen`);
-    } catch (e: any) {
-      console.log(`${logPrefix} Tablet setup error: ${e.message}`);
-    }
-
-    try {
-      await Promise.allSettled([
-        fetch(`${haUrl}/api/services/media_player/turn_on`, {
+        await new Promise(r => setTimeout(r, 1000));
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-        }),
-        fetch(`${haUrl}/api/services/media_player/turn_on`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
-        }),
-      ]);
-      console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      try {
-        await fetch(`${haUrl}/api/services/media_player/select_source`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', source: 'HDMI1' }),
+          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
         });
-        console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input`);
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11' }),
+        });
+        console.log(`${logPrefix} Tablet: wakeup + brightness + Silk same-tab URL + immersive + F11 fullscreen`);
       } catch (e: any) {
-        console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
+        console.log(`${logPrefix} Tablet setup error: ${e.message}`);
       }
+    })();
 
-      await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
-      console.log(`${logPrefix} TV follow URL sent, Silk opens fullscreen (immersive mode)`);
-    } catch (e: any) {
-      console.log(`${logPrefix} TV setup error: ${e.message}`);
-    }
+    const tvSetupPromise = (async () => {
+      try {
+        await Promise.allSettled([
+          fetch(`${haUrl}/api/services/media_player/turn_on`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+          }),
+          fetch(`${haUrl}/api/services/media_player/turn_on`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
+          }),
+        ]);
+        console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        try {
+          await fetch(`${haUrl}/api/services/media_player/select_source`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', source: 'HDMI1' }),
+          });
+          console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input`);
+        } catch (e: any) {
+          console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
+        }
+
+        await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
+        console.log(`${logPrefix} TV follow URL sent, Silk opens fullscreen (immersive mode)`);
+      } catch (e: any) {
+        console.log(`${logPrefix} TV setup error: ${e.message}`);
+      }
+    })();
+
+    await Promise.allSettled([tabletSetupPromise, tvSetupPromise, chunk0PreGenPromise]);
 
     currentTabletReaderUrl = readerUrl;
-    startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice);
+    startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice, preGeneratedChunk0Path);
   }
 
   function describeFileForTTS(file: any, weekNumber: number): string {
@@ -6070,7 +6083,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     chunks: string[],
     startChunk: number,
     sessionId: number,
-    voice: string = "nova"
+    voice: string = "nova",
+    preGeneratedFirstChunkPath: string | null = null
   ) {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = "https://home-view--bkh416.replit.app";
@@ -6143,10 +6157,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         return;
       }
 
-      await stopAllCatWashroomSpeakers(haUrl);
-      console.log(`[Nest Playback] Stopped speakers`);
-      console.log(`[Nest Playback] Skipping intro announcement (already played by caller)`);
-      await new Promise(r => setTimeout(r, 1500));
+      console.log(`[Nest Playback] Skipping intro — confirmation TTS already played by caller`);
+      await new Promise(r => setTimeout(r, 500));
 
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 3;
@@ -6176,10 +6188,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
 
         const chunkText = chunks[i];
-        console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
 
         try {
-          const audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+          let audioPath: string;
+          if (i === startChunk && preGeneratedFirstChunkPath) {
+            audioPath = preGeneratedFirstChunkPath;
+            console.log(`[Nest Playback] Using pre-generated audio for chunk ${i + 1}/${chunks.length}`);
+          } else {
+            console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
+            audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+          }
           const wordCount = chunkText.split(/\s+/).length;
           const estimatedMs = Math.max(5000, (wordCount / 115) * 60 * 1000 + 2000);
 
@@ -7030,7 +7048,10 @@ document.body.removeChild(a);
         const confirmPath = await generateAndSaveTTSAudio(confirmTTS, `shower-button-confirm-${Date.now()}`);
         const appUrl = "https://home-view--bkh416.replit.app";
         await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-        await new Promise(r => setTimeout(r, 4000));
+        const confirmWordCount = confirmTTS.split(/\s+/).length;
+        const confirmWaitMs = Math.max(5000, (confirmWordCount / 115) * 60 * 1000 + 2000);
+        console.log(`[Shower Button] Waiting ${Math.round(confirmWaitMs / 1000)}s for confirm TTS to finish`);
+        await new Promise(r => setTimeout(r, confirmWaitMs));
       } catch (e: any) {
         console.log(`[Shower Button] Confirm TTS error: ${e.message}`);
       }
@@ -7332,7 +7353,10 @@ document.body.removeChild(a);
           const confirmPath = await generateAndSaveTTSAudio(confirmTTS, `cat-lights-confirm-${Date.now()}`);
           const appUrl = "https://home-view--bkh416.replit.app";
           await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-          await new Promise(r => setTimeout(r, 4000));
+          const confirmWordCount = confirmTTS.split(/\s+/).length;
+          const confirmWaitMs = Math.max(5000, (confirmWordCount / 115) * 60 * 1000 + 2000);
+          console.log(`[Cat Lights] Waiting ${Math.round(confirmWaitMs / 1000)}s for confirm TTS to finish`);
+          await new Promise(r => setTimeout(r, confirmWaitMs));
         } catch (e: any) {
           console.log(`[Cat Lights] Confirm TTS error: ${e.message}`);
         }
