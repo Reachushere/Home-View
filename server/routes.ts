@@ -6417,8 +6417,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const cleanName = fileName ? fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() : '';
     const goodbyeText = cleanName
-      ? `Okay, the file position for ${cleanName} has been saved. See you next time Bryn.`
-      : `Okay, the file position has been saved. See you next time Bryn.`;
+      ? `Stopping. ${cleanName}. The file position has been saved. See you next time Bryn.`
+      : `Stopping. The file position has been saved. See you next time Bryn.`;
 
     console.log(`[Nest Stop] Reason: ${reason}. Goodbye: "${goodbyeText}"`);
 
