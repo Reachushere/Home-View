@@ -3730,9 +3730,11 @@ export default function Dashboard() {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
     return prevIds.some(pid => {
-      if (!checkedCourses[pid] && !inProgressCourses[pid] && !(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '')) return false;
-      if (checkedCourses[pid] && !inProgressCourses[pid] && !(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '') && isSectionFulfilledForCourse(pid)) return false;
-      return true;
+      if (checkedCourses[pid]) return true;
+      if (inProgressCourses[pid] && isSectionFulfilledForCourse(pid)) return false;
+      if (inProgressCourses[pid]) return true;
+      if (courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '') return true;
+      return false;
     });
   };
 
@@ -3744,9 +3746,13 @@ export default function Dashboard() {
     const prevIds = previousLevelMap[courseId];
     if (!prevIds) return false;
     return prevIds.some(pid => {
-      const pidCompleted = checkedCourses[pid] || !!(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '');
+      if (checkedCourses[pid]) {
+        if (isActiveInLaterLevel(pid)) return false;
+        return true;
+      }
+      if (inProgressCourses[pid] && isSectionFulfilledForCourse(pid)) return false;
+      const pidCompleted = inProgressCourses[pid] || !!(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '');
       if (!pidCompleted) return false;
-      if (checkedCourses[pid] && !(courseGrades[pid]?.percent && courseGrades[pid]?.percent?.trim() !== '') && !inProgressCourses[pid] && isSectionFulfilledForCourse(pid)) return false;
       if (isActiveInLaterLevel(pid)) return false;
       return true;
     });
