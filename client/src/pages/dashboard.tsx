@@ -3569,33 +3569,32 @@ export default function Dashboard() {
           setShowAllDayRow(val);
         }
       })
+      .then(() => {
+        const syncKeys = [
+          'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
+          'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
+          'coursePlayPriority', 'courseDisplayNames', 'profileData',
+          'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
+          'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
+        ];
+        const payload: Record<string, any> = {};
+        for (const key of syncKeys) {
+          const val = localStorage.getItem(key);
+          if (val) {
+            try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
+          }
+        }
+        if (Object.keys(payload).length > 0) {
+          fetch('/api/degree-tracking/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          }).then(r => r.json()).then(d => {
+            if (d.ok) console.log(`[Sync] Pushed ${d.saved} localStorage keys to server`);
+          }).catch(() => {});
+        }
+      })
       .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    const syncKeys = [
-      'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
-      'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
-      'coursePlayPriority', 'courseDisplayNames', 'profileData',
-      'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
-      'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
-    ];
-    const payload: Record<string, any> = {};
-    for (const key of syncKeys) {
-      const val = localStorage.getItem(key);
-      if (val) {
-        try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
-      }
-    }
-    if (Object.keys(payload).length > 0) {
-      fetch('/api/degree-tracking/bulk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }).then(r => r.json()).then(d => {
-        if (d.ok) console.log(`[Sync] Pushed ${d.saved} localStorage keys to server`);
-      }).catch(() => {});
-    }
   }, []);
 
   const getSelectedCodes = (siblingIds: string[], currentId: string): Set<string> => {
