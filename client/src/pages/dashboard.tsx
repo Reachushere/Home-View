@@ -11766,8 +11766,8 @@ export default function Dashboard() {
       {/* Timer bar - no box, inline left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1}px`,
-        top: '5px',
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2}px`,
+        top: '7px',
         height: '22px',
         zIndex: 100,
         display: 'flex',
@@ -11783,7 +11783,7 @@ export default function Dashboard() {
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
         }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-          <span style={{ fontSize: '14px', fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1', color: '#FFFF00', marginRight: '8px' }}>{formatPomodoroTime(pomodoroTime)}</span>
+          <span style={{ fontSize: '14px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1', color: '#FFFF00', marginRight: '8px' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
         <div className="flex items-center gap-[22px]">
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
