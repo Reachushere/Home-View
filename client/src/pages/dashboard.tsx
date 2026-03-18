@@ -1809,6 +1809,8 @@ export default function Dashboard() {
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
+  const isHamburgerOpenRef = useRef(false);
+  isHamburgerOpenRef.current = isHamburgerOpen;
   const hamburgerCloseTimer = useRef<number | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
@@ -10767,11 +10769,11 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
         onMouseLeave={() => {
-          if (isHamburgerOpen) return;
+          if (isHamburgerOpenRef.current) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           const delay = 'ontouchstart' in window ? 4000 : 1800;
           topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpen) return;
+            if (isHamburgerOpenRef.current) return;
             closeTopPill();
           }, delay);
         }}
@@ -11675,6 +11677,7 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           const delay = 'ontouchstart' in window ? 6000 : 1800;
           topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
             closeTopPill();
           }, delay);
         }}
@@ -11703,12 +11706,22 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           const delay = 'ontouchstart' in window ? 6000 : 1800;
           topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
             closeTopPill();
           }, delay);
         }}
         onMouseEnter={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+        }}
+        onMouseLeave={() => {
+          if (isHamburgerOpenRef.current) return;
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          const delay = 'ontouchstart' in window ? 4000 : 1800;
+          topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
+            closeTopPill();
+          }, delay);
         }}
       >
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
