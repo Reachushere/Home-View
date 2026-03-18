@@ -19460,7 +19460,7 @@ export default function Dashboard() {
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
             className="z-50"
-            style={{ position: 'absolute', right: '-17px', top: '25px', width: '16px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
+            style={{ position: 'absolute', right: '-17px', top: '19px', width: '16px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
             data-testid="resize-handle-calendar-right"
           >
             <div style={{ width: '16px', height: '191px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
@@ -20682,7 +20682,7 @@ export default function Dashboard() {
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
-            style={{ left: '-16px', bottom: '9px', width: '15px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
+            style={{ left: '-16px', bottom: '19px', width: '15px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
             data-testid="resize-handle-homework"
           >
             <div style={{ width: '15px', height: '191px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
