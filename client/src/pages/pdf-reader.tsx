@@ -1529,9 +1529,7 @@ export default function PDFReaderPage() {
     } catch {}
 
 
-    const savedChunk = currentChunk;
-    setCurrentChunk(0);
-    currentChunkRef.current = 0;
+    const savedChunk = currentChunkRef.current;
 
     if (fileId && savedChunk > 0) {
       fetch(`/api/files/${fileId}`, {
