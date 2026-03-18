@@ -7201,10 +7201,18 @@ document.body.removeChild(a);
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
-      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+      const allFilesBefore = await storage.getFiles();
+      let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
-      const allFiles = await storage.getFiles();
-      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+      if (!nextFile) {
+        console.log(`[Cat Lights] No cached files found — syncing OneDrive first`);
+        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+        const allFilesAfter = await storage.getFiles();
+        nextFile = findNextFileByPriority(allFilesAfter, currentWeekNumber);
+      } else {
+        console.log(`[Cat Lights] Using cached file — syncing OneDrive in background`);
+        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
+      }
 
       if (!nextFile) {
         console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
