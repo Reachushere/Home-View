@@ -12888,7 +12888,7 @@ export default function Dashboard() {
               <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
             </>
           ) : (
-            <Mic className="h-4 w-4 text-white" />
+            <Mic className="text-white" style={{ height: '18px', width: '18px' }} />
           )}
         </button>
       </div>
