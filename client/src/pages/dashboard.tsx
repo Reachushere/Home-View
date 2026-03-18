@@ -18349,7 +18349,7 @@ export default function Dashboard() {
                       const endColor = courseHexColorEnd || courseHexColor;
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
-                    const handlePlayFiles = async (fileType: 'module' | 'reading') => {
+                    const handlePlayFiles = (fileType: 'module' | 'reading') => {
                       const courseCodeLower = courseCode.toLowerCase();
                       const folderKey = `week-${selectedWeek}-${courseCodeLower}-${fileType}`;
                       const filesForType = allFiles.filter(f => f.folder === folderKey);
@@ -18359,7 +18359,7 @@ export default function Dashboard() {
                         const readerUrl = targetFile.objectPath?.startsWith('http')
                           ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(targetFile.objectPath || '')}&name=${encodeURIComponent(targetFile.displayName || targetFile.originalName)}&autoplay=1`
                           : `/pdf-reader/${targetFile.id}?autoplay=1`;
-                        window.location.href = readerUrl;
+                        window.open(readerUrl, '_blank');
                       } else {
                         toast({ title: `No ${fileType} files found for week ${selectedWeek}`, variant: 'destructive' });
                       }
