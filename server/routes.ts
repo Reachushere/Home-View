@@ -7237,27 +7237,24 @@ document.body.removeChild(a);
           }),
         ]);
 
-        let ttsSent = false;
+        const ttsStart = Date.now();
         try {
-          const tts1 = await fetch(`${haUrl}/api/services/tts/speak`, {
+          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
+          const appUrl = "https://home-view--bkh416.replit.app";
+          await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
+            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
           });
-          if (tts1.ok) ttsSent = true;
+          console.log(`[Cat Lights] TTS prompt sent via OpenAI in ${Date.now() - ttsStart}ms`);
         } catch (e: any) {
-          console.log(`[Cat Lights] tts.speak error: ${e.message}`);
-        }
-
-        if (!ttsSent) {
+          console.log(`[Cat Lights] OpenAI TTS failed: ${e.message} — trying HA Cloud TTS`);
           try {
-            const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-            const appUrl = "https://home-view--bkh416.replit.app";
-            await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            await fetch(`${haUrl}/api/services/tts/speak`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
+              body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
             });
-          } catch (fallbackErr: any) {
-            console.log(`[Cat Lights] OpenAI TTS fallback failed: ${fallbackErr.message}`);
+          } catch (e2: any) {
+            console.log(`[Cat Lights] HA Cloud TTS also failed: ${e2.message}`);
           }
         }
 
@@ -7267,8 +7264,10 @@ document.body.removeChild(a);
         return;
       }
 
+      await new Promise(r => setTimeout(r, 5000));
+
       {
-        const maxWaitMs = 15000;
+        const maxWaitMs = 20000;
         console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation...`);
 
         const confirmed = await new Promise<boolean>((resolve) => {
@@ -7287,7 +7286,7 @@ document.body.removeChild(a);
                 }
               }
             } catch {}
-          }, 3000);
+          }, 1500);
         });
 
         try {
