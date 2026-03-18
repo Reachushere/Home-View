@@ -3831,48 +3831,40 @@ export default function Dashboard() {
   };
 
   const renderGradeInput = (id: string) => {
-    const laterTarget = laterLevelMap[id]?.[0];
-    const sectionDoneForThis = isSectionFulfilledForCourse(id);
-    const shouldProxy = laterTarget && sectionDoneForThis && !checkedCourses[id];
-    const effectiveId = shouldProxy ? laterTarget : id;
-    const struck = shouldProxy ? false : shouldStrikethrough(id);
+    const struck = shouldStrikethrough(id);
     return (
       <div className="flex items-center justify-center gap-1" style={{ width: '100%' }}>
-        <input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: struck ? '#e5e5e5' : 'white', color: struck ? '#999' : 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[effectiveId]?.percent || ''} onChange={(e) => { if (!struck) updatePercent(effectiveId, e.target.value); }} readOnly={struck} />
-        <span className="text-[9px] text-left leading-none" style={{ color: struck ? '#999' : '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[effectiveId]?.percent || '')}</span>
+        <input type="text" className="text-[9px] px-0 border border-gray-400 rounded-sm text-center" style={{ backgroundColor: struck ? '#e5e5e5' : 'white', color: struck ? '#999' : 'black', width: '28px', minWidth: '28px' }} placeholder="%" value={courseGrades[id]?.percent || ''} onChange={(e) => { if (!struck) updatePercent(id, e.target.value); }} readOnly={struck} />
+        <span className="text-[9px] text-left leading-none" style={{ color: struck ? '#999' : '#333', width: '16px', minWidth: '16px' }}>{percentToGrade(courseGrades[id]?.percent || '')}</span>
       </div>
     );
   };
 
   const renderTriStateToggle = (id: string) => {
-    const laterTarget = laterLevelMap[id]?.[0];
-    const sectionDoneForThis = isSectionFulfilledForCourse(id);
-    const shouldProxy = laterTarget && sectionDoneForThis && !checkedCourses[id];
-    const effectiveId = shouldProxy ? laterTarget : id;
-    const activeInOther = isActiveInOtherLevel(effectiveId);
-    const sectionDone = isSectionFulfilledForCourse(effectiveId);
-    const greyed = isCourseGreyedOut(effectiveId);
-    const hasPercent = !!(courseGrades[effectiveId]?.percent && courseGrades[effectiveId]?.percent?.trim() !== '');
-    const isCompleted = checkedCourses[effectiveId];
-    const isInProgress = inProgressCourses[effectiveId] || isL2InProgressFromL1(effectiveId);
-    const isDisabled = shouldProxy ? false : (activeInOther || sectionDone || (!isCompleted && !isInProgress && greyed));
+    const activeInOther = isActiveInOtherLevel(id);
+    const sectionDone = isSectionFulfilledForCourse(id);
+    const greyed = isCourseGreyedOut(id);
+    const hasPercent = !!(courseGrades[id]?.percent && courseGrades[id]?.percent?.trim() !== '');
+    const isCompleted = checkedCourses[id];
+    const isInProgress = inProgressCourses[id] || isL2InProgressFromL1(id);
+    const isDisabled = activeInOther || sectionDone || (!isCompleted && !isInProgress && greyed);
     const state: 'red' | 'yellow' | 'green' = isCompleted ? 'green' : isDisabled ? 'red' : isInProgress ? 'yellow' : 'red';
     const cycle = () => {
       if (isDisabled) return;
       if (state === 'red') {
-        if (!inProgressCourses[effectiveId]) toggleInProgress(effectiveId);
-        const info = certCourseMap[effectiveId];
-        if (info && /^[A-Z]{2,}\d{3}/.test(info.code.replace(/\s/g, '')) && !isDropdownRow(effectiveId)) {
+        if (!inProgressCourses[id]) toggleInProgress(id);
+        const info = certCourseMap[id];
+        if (info && /^[A-Z]{2,}\d{3}/.test(info.code.replace(/\s/g, '')) && !isDropdownRow(id)) {
           const rawCode = info.code.replace(/\s/g, '');
           const semCode = /^[A-Z]{3,}\d/.test(rawCode) && !rawCode.startsWith('C') ? 'C' + rawCode : rawCode;
           const displayCode = semCode.replace(/([A-Z]+)(\d+)/, '$1 $2');
           addCourseToNextAvailableSemester(semCode, displayCode, info.name);
         }
       } else if (state === 'yellow') {
-        if (inProgressCourses[effectiveId]) toggleInProgress(effectiveId);
-        if (!checkedCourses[effectiveId]) toggleCourse(effectiveId);
+        if (inProgressCourses[id]) toggleInProgress(id);
+        if (!checkedCourses[id]) toggleCourse(id);
       } else {
-        if (checkedCourses[effectiveId]) toggleCourse(effectiveId);
+        if (checkedCourses[id]) toggleCourse(id);
       }
     };
     const bg = state === 'green' ? '#8cb44c' : state === 'yellow' ? '#f0b429' : '#e8526e';
