@@ -12869,7 +12869,7 @@ export default function Dashboard() {
         <button
           onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
           className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
-          style={{ padding: isVoiceListening ? '10px 16px 10px 12px' : '7px', minWidth: isVoiceListening ? '120px' : '34px' }}
+          style={{ padding: isVoiceListening ? '10px 16px 10px 12px' : '9px', minWidth: isVoiceListening ? '120px' : '36px' }}
           data-testid="button-voice-input"
         >
           {isVoiceListening ? (
