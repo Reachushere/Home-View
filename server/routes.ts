@@ -6143,26 +6143,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       await stopAllCatWashroomSpeakers(haUrl);
       console.log(`[Nest Playback] Stopped speakers`);
-
-      const cleanName = fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
-      const hour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });
-      const h = parseInt(hour, 10);
-      const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-      const action = startChunk > 0 ? 'resume' : 'play';
-      const introText = `${greeting} Bryn. I will now ${action} ${cleanName}.`;
-      console.log(`[Nest Playback] Announcing: "${introText}"`);
-      try {
-        const introAudioPath = await generateAndSaveTTSAudio(introText, `nest-intro-${Date.now()}`, voice);
-        console.log(`[Nest Playback] Intro TTS generated: ${introAudioPath}`);
-        await playOnNestSpeaker(`${appUrl}${introAudioPath}`);
-        console.log(`[Nest Playback] Intro sent to Nest speaker`);
-        const introWords = introText.split(/\s+/).length;
-        const introWaitMs = Math.max(3000, (introWords / 115) * 60 * 1000 + 1500);
-        await new Promise(r => setTimeout(r, introWaitMs));
-      } catch (introErr: any) {
-        console.error(`[Nest Playback] Intro TTS/playback failed (non-fatal, continuing to chunks): ${introErr.message}`);
-        await new Promise(r => setTimeout(r, 1000));
-      }
+      console.log(`[Nest Playback] Skipping intro announcement (already played by caller)`);
+      await new Promise(r => setTimeout(r, 1500));
 
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 3;

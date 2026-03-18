@@ -1489,12 +1489,13 @@ export default function PDFReaderPage() {
       audioRef.current.load();
     }
 
-    const stoppedMsg = document.getElementById('stop-received-msg');
-    if (stoppedMsg) {
-      stoppedMsg.textContent = 'Stop received';
-      stoppedMsg.style.opacity = '1';
-      setTimeout(() => { stoppedMsg.style.opacity = '0'; }, 3000);
-    }
+    try {
+      const utterance = new SpeechSynthesisUtterance('Stop received');
+      utterance.rate = 1.1;
+      utterance.volume = 0.8;
+      speechSynthesis.speak(utterance);
+    } catch {}
+
 
     const savedChunk = currentChunk;
     setCurrentChunk(0);
@@ -2528,7 +2529,7 @@ export default function PDFReaderPage() {
               />
             </div>
 
-            <div className="absolute flex items-center gap-2" style={{ bottom: '10px', left: '24px' }}>
+            <div className="absolute flex items-start gap-2" style={{ bottom: '10px', left: '24px' }}>
               <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
                 <RefreshCw className="h-5 w-5 text-white" />
                 <span className="text-[9px] text-white/70 leading-none">Restart</span>
@@ -2539,8 +2540,8 @@ export default function PDFReaderPage() {
               </button>
             </div>
 
-            <div className="absolute flex items-center gap-2" style={{ bottom: '10px', left: '285px' }}>
-              <div className="flex items-center gap-2">
+            <div className="absolute flex items-start gap-2" style={{ bottom: '10px', left: '285px' }}>
+              <div className="flex items-start gap-2">
                 <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
                   <RotateCcw className="h-5 w-5 text-white" />
                   <span className="text-xs text-white font-medium">15s</span>
@@ -2552,7 +2553,7 @@ export default function PDFReaderPage() {
               </div>
             </div>
 
-            <div className="absolute right-8 flex items-center" style={{ gap: '12px', bottom: '15px' }}>
+            <div className="absolute right-8 flex items-start" style={{ gap: '12px', bottom: '10px' }}>
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '145px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
@@ -2565,7 +2566,6 @@ export default function PDFReaderPage() {
               </button>
             </div>
 
-            <span id="stop-received-msg" className="absolute text-white text-sm font-medium" style={{ bottom: '55px', right: '32px', opacity: 0, transition: 'opacity 0.3s ease', pointerEvents: 'none' }} />
 
           </div>
 
