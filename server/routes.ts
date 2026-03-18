@@ -5795,7 +5795,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const initialChunkText = fileChunks[resumeFromChunk] || '';
     const initialWords = initialChunkText.split(/\s+/).filter((w: string) => w.length > 0);
     const initialWordCount = initialWords.length;
-    const initialEstimatedMs = Math.max(5000, (initialWordCount / 155) * 60 * 1000 + 1000);
+    const initialEstimatedMs = Math.max(5000, (initialWordCount / 175) * 60 * 1000 + 1000);
 
     catWashPlaybackState = {
       fileId: fileToPlay.id,
@@ -6218,7 +6218,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
           }
           const wordCount = chunkText.split(/\s+/).length;
-          const estimatedMs = Math.max(5000, (wordCount / 155) * 60 * 1000 + 1000);
+          const estimatedMs = Math.max(5000, (wordCount / 175) * 60 * 1000 + 1000);
 
           if (catWashPlaybackState) {
             catWashPlaybackState.estimatedChunkDuration = estimatedMs;
@@ -6226,7 +6226,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           await playOnNestSpeaker(`${appUrl}${audioPath}`);
           if (catWashPlaybackState) {
-            catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 1500);
+            catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 500);
             catWashPlaybackState.wordIndex = 0;
           }
           startWordAdvancement();
@@ -6448,7 +6448,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-${Date.now()}`, "echo");
       await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
       const wordCount = goodbyeText.split(/\s+/).length;
-      await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 155) * 60 * 1000 + 1000)));
+      await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 175) * 60 * 1000 + 1000)));
     } catch (e: any) {
       console.error(`[Nest Stop] Error playing goodbye: ${e.message}`);
     }
