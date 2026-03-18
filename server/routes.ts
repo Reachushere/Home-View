@@ -5742,20 +5742,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
     const tvFollowUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
 
-    await stopAllCatWashroomSpeakers(haUrl);
-
-    await Promise.all([
-      fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.75 }),
-      }),
-      fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
-      }),
-    ]);
-    console.log(`${logPrefix} Set volume to 0.75`);
-
     catWashSessionId++;
     const currentSession = catWashSessionId;
     if (catWashPlaybackActive) {
@@ -5765,6 +5751,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     catWashPlaybackActive = true;
     catWashPlaybackStartedAt = new Date();
     startToothbrushPolling();
+
+    const lightsNavTimestamp = Date.now();
+    await Promise.all([
+      setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
+      setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
+    ]);
+    console.log(`${logPrefix} tablet-nav set for devices`);
+
+    try { await stopAllCatWashroomSpeakers(haUrl); } catch (e: any) { console.warn(`${logPrefix} stopAllSpeakers error (non-fatal): ${e.message}`); }
+
+    try {
+      await Promise.all([
+        fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.75 }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
+        }),
+      ]);
+      console.log(`${logPrefix} Set volume to 0.75`);
+    } catch (e: any) { console.warn(`${logPrefix} Volume set error (non-fatal): ${e.message}`); }
 
     const fileText = await extractFileText(fileToPlay);
     console.log(`${logPrefix} Text extraction ready (${fileText ? fileText.length : 0} chars)`);
@@ -5788,13 +5797,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       estimatedChunkDuration: 0,
       playbackMode: 'server-tts',
     };
-
-    const lightsNavTimestamp = Date.now();
-    await Promise.all([
-      setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
-      setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
-    ]);
-    console.log(`${logPrefix} tablet-nav set for devices`);
 
     try {
       for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
