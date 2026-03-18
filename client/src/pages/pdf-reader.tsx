@@ -1538,7 +1538,7 @@ export default function PDFReaderPage() {
     }
 
     if (catWashFollow || speakerParam) {
-      fetch("/api/cat-wash/stop", { method: "POST" }).catch(e => console.error('Failed to stop server-side playback:', e));
+      fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).catch(e => console.error('Failed to stop server-side playback:', e));
     }
   };
   
@@ -2193,7 +2193,7 @@ export default function PDFReaderPage() {
                   ))}
                 </div>
               )}
-              <button className="mt-3 text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null))} data-testid="stop-catwash-playback">
+              <button className="mt-3 text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null))} data-testid="stop-catwash-playback">
                 Stop Playback
               </button>
             </div>
@@ -2495,13 +2495,7 @@ export default function PDFReaderPage() {
                   className="rounded-full bg-red-600 hover:bg-red-500"
                   style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,100,100,0.5)', outlineOffset: '3px' }}
                   onClick={() => {
-                    fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null));
-                    try {
-                      const utterance = new SpeechSynthesisUtterance('Stop received');
-                      utterance.rate = 1.1;
-                      utterance.volume = 0.8;
-                      speechSynthesis.speak(utterance);
-                    } catch {}
+                    fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null));
                   }}
                   data-testid="button-stop-catwash"
                 >
@@ -2598,13 +2592,7 @@ export default function PDFReaderPage() {
               </button>
               <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={() => {
                 if (catWashFollow && followState?.active) {
-                  fetch("/api/cat-wash/stop", { method: "POST" }).then(() => setFollowState(null));
-                  try {
-                    const utterance = new SpeechSynthesisUtterance('Stop received');
-                    utterance.rate = 1.1;
-                    utterance.volume = 0.8;
-                    speechSynthesis.speak(utterance);
-                  } catch {}
+                  fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null));
                 } else {
                   stopReading();
                 }

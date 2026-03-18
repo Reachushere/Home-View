@@ -7723,8 +7723,9 @@ document.body.removeChild(a);
   });
 
   // POST /api/cat-wash/stop - Stop ALL playback (cat wash, cat lights, TTS sessions, all echo devices)
-  app.post("/api/cat-wash/stop", async (_req, res) => {
-    console.log("[Cat Wash Stop] === STOP ALL PLAYBACK ===");
+  app.post("/api/cat-wash/stop", async (req, res) => {
+    const keepOpen = req.body?.keepOpen === true;
+    console.log(`[Cat Wash Stop] === STOP ALL PLAYBACK === (keepOpen=${keepOpen})`);
 
     const stopped: string[] = [];
 
@@ -7783,29 +7784,32 @@ document.body.removeChild(a);
       console.error(`[Cat Wash Stop] Failed to stop Nest speaker: ${e.message}`);
     }
 
-    const stopTs = Date.now();
-    await Promise.all([
-      setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'master'),
-      setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'tv'),
-    ]);
+    if (!keepOpen) {
+      const stopTs = Date.now();
+      await Promise.all([
+        setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'master'),
+        setTabletCommand({ action: 'stop_playback', timestamp: stopTs }, true, 'tv'),
+      ]);
 
-    // Turn off the TV via Fire Stick + Samsung TV
-    try {
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-      });
-      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
-      });
-      console.log(`[Cat Wash Stop] TV turned off`);
-      stopped.push("tv");
-    } catch (e: any) {
-      console.log(`[Cat Wash Stop] TV turn off error: ${e.message}`);
+      try {
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+        });
+        await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+        });
+        console.log(`[Cat Wash Stop] TV turned off`);
+        stopped.push("tv");
+      } catch (e: any) {
+        console.log(`[Cat Wash Stop] TV turn off error: ${e.message}`);
+      }
+    } else {
+      console.log(`[Cat Wash Stop] keepOpen=true — tablet/TV stay on reader`);
     }
 
     stopWordAdvancement();
