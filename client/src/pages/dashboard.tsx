@@ -4769,11 +4769,14 @@ export default function Dashboard() {
         const noteW = wasSnapped ? 271 : (currentNote?.width || 271);
         const noteH = wasSnapped ? 250 : (currentNote?.height || 250);
         const clampedPos = clampPosition(currentDragPosition.x, currentDragPosition.y, noteW, noteH);
+        const newZIndex = maxStickyZIndex + 1;
+        setMaxStickyZIndex(newZIndex);
         updateStickyNoteMutation.mutate({ 
           id: currentNoteId, 
           updates: { 
             positionX: Math.round(clampedPos.x),
             positionY: Math.round(clampedPos.y),
+            zIndex: newZIndex,
             ...(wasSnapped ? { width: 271, height: 250 } : {}),
             lastMovedAt: new Date() 
           } 
@@ -4785,17 +4788,6 @@ export default function Dashboard() {
     window.addEventListener('mouseup', onUp);
     window.addEventListener('touchmove', onMove, { passive: false });
     window.addEventListener('touchend', onUp);
-
-    const newZIndex = maxStickyZIndex + 1;
-    setMaxStickyZIndex(newZIndex);
-    const wasSnapped = note.width < 200 || note.height < 200;
-    updateStickyNoteMutation.mutate({ 
-      id: noteId, 
-      updates: { 
-        zIndex: newZIndex,
-        ...(wasSnapped ? { width: 271, height: 250 } : {})
-      } 
-    });
   };
 
   // Auto-return sticky notes to home position after 2 hours
