@@ -1207,6 +1207,7 @@ export default function PDFReaderPage() {
   };
 
   const skipCheckedReloadRef = useRef(false);
+  const resetStartRef = useRef(false);
   const startReading = async () => {
     beacon("startReading-begin", { fileId });
     await unlockAudio();
@@ -1266,7 +1267,8 @@ export default function PDFReaderPage() {
       setCheckedChunks(finalChecked);
       if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, newChunks.length);
     }
-    const mergedForStart = checkedChunks;
+    const mergedForStart = resetStartRef.current ? new Set<number>() : checkedChunks;
+    resetStartRef.current = false;
     let startChunk = (resumeChunkParam !== null && resumeChunkParam < newChunks.length) ? resumeChunkParam : 0;
     if (mergedForStart.size > 0 && startChunk === 0) {
       const firstUnchecked = newChunks.findIndex((_, idx) => !mergedForStart.has(idx));
@@ -1409,10 +1411,13 @@ export default function PDFReaderPage() {
     playingAttentionPromptRef.current = false;
     console.log(`[TTS] Playing chunk ${index + 1}/${chunksRef.current.length}`);
 
-    setTimeout(() => {
+    const scrollToChunk = () => {
       const chunkRow = document.querySelector(`[data-testid="chunk-row-${index}"]`);
       if (chunkRow) chunkRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    };
+    setTimeout(scrollToChunk, 100);
+    setTimeout(scrollToChunk, 400);
+    setTimeout(scrollToChunk, 800);
 
     if (index + 1 < chunksRef.current.length && !ttsPreloadCache.current[index + 1]) {
       const nextText = chunksRef.current[index + 1];
@@ -1569,6 +1574,7 @@ export default function PDFReaderPage() {
       }
     }
     skipCheckedReloadRef.current = true;
+    resetStartRef.current = true;
     startReading();
   };
 
@@ -2466,7 +2472,7 @@ export default function PDFReaderPage() {
                 </button>
               ) : !isPlaying ? (
                 <div className="flex items-center" style={{ marginTop: '-30px', gap: '30px' }}>
-                  {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                  {file && file.lastChunkIndex > 0 && (
                     <button
                       className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex flex-col items-center"
                       style={{ padding: '14px', outline: '2px solid rgba(255,255,255,0.25)', outlineOffset: '3px' }}
@@ -2479,7 +2485,7 @@ export default function PDFReaderPage() {
                       <span className="text-[10px] text-white/70 mt-1">Reset</span>
                     </button>
                   )}
-                  {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                  {file && file.lastChunkIndex > 0 && (
                     <button
                       className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex flex-col items-center"
                       style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
@@ -2493,14 +2499,13 @@ export default function PDFReaderPage() {
                     </button>
                   )}
                   <button
-                    className="rounded-full bg-white hover:bg-white/90 disabled:opacity-30 flex flex-col items-center"
+                    className="rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
                     style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                     onClick={startReading}
                     disabled={isLoading || numPages === 0}
                     data-testid="button-play"
                   >
                     {isLoading ? <Loader2 className="h-10 w-10 text-gray-900 animate-spin" /> : <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />}
-                    <span className="text-[10px] text-gray-500 mt-1">Play</span>
                   </button>
                 </div>
               ) : isPaused ? (
@@ -2508,8 +2513,8 @@ export default function PDFReaderPage() {
                   <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />
                 </button>
               ) : (
-                <button className="rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={pauseReading} data-testid="button-pause">
-                  <Pause className="h-10 w-10 text-gray-900" />
+                <button className="rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={stopReading} data-testid="button-stop-center">
+                  <Square className="h-10 w-10 text-gray-900 fill-gray-900" />
                 </button>
               )}
             </div>
