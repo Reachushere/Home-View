@@ -4710,17 +4710,10 @@ export default function Dashboard() {
       const newX = Math.max(0, cx - offset.x);
       const newY = Math.max(0, cy - offset.y);
       dragPositionRef.current = { x: newX, y: newY };
-      stickyDragPendingPos.current = { x: newX, y: newY };
-      if (stickyDragRafRef.current === null) {
-        stickyDragRafRef.current = requestAnimationFrame(() => {
-          stickyDragRafRef.current = null;
-          const pos = stickyDragPendingPos.current;
-          const dragEl = stickyDragElRef.current;
-          if (pos && dragEl) {
-            dragEl.style.left = `${pos.x}px`;
-            dragEl.style.top = `${pos.y}px`;
-          }
-        });
+      const dragEl = stickyDragElRef.current;
+      if (dragEl) {
+        dragEl.style.left = `${newX}px`;
+        dragEl.style.top = `${newY}px`;
       }
     };
 
@@ -4729,13 +4722,12 @@ export default function Dashboard() {
       window.removeEventListener('mouseup', onUp);
       window.removeEventListener('touchmove', onMove);
       window.removeEventListener('touchend', onUp);
-      if (stickyDragRafRef.current !== null) {
-        cancelAnimationFrame(stickyDragRafRef.current);
-        stickyDragRafRef.current = null;
-      }
 
       const currentDragPosition = dragPositionRef.current;
       const currentNoteId = draggingStickyNoteRef.current;
+      draggingStickyNoteRef.current = null;
+      stickyDragElRef.current = null;
+      dragPositionRef.current = null;
 
       if (currentNoteId !== null && currentDragPosition !== null) {
         if (allDayRowRef.current) {
@@ -4768,10 +4760,6 @@ export default function Dashboard() {
                   homePositionY: Math.round(clamped.y)
                 } 
               });
-              draggingStickyNoteRef.current = null;
-              stickyDragElRef.current = null;
-              dragPositionRef.current = null;
-              setDraggingStickyNote(null);
               return;
             }
           }
@@ -4791,10 +4779,6 @@ export default function Dashboard() {
           } 
         });
       }
-      draggingStickyNoteRef.current = null;
-      stickyDragElRef.current = null;
-      dragPositionRef.current = null;
-      setDraggingStickyNote(null);
     };
 
     window.addEventListener('mousemove', onMove);
@@ -4802,7 +4786,6 @@ export default function Dashboard() {
     window.addEventListener('touchmove', onMove, { passive: false });
     window.addEventListener('touchend', onUp);
 
-    setDraggingStickyNote(noteId);
     const newZIndex = maxStickyZIndex + 1;
     setMaxStickyZIndex(newZIndex);
     const wasSnapped = note.width < 200 || note.height < 200;
