@@ -1165,6 +1165,19 @@ export default function PDFReaderPage() {
   };
   
   const lastReportedWordRef = useRef(-1);
+  const highlightRafRef = useRef<number | null>(null);
+  const pollWordHighlight = () => {
+    handleTimeUpdate();
+    highlightRafRef.current = requestAnimationFrame(pollWordHighlight);
+  };
+  useEffect(() => {
+    if (isPlaying && !isPaused) {
+      highlightRafRef.current = requestAnimationFrame(pollWordHighlight);
+    } else {
+      if (highlightRafRef.current) { cancelAnimationFrame(highlightRafRef.current); highlightRafRef.current = null; }
+    }
+    return () => { if (highlightRafRef.current) { cancelAnimationFrame(highlightRafRef.current); highlightRafRef.current = null; } };
+  }, [isPlaying, isPaused]);
   const handleTimeUpdate = () => {
     if (!audioRef.current || chunkWords.length === 0 || audioDurationRef.current === 0) return;
     
@@ -1471,58 +1484,28 @@ export default function PDFReaderPage() {
       audioRef.current.load();
     }
 
-    if (fileId && currentChunk > 0) {
-      try {
-        await fetch(`/api/files/${fileId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            lastChunkIndex: currentChunk,
-            totalChunks: totalChunks
-          })
-        });
-      } catch (e) {
-        console.error('Failed to save progress:', e);
-      }
+    const stoppedMsg = document.getElementById('stop-received-msg');
+    if (stoppedMsg) {
+      stoppedMsg.textContent = 'Stop received';
+      stoppedMsg.style.opacity = '1';
+      setTimeout(() => { stoppedMsg.style.opacity = '0'; }, 3000);
     }
 
-    if (catWashFollow && file) {
-      const raw = file.displayName || file.originalName || 'this file';
-      const cleanName = raw.replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim();
-      const goodbyeText = `Stop. ${cleanName}. File position saved. See you next time Bryn.`;
-      console.log(`[TTS] Playing goodbye: ${goodbyeText}`);
-      try {
-        const response = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: goodbyeText, voice }),
-        });
-        if (response.ok) {
-          const blob = await response.blob();
-          const goodbyeUrl = URL.createObjectURL(blob);
-          await new Promise<void>((resolve) => {
-            const goodbyeAudio = new Audio(goodbyeUrl);
-            goodbyeAudio.onended = () => { URL.revokeObjectURL(goodbyeUrl); resolve(); };
-            goodbyeAudio.onerror = () => { URL.revokeObjectURL(goodbyeUrl); resolve(); };
-            goodbyeAudio.play().catch(() => resolve());
-          });
-        }
-      } catch (e) {
-        console.error('[TTS] Goodbye TTS failed:', e);
-      }
+    const savedChunk = currentChunk;
+    setCurrentChunk(0);
+    currentChunkRef.current = 0;
+
+    if (fileId && savedChunk > 0) {
+      fetch(`/api/files/${fileId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lastChunkIndex: savedChunk, totalChunks: totalChunks })
+      }).catch(e => console.error('Failed to save progress:', e));
     }
 
     if (catWashFollow || speakerParam) {
-      try {
-        await fetch("/api/cat-wash/stop", { method: "POST" });
-        console.log('[TTS] Server-side playback state cleared');
-      } catch (e) {
-        console.error('Failed to stop server-side playback:', e);
-      }
+      fetch("/api/cat-wash/stop", { method: "POST" }).catch(e => console.error('Failed to stop server-side playback:', e));
     }
-    
-    setCurrentChunk(0);
-    currentChunkRef.current = 0;
   };
   
   const resumeFromLast = async () => {
@@ -2540,8 +2523,19 @@ export default function PDFReaderPage() {
               />
             </div>
 
-            <div className="absolute flex items-end gap-2" style={{ bottom: '10px', left: '265px' }}>
-              <div className="flex items-center gap-2" style={{ alignSelf: 'flex-end' }}>
+            <div className="absolute flex items-center gap-2" style={{ bottom: '10px', left: '24px' }}>
+              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
+                <RefreshCw className="h-5 w-5 text-white" />
+                <span className="text-[9px] text-white/70 leading-none">Redo</span>
+              </button>
+              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning (resets all progress)" data-testid="button-restart-inline">
+                <RotateCcw className="h-5 w-5 text-white" />
+                <span className="text-[9px] text-white/70 leading-none">Reset</span>
+              </button>
+            </div>
+
+            <div className="absolute flex items-center gap-2" style={{ bottom: '10px', left: '285px' }}>
+              <div className="flex items-center gap-2">
                 <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
                   <RotateCcw className="h-5 w-5 text-white" />
                   <span className="text-xs text-white font-medium">15s</span>
@@ -2554,25 +2548,19 @@ export default function PDFReaderPage() {
             </div>
 
             <div className="absolute right-8 flex items-center" style={{ gap: '12px', bottom: '15px' }}>
-              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '170px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '145px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
-              </button>
-              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
-                <RefreshCw className="h-5 w-5 text-white" />
-                <span className="text-[9px] text-white/70 leading-none">Redo</span>
-              </button>
-              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning (resets all progress)" data-testid="button-restart-inline">
-                <RotateCcw className="h-5 w-5 text-white" />
-                <span className="text-[9px] text-white/70 leading-none">Reset</span>
               </button>
               <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={stopReading} disabled={!isPlaying} data-testid="button-stop">
                 <Square className="h-5 w-5 text-white fill-white" />
                 <span className="text-[9px] text-white/70 leading-none">Stop</span>
               </button>
             </div>
+
+            <span id="stop-received-msg" className="absolute text-white text-sm font-medium" style={{ bottom: '55px', right: '32px', opacity: 0, transition: 'opacity 0.3s ease', pointerEvents: 'none' }} />
 
           </div>
 
