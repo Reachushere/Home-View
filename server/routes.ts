@@ -7255,7 +7255,10 @@ document.body.removeChild(a);
         }
 
       } catch (e: any) {
-        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message} — will still wait for confirmation`);
+        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message} — falling back to CHUM FM`);
+        catLightsPromptPending = false;
+        await playChumFmRadio(haUrl);
+        return;
       }
 
       await new Promise(r => setTimeout(r, 2000));
