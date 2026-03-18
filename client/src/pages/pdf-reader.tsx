@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useRoute } from "wouter";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Button } from "@/components/ui/button";
@@ -250,6 +250,7 @@ export default function PDFReaderPage() {
   const animFrameRef = useRef<number>(0);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const previewVoice = async () => {
@@ -1590,6 +1591,7 @@ export default function PDFReaderPage() {
     saveCheckedChunks(key, emptySet, totalChunks);
     setCurrentChunk(0);
     currentChunkRef.current = 0;
+    localStorage.removeItem(`checkedChunks_${key}`);
     if (fileId) {
       try {
         await fetch(`/api/files/${fileId}`, {
@@ -1598,6 +1600,8 @@ export default function PDFReaderPage() {
           body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
         });
         console.log(`[Reset] Server progress cleared for file ${fileId}`);
+        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/files', fileId] });
       } catch (e) {
         console.error(`[Reset] Failed to clear server progress:`, e);
       }
@@ -1664,12 +1668,15 @@ export default function PDFReaderPage() {
       chunksRef.current = newChunks;
       setChunksList(newChunks);
       setTotalChunks(newChunks.length);
-      let serverChecked = new Set<number>();
-      if (file?.checkedChunks) {
-        try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+      let loaded = new Set<number>();
+      if (!skipCheckedReloadRef.current) {
+        let serverChecked = new Set<number>();
+        if (file?.checkedChunks) {
+          try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+        }
+        loaded = serverChecked.size > 0 ? serverChecked : new Set<number>();
+        setCheckedChunks(loaded);
       }
-      const loaded = serverChecked.size > 0 ? serverChecked : new Set<number>();
-      setCheckedChunks(loaded);
 
       const firstUnlistened = newChunks.findIndex((_, idx) => !loaded.has(idx));
       const preloadIdx = firstUnlistened >= 0 ? firstUnlistened : 0;
