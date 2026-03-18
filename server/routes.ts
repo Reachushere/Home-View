@@ -7225,11 +7225,11 @@ document.body.removeChild(a);
         await Promise.all([
           fetch(`${haUrl}/api/services/media_player/volume_set`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.75 }),
+            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }),
           }),
           fetch(`${haUrl}/api/services/media_player/volume_set`, {
             method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
+            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }),
           }),
         ]);
 
