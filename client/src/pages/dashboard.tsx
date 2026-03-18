@@ -18039,8 +18039,33 @@ export default function Dashboard() {
                       return false;
                     }) || []).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                     const taskSlotMap = new Map<number, number>();
-                    courseWeekTasks.forEach((t, idx) => taskSlotMap.set(t.id, idx));
-                    const totalSlots = courseWeekTasks.length;
+                    const taskIntervals = courseWeekTasks.map(t => {
+                      const dueDay = Math.floor((startOfDay(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24));
+                      const startDay = t.startDate
+                        ? Math.floor((startOfDay(new Date(t.startDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))
+                        : dueDay;
+                      return { id: t.id, start: Math.max(0, startDay), end: Math.max(0, dueDay) };
+                    });
+                    const slotOccupancy: number[][] = [];
+                    for (const interval of taskIntervals) {
+                      let assignedSlot = -1;
+                      for (let s = 0; s < slotOccupancy.length; s++) {
+                        let conflict = false;
+                        for (const occupiedDay of slotOccupancy[s]) {
+                          if (occupiedDay >= interval.start && occupiedDay <= interval.end) { conflict = true; break; }
+                        }
+                        if (!conflict) { assignedSlot = s; break; }
+                      }
+                      if (assignedSlot === -1) {
+                        assignedSlot = slotOccupancy.length;
+                        slotOccupancy.push([]);
+                      }
+                      for (let d = interval.start; d <= interval.end; d++) {
+                        slotOccupancy[assignedSlot].push(d);
+                      }
+                      taskSlotMap.set(interval.id, assignedSlot);
+                    }
+                    const totalSlots = slotOccupancy.length || courseWeekTasks.length;
 
                     return weekDays.map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
