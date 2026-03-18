@@ -3545,6 +3545,29 @@ export default function Dashboard() {
         if (data.courseDisplayNames) {
           localStorage.setItem('courseDisplayNames', JSON.stringify(data.courseDisplayNames));
         }
+        if (data.gridSizes && !localStorage.getItem('gridSizes')) {
+          localStorage.setItem('gridSizes', JSON.stringify(data.gridSizes));
+          setGridSizes(prev => ({ ...prev, ...data.gridSizes }));
+        }
+        if (data.calendarHeight && !localStorage.getItem('calendarHeight')) {
+          const h = typeof data.calendarHeight === 'number' ? data.calendarHeight : parseInt(data.calendarHeight);
+          if (!isNaN(h)) {
+            localStorage.setItem('calendarHeight', String(h));
+            setCalendarHeight(h);
+          }
+        }
+        if (data.calendarReduction && !localStorage.getItem('calendarReduction')) {
+          const r = typeof data.calendarReduction === 'number' ? data.calendarReduction : parseInt(data.calendarReduction);
+          if (!isNaN(r)) {
+            localStorage.setItem('calendarReduction', String(r));
+            setCalendarReduction(r);
+          }
+        }
+        if (data.showAllDayRow !== undefined && !localStorage.getItem('showAllDayRow')) {
+          const val = typeof data.showAllDayRow === 'boolean' ? data.showAllDayRow : data.showAllDayRow === 'true';
+          localStorage.setItem('showAllDayRow', JSON.stringify(val));
+          setShowAllDayRow(val);
+        }
       })
       .catch(() => {});
   }, []);
@@ -3555,6 +3578,7 @@ export default function Dashboard() {
       'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
       'coursePlayPriority', 'courseDisplayNames', 'profileData',
       'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
+      'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
     ];
     const payload: Record<string, any> = {};
     for (const key of syncKeys) {
@@ -11513,6 +11537,7 @@ export default function Dashboard() {
                   'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
                   'coursePlayPriority', 'courseDisplayNames', 'profileData',
                   'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
+                  'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
                 ];
                 const payload: Record<string, any> = {};
                 for (const key of syncKeys) {
