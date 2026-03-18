@@ -5806,20 +5806,24 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await new Promise(r => setTimeout(r, 1500));
       await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
         method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
+        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-top -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
       });
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 1000));
+      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
+      });
       await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
         method: 'POST', headers: haHeaders,
         body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11' }),
       });
-      console.log(`${logPrefix} Tablet wakeup + brightness + URL launch + fullscreen sent`);
+      console.log(`${logPrefix} Tablet: wakeup + brightness + Silk same-tab URL + immersive + F11 fullscreen`);
     } catch (e: any) {
       console.log(`${logPrefix} Tablet setup error: ${e.message}`);
     }
 
     try {
-      const [fireStickRes, tvRes] = await Promise.allSettled([
+      await Promise.allSettled([
         fetch(`${haUrl}/api/services/media_player/turn_on`, {
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
@@ -5829,10 +5833,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
         }),
       ]);
-      console.log(`${logPrefix} Fire Stick: ${fireStickRes.status}, TV: ${tvRes.status}`);
+      console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
       await new Promise(resolve => setTimeout(resolve, 3000));
+
+      try {
+        await fetch(`${haUrl}/api/services/media_player/select_source`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', source: 'HDMI1' }),
+        });
+        console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input`);
+      } catch (e: any) {
+        console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
+      }
+
       await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
-      console.log(`${logPrefix} TV follow URL sent`);
+      console.log(`${logPrefix} TV follow URL sent, Silk opens fullscreen (immersive mode)`);
     } catch (e: any) {
       console.log(`${logPrefix} TV setup error: ${e.message}`);
     }
