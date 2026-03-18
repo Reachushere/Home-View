@@ -5561,7 +5561,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catWashSessionId = 0;
   let catWashPlaybackStartedAt: Date | null = null;
   let catWashManuallyStoppedAt: Date | null = null;
-  let catWashPlaybackTrigger: 'lights' | 'water' | 'manual' | null = null;
+  let catWashPlaybackTrigger: 'lights' | 'manual' | null = null;
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
@@ -6862,7 +6862,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-wash", "/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press"],
+      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press"],
     });
   });
 
@@ -6976,90 +6976,7 @@ document.body.removeChild(a);
     }
   });
 
-  app.post("/api/webhook/cat-wash", async (req, res) => {
-    try {
-      let body = req.body || {};
-      if (typeof body === 'string') {
-        try {
-          body = JSON.parse(body.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null'));
-        } catch { body = {}; }
-      }
-      const { bypass_cooldown, retry } = body;
-      console.log("[Cat Wash] ====== WEBHOOK TRIGGERED ======");
-      console.log("[Cat Wash] Timestamp:", new Date().toISOString());
-      console.log("[Cat Wash] Request body:", JSON.stringify(body));
-
-      const timeSinceStart = Date.now() - SERVER_START_TIME;
-      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
-        console.log(`[Cat Wash] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown: ${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
-        return res.json({ action: "ignored", reason: "Server startup cooldown" });
-      }
-
-      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
-        return res.status(500).json({ error: "Home Assistant not configured" });
-      }
-
-      const today = torontoDate();
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-
-      if (catWashManuallyStoppedAt && !bypass_cooldown && !retry) {
-        const msSinceStopped = Date.now() - catWashManuallyStoppedAt.getTime();
-        if (msSinceStopped < 5 * 60 * 1000) {
-          console.log(`[Cat Wash] Manually stopped ${Math.round(msSinceStopped / 1000)}s ago — ignoring webhook (5min cooldown)`);
-          return res.json({ action: "skipped", reason: `Manually stopped ${Math.round(msSinceStopped / 1000)}s ago, cooldown active` });
-        }
-        catWashManuallyStoppedAt = null;
-      } else if ((bypass_cooldown || retry) && catWashManuallyStoppedAt) {
-        console.log(`[Cat Wash] Bypass/retry requested — clearing cooldown`);
-        catWashManuallyStoppedAt = null;
-      }
-
-      if (catLightsPromptPending && !retry) {
-        console.log(`[Cat Wash] Cat lights prompt is pending — skipping to avoid conflict`);
-        return res.json({ action: "skipped", reason: "Cat lights prompt pending" });
-      }
-
-      if (catWashPlaybackActive) {
-        console.log(`[Cat Wash] Playback already active: "${catWashPlaybackState?.fileName}" — skipping retry`);
-        return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState?.fileName });
-      }
-
-      const semesterSettings = await storage.getActiveSemesterSettings();
-      if (!semesterSettings) {
-        console.log(`[Cat Wash] No active semester — skipping`);
-        return res.json({ action: "skipped", reason: "No active semester" });
-      }
-
-      let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : semStart;
-      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
-      console.log(`[Cat Wash] Calculated week: ${currentWeekNumber}`);
-
-      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Wash]');
-
-      const allFiles = await storage.getFiles();
-      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
-
-      if (!nextFile) {
-        console.log(`[Cat Wash] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
-        await playChumFmRadio(haUrl);
-        return res.json({ action: "radio", reason: `All week ${currentWeekNumber} readings complete — playing CHUM FM 104.5` });
-      }
-
-      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
-      console.log(`[Cat Wash] Found file: ${fileName} (id=${nextFile.id}) — starting confirmed playback flow`);
-
-      res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
-
-      catWashPlaybackTrigger = 'water';
-      await startConfirmedPlaybackFlow(nextFile, '[Cat Wash]', 'echo');
-
-    } catch (error: any) {
-      console.error("[Cat Wash] Error:", error);
-      res.status(500).json({ error: "Failed to trigger cat wash reading", details: error.message });
-    }
-  });
+  // Water sensor automation removed — playback is now triggered only by cat lights, knob press, or manual trigger
 
   app.post("/api/webhook/cat-lights-confirm", async (req, res) => {
     console.log(`[Cat Lights Confirm] ====== CONFIRMATION RECEIVED ======`);
@@ -7397,11 +7314,6 @@ document.body.removeChild(a);
         return res.json({ action: "ignored", reason: "No active playback" });
       }
 
-      if (catWashPlaybackTrigger === 'water') {
-        console.log("[Cat Door] Playback was triggered by water sensor — door open does not stop it");
-        return res.json({ action: "ignored", reason: "Water sensor triggered playback — door does not stop it" });
-      }
-
       const stopped: string[] = [];
       const fileName = catWashPlaybackState?.fileName || '';
 
@@ -7494,7 +7406,7 @@ document.body.removeChild(a);
     }
   });
 
-  // POST /api/webhook/cat-knob-press - Press knob to start PDF playback (same queue as cat-lights/water sensor), or stop if already playing
+  // POST /api/webhook/cat-knob-press - Press knob to start PDF playback (same queue as cat-lights), or stop if already playing
   app.post("/api/webhook/cat-knob-press", async (req, res) => {
     try {
       console.log(`[Cat Knob] ====== KNOB PRESS RECEIVED ======`);
