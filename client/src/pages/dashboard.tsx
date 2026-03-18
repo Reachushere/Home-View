@@ -19446,7 +19446,7 @@ export default function Dashboard() {
             }}
             data-testid="button-set-default-size"
           >
-            <span style={{ fontSize: '8px', fontWeight: 400, color: '#ffffff', whiteSpace: 'nowrap', textDecoration: 'underline' }}>Save Default</span>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Save Default</span>
           </button>
           </div>
           </div>
