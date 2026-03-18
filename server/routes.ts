@@ -7015,20 +7015,14 @@ document.body.removeChild(a);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
-      if (catWashPlaybackActive && catWashPlaybackState) {
-        const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
-        const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-        const likelyStale = msSinceStart > 3 * 60 * 1000 && chunkStillAtStart;
+      if (catWashPlaybackActive) {
+        console.log(`[Shower Button] Playback already active — letting it continue (button is toggling shower/fan off)`);
+        return res.json({ action: "skipped", reason: "Playback already active — not interrupting" });
+      }
 
-        if (likelyStale) {
-          console.log(`[Shower Button] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
-          catWashPlaybackActive = false;
-          catWashPlaybackStartedAt = null;
-          catWashPlaybackState = null;
-        } else {
-          console.log(`[Shower Button] Already playing: "${catWashPlaybackState.fileName}" — skipping`);
-          return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
-        }
+      if (catLightsPromptPending) {
+        console.log(`[Shower Button] Lights prompt pending — skipping (button is toggling shower/fan off)`);
+        return res.json({ action: "skipped", reason: "Prompt already pending — not interrupting" });
       }
 
       const today = torontoDate();
@@ -7045,10 +7039,18 @@ document.body.removeChild(a);
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
-      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]');
+      const allFilesBefore = await storage.getFiles();
+      let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
-      const allFiles = await storage.getFiles();
-      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+      if (!nextFile) {
+        console.log(`[Shower Button] No cached files found — syncing OneDrive first`);
+        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]');
+        const allFilesAfter = await storage.getFiles();
+        nextFile = findNextFileByPriority(allFilesAfter, currentWeekNumber);
+      } else {
+        console.log(`[Shower Button] Using cached file — syncing OneDrive in background`);
+        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]').catch(e => console.log(`[Shower Button] Background sync error: ${e.message}`));
+      }
 
       if (!nextFile) {
         console.log(`[Shower Button] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
@@ -7064,7 +7066,7 @@ document.body.removeChild(a);
 
       const confirmTTS = `Okay, I will now play ${fileDesc}.`;
 
-      catWashPlaybackTrigger = 'lights';
+      catWashPlaybackTrigger = 'button';
       await startConfirmedPlaybackFlow(nextFile, '[Shower Button]', 'echo', confirmTTS);
 
     } catch (error: any) {
