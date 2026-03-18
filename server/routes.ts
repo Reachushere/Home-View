@@ -5710,7 +5710,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function startConfirmedPlaybackFlow(
     fileToPlay: any,
     logPrefix: string,
-    voice: string = "echo"
+    voice: string = "echo",
+    confirmationTTS: string | null = null
   ): Promise<void> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = "https://home-view--bkh416.replit.app";
@@ -5870,7 +5871,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     })();
 
-    await Promise.allSettled([tabletSetupPromise, tvSetupPromise, chunk0PreGenPromise]);
+    const confirmTTSPromise = confirmationTTS ? (async () => {
+      try {
+        const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+        await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+        const confirmWordCount = confirmationTTS.split(/\s+/).length;
+        const confirmWaitMs = Math.max(4000, (confirmWordCount / 140) * 60 * 1000 + 1500);
+        console.log(`${logPrefix} Confirm TTS playing, waiting ${Math.round(confirmWaitMs / 1000)}s`);
+        await new Promise(r => setTimeout(r, confirmWaitMs));
+        console.log(`${logPrefix} Confirm TTS finished`);
+      } catch (e: any) {
+        console.log(`${logPrefix} Confirm TTS error: ${e.message}`);
+      }
+    })() : Promise.resolve();
+
+    await Promise.allSettled([tabletSetupPromise, tvSetupPromise, chunk0PreGenPromise, confirmTTSPromise]);
 
     currentTabletReaderUrl = readerUrl;
     startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice, preGeneratedChunk0Path);
@@ -6162,8 +6177,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         return;
       }
 
-      console.log(`[Nest Playback] Skipping intro — confirmation TTS already played by caller`);
-      await new Promise(r => setTimeout(r, 500));
+      console.log(`[Nest Playback] Starting first chunk immediately`);
 
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 3;
@@ -7049,20 +7063,9 @@ document.body.removeChild(a);
       res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
 
       const confirmTTS = `Okay, I will now play ${fileDesc}.`;
-      try {
-        const confirmPath = await generateAndSaveTTSAudio(confirmTTS, `shower-button-confirm-${Date.now()}`);
-        const appUrl = "https://home-view--bkh416.replit.app";
-        await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-        const confirmWordCount = confirmTTS.split(/\s+/).length;
-        const confirmWaitMs = Math.max(5000, (confirmWordCount / 115) * 60 * 1000 + 2000);
-        console.log(`[Shower Button] Waiting ${Math.round(confirmWaitMs / 1000)}s for confirm TTS to finish`);
-        await new Promise(r => setTimeout(r, confirmWaitMs));
-      } catch (e: any) {
-        console.log(`[Shower Button] Confirm TTS error: ${e.message}`);
-      }
 
       catWashPlaybackTrigger = 'lights';
-      await startConfirmedPlaybackFlow(nextFile, '[Shower Button]', 'echo');
+      await startConfirmedPlaybackFlow(nextFile, '[Shower Button]', 'echo', confirmTTS);
 
     } catch (error: any) {
       console.error("[Shower Button] Error:", error);
@@ -7354,17 +7357,9 @@ document.body.removeChild(a);
         catLightsPromptPending = false;
 
         const confirmTTS = `Okay, I will now play ${fileDesc}.`;
-        try {
-          const confirmPath = await generateAndSaveTTSAudio(confirmTTS, `cat-lights-confirm-${Date.now()}`);
-          const appUrl = "https://home-view--bkh416.replit.app";
-          await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-          const confirmWordCount = confirmTTS.split(/\s+/).length;
-          const confirmWaitMs = Math.max(5000, (confirmWordCount / 115) * 60 * 1000 + 2000);
-          console.log(`[Cat Lights] Waiting ${Math.round(confirmWaitMs / 1000)}s for confirm TTS to finish`);
-          await new Promise(r => setTimeout(r, confirmWaitMs));
-        } catch (e: any) {
-          console.log(`[Cat Lights] Confirm TTS error: ${e.message}`);
-        }
+        catWashPlaybackTrigger = 'lights';
+        await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', confirmTTS);
+        return;
       }
 
       catWashPlaybackTrigger = 'lights';
