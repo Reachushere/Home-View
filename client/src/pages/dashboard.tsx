@@ -11706,13 +11706,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Share Button - fixed position, top left */}
+      {/* Share Button - fixed position, bottom right beside copyright */}
       {isAdmin && (
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          data-tpo data-tpo-opacity="1"
-          style={{ height: '16px', width: '16px', position: 'fixed', left: '4px', top: '6px', zIndex: 9999, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: '39px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 38}px`, zIndex: 70 }}
           onClick={generateShareLink}
           data-testid="button-share-main"
         />
