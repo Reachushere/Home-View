@@ -5648,14 +5648,99 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               const uploadResponse = await fetch(uploadUrl, { method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' } });
               if (!uploadResponse.ok) continue;
               const objectPath = objectStorageSync.normalizeObjectEntityPath(uploadUrl);
-              await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
+              const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
               console.log(`${logPrefix} Synced new file: ${file.name} → ${folderName}`);
+              if (newFile?.id) {
+                queueFileForPreparation(newFile.id);
+              }
             }
           }
         } catch (e: any) { console.log(`${logPrefix} OneDrive sync error for ${course.code}: ${e.message}`); }
       }
       console.log(`${logPrefix} OneDrive sync complete`);
     } catch (e: any) { console.log(`${logPrefix} OneDrive sync failed: ${e.message}`); }
+  }
+
+  let audioPreparationActive = false;
+  const audioPreparationQueue: number[] = [];
+
+  async function prepareFileAudio(fileId: number): Promise<void> {
+    try {
+      const file = await storage.getFile(fileId);
+      if (!file) {
+        console.log(`[AudioPrep] File ${fileId} not found — skipping`);
+        return;
+      }
+      if (file.preparedAudioPaths) {
+        console.log(`[AudioPrep] File ${fileId} (${file.originalName}) already prepared — skipping`);
+        return;
+      }
+
+      console.log(`[AudioPrep] ===== Preparing file ${fileId}: ${file.originalName} =====`);
+      const startTime = Date.now();
+
+      let text = await extractFileText(file);
+      if (!text || text.length < 20) {
+        console.log(`[AudioPrep] No usable text extracted from ${file.originalName} — skipping`);
+        return;
+      }
+
+      const chunks = chunkTextForNest(text);
+      if (chunks.length === 0) {
+        console.log(`[AudioPrep] No chunks generated for ${file.originalName} — skipping`);
+        return;
+      }
+
+      console.log(`[AudioPrep] ${file.originalName}: ${text.length} chars → ${chunks.length} chunks`);
+      const audioPaths: string[] = [];
+      const voice = 'nova';
+
+      for (let i = 0; i < chunks.length; i++) {
+        try {
+          console.log(`[AudioPrep] Generating chunk ${i + 1}/${chunks.length} for ${file.originalName} (${chunks[i].length} chars)`);
+          const audioPath = await generateAndSaveTTSAudio(chunks[i], `prep-${fileId}-chunk-${i}`, voice);
+          audioPaths.push(audioPath);
+        } catch (e: any) {
+          console.error(`[AudioPrep] Failed to generate chunk ${i + 1} for ${file.originalName}: ${e.message}`);
+          audioPaths.push('');
+          await new Promise(r => setTimeout(r, 2000));
+        }
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      await storage.updateFile(fileId, {
+        extractedText: text,
+        totalChunks: chunks.length,
+        preparedAudioPaths: JSON.stringify(audioPaths),
+        preparedAt: new Date(),
+      });
+
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+      console.log(`[AudioPrep] ===== Completed ${file.originalName}: ${chunks.length} chunks in ${elapsed}s =====`);
+    } catch (e: any) {
+      console.error(`[AudioPrep] Error preparing file ${fileId}: ${e.message}`);
+    }
+  }
+
+  async function processAudioPreparationQueue(): Promise<void> {
+    if (audioPreparationActive) return;
+    audioPreparationActive = true;
+    try {
+      while (audioPreparationQueue.length > 0) {
+        const fileId = audioPreparationQueue.shift()!;
+        await prepareFileAudio(fileId);
+      }
+    } finally {
+      audioPreparationActive = false;
+    }
+  }
+
+  function queueFileForPreparation(fileId: number): void {
+    if (!audioPreparationQueue.includes(fileId)) {
+      audioPreparationQueue.push(fileId);
+      console.log(`[AudioPrep] Queued file ${fileId} for preparation (queue size: ${audioPreparationQueue.length})`);
+      processAudioPreparationQueue().catch(e => console.error(`[AudioPrep] Queue processing error: ${e.message}`));
+    }
   }
 
   function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
@@ -5786,10 +5871,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
 
     let preGeneratedChunk0Path: string | null = null;
+    let prePreparedPaths: string[] = [];
+    if (fileToPlay.preparedAudioPaths) {
+      try { prePreparedPaths = JSON.parse(fileToPlay.preparedAudioPaths); } catch {}
+    }
     const chunk0PreGenPromise = (fileChunks.length > resumeFromChunk)
-      ? generateAndSaveTTSAudio(fileChunks[resumeFromChunk], `nest-chunk-${fileToPlay.id}-${resumeFromChunk}-${Date.now()}`, voice)
-          .then(p => { preGeneratedChunk0Path = p; console.log(`${logPrefix} Pre-generated chunk ${resumeFromChunk} TTS`); })
-          .catch(e => { console.warn(`${logPrefix} Chunk 0 pre-gen failed (will retry): ${e.message}`); })
+      ? (prePreparedPaths[resumeFromChunk] && prePreparedPaths[resumeFromChunk].length > 0
+          ? Promise.resolve().then(() => { preGeneratedChunk0Path = prePreparedPaths[resumeFromChunk]; console.log(`${logPrefix} Using pre-prepared audio for chunk ${resumeFromChunk}`); })
+          : generateAndSaveTTSAudio(fileChunks[resumeFromChunk], `nest-chunk-${fileToPlay.id}-${resumeFromChunk}-${Date.now()}`, voice)
+              .then(p => { preGeneratedChunk0Path = p; console.log(`${logPrefix} Pre-generated chunk ${resumeFromChunk} TTS`); })
+              .catch(e => { console.warn(`${logPrefix} Chunk 0 pre-gen failed (will retry): ${e.message}`); })
+        )
       : Promise.resolve();
 
     const initialChunkText = fileChunks[resumeFromChunk] || '';
@@ -6179,6 +6271,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       console.log(`[Nest Playback] Starting first chunk immediately`);
 
+      let preparedAudioCache: string[] = [];
+      if (fileId) {
+        try {
+          const fileForCache = await storage.getFile(fileId);
+          if (fileForCache?.preparedAudioPaths) {
+            preparedAudioCache = JSON.parse(fileForCache.preparedAudioPaths);
+            console.log(`[Nest Playback] Loaded ${preparedAudioCache.filter(p => p && p.length > 0).length} pre-prepared audio chunks`);
+          }
+        } catch {}
+      }
+
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 3;
 
@@ -6210,7 +6313,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         try {
           let audioPath: string;
-          if (i === startChunk && preGeneratedFirstChunkPath) {
+          if (preparedAudioCache[i] && preparedAudioCache[i].length > 0) {
+            audioPath = preparedAudioCache[i];
+            console.log(`[Nest Playback] Using pre-prepared audio for chunk ${i + 1}/${chunks.length}`);
+          } else if (i === startChunk && preGeneratedFirstChunkPath) {
             audioPath = preGeneratedFirstChunkPath;
             console.log(`[Nest Playback] Using pre-generated audio for chunk ${i + 1}/${chunks.length}`);
           } else {
@@ -6374,10 +6480,27 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
         buffer = Buffer.from(await pdfResponse.arrayBuffer());
         console.log(`[ExtractText] Downloaded ${buffer.length} bytes from OneDrive`);
-      } else {
-        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-        const objectStorage = new ObjectStorageService();
-        buffer = await objectStorage.downloadObject(file.objectPath);
+      } else if (file.objectPath) {
+        try {
+          const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+          const objectStorage = new ObjectStorageService();
+          const foundFile = await objectStorage.getObjectEntityFile(file.objectPath);
+          if (foundFile) {
+            const chunks: Buffer[] = [];
+            await new Promise<void>((resolve, reject) => {
+              const stream = foundFile.createReadStream();
+              stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+              stream.on('end', () => resolve());
+              stream.on('error', (err: Error) => reject(err));
+            });
+            buffer = Buffer.concat(chunks);
+            console.log(`[ExtractText] Downloaded ${buffer.length} bytes from object storage`);
+          } else {
+            console.error(`[ExtractText] File not found in object storage: ${file.objectPath}`);
+          }
+        } catch (osErr: any) {
+          console.error(`[ExtractText] Object storage download error: ${osErr.message}`);
+        }
       }
 
       if (!buffer) return null;
@@ -9438,6 +9561,41 @@ document.body.removeChild(a);
 
   const recentlyPreparedFiles: { id: number; name: string; folder: string; totalChunks: number; textLength: number; preparedAt: string }[] = [];
   (globalThis as any).__recentlyPreparedFiles = recentlyPreparedFiles;
+
+  app.post("/api/files/prepare-audio", async (req, res) => {
+    try {
+      const { fileId } = req.body || {};
+      if (fileId) {
+        queueFileForPreparation(fileId);
+        return res.json({ action: "queued", fileId });
+      }
+      const allFiles = await storage.getFiles();
+      const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && f.folder && (f.folder.includes('-module') || f.folder.includes('-reading')));
+      for (const file of unprepared) {
+        queueFileForPreparation(file.id);
+      }
+      res.json({ action: "queued", count: unprepared.length, files: unprepared.map((f: any) => ({ id: f.id, name: f.originalName, folder: f.folder })) });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  setTimeout(async () => {
+    try {
+      const allFiles = await storage.getFiles();
+      const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && f.folder && (f.folder.includes('-module') || f.folder.includes('-reading')));
+      if (unprepared.length > 0) {
+        console.log(`[AudioPrep] Startup scan: ${unprepared.length} unprepared files found — queueing`);
+        for (const file of unprepared) {
+          queueFileForPreparation(file.id);
+        }
+      } else {
+        console.log(`[AudioPrep] Startup scan: all files already prepared`);
+      }
+    } catch (e: any) {
+      console.error(`[AudioPrep] Startup scan error: ${e.message}`);
+    }
+  }, 30000);
 
   app.post("/api/files/monitor-sync", async (req, res) => {
     try {

@@ -199,6 +199,8 @@ export const files = pgTable("files", {
   ttsAudioUrl: text("tts_audio_url"),
   ttsGeneratedAt: timestamp("tts_generated_at"),
   extractedText: text("extracted_text"),
+  preparedAudioPaths: text("prepared_audio_paths"),
+  preparedAt: timestamp("prepared_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -15,7 +15,7 @@ export interface IStorage {
   getFile(id: number): Promise<FileRecord | undefined>;
   getFileByPath(objectPath: string): Promise<FileRecord | undefined>;
   createFile(file: InsertFile): Promise<FileRecord>;
-  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string }): Promise<FileRecord>;
+  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string; preparedAudioPaths?: string; preparedAt?: Date }): Promise<FileRecord>;
   deleteFile(id: number): Promise<void>;
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
   getAllSemesterSettings(): Promise<SemesterSettings[]>;
@@ -195,7 +195,7 @@ export class DatabaseStorage implements IStorage {
     return file;
   }
 
-  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string }): Promise<FileRecord> {
+  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string; preparedAudioPaths?: string; preparedAt?: Date }): Promise<FileRecord> {
     const setData: Record<string, unknown> = {};
     if (updates.displayName !== undefined) {
       setData.displayName = updates.displayName;
@@ -226,6 +226,12 @@ export class DatabaseStorage implements IStorage {
     }
     if (updates.extractedText !== undefined) {
       setData.extractedText = updates.extractedText;
+    }
+    if (updates.preparedAudioPaths !== undefined) {
+      setData.preparedAudioPaths = updates.preparedAudioPaths;
+    }
+    if (updates.preparedAt !== undefined) {
+      setData.preparedAt = updates.preparedAt;
     }
     const [updated] = await db
       .update(files)
