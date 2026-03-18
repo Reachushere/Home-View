@@ -7933,7 +7933,43 @@ document.body.removeChild(a);
         dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 7);
       }
-      dueDate.setHours(23, 59, 0, 0);
+
+      let eventStartTime: string | null = null;
+      let eventEndTime: string | null = null;
+      const noonMatch = fullText.match(/\bat\s+noon\b/i);
+      const timeMatch = fullText.match(/\bat\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
+      const rangeMatch = fullText.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*[-–to]+\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+
+      if (rangeMatch) {
+        let startH = parseInt(rangeMatch[1]);
+        const startM = rangeMatch[2] ? parseInt(rangeMatch[2]) : 0;
+        const startAmPm = (rangeMatch[3] || rangeMatch[6] || '').toLowerCase();
+        let endH = parseInt(rangeMatch[4]);
+        const endM = rangeMatch[5] ? parseInt(rangeMatch[5]) : 0;
+        const endAmPm = rangeMatch[6].toLowerCase();
+        if (startAmPm === 'pm' && startH !== 12) startH += 12;
+        if (startAmPm === 'am' && startH === 12) startH = 0;
+        if (endAmPm === 'pm' && endH !== 12) endH += 12;
+        if (endAmPm === 'am' && endH === 12) endH = 0;
+        if (!startAmPm && startH < endH - 5) { if (endH >= 12) startH += 12; }
+        eventStartTime = `${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}`;
+        eventEndTime = `${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`;
+        dueDate.setHours(startH, startM, 0, 0);
+      } else if (noonMatch) {
+        eventStartTime = '12:00';
+        dueDate.setHours(12, 0, 0, 0);
+      } else if (timeMatch) {
+        let h = parseInt(timeMatch[1]);
+        const mins = timeMatch[2] ? parseInt(timeMatch[2]) : 0;
+        const ampm = (timeMatch[3] || '').toLowerCase();
+        if (ampm === 'pm' && h !== 12) h += 12;
+        if (ampm === 'am' && h === 12) h = 0;
+        if (!ampm && h >= 1 && h <= 7) h += 12;
+        eventStartTime = `${String(h).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
+        dueDate.setHours(h, mins, 0, 0);
+      } else {
+        dueDate.setHours(23, 59, 0, 0);
+      }
 
       let taskType = 'reading';
       const typeLower = fullText.toLowerCase();
@@ -7972,6 +8008,8 @@ document.body.removeChild(a);
         type: taskType,
         courseName: courseName,
         dueDate: dueDate,
+        eventStartTime: eventStartTime,
+        eventEndTime: eventEndTime,
         weekNumber: weekNumber,
         priority: priority,
         description: description,
