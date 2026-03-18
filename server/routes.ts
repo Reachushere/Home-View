@@ -7879,6 +7879,132 @@ document.body.removeChild(a);
     }
   });
 
+  app.post("/api/webhook/email-homework", async (req, res) => {
+    try {
+      const webhookSecret = process.env.SITE_PASSWORD;
+      const authHeader = req.headers['x-webhook-secret'] || req.headers['authorization']?.replace('Bearer ', '');
+      if (webhookSecret && authHeader !== webhookSecret) {
+        console.warn("[Email Homework] Unauthorized attempt");
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { subject, body, from } = req.body || {};
+      console.log(`[Email Homework] ====== RECEIVED ======`);
+      console.log(`[Email Homework] From: ${from}, Subject: ${subject}`);
+      console.log(`[Email Homework] Body: ${body}`);
+
+      if (!subject) {
+        return res.status(400).json({ error: "Missing subject" });
+      }
+
+      const coursePattern = /^([A-Z]{3,5}\d{3})\s+/i;
+      const courseMatch = subject.match(coursePattern);
+      const courseName = courseMatch ? courseMatch[1].toUpperCase() : null;
+      const titleText = courseMatch ? subject.slice(courseMatch[0].length).trim() : subject.trim();
+
+      const fullText = [titleText, body || ''].join(' ');
+
+      let dueDate: Date | null = null;
+      const dueDatePatterns = [
+        /due\s+(\d{4}-\d{2}-\d{2})/i,
+        /due\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i,
+        /due\s+(\w+\s+\d{1,2}(?:,?\s*\d{4})?)/i,
+      ];
+      for (const pat of dueDatePatterns) {
+        const m = fullText.match(pat);
+        if (m) {
+          let dateStr = m[1];
+          const hasYear = /\d{4}/.test(dateStr);
+          if (!hasYear) {
+            dateStr = dateStr.replace(/,?\s*$/, '') + ', ' + new Date().getFullYear();
+          }
+          const parsed = new Date(dateStr);
+          if (!isNaN(parsed.getTime())) {
+            if (parsed.getTime() < Date.now() - 86400000 && !hasYear) {
+              parsed.setFullYear(parsed.getFullYear() + 1);
+            }
+            dueDate = parsed;
+            break;
+          }
+        }
+      }
+
+      if (!dueDate) {
+        dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 7);
+      }
+      dueDate.setHours(23, 59, 0, 0);
+
+      let taskType = 'reading';
+      const typeLower = fullText.toLowerCase();
+      if (/\bessay\b/.test(typeLower)) taskType = 'essay';
+      else if (/\bquiz\b/.test(typeLower)) taskType = 'quiz';
+      else if (/\bexam\b|\btest\b|\bfinal\b|\bmidterm\b/.test(typeLower)) taskType = 'exam';
+      else if (/\bdiscussion\b|\bforum\b|\bpost\b/.test(typeLower)) taskType = 'discussion';
+      else if (/\bproject\b|\bpresentation\b/.test(typeLower)) taskType = 'project';
+      else if (/\bpoll\b|\bsurvey\b/.test(typeLower)) taskType = 'poll';
+      else if (/\bmodule\b/.test(typeLower)) taskType = 'module';
+
+      let weekNumber = 1;
+      const weekMatch = fullText.match(/week\s*(\d+)/i);
+      if (weekMatch) {
+        weekNumber = parseInt(weekMatch[1], 10);
+      } else {
+        const semesterSettings = await storage.getActiveSemesterSettings();
+        if (semesterSettings?.semesterStartDate) {
+          const { getWeekNumber } = await import('../shared/schema');
+          weekNumber = getWeekNumber(
+            new Date(),
+            new Date(semesterSettings.semesterStartDate),
+            semesterSettings.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null
+          );
+        }
+      }
+
+      let priority = 'medium';
+      if (/\burgent\b|\bhigh\b|\basap\b|\bimportant\b/i.test(fullText)) priority = 'high';
+      else if (/\blow\b|\boptional\b/i.test(fullText)) priority = 'low';
+
+      const description = body?.trim() || null;
+
+      const taskData: any = {
+        title: titleText,
+        type: taskType,
+        courseName: courseName,
+        dueDate: dueDate,
+        weekNumber: weekNumber,
+        priority: priority,
+        description: description,
+        isCompleted: false,
+      };
+
+      console.log(`[Email Homework] Creating task: ${JSON.stringify(taskData)}`);
+      const task = await storage.createTask(taskData);
+
+      try {
+        const event = await createCalendarEvent({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+        });
+        if (event?.id) {
+          await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: 'google' });
+        }
+      } catch (calErr: any) {
+        console.log(`[Email Homework] Calendar sync failed (non-fatal): ${calErr.message}`);
+      }
+
+      console.log(`[Email Homework] Created task #${task.id}: "${task.title}" (${task.type}, ${task.courseName}, week ${task.weekNumber}, due ${dueDate.toDateString()})`);
+      res.json({ success: true, taskId: task.id, title: task.title, type: task.type, courseName: task.courseName, dueDate: dueDate.toISOString(), weekNumber });
+
+    } catch (error: any) {
+      console.error("[Email Homework] Error:", error);
+      res.status(500).json({ error: "Failed to create task from email", details: error.message });
+    }
+  });
+
   // POST /api/webhook/play-urgent-pdf - Home Assistant webhook to play most urgent unlistened PDF
   // Priority: 1) CPPA modules, 2) Other course modules, 3) CPPA readings
   // Resumes from last position if partially listened
