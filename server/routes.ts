@@ -6862,7 +6862,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press"],
+      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-shower-button", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press"],
     });
   });
 
@@ -6976,7 +6976,89 @@ document.body.removeChild(a);
     }
   });
 
-  // Water sensor automation removed — playback is now triggered only by cat lights, knob press, or manual trigger
+  app.post("/api/webhook/cat-shower-button", async (req, res) => {
+    try {
+      console.log(`[Shower Button] ====== WEBHOOK TRIGGERED ======`);
+      console.log(`[Shower Button] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
+
+      const timeSinceStart = Date.now() - SERVER_START_TIME;
+      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
+        console.log(`[Shower Button] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown)`);
+        return res.json({ action: "ignored", reason: "Server startup cooldown" });
+      }
+
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+      if (catWashPlaybackActive && catWashPlaybackState) {
+        const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
+        const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
+        const likelyStale = msSinceStart > 3 * 60 * 1000 && chunkStillAtStart;
+
+        if (likelyStale) {
+          console.log(`[Shower Button] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
+          catWashPlaybackActive = false;
+          catWashPlaybackStartedAt = null;
+          catWashPlaybackState = null;
+        } else {
+          console.log(`[Shower Button] Already playing: "${catWashPlaybackState.fileName}" — skipping`);
+          return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
+        }
+      }
+
+      const today = torontoDate();
+      const semesterSettings = await storage.getActiveSemesterSettings();
+
+      if (!semesterSettings) {
+        console.log(`[Shower Button] No active semester — playing CHUM FM`);
+        await playChumFmRadio(haUrl);
+        return res.json({ action: "radio", reason: "No active semester" });
+      }
+
+      let currentWeekNumber = 1;
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+
+      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]');
+
+      const allFiles = await storage.getFiles();
+      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+
+      if (!nextFile) {
+        console.log(`[Shower Button] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
+        await playChumFmRadio(haUrl);
+        return res.json({ action: "radio", reason: `All week ${currentWeekNumber} readings complete — playing CHUM FM 104.5` });
+      }
+
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      const fileDesc = describeFileForTTS(nextFile, currentWeekNumber);
+      console.log(`[Shower Button] Found file: ${fileDesc} — ${fileName} (id=${nextFile.id})`);
+
+      res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
+
+      const confirmTTS = `Okay, I will now play ${fileDesc}.`;
+      try {
+        const confirmPath = await generateAndSaveTTSAudio(confirmTTS, `shower-button-confirm-${Date.now()}`);
+        const appUrl = "https://home-view--bkh416.replit.app";
+        await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+        await new Promise(r => setTimeout(r, 4000));
+      } catch (e: any) {
+        console.log(`[Shower Button] Confirm TTS error: ${e.message}`);
+      }
+
+      catWashPlaybackTrigger = 'lights';
+      await startConfirmedPlaybackFlow(nextFile, '[Shower Button]', 'echo');
+
+    } catch (error: any) {
+      console.error("[Shower Button] Error:", error);
+      res.status(500).json({ error: "Failed to handle shower button webhook", details: error.message });
+    }
+  });
 
   app.post("/api/webhook/cat-lights-confirm", async (req, res) => {
     console.log(`[Cat Lights Confirm] ====== CONFIRMATION RECEIVED ======`);
