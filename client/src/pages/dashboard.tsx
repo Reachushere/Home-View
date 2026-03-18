@@ -5237,6 +5237,8 @@ export default function Dashboard() {
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
     const lastShownKey = `semChecklist_lastShown_${semesterSettings.id}`;
     const snoozeUntilKey = `semChecklist_snoozeUntil_${semesterSettings.id}`;
+    const allDoneKey = `semChecklist_allDone_${semesterSettings.id}`;
+    if (localStorage.getItem(allDoneKey) === 'true') return;
     const snoozeUntil = parseInt(localStorage.getItem(snoozeUntilKey) || '0', 10);
     if (snoozeUntil && now.getTime() < snoozeUntil) return;
     const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
@@ -5247,7 +5249,10 @@ export default function Dashboard() {
     fetch('/api/semester-checklist', { credentials: 'include' })
       .then(r => r.json())
       .then(data => {
-        if (data.allChecked) return;
+        if (data.allChecked) {
+          localStorage.setItem(allDoneKey, 'true');
+          return;
+        }
         setSemesterChecklistItems(data.items);
         setSemesterChecklistId(data.semesterId);
         setShowSemesterChecklist(true);

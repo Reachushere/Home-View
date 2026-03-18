@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { Check } from "lucide-react";
 
 type ChecklistItem = {
   id: number;
@@ -31,6 +31,13 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
   const [snoozeValue, setSnoozeValue] = useState(30);
   const [snoozeUnit, setSnoozeUnit] = useState<'minutes' | 'hours'>('minutes');
   const [localChecked, setLocalChecked] = useState<Record<number, boolean>>({});
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+  const onItemsChangeRef = useRef(onItemsChange);
+  onItemsChangeRef.current = onItemsChange;
+  const onOpenChangeRef = useRef(onOpenChange);
+  onOpenChangeRef.current = onOpenChange;
+  const pendingRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     const map: Record<number, boolean> = {};
@@ -38,26 +45,36 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
     setLocalChecked(map);
   }, [items]);
 
-  const handleCheck = useCallback((item: ChecklistItem, checked: boolean) => {
-    setLocalChecked(prev => ({ ...prev, [item.id]: checked }));
+  const handleCheck = (item: ChecklistItem) => {
+    if (pendingRef.current.has(item.id)) return;
+    const newChecked = !localChecked[item.id];
+    setLocalChecked(prev => ({ ...prev, [item.id]: newChecked }));
+    pendingRef.current.add(item.id);
 
     fetch('/api/semester-checklist', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ semesterSettingsId: item.semesterSettingsId, courseCode: item.courseCode, itemType: item.itemType, isChecked: checked }),
+      body: JSON.stringify({ semesterSettingsId: item.semesterSettingsId, courseCode: item.courseCode, itemType: item.itemType, isChecked: newChecked }),
     })
       .then(r => r.json())
       .then(data => {
-        const updated = items.map(i => i.id === item.id ? { ...i, isChecked: checked } : i);
-        onItemsChange(updated);
+        pendingRef.current.delete(item.id);
+        const updated = itemsRef.current.map(i => i.id === item.id ? { ...i, isChecked: newChecked } : i);
+        onItemsChangeRef.current(updated);
         if (data.allChecked) {
           toast({ title: "All done!", description: "Semester setup checklist complete." });
-          onOpenChange(false);
+          if (semesterSettingsId) {
+            localStorage.setItem(`semChecklist_allDone_${semesterSettingsId}`, 'true');
+          }
+          setTimeout(() => onOpenChangeRef.current(false), 600);
         }
       })
-      .catch(err => console.error('Error updating checklist:', err));
-  }, [items, onItemsChange, onOpenChange, toast]);
+      .catch(err => {
+        pendingRef.current.delete(item.id);
+        console.error('Error updating checklist:', err);
+      });
+  };
 
   const grouped: Record<string, ChecklistItem[]> = {};
   items.forEach(item => {
@@ -74,20 +91,33 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
         </DialogHeader>
         <div className="flex flex-col gap-4 mt-2">
           {Object.entries(grouped).map(([courseCode, courseItems]) => (
-            <div key={courseCode} className="flex flex-col gap-2">
+            <div key={courseCode} className="flex flex-col gap-1">
               <span className="text-xs font-bold text-white/80 uppercase tracking-wider">{courseCode}</span>
               {courseItems.map(item => {
                 const label = item.itemType === 'tasks' ? 'Input all assignments, essays, projects and exams' : item.itemType === 'modules' ? 'Upload the modules' : 'Upload reading materials';
+                const checked = !!localChecked[item.id];
                 return (
-                  <label key={item.id} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded px-2 py-1.5 transition-colors" data-testid={`checklist-${courseCode}-${item.itemType}`}>
-                    <Checkbox
-                      className="h-5 w-5 border-2"
-                      checked={!!localChecked[item.id]}
-                      onCheckedChange={(checked) => handleCheck(item, !!checked)}
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 rounded px-2 py-2.5 active:bg-white/10 select-none"
+                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', cursor: 'pointer', minHeight: '44px' }}
+                    onClick={() => handleCheck(item)}
+                    data-testid={`checklist-${courseCode}-${item.itemType}`}
+                  >
+                    <div
+                      className="shrink-0 flex items-center justify-center rounded border-2 transition-colors"
+                      style={{
+                        width: '28px',
+                        height: '28px',
+                        backgroundColor: checked ? '#22c55e' : 'transparent',
+                        borderColor: checked ? '#22c55e' : 'rgba(255,255,255,0.5)',
+                      }}
                       data-testid={`checkbox-${courseCode}-${item.itemType}`}
-                    />
-                    <span className="text-sm text-white/90">{label}</span>
-                  </label>
+                    >
+                      {checked && <Check className="h-5 w-5 text-white" strokeWidth={3} />}
+                    </div>
+                    <span className={`text-sm ${checked ? 'text-white/50 line-through' : 'text-white/90'}`}>{label}</span>
+                  </div>
                 );
               })}
             </div>
