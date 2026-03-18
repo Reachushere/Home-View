@@ -18044,24 +18044,25 @@ export default function Dashboard() {
                       const startDay = t.startDate
                         ? Math.floor((startOfDay(new Date(t.startDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))
                         : dueDay;
-                      return { id: t.id, start: Math.max(0, startDay), end: Math.max(0, dueDay) };
+                      return { id: t.id, start: Math.max(0, startDay), end: Math.max(0, dueDay), span: Math.max(0, dueDay) - Math.max(0, startDay) };
                     });
-                    const slotOccupancy: number[][] = [];
+                    taskIntervals.sort((a, b) => b.span - a.span || a.start - b.start);
+                    const slotOccupancy: Set<number>[] = [];
                     for (const interval of taskIntervals) {
                       let assignedSlot = -1;
                       for (let s = 0; s < slotOccupancy.length; s++) {
                         let conflict = false;
-                        for (const occupiedDay of slotOccupancy[s]) {
-                          if (occupiedDay >= interval.start && occupiedDay <= interval.end) { conflict = true; break; }
+                        for (let d = interval.start; d <= interval.end; d++) {
+                          if (slotOccupancy[s].has(d)) { conflict = true; break; }
                         }
                         if (!conflict) { assignedSlot = s; break; }
                       }
                       if (assignedSlot === -1) {
                         assignedSlot = slotOccupancy.length;
-                        slotOccupancy.push([]);
+                        slotOccupancy.push(new Set());
                       }
                       for (let d = interval.start; d <= interval.end; d++) {
-                        slotOccupancy[assignedSlot].push(d);
+                        slotOccupancy[assignedSlot].add(d);
                       }
                       taskSlotMap.set(interval.id, assignedSlot);
                     }
