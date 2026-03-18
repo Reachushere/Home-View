@@ -17406,7 +17406,7 @@ export default function Dashboard() {
               top: '-4px', 
               left: '-16px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
-              bottom: '-16px', 
+              bottom: '-11px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.5)',
