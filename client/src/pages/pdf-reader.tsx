@@ -905,13 +905,16 @@ export default function PDFReaderPage() {
         setChunksList(preChunks);
         setTotalChunks(preChunks.length);
         const key = getFileKey();
-        let serverChecked = new Set<number>();
-        if (file?.checkedChunks) {
-          try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+        let finalChecked = new Set<number>();
+        if (!skipCheckedReloadRef.current) {
+          let serverChecked = new Set<number>();
+          if (file?.checkedChunks) {
+            try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+          }
+          finalChecked = serverChecked.size > 0 ? serverChecked : new Set<number>();
+          setCheckedChunks(finalChecked);
+          if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, preChunks.length);
         }
-        const finalChecked = serverChecked.size > 0 ? serverChecked : new Set<number>();
-        setCheckedChunks(finalChecked);
-        if (finalChecked.size > 0) saveCheckedChunks(key, finalChecked, preChunks.length);
         console.log("Pre-populated chunks:", preChunks.length);
 
         const firstUnlistened = preChunks.findIndex((_, idx) => !finalChecked.has(idx));
@@ -1585,29 +1588,31 @@ export default function PDFReaderPage() {
   };
 
   const restartFromBeginning = async () => {
+    skipCheckedReloadRef.current = true;
+    resetStartRef.current = true;
     const key = getFileKey();
     const emptySet = new Set<number>();
     setCheckedChunks(emptySet);
-    saveCheckedChunks(key, emptySet, totalChunks);
     setCurrentChunk(0);
     currentChunkRef.current = 0;
     localStorage.removeItem(`checkedChunks_${key}`);
+    localStorage.removeItem(`chunkProgress_${key}`);
+    const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+    delete allProgress[key];
+    localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
     if (fileId) {
-      try {
-        await fetch(`/api/files/${fileId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
-        });
+      fetch(`/api/files/${fileId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
+      }).then(() => {
         console.log(`[Reset] Server progress cleared for file ${fileId}`);
         queryClient.invalidateQueries({ queryKey: ['/api/files'] });
         queryClient.invalidateQueries({ queryKey: ['/api/files', fileId] });
-      } catch (e) {
+      }).catch(e => {
         console.error(`[Reset] Failed to clear server progress:`, e);
-      }
+      });
     }
-    skipCheckedReloadRef.current = true;
-    resetStartRef.current = true;
     startReading();
   };
 
