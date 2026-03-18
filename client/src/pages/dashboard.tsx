@@ -11731,7 +11731,7 @@ export default function Dashboard() {
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
         }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-          <span style={{ fontSize: '12px', fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1', color: '#facc15' }}>{formatPomodoroTime(pomodoroTime)}</span>
+          <span style={{ fontSize: '14px', fontWeight: 800, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1', color: '#facc15' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
         <div className="flex items-center gap-[22px]">
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
@@ -19392,10 +19392,10 @@ export default function Dashboard() {
           </div>
           {/* Calendar Top Resize Handle — top-left side of glass box */}
           <div
-            style={{ position: 'absolute', left: '-4px', top: '-27px', width: '191px', height: '13px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            style={{ position: 'absolute', left: '-4px', top: '-31px', width: '191px', height: '17px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
             data-testid="calendar-top-resize-handle"
           >
-            <div style={{ width: '191px', height: '13px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '191px', height: '17px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} onClick={(e) => { e.stopPropagation(); startTransition(() => setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30))); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr', flexShrink: 0 }}>⋮⋮</span>
@@ -19406,10 +19406,10 @@ export default function Dashboard() {
           {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
           <div
             className="z-50"
-            style={{ position: 'absolute', right: '-18px', top: '11px', width: '18px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'absolute', right: '-17px', top: '11px', width: '17px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-calendar-right"
           >
-            <div style={{ width: '18px', height: '191px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '17px', height: '191px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }} onClick={(e) => { e.stopPropagation(); startTransition(() => setCalendarReduction(prev => Math.max(0, prev - 30))); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', flexShrink: 0 }}>⋮⋮</span>
@@ -19419,10 +19419,10 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            style={{ position: 'absolute', left: '50%', bottom: '-12px', transform: 'translateX(-50%)', width: '191px', height: '12px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
+            style={{ position: 'absolute', left: '50%', bottom: '-17px', transform: 'translateX(-50%)', width: '191px', height: '17px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
             data-testid="calendar-height-resize-handle"
           >
-            <div style={{ width: '191px', height: '12px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '191px', height: '17px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} onClick={(e) => { e.stopPropagation(); setCalendarHeight(prev => Math.min(window.innerHeight - 100, prev + 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr', flexShrink: 0 }}>⋮⋮</span>
@@ -20629,10 +20629,10 @@ export default function Dashboard() {
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
-            style={{ left: '-19px', bottom: '16px', width: '18px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ left: '-18px', bottom: '16px', width: '17px', height: '191px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '18px', height: '191px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+            <div style={{ width: '17px', height: '191px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }} onClick={(e) => { e.stopPropagation(); startTransition(() => setCalendarReduction(prev => prev + 30)); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <span className="cursor-grab active:cursor-grabbing select-none" style={{ fontSize: '13px', lineHeight: '1', color: '#000', flexShrink: 0 }}>⋮⋮</span>
