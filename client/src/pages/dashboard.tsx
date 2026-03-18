@@ -19441,7 +19441,7 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <button
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'absolute', right: '3px', bottom: '-15px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 50, background: 'none', border: 'none', padding: 0, pointerEvents: 'auto' }}
+            style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 3}px`, bottom: `${calendarBottom - 18}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: 0, pointerEvents: 'auto' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
