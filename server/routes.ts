@@ -6318,7 +6318,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  function chunkTextForNest(text: string, maxLength: number = 4000): string[] {
+  function chunkTextForNest(text: string, maxLength: number = 1500): string[] {
     const sentences = text.split(/(?<=[.!?])\s+/);
     const chunks: string[] = [];
     let current = '';
@@ -7770,6 +7770,15 @@ document.body.removeChild(a);
       });
       console.log(`[Cat Wash Stop] Sent media_stop to Nest speaker`);
       stopped.push("nestSpeaker");
+
+      const appUrl = "https://home-view--bkh416.replit.app";
+      try {
+        const stopConfirmPath = await generateAndSaveTTSAudio("Stop received.", `cat-wash-stop-confirm-${Date.now()}`);
+        await playOnNestSpeaker(`${appUrl}${stopConfirmPath}`);
+        console.log(`[Cat Wash Stop] Played "Stop received" on Nest`);
+      } catch (e2: any) {
+        console.log(`[Cat Wash Stop] Stop confirm TTS error: ${e2.message}`);
+      }
     } catch (e: any) {
       console.error(`[Cat Wash Stop] Failed to stop Nest speaker: ${e.message}`);
     }
