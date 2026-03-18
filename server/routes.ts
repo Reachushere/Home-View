@@ -7123,6 +7123,12 @@ document.body.removeChild(a);
           stopTTSSession("Light turned off - stopping playback");
           stopped.push("ttsSession");
         }
+        try {
+          await stopAllCatWashroomSpeakers(haUrl);
+          stopped.push("echoSpeakers");
+        } catch (e: any) {
+          console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
+        }
         catLightsPromptPending = false;
         catWashPlaybackTrigger = null;
         console.log(`[Cat Lights] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
@@ -7254,10 +7260,10 @@ document.body.removeChild(a);
         return;
       }
 
-      await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r => setTimeout(r, 2000));
 
       {
-        const maxWaitMs = 20000;
+        const maxWaitMs = 23000;
         console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation...`);
 
         const confirmed = await new Promise<boolean>((resolve) => {
