@@ -7968,7 +7968,7 @@ document.body.removeChild(a);
         eventStartTime = `${String(h).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
         dueDate.setHours(h, mins, 0, 0);
       } else {
-        dueDate.setHours(23, 59, 0, 0);
+        dueDate.setHours(9, 0, 0, 0);
       }
 
       let taskType = 'reading';
