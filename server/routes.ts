@@ -5696,11 +5696,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function playChumFmRadio(haUrl: string): Promise<void> {
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-    await fetch(`${haUrl}/api/services/media_player/play_media`, {
-      method: 'POST', headers: haHeaders,
-      body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_type: "custom", media_content_id: "play 104.5 chumfm" }),
-    });
-    console.log(`[Radio] Playing CHUM FM 104.5 on Nest`);
+    await Promise.allSettled(
+      CAT_ECHO_ENTITIES.map(entity =>
+        fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: entity, media_content_type: "custom", media_content_id: "play 104.5 chum fm" }),
+        })
+      )
+    );
+    console.log(`[Radio] Playing CHUM FM 104.5 on Echo cat washroom speakers`);
   }
 
   async function startConfirmedPlaybackFlow(
@@ -5818,6 +5822,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     currentTabletReaderUrl = readerUrl;
     startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice);
+  }
+
+  function describeFileForTTS(file: any, weekNumber: number): string {
+    const folder = (file.folder || '').toLowerCase();
+    const name = (file.originalName || file.displayName || '').toLowerCase();
+    const codeMatch = folder.match(/([a-z]{3,5}\s?\d{3})/i) || name.match(/([a-z]{3,5}\s?\d{3})/i);
+    const courseCode = codeMatch ? codeMatch[1].toUpperCase().replace(/\s/g, '') : '';
+    const shortCode = courseCode.length >= 4 ? courseCode.substring(0, 4) : courseCode;
+    const isModule = folder.includes('module') || name.includes('module');
+    const fileType = isModule ? 'Module' : 'Reading File';
+    if (shortCode) {
+      return `${shortCode} ${fileType} for week ${weekNumber}`;
+    }
+    return `${fileType} for week ${weekNumber}`;
   }
 
   function orderFilesByCoursePriority(files: any[]): any[] {
@@ -6138,15 +6156,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.log(`[Nest Playback] Attention prompt after ${chunksPlayedSinceLastPrompt} chunks`);
           const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`, voice);
           await playOnNestSpeaker(`${appUrl}${promptPath}`);
-          await new Promise(r => setTimeout(r, 5000));
           chunksPlayedSinceLastPrompt = 0;
-          if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
-            if (fileId) {
-              try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
-              console.log(`[Nest Playback] Saved progress on abort after attention: chunk ${i}`);
-            }
-            break;
-          }
         }
 
         const chunkText = chunks[i];
@@ -6194,33 +6204,48 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[Nest Playback] All chunks complete for "${fileName}"`);
         try { await storage.updateFile(fileId, { listened: true, lastChunkIndex: chunks.length }); } catch {}
 
-        if (catWashPlaybackState) {
-          try {
-            const resp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/cat-wash/update-progress`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ fileId, completed: true }),
-            });
-            const data = await resp.json();
-            if (data.nextFile) {
-              console.log(`[Nest Playback] Auto-continuing to next file: ${data.nextFile.name}`);
-              const nextFiles = await storage.getFiles();
-              const nextFile = nextFiles.find((f: any) => f.id === data.nextFile.id);
-              if (nextFile) {
-                const nextText = await extractFileText(nextFile);
-                if (nextText) {
-                  const nextChunks = chunkTextForNest(nextText);
-                  startNestChunkPlayback(nextFile.id, nextFile.displayName || nextFile.originalName, nextChunks, 0, sessionId, voice);
-                  return;
-                }
-              }
+        const semesterSettings = await storage.getActiveSemesterSettings();
+        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+        const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+        const completedFileDesc = describeFileForTTS({ folder: catWashPlaybackState?.fileName || fileName, originalName: fileName }, currentWeekNumber);
+
+        const allFilesNow = await storage.getFiles();
+        const nextFile = findNextFileByPriority(allFilesNow, currentWeekNumber, fileId);
+
+        if (nextFile) {
+          const nextFileDesc = describeFileForTTS(nextFile, currentWeekNumber);
+          const transitionText = `${completedFileDesc} is complete. Now playing ${nextFileDesc}.`;
+          console.log(`[Nest Playback] Transition: "${transitionText}"`);
+          const transitionPath = await generateAndSaveTTSAudio(transitionText, `nest-transition-${Date.now()}`, voice);
+          await playOnNestSpeaker(`${appUrl}${transitionPath}`);
+          await new Promise(r => setTimeout(r, 6000));
+
+          const nextText = await extractFileText(nextFile);
+          if (nextText) {
+            const nextChunks = chunkTextForNest(nextText);
+            if (nextChunks.length > 0) {
+              const nextName = nextFile.displayName || nextFile.originalName;
+              catWashPlaybackState = {
+                fileId: nextFile.id,
+                fileName: nextName,
+                chunkIndex: 0,
+                totalChunks: nextChunks.length,
+                chunks: nextChunks,
+                currentWords: [],
+                wordIndex: 0,
+                startedAt: new Date(),
+                chunkStartedAt: new Date(),
+                estimatedChunkDuration: 0,
+                playbackMode: 'server-tts',
+              };
+              startNestChunkPlayback(nextFile.id, nextName, nextChunks, 0, sessionId, voice);
+              return;
             }
-          } catch (e: any) {
-            console.error(`[Nest Playback] Error checking next file: ${e.message}`);
           }
         }
 
-        const completionPath = await generateAndSaveTTSAudio("All readings complete. Great job Bryn.", `nest-complete-${Date.now()}`, voice);
+        const completionPath = await generateAndSaveTTSAudio("All readings for this week are complete. Great job Bryn.", `nest-complete-${Date.now()}`, voice);
         await playOnNestSpeaker(`${appUrl}${completionPath}`);
       }
 
@@ -6344,8 +6369,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const cleanName = fileName ? fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() : '';
     const goodbyeText = cleanName
-      ? `Stopping. ${cleanName}. File position saved. See you next time Bryn.`
-      : `Stopping playback. See you next time Bryn.`;
+      ? `Okay, the file position for ${cleanName} has been saved. See you next time Bryn.`
+      : `Okay, the file position has been saved. See you next time Bryn.`;
 
     console.log(`[Nest Stop] Reason: ${reason}. Goodbye: "${goodbyeText}"`);
 
@@ -7123,13 +7148,31 @@ document.body.removeChild(a);
       }
 
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-      const ttsMessage = `Would you like to listen to your module reading?`;
-      console.log(`[Cat Lights] Sending TTS prompt immediately (catLightsPromptPending=true)...`);
-      try {
-        const stateResp = await fetch(`${haUrl}/api/states/${CAT_WR_HA_VOICE_ENTITY}`, { headers: haHeaders });
-        const stateData = stateResp.ok ? await stateResp.json() : null;
-        console.log(`[Cat Lights] HA Voice state before TTS: ${JSON.stringify({ state: stateData?.state, volume: stateData?.attributes?.volume_level, is_volume_muted: stateData?.attributes?.is_volume_muted, friendly_name: stateData?.attributes?.friendly_name, supported_features: stateData?.attributes?.supported_features })}`);
 
+      let currentWeekNumber = 1;
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+
+      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+
+      const allFiles = await storage.getFiles();
+      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+
+      if (!nextFile) {
+        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
+        catLightsPromptPending = false;
+        await playChumFmRadio(haUrl);
+        return;
+      }
+
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      const fileDesc = describeFileForTTS(nextFile, currentWeekNumber);
+      console.log(`[Cat Lights] Found next file: ${fileDesc} — ${fileName} (id=${nextFile.id})`);
+
+      const ttsMessage = `Would you like to play ${fileDesc}?`;
+      console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
+      try {
         const [boolOffResp, boolOnResp] = await Promise.all([
           fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
           fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
@@ -7146,35 +7189,26 @@ document.body.removeChild(a);
             body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
           }),
         ]);
-        console.log(`[Cat Lights] Set HA Voice + Nest volume to 0.75`);
 
         let ttsSent = false;
-
-        console.log(`[Cat Lights] Trying tts.speak with entity=tts.home_assistant_cloud, target=${CAT_WR_HA_VOICE_ENTITY}`);
         try {
           const tts1 = await fetch(`${haUrl}/api/services/tts/speak`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
           });
-          const tts1Body = await tts1.text();
-          console.log(`[Cat Lights] tts.speak response: ${tts1.status} body=${tts1Body.substring(0, 500)}`);
           if (tts1.ok) ttsSent = true;
         } catch (e: any) {
           console.log(`[Cat Lights] tts.speak error: ${e.message}`);
         }
 
         if (!ttsSent) {
-          console.log(`[Cat Lights] tts.speak failed — trying OpenAI TTS via play_media on HA Voice only...`);
           try {
             const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
             const appUrl = "https://home-view--bkh416.replit.app";
-            const fullAudioUrl = `${appUrl}${audioPath}`;
-            console.log(`[Cat Lights] Generated OpenAI TTS audio: ${fullAudioUrl}`);
-            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: fullAudioUrl, media_content_type: "music" }),
+              body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
             });
-            console.log(`[Cat Lights] play_media on HA Voice: ${playResp.status} ${(await playResp.text()).substring(0, 300)}`);
           } catch (fallbackErr: any) {
             console.log(`[Cat Lights] OpenAI TTS fallback failed: ${fallbackErr.message}`);
           }
@@ -7186,36 +7220,9 @@ document.body.removeChild(a);
         return;
       }
 
-      let currentWeekNumber = 1;
-      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
-
-      await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
-
-      const allFiles = await storage.getFiles();
-      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
-
-      if (!nextFile) {
-        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
-        catLightsPromptPending = false;
-        try {
-          await fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) });
-        } catch {}
-        await playChumFmRadio(haUrl);
-        return;
-      }
-
-      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
-      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-      const courseMatchL = nextFile.folder?.match(/([a-z]{3,5}\d{3})/i);
-      const courseNameL = courseMatchL ? courseMatchL[0].toUpperCase() : '';
-      const fileTypeL = isModuleFile(nextFile) ? 'module' : 'reading';
-      console.log(`[Cat Lights] Found next file: ${courseNameL} ${fileTypeL} — ${fileName} (id=${nextFile.id})`);
-
       {
         const maxWaitMs = 15000;
-        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation via /api/webhook/cat-lights-confirm or input_boolean ...`);
+        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation...`);
 
         const confirmed = await new Promise<boolean>((resolve) => {
           let resolved = false;
@@ -7228,7 +7235,7 @@ document.body.removeChild(a);
               if (resp.ok) {
                 const data = await resp.json();
                 if (data.state === 'on') {
-                  console.log(`[Cat Lights] Confirmation received via input_boolean (${MODULE_READING_CONFIRMED} = on)`);
+                  console.log(`[Cat Lights] Confirmation received via input_boolean`);
                   finish(true);
                 }
               }
@@ -7244,13 +7251,23 @@ document.body.removeChild(a);
         } catch {}
 
         if (!confirmed) {
-          console.log(`[Cat Lights] No confirmation received — playing CHUM FM`);
+          console.log(`[Cat Lights] No confirmation received — playing CHUM FM on Echo speakers`);
           catLightsPromptPending = false;
           await playChumFmRadio(haUrl);
           return;
         }
         console.log(`[Cat Lights] Confirmation received — starting playback`);
         catLightsPromptPending = false;
+
+        const confirmTTS = `Okay, I will now play ${fileDesc}.`;
+        try {
+          const confirmPath = await generateAndSaveTTSAudio(confirmTTS, `cat-lights-confirm-${Date.now()}`);
+          const appUrl = "https://home-view--bkh416.replit.app";
+          await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+          await new Promise(r => setTimeout(r, 4000));
+        } catch (e: any) {
+          console.log(`[Cat Lights] Confirm TTS error: ${e.message}`);
+        }
       }
 
       catWashPlaybackTrigger = 'lights';
