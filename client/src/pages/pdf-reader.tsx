@@ -1178,6 +1178,27 @@ export default function PDFReaderPage() {
     }
     return () => { if (highlightRafRef.current) { cancelAnimationFrame(highlightRafRef.current); highlightRafRef.current = null; } };
   }, [isPlaying, isPaused]);
+  const wordWeightsRef = useRef<number[]>([]);
+  const wordCumulativeRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    if (chunkWords.length === 0) return;
+    const weights = chunkWords.map((w: string) => {
+      const base = Math.max(w.replace(/[^a-zA-Z]/g, '').length, 1);
+      const hasPause = /[.!?;:]$/.test(w) ? 2.5 : /[,]$/.test(w) ? 1.3 : 0;
+      return base + hasPause;
+    });
+    const total = weights.reduce((a: number, b: number) => a + b, 0);
+    const cumulative: number[] = [];
+    let sum = 0;
+    for (const w of weights) {
+      sum += w / total;
+      cumulative.push(sum);
+    }
+    wordWeightsRef.current = weights;
+    wordCumulativeRef.current = cumulative;
+  }, [chunkWords]);
+
   const handleTimeUpdate = () => {
     if (!audioRef.current || chunkWords.length === 0 || audioDurationRef.current === 0) return;
     
@@ -1185,7 +1206,14 @@ export default function PDFReaderPage() {
     var duration = audioDurationRef.current;
     var progress = currentTime / duration;
     
-    var estimatedWordIndex = Math.floor(progress * chunkWords.length);
+    var estimatedWordIndex: number;
+    const cumulative = wordCumulativeRef.current;
+    if (cumulative.length === chunkWords.length) {
+      estimatedWordIndex = cumulative.findIndex((c: number) => c >= progress);
+      if (estimatedWordIndex === -1) estimatedWordIndex = chunkWords.length - 1;
+    } else {
+      estimatedWordIndex = Math.floor(progress * chunkWords.length);
+    }
     var clampedIndex = Math.min(estimatedWordIndex, chunkWords.length - 1);
     
     if (clampedIndex !== currentWordIndex) {
