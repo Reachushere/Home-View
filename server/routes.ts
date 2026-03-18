@@ -5791,17 +5791,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           .catch(e => { console.warn(`${logPrefix} Chunk 0 pre-gen failed (will retry): ${e.message}`); })
       : Promise.resolve();
 
+    const initialChunkText = fileChunks[resumeFromChunk] || '';
+    const initialWords = initialChunkText.split(/\s+/).filter((w: string) => w.length > 0);
+    const initialWordCount = initialWords.length;
+    const initialEstimatedMs = Math.max(5000, (initialWordCount / 115) * 60 * 1000 + 2000);
+
     catWashPlaybackState = {
       fileId: fileToPlay.id,
       fileName,
       chunkIndex: resumeFromChunk,
       totalChunks: totalChunksCalc,
       chunks: fileChunks,
-      currentWords: [],
+      currentWords: initialWords,
       wordIndex: 0,
       startedAt: new Date(),
       chunkStartedAt: new Date(),
-      estimatedChunkDuration: 0,
+      estimatedChunkDuration: initialEstimatedMs,
       playbackMode: 'server-tts',
     };
 
@@ -7609,7 +7614,7 @@ document.body.removeChild(a);
     if (catWashPlaybackActive && catWashPlaybackState && catWashPlaybackStartedAt) {
       const msSinceStart = Date.now() - catWashPlaybackStartedAt.getTime();
       const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-      if (msSinceStart > 2 * 60 * 1000 && chunkStillAtStart) {
+      if (msSinceStart > 10 * 60 * 1000 && chunkStillAtStart) {
         console.log(`[Cat Wash Progress] Auto-clearing stale state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
         catWashPlaybackActive = false;
         catWashPlaybackStartedAt = null;
