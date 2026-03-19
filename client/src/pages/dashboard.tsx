@@ -687,6 +687,11 @@ export default function Dashboard() {
     return saved ? parseFloat(saved) : 33;
   });
   const hwDividerDragRef = useRef<{ startX: number; startPercent: number; containerWidth: number } | null>(null);
+  const [hwGroupBarWidth, setHwGroupBarWidth] = useState(() => {
+    const saved = localStorage.getItem('hwGroupBarWidth');
+    return saved ? parseFloat(saved) : 111;
+  });
+  const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
   const [calendarBorderTop, setCalendarBorderTop] = useState(0);
   const clockContainerRef = useRef<HTMLDivElement>(null);
   const [clockWidth, setClockWidth] = useState(0);
@@ -2541,6 +2546,32 @@ export default function Dashboard() {
   };
   
   // Handle row resize
+  const handleHwGroupBarDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    hwGroupBarDragRef.current = { startX, startWidth: hwGroupBarWidth };
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      if (!hwGroupBarDragRef.current) return;
+      const clientX = 'touches' in ev ? ev.touches[0].clientX : (ev as MouseEvent).clientX;
+      const dx = clientX - hwGroupBarDragRef.current.startX;
+      const newW = Math.max(60, Math.min(141, hwGroupBarDragRef.current.startWidth + dx));
+      setHwGroupBarWidth(newW);
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      setHwGroupBarWidth(w => { localStorage.setItem('hwGroupBarWidth', String(w)); return w; });
+      hwGroupBarDragRef.current = null;
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onUp);
+  };
+
   const handleHwDividerDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -21242,9 +21273,8 @@ export default function Dashboard() {
                 onMouseDown={handleHwDividerDragStart}
                 onTouchStart={handleHwDividerDragStart}
                 data-testid="hw-divider-handle"
-              >
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: '2px', width: '2px', backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: '1px' }} />
-              </div>
+              />
+
             );
 
             const rows = [...rightBgs, ...courseRows];
@@ -21351,7 +21381,13 @@ export default function Dashboard() {
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
+                <div
+                  style={{ position: 'absolute', top: 0, bottom: 0, left: `${hwGroupBarWidth + 4}px`, width: '8px', marginLeft: '-4px', cursor: 'col-resize', zIndex: 10 }}
+                  onMouseDown={handleHwGroupBarDragStart}
+                  onTouchStart={handleHwGroupBarDragStart}
+                  data-testid="hw-group-bar-handle"
+                />
                 {/* Today Section */}
                 <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Today</span>
@@ -21494,7 +21530,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 This week
                               </span>
@@ -21678,7 +21714,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Next week
                               </span>
@@ -21869,7 +21905,7 @@ export default function Dashboard() {
                         });
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Two weeks
                               </span>
@@ -22031,7 +22067,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '10px' }}>
-                            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
                                   const lastWeek = group.weeks[group.weeks.length - 1];
