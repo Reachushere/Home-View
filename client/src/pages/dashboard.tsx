@@ -10814,15 +10814,15 @@ export default function Dashboard() {
                       <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero ? (
                         <>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}</span>
                         </>
                       ) : (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}.</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}.</span>
                         </>
                       )}
                     </div>
@@ -10856,15 +10856,15 @@ export default function Dashboard() {
                       <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero2 ? (
                         <>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}</span>
                         </>
                       ) : (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{courseForNext ? `${courseForNext.name.split(' - ')[1] || courseForNext.name} ${next.title}` : next.title}.</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}.</span>
                         </>
                       )}
                     </div>
@@ -21244,6 +21244,8 @@ export default function Dashboard() {
                       if (tc !== cCode || t.isCompleted) return false;
                       const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
                       if (!knownCourseCodes.includes(tc)) return false;
+                      const taskDue = new Date(t.dueDate);
+                      if (taskDue < startOfDay(new Date())) return false;
                       return true;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No tasks</span>;
@@ -21457,6 +21459,7 @@ export default function Dashboard() {
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             const otherProgressTasks = (allTasks || []).filter(t => {
               if (t.isCompleted) return false;
+              if (new Date(t.dueDate) < startOfDay(new Date())) return false;
               const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
               if (knownCourseCodes.includes(tc)) return false;
               if (t.weekNumber !== undefined && t.weekNumber !== null) return t.weekNumber === selectedWeek;
