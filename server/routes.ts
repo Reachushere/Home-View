@@ -2623,8 +2623,15 @@ html,body{height:100%;overflow:hidden;background:transparent}
       const weekNum = parseInt(req.params.weekNum);
       if (isNaN(weekNum)) return res.status(400).json({ error: "Invalid week number" });
 
-      const basePath = `/School/1. TMU/Courses/2026/Winter`;
-      const courses = ['CPPA122', 'CFNF400', 'CASL101'];
+      const semester = await storage.getActiveSemesterSettings();
+      const year = semester?.semesterStartDate ? new Date(semester.semesterStartDate).getFullYear() : new Date().getFullYear();
+      const semFolder = getSemesterTypeFolder(semester?.semesterType);
+      const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
+      const courses: string[] = [];
+      if (semester?.course1Code) courses.push(semester.course1Code);
+      if (semester?.course2Code) courses.push(semester.course2Code);
+      if (semester?.course3Code) courses.push(semester.course3Code);
+      if (courses.length === 0) return res.json({});
       const counts: Record<string, { total: number; listened: number; unlistened: number }> = {};
 
       // Get list of course folders from OneDrive
@@ -3521,7 +3528,6 @@ html,body{height:100%;overflow:hidden;background:transparent}
       await createOneDriveFolder(basePath, semFolder);
       const semPath = `${basePath}/${semFolder}`;
 
-      const numWeeks = 13;
       const results: string[] = [];
 
       for (let i = 1; i <= 3; i++) {
@@ -3532,13 +3538,14 @@ html,body{height:100%;overflow:hidden;background:transparent}
         await createOneDriveFolder(semPath, folderName);
         const coursePath = `${semPath}/${folderName}`;
 
-        for (let week = 1; week <= numWeeks; week++) {
-          await createOneDriveFolder(coursePath, `Week ${week}`);
-          const weekPath = `${coursePath}/Week ${week}`;
+        const weekNames = generateWeekFolderNames(semester, i);
+        for (const weekName of weekNames) {
+          await createOneDriveFolder(coursePath, weekName);
+          const weekPath = `${coursePath}/${weekName}`;
           await createOneDriveFolder(weekPath, "Module");
           await createOneDriveFolder(weekPath, "Reading");
         }
-        results.push(folderName);
+        results.push(`${folderName} (${weekNames.length} weeks)`);
       }
 
       console.log(`[OneDrive] Ensured semester folders for ${semester.semesterName}: ${results.join(', ')}`);
@@ -3590,14 +3597,15 @@ html,body{height:100%;overflow:hidden;background:transparent}
       } else {
         await createOneDriveFolder(semPath, newFolderName);
         const coursePath = `${semPath}/${newFolderName}`;
-        for (let week = 1; week <= 13; week++) {
-          await createOneDriveFolder(coursePath, `Week ${week}`);
-          const weekPath = `${coursePath}/Week ${week}`;
+        const weekNames = generateWeekFolderNames(semester, courseIndex);
+        for (const weekName of weekNames) {
+          await createOneDriveFolder(coursePath, weekName);
+          const weekPath = `${coursePath}/${weekName}`;
           await createOneDriveFolder(weekPath, "Module");
           await createOneDriveFolder(weekPath, "Reading");
         }
-        console.log(`[OneDrive] Created new folder structure: ${newFolderName} (old '${oldFolderName}' not found)`);
-        res.json({ success: true, action: 'created', folder: newFolderName });
+        console.log(`[OneDrive] Created new folder structure: ${newFolderName} (${weekNames.length} weeks, old '${oldFolderName}' not found)`);
+        res.json({ success: true, action: 'created', folder: newFolderName, weeks: weekNames.length });
       }
     } catch (err: any) {
       console.error("Error renaming course folder:", err);
@@ -3646,6 +3654,55 @@ html,body{height:100%;overflow:hidden;background:transparent}
     } catch (err: any) {
       console.error("Error creating semester folders:", err);
       res.status(500).json({ error: err.message || "Failed to create semester folders" });
+    }
+  });
+
+  app.post("/api/onedrive/ensure-all-semester-folders", async (req, res) => {
+    try {
+      const allSemesters = await storage.getAllSemesterSettings();
+      if (!allSemesters || allSemesters.length === 0) {
+        return res.json({ success: true, message: "No semesters found" });
+      }
+
+      const { createOneDriveFolder } = await import("./onedrive");
+      const allResults: Array<{ semester: string; folders: string[] }> = [];
+
+      for (const semester of allSemesters) {
+        const semType = getSemesterTypeFolder(semester.semesterType);
+        const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+        const year = startDate.getFullYear();
+        const basePath = `/School/1. TMU/Courses/${year}`;
+
+        await createOneDriveFolder(basePath, semType);
+        const semPath = `${basePath}/${semType}`;
+        const courseResults: string[] = [];
+
+        for (let i = 1; i <= 3; i++) {
+          const code = ((semester as any)[`course${i}Code`] || '').replace(/\s/g, '');
+          if (!code) continue;
+          const name = (semester as any)[`course${i}Name`] || '';
+          const folderName = name ? `${code} - ${name}` : code;
+          await createOneDriveFolder(semPath, folderName);
+          const coursePath = `${semPath}/${folderName}`;
+
+          const weekNames = generateWeekFolderNames(semester, i);
+          for (const weekName of weekNames) {
+            await createOneDriveFolder(coursePath, weekName);
+            const weekPath = `${coursePath}/${weekName}`;
+            await createOneDriveFolder(weekPath, "Module");
+            await createOneDriveFolder(weekPath, "Reading");
+          }
+          courseResults.push(`${folderName} (${weekNames.length} weeks)`);
+        }
+
+        allResults.push({ semester: semester.semesterName || `${semType} ${year}`, folders: courseResults });
+        console.log(`[OneDrive] Ensured folders for ${semester.semesterName}: ${courseResults.join(', ')}`);
+      }
+
+      res.json({ success: true, semesters: allResults });
+    } catch (err: any) {
+      console.error("Error ensuring all semester folders:", err);
+      res.status(500).json({ error: err.message });
     }
   });
 
@@ -5702,9 +5759,113 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   function getSemesterTypeFolder(semType: string | null | undefined): string {
     const t = (semType || 'winter').toLowerCase();
-    if (t.includes('spring') || t.includes('summer')) return 'Spring-Summer';
+    if (t.includes('spring') || t.includes('summer')) return 'Spring & Summer';
     if (t.includes('fall')) return 'Fall';
     return 'Winter';
+  }
+
+  function generateWeekFolderNames(semester: any, courseIndex: number): string[] {
+    const semType = (semester.semesterType || 'winter').toLowerCase();
+    const isSpSu = semType.includes('spring') || semType.includes('summer');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function fmt(d: Date): string {
+      return `${months[d.getMonth()]} ${d.getDate()}`;
+    }
+
+    if (!isSpSu) {
+      const semStart = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+      const readingWeekStart = semester.readingWeekStart ? new Date(semester.readingWeekStart) : null;
+      const weeks: string[] = [];
+      let weekStart = new Date(semStart);
+      weekStart.setHours(0, 0, 0, 0);
+      const dayOfWeek = weekStart.getDay();
+      if (dayOfWeek !== 1) {
+        weekStart.setDate(weekStart.getDate() - ((dayOfWeek + 6) % 7));
+      }
+
+      let weekNum = 1;
+      for (let i = 0; i < 14 && weekNum <= 13; i++) {
+        const wStart = new Date(weekStart);
+        const wEnd = new Date(wStart);
+        wEnd.setDate(wEnd.getDate() + 4);
+
+        if (readingWeekStart) {
+          const rwStart = new Date(readingWeekStart);
+          rwStart.setHours(0, 0, 0, 0);
+          if (wStart.getTime() >= rwStart.getTime() && wStart.getTime() < rwStart.getTime() + 7 * 86400000) {
+            weeks.push(`Week ${weekNum - 0.5} - STUDY`);
+            weekStart.setDate(weekStart.getDate() + 7);
+            continue;
+          }
+        }
+
+        const startStr = fmt(wStart);
+        const endStr = wStart.getMonth() === wEnd.getMonth() ? `${wEnd.getDate()}` : fmt(wEnd);
+        weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+        weekNum++;
+        weekStart.setDate(weekStart.getDate() + 7);
+      }
+      return weeks;
+    }
+
+    const springSummerTerm = (semester[`course${courseIndex}SpringSummerTerm`] || 'full').toLowerCase();
+    let courseStart: Date;
+    let courseEnd: Date;
+    const semStart = new Date(semester.semesterStartDate || Date.now());
+
+    if (springSummerTerm === 'first_half') {
+      courseStart = semester[`course${courseIndex}StartDate`] ? new Date(semester[`course${courseIndex}StartDate`]) : new Date(semStart);
+      courseEnd = semester[`course${courseIndex}EndDate`] ? new Date(semester[`course${courseIndex}EndDate`]) : new Date(courseStart.getTime() + 7 * 7 * 86400000);
+    } else if (springSummerTerm === 'second_half') {
+      courseStart = semester[`course${courseIndex}StartDate`] ? new Date(semester[`course${courseIndex}StartDate`]) : new Date(semStart);
+      courseEnd = semester[`course${courseIndex}EndDate`] ? new Date(semester[`course${courseIndex}EndDate`]) : new Date(courseStart.getTime() + 6 * 7 * 86400000);
+    } else {
+      courseStart = semester[`course${courseIndex}StartDate`] ? new Date(semester[`course${courseIndex}StartDate`]) : new Date(semStart);
+      courseEnd = semester[`course${courseIndex}EndDate`] ? new Date(semester[`course${courseIndex}EndDate`]) : new Date(courseStart.getTime() + 13 * 7 * 86400000);
+    }
+    courseStart.setHours(0, 0, 0, 0);
+    courseEnd.setHours(0, 0, 0, 0);
+    const dayOW = courseStart.getDay();
+    if (dayOW !== 1) {
+      courseStart.setDate(courseStart.getDate() - ((dayOW + 6) % 7));
+    }
+
+    const weeks: string[] = [];
+    let weekStart = new Date(courseStart);
+    let weekNum = 1;
+
+    if (springSummerTerm === 'full') {
+      const midpoint = 8;
+      let secondHalfNum = 1;
+      while (weekStart.getTime() < courseEnd.getTime()) {
+        const wStart = new Date(weekStart);
+        const wEnd = new Date(wStart);
+        wEnd.setDate(wEnd.getDate() + 4);
+        const startStr = fmt(wStart);
+        const endStr = wStart.getMonth() === wEnd.getMonth() ? `${wEnd.getDate()}` : fmt(wEnd);
+        if (weekNum >= midpoint) {
+          weeks.push(`Week ${weekNum} (${secondHalfNum}) - ${startStr}-${endStr}`);
+          secondHalfNum++;
+        } else {
+          weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+        }
+        weekNum++;
+        weekStart.setDate(weekStart.getDate() + 7);
+      }
+    } else {
+      while (weekStart.getTime() < courseEnd.getTime()) {
+        const wStart = new Date(weekStart);
+        const wEnd = new Date(wStart);
+        wEnd.setDate(wEnd.getDate() + 4);
+        const startStr = fmt(wStart);
+        const endStr = wStart.getMonth() === wEnd.getMonth() ? `${wEnd.getDate()}` : fmt(wEnd);
+        weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+        weekNum++;
+        weekStart.setDate(weekStart.getDate() + 7);
+      }
+    }
+    return weeks;
   }
 
   async function getSemesterOneDriveCourses(semesterSettings: any): Promise<Array<{ code: string; path: string }>> {
