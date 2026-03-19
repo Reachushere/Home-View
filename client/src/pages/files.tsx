@@ -1214,8 +1214,47 @@ export default function FilesPage() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-1 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
+        {/* Back Arrow + Home - always at very left */}
+        {viewMode === 'all' ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-[#3d3d3d]"
+            data-testid="button-back"
+            onClick={navigateBack}
+            disabled={!selectedFolder}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-[#3d3d3d]"
+            onClick={() => {
+              if (oneDrivePathHistory.length > 0) {
+                const previousPath = oneDrivePathHistory[oneDrivePathHistory.length - 1];
+                setOneDrivePathHistory(oneDrivePathHistory.slice(0, -1));
+                setOneDrivePath(previousPath);
+              }
+            }}
+            disabled={oneDrivePathHistory.length === 0}
+            data-testid="button-onedrive-back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        )}
+        <a
+          href="/"
+          className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#3d3d3d]"
+          data-testid="button-home"
+          title="Back to Dashboard"
+        >
+          <Home className="h-4 w-4" />
+        </a>
+
         {/* View Mode Toggle */}
-        <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden mr-2">
+        <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden ml-1">
           <button
             className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'all' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
             onClick={() => setViewMode('all')}
@@ -1234,25 +1273,7 @@ export default function FilesPage() {
 
         {viewMode === 'all' ? (
           <>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-[#3d3d3d]"
-              data-testid="button-back"
-              onClick={navigateBack}
-              disabled={!selectedFolder}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <a
-              href="/"
-              className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#3d3d3d]"
-              data-testid="button-home"
-              title="Back to Dashboard"
-            >
-              <Home className="h-4 w-4" />
-            </a>
-            <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 min-w-0 truncate">
+            <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 min-w-0 truncate ml-2">
               <span className="truncate text-white">{getBreadcrumb()[0]}</span>
             </div>
             <ObjectUploader
@@ -1283,31 +1304,7 @@ export default function FilesPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-[#3d3d3d]"
-              onClick={() => {
-                if (oneDrivePathHistory.length > 0) {
-                  const previousPath = oneDrivePathHistory[oneDrivePathHistory.length - 1];
-                  setOneDrivePathHistory(oneDrivePathHistory.slice(0, -1));
-                  setOneDrivePath(previousPath);
-                }
-              }}
-              disabled={oneDrivePathHistory.length === 0}
-              data-testid="button-onedrive-back"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <a
-              href="/"
-              className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#3d3d3d]"
-              data-testid="button-onedrive-home"
-              title="Back to Dashboard"
-            >
-              <Home className="h-4 w-4" />
-            </a>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-[#3d3d3d]"
+              className="h-8 w-8 hover:bg-[#3d3d3d] ml-1"
               onClick={() => {
                 queryClient.invalidateQueries({ queryKey: ["/api/onedrive/files", oneDrivePath] });
               }}
