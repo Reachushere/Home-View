@@ -11837,7 +11837,17 @@ export default function Dashboard() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className="pill-button-hover"
-            onClick={() => { triggerButtonGlow('refresh'); queryClient.invalidateQueries().then(() => queryClient.refetchQueries()); refreshFileCounts(); }}
+            onClick={(e) => {
+              triggerButtonGlow('refresh');
+              const icon = (e.currentTarget as HTMLElement).querySelector('svg');
+              if (icon) { icon.style.transition = 'transform 0.6s ease'; icon.style.transform = 'rotate(360deg)'; setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = 'rotate(0deg)'; }, 650); }
+              queryClient.invalidateQueries();
+              queryClient.refetchQueries();
+              refreshFileCounts();
+              fetch('/api/google/calendar/events').catch(() => {});
+              fetch('/api/tasks').catch(() => {});
+              fetch('/api/announcements').catch(() => {});
+            }}
             data-testid="button-refresh-data"
             title="Refresh"
           >
