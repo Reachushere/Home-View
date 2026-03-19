@@ -233,8 +233,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         } catch {}
       });
   }, [courseInfo.courseCode]);
-  const [showSyllabusViewer, setShowSyllabusViewer] = useState(false);
-  const [syllabusViewerUrl, setSyllabusViewerUrl] = useState<string>('');
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
@@ -1489,26 +1487,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               </>
             )}
           </div>
-
-          {showSyllabusViewer && syllabusViewerUrl && (
-            <div className="mx-3 mb-2 border border-white/20 rounded-lg overflow-hidden" data-testid="syllabus-viewer">
-              <div className="flex items-center justify-between px-3 py-1.5 bg-emerald-900/30 border-b border-white/15">
-                <div className="flex items-center gap-1.5">
-                  <FileText className="h-3 w-3 text-emerald-400" />
-                  <span className="text-[10px] text-white font-medium">Syllabus</span>
-                </div>
-                <button onClick={() => setShowSyllabusViewer(false)} className="text-white/60 hover:text-white" data-testid="button-close-syllabus-viewer">
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <iframe
-                src={syllabusViewerUrl}
-                className="w-full bg-white"
-                style={{ height: '400px' }}
-                title="Syllabus Viewer"
-              />
-            </div>
-          )}
 
           {syllabusData && Object.keys(syllabusItemStates).length > 0 && (
             <div className="mx-3 mb-2 border border-emerald-400/30 rounded-lg overflow-hidden" data-testid="syllabus-review-panel">

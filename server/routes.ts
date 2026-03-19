@@ -73,14 +73,10 @@ function generateRepeatDates(
   return dates;
 }
 
-// Dynamic import for pdf-parse to avoid CommonJS compatibility issues
-let pdfParse: any = null;
+// Dynamic import for pdf-parse v2
 async function getPdfParser() {
-  if (!pdfParse) {
-    const module = await import("pdf-parse");
-    pdfParse = (module as any).default || (module as any).PDFParse || module;
-  }
-  return pdfParse;
+  const { PDFParse } = await import("pdf-parse");
+  return PDFParse;
 }
 
 // Use Nabu Casa cloud URL for remote access
@@ -3092,7 +3088,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       if (isPDF) {
         try {
           const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(fileBuffer) });
+          const parser = new PdfParser({ data: new Uint8Array(fileBuffer), verbosity: 0 });
           await parser.load();
           const pdfText = await parser.getText();
           
@@ -3187,8 +3183,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       
       // Extract text using pdf-parse (same pattern as file extraction)
       const PdfParser = await getPdfParser();
-      const parser = new PdfParser({ data: new Uint8Array(buffer) });
-      await parser.load();
+      const parser = new PdfParser({ data: new Uint8Array(buffer), verbosity: 0 });
       const pdfText = await parser.getText();
 
       // Use PAGE_BREAK_MARKER for page breaks
@@ -7402,7 +7397,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       if (!buffer) return null;
       const PdfParser = await getPdfParser();
-      const parser = new PdfParser({ data: new Uint8Array(buffer) });
+      const parser = new PdfParser({ data: new Uint8Array(buffer), verbosity: 0 });
       await parser.load();
       const pdfText = await parser.getText();
       let textContent = '';
@@ -7671,7 +7666,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const isPDF = content.slice(0, 4).toString() === '%PDF';
       if (isPDF) {
         const PdfParser = await getPdfParser();
-        const parser = new PdfParser({ data: new Uint8Array(content) });
+        const parser = new PdfParser({ data: new Uint8Array(content), verbosity: 0 });
         await parser.load();
         const pdfText = await parser.getText();
         if (pdfText && typeof pdfText === 'object') {
@@ -9259,7 +9254,7 @@ document.body.removeChild(a);
         const isPDF = content.slice(0, 4).toString() === '%PDF';
         if (isPDF) {
           const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(content) });
+          const parser = new PdfParser({ data: new Uint8Array(content), verbosity: 0 });
           await parser.load();
           const pdfText = await parser.getText();
           
@@ -9631,7 +9626,7 @@ document.body.removeChild(a);
         const isPDF = content.slice(0, 4).toString() === '%PDF';
         if (isPDF) {
           const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(content) });
+          const parser = new PdfParser({ data: new Uint8Array(content), verbosity: 0 });
           await parser.load();
           const pdfText = await parser.getText();
           
@@ -9998,7 +9993,7 @@ document.body.removeChild(a);
         const isPDF = content.slice(0, 4).toString() === '%PDF';
         if (isPDF) {
           const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(content) });
+          const parser = new PdfParser({ data: new Uint8Array(content), verbosity: 0 });
           await parser.load();
           const pdfText = await parser.getText();
           
@@ -10763,8 +10758,7 @@ document.body.removeChild(a);
         // Parse PDF and extract text using PDFParse class
         try {
           const PdfParser = await getPdfParser();
-          const parser = new PdfParser({ data: new Uint8Array(fileBuffer) });
-          await parser.load();
+          const parser = new PdfParser({ data: new Uint8Array(fileBuffer), verbosity: 0 });
           const pdfText = await parser.getText();
           // getText() returns an object with pages array containing text
           if (pdfText && typeof pdfText === 'object') {
@@ -12185,9 +12179,10 @@ document.body.removeChild(a);
 
       let pdfText = '';
       try {
-        const pdfParse = (await import('pdf-parse')).default;
-        const pdfData = await pdfParse(fileBuffer);
-        pdfText = pdfData.text;
+        const { PDFParse } = await import('pdf-parse');
+        const parser = new PDFParse({ data: new Uint8Array(fileBuffer), verbosity: 0 });
+        const result = await parser.getText();
+        pdfText = result.text || '';
       } catch (pdfErr) {
         console.error("Failed to parse syllabus PDF:", pdfErr);
         return res.status(500).json({ error: "Failed to parse PDF content" });
@@ -12299,9 +12294,10 @@ Return ONLY the JSON object, no markdown formatting.`;
 
       let pdfText = '';
       try {
-        const pdfParse = (await import('pdf-parse')).default;
-        const pdfData = await pdfParse(fileBuffer);
-        pdfText = pdfData.text;
+        const { PDFParse } = await import('pdf-parse');
+        const parser = new PDFParse({ data: new Uint8Array(fileBuffer), verbosity: 0 });
+        const result = await parser.getText();
+        pdfText = result.text || '';
       } catch (pdfErr) {
         console.error("Failed to parse PDF:", pdfErr);
         return res.status(500).json({ error: "Failed to parse PDF content" });
