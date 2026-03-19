@@ -1677,17 +1677,7 @@ export default function Dashboard() {
     } catch {}
   }, []);
 
-  // Arrow connections from task boxes to calendar
-  const [arrowConnections, setArrowConnections] = useState<Array<{
-    taskId: number;
-    fromX: number;
-    fromY: number;
-    toX: number;
-    toY: number;
-    color: string;
-    isToday: boolean;
-    isTomorrow: boolean;
-  }>>([]);
+  
   
   const mainContentRef = useRef<HTMLElement | null>(null);
   
@@ -9000,188 +8990,7 @@ export default function Dashboard() {
     });
   }, [calendarView, gridSizes]);
 
-  // Calculate arrow connections from task boxes to calendar
-  useEffect(() => {
-    if (calendarView !== "week") {
-      setArrowConnections([]);
-      return;
-    }
-    
-    const calculateArrows = () => {
-      const connections: typeof arrowConnections = [];
-      const todayTaskIds = new Set(dueTodayTasks.map(t => t.id));
-      const tomorrowTaskIds = new Set(dueTomorrowTasks.map(t => t.id));
-      
-      // Create task entries with their source box type
-      const tasksWithBox: Array<{task: typeof dueTodayTasks[0], boxType: 'today' | 'tomorrow' | 'thisweek'}> = [
-        ...dueTodayTasks.map(t => ({ task: t, boxType: 'today' as const })),
-        ...dueTomorrowTasks.map(t => ({ task: t, boxType: 'tomorrow' as const })),
-        ...dueThisWeekTasks.map(t => ({ task: t, boxType: 'thisweek' as const }))
-      ];
-      
-      // Deduplicate by task ID + boxType combination to allow one arrow per box
-      const seenKeys = new Set<string>();
-      const uniqueTasksWithBox = tasksWithBox.filter(({ task, boxType }) => {
-        const key = `${task.id}-${boxType}`;
-        if (seenKeys.has(key)) return false;
-        seenKeys.add(key);
-        return true;
-      });
-      
-      uniqueTasksWithBox.forEach(({ task, boxType }) => {
-        // Find the task card in the specific box using the checkbox attribute
-        let checkboxEl: Element | null = null;
-        let boxTaskEl: Element | null = null;
-        
-        if (boxType === 'today') {
-          checkboxEl = document.querySelector(`input[data-today-checkbox="${task.id}"]`);
-          boxTaskEl = checkboxEl?.closest(`[data-box-task-id="${task.id}"]`) || null;
-        } else if (boxType === 'tomorrow') {
-          checkboxEl = document.querySelector(`input[data-tomorrow-checkbox="${task.id}"]`);
-          boxTaskEl = checkboxEl?.closest(`[data-box-task-id="${task.id}"]`) || null;
-        } else {
-          // For this week, use the generic selector
-          boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
-          checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]') || null;
-        }
-        
-        
-        // Determine which date to target based on boxType
-        let targetDateStr: string;
-        if (boxType === 'today') {
-          targetDateStr = format(today, 'yyyy-MM-dd');
-        } else if (boxType === 'tomorrow') {
-          targetDateStr = format(tomorrow, 'yyyy-MM-dd');
-        } else {
-          // For this week, use the task's due date
-          targetDateStr = format(new Date(task.dueDate), 'yyyy-MM-dd');
-        }
-        
-        // Find the corresponding task on the calendar that matches the target date
-        const calTaskEls = Array.from(document.querySelectorAll(`[data-cal-task-id="${task.id}"]`));
-        let calTaskEl: Element | null = null;
-        
-        // Find the calendar task element that matches the target date
-        for (const el of calTaskEls) {
-          const calDate = el.getAttribute('data-cal-date');
-          if (calDate === targetDateStr) {
-            calTaskEl = el;
-            break;
-          }
-        }
-        
-        
-        // Skip if no matching calendar task found for this date
-        if (!calTaskEl) {
-          return;
-        }
-        
-        // Always target the calendar task checkbox
-        if (boxTaskEl && calTaskEl) {
-          const calRect = calTaskEl.getBoundingClientRect();
-          
-          // Skip if calendar task has invalid dimensions (not rendered properly)
-          if (calRect.width === 0 || calRect.height === 0) {
-            return;
-          }
-          
-          // Skip if calendar task is scrolled behind course rows (above the visible scroll area)
-          // Find the course rows container to get its bottom position
-          const courseRowsContainer = document.querySelector('[data-testid="course-rows-container"]');
-          if (courseRowsContainer) {
-            const courseRowsRect = courseRowsContainer.getBoundingClientRect();
-            // If the bottom of the calendar task is above the bottom of course rows, it's hidden
-            if (calRect.bottom < courseRowsRect.bottom) {
-              return;
-            }
-          }
-          
-          // Get course color - black for tasks without a course
-          const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-          let color = "#000000";
-          if (courseCode === "CPPA122") color = "#47B045";
-          else if (courseCode === "CFNF400") color = "#FA67B3";
-          else if (courseCode === "CASL101") color = "#6366f1";
-          
-          let fromX: number;
-          let fromY: number;
-          if (checkboxEl) {
-            const checkboxRect = checkboxEl.getBoundingClientRect();
-            fromX = checkboxRect.left;
-            fromY = checkboxRect.top + checkboxRect.height / 2;
-          } else {
-            const boxRect = boxTaskEl.getBoundingClientRect();
-            fromX = boxRect.left;
-            fromY = boxRect.top + boxRect.height / 2;
-          }
-          
-          // Always point to the calendar task checkbox (arrow pointing right, 2px away)
-          let toX: number;
-          let toY: number;
-          const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
-          
-          if (calCheckboxEl) {
-            const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left - 2;
-            toY = calCheckboxRect.top + calCheckboxRect.height / 2;
-          } else {
-            toX = calRect.left - 2;
-            toY = calRect.height > 50 ? calRect.top + 12 : calRect.top + calRect.height / 2;
-          }
-          
-          // For green arrows (Tomorrow box), keep them visible even when calendar task is above viewport
-          // For pink/blue arrows (This Week box), skip if target is completely off-screen
-          const isGreenArrow = color === "#22c55e";
-          if (!isGreenArrow) {
-            // Skip pink/blue arrows when target is off-screen
-            if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) {
-              return;
-            }
-          }
-          
-          connections.push({
-            taskId: task.id,
-            fromX,
-            fromY,
-            toX,
-            toY,
-            color,
-            isToday: boxType === 'today',
-            isTomorrow: boxType === 'tomorrow'
-          });
-        }
-      });
-
-      
-      setArrowConnections((prev: typeof connections) => {
-        if (prev.length !== connections.length) return connections;
-        const changed = connections.some((c, i) => {
-          const p = prev[i];
-          return !p || p.taskId !== c.taskId || Math.abs(p.fromX - c.fromX) > 1 || Math.abs(p.fromY - c.fromY) > 1 || Math.abs(p.toX - c.toX) > 1 || Math.abs(p.toY - c.toY) > 1;
-        });
-        return changed ? connections : prev;
-      });
-    };
-    
-    // Calculate after DOM updates (give time for prep-today elements to render)
-    const timer = setTimeout(calculateArrows, 300);
-    
-    // Recalculate on scroll and resize with proper debouncing
-    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
-    const handleUpdate = () => {
-      if (scrollTimer) clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(calculateArrows, 100);
-    };
-    window.addEventListener('scroll', handleUpdate, true);
-    window.addEventListener('resize', handleUpdate);
-    
-    return () => {
-      clearTimeout(timer);
-      if (scrollTimer) clearTimeout(scrollTimer);
-      window.removeEventListener('scroll', handleUpdate, true);
-      window.removeEventListener('resize', handleUpdate);
-    };
-  }, [calendarView, dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, allTasks.length]);
+  const arrowConnections: any[] = [];
 
   useEffect(() => {
     const timers = new Map<Element, ReturnType<typeof setTimeout>>();
@@ -23772,9 +23581,8 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
-        {/* Arrow Connections - Split into two SVG layers for proper z-indexing */}
-        {/* Layer 1: Transparent curves ABOVE prep boxes (z-index: 46, above green columns at z-42) */}
-        {blinkSettings.showArrows && arrowConnections.length > 0 && (
+        {/* Arrow Connections - Disabled */}
+        {false && blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
             style={{ width: '100vw', height: '100vh', zIndex: 46 }}
@@ -23965,8 +23773,8 @@ export default function Dashboard() {
           </svg>
         )}
         
-        {/* Layer 2: Opaque lines ON TOP of calendar (z-index: 55) */}
-        {blinkSettings.showArrows && arrowConnections.length > 0 && (
+        {/* Layer 2: Disabled */}
+        {false && blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
             style={{ width: '100vw', height: '100vh', zIndex: 55 }}
