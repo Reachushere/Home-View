@@ -2075,7 +2075,6 @@ export default function Dashboard() {
     taskBoxFilesBlinkSpeed: number;
     buttonSpacing: number;
     mediaControlSpacing: number;
-    showArrows: boolean;
     tallPillButtonSpacing: number;
     tallPillHeight: number;
   }>(() => {
@@ -2090,7 +2089,6 @@ export default function Dashboard() {
       taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       buttonSpacing: parsed.buttonSpacing ?? 32,
       mediaControlSpacing: parsed.mediaControlSpacing ?? 32,
-      showArrows: parsed.showArrows ?? false,
       tallPillButtonSpacing: parsed.tallPillButtonSpacing ?? 0,
       tallPillHeight: parsed.tallPillHeight ?? 0
     };
@@ -8990,7 +8988,6 @@ export default function Dashboard() {
     });
   }, [calendarView, gridSizes]);
 
-  const arrowConnections: any[] = [];
 
   useEffect(() => {
     const timers = new Map<Element, ReturnType<typeof setTimeout>>();
@@ -16965,18 +16962,7 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Show Arrows Toggle */}
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-medium">Show Connection Arrows</Label>
-                        <input
-                          type="checkbox"
-                          checked={blinkSettings.showArrows}
-                          onChange={(e) => setBlinkSettings(prev => ({ ...prev, showArrows: e.target.checked }))}
-                          className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
-                          data-testid="toggle-show-arrows"
-                        />
-                      </div>
-                    </div>
+                    
                     
                     </div>
                 </div>
@@ -23580,295 +23566,6 @@ export default function Dashboard() {
             )}
           </DialogContent>
         </Dialog>
-
-        {/* Arrow Connections - Disabled */}
-        {false && blinkSettings.showArrows && arrowConnections.length > 0 && (
-          <svg 
-            className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 46 }}
-          >
-            <defs>
-              <marker
-                id="arrowhead-green"
-                markerWidth="12"
-                markerHeight="10"
-                refX="10"
-                refY="5"
-                orient="auto-start-reverse"
-              >
-                <polygon points="0 0, 12 5, 0 10" fill="#22c55e" fillOpacity="1" />
-              </marker>
-              <marker
-                id="arrowhead-pink"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="0"
-              >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" fillOpacity="0.75" />
-              </marker>
-              <marker
-                id="arrowhead-indigo"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="0"
-              >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="0.75" />
-              </marker>
-              <marker
-                id="arrowhead-black"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="0"
-              >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
-              </marker>
-              <marker
-                id="arrowhead-black-down"
-                markerWidth="10"
-                markerHeight="7"
-                refX="3.5"
-                refY="10"
-                orient="90"
-              >
-                <polygon points="0 0, 3.5 10, 7 0" fill="#000000" fillOpacity="0.75" />
-              </marker>
-            </defs>
-            {arrowConnections.map((conn) => {
-              const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
-                : conn.color === "#ec4899" ? "arrowhead-pink" 
-                : conn.color === "#6366f1" ? "arrowhead-indigo"
-                : "arrowhead-black";
-              const exitX = conn.fromX - 21;
-              const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
-              const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
-              
-              // Transparent path: FULL path from task box checkbox down to calendar task checkbox
-              const isGreen = conn.color === "#22c55e";
-              const midY = (containerBottom + conn.toY) / 2;
-              
-              // For green arrows: calculate where opaque line ends (at moduleColumnStart, splitY)
-              const calendarContainer = document.querySelector('[data-calendar-grid="true"]');
-              const calendarLeft = calendarContainer ? calendarContainer.getBoundingClientRect().left : 24;
-              const moduleColumnStart = calendarLeft + gridSizes.timeColumnWidth;
-              const opaqueExitX = conn.fromX - 21;
-              const opaqueMidY = (containerBottom + conn.toY) / 2;
-              const tCubed = (moduleColumnStart - opaqueExitX) / (conn.toX - opaqueExitX);
-              let greenEndX = moduleColumnStart;
-              let greenEndY = conn.toY;
-              if (tCubed > 0 && tCubed <= 1 && !isNaN(tCubed)) {
-                const t = Math.cbrt(tCubed);
-                const oneMinusT = 1 - t;
-                greenEndY = oneMinusT*oneMinusT*oneMinusT*containerBottom + 
-                           3*oneMinusT*oneMinusT*t*opaqueMidY + 
-                           3*oneMinusT*t*t*conn.toY + 
-                           t*t*t*conn.toY;
-              }
-              
-              // conn.fromX = Tomorrow box checkbox, conn.toX = Calendar task checkbox
-              // Green arrow: arrowhead MUST ALWAYS be at CALENDAR (conn.toX) - NEVER EVER at Tomorrow box (conn.fromX)
-              // Control points for curve - CP2 at same Y as Tomorrow checkbox for horizontal entry
-              const greenExitPoint = { x: conn.fromX - 21, y: conn.fromY }; // 21px left of Tomorrow checkbox (same as This Week)
-              const defaultGreenCP1 = { x: conn.toX - 40, y: containerBottom }; // control point 1 near calendar
-              const defaultGreenCP2 = { x: greenExitPoint.x, y: containerBottom }; // control point 2 directly above exit point
-              const defaultGreenEnd = { x: conn.fromX, y: conn.fromY }; // Tomorrow box checkbox (line ends here)
-              
-              // ABSOLUTE RULE: greenStart (arrowhead) is ALWAYS at CALENDAR task checkbox (conn.toX, conn.toY)
-              // NEVER EVER at Tomorrow box - this is hardcoded and cannot be changed
-              const greenStart = { x: conn.toX - 16, y: conn.toY }; // ALWAYS at CALENDAR task checkbox, 16px left
-              
-              // Only control points and end can use drag state - arrowhead position is locked
-              const dragState = (window as any).__greenArrowDragState || {};
-              const greenCP1 = dragState.cp1 || defaultGreenCP1;
-              const greenCP2 = dragState.cp2 || defaultGreenCP2;
-              const greenEnd = dragState.end || defaultGreenEnd;
-              const arrowRotation = dragState.rotation || 0; // degrees
-              // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
-              const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
-              const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
-              // Green path: from arrowhead, curves down, then horizontal 21px into Tomorrow checkbox (like This Week box)
-              // Tomorrow arrows: approach from above with downward arrowhead (mirror of Today arrows)
-              let transparentPath: string;
-              if (isGreen) {
-                transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
-              } else if (conn.isTomorrow) {
-                // Tomorrow arrows: come from above and point DOWN to checkbox (mirror of Today arrow)
-                // Path: left from Tomorrow box -> down -> curve to directly above target -> straight down
-                // Offset: 2px right, 2px up from original position
-                const aboveTargetY = conn.toY - 40; // Position above the task
-                const lineEndY = conn.toY - 13; // Stop at arrowhead tip, 6px higher total
-                const targetX = conn.toX + 6; // Move 6px to the right
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${targetX} ${aboveTargetY - 30}, ${targetX} ${aboveTargetY} L ${targetX} ${lineEndY}`;
-              } else {
-                // Today/This Week arrows: normal curved path from left side
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
-              }
-              
-              // For green: calculate opaque portion at END of curve (near Tomorrow box checkbox)
-              // t=0.46 is where the opaque portion starts (last 54% of curve is opaque)
-              const opaqueStartT = 0.46;
-              const opaqueOneMinusT = 1 - opaqueStartT;
-              // Bezier point at t: B(t) = (1-t)³P0 + 3(1-t)²tP1 + 3(1-t)t²P2 + t³P3
-              const opaqueStartX = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.x + 
-                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueStartT*greenCP1.x + 
-                                3*opaqueOneMinusT*opaqueStartT*opaqueStartT*greenCP2.x + 
-                                opaqueStartT*opaqueStartT*opaqueStartT*greenExitPoint.x;
-              const opaqueStartY = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.y + 
-                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueStartT*greenCP1.y + 
-                                3*opaqueOneMinusT*opaqueStartT*opaqueStartT*greenCP2.y + 
-                                opaqueStartT*opaqueStartT*opaqueStartT*greenExitPoint.y;
-              // Split bezier control points using de Casteljau for second segment [t, 1]
-              const Q0 = { x: horizontalEnd.x + opaqueStartT*(greenCP1.x - horizontalEnd.x), y: horizontalEnd.y + opaqueStartT*(greenCP1.y - horizontalEnd.y) };
-              const Q1 = { x: greenCP1.x + opaqueStartT*(greenCP2.x - greenCP1.x), y: greenCP1.y + opaqueStartT*(greenCP2.y - greenCP1.y) };
-              const Q2 = { x: greenCP2.x + opaqueStartT*(greenExitPoint.x - greenCP2.x), y: greenCP2.y + opaqueStartT*(greenExitPoint.y - greenCP2.y) };
-              const R0 = { x: Q0.x + opaqueStartT*(Q1.x - Q0.x), y: Q0.y + opaqueStartT*(Q1.y - Q0.y) };
-              const R1 = { x: Q1.x + opaqueStartT*(Q2.x - Q1.x), y: Q1.y + opaqueStartT*(Q2.y - Q1.y) };
-              // New control points for second segment [t, 1]: split point, R1, Q2, greenExitPoint, then horizontal to checkbox
-              const greenOpaquePath = `M ${opaqueStartX} ${opaqueStartY} C ${R1.x} ${R1.y}, ${Q2.x} ${Q2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
-              
-              // Arrow marker
-              
-              return (
-                <g key={`transparent-${conn.taskId}`}>
-                  <path
-                    d={transparentPath}
-                    stroke={conn.color}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.25"
-                    markerEnd={isGreen ? undefined : `url(#${markerId})`}
-                    markerStart={undefined}
-                  />
-                  {/* Green opaque overlay - first ~30 dashes following the curve */}
-                  {isGreen && (
-                    <path
-                      d={greenOpaquePath}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="1"
-                    />
-                  )}
-                  {/* Green arrowhead */}
-                  {isGreen && (
-                    <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
-                      <polygon 
-                        points="-6,-7 14,0 -6,7" 
-                        fill="#22c55e" 
-                        fillOpacity="0.75"
-                        style={{ pointerEvents: 'none' }}
-                      />
-                    </g>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
-        )}
-        
-        {/* Layer 2: Disabled */}
-        {false && blinkSettings.showArrows && arrowConnections.length > 0 && (
-          <svg 
-            className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 55 }}
-          >
-            {arrowConnections.map((conn) => {
-              // Skip green arrows - they're fully rendered in Layer 1
-              const isGreen = conn.color === '#22c55e';
-              if (isGreen) return null;
-              
-              const exitX = conn.fromX - 21;
-              const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
-              const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
-              
-              // Module column boundary - where opaque ends and transparent begins
-              const calendarContainer = document.querySelector('[data-calendar-grid="true"]');
-              const calendarLeft = calendarContainer ? calendarContainer.getBoundingClientRect().left : 24;
-              const moduleColumnStart = calendarLeft + gridSizes.timeColumnWidth;
-              
-              // Validate that calculation will produce valid results
-              const denominator = conn.toX - exitX;
-              if (denominator <= 0 || moduleColumnStart <= exitX) {
-                // Invalid geometry - just draw a simple line from checkbox to task
-                const simplePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-                return (
-                  <g key={`opaque-${conn.taskId}`}>
-                    <path
-                      d={simplePath}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="1"
-                    />
-                  </g>
-                );
-              }
-              
-              // Calculate where the cubic bezier crosses the module column boundary
-              // For cubic bezier C(exitX, midY, exitX, toY, toX, toY):
-              // x(t) = exitX + t³*(toX - exitX), so t³ = (moduleColumnStart - exitX) / (toX - exitX)
-              const midY = (containerBottom + conn.toY) / 2;
-              const tCubed = (moduleColumnStart - exitX) / (conn.toX - exitX);
-              
-              let opaquePath: string;
-              if (tCubed <= 0 || tCubed > 1 || isNaN(tCubed)) {
-                // The curve doesn't cross module column in valid range - just draw line to containerBottom
-                opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-              } else {
-                const t = Math.cbrt(tCubed);
-                // Calculate y position at t using cubic bezier formula
-                // y(t) = (1-t)³*containerBottom + 3(1-t)²t*midY + 3(1-t)t²*toY + t³*toY
-                const oneMinusT = 1 - t;
-                const splitY = oneMinusT*oneMinusT*oneMinusT*containerBottom + 
-                               3*oneMinusT*oneMinusT*t*midY + 
-                               3*oneMinusT*t*t*conn.toY + 
-                               t*t*t*conn.toY;
-                
-                // Calculate control points for the split cubic bezier (de Casteljau's algorithm)
-                // Original: P0=(exitX,containerBottom), P1=(exitX,midY), P2=(exitX,toY), P3=(toX,toY)
-                // For first segment [0,t], new control points are:
-                const P0 = { x: exitX, y: containerBottom };
-                const P1 = { x: exitX, y: midY };
-                const P2 = { x: exitX, y: conn.toY };
-                const P3 = { x: conn.toX, y: conn.toY };
-                
-                // First level interpolation
-                const Q0 = { x: P0.x + t*(P1.x - P0.x), y: P0.y + t*(P1.y - P0.y) };
-                const Q1 = { x: P1.x + t*(P2.x - P1.x), y: P1.y + t*(P2.y - P1.y) };
-                const Q2 = { x: P2.x + t*(P3.x - P2.x), y: P2.y + t*(P3.y - P2.y) };
-                
-                // Second level interpolation
-                const R0 = { x: Q0.x + t*(Q1.x - Q0.x), y: Q0.y + t*(Q1.y - Q0.y) };
-                const R1 = { x: Q1.x + t*(Q2.x - Q1.x), y: Q1.y + t*(Q2.y - Q1.y) };
-                
-                // Split point (already calculated as moduleColumnStart, splitY)
-                // New control points for first segment: P0, Q0, R0, split point
-                opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${Q0.x} ${Q0.y}, ${R0.x} ${R0.y}, ${moduleColumnStart} ${splitY}`;
-              }
-              
-              return (
-                <g key={`opaque-${conn.taskId}`}>
-                  <path
-                    d={opaquePath}
-                    stroke={conn.color}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="1"
-                  />
-                </g>
-              );
-            })}
-          </svg>
-        )}
 
         {/* Celebration Popup */}
         {showCelebration && (
