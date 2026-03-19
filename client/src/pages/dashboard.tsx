@@ -11891,7 +11891,7 @@ export default function Dashboard() {
         height: '22px',
         zIndex: 100,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         justifyContent: 'flex-end',
         gap: '7px',
         paddingRight: '0px',
