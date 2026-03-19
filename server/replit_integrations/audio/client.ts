@@ -194,7 +194,7 @@ export async function textToSpeech(
     modalities: ["text", "audio"],
     audio: { voice, format },
     messages: [
-      { role: "system", content: "You are an assistant that performs text-to-speech." },
+      { role: "system", content: "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly." },
       { role: "user", content: `Repeat the following text verbatim: ${text}` },
     ],
   });
@@ -216,7 +216,7 @@ export async function textToSpeechStream(
     modalities: ["text", "audio"],
     audio: { voice, format: "pcm16" },
     messages: [
-      { role: "system", content: "You are an assistant that performs text-to-speech." },
+      { role: "system", content: "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly." },
       { role: "user", content: `Repeat the following text verbatim: ${text}` },
     ],
     stream: true,

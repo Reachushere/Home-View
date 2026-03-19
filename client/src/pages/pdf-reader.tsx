@@ -1278,7 +1278,7 @@ export default function PDFReaderPage() {
     
     var currentTime = audioRef.current.currentTime;
     var duration = audioDurationRef.current;
-    var progress = Math.max(0, (currentTime / duration) - (1 / 150));
+    var progress = Math.max(0, (currentTime / duration) - (1 / 180));
     
     var estimatedWordIndex: number;
     const cumulative = wordCumulativeRef.current;
@@ -1916,7 +1916,7 @@ export default function PDFReaderPage() {
       totalWords += wordCount;
       if (!checkedChunks.has(i)) remainingWords += wordCount;
     }
-    const wordsPerMinute = 150 * playbackSpeed;
+    const wordsPerMinute = 130 * playbackSpeed;
     const totalMinutes = Math.ceil(totalWords / wordsPerMinute);
     const remainingMinutes = Math.ceil(remainingWords / wordsPerMinute);
     const formatTime = (mins: number) => {

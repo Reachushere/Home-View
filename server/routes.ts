@@ -415,6 +415,10 @@ function cleanTextForTTS(text: string): string {
     .replace(/\bTab\b/g, '')
     .replace(/\btab\b/g, '');
 
+  cleanedText = cleanedText
+    .replace(/x{3,}/gi, '')
+    .replace(/\b(?:AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)){2,}\b/g, '');
+
   // Final cleanup
   let result = cleanedText
     .replace(/&amp;/g, 'and')
