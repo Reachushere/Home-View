@@ -448,6 +448,7 @@ button[role="combobox"] > span {
 
 .course-cell-scroll {
   overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 .course-cell-scroll::-webkit-scrollbar {
   width: 4px;
