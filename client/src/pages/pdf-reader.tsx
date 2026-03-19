@@ -2576,7 +2576,7 @@ export default function PDFReaderPage() {
               />
             </div>
 
-            <div className="absolute flex items-start gap-2" style={{ bottom: '10px', left: '24px' }}>
+            <div className="absolute flex items-start gap-2" style={{ bottom: '10px', left: '39px' }}>
               <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
                 <RefreshCw className="h-5 w-5 text-white" />
                 <span className="text-[9px] text-white/70 leading-none">Restart</span>
