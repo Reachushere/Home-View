@@ -13251,7 +13251,7 @@ export default function Dashboard() {
               const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
               briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
             }
-            items.push({ title: `<img src="${newspaperIconPath}" style="height:23px;width:auto;display:inline-block;vertical-align:middle;margin-right:4px;filter:invert(1)" /><b>FORECAST BRIEF</b>  |  ${briefParts.join('  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${newspaperIconPath}" style="height:28px;width:auto;display:inline-block;vertical-align:middle;margin-right:4px;filter:invert(1)" /><b>FORECAST BRIEF</b>  |  ${briefParts.join('  ')}`, source: '_FORECAST_', link: '' });
           }
           return items;
         })() : []),
