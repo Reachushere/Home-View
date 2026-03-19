@@ -18283,7 +18283,6 @@ export default function Dashboard() {
                                     boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                                     overflow: 'hidden',
-                                    paddingRight: modulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : modulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
                                     position: 'relative',
                                   }}
                                   onClick={() => setEditingTask(task)}
@@ -18291,18 +18290,6 @@ export default function Dashboard() {
                                 >
                                   {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; return <span className="bg-black flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ color: '#FFFF00', letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '6px' : '8px', WebkitTextStroke: '0.15px #FFFF00', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined }}>PREP</span>{showCount && <span style={{ color: 'white', fontSize: '8px', fontWeight: 785, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
                                   <span className="truncate text-gray-700 pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
-                                  <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '2px', zIndex: 2 }}>
-                                    {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-prep-${task.id}`} /> : null; })()}
-                                    {modulePdfUrl && (
-                                      <img
-                                        src={pdfIconPath}
-                                        alt="Open PDF"
-                                        style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', animation: 'none' }}
-                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (moduleFile) { window.open(`/pdf-reader/${moduleFile.id}`, '_blank'); } else if (modulePdfUrl!.startsWith('http')) { window.open(modulePdfUrl!, '_blank'); } else { const p = modulePdfUrl!.startsWith('/') ? modulePdfUrl!.slice(1) : encodeURIComponent(modulePdfUrl!); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
-                                        data-testid={`pdf-icon-prep-${task.id}`}
-                                      />
-                                    )}
-                                  </div>
                                 </div>
                               </div>
                             );
