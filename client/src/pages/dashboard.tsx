@@ -21050,44 +21050,51 @@ export default function Dashboard() {
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>
+          {/* Scroll to top (double chevron up) */}
           <div
-            className="absolute z-50 flex flex-col items-center cursor-pointer"
-            style={{ right: '-18px', bottom: '29px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
+            style={{ right: '-18px', bottom: `${29 + 18 + 18 + 7 + 1 + 7 + 18}px`, width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
+            data-testid="button-homework-scroll-to-top"
           >
-            <div
-              className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ position: 'absolute', bottom: '79px', left: '50%', transform: 'translateX(-50%)', width: '18px', height: '18px' }}
-              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
-              data-testid="button-homework-scroll-to-top"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
-            </div>
-            <div style={{ position: 'absolute', bottom: '54px', right: '4px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
-            <div
-              className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '18px', height: '18px' }}
-              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
-              data-testid="button-homework-scroll-top"
-            >
-              <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
-            </div>
-            <div
-              className="hover:bg-white/20 rounded-full flex items-center justify-center"
-              style={{ width: '18px', height: '18px' }}
-              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
-              data-testid="button-homework-scroll-bottom"
-            >
-              <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
-            </div>
-            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', marginTop: '7px', marginBottom: '7px' }} />
-            <div
-              className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ width: '18px', height: '18px' }}
-              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
-              data-testid="button-homework-scroll-to-bottom"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
-            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
+          </div>
+          {/* Top separator */}
+          <div
+            className="absolute z-50"
+            style={{ right: '-14px', bottom: `${29 + 18 + 18 + 7}px`, width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+          />
+          {/* Page up (single chevron up) */}
+          <div
+            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
+            style={{ right: '-18px', bottom: `${29 + 18 + 18}px`, width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
+            data-testid="button-homework-scroll-top"
+          >
+            <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
+          </div>
+          {/* Page down (single chevron down) */}
+          <div
+            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
+            style={{ right: '-18px', bottom: `${29 + 18}px`, width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
+            data-testid="button-homework-scroll-bottom"
+          >
+            <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
+          </div>
+          {/* Bottom separator */}
+          <div
+            className="absolute z-50"
+            style={{ right: '-14px', bottom: `${29 + 11}px`, width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+          />
+          {/* Scroll to bottom (double chevron down) */}
+          <div
+            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
+            style={{ right: '-18px', bottom: '29px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
+            data-testid="button-homework-scroll-to-bottom"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
           </div>
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
@@ -22297,7 +22304,7 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '10px' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
@@ -22340,39 +22347,69 @@ export default function Dashboard() {
                                 })}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
-                              <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                            </div>
+                            {group.tasks.length > 1 && (
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
+                              </div>
+                            )}
                             <div style={{ flex: 1, minWidth: 0, alignSelf: 'center' }}>
                               {group.tasks.map((task, taskIdx) => {
-                                const progressColor = getProgressColor(task, 'thisweek');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
+                                const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
+                                const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} data-box-task-id={task.id} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} style={{ display: 'flex', gap: '2px', alignItems: 'center', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', paddingRight: '4px', borderBottom: taskIdx < group.tasks.length - 1 ? '0.5px solid rgba(255,255,255,0.08)' : 'none', backgroundColor: taskIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px' }}>
-                                    <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginLeft: '-10px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
-                                      <button
-                                        className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
-                                        onClick={() => setEditingTask(task)}
-                                        data-testid={`task-link-beyond-${task.id}`}
-                                        style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
-                                      >
-                                        {task.title}
-                                      </button>
-                                      <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                                    onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
+                                    onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
+                                    ref={(rowEl) => {
+                                      if (!rowEl || rowEl.dataset.swipeInit) return;
+                                      rowEl.dataset.swipeInit = '1';
+                                      const delEl = rowEl.querySelector('[data-swipe-delete]') as HTMLDivElement;
+                                      const resEl = rowEl.querySelector('[data-swipe-reschedule]') as HTMLDivElement;
+                                      const contentEl = rowEl.querySelector('[data-swipe-content]') as HTMLDivElement;
+                                      if (delEl && resEl && contentEl) {
+                                        const ctrl = swipeableRow(rowEl, contentEl, delEl, resEl);
+                                        delEl.addEventListener('click', (e) => { e.stopPropagation(); if (window.confirm(`Delete "${task.title}"?`)) { ctrl.reset(); deleteTaskWithUndo(task.id); } else { ctrl.reset(); } });
+                                        resEl.addEventListener('click', (e) => { e.stopPropagation(); ctrl.reset(); setEditingTask(task); });
+                                      }
+                                    }}
+                                  >
+                                    <div data-swipe-delete data-testid={`swipe-delete-3w-${task.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', background: '#ef4444', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '4px 0 0 4px', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Delete</span>
+                                    </div>
+                                    <div data-swipe-reschedule data-testid={`swipe-reschedule-3w-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
+                                      <span className="text-white text-[9px] font-bold">Reschedule</span>
+                                    </div>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                      <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginLeft: '-10px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
+                                          <div>
+                                            <button
+                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              onClick={() => setEditingTask(task)}
+                                              data-testid={`task-link-beyond-${task.id}`}
+                                              data-upcoming-task-name
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
+                                            >
+                                              {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
+                                            </button>
+                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
+                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(30, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                    <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                                      <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil}d-{format(new Date(task.dueDate), 'EEE').toUpperCase()}</span>
-                                      <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                        <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / 30) * 53), 53)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                      </div>
-                                    </div>
-                                    
                                   </div>
                                 );
                               })}
