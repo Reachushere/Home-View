@@ -682,6 +682,11 @@ export default function Dashboard() {
   const homeworkSpacerRef = useRef<HTMLDivElement>(null);
   const homeworkSectionRef = useRef<HTMLElement>(null);
   const homeworkScrollRef = useRef<HTMLDivElement>(null);
+  const [hwDividerPercent, setHwDividerPercent] = useState(() => {
+    const saved = localStorage.getItem('hwDividerPercent');
+    return saved ? parseFloat(saved) : 33;
+  });
+  const hwDividerDragRef = useRef<{ startX: number; startPercent: number; containerWidth: number } | null>(null);
   const [calendarBorderTop, setCalendarBorderTop] = useState(0);
   const clockContainerRef = useRef<HTMLDivElement>(null);
   const [clockWidth, setClockWidth] = useState(0);
@@ -2536,6 +2541,36 @@ export default function Dashboard() {
   };
   
   // Handle row resize
+  const handleHwDividerDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const container = homeworkSectionRef.current;
+    if (!container) return;
+    const containerWidth = container.getBoundingClientRect().width;
+    const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    hwDividerDragRef.current = { startX, startPercent: hwDividerPercent, containerWidth };
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      if (!hwDividerDragRef.current) return;
+      const clientX = 'touches' in ev ? ev.touches[0].clientX : (ev as MouseEvent).clientX;
+      const dx = clientX - hwDividerDragRef.current.startX;
+      const dpct = (dx / hwDividerDragRef.current.containerWidth) * 100;
+      const newPct = Math.max(20, Math.min(63, hwDividerDragRef.current.startPercent + dpct));
+      setHwDividerPercent(newPct);
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      setHwDividerPercent(pct => { localStorage.setItem('hwDividerPercent', String(pct)); return pct; });
+      hwDividerDragRef.current = null;
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onUp);
+  };
+
   const handleRowResizeStart = (e: React.MouseEvent | React.TouchEvent, rowType: 'allDay' | 'course' | 'timeSlot', hourIndex?: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -17818,7 +17853,7 @@ export default function Dashboard() {
                   if (!alreadyExists) allDisplayCourses.push(sc);
                 }
                 const filteredCourses = allDisplayCourses;
-                const minThreeTaskHeight = 3 * 22 + 8; // 74px minimum (3 tasks with gaps and padding)
+                const minThreeTaskHeight = 3 * 22 + 2 * 2 + 6; // 76px: 3 tasks (22px) + 2 gaps (2px) + padding (6px)
                 const maxCourseRowHeight = minThreeTaskHeight;
                 return (
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
@@ -18194,7 +18229,7 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
-                        <div className={`flex flex-col gap-0.5${slottedItems.filter(s => s !== null).length > 3 ? ' course-cell-scroll' : ''}`} style={{ overflowY: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', overflowX: 'visible', maxHeight: `${maxCourseRowHeight - 4}px` }}>
+                        <div className={`flex flex-col gap-0.5${slottedItems.filter(s => s !== null).length > 3 ? ' course-cell-scroll' : ''}`} style={{ overflowY: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', overflowX: 'visible', ...(slottedItems.filter(s => s !== null).length > 3 ? { maxHeight: `${maxCourseRowHeight - 4}px` } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
@@ -20981,7 +21016,7 @@ export default function Dashboard() {
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: 0,
-                  width: '33%',
+                  width: `${hwDividerPercent}%`,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
@@ -20989,7 +21024,7 @@ export default function Dashboard() {
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  left: '33%',
+                  left: `${hwDividerPercent}%`,
                   right: 0,
                   height: `${rowHeight}px`,
                   background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -21103,7 +21138,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
                     left: 0,
-                    width: '33%',
+                    width: `${hwDividerPercent}%`,
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
@@ -21191,6 +21226,27 @@ export default function Dashboard() {
               );
             });
 
+            courseRows.push(
+              <div
+                key="hw-divider-handle"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: `${hwDividerPercent}%`,
+                  width: '6px',
+                  marginLeft: '-3px',
+                  cursor: 'col-resize',
+                  zIndex: 50,
+                }}
+                onMouseDown={handleHwDividerDragStart}
+                onTouchStart={handleHwDividerDragStart}
+                data-testid="hw-divider-handle"
+              >
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: '2px', width: '2px', backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: '1px' }} />
+              </div>
+            );
+
             const rows = [...rightBgs, ...courseRows];
 
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
@@ -21218,7 +21274,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${otherTop}px`,
                     left: 0,
-                    width: '33%',
+                    width: `${hwDividerPercent}%`,
                     height: `${otherRowHeight}px`,
                     background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
                     zIndex: 41,
@@ -21232,7 +21288,7 @@ export default function Dashboard() {
                   <div key="other-progress-tasks" style={{
                     position: 'absolute',
                     top: `${otherTop}px`,
-                    left: '33%',
+                    left: `${hwDividerPercent}%`,
                     right: 0,
                     height: `${otherRowHeight}px`,
                     background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
