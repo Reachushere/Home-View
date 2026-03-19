@@ -8756,6 +8756,44 @@ export default function Dashboard() {
   })();
   const dueThisWeekTasks = [...dueNextWeekTasks, ...dueTwoWeeksTasks];
 
+  const hwWeeklyTimeline = useMemo(() => {
+    const semDefs: Array<{ label: string; start: Date; end: Date }> = [];
+    for (let y = 2026; y <= 2029; y++) {
+      semDefs.push({ label: 'Winter ' + y, start: new Date(y, 0, 13), end: new Date(y, 3, 17) });
+      semDefs.push({ label: 'Spring/Summer ' + y, start: new Date(y, 4, 5), end: new Date(y, 7, 4) });
+      semDefs.push({ label: 'Fall ' + y, start: new Date(y, 8, 8), end: new Date(y, 11, 7) });
+    }
+    const todayStart = startOfDay(new Date());
+    const currentWeekSat = startOfWeek(todayStart, { weekStartsOn: 6 });
+    const result: Array<{ weekStart: Date; weekEnd: Date; label: string; sublabel: string; semLabel: string | null; weekNum: number | null }> = [];
+    let cursor = currentWeekSat;
+    const endLimit = new Date(2030, 3, 17);
+    while (cursor < endLimit) {
+      const wStart = new Date(cursor);
+      const wEnd = addDays(wStart, 6);
+      const wMid = addDays(wStart, 3);
+      let matched: (typeof semDefs)[0] | null = null;
+      let wNum: number | null = null;
+      for (const sem of semDefs) {
+        const semSat = startOfWeek(sem.start, { weekStartsOn: 6 });
+        if (wMid >= semSat && wMid <= sem.end) {
+          matched = sem;
+          const diffD = Math.floor((wStart.getTime() - semSat.getTime()) / 86400000);
+          wNum = Math.floor(diffD / 7) + 1;
+          break;
+        }
+      }
+      const dr = format(wStart, 'MMM d') + ' - ' + format(wEnd, 'MMM d');
+      if (matched && wNum !== null && wNum >= 1) {
+        result.push({ weekStart: wStart, weekEnd: wEnd, label: 'Week ' + wNum, sublabel: dr, semLabel: matched.label, weekNum: wNum });
+      } else {
+        result.push({ weekStart: wStart, weekEnd: wEnd, label: dr, sublabel: '', semLabel: null, weekNum: null });
+      }
+      cursor = addDays(cursor, 7);
+    }
+    return result;
+  }, []);
+
   const upcomingEventsToday = useMemo(() => {
     const now = new Date();
     return upcomingCalendarEvents.filter(e => {
@@ -21726,7 +21764,8 @@ export default function Dashboard() {
 
                 {/* This Week Section */}
                 <div data-homework-section="thisweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
+                  <span className="text-[12px] font-semibold" style={{ color: isSameDay(startOfWeek(new Date(), { weekStartsOn: 6 }), startOfDay(hwWeeklyTimeline[0]?.weekStart)) ? '#ffff00' : '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                  {hwWeeklyTimeline[0]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '1px' }}>{hwWeeklyTimeline[0].sublabel}</span>}
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '5px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -21910,7 +21949,8 @@ export default function Dashboard() {
                 )}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
+                  {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '1px' }}>{hwWeeklyTimeline[1].sublabel}</span>}
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueNextWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-1px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -22098,7 +22138,8 @@ export default function Dashboard() {
                 )}
                 {/* 2 Weeks Section */}
                 <div data-homework-section="twoweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Two weeks</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
+                  {hwWeeklyTimeline[2]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '1px' }}>{hwWeeklyTimeline[2].sublabel}</span>}
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '2px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -22266,7 +22307,8 @@ export default function Dashboard() {
                 )}
                 {/* 3 Weeks and Beyond Section */}
                 <div data-homework-section="threeweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Three weeks +</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label ? hwWeeklyTimeline[3].label + ' +' : 'Three weeks +'}</span>
+                  {hwWeeklyTimeline[3]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '1px' }}>{hwWeeklyTimeline[3].sublabel + ' +'}</span>}
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueBeyondTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
