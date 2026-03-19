@@ -18432,7 +18432,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: '#ffffff',
+                                    backgroundColor: (() => { const m = course.darkColor.match(/^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i); if (m) { const r = parseInt(m[1],16), g = parseInt(m[2],16), b = parseInt(m[3],16); return `rgb(${Math.round(r + (255-r)*0.82)}, ${Math.round(g + (255-g)*0.82)}, ${Math.round(b + (255-b)*0.82)})`; } return '#ffffff'; })(),
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
@@ -18478,7 +18478,7 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: 'white',
+                                backgroundColor: (() => { const m = course.darkColor.match(/^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i); if (m) { const r = parseInt(m[1],16), g = parseInt(m[2],16), b = parseInt(m[3],16); return `rgb(${Math.round(r + (255-r)*0.82)}, ${Math.round(g + (255-g)*0.82)}, ${Math.round(b + (255-b)*0.82)})`; } return 'white'; })(),
                                 borderColor: course.darkColor,
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
@@ -20836,16 +20836,12 @@ export default function Dashboard() {
             // Parse course code and name (format: "CPPA122" or "CPPA122 - Full Name")
             const courseCode = (task.courseName?.split(' - ')[0] || '').trim();
             const courseFullName = (task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '').trim();
-            const taskGc = getCourseGradientColors(courseCode);
-            const taskRgb = hexToRgb(taskGc.start);
-            const taskCourseBg = `rgba(${taskRgb.r}, ${taskRgb.g}, ${taskRgb.b}, 0.13)`;
-            
             return (
               <div 
                 key={task.id} 
                 className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${isZeroDaysTask ? 'animate-zero-day-blink' : shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink-no-sweep' : ''}`} 
                 data-box-task-id={task.id} 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundColor: taskCourseBg }}
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                 onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
