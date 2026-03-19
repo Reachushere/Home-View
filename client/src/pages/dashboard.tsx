@@ -21167,7 +21167,7 @@ export default function Dashboard() {
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '6px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
             {weatherData && (
-              <div style={{ position: 'absolute', left: '17px', top: '0px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ position: 'absolute', right: '5px', top: '0px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
                 <span className="text-[10.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
               </div>
