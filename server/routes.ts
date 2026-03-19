@@ -3960,6 +3960,104 @@ html,body{height:100%;overflow:hidden;background:transparent}
     return 'University';
   }
 
+  app.post('/api/webhook/reminder', async (req, res) => {
+    try {
+      const { subject, body, auth } = req.body;
+      if (auth !== '5747') {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const title = (subject || '').replace(/^reminder\s*/i, '').trim() || (body || '').trim() || 'Reminder';
+      const description = body?.trim() || null;
+
+      const dueDate = new Date();
+      dueDate.setHours(9, 0, 0, 0);
+
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let weekNumber = 1;
+      if (semesterSettings?.semesterStartDate) {
+        const { getWeekNumber } = await import('../shared/schema');
+        weekNumber = getWeekNumber(
+          new Date(),
+          new Date(semesterSettings.semesterStartDate),
+          semesterSettings.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null
+        );
+      }
+
+      const task = await storage.createTask({
+        title,
+        type: 'reminder',
+        courseName: null,
+        dueDate,
+        eventStartTime: null,
+        eventEndTime: null,
+        weekNumber,
+        priority: 'medium',
+        description,
+        isCompleted: false,
+        isAcknowledged: false,
+      });
+      console.log(`[Email Reminder] Created reminder #${task.id}: "${title}"`);
+      return res.json({ action: 'created', id: task.id, title });
+    } catch (err: any) {
+      console.error('[Email Reminder] Error:', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/webhook/delete', async (req, res) => {
+    try {
+      const { body, auth } = req.body;
+      if (auth !== '5747') {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      if (!body || typeof body !== 'string') {
+        return res.status(400).json({ error: 'Missing body' });
+      }
+      const text = body.trim().toLowerCase();
+
+      const tickerMatch = text.match(/^ticker\s+(?:item\s+)?(.+)/i);
+      if (tickerMatch) {
+        const target = tickerMatch[1].trim();
+        const all = await storage.getAnnouncements();
+        const matches = all.filter(a => a.body.toLowerCase().includes(target) || a.snippet?.toLowerCase().includes(target) || a.subject?.toLowerCase().includes(target));
+        for (const m of matches) {
+          await storage.deleteAnnouncement(m.id);
+        }
+        console.log(`[Email Delete] Deleted ${matches.length} ticker items matching "${target}"`);
+        return res.json({ action: 'deleted', type: 'ticker', target, count: matches.length });
+      }
+
+      const calendarMatch = text.match(/^calendar\s+(?:item\s+|entry\s+)?(.+)/i);
+      if (calendarMatch) {
+        const target = calendarMatch[1].trim();
+        const allTasks = await storage.getTasks();
+        const matches = allTasks.filter((t: any) => t.title.toLowerCase().includes(target) || t.description?.toLowerCase().includes(target));
+        for (const m of matches) {
+          await storage.deleteTask(m.id);
+        }
+        console.log(`[Email Delete] Deleted ${matches.length} calendar tasks matching "${target}"`);
+        return res.json({ action: 'deleted', type: 'calendar', target, count: matches.length });
+      }
+
+      const todoMatch = text.match(/^(?:todo|reminder|to-do|to do)\s+(.+)/i);
+      if (todoMatch) {
+        const target = todoMatch[1].trim();
+        const allTasks = await storage.getTasks();
+        const matches = allTasks.filter((t: any) => t.type === 'reminder' && (t.title.toLowerCase().includes(target) || t.description?.toLowerCase().includes(target)));
+        for (const m of matches) {
+          await storage.deleteTask(m.id);
+        }
+        console.log(`[Email Delete] Deleted ${matches.length} todo/reminder tasks matching "${target}"`);
+        return res.json({ action: 'deleted', type: 'todo', target, count: matches.length });
+      }
+
+      return res.status(400).json({ error: 'Unrecognized delete target. Use: "ticker item xyz", "calendar item xyz", or "todo xyz"' });
+    } catch (err: any) {
+      console.error('[Email Delete] Error:', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   const tickerExpirations = new Map<number, NodeJS.Timeout>();
   app.post('/api/webhook/ticker', async (req, res) => {
     try {
