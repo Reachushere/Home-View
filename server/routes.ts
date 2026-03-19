@@ -3671,14 +3671,16 @@ html,body{height:100%;overflow:hidden;background:transparent}
       results.push({ path: `${basePath}/${semesterFolder}`, ...semFolderResult });
       const semPath = `${basePath}/${semesterFolder}`;
 
-      for (const course of courses) {
+      const semester = await storage.getActiveSemesterSettings();
+      for (let ci = 0; ci < courses.length; ci++) {
+        const course = courses[ci];
         const courseFolderName = `${course.code} - ${course.name}`;
         const courseResult = await createOneDriveFolder(semPath, courseFolderName);
         results.push({ path: `${semPath}/${courseFolderName}`, ...courseResult });
         const coursePath = `${semPath}/${courseFolderName}`;
 
-        for (let week = 1; week <= numWeeks; week++) {
-          const weekFolderName = `Week ${week}`;
+        const weekNames = semester ? generateWeekFolderNames(semester, ci + 1) : Array.from({ length: numWeeks }, (_, i) => `Week ${i + 1}`);
+        for (const weekFolderName of weekNames) {
           const weekResult = await createOneDriveFolder(coursePath, weekFolderName);
           results.push({ path: `${coursePath}/${weekFolderName}`, ...weekResult });
           const weekPath = `${coursePath}/${weekFolderName}`;
