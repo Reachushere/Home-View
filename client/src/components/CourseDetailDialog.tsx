@@ -29,6 +29,7 @@ import {
   X,
   GripVertical,
   FolderPlus,
+  Copy,
   ChevronDown,
   ChevronRight,
   ArrowUp,
@@ -903,6 +904,23 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </span>
         </div>
         <div className="flex items-center gap-0.5 flex-shrink-0">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const { id, gradeValue, isCompleted, ...rest } = task;
+              createTaskMutation.mutate({
+                ...rest,
+                title: `${task.title} (copy)`,
+                isCompleted: false,
+                gradeValue: null,
+              });
+            }}
+            className="flex-shrink-0 text-white/30 hover:text-blue-400 transition-colors p-0.5"
+            title="Duplicate task"
+            data-testid={`button-duplicate-task-${task.id}`}
+          >
+            <Copy className="h-3 w-3" />
+          </button>
           {assignToGroup === task.id ? (
             <select
               className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5"
