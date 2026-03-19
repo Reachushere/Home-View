@@ -5893,6 +5893,57 @@ html,body{height:100%;overflow:hidden;background:transparent}
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 
+  app.post("/api/uploads/direct", async (req, res) => {
+    try {
+      const chunks: Buffer[] = [];
+      req.on('data', (chunk: Buffer) => chunks.push(chunk));
+      await new Promise<void>((resolve, reject) => {
+        req.on('end', resolve);
+        req.on('error', reject);
+      });
+      const fileBuffer = Buffer.concat(chunks);
+      const fileName = (req.headers['x-file-name'] as string) || 'upload.pdf';
+      const contentType = (req.headers['content-type'] as string) || 'application/octet-stream';
+
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorageService = new ObjectStorageService();
+      const privateDir = process.env.PRIVATE_OBJECT_DIR;
+      if (!privateDir) throw new Error("PRIVATE_OBJECT_DIR not set");
+
+      const { randomUUID } = await import("crypto");
+      const objectId = randomUUID();
+      const fullPath = `${privateDir}/uploads/${objectId}`;
+
+      const pathParts = fullPath.replace(/^\//, '').split('/');
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join('/');
+
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      await new Promise<void>((resolve, reject) => {
+        const stream = file.createWriteStream({ contentType, resumable: false });
+        stream.on('finish', resolve);
+        stream.on('error', reject);
+        stream.end(fileBuffer);
+      });
+
+      const objectPath = `/objects/uploads/${objectId}`;
+      const createdFile = await storage.createFile({
+        originalName: fileName,
+        displayName: fileName,
+        objectPath,
+        contentType,
+        size: fileBuffer.length,
+      });
+
+      console.log(`[Upload] Direct upload success: ${fileName} -> ${objectPath} (${fileBuffer.length} bytes)`);
+      res.json({ objectPath, fileId: createdFile?.id, metadata: { name: fileName, size: fileBuffer.length, contentType } });
+    } catch (error: any) {
+      console.error("[Upload] Direct upload error:", error);
+      res.status(500).json({ error: error.message || "Failed to upload file" });
+    }
+  });
+
   // ============================================
   // SHOWER AUTOMATION - Auto-play PDFs on motion
   // ============================================
@@ -12074,9 +12125,13 @@ document.body.removeChild(a);
       const objectPath = req.query.path as string;
       if (!objectPath) return res.status(400).json({ error: "path required" });
 
-      const bucketId = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split('/')[1] || '';
+      const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
+      const pathParts = privateDir.replace(/^\//, '').split('/');
+      const bucketName = pathParts[0];
       const filePath = objectPath.replace('/objects/', '');
-      const [buffer] = await objectStorageClient.bucket(bucketId).file(filePath).download();
+      const fullObjectName = `.private/${filePath}`;
+      console.log(`[Syllabus View] bucket=${bucketName}, object=${fullObjectName}`);
+      const [buffer] = await objectStorageClient.bucket(bucketName).file(fullObjectName).download();
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline');
       res.send(buffer);
@@ -12093,11 +12148,15 @@ document.body.removeChild(a);
         return res.status(400).json({ error: "objectPath and courseName are required" });
       }
 
-      const bucketId = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split('/')[1] || '';
+      const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
+      const pathParts = privateDir.replace(/^\//, '').split('/');
+      const bucketName = pathParts[0];
       const filePath = objectPath.replace('/objects/', '');
+      const fullObjectName = `.private/${filePath}`;
       let fileBuffer: Buffer;
       try {
-        const [buffer] = await objectStorageClient.bucket(bucketId).file(filePath).download();
+        console.log(`[Syllabus Parse] Downloading from bucket=${bucketName}, object=${fullObjectName}`);
+        const [buffer] = await objectStorageClient.bucket(bucketName).file(fullObjectName).download();
         fileBuffer = buffer;
       } catch (dlErr) {
         console.error("Failed to download syllabus from object storage:", dlErr);

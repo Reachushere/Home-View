@@ -642,10 +642,41 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     toast({ title: "Uploading syllabus...", description: `Uploading ${file.name}` });
 
     try {
-      const uploadResult = await uploadFile(file);
-      if (!uploadResult) throw new Error("Upload failed");
+      console.log('[Syllabus] Starting direct upload for:', file.name, file.size, 'bytes');
+      const uploadResp = await fetch('/api/uploads/direct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type || 'application/pdf',
+          'X-File-Name': file.name,
+        },
+        body: file,
+      });
+      if (!uploadResp.ok) {
+        const errData = await uploadResp.json().catch(() => ({}));
+        throw new Error(errData.error || 'Upload failed');
+      }
+      const uploadResult = await uploadResp.json();
+      console.log('[Syllabus] Upload success:', uploadResult.objectPath);
+      if (!uploadResult?.objectPath) throw new Error("Upload failed - no object path returned");
 
-      toast({ title: "Analyzing syllabus...", description: "AI is reading through the entire syllabus..." });
+      setSyllabusObjectPath(uploadResult.objectPath);
+      try {
+        await fetch('/api/syllabus/paths', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: uploadResult.objectPath }),
+        });
+        console.log('[Syllabus] Path saved to server');
+      } catch (e) { console.error('[Syllabus] Failed to save path to server:', e); }
+      try {
+        const saved = localStorage.getItem('courseSyllabusPaths');
+        const local = saved ? JSON.parse(saved) : {};
+        local[courseInfo.courseCode] = uploadResult.objectPath;
+        localStorage.setItem('courseSyllabusPaths', JSON.stringify(local));
+        console.log('[Syllabus] Path saved to localStorage');
+      } catch {}
+
+      toast({ title: "Syllabus uploaded!", description: "Now analyzing with AI..." });
 
       const parseResp = await fetch("/api/syllabus/parse", {
         method: "POST",
@@ -660,26 +691,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
       if (!parseResp.ok) {
         const err = await parseResp.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to parse syllabus");
+        console.error('[Syllabus] Parse failed:', err);
+        toast({ title: "Syllabus saved", description: "AI parsing failed but your syllabus PDF is attached. You can view it anytime.", variant: "default" });
+        setIsParsingSyllabus(false);
+        return;
       }
 
       const parsed = await parseResp.json();
       setSyllabusData(parsed);
-
-      setSyllabusObjectPath(uploadResult.objectPath);
-      try {
-        await fetch('/api/syllabus/paths', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: uploadResult.objectPath }),
-        });
-      } catch {}
-      try {
-        const saved = localStorage.getItem('courseSyllabusPaths');
-        const local = saved ? JSON.parse(saved) : {};
-        local[courseInfo.courseCode] = uploadResult.objectPath;
-        localStorage.setItem('courseSyllabusPaths', JSON.stringify(local));
-      } catch {}
 
       const allItems = [
         ...(parsed.items || []).map((item: any, i: number) => ({ ...item, _idx: i, _source: 'item' })),

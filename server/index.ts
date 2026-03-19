@@ -48,6 +48,9 @@ declare module "http" {
 app.use(cookieParser());
 
 app.use((req: any, res: any, next: any) => {
+  if (req.path === '/api/uploads/direct') {
+    return next();
+  }
   const contentType = (req.headers['content-type'] || '').toLowerCase();
   if (req.method !== 'GET' && req.method !== 'HEAD' && contentType.includes('application/json')) {
     let chunks: Buffer[] = [];
@@ -75,7 +78,10 @@ app.use((req: any, res: any, next: any) => {
   }
 });
 
-app.use(express.urlencoded({ extended: false }));
+app.use((req: any, res: any, next: any) => {
+  if (req.path === '/api/uploads/direct') return next();
+  express.urlencoded({ extended: false })(req, res, next);
+});
 
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
