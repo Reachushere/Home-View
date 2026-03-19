@@ -21163,7 +21163,7 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px' }}>
-            <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.25px', backgroundColor: '#ffffff' }} />
+            <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.15px', backgroundColor: '#ffffff' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '6px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
             {weatherData && (
