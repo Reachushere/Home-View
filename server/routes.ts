@@ -20,6 +20,7 @@ import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
+import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
 
 // Helper function to generate repeated task due dates
@@ -11692,7 +11693,24 @@ document.body.removeChild(a);
         console.error("Failed to fetch second account upcoming events:", err);
       }
 
-      const allEvents = [...primaryEvents, ...secondAccountEvents];
+      let tmuUpcomingEvents: any[] = [];
+      try {
+        const tmuFormatted = await fetchTMUCalendarEvents(start, end);
+        tmuUpcomingEvents = tmuFormatted.map(e => ({
+          id: e.id,
+          start: { dateTime: e.startDate },
+          end: { dateTime: e.endDate },
+          summary: e.title,
+          description: e.description,
+          location: e.location,
+          htmlLink: '',
+          _source: 'tmu',
+        }));
+      } catch (err) {
+        console.error("Failed to fetch TMU upcoming events:", err);
+      }
+
+      const allEvents = [...primaryEvents, ...secondAccountEvents, ...tmuUpcomingEvents];
 
       const tasks = await storage.getTasks({});
       const syncedEventIds = new Set([
@@ -11723,7 +11741,7 @@ document.body.removeChild(a);
           endDate,
           isAllDay,
           htmlLink: event.htmlLink,
-          source: 'google',
+          source: event._source === 'tmu' ? 'tmu' : 'google',
         };
       });
 
@@ -11786,8 +11804,25 @@ document.body.removeChild(a);
         console.error("Failed to fetch second account events:", err);
       }
       
-      // Combine events from both accounts
-      const allEvents = [...primaryEvents, ...secondAccountEvents];
+      let tmuEvents: any[] = [];
+      try {
+        const tmuFormatted = await fetchTMUCalendarEvents(start, endOfWeek);
+        tmuEvents = tmuFormatted.map(e => ({
+          id: e.id,
+          start: { dateTime: e.startDate },
+          end: { dateTime: e.endDate },
+          summary: e.title,
+          description: e.description,
+          location: e.location,
+          htmlLink: '',
+          _source: 'tmu',
+        }));
+      } catch (err) {
+        console.error("Failed to fetch TMU calendar events:", err);
+      }
+
+      // Combine events from all accounts
+      const allEvents = [...primaryEvents, ...secondAccountEvents, ...tmuEvents];
       
       // Get all tasks to find which events are already synced from this app
       const tasks = await storage.getTasks({});
@@ -11823,7 +11858,7 @@ document.body.removeChild(a);
           endDate,
           isAllDay,
           htmlLink: event.htmlLink,
-          source: 'google',
+          source: event._source === 'tmu' ? 'tmu' : 'google',
         };
       });
       
