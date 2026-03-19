@@ -18,6 +18,7 @@ import cnnLogoPath from "@assets/CNN_1773536484180.png";
 import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
+import tmuBoxesLogo from "@assets/TMU_Boxes_1773894223753.png";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
@@ -8870,6 +8871,18 @@ export default function Dashboard() {
     weekDays = rawWeekDays.slice(0, 7); // Safety limit
   }
   
+  const thisWeekAnnouncements = (() => {
+    if (!weekDays || weekDays.length < 7 || !d2lAnnouncements || d2lAnnouncements.length === 0) return [];
+    const wkStart = weekDays[0];
+    const wkEnd = new Date(weekDays[6]);
+    wkEnd.setHours(23, 59, 59, 999);
+    return d2lAnnouncements.filter((a: any) => {
+      const d = new Date(a.receivedAt || a.date);
+      return d >= wkStart && d <= wkEnd;
+    });
+  })();
+  const d2lTickerHeight = 22;
+
   // Time slots for the day view - always show all 24 hours
   const isTravelMode = !!(schoolData.isTravelling || profileData.travelTimezone);
   const calStart = 0;
@@ -10753,7 +10766,7 @@ export default function Dashboard() {
       )}
 
       {/* School Logo - Fixed top left, customizable via school settings */}
-      <div className="fixed flex items-center" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: '8px', height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+      <div className="fixed flex items-center" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: `${8 + d2lTickerHeight}px`, height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '44px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <div className="flex flex-col">
@@ -10962,7 +10975,7 @@ export default function Dashboard() {
           transform: `translateY(${isTopPillOpen ? '14px' : '-77px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
-          top: '0px',
+          top: `${d2lTickerHeight}px`,
           height: '57px',
           paddingTop: '1px',
           paddingBottom: '1px',
@@ -11866,13 +11879,48 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* D2L Announcement Ticker - fixed at very top of page */}
+      <div className="fixed left-0 right-0 z-[9999] overflow-hidden" style={{ top: 0, height: '22px', background: 'linear-gradient(90deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 50%, rgba(16,185,129,0.12) 100%)', borderBottom: '1px solid rgba(16,185,129,0.25)' }} data-testid="announcement-ticker">
+        <div className="absolute left-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
+        <div className="absolute right-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(270deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
+        {thisWeekAnnouncements.length > 0 ? (
+          <div className="flex items-center h-full animate-ticker whitespace-nowrap" style={{ animation: `ticker ${Math.max(30, thisWeekAnnouncements.length * 12)}s linear infinite` }}>
+            {[...thisWeekAnnouncements, ...thisWeekAnnouncements].map((a: any, i: number) => {
+              const timeAgo = (() => {
+                const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 60) return `${mins}m ago`;
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return `${hrs}h ago`;
+                const days = Math.floor(hrs / 24);
+                return `${days}d ago`;
+              })();
+              return (
+                <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
+                  <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '14px', width: 'auto', objectFit: 'contain' }} />
+                  <span className="text-[9px] font-bold tracking-wide uppercase" style={{ background: 'rgba(0,61,124,0.15)', padding: '1px 4px', borderRadius: '2px', color: '#6DB3F2' }}>{a.courseName}</span>
+                  <span className="text-white/85 mx-0.5 text-[13px]" style={{ lineHeight: '1', fontWeight: 300 }}>|</span>
+                  <span className="text-[9px] text-white/90">{a.subject}</span>
+                  <span className="text-[8px] text-white/40 ml-1">{timeAgo}</span>
+                </span>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '14px', width: 'auto', objectFit: 'contain' }} />
+            <span className="text-[9px] text-white/40 ml-2">No announcements</span>
+          </div>
+        )}
+      </div>
+
       {/* Top pill tab - centered to page, outside pill container to avoid transform issues */}
       <div
         style={{
           position: 'fixed',
           left: '50%',
           transform: 'translateX(-50%)',
-          top: '-8px',
+          top: `${-8 + d2lTickerHeight}px`,
           width: '120px',
           height: '35px',
           cursor: 'pointer',
@@ -11899,7 +11947,7 @@ export default function Dashboard() {
           position: 'fixed',
           left: '50%',
           transform: 'translateX(-50%)',
-          top: '-9px',
+          top: `${-9 + d2lTickerHeight}px`,
           width: '84px',
           height: '25px',
           cursor: 'pointer',
@@ -11954,7 +12002,7 @@ export default function Dashboard() {
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2}px`,
-        top: '7px',
+        top: `${7 + d2lTickerHeight}px`,
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -11985,8 +12033,8 @@ export default function Dashboard() {
       </div>
 
       {/* Time - fixed position */}
-      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1 - 2}px`, top: '8px', width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
-      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 9}px`, top: '7px', zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1 - 2}px`, top: `${8 + d2lTickerHeight}px`, width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
+      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 9}px`, top: `${7 + d2lTickerHeight}px`, zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
         <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '700', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
           {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
         </span>
@@ -17600,7 +17648,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-hidden overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, flexShrink: 0, order: 1, paddingTop: '10px' }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -17851,33 +17899,7 @@ export default function Dashboard() {
               })}
             </div>
 
-            {d2lAnnouncements.length > 0 && (
-              <div className="relative w-full overflow-hidden flex-shrink-0" style={{ height: '22px', background: 'linear-gradient(90deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 50%, rgba(16,185,129,0.12) 100%)', borderBottom: '1px solid rgba(16,185,129,0.25)' }} data-testid="announcement-ticker">
-                <div className="absolute left-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
-                <div className="absolute right-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(270deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
-                <div className="flex items-center h-full animate-ticker whitespace-nowrap" style={{ animation: `ticker ${Math.max(30, d2lAnnouncements.length * 12)}s linear infinite` }}>
-                  {[...d2lAnnouncements, ...d2lAnnouncements].map((a: any, i: number) => {
-                    const timeAgo = (() => {
-                      const diff = Date.now() - new Date(a.date).getTime();
-                      const mins = Math.floor(diff / 60000);
-                      if (mins < 60) return `${mins}m ago`;
-                      const hrs = Math.floor(mins / 60);
-                      if (hrs < 24) return `${hrs}h ago`;
-                      const days = Math.floor(hrs / 24);
-                      return `${days}d ago`;
-                    })();
-                    return (
-                      <span key={`${a.id}-${i}`} className="inline-flex items-center gap-2 mx-6" data-testid={`announcement-${a.id}-${i}`}>
-                        <span className="text-[9px] font-bold text-emerald-400 tracking-wide uppercase">{a.courseName}</span>
-                        <span className="text-[9px] text-white/80">{a.subject}</span>
-                        <span className="text-[8px] text-white/40">{timeAgo}</span>
-                        <span className="text-emerald-600/40 mx-2">•</span>
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            
             
               {/* Course Rows - Dynamic based on selected week */}
               {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}

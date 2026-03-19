@@ -555,5 +555,19 @@ export const insertFeedbackNoteSchema = createInsertSchema(feedbackNotes).omit({
 export type FeedbackNote = typeof feedbackNotes.$inferSelect;
 export type InsertFeedbackNote = z.infer<typeof insertFeedbackNoteSchema>;
 
+export const announcements = pgTable("announcements", {
+  id: serial("id").primaryKey(),
+  emailId: text("email_id").notNull(),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  snippet: text("snippet"),
+  courseName: text("course_name"),
+  receivedAt: timestamp("received_at").defaultNow(),
+});
+
+export const insertAnnouncementSchema = createInsertSchema(announcements).omit({ id: true });
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, keyContacts, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, keyContacts, announcements, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -89,6 +89,9 @@ export interface IStorage {
   createKeyContact(data: InsertKeyContact): Promise<KeyContact>;
   updateKeyContact(id: number, updates: Partial<InsertKeyContact>): Promise<KeyContact>;
   deleteKeyContact(id: number): Promise<void>;
+  getAnnouncements(): Promise<Announcement[]>;
+  createAnnouncement(data: InsertAnnouncement): Promise<Announcement>;
+  getAnnouncementByEmailId(emailId: string): Promise<Announcement | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -706,6 +709,20 @@ export class DatabaseStorage implements IStorage {
 
   async deleteKeyContact(id: number): Promise<void> {
     await db.delete(keyContacts).where(eq(keyContacts.id, id));
+  }
+
+  async getAnnouncements(): Promise<Announcement[]> {
+    return db.select().from(announcements).orderBy(desc(announcements.receivedAt));
+  }
+
+  async createAnnouncement(data: InsertAnnouncement): Promise<Announcement> {
+    const [created] = await db.insert(announcements).values(data).returning();
+    return created;
+  }
+
+  async getAnnouncementByEmailId(emailId: string): Promise<Announcement | undefined> {
+    const [a] = await db.select().from(announcements).where(eq(announcements.emailId, emailId));
+    return a;
   }
 }
 

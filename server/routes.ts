@@ -3857,18 +3857,51 @@ html,body{height:100%;overflow:hidden;background:transparent}
 
   // ============= END ONEDRIVE ROUTES =============
 
-  // ============= GMAIL / D2L ANNOUNCEMENTS =============
-  app.get("/api/announcements", async (req, res) => {
+  // ============= D2L ANNOUNCEMENTS =============
+  app.get("/api/announcements", async (_req, res) => {
     try {
-      const { fetchD2LAnnouncements } = await import("./gmail");
-      const maxResults = parseInt(req.query.limit as string) || 20;
-      const announcements = await fetchD2LAnnouncements(maxResults);
-      res.json(announcements);
+      const all = await storage.getAnnouncements();
+      res.json(all);
     } catch (err: any) {
       console.error("Error fetching announcements:", err.message);
-      res.status(500).json({ error: err.message, announcements: [] });
+      res.json([]);
     }
   });
+
+  app.post("/api/announcements/webhook", async (req, res) => {
+    try {
+      const { emailId, subject, body, snippet, courseName, receivedAt } = req.body;
+      if (!subject) {
+        return res.status(400).json({ error: "subject is required" });
+      }
+      const id = emailId || `manual-${Date.now()}`;
+      const existing = await storage.getAnnouncementByEmailId(id);
+      if (existing) {
+        return res.json({ success: true, message: "Already exists", id: existing.id });
+      }
+      const created = await storage.createAnnouncement({
+        emailId: id,
+        subject,
+        body: body || '',
+        snippet: snippet || subject.slice(0, 100),
+        courseName: courseName || extractCourseFromSubject(subject),
+        receivedAt: receivedAt ? new Date(receivedAt) : new Date(),
+      });
+      console.log(`[Announcements] New: "${subject}" (${created.courseName})`);
+      res.json({ success: true, id: created.id });
+    } catch (err: any) {
+      console.error("Announcement webhook error:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  function extractCourseFromSubject(subject: string): string {
+    const match = subject.match(/\[([^\]]+)\]/);
+    if (match) return match[1].trim();
+    const codeMatch = subject.match(/([A-Z]{3,4}\s?\d{3})/i);
+    if (codeMatch) return codeMatch[1];
+    return 'University';
+  }
 
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {
