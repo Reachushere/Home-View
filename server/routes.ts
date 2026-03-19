@@ -2030,7 +2030,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       }
 
       const feeds = [
-        { source: 'CNN', url: 'http://rss.cnn.com/rss/cnn_topstories.rss' },
+        { source: 'CNN', url: 'http://rss.cnn.com/rss/cnn_latest.rss' },
         { source: 'CBC', url: 'https://www.cbc.ca/cmlink/rss-topstories' },
         { source: 'CTV', url: 'https://news.google.com/rss/search?q=site:ctvnews.ca+when:1d&hl=en-CA&gl=CA&ceid=CA:en' },
         { source: 'Global', url: 'https://globalnews.ca/politics/feed/' },
