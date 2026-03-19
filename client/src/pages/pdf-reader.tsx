@@ -1502,7 +1502,16 @@ export default function PDFReaderPage() {
     if (index >= 2 && index < chunksRef.current.length - 1 && (index + 1) % 3 === 0 && !playingAttentionPromptRef.current) {
       playingAttentionPromptRef.current = true;
       console.log(`[TTS] Playing attention prompt after chunk ${index + 1}`);
-      await playTTS("Bryn, are you paying attention?");
+      if (catWashFollow || speakerParam) {
+        try {
+          await fetch("/api/media/attention-prompt", { method: "POST" });
+          await new Promise(r => setTimeout(r, 4000));
+        } catch (e) {
+          console.log(`[TTS] Attention prompt server call failed:`, e);
+        }
+      } else {
+        await playTTS("Bryn, are you paying attention?");
+      }
       playingAttentionPromptRef.current = false;
     }
     if (isPlayingRef.current) {

@@ -4696,7 +4696,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
 
   app.post("/api/tts/speaker", async (req, res) => {
     try {
-      const { text, voice = "nova", entityId } = req.body;
+      const { text, voice = "echo", entityId } = req.body;
       console.log(`[TTS Speaker] Request received - entity: ${entityId}, voice: ${voice}, text length: ${text?.length || 0}`);
 
       if (!text || typeof text !== "string") {
@@ -5961,7 +5961,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       console.log(`[AudioPrep] ${file.originalName}: ${text.length} chars → ${chunks.length} chunks`);
       const audioPaths: string[] = [];
-      const voice = 'nova';
+      const voice = 'echo';
 
       for (let i = 0; i < chunks.length; i++) {
         try {
@@ -6495,7 +6495,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     chunks: string[],
     startChunk: number,
     sessionId: number,
-    voice: string = "nova",
+    voice: string = "echo",
     preGeneratedFirstChunkPath: string | null = null
   ) {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
@@ -10611,6 +10611,19 @@ document.body.removeChild(a);
   });
 
   // POST /api/media/skip-chunk - Skip to next or previous chunk in TTS
+  app.post("/api/media/attention-prompt", async (req, res) => {
+    try {
+      const appUrl = "https://home-view--bkh416.replit.app";
+      const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `attention-prompt-${Date.now()}`, "echo");
+      await playOnNestSpeaker(`${appUrl}${promptPath}`);
+      console.log(`[Attention Prompt] Played on Nest speaker`);
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error(`[Attention Prompt] Error: ${error.message}`);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/media/skip-chunk", async (req, res) => {
     try {
       const { direction, entityId } = req.body; // "forward" or "backward"
