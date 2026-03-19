@@ -17816,7 +17816,7 @@ export default function Dashboard() {
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
                         className="absolute left-0 right-0 bottom-0 cursor-pointer z-10"
-                        style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#e6b800' : '#7c3aed', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
+                        style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#ffd000' : '#7c3aed', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
                         onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
