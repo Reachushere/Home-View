@@ -11926,8 +11926,8 @@ export default function Dashboard() {
                   return (
                     <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
                       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
-                        <img src={tmuBoxesLogo} alt="TMU" style={{ height: '23px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '6px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '1px', top: '50%', transform: 'translateY(-50%)' }}>{a.courseName}</span>
+                        <img src={tmuBoxesLogo} alt="TMU" style={{ height: '25px', width: 'auto', objectFit: 'contain' }} />
+                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '10px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', right: '-1px', top: '50%', transform: 'translateY(-50%)' }}>{a.courseName}</span>
                       </span>
                       <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
                       <span className="text-[13px] text-white/90 font-medium">{a.subject}</span>
@@ -11941,7 +11941,7 @@ export default function Dashboard() {
           ) : (
             <div className="flex items-center justify-center h-full">
               <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src={tmuBoxesLogo} alt="TMU" style={{ height: '23px', width: 'auto', objectFit: 'contain' }} />
+                <img src={tmuBoxesLogo} alt="TMU" style={{ height: '25px', width: 'auto', objectFit: 'contain' }} />
               </span>
               <span className="text-[13px] text-white/40 ml-2">No announcements</span>
             </div>
