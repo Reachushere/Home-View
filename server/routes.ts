@@ -8509,7 +8509,7 @@ document.body.removeChild(a);
 
       if (!dueDate) {
         dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 7);
+        dueDate.setDate(dueDate.getDate() + 1);
       }
 
       let eventStartTime: string | null = null;
@@ -8592,6 +8592,7 @@ document.body.removeChild(a);
         priority: priority,
         description: description,
         isCompleted: false,
+        isAcknowledged: taskType === 'reminder' ? false : true,
       };
 
       console.log(`[Email Homework] Creating task: ${JSON.stringify(taskData)}`);

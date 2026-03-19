@@ -337,6 +337,7 @@ export const tasks = pgTable("tasks", {
   gradeTotal: doublePrecision("grade_total"), // Total possible points (e.g., 7.5)
   assignmentGroup: text("assignment_group"), // Group name for organizing assignments
   sortOrder: integer("sort_order").default(0), // Order within group or list
+  isAcknowledged: boolean("is_acknowledged").default(true), // For reminders: false until user acknowledges
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings

@@ -4539,6 +4539,8 @@ export default function Dashboard() {
     retryDelay: 1000,
   });
 
+  const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
+
   useEffect(() => {
     if (!allTasks || allTasks.length === 0) return;
     const courseTasksMap: Record<string, Task[]> = {};
@@ -11861,10 +11863,10 @@ export default function Dashboard() {
         }}
       >
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
-          <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill={hasUnackedReminders ? "rgba(220, 38, 38, 0.5)" : "rgba(255,255,255,0.18)"} stroke={hasUnackedReminders ? "rgba(220, 38, 38, 0.8)" : "rgba(255,255,255,0.35)"} strokeWidth="1.5" />
         </svg>
-        <div style={{ position: 'absolute', left: '50%', top: '10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-          <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
+        <div className={hasUnackedReminders ? "animate-pill-reminder" : ""} style={{ position: 'absolute', left: '50%', top: '10px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
+          {hasUnackedReminders ? <Bell className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: '#dc2626', filter: 'drop-shadow(0 0 2px rgba(220, 38, 38, 0.8))' }} /> : <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />}
         </div>
       </div>
 
@@ -18508,7 +18510,7 @@ export default function Dashboard() {
               {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
               {(() => {
                 const otherTasks = allTasks?.filter(task => {
-                  if (task.type !== 'other' && task.type !== 'meeting') return false;
+                  if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
                   if (task.type === 'meeting' && task.courseName) return false;
                   if (task.isCompleted) return false;
                   const taskDueDate = startOfDay(new Date(task.dueDate));
@@ -18573,13 +18575,14 @@ export default function Dashboard() {
                             const tomorrow = addDays(today, 1);
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                             const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            const isUnackedReminder = task.type === 'reminder' && !(task as any).isAcknowledged;
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
-                                  borderColor: 'rgba(107, 114, 128, 0.5)',
+                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : 'rgba(107, 114, 128, 0.25)',
+                                  borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : 'rgba(107, 114, 128, 0.5)',
                                 }}
                                 onClick={() => setEditingTask(task)}
                                 title={task.title}
@@ -23013,6 +23016,31 @@ export default function Dashboard() {
                 >
                   Cancel
                 </Button>
+                {editingTask && editingTask.type === 'reminder' && !(editingTask as any).isAcknowledged && (
+                  <Button
+                    variant="outline"
+                    className="border !border-red-400 text-white hover:text-white hover:!border-red-300 hover:bg-red-500/20 transition-opacity duration-200 h-8"
+                    style={{
+                      fontSize: '12px',
+                      boxShadow: '0 0 6px rgba(220, 38, 38, 0.6), 0 0 12px rgba(220, 38, 38, 0.4)',
+                      background: 'rgba(220, 38, 38, 0.15)',
+                    }}
+                    onClick={() => {
+                      fetch(`/api/tasks/${editingTask.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ isAcknowledged: true }),
+                      }).then(() => {
+                        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                        setEditingTask(null);
+                      });
+                    }}
+                    data-testid="button-acknowledge-reminder"
+                  >
+                    Acknowledge
+                  </Button>
+                )}
                 {editingTask && (
                   <Button
                     variant="outline"
