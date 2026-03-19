@@ -1599,18 +1599,25 @@ export default function PDFReaderPage() {
     delete allProgress[key];
     localStorage.setItem('allChunkProgress', JSON.stringify(allProgress));
     if (fileId) {
-      fetch(`/api/files/${fileId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
-      }).then(() => {
+      try {
+        await fetch(`/api/files/${fileId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0, totalChunks, listened: false }),
+        });
         console.log(`[Reset] Server progress cleared for file ${fileId}`);
+        queryClient.setQueryData(['/api/files', fileId], (old: any) => old ? { ...old, checkedChunks: '[]', lastChunkIndex: 0, listened: false } : old);
+        queryClient.setQueryData(['/api/files'], (old: any[]) => {
+          if (!Array.isArray(old)) return old;
+          return old.map((f: any) => f.id === Number(fileId) ? { ...f, checkedChunks: '[]', lastChunkIndex: 0, listened: false } : f);
+        });
         queryClient.invalidateQueries({ queryKey: ['/api/files'] });
         queryClient.invalidateQueries({ queryKey: ['/api/files', fileId] });
-      }).catch(e => {
+      } catch (e) {
         console.error(`[Reset] Failed to clear server progress:`, e);
-      });
+      }
     }
+    skipCheckedReloadRef.current = true;
     startReading();
   };
 
