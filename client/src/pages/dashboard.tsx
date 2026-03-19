@@ -22341,7 +22341,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
-                            <div style={{ flex: 1, minWidth: 0, alignSelf: 'center' }}>
+                            <div style={{ flex: 1, minWidth: 0, alignSelf: 'flex-start', paddingTop: '2px' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
