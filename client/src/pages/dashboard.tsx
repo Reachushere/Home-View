@@ -21588,8 +21588,8 @@ export default function Dashboard() {
                 {dueTodayTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }}>
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         Today
                       </span>
@@ -21757,8 +21757,8 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 This week
                               </span>
@@ -21941,8 +21941,8 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }} data-testid={`mini-cal-group-${group.key}`}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Next week
                               </span>
@@ -22132,8 +22132,8 @@ export default function Dashboard() {
                           return { date: startOfDay(new Date(t.dueDate)), courseCode };
                         });
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Two weeks
                               </span>
