@@ -3265,6 +3265,8 @@ export default function Dashboard() {
   } | null>(null);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [todoItems, setTodoItems] = useState<string[]>([]);
+  const [newReminderTitle, setNewReminderTitle] = useState('');
+  const [newReminderDueDate, setNewReminderDueDate] = useState('');
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [hoveredCountdownTaskId, setHoveredCountdownTaskId] = useState<number | null>(null);
@@ -11587,9 +11589,9 @@ export default function Dashboard() {
             className="pill-button-hover"
             onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
             data-testid="honeycomb-todo-header"
-            title="ToDo"
+            title="Reminders"
           >
-            <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            <Bell style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
           </div>
 
           {/* Bell Button (moved from bottom pill) */}
@@ -22123,82 +22125,214 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
               <div className="flex items-center gap-2">
-                <ListTodo className="text-white" style={{ width: '15px', height: '15px' }} />
+                <Bell className="text-white" style={{ width: '15px', height: '15px' }} />
                 <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                  TO DO ({todoItems.filter(item => item.trim() && !item.startsWith('✓')).length})
+                  REMINDERS ({(allTasks || []).filter(t => t.type === 'reminder' && !t.isCompleted).length})
                 </h2>
               </div>
             </div>
             <div className="flex-1 p-4 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-              <div className="mb-3">
+              <div className="mb-3 flex items-end gap-2">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    className="w-full text-xs px-2 py-1.5 rounded bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/30"
+                    placeholder="New reminder..."
+                    value={newReminderTitle}
+                    onChange={(e) => setNewReminderTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newReminderTitle.trim()) {
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        tomorrow.setHours(9, 0, 0, 0);
+                        fetch('/api/tasks', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({
+                            title: newReminderTitle.trim(),
+                            type: 'reminder',
+                            dueDate: newReminderDueDate || tomorrow.toISOString(),
+                            weekNumber: getWeekNumber(newReminderDueDate ? new Date(newReminderDueDate) : tomorrow),
+                            isAcknowledged: false,
+                            priority: 'medium',
+                          }),
+                        }).then(() => {
+                          queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                          setNewReminderTitle('');
+                          setNewReminderDueDate('');
+                        });
+                      }
+                    }}
+                    data-testid="input-new-reminder"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="datetime-local"
+                    className="text-xs px-2 py-1.5 rounded bg-white/10 text-white focus:outline-none focus:ring-1 focus:ring-white/30"
+                    style={{ colorScheme: 'dark', fontSize: '10px' }}
+                    value={newReminderDueDate}
+                    onChange={(e) => setNewReminderDueDate(e.target.value)}
+                    data-testid="input-reminder-due-date"
+                  />
+                </div>
                 <Button
                   type="button"
                   variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-4"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-3"
                   style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                  disabled={!newReminderTitle.trim()}
                   onClick={() => {
-                    const newItems = [...todoItems, ''];
-                    setTodoItems(newItems);
-                    setTimeout(() => {
-                      const inputEl = document.querySelector(`[data-todo-idx="${newItems.length - 1}"]`) as HTMLInputElement;
-                      if (inputEl) inputEl.focus();
-                    }, 50);
+                    if (!newReminderTitle.trim()) return;
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(9, 0, 0, 0);
+                    fetch('/api/tasks', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({
+                        title: newReminderTitle.trim(),
+                        type: 'reminder',
+                        dueDate: newReminderDueDate || tomorrow.toISOString(),
+                        weekNumber: getWeekNumber(newReminderDueDate ? new Date(newReminderDueDate) : tomorrow),
+                        isAcknowledged: false,
+                        priority: 'medium',
+                      }),
+                    }).then(() => {
+                      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                      setNewReminderTitle('');
+                      setNewReminderDueDate('');
+                    });
                   }}
-                  data-testid="button-add-item-flyout"
+                  data-testid="button-add-reminder"
                 >
                   <Plus className="w-3 h-3 mr-1" />
-                  Add To Do
+                  Add
                 </Button>
               </div>
-              {todoItems.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-white/40 text-sm">
-                  Click "Add To Do" to create an item
-                </div>
-              ) : (
-                <div className="grid grid-cols-4 gap-3">
-                  {todoItems.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5">
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 rounded border-white/40 bg-transparent accent-green-500 flex-shrink-0"
-                        checked={item.startsWith('✓')}
-                        onChange={(e) => {
-                          const newItems = [...todoItems];
-                          if (e.target.checked && !newItems[idx].startsWith('✓')) {
-                            newItems[idx] = '✓' + newItems[idx];
-                          } else if (!e.target.checked && newItems[idx].startsWith('✓')) {
-                            newItems[idx] = newItems[idx].slice(1);
-                          }
-                          setTodoItems(newItems);
-                        }}
-                      />
-                      <input 
-                        type="text" 
-                        data-todo-idx={idx}
-                        className={`flex-1 text-xs px-1.5 py-1 rounded bg-white/10 text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none ${item.startsWith('✓') ? 'line-through text-white/50' : ''}`}
-                        placeholder="Item..." 
-                        value={item.replace(/^✓/, '')} 
-                        onChange={(e) => {
-                          const newItems = [...todoItems];
-                          const wasChecked = newItems[idx].startsWith('✓');
-                          newItems[idx] = (wasChecked ? '✓' : '') + e.target.value;
-                          setTodoItems(newItems);
-                        }}
-                      />
-                      <button
-                        className="text-white/40 hover:text-white/80 transition-colors p-0.5 flex-shrink-0"
-                        onClick={() => {
-                          const newItems = todoItems.filter((_, i) => i !== idx);
-                          setTodoItems(newItems);
-                        }}
-                        data-testid={`button-delete-todo-${idx}`}
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
+              {(() => {
+                const reminderTasks = (allTasks || []).filter(t => t.type === 'reminder').sort((a, b) => {
+                  if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
+                  return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                });
+                if (reminderTasks.length === 0) {
+                  return (
+                    <div className="flex items-center justify-center h-32 text-white/40 text-sm">
+                      No reminders yet — add one above
                     </div>
-                  ))}
-                </div>
-              )}
+                  );
+                }
+                return (
+                  <div className="space-y-2">
+                    {reminderTasks.map(reminder => {
+                      const isOverdue = !reminder.isCompleted && new Date(reminder.dueDate) < new Date();
+                      const isUnacked = !(reminder as any).isAcknowledged;
+                      return (
+                        <div
+                          key={reminder.id}
+                          className={`flex items-center gap-2 p-2 rounded-lg transition-all ${reminder.isCompleted ? 'opacity-50' : ''} ${isUnacked && !reminder.isCompleted ? 'ring-1 ring-red-400/50' : ''}`}
+                          style={{ background: isOverdue ? 'rgba(220, 38, 38, 0.15)' : 'rgba(255, 255, 255, 0.08)' }}
+                          data-testid={`reminder-item-${reminder.id}`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 rounded border-white/40 bg-transparent accent-green-500 flex-shrink-0"
+                            checked={!!reminder.isCompleted}
+                            onChange={(e) => {
+                              fetch(`/api/tasks/${reminder.id}/complete`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ isCompleted: e.target.checked }),
+                              }).then(() => {
+                                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                              });
+                            }}
+                            data-testid={`checkbox-reminder-${reminder.id}`}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className={`text-xs ${reminder.isCompleted ? 'line-through text-white/50' : 'text-white'}`} data-testid={`text-reminder-title-${reminder.id}`}>
+                              {reminder.title}
+                            </div>
+                            <div className={`text-[10px] flex items-center gap-1 ${isOverdue ? 'text-red-400' : 'text-white/50'}`}>
+                              <Clock className="w-2.5 h-2.5" />
+                              {format(new Date(reminder.dueDate), 'MMM d, yyyy h:mm a')}
+                              {isOverdue && <span className="text-red-400 font-medium">OVERDUE</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {isUnacked && !reminder.isCompleted && (
+                              <button
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                                title="Acknowledge"
+                                onClick={() => {
+                                  fetch(`/api/tasks/${reminder.id}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ isAcknowledged: true }),
+                                  }).then(() => {
+                                    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                                  });
+                                }}
+                                data-testid={`button-ack-reminder-${reminder.id}`}
+                              >
+                                <BellOff className="h-3 w-3" />
+                              </button>
+                            )}
+                            {!reminder.isCompleted && (
+                              <button
+                                className="text-white/40 hover:text-teal-300 transition-colors p-1"
+                                title="Send email reminder"
+                                onClick={() => {
+                                  fetch('/api/email/reminder', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ taskId: reminder.id }),
+                                  }).then(res => {
+                                    if (res.ok) {
+                                      toast({ title: 'Reminder sent', description: `Email reminder sent for "${reminder.title}"` });
+                                    } else {
+                                      toast({ title: 'Failed', description: 'Could not send reminder email', variant: 'destructive' });
+                                    }
+                                  });
+                                }}
+                                data-testid={`button-email-reminder-${reminder.id}`}
+                              >
+                                <Mail className="h-3 w-3" />
+                              </button>
+                            )}
+                            <button
+                              className="text-white/40 hover:text-white/80 transition-colors p-1"
+                              title="Edit"
+                              onClick={() => {
+                                setEditingTask(reminder);
+                                setIsTodoFlyoutOpen(false);
+                              }}
+                              data-testid={`button-edit-reminder-${reminder.id}`}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                            <button
+                              className="text-white/40 hover:text-red-400 transition-colors p-1"
+                              title="Delete"
+                              onClick={() => {
+                                deleteTaskWithUndo(reminder.id);
+                              }}
+                              data-testid={`button-delete-reminder-${reminder.id}`}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
             <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
               <Button
@@ -22209,9 +22343,9 @@ export default function Dashboard() {
                   boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                   fontSize: '12px'
                 }}
-                data-testid="button-save-todo"
+                data-testid="button-close-reminders"
               >
-                Save
+                Close
               </Button>
             </div>
           </section>
