@@ -13234,7 +13234,7 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px" />3-Day Forecast: ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px;position:relative;top:-2px" />3-Day Forecast: ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = weatherData.daily[0];
             const tomorrowD = weatherData.daily[1];
