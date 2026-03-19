@@ -5725,6 +5725,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catWashPlaybackStartedAt: Date | null = null;
   let catWashManuallyStoppedAt: Date | null = null;
   let catWashPlaybackTrigger: 'lights' | 'manual' | null = null;
+  let lastVolumeChange: { volume: number; direction: string; timestamp: number } | null = null;
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
@@ -6608,6 +6609,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.log(`[Nest Playback] Attention prompt after ${chunksPlayedSinceLastPrompt} chunks`);
           const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`, voice);
           await playOnNestSpeaker(`${appUrl}${promptPath}`);
+          await new Promise(r => setTimeout(r, 4000));
           chunksPlayedSinceLastPrompt = 0;
         }
 
@@ -7982,6 +7984,7 @@ document.body.removeChild(a);
         method: 'POST', headers: haHeaders,
         body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: newVolume }),
       });
+      lastVolumeChange = { volume: Math.round(newVolume * 100), direction, timestamp: Date.now() };
       console.log(`[Cat Volume] Set volume: ${currentVolume} → ${newVolume} (${direction}, ${speed})`);
     } catch (err: any) {
       console.error(`[Cat Volume] Error: ${err.message}`);
@@ -8078,6 +8081,7 @@ document.body.removeChild(a);
     }
 
     const state = catWashPlaybackState;
+    const volumeEvent = lastVolumeChange && (Date.now() - lastVolumeChange.timestamp < 5000) ? lastVolumeChange : null;
     res.json({
       active: true,
       fileId: state.fileId,
@@ -8087,6 +8091,7 @@ document.body.removeChild(a);
       chunkText: state.chunks[state.chunkIndex] || '',
       words: state.currentWords,
       wordIndex: state.wordIndex || 0,
+      volumeChange: volumeEvent,
     });
   });
 

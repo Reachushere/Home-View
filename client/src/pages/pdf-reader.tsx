@@ -231,6 +231,9 @@ export default function PDFReaderPage() {
   const [isFlicking, setIsFlicking] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState(speakerParam || "browser_tts");
   const selectedSpeakerRef = useRef(selectedSpeaker);
+  const [volumeOverlay, setVolumeOverlay] = useState<{ volume: number; direction: string } | null>(null);
+  const volumeOverlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastVolumeTimestampRef = useRef<number>(0);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
@@ -488,6 +491,12 @@ export default function PDFReaderPage() {
             progress: 0,
             fileName: data.fileName || '',
           });
+          if (data.volumeChange && data.volumeChange.timestamp > lastVolumeTimestampRef.current) {
+            lastVolumeTimestampRef.current = data.volumeChange.timestamp;
+            setVolumeOverlay({ volume: data.volumeChange.volume, direction: data.volumeChange.direction });
+            if (volumeOverlayTimerRef.current) clearTimeout(volumeOverlayTimerRef.current);
+            volumeOverlayTimerRef.current = setTimeout(() => setVolumeOverlay(null), 2500);
+          }
         } else {
           setFollowState(null);
         }
@@ -497,6 +506,24 @@ export default function PDFReaderPage() {
     const interval = setInterval(poll, 500);
     return () => clearInterval(interval);
   }, [followOnly]);
+
+  useEffect(() => {
+    if (!catWashFollow || !autoplayParam) return;
+    const pollVolume = async () => {
+      try {
+        const resp = await fetch("/api/cat-wash/progress");
+        const data = await resp.json();
+        if (data.volumeChange && data.volumeChange.timestamp > lastVolumeTimestampRef.current) {
+          lastVolumeTimestampRef.current = data.volumeChange.timestamp;
+          setVolumeOverlay({ volume: data.volumeChange.volume, direction: data.volumeChange.direction });
+          if (volumeOverlayTimerRef.current) clearTimeout(volumeOverlayTimerRef.current);
+          volumeOverlayTimerRef.current = setTimeout(() => setVolumeOverlay(null), 2500);
+        }
+      } catch {}
+    };
+    const interval = setInterval(pollVolume, 800);
+    return () => clearInterval(interval);
+  }, [catWashFollow, autoplayParam]);
 
   const lastNavTimestamp = useRef(() => {
     try { return Number(localStorage.getItem('lastNavTimestamp') || '0'); } catch { return 0; }
@@ -1636,11 +1663,28 @@ export default function PDFReaderPage() {
 
   const skipBack = () => {
     if (currentChunkRef.current > 0) {
+      try {
+        const utterance = new SpeechSynthesisUtterance('previous chunk');
+        utterance.rate = 1.1;
+        utterance.volume = 0.8;
+        speechSynthesis.speak(utterance);
+      } catch {}
+
+      if (catWashFollow || speakerParam) {
+        fetch("/api/media/skip-chunk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ direction: "backward" }),
+        }).catch(e => console.error('[TTS] Server skip back failed:', e));
+      }
+
       if (audioRef.current) {
         audioRef.current.pause();
       }
       const prevChunk = currentChunkRef.current - 1;
       console.log(`[TTS] Skip back to chunk ${prevChunk}`);
+      setCurrentChunk(prevChunk);
+      currentChunkRef.current = prevChunk;
       setIsPlaying(true);
       isPlayingRef.current = true;
       setIsPaused(false);
@@ -1651,11 +1695,32 @@ export default function PDFReaderPage() {
 
   const skipForward = () => {
     if (currentChunkRef.current < totalChunks - 1) {
+      try {
+        const utterance = new SpeechSynthesisUtterance('next chunk');
+        utterance.rate = 1.1;
+        utterance.volume = 0.8;
+        speechSynthesis.speak(utterance);
+      } catch {}
+
+      if (catWashFollow || speakerParam) {
+        fetch("/api/media/skip-chunk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ direction: "forward" }),
+        }).catch(e => console.error('[TTS] Server skip forward failed:', e));
+      }
+
       if (audioRef.current) {
         audioRef.current.pause();
       }
       const nextChunk = currentChunkRef.current + 1;
       console.log(`[TTS] Skip forward to chunk ${nextChunk}`);
+      setCurrentChunk(nextChunk);
+      currentChunkRef.current = nextChunk;
+      setIsPlaying(true);
+      isPlayingRef.current = true;
+      setIsPaused(false);
+      isPausedRef.current = false;
       playNextChunk(nextChunk);
     }
   };
@@ -1795,6 +1860,40 @@ export default function PDFReaderPage() {
       <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,15,40,0.15) 0%, rgba(0,10,30,0.25) 100%)' }} />
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
+
+      {volumeOverlay && (
+        <div
+          data-testid="volume-overlay"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 9999,
+            background: 'rgba(0,0,0,0.85)',
+            borderRadius: '16px',
+            padding: '24px 40px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '12px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            animation: 'fadeIn 0.15s ease-out',
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{ fontSize: '36px', color: 'white' }}>
+            {volumeOverlay.direction === 'up' ? '\u{1F50A}' : '\u{1F509}'}
+          </div>
+          <div style={{ width: '160px', height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: `${volumeOverlay.volume}%`, height: '100%', background: 'white', borderRadius: '4px', transition: 'width 0.15s ease' }} />
+          </div>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: 'white', fontVariantNumeric: 'tabular-nums' }}>
+            {volumeOverlay.volume}%
+          </div>
+        </div>
+      )}
 
       {!followOnly && <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
         <div className="flex items-center gap-3 px-5 py-1.5 border-b border-white/10 backdrop-blur-sm" style={{ background: controlsBarBg }}>
@@ -2601,10 +2700,10 @@ export default function PDFReaderPage() {
             </div>
 
             <div className="absolute right-8 flex items-start" style={{ gap: '12px', bottom: '4px' }}>
-              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '145px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
+              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '145px' }} onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={!isPlaying || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
                 <SkipForward className="h-5 w-5 text-white" />
               </button>
               <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={() => {

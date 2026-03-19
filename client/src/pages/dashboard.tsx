@@ -5401,6 +5401,9 @@ export default function Dashboard() {
   const triggerButtonGlow = (_buttonId: string) => {};
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("browser_tts");
   const previewSpeakerRef = useRef<string>("browser_tts");
+  const [volumeOverlay, setVolumeOverlay] = useState<{ volume: number; direction: string } | null>(null);
+  const volumeOverlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastVolumeTimestampRef = useRef<number>(0);
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -6010,6 +6013,24 @@ export default function Dashboard() {
     }
     return result;
   };
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const pollVolume = async () => {
+      try {
+        const resp = await fetch("/api/cat-wash/progress");
+        const data = await resp.json();
+        if (data.volumeChange && data.volumeChange.timestamp > lastVolumeTimestampRef.current) {
+          lastVolumeTimestampRef.current = data.volumeChange.timestamp;
+          setVolumeOverlay({ volume: data.volumeChange.volume, direction: data.volumeChange.direction });
+          if (volumeOverlayTimerRef.current) clearTimeout(volumeOverlayTimerRef.current);
+          volumeOverlayTimerRef.current = setTimeout(() => setVolumeOverlay(null), 2500);
+        }
+      } catch {}
+    };
+    const interval = setInterval(pollVolume, 800);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
   // Fetch text when file is selected for preview
   useEffect(() => {
@@ -9343,6 +9364,38 @@ export default function Dashboard() {
             zIndex: 1
           }}
         />
+      )}
+      {volumeOverlay && (
+        <div
+          data-testid="volume-overlay"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 99999,
+            background: 'rgba(0,0,0,0.85)',
+            borderRadius: '16px',
+            padding: '24px 40px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '12px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{ fontSize: '36px', color: 'white' }}>
+            {volumeOverlay.direction === 'up' ? '\u{1F50A}' : '\u{1F509}'}
+          </div>
+          <div style={{ width: '160px', height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: `${volumeOverlay.volume}%`, height: '100%', background: 'white', borderRadius: '4px', transition: 'width 0.15s ease' }} />
+          </div>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: 'white', fontVariantNumeric: 'tabular-nums' }}>
+            {volumeOverlay.volume}%
+          </div>
+        </div>
       )}
       {/* Loading overlay for OneDrive file fetching */}
       {isLoadingOneDriveFiles && (
