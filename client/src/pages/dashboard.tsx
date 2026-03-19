@@ -6368,6 +6368,7 @@ export default function Dashboard() {
       body: JSON.stringify({ checkedChunks: checkedJson, totalChunks: total }),
     }).then(() => {
       queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+      refreshFileCounts();
     }).catch(err => console.error('Failed to save auto-checked chunks:', err));
   };
 
@@ -18459,12 +18460,16 @@ export default function Dashboard() {
                       for (const f of files) {
                         if (f.listened) {
                           totalProgress += 100;
-                        } else if (f.checkedChunks && f.totalChunks && f.totalChunks > 0) {
+                        } else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
                           try {
-                            const checked = JSON.parse(f.checkedChunks) as number[];
-                            totalProgress += Math.round((checked.length / f.totalChunks) * 100);
+                            const checked = JSON.parse(f.checkedChunks);
+                            if (Array.isArray(checked) && checked.length > 0) {
+                              totalProgress += Math.round((checked.length / f.totalChunks) * 100);
+                            } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
+                              totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                            }
                           } catch {
-                            if (f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
+                            if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
                               totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                             }
                           }
@@ -20558,9 +20563,9 @@ export default function Dashboard() {
               for (var fi = 0; fi < files.length; fi++) {
                 var f = files[fi];
                 if (f.listened) { totalProgress += 100; }
-                else if (f.checkedChunks && f.totalChunks && f.totalChunks > 0) {
-                  try { var checked = JSON.parse(f.checkedChunks) as number[]; totalProgress += Math.round((checked.length / f.totalChunks) * 100); } catch { if (f.lastChunkIndex != null && f.lastChunkIndex >= 0) totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
-                } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
+                else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
+                  try { var checked = JSON.parse(f.checkedChunks); if (Array.isArray(checked) && checked.length > 0) { totalProgress += Math.round((checked.length / f.totalChunks) * 100); } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) { totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); } } catch { if (f.lastChunkIndex != null && f.lastChunkIndex > 0) totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
+                } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex > 0) {
                   totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                 }
               }
