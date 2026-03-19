@@ -18440,7 +18440,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: `${course.color}18`,
+                                    backgroundColor: `${course.color}30`,
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
@@ -18486,7 +18486,7 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: `${course.color}18`,
+                                backgroundColor: `${course.color}30`,
                                 borderColor: course.darkColor,
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
