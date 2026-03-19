@@ -18137,7 +18137,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: 'transparent' }}
+                                    style={{ backgroundColor: cellBg }}
                                   />
                                 );
                               }
@@ -18148,7 +18148,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: 'transparent' }}
+                                    style={{ backgroundColor: cellBg }}
                                   />
                                 );
                               }
@@ -18250,7 +18250,26 @@ export default function Dashboard() {
                   return false;
                 }).length || 0;
                 
-                // Use pre-computed max height so all course rows are the same height
+                // Skip rendering course row if it has no tasks or projects this week
+                const courseHasProjects = allProjects.some(proj => {
+                  if (!proj.courseName) return false;
+                  const projCourseCode = proj.courseName.split(' - ')[0]?.toUpperCase();
+                  if (projCourseCode !== courseName) return false;
+                  if (proj.status === 'completed' || proj.status === 'cancelled') return false;
+                  if (!proj.targetDate) return false;
+                  const projTargetDate = startOfDay(new Date(proj.targetDate));
+                  const weekStart = startOfDay(weekDays[0]);
+                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  if (projTargetDate >= weekStart && projTargetDate < weekEnd) return true;
+                  if (proj.startDate) {
+                    const projStartDate = startOfDay(new Date(proj.startDate));
+                    if (projStartDate < weekEnd && projTargetDate > weekStart) return true;
+                  }
+                  return false;
+                });
+                if (courseTaskCount === 0 && !courseHasProjects) {
+                  return null;
+                }
                 
                 return (
                 <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
@@ -18288,7 +18307,7 @@ export default function Dashboard() {
                       );
                     })()}
                   </div>
-                  {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: 'transparent', borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
+                  {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {(() => {
                     const cwWeekStart = startOfDay(weekDays[0]);
                     const cwWeekEnd = startOfDay(addDays(weekDays[5], 1));
@@ -18406,14 +18425,14 @@ export default function Dashboard() {
                     dueTasks.forEach(t => { const slot = taskSlotMap.get(t.id); if (slot !== undefined) slottedItems[slot] = { task: t, isPrep: false }; });
                     prepTasks.forEach(t => { const slot = taskSlotMap.get(t.id); if (slot !== undefined && slottedItems[slot] === null) slottedItems[slot] = { task: t, isPrep: true }; });
                     
-                    const cellHasContent = dueTasks.length > 0 || prepTasks.length > 0;
-                    const cellBgActual = cellHasContent ? cellBgColor : 'transparent';
+                    const cellBgActual = cellBgColor;
+                    const cellHasScroll = slottedItems.filter(s => s !== null).length > 3;
                     
                     return (
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col pt-0.5"
-                        style={{ backgroundColor: cellBgActual, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
+                        style={{ backgroundColor: cellHasScroll ? 'transparent' : cellBgActual, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
