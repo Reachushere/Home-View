@@ -2414,7 +2414,7 @@ export default function Dashboard() {
     const deviceSaved = localStorage.getItem(`gridSizes_${deviceId}`);
     
     const applyCompressedHours = (heights: number[]) => {
-      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (heights[i] > 14) heights[i] = 14; });
+      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (heights[i] > 10) heights[i] = 10; });
       return heights;
     };
 
@@ -10816,7 +10816,7 @@ export default function Dashboard() {
               data-tpo data-tpo-opacity="1"
               style={{
                 position: 'fixed',
-                top: '25px',
+                top: `${25 + d2lTickerHeight}px`,
                 zIndex: 101,
                 opacity: isTopPillOpen ? 0 : 1,
                 transition: 'opacity 0.4s ease-in-out',
@@ -10877,7 +10877,7 @@ export default function Dashboard() {
             data-tpo data-tpo-opacity="1"
             style={{
               position: 'fixed',
-              top: '25px',
+              top: `${25 + d2lTickerHeight}px`,
               zIndex: 101,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
@@ -10891,7 +10891,7 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div className={diffDays === 0 ? 'countdown-due-today-pulse' : ''} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: diffDays === 0 ? undefined : '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+            <div className={diffDays === 0 ? 'countdown-due-today-pulse' : ''} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: diffDays === 0 ? undefined : '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}> 
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                 {(() => {
@@ -11889,7 +11889,7 @@ export default function Dashboard() {
       </div>
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
-      <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 9999, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
+      <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 10005, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
         <div className="flex-shrink-0 flex items-center justify-center" style={{ height: '38px', width: 'auto' }}>
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
         </div>
@@ -11908,28 +11908,35 @@ export default function Dashboard() {
                 el.style.animation = `tickerScroll ${duration}s linear infinite`;
               });
             }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
-              {[...thisWeekAnnouncements, ...thisWeekAnnouncements].map((a: any, i: number) => {
-                const timeAgo = (() => {
-                  const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
-                  const mins = Math.floor(diff / 60000);
-                  if (mins < 60) return `${mins}m ago`;
-                  const hrs = Math.floor(mins / 60);
-                  if (hrs < 24) return `${hrs}h ago`;
-                  const days = Math.floor(hrs / 24);
-                  return `${days}d ago`;
-                })();
-                return (
-                  <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
-                    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
-                      <img src={tmuBoxesLogo} alt="TMU" style={{ height: '23px', width: 'auto', objectFit: 'contain' }} />
-                      <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '6px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '1px', top: '50%', transform: 'translateY(-50%)' }}>{a.courseName}</span>
+              {(() => {
+                const items = thisWeekAnnouncements.length >= 3 ? thisWeekAnnouncements : [...thisWeekAnnouncements, ...thisWeekAnnouncements, ...thisWeekAnnouncements].slice(0, Math.max(thisWeekAnnouncements.length * 2, 4));
+                return items.map((a: any, i: number) => {
+                  const timeAgo = (() => {
+                    const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
+                    const mins = Math.floor(diff / 60000);
+                    if (mins < 60) return `${mins}m ago`;
+                    const hrs = Math.floor(mins / 60);
+                    if (hrs < 24) return `${hrs}h ago`;
+                    const days = Math.floor(hrs / 24);
+                    return `${days}d ago`;
+                  })();
+                  const snippetText = a.snippet || a.body || '';
+                  const cleanSnippet = snippetText.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+                  const displaySnippet = cleanSnippet && cleanSnippet !== a.subject ? ` — ${cleanSnippet.slice(0, 120)}${cleanSnippet.length > 120 ? '…' : ''}` : '';
+                  return (
+                    <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
+                      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
+                        <img src={tmuBoxesLogo} alt="TMU" style={{ height: '23px', width: 'auto', objectFit: 'contain' }} />
+                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '6px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '1px', top: '50%', transform: 'translateY(-50%)' }}>{a.courseName}</span>
+                      </span>
+                      <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
+                      <span className="text-[13px] text-white/90 font-medium">{a.subject}</span>
+                      {displaySnippet && <span className="text-[12px] text-white/55">{displaySnippet}</span>}
+                      <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
                     </span>
-                    <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
-                    <span className="text-[13px] text-white/90">{a.subject}</span>
-                    <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
-                  </span>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
