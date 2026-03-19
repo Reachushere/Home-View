@@ -1900,12 +1900,12 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             const dt = new Date(t + 'T12:00:00');
             return `${DAYS[dt.getDay()]}: ${Math.round(wxRes.daily.temperature_2m_max[i])}°/${Math.round(wxRes.daily.temperature_2m_min[i])}°`;
           });
-          tickerItems += `<span class="t-item"><span class="t-forecast">📅 <b>3-DAY FORECAST</b></span> <span class="t-data"> |  ${parts.join('  •  ')}</span></span>`;
+          tickerItems += `<span class="t-item"><span class="t-forecast">📅 <b>3-DAY FORECAST</b></span> <span class="t-data" style="color:rgba(255,255,255,0.95)"> |  ${parts.join('  •  ')}</span></span>`;
         }
       }
 
       if (pollenRes && pollenRes.overall) {
-        tickerItems += `<span class="t-item"><span class="t-forecast">🌿 <b>POLLEN</b>:</span> <span class="t-data">${pollenRes.overall.level} (Tree: ${pollenRes.tree.level}, Grass: ${pollenRes.grass.level}, Weed: ${pollenRes.weed.level})  |  AQI: ${pollenRes.aqi}</span></span>`;
+        tickerItems += `<span class="t-item"><span class="t-forecast">🌿 <b>POLLEN</b>:</span> <span class="t-data" style="color:rgba(255,255,255,0.95)">${pollenRes.overall.level} (Tree: ${pollenRes.tree.level}, Grass: ${pollenRes.grass.level}, Weed: ${pollenRes.weed.level})  |  AQI: ${pollenRes.aqi}</span></span>`;
       }
 
       if (newsRes && Array.isArray(newsRes)) {
