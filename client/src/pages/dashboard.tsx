@@ -22433,11 +22433,9 @@ export default function Dashboard() {
             )}
           </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-            <div data-testid="timeline-box" style={{ width: '30px', height: '10px', backgroundColor: colorSettings.headerBar, borderRadius: '0 0 3px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div data-testid="timeline-box" style={{ position: 'absolute', bottom: '-10px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '10px', backgroundColor: '#3b82f6', borderRadius: '0 0 3px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
               <span style={{ fontSize: '5px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.5px', lineHeight: 1 }}>Timeline</span>
             </div>
-          </div>
         </section>
 
         <div style={{ display: 'none' }} data-task-boxes-container="true" />
