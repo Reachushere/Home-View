@@ -1901,6 +1901,17 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             return `${DAYS[dt.getDay()]}: ${Math.round(wxRes.daily.temperature_2m_max[i])}°/${Math.round(wxRes.daily.temperature_2m_min[i])}°`;
           });
           tickerItems += `<span class="t-item"><span class="t-forecast"><img src="/forecast-icon.png" style="height:1.2em;width:auto;display:inline-block;vertical-align:middle;margin-right:4px" /> <b>3-DAY FORECAST</b></span> <span class="t-data" style="color:rgba(255,255,255,0.95)"> |  ${parts.join('  •  ')}</span></span>`;
+          const WMO_BRIEF: Record<number, string> = {0:'clear',1:'mostly clear',2:'partly cloudy',3:'overcast',45:'foggy',48:'foggy',51:'light drizzle',53:'drizzle',55:'heavy drizzle',61:'light rain',63:'rain',65:'heavy rain',66:'freezing rain',67:'heavy freezing rain',71:'light snow',73:'snow',75:'heavy snow',77:'snow grains',80:'light showers',81:'showers',82:'heavy showers',85:'light snow showers',86:'heavy snow showers',95:'thunderstorms',96:'thunderstorms with hail',99:'severe thunderstorms'};
+          const briefParts: string[] = [];
+          briefParts.push(`Currently ${temp}° and ${WMO_BRIEF[c.weather_code as number] || 'mixed conditions'}. Today's high ${Math.round(wxRes.daily.temperature_2m_max[0])}°, low ${Math.round(wxRes.daily.temperature_2m_min[0])}°.`);
+          for (let bi = 1; bi <= 2; bi++) {
+            if (wxRes.daily.time[bi]) {
+              const bdt = new Date(wxRes.daily.time[bi] + 'T12:00:00');
+              const bDesc = WMO_BRIEF[wxRes.daily.weather_code?.[bi] as number] || 'mixed conditions';
+              briefParts.push(`${DAYS[bdt.getDay()]}: ${bDesc}, ${Math.round(wxRes.daily.temperature_2m_max[bi])}°/${Math.round(wxRes.daily.temperature_2m_min[bi])}°.`);
+            }
+          }
+          tickerItems += `<span class="t-item"><span class="t-forecast"><img src="/newspaper-icon.png" style="height:1.2em;width:auto;display:inline-block;vertical-align:middle;margin-right:4px;filter:invert(1)" /> <b>FORECAST BRIEF</b></span> <span class="t-data" style="color:rgba(255,255,255,0.95)"> |  ${briefParts.join('  ')}</span></span>`;
         }
       }
 
