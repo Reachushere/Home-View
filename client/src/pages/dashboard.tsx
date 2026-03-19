@@ -2375,6 +2375,8 @@ export default function Dashboard() {
     }
     if (saved) {
       const parsed = JSON.parse(saved);
+      if (parsed.headerBar === '#160502') parsed.headerBar = '#1a3a5c';
+      if (parsed.todayCurrentHourCellBackground === '#160502') parsed.todayCurrentHourCellBackground = '#1a3a5c';
       return { ...defaults, ...parsed };
     }
     return defaults;
