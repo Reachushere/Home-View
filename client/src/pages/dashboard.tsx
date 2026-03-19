@@ -21267,6 +21267,7 @@ export default function Dashboard() {
                             marginBottom: '0px',
                             opacity: 1,
                             padding: '4px 0',
+                            marginTop: '5px',
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
