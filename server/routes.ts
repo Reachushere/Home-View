@@ -6525,17 +6525,28 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const audioPaths: string[] = [];
       const voice = 'echo';
 
+      let consecutiveRateLimits = 0;
       for (let i = 0; i < chunks.length; i++) {
         try {
           console.log(`[AudioPrep] Generating chunk ${i + 1}/${chunks.length} for ${file.originalName} (${chunks[i].length} chars)`);
           const audioPath = await generateAndSaveTTSAudio(chunks[i], `prep-${fileId}-chunk-${i}`, voice);
           audioPaths.push(audioPath);
+          consecutiveRateLimits = 0;
         } catch (e: any) {
+          const isRateLimit = e.message?.includes('429') || e.message?.includes('rate limit') || e.message?.includes('Rate limit');
           console.error(`[AudioPrep] Failed to generate chunk ${i + 1} for ${file.originalName}: ${e.message}`);
+          if (isRateLimit) {
+            consecutiveRateLimits++;
+            const backoffMs = Math.min(consecutiveRateLimits * 15000, 120000);
+            console.log(`[AudioPrep] Rate limited (${consecutiveRateLimits}x) — backing off ${backoffMs / 1000}s`);
+            await new Promise(r => setTimeout(r, backoffMs));
+            i--;
+            continue;
+          }
           audioPaths.push('');
           await new Promise(r => setTimeout(r, 2000));
         }
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 800));
       }
 
       await storage.updateFile(fileId, {
