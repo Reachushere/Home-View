@@ -360,7 +360,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_' || item.source === '_FORECAST_NOSEP_') {
-        const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?|(?:TORONTO FORECAST|3-DAY FORECAST|FORECAST BRIEF|POLLEN):?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
+        const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?|(?:Toronto Forecast|3-Day Forecast|Forecast Brief|Pollen):?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
         const sep = item.source === '_FORECAST_' ? '<span class="text-white/20 mx-2">|</span>' : '';
         return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] text-white/95">${forecastHtml}</span>${sep}</span>`;
       }
@@ -13226,7 +13226,7 @@ export default function Dashboard() {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
           const items: { title: string; source: string; link: string }[] = [];
-          items.push({ title: `<img src="${cnTowerPath}" style="height:34px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />TORONTO FORECAST: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h`, source: '_FORECAST_NOSEP_', link: '' });
+          items.push({ title: `<img src="${cnTowerPath}" style="height:34px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Toronto Forecast: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h`, source: '_FORECAST_NOSEP_', link: '' });
           if (weatherData.daily && weatherData.daily.length >= 3) {
             const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
             const forecastParts = weatherData.daily.slice(0, 3).map(d => {
@@ -13234,7 +13234,7 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `<img src="${forecastIconPath}" style="height:21px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />3-DAY FORECAST  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${forecastIconPath}" style="height:21px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />3-Day Forecast  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = weatherData.daily[0];
             const tomorrowD = weatherData.daily[1];
@@ -13252,11 +13252,11 @@ export default function Dashboard() {
               const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
               briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
             }
-            items.push({ title: `<img src="${newspaperIconPath}" style="height:26px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px;position:relative;top:-3px" />FORECAST BRIEF  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
+            items.push({ title: `<img src="${newspaperIconPath}" style="height:26px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px;position:relative;top:-3px" />Forecast Brief  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
           }
           return items;
         })() : []),
-        ...(pollenData ? [{ title: `<span style="margin-left:8px">🌿</span> POLLEN: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
+        ...(pollenData ? [{ title: `<span style="margin-left:8px">🌿</span> Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
