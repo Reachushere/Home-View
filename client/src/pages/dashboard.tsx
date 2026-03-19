@@ -2100,7 +2100,7 @@ export default function Dashboard() {
       taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       buttonSpacing: parsed.buttonSpacing ?? 8,
       mediaControlSpacing: parsed.mediaControlSpacing ?? 32,
-      showArrows: parsed.showArrows ?? true,
+      showArrows: parsed.showArrows ?? false,
       tallPillButtonSpacing: parsed.tallPillButtonSpacing ?? 0,
       tallPillHeight: parsed.tallPillHeight ?? 0
     };
