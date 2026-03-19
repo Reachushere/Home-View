@@ -6699,8 +6699,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     }
 
-    const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&auth=${authParam}`;
-    const tvFollowUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&auth=${authParam}`;
+    const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&voice=echo&fullscreen=true&auth=${authParam}`;
+    const tvFollowUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&voice=echo&fullscreen=true&auth=${authParam}`;
 
     catWashSessionId++;
     const currentSession = catWashSessionId;

@@ -104,6 +104,8 @@ export default function PDFReaderPage() {
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
   const followOnly = urlParams.get("followOnly") === "true";
+  const voiceParam = urlParams.get("voice");
+  const fullscreenParam = urlParams.get("fullscreen") === "true";
   const autoplayTriggeredRef = useRef(
     !autoplayParam ? false :
     catWashFollow ? false :
@@ -121,6 +123,43 @@ export default function PDFReaderPage() {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
+  useEffect(() => {
+    if (!fullscreenParam && !catWashFollow) return;
+    const enterFullscreen = () => {
+      if (!document.fullscreenElement) {
+        const el = document.documentElement as any;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (req) req.call(el).catch(() => {});
+      }
+    };
+    enterFullscreen();
+    const onInteraction = () => {
+      enterFullscreen();
+      document.removeEventListener('touchstart', onInteraction);
+      document.removeEventListener('click', onInteraction);
+    };
+    document.addEventListener('touchstart', onInteraction, { once: true });
+    document.addEventListener('click', onInteraction, { once: true });
+    const recheckInterval = setInterval(() => {
+      if (!document.fullscreenElement) enterFullscreen();
+    }, 3000);
+    let wakeLock: any = null;
+    const requestWakeLock = async () => {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+        }
+      } catch {}
+    };
+    requestWakeLock();
+    return () => {
+      clearInterval(recheckInterval);
+      document.removeEventListener('touchstart', onInteraction);
+      document.removeEventListener('click', onInteraction);
+      if (wakeLock) wakeLock.release().catch(() => {});
+    };
+  }, [fullscreenParam, catWashFollow]);
 
   useEffect(() => {
     if (fileId || isOneDriveRoute || oneDriveUrl) return;
@@ -203,6 +242,7 @@ export default function PDFReaderPage() {
   const [currentChunk, setCurrentChunk] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
   const [voice, setVoice] = useState<Voice>(() => {
+    if (voiceParam && ["alloy","ash","echo","fable","onyx"].includes(voiceParam)) return voiceParam as Voice;
     const saved = localStorage.getItem('pdf-reader-voice');
     return (saved && ["alloy","ash","echo","fable","onyx"].includes(saved) ? saved : "echo") as Voice;
   });
@@ -244,6 +284,7 @@ export default function PDFReaderPage() {
   const isPlayingRef = useRef<boolean>(false);
   const isPausedRef = useRef<boolean>(false);
   const playingAttentionPromptRef = useRef<boolean>(false);
+  const attentionPromptBlobUrlRef = useRef<string | null>(null);
   const playbackSpeedRef = useRef<number>(1);
   const volumeRef = useRef<number>(1);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -1237,7 +1278,7 @@ export default function PDFReaderPage() {
     
     var currentTime = audioRef.current.currentTime;
     var duration = audioDurationRef.current;
-    var progress = currentTime / duration;
+    var progress = Math.max(0, (currentTime / duration) - (1 / 150));
     
     var estimatedWordIndex: number;
     const cumulative = wordCumulativeRef.current;
@@ -1346,6 +1387,19 @@ export default function PDFReaderPage() {
     isPlayingRef.current = true;
     setIsPaused(false);
     isPausedRef.current = false;
+
+    if (!attentionPromptBlobUrlRef.current && !catWashFollow && !speakerParam) {
+      fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: "Bryn, are you paying attention?", voice }),
+      }).then(r => r.ok ? r.blob() : null).then(blob => {
+        if (blob) {
+          attentionPromptBlobUrlRef.current = URL.createObjectURL(blob);
+          console.log(`[TTS] Pre-cached attention prompt (${blob.size} bytes)`);
+        }
+      }).catch(() => {});
+    }
     
     beacon("startReading-calling-playNextChunk", { startChunk, isPlaying: isPlayingRef.current, checkedCount: mergedChecked.size });
 
@@ -1515,7 +1569,55 @@ export default function PDFReaderPage() {
           console.log(`[TTS] Attention prompt server call failed:`, e);
         }
       } else {
-        await playTTS("Bryn, are you paying attention?");
+        if (!attentionPromptBlobUrlRef.current) {
+          try {
+            console.log(`[TTS] Generating attention prompt audio (first time)`);
+            const resp = await fetch("/api/tts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: "Bryn, are you paying attention?", voice }),
+            });
+            if (resp.ok) {
+              const blob = await resp.blob();
+              attentionPromptBlobUrlRef.current = URL.createObjectURL(blob);
+              console.log(`[TTS] Attention prompt cached (${blob.size} bytes)`);
+            }
+          } catch (e) {
+            console.log(`[TTS] Failed to pre-generate attention prompt:`, e);
+          }
+        }
+        if (attentionPromptBlobUrlRef.current) {
+          console.log(`[TTS] Playing cached attention prompt (separate audio)`);
+          await new Promise<void>((resolve) => {
+            const tempAudio = new Audio(attentionPromptBlobUrlRef.current!);
+            tempAudio.volume = volumeRef.current;
+            tempAudio.playbackRate = 1;
+            tempAudio.onended = () => { tempAudio.remove(); resolve(); };
+            tempAudio.onerror = () => { tempAudio.remove(); resolve(); };
+            tempAudio.play().catch(() => { tempAudio.remove(); resolve(); });
+          });
+        } else {
+          console.log(`[TTS] Playing attention prompt via separate audio fetch`);
+          await new Promise<void>(async (resolve) => {
+            try {
+              const resp = await fetch("/api/tts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: "Bryn, are you paying attention?", voice }),
+              });
+              if (resp.ok) {
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                attentionPromptBlobUrlRef.current = url;
+                const tempAudio = new Audio(url);
+                tempAudio.volume = volumeRef.current;
+                tempAudio.onended = () => { tempAudio.remove(); resolve(); };
+                tempAudio.onerror = () => { tempAudio.remove(); resolve(); };
+                tempAudio.play().catch(() => { tempAudio.remove(); resolve(); });
+              } else { resolve(); }
+            } catch { resolve(); }
+          });
+        }
       }
       playingAttentionPromptRef.current = false;
     }
