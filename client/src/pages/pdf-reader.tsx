@@ -267,6 +267,7 @@ export default function PDFReaderPage() {
   const [checkedChunks, setCheckedChunks] = useState<Set<number>>(new Set());
   const [chunksList, setChunksList] = useState<string[]>([]);
   const [isEditingText, setIsEditingText] = useState(false);
+  const [catWashPaused, setCatWashPaused] = useState(false);
   const [editableText, setEditableText] = useState("");
   const [editingChunkIndex, setEditingChunkIndex] = useState<number | null>(null);
   const [editableChunkText, setEditableChunkText] = useState("");
@@ -1697,7 +1698,9 @@ export default function PDFReaderPage() {
     }
 
     if (catWashFollow || speakerParam) {
-      fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).catch(e => console.error('Failed to stop server-side playback:', e));
+      fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "stop" }) })
+        .then(() => { setFollowState(null); setCatWashPaused(false); })
+        .catch(e => console.error('Failed to stop server-side playback:', e));
     }
   };
   
@@ -2439,7 +2442,7 @@ export default function PDFReaderPage() {
                   ))}
                 </div>
               )}
-              <button className="mt-3 text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null))} data-testid="stop-catwash-playback">
+              <button className="mt-3 text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "stop" }) }).then(() => { setFollowState(null); setCatWashPaused(false); })} data-testid="stop-catwash-playback">
                 Stop Playback
               </button>
             </div>
@@ -2447,7 +2450,7 @@ export default function PDFReaderPage() {
 
           {catWashFollow && !followOnly && !autoplayParam && !followState?.active && (
             <div className="m-4 p-4 rounded-lg border border-white/10 text-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
-              <span className="text-sm text-white/50">Waiting for Cat Wash playback to start...</span>
+              <span className="text-sm text-white/50">{catWashPaused ? 'Paused. Tap play to resume.' : 'Waiting for playback to start...'}</span>
             </div>
           )}
 
@@ -2761,20 +2764,6 @@ export default function PDFReaderPage() {
 
               {file && file.lastChunkIndex > 0 && !isPlaying && (
                 <button
-                  className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 shrink-0"
-                  style={{ outline: '2px solid rgba(255,255,255,0.25)', outlineOffset: '2px' }}
-                  onClick={restartFromBeginning}
-                  disabled={isLoading || numPages === 0}
-                  title="Restart from beginning (clears all progress)"
-                  data-testid="button-restart"
-                >
-                  <SkipBack className="h-5 w-5 text-white" />
-                  <span className="text-[8px] text-white/70 leading-none">Reset</span>
-                </button>
-              )}
-
-              {file && file.lastChunkIndex > 0 && !isPlaying && (
-                <button
                   className="w-14 h-14 flex flex-col items-center justify-center rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 shrink-0"
                   style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
                   onClick={resumeFromLast}
@@ -2789,14 +2778,29 @@ export default function PDFReaderPage() {
 
               {catWashFollow && followState?.active ? (
                 <button
-                  className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0"
-                  style={{ outline: '2px solid rgba(255,100,100,0.5)', outlineOffset: '3px' }}
+                  className="w-16 h-16 flex items-center justify-center rounded-full bg-yellow-600 hover:bg-yellow-500 shrink-0"
+                  style={{ outline: '2px solid rgba(255,200,50,0.5)', outlineOffset: '3px' }}
                   onClick={() => {
-                    fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null));
+                    fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "pause" }) })
+                      .then(() => setCatWashPaused(true))
+                      .catch(e => console.error('Failed to pause:', e));
                   }}
-                  data-testid="button-stop-catwash"
+                  data-testid="button-pause-catwash"
                 >
-                  <Square className="h-7 w-7 text-white fill-white" />
+                  <Pause className="h-7 w-7 text-white fill-white" />
+                </button>
+              ) : catWashFollow && catWashPaused ? (
+                <button
+                  className="w-16 h-16 flex items-center justify-center rounded-full bg-green-600 hover:bg-green-500 shrink-0"
+                  style={{ outline: '2px solid rgba(100,255,100,0.5)', outlineOffset: '3px' }}
+                  onClick={() => {
+                    fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "resume" }) })
+                      .then(() => setCatWashPaused(false))
+                      .catch(e => console.error('Failed to resume:', e));
+                  }}
+                  data-testid="button-resume-catwash"
+                >
+                  <Play className="h-7 w-7 text-white fill-white ml-0.5" />
                 </button>
               ) : !isPlaying ? (
                 <button
@@ -2827,12 +2831,14 @@ export default function PDFReaderPage() {
               </button>
 
               <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
-                if (catWashFollow && followState?.active) {
-                  fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null));
+                if (catWashFollow && (followState?.active || catWashPaused)) {
+                  fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "stop" }) })
+                    .then(() => { setFollowState(null); setCatWashPaused(false); })
+                    .catch(e => console.error('Failed to stop:', e));
                 } else {
                   stopReading();
                 }
-              }} disabled={!isPlaying && !(catWashFollow && followState?.active)} data-testid="button-stop" title="Stop">
+              }} disabled={!isPlaying && !(catWashFollow && followState?.active) && !catWashPaused} data-testid="button-stop" title="Stop">
                 <Square className="h-4 w-4 text-white fill-white" />
                 <span className="text-[8px] text-white/70 leading-none mt-0.5">Stop</span>
               </button>
