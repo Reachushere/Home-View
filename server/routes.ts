@@ -7934,7 +7934,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-shower-button", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press", "/api/webhook/voice-command"],
+      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-shower-button", "/api/webhook/cat-wash-stop", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press", "/api/webhook/voice-command"],
     });
   });
 
@@ -8455,68 +8455,6 @@ document.body.removeChild(a);
     }
   });
 
-  // POST /api/webhook/cat-door - Triggered when cat washroom door opens
-  // Stops playback if the cat light is already on
-  app.post("/api/webhook/cat-door", async (req, res) => {
-    try {
-      const rawNewState = req.body?.new_state;
-      const doorState = req.body?.state || (typeof rawNewState === 'string' ? rawNewState : rawNewState?.state) || 'unknown';
-      console.log(`[Cat Door] ====== WEBHOOK TRIGGERED ======`);
-      console.log(`[Cat Door] Timestamp: ${new Date().toISOString()}`);
-      console.log(`[Cat Door] Door state: ${doorState}`);
-
-      if (doorState !== 'on' && doorState !== 'open') {
-        console.log(`[Cat Door] Door not opened (state: ${doorState}) — ignoring`);
-        return res.json({ action: "ignored", reason: `Door state is ${doorState}, not open` });
-      }
-
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      let lightIsOn = false;
-      try {
-        const lightResp = await fetch(`${haUrl}/api/states/light.cat_lights`, {
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-        });
-        if (lightResp.ok) {
-          const lightData = await lightResp.json();
-          lightIsOn = lightData?.state === 'on';
-        }
-      } catch (e: any) {
-        console.log(`[Cat Door] Failed to query light state: ${e.message}`);
-      }
-
-      if (!lightIsOn) {
-        console.log(`[Cat Door] Light is not on — ignoring door open`);
-        return res.json({ action: "ignored", reason: "Light is not on" });
-      }
-
-      if (!catWashPlaybackActive && !currentTTSSession) {
-        console.log("[Cat Door] Light is on but no active playback — ignoring");
-        return res.json({ action: "ignored", reason: "No active playback" });
-      }
-
-      const stopped: string[] = [];
-      const fileName = catWashPlaybackState?.fileName || '';
-
-      if (catWashPlaybackActive) {
-        stopped.push(`playback:${fileName}`);
-        await stopNestPlaybackWithGoodbye('door_opened');
-      }
-
-      if (currentTTSSession) {
-        console.log(`[Cat Door] Stopping active TTS session`);
-        stopTTSSession("Door opened while light on - stopping playback");
-        stopped.push("ttsSession");
-      }
-
-      catWashPlaybackTrigger = null;
-      console.log(`[Cat Door] Stopped (light was on): ${stopped.join(', ') || 'nothing was playing'}`);
-      res.json({ action: "stopped", trigger: "door_opened_light_on", stoppedItems: stopped });
-
-    } catch (error: any) {
-      console.error("[Cat Door] Error:", error);
-      res.status(500).json({ error: "Failed to handle door webhook", details: error.message });
-    }
-  });
 
   // POST /api/webhook/kitchen-volume - Control Kitchen Echo Studio volume (fire-and-forget for HA automations)
   app.post("/api/webhook/kitchen-volume", async (req, res) => {
