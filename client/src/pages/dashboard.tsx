@@ -357,8 +357,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_') {
-        const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?)/, '<span style="color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)">$1</span>');
-        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold text-white/95">${forecastHtml}</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold" style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">${item.title}</span></span>`;
       }
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
@@ -11925,8 +11924,8 @@ export default function Dashboard() {
                   return (
                     <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
                       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
-                        <img src={tmuBoxesLogo} alt="TMU" style={{ height: '25px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '10px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', right: '-1px', top: '50%', transform: 'translateY(-50%)' }}>{a.courseName}</span>
+                        <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
+                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', right: '-1px', top: '50%', transform: 'translateY(-50%)' }}>{(a.courseName || '').replace(/\s+/g, '')}</span>
                       </span>
                       <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
                       <span className="text-[13px] text-white/90 font-medium">{a.subject}</span>
@@ -11940,7 +11939,7 @@ export default function Dashboard() {
           ) : (
             <div className="flex items-center justify-center h-full">
               <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src={tmuBoxesLogo} alt="TMU" style={{ height: '25px', width: 'auto', objectFit: 'contain' }} />
+                <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
               </span>
               <span className="text-[13px] text-white/40 ml-2">No announcements</span>
             </div>
