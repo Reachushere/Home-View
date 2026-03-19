@@ -23435,7 +23435,10 @@ export default function Dashboard() {
                   variant="ghost"
                   className="absolute top-0 right-0 z-10 text-white/60 hover:text-white hover:bg-transparent transition-opacity duration-200 h-6 w-6"
                   onClick={() => {
-                    deleteTaskWithUndo(editingTask.id);
+                    if (!confirm(`Delete "${editingTask.title}"?`)) return;
+                    const taskId = editingTask.id;
+                    setEditingTask(null);
+                    doDeleteSingleTask(taskId);
                   }}
                   data-testid="button-delete-task-dialog"
                 >
