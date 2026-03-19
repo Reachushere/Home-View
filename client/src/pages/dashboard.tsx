@@ -373,7 +373,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       if (item.publishedAt) {
         const diff = Date.now() - new Date(item.publishedAt).getTime();
         const mins = Math.floor(diff / 60000);
-        if (mins >= 0) {
+        if (mins >= 0 && mins <= 4320) {
           const ago = mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
           timeAgoHtml = `<span class="text-[11px]" style="color:rgba(255,255,255,0.6);margin-left:4px">${ago}</span>`;
         }
