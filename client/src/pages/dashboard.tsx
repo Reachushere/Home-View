@@ -17816,7 +17816,7 @@ export default function Dashboard() {
                     {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
                         className="absolute left-0 right-0 bottom-0 cursor-pointer z-10"
-                        style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#c2410c' : '#c084fc', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
+                        style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#e6b800' : '#7c3aed', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
                         onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
@@ -21053,47 +21053,47 @@ export default function Dashboard() {
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>
-          {/* Scroll to top (double chevron up) */}
+          {/* Scroll to top (double chevron up) — 10px above top separator */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: `${29 + 18 + 18 + 7 + 1 + 7 + 18}px`, width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '120px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-top"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
           </div>
-          {/* Top separator */}
+          {/* Top separator — 10px above top of up chevron */}
           <div
             className="absolute z-50"
-            style={{ right: '-14px', bottom: `${29 + 18 + 18 + 7}px`, width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-14px', bottom: '99px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           />
-          {/* Page up (single chevron up) */}
+          {/* Page up (single chevron up) — stacked above page down */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: `${29 + 18 + 18}px`, width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '71px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-top"
           >
             <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
           </div>
-          {/* Page down (single chevron down) */}
+          {/* Page down (single chevron down) — 10px above bottom separator */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: `${29 + 18}px`, width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '53px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-bottom"
           >
             <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
           </div>
-          {/* Bottom separator */}
+          {/* Bottom separator — 10px above bottom double chevron */}
           <div
             className="absolute z-50"
-            style={{ right: '-14px', bottom: `${29 + 11}px`, width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-14px', bottom: '42px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           />
-          {/* Scroll to bottom (double chevron down) */}
+          {/* Scroll to bottom (double chevron down) — moved down 5px to 24px */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '29px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '24px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-bottom"
           >
