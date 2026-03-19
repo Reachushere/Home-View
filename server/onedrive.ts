@@ -158,6 +158,27 @@ export async function checkOneDriveFolderExists(folderPath: string): Promise<boo
   }
 }
 
+export async function listOneDriveFolderChildren(folderPath: string): Promise<any[]> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedPath = encodeURIComponent(folderPath).replace(/%2F/g, '/');
+    const response = await client.api(`/me/drive/root:${encodedPath}:/children`).get();
+    return (response.value || []).map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      folder: !!item.folder,
+    }));
+  } catch (error: any) {
+    console.error(`Error listing children of "${folderPath}":`, error.message || error);
+    return [];
+  }
+}
+
+export async function renameOneDriveItem(itemId: string, newName: string): Promise<void> {
+  const client = await getOneDriveClient();
+  await client.api(`/me/drive/items/${itemId}`).patch({ name: newName });
+}
+
 // Search for files
 export async function searchOneDriveFiles(query: string) {
   const client = await getOneDriveClient();

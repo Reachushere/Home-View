@@ -3785,6 +3785,76 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  app.post("/api/onedrive/rename-week-folders", async (req, res) => {
+    try {
+      const { courseCode, courseName, weekStyle } = req.body;
+      if (!courseCode || !weekStyle) {
+        return res.status(400).json({ error: "courseCode and weekStyle are required" });
+      }
+
+      const allSemesters = await storage.getAllSemesterSettings();
+      const { listOneDriveFolderChildren, renameOneDriveItem } = await import("./onedrive");
+
+      let targetSemester: any = null;
+      let courseIndex = -1;
+      for (const sem of allSemesters || []) {
+        for (let i = 1; i <= 5; i++) {
+          const code = sem[`course${i}Code` as keyof typeof sem];
+          if (code && String(code).toLowerCase() === courseCode.toLowerCase()) {
+            targetSemester = sem;
+            courseIndex = i;
+            break;
+          }
+        }
+        if (targetSemester) break;
+      }
+
+      if (!targetSemester || courseIndex < 0) {
+        return res.status(404).json({ error: "Course not found in any semester" });
+      }
+
+      const semType = getSemesterTypeFolder(targetSemester.semesterType);
+      const year = targetSemester.semesterStartDate
+        ? new Date(targetSemester.semesterStartDate).getFullYear()
+        : new Date().getFullYear();
+      const cName = targetSemester[`course${courseIndex}Name` as keyof typeof targetSemester] || courseName || courseCode;
+      const cCode = String(targetSemester[`course${courseIndex}Code` as keyof typeof targetSemester] || courseCode);
+      const courseFolderName = `${cCode} - ${cName}`;
+      const courseFolderPath = `/School/1. TMU/Courses/${year}/${semType}/${courseFolderName}`;
+
+      const children = await listOneDriveFolderChildren(courseFolderPath);
+      const weekFolders = (children || []).filter((c: any) =>
+        c.folder && (c.name.startsWith("Week ") || c.name.startsWith("Reading Week"))
+      ).sort((a: any, b: any) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+      if (weekFolders.length === 0) {
+        return res.json({ success: true, message: "No week folders found to rename.", renamed: 0 });
+      }
+
+      const newNames = generateWeekFolderNames(targetSemester, courseIndex);
+      let renamedCount = 0;
+
+      for (let i = 0; i < weekFolders.length && i < newNames.length; i++) {
+        const folder = weekFolders[i];
+        const newName = newNames[i];
+        if (folder.name !== newName) {
+          try {
+            await renameOneDriveItem(folder.id, newName);
+            renamedCount++;
+            console.log(`[OneDrive] Renamed "${folder.name}" → "${newName}"`);
+          } catch (e: any) {
+            console.error(`[OneDrive] Failed to rename "${folder.name}":`, e.message);
+          }
+        }
+      }
+
+      res.json({ success: true, message: `Renamed ${renamedCount} week folders to "${weekStyle}" style.`, renamed: renamedCount });
+    } catch (err: any) {
+      console.error("Rename week folders error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // ============= END ONEDRIVE ROUTES =============
 
   // GET /api/calendar/list - List all available Google calendars for selection
@@ -5892,7 +5962,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const rwStart = new Date(readingWeekStart);
           rwStart.setHours(0, 0, 0, 0);
           if (wStart.getTime() >= rwStart.getTime() && wStart.getTime() < rwStart.getTime() + 7 * 86400000) {
-            weeks.push(`Week ${weekNum - 0.5} - STUDY`);
+            weeks.push(`Reading Week - STUDY`);
             weekStart.setDate(weekStart.getDate() + 7);
             continue;
           }
@@ -11635,6 +11705,136 @@ document.body.removeChild(a);
     } catch (err) {
       console.error("ICS parse error:", err);
       res.status(500).json({ error: "Failed to parse ICS file" });
+    }
+  });
+
+  app.get("/api/syllabus/view", async (req, res) => {
+    try {
+      const objectPath = req.query.path as string;
+      if (!objectPath) return res.status(400).json({ error: "path required" });
+
+      const bucketId = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split('/')[1] || '';
+      const filePath = objectPath.replace('/objects/', '');
+      const [buffer] = await objectStorageClient.bucket(bucketId).file(filePath).download();
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline');
+      res.send(buffer);
+    } catch (err: any) {
+      console.error("Error serving syllabus:", err);
+      res.status(500).json({ error: "Failed to load syllabus" });
+    }
+  });
+
+  app.post("/api/syllabus/parse", async (req, res) => {
+    try {
+      const { objectPath, courseName, courseCode, fileName } = req.body;
+      if (!objectPath || !courseName) {
+        return res.status(400).json({ error: "objectPath and courseName are required" });
+      }
+
+      const bucketId = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split('/')[1] || '';
+      const filePath = objectPath.replace('/objects/', '');
+      let fileBuffer: Buffer;
+      try {
+        const [buffer] = await objectStorageClient.bucket(bucketId).file(filePath).download();
+        fileBuffer = buffer;
+      } catch (dlErr) {
+        console.error("Failed to download syllabus from object storage:", dlErr);
+        return res.status(500).json({ error: "Failed to read uploaded file" });
+      }
+
+      let pdfText = '';
+      try {
+        const pdfParse = (await import('pdf-parse')).default;
+        const pdfData = await pdfParse(fileBuffer);
+        pdfText = pdfData.text;
+      } catch (pdfErr) {
+        console.error("Failed to parse syllabus PDF:", pdfErr);
+        return res.status(500).json({ error: "Failed to parse PDF content" });
+      }
+
+      if (!pdfText.trim()) {
+        return res.status(400).json({ error: "Could not extract text from syllabus PDF" });
+      }
+
+      const OpenAI = (await import('openai')).default;
+      const openai = new OpenAI({
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+      });
+
+      const prompt = `You are analyzing a university course syllabus for "${courseName}" (${courseCode || ''}).
+
+Extract ALL of the following information from this syllabus. Be thorough — do not skip anything.
+
+Return a JSON object with these fields:
+
+1. "courseInfo": {
+  "professor": string or null (professor/instructor name),
+  "professorEmail": string or null (professor email),
+  "officeHours": string or null (office hours description),
+  "textbook": string or null (required textbook/materials),
+  "description": string or null (course description summary)
+}
+
+2. "gradingBreakdown": array of objects, each with:
+  - "component": string (e.g. "Midterm Exam", "Final Paper", "Participation")
+  - "weight": number (percentage, e.g. 30 for 30%)
+  - "description": string or null (any details about this component)
+
+3. "items": array of ALL deadlines, assignments, exams, quizzes, discussions, projects, and important dates found. Each item:
+  - "title": string (e.g. "Assignment 1 - Essay on Policy")
+  - "type": string (one of: reading, essay, exam, quiz, discussion, poll, project, module, assignment, other)
+  - "date": string or null (ISO date if found, e.g. "2026-01-30", or null if no specific date)
+  - "dateDescription": string or null (date as written in syllabus, e.g. "Week 5, Friday 11:59pm")
+  - "time": string or null (time if specified, e.g. "23:59")
+  - "weight": number or null (grade percentage weight if mentioned)
+  - "description": string (details, requirements, word count, format, etc.)
+  - "category": string (one of: assignment, exam, deadline, event, policy)
+
+4. "policies": array of notable course policies, each with:
+  - "title": string (e.g. "Late Submission Policy")
+  - "description": string (summary of the policy)
+
+5. "weekNumbering": {
+  - "style": string (one of: "skip_break" if the course skips the break/reading week number so Week 6 is followed by Week 7 after break, "include_break" if the course counts break week as a numbered week like Week 7 = Reading Week then Week 8, or "continuous" if weeks just count 1-13 regardless of breaks)
+  - "breakWeekLabel": string or null (how the syllabus labels the break/reading week, e.g. "Reading Week", "Study Week", "Break", "Week 7 - No Class")
+  - "totalWeeks": number or null (total number of instructional weeks mentioned)
+  - "evidence": string (quote or describe the part of the syllabus that shows how weeks are numbered around the break)
+}
+
+Be extremely thorough. Include EVERY assignment, deadline, exam, quiz, discussion post, and important date mentioned anywhere in the syllabus — even if found in a weekly schedule/outline table.
+
+Syllabus text:
+${pdfText.substring(0, 12000)}
+
+Return ONLY the JSON object, no markdown formatting.`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.1,
+      });
+
+      const responseText = completion.choices[0]?.message?.content || '';
+      let parsed: any;
+      try {
+        const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        parsed = JSON.parse(jsonStr);
+      } catch {
+        return res.status(500).json({ error: "Failed to parse AI response", raw: responseText });
+      }
+
+      console.log(`[Syllabus] Parsed ${courseName}: ${parsed.items?.length || 0} items, ${parsed.gradingBreakdown?.length || 0} grading components`);
+
+      res.json({
+        ...parsed,
+        objectPath,
+        fileName: fileName || 'Syllabus.pdf',
+      });
+    } catch (err: any) {
+      console.error("Error parsing syllabus:", err);
+      res.status(500).json({ error: err.message || "Internal server error" });
     }
   });
 

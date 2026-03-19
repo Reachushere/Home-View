@@ -195,6 +195,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
+  const [isParsingSyllabus, setIsParsingSyllabus] = useState(false);
+  const [syllabusData, setSyllabusData] = useState<any>(null);
+  const [syllabusItemStates, setSyllabusItemStates] = useState<Record<number, { accepted: boolean | null; editing: boolean; edits: any }>>({});
+  const [syllabusObjectPath, setSyllabusObjectPath] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('courseSyllabusPaths');
+      const parsed = saved ? JSON.parse(saved) : {};
+      return parsed[courseInfo.courseCode] || '';
+    } catch { return ''; }
+  });
+  const [showSyllabusViewer, setShowSyllabusViewer] = useState(false);
+  const [syllabusViewerUrl, setSyllabusViewerUrl] = useState<string>('');
+  const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
     professor: courseInfo.professor || '',
@@ -545,6 +558,160 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
       toast({ title: "Error", description: err.message || "Failed to process assignment.", variant: "destructive" });
     } finally {
       setIsParsingPdf(false);
+    }
+  };
+
+  const handleUploadSyllabus = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      toast({ title: "Invalid file", description: "Please upload a PDF file.", variant: "destructive" });
+      return;
+    }
+
+    setIsParsingSyllabus(true);
+    toast({ title: "Uploading syllabus...", description: `Uploading ${file.name}` });
+
+    try {
+      const uploadResult = await uploadFile(file);
+      if (!uploadResult) throw new Error("Upload failed");
+
+      toast({ title: "Analyzing syllabus...", description: "AI is reading through the entire syllabus..." });
+
+      const parseResp = await fetch("/api/syllabus/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          objectPath: uploadResult.objectPath,
+          courseName: courseInfo.fullName,
+          courseCode: courseInfo.courseCode,
+          fileName: file.name,
+        }),
+      });
+
+      if (!parseResp.ok) {
+        const err = await parseResp.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to parse syllabus");
+      }
+
+      const parsed = await parseResp.json();
+      setSyllabusData(parsed);
+
+      try {
+        const saved = localStorage.getItem('courseSyllabusPaths');
+        const paths = saved ? JSON.parse(saved) : {};
+        paths[courseInfo.courseCode] = uploadResult.objectPath;
+        localStorage.setItem('courseSyllabusPaths', JSON.stringify(paths));
+        setSyllabusObjectPath(uploadResult.objectPath);
+      } catch {}
+
+      const allItems = [
+        ...(parsed.items || []).map((item: any, i: number) => ({ ...item, _idx: i, _source: 'item' })),
+        ...(parsed.gradingBreakdown || []).map((g: any, i: number) => ({ title: g.component, weight: g.weight, description: g.description, type: 'other', category: 'grading', _idx: i + 1000, _source: 'grading' })),
+      ];
+
+      const initialStates: Record<number, { accepted: boolean | null; editing: boolean; edits: any }> = {};
+      allItems.forEach((item: any) => {
+        initialStates[item._idx] = { accepted: null, editing: false, edits: { ...item } };
+      });
+
+      if (parsed.weekNumbering) {
+        initialStates[-1] = { accepted: null, editing: false, edits: { ...parsed.weekNumbering } };
+      }
+
+      setSyllabusItemStates(initialStates);
+
+      if (parsed.courseInfo) {
+        const ci = parsed.courseInfo;
+        if (ci.professor || ci.professorEmail) {
+          const updates: any = {};
+          if (ci.professor && !courseInfo.professor) updates.professor = ci.professor;
+          if (ci.professorEmail && !courseInfo.professorEmail) updates.professorEmail = ci.professorEmail;
+          if (Object.keys(updates).length > 0 && onSaveCourseInfo) {
+            onSaveCourseInfo(updates);
+          }
+        }
+      }
+
+      toast({ title: "Syllabus parsed!", description: `Found ${parsed.items?.length || 0} items. Review them below.` });
+    } catch (err: any) {
+      console.error("Syllabus parse error:", err);
+      toast({ title: "Error", description: err.message || "Failed to process syllabus.", variant: "destructive" });
+    } finally {
+      setIsParsingSyllabus(false);
+    }
+  };
+
+  const handleAcceptSyllabusItem = async (idx: number) => {
+    const state = syllabusItemStates[idx];
+    if (!state) return;
+    const item = state.edits;
+
+    if (item._source === 'grading') {
+      setSyllabusItemStates(prev => ({ ...prev, [idx]: { ...prev[idx], accepted: true } }));
+      toast({ title: "Accepted", description: `${item.title} - ${item.weight}% noted.` });
+      return;
+    }
+
+    try {
+      let dueDate: Date;
+      if (item.date) {
+        dueDate = new Date(item.date);
+        if (item.time) {
+          const [h, m] = item.time.split(':').map(Number);
+          dueDate.setHours(h, m, 0, 0);
+        } else {
+          dueDate.setHours(23, 59, 0, 0);
+        }
+      } else {
+        dueDate = new Date();
+        dueDate.setHours(23, 59, 0, 0);
+      }
+
+      await apiRequest("POST", "/api/tasks", {
+        title: item.title,
+        description: item.description || "",
+        type: item.type || "other",
+        courseName: courseInfo.fullName,
+        dueDate: dueDate.toISOString(),
+        priority: item.type === "exam" || item.type === "quiz" ? "high" : "medium",
+        weekNumber: getWeekNumber(dueDate, semesterStart, readingWeekStart),
+        reminder1: 30,
+        reminder2: 120,
+        gradeWeight: item.weight || null,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      setSyllabusItemStates(prev => ({ ...prev, [idx]: { ...prev[idx], accepted: true } }));
+      toast({ title: "Added", description: `"${item.title}" added to assignments and calendar.` });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to create task.", variant: "destructive" });
+    }
+  };
+
+  const handleDeclineSyllabusItem = (idx: number) => {
+    setSyllabusItemStates(prev => ({ ...prev, [idx]: { ...prev[idx], accepted: false } }));
+  };
+
+  const handleAcceptWeekNumbering = async (style: string) => {
+    try {
+      const resp = await fetch("/api/onedrive/rename-week-folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseCode: courseInfo.courseCode,
+          courseName: courseInfo.courseName,
+          weekStyle: style,
+        }),
+      });
+      if (!resp.ok) throw new Error("Failed to update folders");
+      const data = await resp.json();
+      setSyllabusItemStates(prev => ({ ...prev, [-1]: { ...prev[-1], accepted: true } }));
+      toast({ title: "Folders updated", description: data.message || `Week numbering set to "${style}".` });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to update week folders.", variant: "destructive" });
     }
   };
 
@@ -930,19 +1097,34 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       <div className="w-10 h-5 rounded-full" style={{ background: `linear-gradient(to right, ${editInfo.color}, ${editInfo.colorEnd})` }} />
                     </div>
                   </div>
-                  <label className="cursor-pointer" data-testid="button-upload-assignment">
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      className="hidden"
-                      onChange={handleUploadAssignment}
-                      disabled={isParsingPdf || isUploading}
-                    />
-                    <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                      {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                      {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
-                    </div>
-                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <label className="cursor-pointer" data-testid="button-upload-syllabus">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={handleUploadSyllabus}
+                        disabled={isParsingSyllabus || isUploading}
+                      />
+                      <div className={`h-6 px-2 text-[9px] bg-emerald-600/30 hover:bg-emerald-600/50 text-white border border-emerald-400/30 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
+                        {isParsingSyllabus ? 'Parsing...' : 'Syllabus'}
+                      </div>
+                    </label>
+                    <label className="cursor-pointer" data-testid="button-upload-assignment">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={handleUploadAssignment}
+                        disabled={isParsingPdf || isUploading}
+                      />
+                      <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                        {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -1011,9 +1193,277 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
                 )}
+                {syllabusObjectPath && (
+                  <button
+                    onClick={() => {
+                      setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
+                      setShowSyllabusViewer(true);
+                    }}
+                    className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-emerald-600/15 border border-emerald-400/25 rounded px-2 py-1.5 mt-1 w-full transition-colors hover:bg-emerald-600/25"
+                    data-testid="button-view-syllabus"
+                  >
+                    <FileText className="h-3 w-3 text-emerald-400" />
+                    <span>View Syllabus</span>
+                    <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0 text-emerald-400/60" />
+                  </button>
+                )}
               </>
             )}
           </div>
+
+          {showSyllabusViewer && syllabusViewerUrl && (
+            <div className="mx-3 mb-2 border border-white/20 rounded-lg overflow-hidden" data-testid="syllabus-viewer">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-emerald-900/30 border-b border-white/15">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="h-3 w-3 text-emerald-400" />
+                  <span className="text-[10px] text-white font-medium">Syllabus</span>
+                </div>
+                <button onClick={() => setShowSyllabusViewer(false)} className="text-white/60 hover:text-white" data-testid="button-close-syllabus-viewer">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <iframe
+                src={syllabusViewerUrl}
+                className="w-full bg-white"
+                style={{ height: '400px' }}
+                title="Syllabus Viewer"
+              />
+            </div>
+          )}
+
+          {syllabusData && Object.keys(syllabusItemStates).length > 0 && (
+            <div className="mx-3 mb-2 border border-emerald-400/30 rounded-lg overflow-hidden" data-testid="syllabus-review-panel">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-emerald-900/30 border-b border-emerald-400/20">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="h-3 w-3 text-emerald-400" />
+                  <span className="text-[10px] text-white font-medium">Syllabus Review</span>
+                  <span className="text-[8px] text-white/60">
+                    {Object.values(syllabusItemStates).filter(s => s.accepted === true).length} accepted ·{' '}
+                    {Object.values(syllabusItemStates).filter(s => s.accepted === null).length} pending
+                  </span>
+                </div>
+                <button onClick={() => { setSyllabusData(null); setSyllabusItemStates({}); }} className="text-white/60 hover:text-white text-[9px]" data-testid="button-dismiss-syllabus-review">
+                  Dismiss
+                </button>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+
+                {syllabusData.weekNumbering && syllabusItemStates[-1] && syllabusItemStates[-1].accepted === null && (
+                  <div className="px-3 py-2 border-b border-white/10 bg-amber-900/15" data-testid="syllabus-week-numbering">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Calendar className="h-3 w-3 text-amber-400" />
+                      <span className="text-[10px] text-white font-medium">Week Numbering Style</span>
+                    </div>
+                    <p className="text-[9px] text-white/70 mb-1.5">
+                      Detected: <span className="text-white font-medium">{syllabusData.weekNumbering.style === 'skip_break' ? 'Skips break week number' : syllabusData.weekNumbering.style === 'include_break' ? 'Counts break as a numbered week' : 'Continuous numbering'}</span>
+                      {syllabusData.weekNumbering.breakWeekLabel && <> · Break label: "{syllabusData.weekNumbering.breakWeekLabel}"</>}
+                    </p>
+                    {syllabusData.weekNumbering.evidence && (
+                      <p className="text-[8px] text-white/50 mb-2 italic">"{syllabusData.weekNumbering.evidence}"</p>
+                    )}
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleAcceptWeekNumbering(syllabusData.weekNumbering.style)}
+                        className="h-5 px-2 text-[8px] bg-green-600/30 hover:bg-green-600/50 text-white border border-green-400/30 rounded flex items-center gap-1"
+                        data-testid="button-accept-week-style"
+                      >
+                        <Check className="h-2.5 w-2.5" /> Accept
+                      </button>
+                      <button
+                        onClick={() => {
+                          setWeekStyleChoice(syllabusData.weekNumbering.style);
+                          handleDeclineSyllabusItem(-1);
+                        }}
+                        className="h-5 px-2 text-[8px] bg-red-600/20 hover:bg-red-600/30 text-white border border-red-400/20 rounded flex items-center gap-1"
+                        data-testid="button-decline-week-style"
+                      >
+                        <X className="h-2.5 w-2.5" /> Decline
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {syllabusData.weekNumbering && syllabusItemStates[-1] && syllabusItemStates[-1].accepted === false && weekStyleChoice !== null && (
+                  <div className="px-3 py-2 border-b border-white/10 bg-amber-900/15" data-testid="syllabus-week-numbering-choose">
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <Calendar className="h-3 w-3 text-amber-400" />
+                      <span className="text-[10px] text-white font-medium">Choose Week Numbering</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      {['skip_break', 'include_break', 'continuous'].filter(s => s !== weekStyleChoice).map(style => (
+                        <button
+                          key={style}
+                          onClick={() => { handleAcceptWeekNumbering(style); setWeekStyleChoice(null); }}
+                          className="h-6 px-2 text-[9px] bg-white/5 hover:bg-white/10 text-white border border-white/15 rounded flex items-center gap-2 text-left"
+                          data-testid={`button-week-style-${style}`}
+                        >
+                          <span className="font-medium">{style === 'skip_break' ? 'Skip break number' : style === 'include_break' ? 'Count break as week' : 'Continuous 1-13'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {syllabusData.courseInfo?.description && (
+                  <div className="px-3 py-1.5 border-b border-white/10 bg-white/3">
+                    <p className="text-[9px] text-white/60 italic">{syllabusData.courseInfo.description}</p>
+                  </div>
+                )}
+
+                {(() => {
+                  const items = [
+                    ...(syllabusData.items || []).map((item: any, i: number) => ({ ...item, _idx: i, _source: 'item' })),
+                    ...(syllabusData.gradingBreakdown || []).map((g: any, i: number) => ({ title: g.component, weight: g.weight, description: g.description, type: 'other', category: 'grading', _idx: i + 1000, _source: 'grading' })),
+                  ];
+                  return items.map((item: any) => {
+                    const state = syllabusItemStates[item._idx];
+                    if (!state) return null;
+                    const isAccepted = state.accepted === true;
+                    const isDeclined = state.accepted === false;
+                    const isEditing = state.editing;
+                    const edits = state.edits;
+
+                    return (
+                      <div
+                        key={item._idx}
+                        className={`px-3 py-1.5 border-b border-white/8 flex items-start gap-2 transition-colors ${isAccepted ? 'bg-green-900/10 opacity-60' : isDeclined ? 'bg-red-900/10 opacity-40' : 'hover:bg-white/5'}`}
+                        data-testid={`syllabus-item-${item._idx}`}
+                      >
+                        <div className="flex flex-col gap-0.5 mt-0.5 flex-shrink-0">
+                          {!isAccepted && !isDeclined ? (
+                            <>
+                              <button
+                                onClick={() => handleAcceptSyllabusItem(item._idx)}
+                                className="w-4 h-4 rounded border border-green-400/40 bg-green-600/20 hover:bg-green-600/40 flex items-center justify-center transition-colors"
+                                title="Accept"
+                                data-testid={`button-accept-item-${item._idx}`}
+                              >
+                                <Check className="h-2.5 w-2.5 text-green-400" />
+                              </button>
+                              <button
+                                onClick={() => handleDeclineSyllabusItem(item._idx)}
+                                className="w-4 h-4 rounded border border-red-400/30 bg-red-600/15 hover:bg-red-600/30 flex items-center justify-center transition-colors"
+                                title="Decline"
+                                data-testid={`button-decline-item-${item._idx}`}
+                              >
+                                <X className="h-2.5 w-2.5 text-red-400" />
+                              </button>
+                            </>
+                          ) : isAccepted ? (
+                            <div className="w-4 h-4 rounded bg-green-600/30 flex items-center justify-center">
+                              <Check className="h-2.5 w-2.5 text-green-400" />
+                            </div>
+                          ) : (
+                            <div className="w-4 h-4 rounded bg-red-600/20 flex items-center justify-center">
+                              <X className="h-2.5 w-2.5 text-red-400" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          {isEditing ? (
+                            <div className="space-y-1">
+                              <input
+                                className="w-full h-5 text-[9px] bg-white/10 border border-white/20 rounded px-1.5 text-white"
+                                value={edits.title || ''}
+                                onChange={(e) => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], edits: { ...prev[item._idx].edits, title: e.target.value } } }))}
+                                placeholder="Title"
+                                data-testid={`input-edit-syllabus-title-${item._idx}`}
+                              />
+                              <div className="flex gap-1">
+                                <input
+                                  type="date"
+                                  className="flex-1 h-5 text-[9px] bg-white/10 border border-white/20 rounded px-1.5 text-white"
+                                  style={{ colorScheme: 'dark' }}
+                                  value={edits.date || ''}
+                                  onChange={(e) => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], edits: { ...prev[item._idx].edits, date: e.target.value } } }))}
+                                  data-testid={`input-edit-syllabus-date-${item._idx}`}
+                                />
+                                <input
+                                  type="time"
+                                  className="w-20 h-5 text-[9px] bg-white/10 border border-white/20 rounded px-1.5 text-white"
+                                  style={{ colorScheme: 'dark' }}
+                                  value={edits.time || ''}
+                                  onChange={(e) => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], edits: { ...prev[item._idx].edits, time: e.target.value } } }))}
+                                  data-testid={`input-edit-syllabus-time-${item._idx}`}
+                                />
+                                <input
+                                  className="w-14 h-5 text-[9px] bg-white/10 border border-white/20 rounded px-1.5 text-white text-center"
+                                  value={edits.weight ?? ''}
+                                  onChange={(e) => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], edits: { ...prev[item._idx].edits, weight: e.target.value ? parseFloat(e.target.value) : null } } }))}
+                                  placeholder="Wt%"
+                                  data-testid={`input-edit-syllabus-weight-${item._idx}`}
+                                />
+                              </div>
+                              <textarea
+                                className="w-full h-10 text-[8px] bg-white/10 border border-white/20 rounded px-1.5 py-1 text-white resize-none"
+                                value={edits.description || ''}
+                                onChange={(e) => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], edits: { ...prev[item._idx].edits, description: e.target.value } } }))}
+                                placeholder="Description"
+                                data-testid={`input-edit-syllabus-desc-${item._idx}`}
+                              />
+                              <button
+                                onClick={() => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], editing: false } }))}
+                                className="h-4 px-2 text-[8px] bg-white/10 hover:bg-white/20 text-white rounded"
+                                data-testid={`button-done-edit-${item._idx}`}
+                              >
+                                Done
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-white font-medium truncate">{edits.title || item.title}</span>
+                                {item._source === 'grading' && (
+                                  <span className="text-[7px] px-1 py-0.5 bg-purple-500/20 text-purple-300 rounded">Grading</span>
+                                )}
+                                {edits.weight != null && (
+                                  <span className="text-[8px] text-amber-400 flex-shrink-0">{edits.weight}%</span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-[8px] text-white/60">
+                                {(edits.date || edits.dateDescription) && (
+                                  <span>{edits.date || edits.dateDescription}</span>
+                                )}
+                                {edits.type && edits.type !== 'other' && (
+                                  <span className="capitalize">{edits.type}</span>
+                                )}
+                              </div>
+                              {edits.description && (
+                                <p className="text-[8px] text-white/50 mt-0.5 line-clamp-2">{edits.description}</p>
+                              )}
+                            </>
+                          )}
+                        </div>
+
+                        {!isAccepted && !isDeclined && !isEditing && (
+                          <button
+                            onClick={() => setSyllabusItemStates(prev => ({ ...prev, [item._idx]: { ...prev[item._idx], editing: true } }))}
+                            className="flex-shrink-0 w-5 h-5 rounded hover:bg-white/10 flex items-center justify-center mt-0.5 transition-colors"
+                            title="Edit"
+                            data-testid={`button-edit-item-${item._idx}`}
+                          >
+                            <Pencil className="h-2.5 w-2.5 text-white/50" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
+
+                {syllabusData.policies && syllabusData.policies.length > 0 && (
+                  <div className="px-3 py-2 border-t border-white/15">
+                    <div className="text-[9px] text-white/70 font-medium mb-1">Policies</div>
+                    {syllabusData.policies.map((p: any, i: number) => (
+                      <div key={i} className="text-[8px] text-white/50 mb-1">
+                        <span className="text-white/70 font-medium">{p.title}:</span> {p.description}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
