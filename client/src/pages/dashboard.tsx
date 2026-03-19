@@ -2367,16 +2367,18 @@ export default function Dashboard() {
       localStorage.setItem('colorSettingsMigrationV17', 'done');
       return migrated;
     }
-    const migrationV19 = localStorage.getItem('colorSettingsMigrationV19');
-    if (!migrationV19) {
+    const migrationV20 = localStorage.getItem('colorSettingsMigrationV20');
+    if (!migrationV20) {
       localStorage.removeItem('colorSettings');
-      localStorage.setItem('colorSettingsMigrationV19', 'done');
+      localStorage.removeItem('colorSettingsMigrationV17');
+      localStorage.removeItem('colorSettingsMigrationV18');
+      localStorage.removeItem('colorSettingsMigrationV18b');
+      localStorage.removeItem('colorSettingsMigrationV19');
+      localStorage.setItem('colorSettingsMigrationV20', 'done');
       return defaults;
     }
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed.headerBar === '#160502') parsed.headerBar = '#1a3a5c';
-      if (parsed.todayCurrentHourCellBackground === '#160502') parsed.todayCurrentHourCellBackground = '#1a3a5c';
       return { ...defaults, ...parsed };
     }
     return defaults;
