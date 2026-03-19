@@ -2367,15 +2367,11 @@ export default function Dashboard() {
       localStorage.setItem('colorSettingsMigrationV17', 'done');
       return migrated;
     }
-    const migrationV18b = localStorage.getItem('colorSettingsMigrationV18b');
-    if (!migrationV18b) {
-      const existing = saved ? JSON.parse(saved) : {};
-      if (!existing.headerBar || existing.headerBar === '#160502') existing.headerBar = '#1a3a5c';
-      if (!existing.todayCurrentHourCellBackground || existing.todayCurrentHourCellBackground === '#160502') existing.todayCurrentHourCellBackground = '#1a3a5c';
-      const migrated = { ...defaults, ...existing };
-      localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV18b', 'done');
-      return migrated;
+    const migrationV19 = localStorage.getItem('colorSettingsMigrationV19');
+    if (!migrationV19) {
+      localStorage.removeItem('colorSettings');
+      localStorage.setItem('colorSettingsMigrationV19', 'done');
+      return defaults;
     }
     if (saved) {
       const parsed = JSON.parse(saved);
