@@ -8597,13 +8597,6 @@ export default function Dashboard() {
     if (dueDateLocal <= startOfDay(today)) return false;
     if (dueDate > thisWeekFridayEnd) return false;
     if (isSameDay(dueDate, today)) return false;
-    if (t.startDate && (t.type === 'module' || t.type === 'reading' || t.type === 'Module' || t.type === 'Reading')) {
-      const taskStartDate = startOfDay(new Date(t.startDate));
-      const taskDueDate = startOfDay(dueDate);
-      if (taskStartDate <= startOfDay(today) && startOfDay(today) < taskDueDate) {
-        return false;
-      }
-    }
     return true;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
@@ -20784,6 +20777,56 @@ export default function Dashboard() {
                       )}
                     </div>
                     <span className="text-[9px] text-white/50 font-normal truncate leading-tight">{courseCode}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                    {(task.type === 'module' || task.type === 'reading' || task.type === 'Module' || task.type === 'Reading') && (() => {
+                      const cc = courseCode.toLowerCase();
+                      const wk = task.weekNumber ?? selectedWeek;
+                      const mKey = `week-${wk}-${cc}-module`;
+                      const rKey = `week-${wk}-${cc}-reading`;
+                      const mFiles = weeklyFiles.filter(f => f.folder === mKey);
+                      const rFiles = weeklyFiles.filter(f => f.folder === rKey);
+                      const calcPct = (files: typeof weeklyFiles, folderKey: string) => {
+                        const fc = fileCounts[folderKey];
+                        const fcPct = (fc && fc.total > 0) ? (fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0)) : -1;
+                        if (files.length === 0) return fcPct >= 0 ? fcPct : 0;
+                        let tp = 0;
+                        for (const f of files) {
+                          if (f.listened) { tp += 100; }
+                          else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
+                            try { const ck = JSON.parse(f.checkedChunks); if (Array.isArray(ck) && ck.length > 0) tp += Math.round((ck.length / f.totalChunks) * 100); else if (f.lastChunkIndex && f.lastChunkIndex > 0) tp += Math.round((f.lastChunkIndex / f.totalChunks) * 100); } catch { if (f.lastChunkIndex && f.lastChunkIndex > 0) tp += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
+                          } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex && f.lastChunkIndex > 0) { tp += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
+                        }
+                        const fp = Math.min(100, Math.round(tp / files.length));
+                        return Math.max(fp, fcPct >= 0 ? fcPct : 0);
+                      };
+                      const mPct = calcPct(mFiles, mKey);
+                      const rPct = calcPct(rFiles, rKey);
+                      const pColor = (p: number) => p === 100 ? '#22c55e' : p > 0 ? '#f97316' : '#ef4444';
+                      const hasMFiles = mFiles.length > 0 || (fileCounts[mKey] && fileCounts[mKey].total > 0);
+                      const hasRFiles = rFiles.length > 0 || (fileCounts[rKey] && fileCounts[rKey].total > 0);
+                      if (!hasMFiles && !hasRFiles) return null;
+                      return (
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {hasMFiles && (
+                            <div className="flex items-center gap-1">
+                              <span className="text-[7px] text-white/60 font-medium uppercase">M</span>
+                              <div style={{ width: '32px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '2px', position: 'relative' }}>
+                                <div style={{ width: `${mPct}%`, height: '3px', backgroundColor: pColor(mPct), borderRadius: '2px' }} />
+                              </div>
+                              <span className="text-[7px] font-bold" style={{ color: pColor(mPct) }}>{mPct}%</span>
+                            </div>
+                          )}
+                          {hasRFiles && (
+                            <div className="flex items-center gap-1">
+                              <span className="text-[7px] text-white/60 font-medium uppercase">R</span>
+                              <div style={{ width: '32px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '2px', position: 'relative' }}>
+                                <div style={{ width: `${rPct}%`, height: '3px', backgroundColor: pColor(rPct), borderRadius: '2px' }} />
+                              </div>
+                              <span className="text-[7px] font-bold" style={{ color: pColor(rPct) }}>{rPct}%</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div style={{ width: '5px', flexShrink: 0 }} />
                   {/* Col 3: Days count + progress bar */}
