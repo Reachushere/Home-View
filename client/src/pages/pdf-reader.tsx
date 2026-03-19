@@ -2723,7 +2723,7 @@ export default function PDFReaderPage() {
       {!followOnly && <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '5px 20px 14px 20px' }}>
         <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
           <div className="relative px-4 pb-4 pt-1" style={{ overflow: 'visible' }}>
-            <div className="flex items-center justify-center" style={{ overflow: 'visible', gap: '12px' }}>
+            <div className="flex items-center justify-between" style={{ overflow: 'visible', gap: '8px' }}>
               <div style={{ width: '120px', height: '48px', flexShrink: 0 }}>
                 <canvas
                   ref={canvasRef}
