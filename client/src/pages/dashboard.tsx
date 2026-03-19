@@ -13252,7 +13252,7 @@ export default function Dashboard() {
               const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
               briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
             }
-            items.push({ title: `<img src="${newspaperIconPath}" style="height:24px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px;position:relative;top:-3px" />Forecast Brief  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
+            items.push({ title: `<img src="${newspaperIconPath}" style="height:21px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px;position:relative;top:-3px" />Forecast Brief  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
           }
           return items;
         })() : []),
