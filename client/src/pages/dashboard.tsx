@@ -11920,7 +11920,7 @@ export default function Dashboard() {
                 })();
                 return (
                   <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
-                    <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', minWidth: '42px', objectFit: 'contain', verticalAlign: 'middle' }} />
+                    <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '18px', width: 'auto', minWidth: '18px', objectFit: 'contain', verticalAlign: 'middle' }} />
                     <span className="text-[13px] font-bold tracking-wide uppercase" style={{ color: '#6DB3F2' }}>{a.courseName}</span>
                     <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
                     <span className="text-[13px] text-white/90">{a.subject}</span>
@@ -11931,7 +11931,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+              <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
               <span className="text-[13px] text-white/40 ml-2">No announcements</span>
             </div>
           )}
