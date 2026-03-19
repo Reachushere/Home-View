@@ -18969,8 +18969,10 @@ export default function Dashboard() {
                     const ce = getCalendarEventsForHour(day, hour);
                     return ht.length > 0 || ct.length > 0 || ce.length > 0;
                   });
-                  const baseRowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
-                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.round(baseRowHeight / 2) : baseRowHeight;
+                  const compressedHours = [0,1,2,3,4,5,6,21,22,23];
+                  const isCompressedHour = compressedHours.includes(hour);
+                  const baseRowHeight = isCompressedHour ? Math.min(gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight, 10) : (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
+                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.min(baseRowHeight, 10) : baseRowHeight;
                   return (
                   <div 
                     key={hour} 
