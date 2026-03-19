@@ -1944,9 +1944,9 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           if (item.publishedAt) {
             const diff = Date.now() - new Date(item.publishedAt).getTime();
             const mins = Math.floor(diff / 60000);
-            if (mins >= 0) {
+            if (mins >= 0 && mins <= 4320) {
               const ago = mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
-              timeAgoHtml = `<span style="font-size:16px;color:rgba(255,255,255,0.6);margin-left:6px">${ago}</span>`;
+              timeAgoHtml = `<span style="font-size:11px;color:rgba(255,255,255,0.6);margin-left:4px">${ago}</span>`;
             }
           }
           tickerItems += `<span class="t-item"><a href="${escapedLink}" target="_blank">${logoHtml}<span class="t-sep">|</span><span class="t-headline">${escapedTitle}</span>${timeAgoHtml}</a></span>`;
@@ -1972,17 +1972,17 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 html,body{height:100%;overflow:hidden;background:transparent}
 @keyframes tickerScroll{0%{transform:translate3d(var(--ticker-start),0,0)}100%{transform:translate3d(var(--ticker-end),0,0)}}
 @keyframes tickerAlertBlink{0%,100%{opacity:1}50%{opacity:0.3}}
-.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:#000;border-top:1px solid rgba(255,255,255,0.15)}
+.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
 .ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;position:relative;will-change:transform;backface-visibility:hidden}
 .t-item{display:inline-flex;align-items:center;gap:6px;margin:0 16px}
 .t-item a{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .t-item a:hover{text-decoration:underline}
 .t-alert{animation:tickerAlertBlink 1s ease-in-out infinite}
-.t-alert-text{font-size:20px;font-weight:700;color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)}
-.t-forecast{font-size:20px;font-weight:600;color:#4ade80;text-shadow:0 0 4px rgba(74,222,128,0.3)}
-.t-data{font-size:20px;font-weight:600;color:rgba(255,255,255,0.95)}
-.t-headline{font-size:20px;font-weight:700;color:rgba(255,255,255,0.95)}
-.t-sep{color:rgba(255,255,255,0.85);margin:0 4px;font-weight:900;font-size:21px;line-height:1;vertical-align:middle}
+.t-alert-text{font-size:13px;font-weight:700;color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)}
+.t-forecast{font-size:13px;font-weight:400;color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)}
+.t-data{font-size:13px;font-weight:400;color:rgba(255,255,255,0.95)}
+.t-headline{font-size:13px;font-weight:400;color:rgba(255,255,255,0.9)}
+.t-sep{color:rgba(255,255,255,0.85);margin:0 4px;font-weight:300;font-size:13px;line-height:1;vertical-align:middle}
 .t-logo{border-radius:2px;object-fit:contain;vertical-align:middle}
 </style></head><body>
 <div class="ticker-wrap"><div class="ticker-track" id="track">${tickerItems}</div></div>
