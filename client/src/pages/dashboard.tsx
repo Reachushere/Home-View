@@ -21383,7 +21383,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '36px', display: 'inline-block' }}>Module</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '5px' }}>
                                   {pd.moduleUnread}
                                 </div>
                               )}
@@ -21416,7 +21416,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '36px', display: 'inline-block' }}>Reading</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '5px' }}>
                                   {pd.readingUnread}
                                 </div>
                               )}
