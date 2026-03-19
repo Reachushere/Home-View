@@ -22433,8 +22433,8 @@ export default function Dashboard() {
             )}
           </div>
           </div>
-        <div data-testid="timeline-box" style={{ position: 'absolute', bottom: '70px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '10px', backgroundColor: '#3b82f6', borderRadius: '0 0 3px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
-              <span style={{ fontSize: '5px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.5px', lineHeight: 1 }}>Timeline</span>
+        <div data-testid="timeline-box" style={{ position: 'absolute', bottom: '70px', left: '50%', transform: 'translateX(-50%)', width: '600px', height: '200px', backgroundColor: '#3b82f6', borderRadius: '0 0 6px 6px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
+              <span style={{ fontSize: '100px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.5px', lineHeight: 1 }}>Timeline</span>
             </div>
         </section>
 
