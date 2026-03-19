@@ -12920,11 +12920,20 @@ Return ONLY the JSON object, no markdown formatting.`;
         
         // Only announce reminders for tasks with an explicit scheduled time
         // (eventStartTime set, or due time is not midnight — meaning user set a specific time)
-        const dueDate = new Date(task.dueDate);
+        let dueDate = new Date(task.dueDate);
         const dueDateETHour = parseInt(dueDate.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
         const dueDateETMin = parseInt(dueDate.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
         const hasDueTime = dueDateETHour !== 0 || dueDateETMin !== 0;
         if (!task.eventStartTime && !hasDueTime) continue;
+
+        if (task.eventStartTime) {
+          const [estH, estM] = task.eventStartTime.split(':').map(Number);
+          const dueDateET = new Date(dueDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          dueDateET.setHours(estH, estM, 0, 0);
+          const utcRef = new Date(dueDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          const offsetMs = utcRef.getTime() - dueDate.getTime();
+          dueDate = new Date(dueDateET.getTime() - offsetMs);
+        }
         
         // Only use non-default reminders (skip the schema defaults of 30 and 120)
         // Include reminder3/4 which have no defaults, and reminder1/2 only if user changed them
