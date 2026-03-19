@@ -12091,8 +12091,8 @@ export default function Dashboard() {
         <div ref={clockContainerRef} className={`flex ${
           pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
           pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
-        }`} style={{ alignItems: 'baseline', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
-          <span style={{ fontSize: '14px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1', color: '#FFFF00', marginRight: '8px' }}>{formatPomodoroTime(pomodoroTime)}</span>
+        }`} style={{ alignItems: 'center', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+          <span style={{ fontSize: '14px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1.25', color: '#FFFF00', marginRight: '8px' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
         <div className="flex items-center gap-[22px]">
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
