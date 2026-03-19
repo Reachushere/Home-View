@@ -11867,7 +11867,7 @@ export default function Dashboard() {
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
           <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill={hasUnackedReminders ? "rgba(220, 38, 38, 0.5)" : "rgba(255,255,255,0.18)"} stroke={hasUnackedReminders ? "rgba(220, 38, 38, 0.8)" : "rgba(255,255,255,0.35)"} strokeWidth="1.5" />
         </svg>
-        <div className={hasUnackedReminders ? "animate-pill-reminder" : ""} style={{ position: 'absolute', left: '50%', top: '7px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
+        <div className={hasUnackedReminders ? "animate-pill-reminder" : ""} style={{ position: 'absolute', left: '50%', top: '6px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
           {hasUnackedReminders ? <Bell className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: '#dc2626', filter: 'drop-shadow(0 0 2px rgba(220, 38, 38, 0.8))' }} /> : <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />}
         </div>
       </div>
