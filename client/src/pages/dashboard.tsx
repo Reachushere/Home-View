@@ -18589,7 +18589,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: '#9ca3af',
+                                    backgroundColor: '#ffffff',
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
