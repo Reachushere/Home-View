@@ -21690,8 +21690,8 @@ export default function Dashboard() {
 
                 {/* This Week Section */}
                 <div data-homework-section="thisweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#071e38' }}>This week</span>
-                  <span className="text-[11px] font-semibold" style={{ color: '#071e38' }}>({dueTomorrowTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>This week</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '5px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
@@ -21874,8 +21874,8 @@ export default function Dashboard() {
                 )}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
-                  <span className="text-[12px] font-semibold" style={{ color: '#071e38' }}>Next week</span>
-                  <span className="text-[11px] font-semibold" style={{ color: '#071e38' }}>({dueNextWeekTasks.length})</span>
+                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>Next week</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueNextWeekTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-1px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
