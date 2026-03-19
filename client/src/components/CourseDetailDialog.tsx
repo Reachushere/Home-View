@@ -1348,20 +1348,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                   <div className="flex items-center gap-1.5">
                     {syllabusObjectPath && (
-                      <button
+                      <Paperclip
+                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
                         onClick={() => {
                           setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
                           setShowSyllabusViewer(true);
                         }}
-                        className="h-6 px-2 text-[9px] bg-emerald-600/40 hover:bg-emerald-600/60 text-white border border-emerald-400/40 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap"
                         data-testid="button-view-syllabus-edit"
-                      >
-                        <Paperclip className="h-3 w-3" />
-                        View Syllabus
-                      </button>
+                      />
                     )}
                     {syllabusObjectPath && (
-                      <button
+                      <Trash2
+                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
                         onClick={async () => {
                           setSyllabusObjectPath('');
                           try {
@@ -1377,11 +1375,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           } catch {}
                           toast({ title: "Syllabus removed" });
                         }}
-                        className="h-6 px-1.5 text-[9px] bg-red-600/30 hover:bg-red-600/50 text-white border border-red-400/30 rounded-md flex items-center gap-1 transition-colors"
                         data-testid="button-delete-syllabus"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
+                      />
                     )}
                     <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">
                       <input
@@ -1391,7 +1386,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         onChange={handleUploadSyllabus}
                         disabled={isParsingSyllabus || isUploading || !!syllabusObjectPath}
                       />
-                      <div className={`h-6 px-2 text-[9px] bg-emerald-600/30 hover:bg-emerald-600/50 text-white border border-emerald-400/30 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                      <div className={`h-6 px-2 text-[9px] ${syllabusObjectPath ? 'bg-gray-500/40 text-white/50 border-gray-400/30' : 'bg-emerald-600/30 hover:bg-emerald-600/50 text-white border-emerald-400/30'} border rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                         {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
                         {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
                       </div>
@@ -1465,6 +1460,21 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </div>
                   )}
                 </div>
+                {syllabusObjectPath && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => {
+                        setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
+                        setShowSyllabusViewer(true);
+                      }}
+                      className="h-6 px-2 text-[9px] bg-emerald-600/40 hover:bg-emerald-600/60 text-white border border-emerald-400/40 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap"
+                      data-testid="button-view-syllabus"
+                    >
+                      <Paperclip className="h-3 w-3" />
+                      View Syllabus
+                    </button>
+                  </div>
+                )}
                 {courseInfo.zoomLink && (
                   <a
                     href={courseInfo.zoomLink}
@@ -1478,42 +1488,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
                 )}
-                <div className="mt-1">
-                  {syllabusObjectPath ? (
-                    <div className="flex items-center gap-2">
-                      <Paperclip className="h-3 w-3 text-emerald-400 shrink-0" data-testid="icon-syllabus-attached-view" />
-                      <button
-                        onClick={() => {
-                          setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
-                          setShowSyllabusViewer(true);
-                        }}
-                        className="text-[10px] text-white underline hover:text-white/70 transition-colors"
-                        data-testid="button-view-syllabus"
-                      >
-                        View Syllabus
-                      </button>
-                      <button
-                        onClick={async () => {
-                          setSyllabusObjectPath('');
-                          try {
-                            await fetch('/api/syllabus/paths', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: '' }),
-                            });
-                          } catch {}
-                          toast({ title: "Syllabus removed" });
-                        }}
-                        className="hover:opacity-70 transition-opacity"
-                        data-testid="button-delete-syllabus-view"
-                      >
-                        <Trash2 className="h-3 w-3 text-red-400/70 hover:text-red-400" />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-[10px] text-white/40 italic" data-testid="text-no-syllabus">No syllabus uploaded — use Edit to add one</span>
-                  )}
-                </div>
               </>
             )}
           </div>
