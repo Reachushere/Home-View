@@ -4013,12 +4013,18 @@ export default function Dashboard() {
     return false;
   };
 
+  const courseRowBg = (id: string): string | undefined => {
+    if (checkedCourses[id]) return 'rgba(16,185,129,0.06)';
+    if (isSectionFulfilledForCourse(id) || isActiveInOtherLevel(id) || isCourseGreyedOut(id)) return 'rgba(0,0,0,0.02)';
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'rgba(245,158,11,0.06)';
+    return undefined;
+  };
   const courseRowClass = (id: string) => {
-    if (checkedCourses[id]) return 'text-emerald-700 bg-emerald-50/50';
-    if (isSectionFulfilledForCourse(id)) return 'text-gray-400 bg-gray-50';
-    if (isActiveInOtherLevel(id)) return 'text-gray-400 bg-gray-50';
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'text-amber-800 bg-amber-50/50';
-    if (isCourseGreyedOut(id)) return 'text-gray-400 bg-gray-50';
+    if (checkedCourses[id]) return 'text-emerald-700';
+    if (isSectionFulfilledForCourse(id)) return 'text-gray-400';
+    if (isActiveInOtherLevel(id)) return 'text-gray-400';
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'text-amber-800';
+    if (isCourseGreyedOut(id)) return 'text-gray-400';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
@@ -12212,7 +12218,7 @@ export default function Dashboard() {
                   { id: 'PPA102', code: 'CPPA 102', name: 'Cdn Public Admin II: Processes', type: 'Prof-Req\'d' },
                   { id: 'PPA125', code: 'CPPA 125', name: 'Rights, Equity and the State', type: 'Prof-Req\'d' },
                 ].map((c, i) => (
-                  <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(0, 'L1') ? 'section-dim' : ''}`}>
+                  <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(0, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(c.id) }}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
@@ -12240,7 +12246,7 @@ export default function Dashboard() {
                   const disabled = isCheckDisabled(c.id);
                   const isSelectTwo = c.id.startsWith('L1_PPA12');
                   return (
-                  <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(1, 'L1') ? 'section-dim' : ''}`}>
+                  <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(1, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(c.id) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(c.id)}>SELECT</div>
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
@@ -12259,7 +12265,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff', ...(isSectionAllGreen(2, 'L1') ? { opacity: 0.45 } : {}) }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: <span style={sectionRemaining(2, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select one course from "Table A"</span> <span className="font-bold" style={sectionRemaining(2, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L1')}/{certSections.L1[2].required} remaining)</span></div>
                 </div>
-                <div className={`flex border-b border-black ${courseRowClass('LIBERAL')} ${isSectionAllGreen(2, 'L1') ? 'section-dim' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('LIBERAL')} ${isSectionAllGreen(2, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg('LIBERAL') }}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('LIBERAL')}>SELECT</div>
                   <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
@@ -12285,7 +12291,7 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally Related Elective: <span style={sectionRemaining(3, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select two courses from "Table I"</span> <span className="font-bold" style={sectionRemaining(3, 'L1') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L1')}/{certSections.L1[3].required} remaining)</span></div>
                 </div>
                 {['OPEN1','OPEN2'].map((cid, i) => (
-                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L1') ? 'section-dim' : ''}`}>
+                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
@@ -12340,7 +12346,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff', ...(isSectionAllGreen(0, 'L2') ? { opacity: 0.45 } : {}) }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Required Professional Course <span className="font-bold" style={sectionRemaining(0, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L2')}/{certSections.L2[0].required} remaining)</span></div>
                 </div>
-                <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')} ${isSectionAllGreen(0, 'L2') ? 'section-dim' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')} ${isSectionAllGreen(0, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg('L2_PPA211') }}>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">Prof-Req'd</div>
                   <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0 truncate"><CourseName id="L2_PPA211">Public Policy</CourseName><StrikethroughLabel id="L2_PPA211" /></span></div>
@@ -12368,7 +12374,7 @@ export default function Dashboard() {
                 ].map((c) => {
                   const disabled = isCheckDisabled(c.id);
                   return (
-                  <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(1, 'L2') ? 'section-dim' : ''}`}>
+                  <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(1, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(c.id) }}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
@@ -12387,7 +12393,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-black" style={{ backgroundColor: '#000000', color: '#ffffff', ...(isSectionAllGreen(2, 'L2') ? { opacity: 0.45 } : {}) }}>
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Liberal Studies Elective: <span style={sectionRemaining(2, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select one course from Table A</span> <span className="font-bold" style={sectionRemaining(2, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L2')}/{certSections.L2[2].required} remaining)</span></div>
                 </div>
-                <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')} ${isSectionAllGreen(2, 'L2') ? 'section-dim' : ''}`}>
+                <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')} ${isSectionAllGreen(2, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg('L2_LIBERAL') }}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('L2_LIBERAL')}>SELECT</div>
                   <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
@@ -12422,7 +12428,7 @@ export default function Dashboard() {
                 ].map((ecn, i) => {
                   const disabled = isCheckDisabled(ecn.id);
                   return (
-                  <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)} ${isSectionAllGreen(3, 'L2') ? 'section-dim' : ''}`}>
+                  <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)} ${isSectionAllGreen(3, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(ecn.id) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(ecn.id)}>SELECT</div>
                     <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0 truncate"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span></div>
@@ -12440,7 +12446,7 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5 text-[9px]">Professionally-Related Elective: <span style={sectionRemaining(4, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from Table I</span> <span className="font-bold" style={sectionRemaining(4, 'L2') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L2')}/{certSections.L2[4].required} remaining)</span></div>
                 </div>
                 {['L2_OPEN1','L2_OPEN2'].map((cid, i) => (
-                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L2') ? 'section-dim' : ''}`}>
+                  <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
                     <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
@@ -12504,7 +12510,7 @@ export default function Dashboard() {
                     <tr className="border-b border-black" style={isSectionAllGreen(0, 'L3') ? { opacity: 0.45 } : undefined}>
                       <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
                     </tr>
-                    <tr className={`border-b border-black ${courseRowClass('L3_PPA333')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`}>
+                    <tr className={`border-b border-black ${courseRowClass('L3_PPA333')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg('L3_PPA333') }}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id="L3_PPA333">Research Methods in Public Admin</CourseName><StrikethroughLabel id="L3_PPA333" /></span></div></td>
@@ -12516,7 +12522,7 @@ export default function Dashboard() {
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle("L3_PPA333")}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="pencil-cert-L3_PPA333"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
-                    <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`}>
+                    <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg('L3_PRACTICUM1') }}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span></div></td>
@@ -12547,7 +12553,7 @@ export default function Dashboard() {
                       { code: 'CPPA 490', title: 'Public Administration Themes', id: 'L3_PPA490' },
                       { code: 'CPPA 501', title: 'Public Sector Leadership', id: 'L3_PPA501' },
                     ].map((course, idx, arr) => (
-                      <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)} ${isSectionAllGreen(1, 'L3') ? 'section-dim-tr' : ''}`}>
+                      <tr key={course.code} className={`border-b border-black ${courseRowClass(course.id)} ${isSectionAllGreen(1, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(course.id) }}>
                         {idx === 0 && (
                           <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[9px] align-middle no-dim" style={{ backgroundColor: sectionRemaining(1, 'L3') === 0 ? '#e5e7eb' : 'white', color: sectionRemaining(1, 'L3') === 0 ? '#9ca3af' : '#000' }}>
                             <div className="leading-tight">SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
@@ -12568,7 +12574,7 @@ export default function Dashboard() {
                       <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
                     </tr>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
-                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(2, 'L3') ? 'section-dim-tr' : ''}`} data-testid={`cert-course-${cid}`}>
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(2, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }} data-testid={`cert-course-${cid}`}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
@@ -12593,7 +12599,7 @@ export default function Dashboard() {
                       <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Liberal Studies Electives: <span style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>1 Table A + 3 Table B</span> <span className="font-bold" style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
                     </tr>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
-                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L3') ? 'section-dim-tr' : ''}`}>
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
@@ -12618,7 +12624,7 @@ export default function Dashboard() {
                       <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Professionally Related Electives: <span style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select seven from PR table I</span> <span className="font-bold" style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
                     </tr>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
-                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L3') ? 'section-dim-tr' : ''}`}>
+                    <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
@@ -21798,7 +21804,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               )}
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -21832,8 +21838,8 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1, marginLeft: '-10px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
+                                        <span style={{ width: '14px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 1, marginLeft: '-6px', marginRight: '2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-4px' }}>
                                           <div>
                                             <button
                                               className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -21985,7 +21991,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               )}
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
+                            <div style={{ flex: 1, minWidth: 0,  }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -22176,7 +22182,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               )}
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
+                            <div style={{ flex: 1, minWidth: 0,  }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
@@ -22343,7 +22349,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               )}
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
+                            <div style={{ flex: 1, minWidth: 0,  }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
