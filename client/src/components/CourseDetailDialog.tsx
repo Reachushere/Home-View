@@ -97,6 +97,7 @@ interface CourseDetailDialogProps {
   semesterStart: Date;
   readingWeekStart: Date | null;
   certificateName?: string;
+  onPushUndo?: (action: { type: string; description: string; data: any }) => void;
 }
 
 interface NewTaskForm {
@@ -188,7 +189,7 @@ function percentToLetterGrade(pct: number): string {
   return 'F';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -472,7 +473,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   });
 
   const toggleTaskMutation = useMutation({
-    mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
+    mutationFn: async ({ id, isCompleted, _task }: { id: number; isCompleted: boolean; _task?: any }) => {
+      if (onPushUndo && _task) {
+        onPushUndo({
+          type: isCompleted ? 'complete' : 'uncomplete',
+          description: `${isCompleted ? 'Completed' : 'Uncompleted'} "${_task.title}"`,
+          data: { taskId: id, taskTitle: _task.title }
+        });
+      }
       return apiRequest("PATCH", `/api/tasks/${id}`, { isCompleted });
     },
     onSuccess: () => {
@@ -481,7 +489,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   });
 
   const deleteTaskMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async ({ id, _task }: { id: number; _task?: any }) => {
+      if (onPushUndo && _task) {
+        onPushUndo({
+          type: 'delete',
+          description: `Deleted "${_task.title}"`,
+          data: { taskId: _task.id, taskTitle: _task.title, title: _task.title, description: _task.description, type: _task.type, courseName: _task.courseName, dueDate: _task.dueDate, startDate: _task.startDate, weekNumber: _task.weekNumber, isCompleted: _task.isCompleted, eventStartTime: _task.eventStartTime, eventEndTime: _task.eventEndTime, priority: _task.priority, gradeWeight: _task.gradeWeight, gradeTotal: _task.gradeTotal, gradeValue: _task.gradeValue }
+        });
+      }
       return apiRequest("DELETE", `/api/tasks/${id}`);
     },
     onSuccess: () => {
@@ -491,7 +506,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   });
 
   const updateGradeValueMutation = useMutation({
-    mutationFn: async ({ id, gradeValue }: { id: number; gradeValue: number | null }) => {
+    mutationFn: async ({ id, gradeValue, _task }: { id: number; gradeValue: number | null; _task?: any }) => {
+      if (onPushUndo && _task) {
+        onPushUndo({
+          type: 'edit',
+          description: `Changed grade for "${_task.title}"`,
+          data: { taskId: id, taskTitle: _task.title, oldFields: { gradeValue: _task.gradeValue }, newFields: { gradeValue } }
+        });
+      }
       return apiRequest("PATCH", `/api/tasks/${id}`, { gradeValue });
     },
     onSuccess: () => {
@@ -500,7 +522,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   });
 
   const updateTaskMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Record<string, any> }) => {
+    mutationFn: async ({ id, data, _task }: { id: number; data: Record<string, any>; _task?: any }) => {
+      if (onPushUndo && _task) {
+        const oldFields: Record<string, any> = {};
+        const newFields: Record<string, any> = {};
+        for (const key of Object.keys(data)) {
+          const oldVal = (_task as any)[key];
+          if (String(oldVal ?? '') !== String(data[key] ?? '')) {
+            oldFields[key] = oldVal;
+            newFields[key] = data[key];
+          }
+        }
+        if (Object.keys(oldFields).length > 0) {
+          onPushUndo({
+            type: 'edit',
+            description: `Updated "${_task.title}"`,
+            data: { taskId: id, taskTitle: _task.title, oldFields, newFields }
+          });
+        }
+      }
       return apiRequest("PATCH", `/api/tasks/${id}`, data);
     },
     onSuccess: () => {
@@ -812,7 +852,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           <GripVertical className="h-3.5 w-3.5" />
         </div>
         <button
-          onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted }); }}
+          onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted, _task: task }); }}
           className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
             task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
           }`}
@@ -842,19 +882,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
-            onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val })}
+            onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
             placeholder="Scr"
             testId={`input-grade-value-${task.id}`}
           />
           <DebouncedGradeInput
             value={task.gradeTotal}
-            onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val } })}
+            onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val }, _task: task })}
             placeholder="Tot"
             testId={`input-grade-total-${task.id}`}
           />
           <DebouncedGradeInput
             value={task.gradeWeight}
-            onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val } })}
+            onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val }, _task: task })}
             placeholder="Wt"
             testId={`input-grade-weight-${task.id}`}
           />
@@ -886,7 +926,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             </button>
           )}
           <button
-            onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate(task.id); }}
+            onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
             className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
             data-testid={`button-delete-task-${task.id}`}
           >

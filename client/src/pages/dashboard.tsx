@@ -13097,6 +13097,7 @@ export default function Dashboard() {
             }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}
+            onPushUndo={(action) => pushUndo(action as UndoAction)}
           />
         );
       })()}
@@ -23349,6 +23350,22 @@ export default function Dashboard() {
                 onClick={async () => {
                   if (recurringEditPending) {
                     const { originalTitle, ...singlePayload } = recurringEditPending.payload as Record<string, unknown>;
+                    const oldTask = allTasks.find(t => t.id === recurringEditPending.taskId);
+                    if (oldTask) {
+                      const oldFields: Record<string, any> = {};
+                      const newFields: Record<string, any> = {};
+                      for (const key of Object.keys(singlePayload)) {
+                        const oldVal = (oldTask as any)[key];
+                        const newVal = singlePayload[key];
+                        if (String(oldVal ?? '') !== String(newVal ?? '')) {
+                          oldFields[key] = oldVal;
+                          newFields[key] = newVal;
+                        }
+                      }
+                      if (Object.keys(oldFields).length > 0) {
+                        pushUndo({ type: 'edit', description: `Edited "${oldTask.title}"`, data: { taskId: oldTask.id, taskTitle: oldTask.title, oldFields, newFields } });
+                      }
+                    }
                     await apiRequest("PATCH", `/api/tasks/${recurringEditPending.taskId}`, singlePayload);
                     queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
                     queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
@@ -23405,7 +23422,8 @@ export default function Dashboard() {
             {rescheduleTask && (
               <RescheduleForm 
                 task={rescheduleTask}
-                onSuccess={() => setRescheduleTask(null)} 
+                onSuccess={() => setRescheduleTask(null)}
+                onUndoPush={(action) => pushUndo(action as UndoAction)}
               />
             )}
           </DialogContent>
@@ -23503,6 +23521,7 @@ export default function Dashboard() {
                 onRecurringEdit={(taskId, title, payload, onSuccessCb) => {
                   setRecurringEditPending({ taskId, title, payload, onSuccess: onSuccessCb });
                 }}
+                onUndoPush={(action) => pushUndo(action as UndoAction)}
               />
             )}
           </DialogContent>
@@ -26211,7 +26230,8 @@ function TaskForm({
   initialEndTime,
   hideSubmitButton,
   onSuccess,
-  onRecurringEdit 
+  onRecurringEdit,
+  onUndoPush 
 }: { 
   task?: Task; 
   weekNumber: number;
@@ -26222,6 +26242,7 @@ function TaskForm({
   hideSubmitButton?: boolean;
   onSuccess: () => void;
   onRecurringEdit?: (taskId: number, title: string, payload: Record<string, unknown>, onSuccess: () => void) => void;
+  onUndoPush?: (action: { type: 'edit'; description: string; data: { taskId: number; taskTitle: string; oldFields: Record<string, any>; newFields: Record<string, any> } }) => void;
 }) {
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -26393,6 +26414,27 @@ function TaskForm({
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
       };
       if (task) {
+        if (onUndoPush) {
+          const oldFields: Record<string, any> = {};
+          const newFields: Record<string, any> = {};
+          for (const key of Object.keys(payload)) {
+            const oldVal = (task as any)[key];
+            const newVal = payload[key];
+            const oldStr = oldVal instanceof Date ? oldVal.toISOString() : String(oldVal ?? '');
+            const newStr = String(newVal ?? '');
+            if (oldStr !== newStr) {
+              oldFields[key] = oldVal instanceof Date ? oldVal.toISOString() : oldVal;
+              newFields[key] = newVal;
+            }
+          }
+          if (Object.keys(oldFields).length > 0) {
+            onUndoPush({
+              type: 'edit',
+              description: `Edited "${task.title}"`,
+              data: { taskId: task.id, taskTitle: task.title, oldFields, newFields }
+            });
+          }
+        }
         return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
       }
       // Create the task and return the response to get the new task ID
@@ -27492,16 +27534,30 @@ function TaskDependencies({ taskId, taskTitle }: { taskId: number; taskTitle: st
 
 function RescheduleForm({ 
   task, 
-  onSuccess 
+  onSuccess,
+  onUndoPush 
 }: { 
   task: Task; 
   onSuccess: () => void;
+  onUndoPush?: (action: { type: 'edit'; description: string; data: { taskId: number; taskTitle: string; oldFields: Record<string, any>; newFields: Record<string, any> } }) => void;
 }) {
   const [newDate, setNewDate] = useState("");
   const [newWeek, setNewWeek] = useState(task.weekNumber);
 
   const rescheduleMutation = useMutation({
     mutationFn: async () => {
+      if (onUndoPush) {
+        onUndoPush({
+          type: 'edit',
+          description: `Rescheduled "${task.title}"`,
+          data: {
+            taskId: task.id,
+            taskTitle: task.title,
+            oldFields: { dueDate: task.dueDate instanceof Date ? task.dueDate.toISOString() : task.dueDate, weekNumber: task.weekNumber },
+            newFields: { dueDate: newDate, weekNumber: newWeek }
+          }
+        });
+      }
       return apiRequest("PATCH", `/api/tasks/${task.id}/reschedule`, {
         dueDate: newDate,
         weekNumber: newWeek,
