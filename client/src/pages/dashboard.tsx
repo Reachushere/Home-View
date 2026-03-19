@@ -18023,7 +18023,7 @@ export default function Dashboard() {
                   if (!alreadyExists) allDisplayCourses.push(sc);
                 }
                 const filteredCourses = allDisplayCourses;
-                const maxCourseRowHeight = 3 * 22 + 2 * 2 + 4;
+                const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
                 return (
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
               {filteredCourses.map((courseData, courseIdx) => {
