@@ -12133,8 +12133,9 @@ export default function Dashboard() {
                       return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNoC;
                     });
                     const cg = certKey ? courseGrades[certKey] : null;
+                    const directGrade = courseGrades[codeNorm] || courseGrades[code] || courseGrades[codeNoC] || null;
                     let electiveGrade: { grade: string; percent: string } | null = null;
-                    if (!cg?.percent && !cg?.grade) {
+                    if (!cg?.percent && !cg?.grade && !directGrade?.percent && !directGrade?.grade) {
                       for (const [slot, elVal] of Object.entries(openElectives)) {
                         if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
                           if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
@@ -12147,6 +12148,8 @@ export default function Dashboard() {
                     if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
                     else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                    else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                    else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) { vals.push(letterToGpa[directGrade.grade]); }
                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                   }
