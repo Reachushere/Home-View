@@ -11932,7 +11932,7 @@ export default function Dashboard() {
                       <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
                       <span className="text-[13px] text-white/90 font-medium">{a.subject}</span>
                       {displaySnippet && <span className="text-[12px] text-white/55">{displaySnippet}</span>}
-                      <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
+                      <span className="text-[11px] text-white/60 ml-1">{timeAgo}</span>
                     </span>
                   );
                 });
