@@ -186,15 +186,19 @@ export async function voiceChatStream(
  */
 export async function textToSpeech(
   text: string,
-  voice: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer" = "alloy",
-  format: "wav" | "mp3" | "flac" | "opus" | "pcm16" = "wav"
+  voice: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer" = "echo",
+  format: "wav" | "mp3" | "flac" | "opus" | "pcm16" = "wav",
+  slowPace: boolean = false
 ): Promise<Buffer> {
+  const systemContent = slowPace
+    ? "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly."
+    : "You are an assistant that performs text-to-speech. Read the text naturally and clearly.";
   const response = await openai.chat.completions.create({
     model: "gpt-audio",
     modalities: ["text", "audio"],
     audio: { voice, format },
     messages: [
-      { role: "system", content: "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly." },
+      { role: "system", content: systemContent },
       { role: "user", content: `Repeat the following text verbatim: ${text}` },
     ],
   });
@@ -209,14 +213,18 @@ export async function textToSpeech(
  */
 export async function textToSpeechStream(
   text: string,
-  voice: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer" = "alloy"
+  voice: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer" = "echo",
+  slowPace: boolean = false
 ): Promise<AsyncIterable<string>> {
+  const systemContent = slowPace
+    ? "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly."
+    : "You are an assistant that performs text-to-speech. Read the text naturally and clearly.";
   const stream = await openai.chat.completions.create({
     model: "gpt-audio",
     modalities: ["text", "audio"],
     audio: { voice, format: "pcm16" },
     messages: [
-      { role: "system", content: "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly." },
+      { role: "system", content: systemContent },
       { role: "user", content: `Repeat the following text verbatim: ${text}` },
     ],
     stream: true,

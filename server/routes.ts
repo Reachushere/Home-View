@@ -244,7 +244,7 @@ const CHARS_PER_SECOND = 13; // Conservative: let chunk finish before sending ne
 const CHUNK_SIZE = 2000; // Characters per TTS chunk
 
 // Helper to generate OpenAI TTS audio and save to object storage for playback
-async function generateAndSaveTTSAudio(text: string, fileId: string, voice: string = "echo"): Promise<string> {
+async function generateAndSaveTTSAudio(text: string, fileId: string, voice: string = "echo", slowPace: boolean = false): Promise<string> {
   const publicPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0]?.trim();
   if (!publicPath) {
     throw new Error("PUBLIC_OBJECT_SEARCH_PATHS not configured");
@@ -268,7 +268,7 @@ async function generateAndSaveTTSAudio(text: string, fileId: string, voice: stri
   console.log(`Generating OpenAI TTS for ${normalizedText.length} chars, file: ${fileId}`);
   
   const ttsStart = Date.now();
-  const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3");
+  const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3", slowPace);
   console.log(`OpenAI TTS completed in ${Date.now() - ttsStart}ms, ${audioBuffer.length} bytes`);
   
   if (audioBuffer.length === 0) {
@@ -5169,7 +5169,8 @@ html,body{height:100%;overflow:hidden;background:transparent}
       const audioBuffer = await textToSpeech(
         trimmedText,
         selectedVoice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
-        "mp3"
+        "mp3",
+        true
       );
       
       console.log(`TTS completed in ${Date.now() - startTime}ms, ${audioBuffer.length} bytes`);
@@ -6534,7 +6535,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       for (let i = 0; i < chunks.length; i++) {
         try {
           console.log(`[AudioPrep] Generating chunk ${i + 1}/${chunks.length} for ${file.originalName} (${chunks[i].length} chars)`);
-          const audioPath = await generateAndSaveTTSAudio(chunks[i], `prep-${fileId}-chunk-${i}`, voice);
+          const audioPath = await generateAndSaveTTSAudio(chunks[i], `prep-${fileId}-chunk-${i}`, voice, true);
           audioPaths.push(audioPath);
           consecutiveRateLimits = 0;
         } catch (e: any) {
@@ -6756,7 +6757,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const chunk0PreGenPromise = (fileChunks.length > resumeFromChunk)
       ? (prePreparedPaths[resumeFromChunk] && prePreparedPaths[resumeFromChunk].length > 0
           ? Promise.resolve().then(() => { preGeneratedChunk0Path = prePreparedPaths[resumeFromChunk]; console.log(`${logPrefix} Using pre-prepared audio for chunk ${resumeFromChunk}`); })
-          : generateAndSaveTTSAudio(fileChunks[resumeFromChunk], `nest-chunk-${fileToPlay.id}-${resumeFromChunk}-${Date.now()}`, voice)
+          : generateAndSaveTTSAudio(fileChunks[resumeFromChunk], `nest-chunk-${fileToPlay.id}-${resumeFromChunk}-${Date.now()}`, voice, true)
               .then(p => { preGeneratedChunk0Path = p; console.log(`${logPrefix} Pre-generated chunk ${resumeFromChunk} TTS`); })
               .catch(e => { console.warn(`${logPrefix} Chunk 0 pre-gen failed (will retry): ${e.message}`); })
         )
@@ -7213,11 +7214,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 console.log(`[Nest Playback] Look-ahead resolved for chunk ${i + 1}/${chunks.length}`);
               } else {
                 console.log(`[Nest Playback] Look-ahead failed, regenerating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
-                audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+                audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice, true);
               }
             } else {
               console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
-              audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+              audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice, true);
             }
           }
           lookaheadAudioPath = null;
@@ -7243,7 +7244,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (nextIdx < chunks.length && !(preparedAudioCache[nextIdx] && preparedAudioCache[nextIdx].length > 0)) {
             console.log(`[Nest Playback] Look-ahead: pre-generating chunk ${nextIdx + 1}/${chunks.length} in background`);
             lookaheadChunkIndex = nextIdx;
-            lookaheadPromise = generateAndSaveTTSAudio(chunks[nextIdx], `nest-chunk-${fileId}-${nextIdx}-${Date.now()}`, voice)
+            lookaheadPromise = generateAndSaveTTSAudio(chunks[nextIdx], `nest-chunk-${fileId}-${nextIdx}-${Date.now()}`, voice, true)
               .then(path => { lookaheadAudioPath = path; return path; })
               .catch(err => { console.log(`[Nest Playback] Look-ahead generation failed for chunk ${nextIdx + 1}: ${err.message}`); return null; });
           }
