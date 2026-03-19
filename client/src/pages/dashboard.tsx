@@ -21248,10 +21248,10 @@ export default function Dashboard() {
                             }
                           } : undefined}
                           style={{
-                            lineHeight: '1.4',
-                            marginBottom: '2px',
+                            lineHeight: '1.5',
+                            marginBottom: '0px',
                             opacity: 1,
-                            padding: '1px 0',
+                            padding: '4px 0',
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
@@ -21259,8 +21259,8 @@ export default function Dashboard() {
                           onMouseLeave={() => setHoveredCountdownTaskId(null)}
                           onClick={() => setEditingTask(t)}
                         >
-                          <span style={{ fontSize: '16px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '16px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span style={{ fontSize: '12px', color: textColor, flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '12px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDay(tDueDate);
