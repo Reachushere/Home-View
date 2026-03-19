@@ -7448,9 +7448,26 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  let voiceCommandPauseState_: {
+    fileId: number;
+    chunkIndex: number;
+    fileName: string;
+    pausedAt: Date;
+    autoStopTimer: ReturnType<typeof setTimeout>;
+  } | null = null;
+
+  function clearVoiceCommandPause_() {
+    if (voiceCommandPauseState_) {
+      clearTimeout(voiceCommandPauseState_.autoStopTimer);
+      voiceCommandPauseState_ = null;
+    }
+  }
+
   async function stopNestPlaybackWithGoodbye(reason: string): Promise<void> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = "https://home-view--bkh416.replit.app";
+
+    clearVoiceCommandPause_();
 
     if (nestPlaybackAbort) {
       nestPlaybackAbort();
@@ -7917,7 +7934,7 @@ document.body.removeChild(a);
       currentFile: catWashPlaybackState?.fileName || null,
       currentChunk: catWashPlaybackState?.chunkIndex || 0,
       totalChunks: catWashPlaybackState?.totalChunks || 0,
-      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-shower-button", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press"],
+      endpoints: ["/api/webhook/cat-lights", "/api/webhook/cat-lights-confirm", "/api/webhook/cat-shower-button", "/api/webhook/cat-wash-stop", "/api/webhook/cat-door", "/api/webhook/cat-volume", "/api/webhook/cat-knob-press", "/api/webhook/voice-command"],
     });
   });
 
@@ -8721,6 +8738,7 @@ document.body.removeChild(a);
     const keepOpen = req.body?.keepOpen === true;
     console.log(`[Cat Wash Stop] === STOP ALL PLAYBACK === (keepOpen=${keepOpen})`);
 
+    clearVoiceCommandPause_();
     const stopped: string[] = [];
 
     if (catWashPlaybackActive && catWashPlaybackState) {
@@ -8809,6 +8827,470 @@ document.body.removeChild(a);
     stopWordAdvancement();
     console.log(`[Cat Wash Stop] Stopped: ${stopped.join(', ')}`);
     res.json({ stopped: true, stoppedItems: stopped });
+  });
+
+  app.post("/api/webhook/voice-command", async (req, res) => {
+    const command = (req.body?.command || '').toLowerCase().trim();
+    console.log(`[Voice Command] ====== WEBHOOK TRIGGERED ====== command="${command}"`);
+    console.log(`[Voice Command] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
+
+    if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+      return res.status(500).json({ error: "Home Assistant not configured" });
+    }
+
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const appUrl = "https://home-view--bkh416.replit.app";
+    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+    try {
+      if (command === 'pause') {
+        if (!catWashPlaybackActive || !catWashPlaybackState) {
+          console.log(`[Voice Command] Pause requested but no active playback`);
+          try {
+            const noPlayPath = await generateAndSaveTTSAudio("Nothing is playing right now.", `vc-no-play-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPlayPath}`);
+          } catch {}
+          return res.json({ action: "ignored", reason: "No active playback" });
+        }
+
+        const { fileId, chunkIndex, fileName } = catWashPlaybackState;
+        console.log(`[Voice Command] Pausing: "${fileName}" at chunk ${chunkIndex}`);
+
+        if (nestPlaybackAbort) {
+          nestPlaybackAbort();
+          nestPlaybackAbort = null;
+        }
+        await stopNestSpeaker();
+        stopWordAdvancement();
+
+        if (fileId && chunkIndex != null) {
+          try {
+            await storage.updateFile(fileId, { lastChunkIndex: chunkIndex });
+            console.log(`[Voice Command] Saved progress: file ${fileId}, chunk ${chunkIndex}`);
+          } catch (e: any) {
+            console.error(`[Voice Command] Failed to save progress: ${e.message}`);
+          }
+        }
+
+        catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
+        const savedState = { ...catWashPlaybackState };
+        catWashPlaybackState = null;
+        stopToothbrushPolling();
+
+        const PAUSE_TIMEOUT_MS = 10 * 60 * 1000;
+        clearVoiceCommandPause_();
+        const autoStopTimer = setTimeout(async () => {
+          console.log(`[Voice Command] 10-minute pause timeout — auto-stopping`);
+          voiceCommandPauseState_ = null;
+
+          const stopTimestamp = Date.now();
+          await Promise.all([
+            setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: stopTimestamp }, true, 'master'),
+            setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
+          ]);
+
+          try {
+            await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+            });
+            await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+            });
+          } catch {}
+
+          try {
+            const timeoutPath = await generateAndSaveTTSAudio("Pause timed out. Playback has been stopped. Your progress has been saved.", `vc-timeout-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${timeoutPath}`);
+          } catch {}
+        }, PAUSE_TIMEOUT_MS);
+
+        voiceCommandPauseState_ = {
+          fileId: savedState.fileId,
+          chunkIndex: savedState.chunkIndex,
+          fileName: savedState.fileName,
+          pausedAt: new Date(),
+          autoStopTimer,
+        };
+
+        try {
+          const pausePath = await generateAndSaveTTSAudio("Paused. Say resume to continue, or I'll stop in 10 minutes.", `vc-pause-${Date.now()}`);
+          await playOnNestSpeaker(`${appUrl}${pausePath}`);
+        } catch {}
+
+        return res.json({ action: "paused", file: fileName, chunk: chunkIndex });
+
+      } else if (command === 'resume') {
+        if (!voiceCommandPauseState_) {
+          console.log(`[Voice Command] Resume requested but nothing is paused`);
+          try {
+            const noPausePath = await generateAndSaveTTSAudio("Nothing is paused right now.", `vc-no-pause-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPausePath}`);
+          } catch {}
+          return res.json({ action: "ignored", reason: "Nothing paused" });
+        }
+
+        const { fileId, fileName } = voiceCommandPauseState_;
+        console.log(`[Voice Command] Resuming: "${fileName}" (fileId=${fileId})`);
+        clearVoiceCommandPause_();
+
+        const file = await storage.getFile(fileId);
+        if (!file) {
+          console.log(`[Voice Command] File ${fileId} not found`);
+          try {
+            const notFoundPath = await generateAndSaveTTSAudio("The file could not be found.", `vc-notfound-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${notFoundPath}`);
+          } catch {}
+          return res.json({ action: "error", reason: "File not found" });
+        }
+
+        try {
+          const echoEntities = [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ];
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: echoEntities }),
+          });
+          console.log(`[Voice Command] Cleared Echo speakers before resume`);
+        } catch (e: any) {
+          console.warn(`[Voice Command] Echo clear error (non-fatal): ${e.message}`);
+        }
+
+        const fileDesc = describeFileForTTS(file, 0).replace(/ for week 0$/, '');
+        const confirmTTS = `Resuming ${fileDesc}.`;
+        catWashPlaybackTrigger = catWashPlaybackTrigger || 'manual';
+        catLightsPromptPending = false;
+
+        res.json({ action: "resuming", file: fileName, fileId });
+
+        await startConfirmedPlaybackFlow(file, '[Voice Resume]', 'echo', confirmTTS);
+        return;
+
+      } else if (command === 'stop') {
+        clearVoiceCommandPause_();
+
+        if (!catWashPlaybackActive && !voiceCommandPauseState_) {
+          console.log(`[Voice Command] Stop requested but nothing is playing or paused`);
+          try {
+            const noPlayPath = await generateAndSaveTTSAudio("Nothing is playing.", `vc-nostop-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPlayPath}`);
+          } catch {}
+          return res.json({ action: "ignored", reason: "Nothing playing or paused" });
+        }
+
+        console.log(`[Voice Command] Stopping all playback`);
+
+        if (catWashPlaybackActive) {
+          await stopNestPlaybackWithGoodbye('voice_command_stop');
+        } else {
+          const stopTimestamp = Date.now();
+          await Promise.all([
+            setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: stopTimestamp }, true, 'master'),
+            setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
+          ]);
+
+          try {
+            await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+            });
+            await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+            });
+          } catch {}
+
+          try {
+            const stopPath = await generateAndSaveTTSAudio("Stopped. Your progress has been saved. See you next time Bryn.", `vc-stop-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${stopPath}`);
+          } catch {}
+        }
+
+        if (currentTTSSession) {
+          stopTTSSession("Voice command stop");
+        }
+
+        return res.json({ action: "stopped" });
+
+      } else if (command === 'restart' || command === 'go_back') {
+        let targetFileId: number | null = null;
+        let targetChunk: number = 0;
+        let targetFileName: string = '';
+
+        if (catWashPlaybackActive && catWashPlaybackState) {
+          targetFileId = catWashPlaybackState.fileId;
+          targetChunk = Math.max(0, catWashPlaybackState.chunkIndex - 1);
+          targetFileName = catWashPlaybackState.fileName;
+
+          if (nestPlaybackAbort) {
+            nestPlaybackAbort();
+            nestPlaybackAbort = null;
+          }
+          await stopNestSpeaker();
+          stopWordAdvancement();
+          catWashPlaybackActive = false;
+          catWashPlaybackStartedAt = null;
+          catWashPlaybackState = null;
+          stopToothbrushPolling();
+        } else if (voiceCommandPauseState_) {
+          targetFileId = voiceCommandPauseState_.fileId;
+          targetChunk = Math.max(0, voiceCommandPauseState_.chunkIndex - 1);
+          targetFileName = voiceCommandPauseState_.fileName;
+          clearVoiceCommandPause_();
+        }
+
+        if (!targetFileId) {
+          console.log(`[Voice Command] Restart requested but no active/paused playback`);
+          try {
+            const noPath = await generateAndSaveTTSAudio("Nothing is playing to restart.", `vc-norestart-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPath}`);
+          } catch {}
+          return res.json({ action: "ignored", reason: "Nothing to restart" });
+        }
+
+        console.log(`[Voice Command] Restart: "${targetFileName}" going back to chunk ${targetChunk}`);
+
+        try {
+          await storage.updateFile(targetFileId, { lastChunkIndex: targetChunk });
+        } catch (e: any) {
+          console.error(`[Voice Command] Failed to update chunk: ${e.message}`);
+        }
+
+        const file = await storage.getFile(targetFileId);
+        if (!file) {
+          return res.json({ action: "error", reason: "File not found" });
+        }
+
+        try {
+          const echoEntities = [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ];
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: echoEntities }),
+          });
+        } catch {}
+
+        const confirmTTS = `Going back. Restarting from an earlier section.`;
+        catWashPlaybackTrigger = catWashPlaybackTrigger || 'manual';
+        catLightsPromptPending = false;
+
+        res.json({ action: "restarting", file: targetFileName, fromChunk: targetChunk });
+
+        await startConfirmedPlaybackFlow(file, '[Voice Restart]', 'echo', confirmTTS);
+        return;
+
+      } else if (command === 'reset') {
+        let targetFileId: number | null = null;
+        let targetFileName: string = '';
+
+        if (catWashPlaybackActive && catWashPlaybackState) {
+          targetFileId = catWashPlaybackState.fileId;
+          targetFileName = catWashPlaybackState.fileName;
+
+          if (nestPlaybackAbort) {
+            nestPlaybackAbort();
+            nestPlaybackAbort = null;
+          }
+          await stopNestSpeaker();
+          stopWordAdvancement();
+          catWashPlaybackActive = false;
+          catWashPlaybackStartedAt = null;
+          catWashPlaybackState = null;
+          stopToothbrushPolling();
+        } else if (voiceCommandPauseState_) {
+          targetFileId = voiceCommandPauseState_.fileId;
+          targetFileName = voiceCommandPauseState_.fileName;
+          clearVoiceCommandPause_();
+        }
+
+        if (!targetFileId) {
+          console.log(`[Voice Command] Reset requested but no active/paused playback`);
+          try {
+            const noPath = await generateAndSaveTTSAudio("Nothing is playing to reset.", `vc-noreset-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPath}`);
+          } catch {}
+          return res.json({ action: "ignored", reason: "Nothing to reset" });
+        }
+
+        console.log(`[Voice Command] Reset: "${targetFileName}" back to chunk 0`);
+
+        try {
+          await storage.updateFile(targetFileId, { lastChunkIndex: 0, checkedChunks: '[]' });
+        } catch (e: any) {
+          console.error(`[Voice Command] Failed to reset file: ${e.message}`);
+        }
+
+        const file = await storage.getFile(targetFileId);
+        if (!file) {
+          return res.json({ action: "error", reason: "File not found" });
+        }
+
+        try {
+          const echoEntities = [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ];
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: echoEntities }),
+          });
+        } catch {}
+
+        const fileDesc = describeFileForTTS(file, 0).replace(/ for week 0$/, '');
+        const confirmTTS = `Resetting ${fileDesc}. Starting from the beginning.`;
+        catWashPlaybackTrigger = catWashPlaybackTrigger || 'manual';
+        catLightsPromptPending = false;
+
+        res.json({ action: "resetting", file: targetFileName });
+
+        await startConfirmedPlaybackFlow(file, '[Voice Reset]', 'echo', confirmTTS);
+        return;
+
+      } else if (command === 'skip') {
+        let currentFileId: number | null = null;
+        let currentFileName: string = '';
+
+        if (catWashPlaybackActive && catWashPlaybackState) {
+          currentFileId = catWashPlaybackState.fileId;
+          currentFileName = catWashPlaybackState.fileName;
+
+          if (nestPlaybackAbort) {
+            nestPlaybackAbort();
+            nestPlaybackAbort = null;
+          }
+          await stopNestSpeaker();
+          stopWordAdvancement();
+          catWashPlaybackActive = false;
+          catWashPlaybackStartedAt = null;
+          catWashPlaybackState = null;
+          stopToothbrushPolling();
+        } else if (voiceCommandPauseState_) {
+          currentFileId = voiceCommandPauseState_.fileId;
+          currentFileName = voiceCommandPauseState_.fileName;
+          clearVoiceCommandPause_();
+        }
+
+        if (!currentFileId) {
+          console.log(`[Voice Command] Skip requested but no active/paused playback`);
+          try {
+            const noPath = await generateAndSaveTTSAudio("Nothing is playing to skip.", `vc-noskip-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPath}`);
+          } catch {}
+          return res.json({ action: "ignored", reason: "Nothing to skip" });
+        }
+
+        console.log(`[Voice Command] Skip: marking "${currentFileName}" as listened and finding next`);
+
+        try {
+          await storage.updateFile(currentFileId, { listened: true });
+        } catch (e: any) {
+          console.error(`[Voice Command] Failed to mark listened: ${e.message}`);
+        }
+
+        const semesterSettings = await storage.getActiveSemesterSettings();
+        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
+        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+        const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+
+        const allFiles = await storage.getFiles();
+        const nextFile = findNextFileByPriority(allFiles, currentWeekNumber, currentFileId);
+
+        if (!nextFile) {
+          console.log(`[Voice Command] No more files for week ${currentWeekNumber}`);
+
+          const stopTimestamp = Date.now();
+          await Promise.all([
+            setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: stopTimestamp }, true, 'master'),
+            setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
+          ]);
+
+          try {
+            await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+            });
+            await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+              method: 'POST', headers: haHeaders,
+              body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+            });
+          } catch {}
+
+          try {
+            const donePath = await generateAndSaveTTSAudio("Skipped. No more readings for this week. Great work Bryn!", `vc-skipdone-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${donePath}`);
+          } catch {}
+
+          return res.json({ action: "skipped_and_done", skippedFile: currentFileName });
+        }
+
+        const nextFileName = nextFile.displayName || nextFile.originalName || 'Unknown';
+        const fileDesc = describeFileForTTS(nextFile, currentWeekNumber);
+        console.log(`[Voice Command] Skipping to next: ${fileDesc} (id=${nextFile.id})`);
+
+        try {
+          const echoEntities = [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ];
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: echoEntities }),
+          });
+        } catch {}
+
+        const confirmTTS = `Skipped. Now playing ${fileDesc}.`;
+        catWashPlaybackTrigger = catWashPlaybackTrigger || 'manual';
+        catLightsPromptPending = false;
+
+        res.json({ action: "skipping", skippedFile: currentFileName, nextFile: nextFileName });
+
+        await startConfirmedPlaybackFlow(nextFile, '[Voice Skip]', 'echo', confirmTTS);
+        return;
+
+      } else {
+        console.log(`[Voice Command] Unknown command: "${command}"`);
+        return res.json({ action: "unknown", command });
+      }
+
+    } catch (error: any) {
+      console.error(`[Voice Command] Error: ${error.message}`);
+      res.status(500).json({ error: "Voice command failed", details: error.message });
+    }
+  });
+
+  app.get("/api/voice-command/status", (_req, res) => {
+    const status: any = {
+      playbackActive: catWashPlaybackActive,
+      paused: !!voiceCommandPauseState_,
+    };
+    if (catWashPlaybackActive && catWashPlaybackState) {
+      status.playing = {
+        fileId: catWashPlaybackState.fileId,
+        fileName: catWashPlaybackState.fileName,
+        chunkIndex: catWashPlaybackState.chunkIndex,
+        totalChunks: catWashPlaybackState.totalChunks,
+      };
+    }
+    if (voiceCommandPauseState_) {
+      status.pauseInfo = {
+        fileId: voiceCommandPauseState_.fileId,
+        fileName: voiceCommandPauseState_.fileName,
+        chunkIndex: voiceCommandPauseState_.chunkIndex,
+        pausedAt: voiceCommandPauseState_.pausedAt.toISOString(),
+        autoStopIn: Math.max(0, 10 * 60 * 1000 - (Date.now() - voiceCommandPauseState_.pausedAt.getTime())),
+      };
+    }
+    res.json(status);
   });
 
   app.get("/api/ha/entities", async (_req, res) => {
