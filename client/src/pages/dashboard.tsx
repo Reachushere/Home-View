@@ -2346,7 +2346,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#164a72',
+      headerBar: '#0e3356',
       mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
@@ -2355,12 +2355,12 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#164a72',
+      todayCurrentHourCellBackground: '#0e3356',
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
-    const migrationV22 = localStorage.getItem('colorSettingsMigrationV22');
-    if (!migrationV22) {
+    const migrationV23 = localStorage.getItem('colorSettingsMigrationV23');
+    if (!migrationV23) {
       localStorage.removeItem('colorSettings');
       localStorage.removeItem('colorSettingsMigrationV17');
       localStorage.removeItem('colorSettingsMigrationV18');
@@ -2368,7 +2368,8 @@ export default function Dashboard() {
       localStorage.removeItem('colorSettingsMigrationV19');
       localStorage.removeItem('colorSettingsMigrationV20');
       localStorage.removeItem('colorSettingsMigrationV21');
-      localStorage.setItem('colorSettingsMigrationV22', 'done');
+      localStorage.removeItem('colorSettingsMigrationV22');
+      localStorage.setItem('colorSettingsMigrationV23', 'done');
       return defaults;
     }
     const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
@@ -3693,8 +3694,8 @@ export default function Dashboard() {
         if (data.colorSettings) {
           setColorSettings(prev => {
             const merged = { ...prev, ...data.colorSettings };
-            if (merged.headerBar === '#160502' || merged.headerBar === '#1a3a5c' || merged.headerBar === '#0f2540') merged.headerBar = '#164a72';
-            if (merged.todayCurrentHourCellBackground === '#160502' || merged.todayCurrentHourCellBackground === '#1a3a5c' || merged.todayCurrentHourCellBackground === '#0f2540') merged.todayCurrentHourCellBackground = '#164a72';
+            if (merged.headerBar === '#160502' || merged.headerBar === '#1a3a5c' || merged.headerBar === '#0f2540' || merged.headerBar === '#164a72') merged.headerBar = '#0e3356';
+            if (merged.todayCurrentHourCellBackground === '#160502' || merged.todayCurrentHourCellBackground === '#1a3a5c' || merged.todayCurrentHourCellBackground === '#0f2540' || merged.todayCurrentHourCellBackground === '#164a72') merged.todayCurrentHourCellBackground = '#0e3356';
             localStorage.setItem('colorSettings', JSON.stringify(merged));
             return merged;
           });
