@@ -9277,7 +9277,7 @@ export default function Dashboard() {
       const ce = getCalendarEventsForHour(day, h);
       return ht.length > 0 || ct.length > 0 || ce.length > 0;
     });
-    return hasTasks ? base : Math.round(base / 2);
+    return hasTasks ? base : 12;
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
@@ -18395,7 +18395,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: 'visible', minWidth: 0 }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -19036,8 +19036,8 @@ export default function Dashboard() {
                   });
                   const compressedHours = [0,1,2,3,4,5,6,21,22,23];
                   const isCompressedHour = compressedHours.includes(hour);
-                  const baseRowHeight = isCompressedHour ? Math.min(gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight, 10) : (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.min(baseRowHeight, 10) : baseRowHeight;
+                  const baseRowHeight = isCompressedHour ? Math.min(gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight, 12) : (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
+                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.min(baseRowHeight, 12) : baseRowHeight;
                   return (
                   <div 
                     key={hour} 
