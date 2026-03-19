@@ -21377,7 +21377,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex items-center gap-[5px]">
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px', marginLeft: '3px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px', marginLeft: '1px', marginTop: '2px' }}>
                                 {pd.moduleP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
@@ -21410,7 +21410,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex items-center gap-[5px]">
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px', marginLeft: '3px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px', marginLeft: '1px', marginTop: '2px' }}>
                                 {pd.readingP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
